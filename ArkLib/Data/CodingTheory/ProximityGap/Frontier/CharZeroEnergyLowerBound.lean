@@ -152,13 +152,23 @@ multi-pairing refinement: an injection over (pairing `σ` × injective antipodal
 antipodally paired by `σ` with all `r` pair-values in DISTINCT antipodal classes. On that
 *generic* (distinct-class) locus the pairing `σ` is UNIQUELY recoverable from the tuple, so the
 images over distinct `σ` are disjoint, giving the `(2r−1)‼` factor; the `(n/2)_r·2^r` factor is
-the distinct-signed-class choice. This is verified EXACTLY (injective, image card
-`= (2r−1)‼·(n/2)_r·2^r`) in `scripts/probes/probe_charzero_lower_injection.py` for `(n,r)` in
-`{(4,1),(4,2),(8,1),(8,2)}`, and `A_r ≤ E_r ≤ Wick` in `probe_charzero_energy_lower.py` for
-`n ∈ {2,4,8}`, `r ∈ {1,2,3}`. The single-pairing base case above (`= |G|^r`) is the `σ = adjacent`,
-`r = 1`-class collapse of that count. Formalizing the disjointness (unique-`σ`-on-generic-locus) is
-the isolated remaining step — the part that lifts the constant from `1·|G|^r` to the super-diagonal
-`(2r−1)‼`, hence past `4^r` at `r ≥ 6` to feed `NotRamanujanLowerBound.not_ramanujan_of_energy_lb`.
+the distinct-signed-class choice. The mechanism is FULLY probe-verified, exact, char-0 `μ_{2^k}`:
+* `scripts/probes/probe_charzero_energy_lower.py` — `A_r ≤ E_r ≤ Wick` for `n ∈ {2,4,8}, r ∈ {1,2,3}`.
+* `scripts/probes/probe_charzero_lower_injection.py` — the (pairing × distinct-class × sign) injection is
+  EXACTLY injective with image card `= (2r−1)‼·(n/2)_r·2^r` for `(n,r) ∈ {(4,1),(4,2),(8,1),(8,2)}`.
+* `scripts/probes/probe_charzero_persigma_count.py` — the two ingredients of the `card_biUnion`
+  assembly: (a) the PER-PAIRING generic count is exactly `(n/2)_r·2^r`, and (b) the per-`σ` generic
+  image sets are PAIRWISE DISJOINT across distinct pairings `σ` (confirmed for `(n,r) ∈ {(4,1),(4,2),
+  (8,1),(8,2)}`, all pairings). So `E_r ≥ Σ_σ (n/2)_r·2^r = (2r−1)‼·(n/2)_r·2^r`.
+
+The single-pairing base case above (`= |G|^r`) is the `σ = adjacent`, single-class collapse of that
+count. The isolated remaining Lean step is the `Finset.card_biUnion` assembly: prove the
+unique-`σ`-on-generic-locus lemma (antipodal partners = the unique same-antipodal-class index
+pairs) to get `(↑pairings).PairwiseDisjoint genericImage`, then `card_biUnion` sums the per-`σ`
+count `(n/2)_r·2^r` over the `(2r−1)‼` pairings. That lifts the constant from `1·|G|^r` to the
+super-diagonal `(2r−1)‼`, hence past `4^r` at `r ≥ 6` to feed
+`NotRamanujanLowerBound.not_ramanujan_of_energy_lb`. (The disjointness probe (b) is the dual of the
+proven UPPER `zeroSumCount_le_pairings` `card_biUnion_le` — same biUnion, opposite inequality.)
 -/
 
 end ProximityGap.Frontier.CharZeroEnergyLowerBound
