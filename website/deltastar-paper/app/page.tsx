@@ -8,6 +8,7 @@ import { Results } from "@/components/sections/Results";
 import { Refutations } from "@/components/sections/Refutations";
 import { OpenCore } from "@/components/sections/OpenCore";
 import { Discussion } from "@/components/sections/Discussion";
+import { Contribute } from "@/components/sections/Contribute";
 import { Timeline } from "@/components/sections/Timeline";
 import { References } from "@/components/sections/References";
 import { DegenProvider } from "@/components/degen/DegenProvider";
@@ -15,6 +16,7 @@ import { EliPopup } from "@/components/degen/EliPopup";
 import { Eli5 } from "@/components/degen/Eli5";
 
 const toc = [
+  { href: "#contribute", label: "Mine it yourself" },
   { href: "#abstract", label: "Abstract" },
   { href: "#prize", label: "The prize" },
   { href: "#problem", label: "1 \u2002The problem" },
@@ -47,6 +49,7 @@ export default function Page() {
       </nav>
 
       <Header />
+      <Contribute />
       <Eli5 k="abstract" />
       <Abstract />
       <PrizeBox />

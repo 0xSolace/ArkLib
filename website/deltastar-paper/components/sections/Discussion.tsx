@@ -67,7 +67,7 @@ export function Discussion() {
         <a href="https://github.com/lalalune/ArkLib">lalalune/ArkLib</a>: clone,
         build, and run <code className="inline">#print axioms</code> on any
         theorem named above. The campaign log is public at issues #232, #334,
-        #357, and #371.
+        #357, #371, #389, and #407.
       </p>
     </Section>
   );
