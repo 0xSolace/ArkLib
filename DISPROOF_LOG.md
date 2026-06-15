@@ -3371,3 +3371,50 @@ weight-3 witness SpurWeightThreeCollision (Spur_2(3)≥1, 8fadf6eb1): together �
 odd p, weight≥3 dirty at every odd p — they pin the tower's onset at weight 3 and its universality in p.
 NOT a refutation of CORE; a mapped boundary on the Spur support. CORE (M(μ_n)≤C√(n log(p/n))) OPEN.
 -- spur3 lane, co-author wakesync.
+
+================================================================================
+REFUTATION-WITH-MECHANISM (lane dblcompose, 2026-06-15): the doubling-mass HALVING
+does NOT iterate via the other tower neighbor. plus2Mass = plusMass EXACTLY.
+================================================================================
+OBJECT. DilationDoublingMassHalf proves a SINGLE-level cap: along one genuine disjoint
+tower step (negation-closed G=μ_n, ζ order 2n, μ_n ⊔ ζμ_n disjoint), the L²-weighted
+DOUBLING (+sign) cross-mass plusMass = Σ_{s_b≥0} ‖η_b‖‖η_{ζb}‖ ≤ ½q|G|, where
+s_b = Re η_b · Re η_{ζb}. Its honesty note flags the OPEN gap: a single frequency may sit
+on the +trajectory through MANY levels; the average only forbids ALL of them. The natural
+hope is the halving ITERATES — intersecting +sign at a second tower dilation thins by
+another ½ ⟹ geometric deep-descent cap plus_ℓ ≤ 2^{-ℓ}q|G|.
+
+PROBE (scripts/probes/probe_doubling_twolevel_compose.py + _massloc.py + _orbit_sign_coherence.py;
+exact complex periods over PROPER thin μ_n=⟨h²⟩, h order 2n, p≍n⁴, 2n|p−1, n=8,16,32,64,
+NEVER n=q−1; imMax ≤ 1e-8 confirms reality from negation-closure):
+The two tower neighbors of b are ζb and ζ⁻¹b. Define the doubly-doubling mass plus2Mass on
+{b : s_b(ζ)≥0 AND s_b(ζ⁻¹)≥0}. RESULT, every n:
+  • plus2Mass/plusMass = 1.000   (the second halving FAILS completely)
+  • cross-mass over (s1,s2) sign-quadrants: mass(++)=0.500, mass(−−)=0.500,
+    mass(+−)=mass(−+)=0.000 to machine precision — the mass is PERFECTLY sign-coherent.
+  • DIRECT VERIFY (verify_coset): max|η_{ζb} − η_{ζ⁻¹b}| = 1.8e-15 ⟹ η_{ζb} = η_{ζ⁻¹b} EXACTLY.
+
+MECHANISM (now an exact algebraic identity, not just empirics). ζb and ζ⁻¹b differ by
+ζ² = ζ·(ζ⁻¹)⁻¹, and ζ² ∈ μ_n = G (ζ has order 2n ⟹ ζ² has order n). The period is
+G-COSET-INVARIANT in the frequency (eta_smul_invariant, #389: η_{gb}=η_b for g permuting G).
+Hence η_{ζ⁻¹b} = η_{ζ⁻²·(ζb)} = η_{ζb} since ζ⁻² ∈ G. Therefore the second cross-sign
+s_b(ζ⁻¹) = Re η_{ζ⁻¹b}·Re η_b = Re η_{ζb}·Re η_b = s_b(ζ) IDENTICALLY. The "second" +condition
+is LITERALLY the first; intersecting them is intersecting a set with itself ⟹ plus2Mass=plusMass.
+
+CONSTRAINT LEMMA. The doubling-mass halving is a G-COSET INVARIANT of the dilation:
+plusMass ψ G (g·ζ) = plusMass ψ G ζ for any g permuting G. So NO dilation in the G-coset of ζ
+(in particular the inverse/other-neighbor ζ⁻¹) yields a second, independent halving. A geometric
+deep-descent cap CANNOT be built from tower-neighbor dilations; any genuine second halving needs a
+dilation OUTSIDE the G-coset of {ζ, ζ⁻¹}, and the worst-case single-frequency sign word (the
+BGK/Paley wall) is untouched by this average-mass argument. Companion to survivor-honesty's COUNT
+no-recursion finding (S_i/S_{i-1}≈0.50 with no clean identity) — here the MASS side has no recursion
+either, for a sharper reason (exact period collapse, not statistical).
+
+FORMALIZED (axiom-clean, in-graph, build exit 0 / 3319 jobs):
+Frontier/DilationDoublingMassNoCompose.lean —
+  • crossSign_dilate_smul_eq / crossMass_dilate_smul_eq : G-coset-invariance of the cross-sign/mass.
+  • plusMass_dilate_smul_eq : plusMass ψ G (g·ζ) = plusMass ψ G ζ (the doubling mass is a G-coset
+    invariant of the dilation) — EXTENDS eta_smul_invariant.
+  • plusMass_inv_eq : plusMass ψ G ζ⁻¹ = plusMass ψ G ζ (no second halving via the other neighbor).
+NOT a refutation of CORE; a precise NO-GO on the iterated-halving deep-descent route + the exact
+mechanism. CORE M(μ_n) ≤ C√(n log(p/n)) UNCHANGED/OPEN. -- dblcompose lane, co-author wakesync.

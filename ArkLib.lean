@@ -956,6 +956,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarRungGranularity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoCompose
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
