@@ -2842,3 +2842,43 @@ DECREASING 4,4,3) CARRY the bad-prime anomaly but there the char-0 Wick ratio sa
 41980aa29) and the anomaly is BGK-tight (kappa explodes, sibling 1c48ff7cd). => BOTH accessible-clean
 ends are walled; the prize sits in neither. CORE not closed; the moment/L4 method is mapped as
 walled-from-both-ends. Pure-Python exact => axiom-clean trivially. probe_407_r2_rung_anomaly_free.py.
+
+================================================================================
+2026-06-15 The bad-prime anomaly ONSET DEPTH r0(n) PLATEAUS at 3 (does NOT reach
+the prize rung r=2): r0 = {16:4, 32:4, 64:3, 128:3}. The r=2 prize rung is
+anomaly-CLEAN in-window at n=128 (exact, 30-prime net). (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the decisive open question explicitly posed by the prior onset-depth entry above): the bad-prime
+anomaly Anom_r = E_r^(p) - E_r^(0) carries the ENTIRE prize (the char-0 part E_r^(0)/Wick is thin-blind +
+saturates to 1, 41980aa29). Its onset depth r0(n) = smallest r with some in-window prime Anom_r>0 was
+measured DECREASING: 16:4, 32:4, 64:3 -- marching toward the prize-defining rung r=2 (M^4 <= p*A_2). The
+prior entry left OPEN: does r0(n) -> 2 (anomaly reaches + potentially CRACKS the prize rung) or plateau at
+r0>=3 (prize rung stays clean)? n=128 decides the trend.
+
+OBJECT (exact, PROPER mu_n, in-window beta~4 primes p=1 mod n, NEVER n=q-1): engine REUSED verbatim from
+probe_407_anom_worst_rtraj_n32.py (Ep = mod-p r-fold additive convolution count; E0_ring = char-0 neg-
+closure cyclotomic-lattice energy). Engine cross-validated: E0_ring(n,2)=3n(n-1) EXACTLY at n=16..128
+(=48768=3*128*127 at n=128), matching the in-tree closed form E_2(mu_n)=3n(n-1) (44234dc3d/5b0873ddb).
+Probe scripts/probes/probe_407_anomaly_onset_n128.py (+ _verify.py for robustness/anti-vacuity).
+
+RESULT -- r0(128) = 3 (PLATEAU, not ->2):
+    n   | 16 | 32 | 64 | 128
+    r0  |  4 |  4 |  3 |  3      <- decreasing 16->64, then PLATEAUS at 3 from n=64 to n=128.
+  At n=128: r=2 anomaly-clean (Anom_2 = 0 over a WIDE 30-prime in-window net, beta 4.0-4.10, 0 nonzero);
+  r=3 ONSET (6/30 primes nonzero, quantized witnesses {92160, 138240, ...} -- the discrete arithmetic
+  ladder of the prior entry). ANTI-VACUITY (rule 1): at r=2, Ep=E0=48768 (both LARGE positive, equal) =>
+  Anom_2=0 is a GENUINE exact cancellation, NOT a vacuous/trivial zero. r=2 anomaly-clean is robust.
+
+VERDICT (rule-4 mapped result, rule-6 honest -- NOT a closure/refutation):
+  - The prize-defining rung r=2 STAYS anomaly-free in-window through n=128. The worst in-window prize
+    prime does NOT crack A_2 <= Wick at the prize rung at any accessible n (<=128) -- the candidate
+    "anomaly reaches r=2" crack does NOT happen at the next octave.
+  - r0(n) plateaus at 3, so the bad-prime anomaly enters one rung ABOVE the prize-defining rung and stays
+    there (so far). This is CONSISTENT with the prize-equivalent target sitting at the DEEP rung r*~log m
+    (the wickbound-capability pin sqrt(2/e)): the shallow accessible rungs (r=2 prize-defining, r=3 onset)
+    do NOT extrapolate to the deep-r behavior -- the prize is decided at r*~log m (r*~14 at n=2^16), far
+    above the r=3 plateau. The plateau REMOVES the "anomaly descends to r=2" mechanism as a finite-n crack
+    route and reconfirms that all prize tension lives at deep r*, not at the shallow prize-defining rung.
+  - Does NOT close/refute CORE. MAPS the onset-depth trend to its next octave + resolves the prior entry's
+    open question (plateau, not ->2). Pure-Python exact integer counts, no Lean => axiom-clean trivially.
+    probe_407_anomaly_onset_n128.py + probe_407_anomaly_onset_n128_verify.py.
