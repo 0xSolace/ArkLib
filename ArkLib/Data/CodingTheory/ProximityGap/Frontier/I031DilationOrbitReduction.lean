@@ -122,6 +122,40 @@ theorem sup'_norm_dilate_index {ψ : AddChar F ℂ} {n : ℕ} {ζ : F}
   -- `‖η_{ζ·b}‖ = ‖η_b‖` (coset invariance) — note `(ζ * ·) b = ζ * b`.
   simpa using eta_norm_const_on_coset (ψ := ψ) hζ b
 
+/-! ### The orbit-count side: each `μ_n`-coset has exactly `n` elements
+
+These pin the *index-set cardinality* half of the reduction: under a primitive `n`-th root (so
+`|μ_n| = n` exactly, `card_nthRootsFinset`), every coset `b•μ_n` has `n` elements. Combined with the
+norm-invariance above, the `q-1` frequencies of `Fp*` partition into orbits of size `n`, so the
+per-frequency core is determined by `(q-1)/n` representatives — the I031 metric-entropy collapse from
+`log p` to `log(p/n)`, now with the orbit size pinned. -/
+
+/-- **A `μ_n`-coset has exactly `|μ_n|` elements.** Dilation by a unit `b ≠ 0` is injective, so the
+left coset `b•μ_n = dilate b μ_n` has the same cardinality as `μ_n`. -/
+theorem coset_card_eq {n : ℕ} {b : F} (hb : b ≠ 0) :
+    (dilate b (nthRootsFinset n (1 : F))).card = (nthRootsFinset n (1 : F)).card :=
+  card_dilate hb _
+
+/-- **Each `μ_n`-coset has exactly `n` elements** (under a primitive `n`-th root of unity, so
+`|μ_n| = n` by `card_nthRootsFinset`). This is the orbit-size datum: the `q-1` frequencies split into
+equal orbits of size `n`, hence `(q-1)/n` orbits — the index-set reduction the I031 chaining lemma
+consumes. -/
+theorem coset_card_eq_n {n : ℕ} {ζ : F} (hζ : IsPrimitiveRoot ζ n) {b : F} (hb : b ≠ 0) :
+    (dilate b (nthRootsFinset n (1 : F))).card = n := by
+  rw [coset_card_eq hb, hζ.card_nthRootsFinset]
+
+/-- **The orbit objective is constant across the whole coset, at coset size `n`.** Packages the two
+halves: for `ζ ∈ μ_n`, `‖η_{ζ·b}‖ = ‖η_b‖` (norm-invariance) while the coset `b•μ_n` carries exactly `n`
+frequencies (under a primitive root). So one representative per coset determines `‖η‖` on all `n` of its
+members — the exact `(q-1)→(q-1)/n` index collapse. -/
+theorem orbit_norm_const_card_n {ψ : AddChar F ℂ} {n : ℕ} {ζ : F}
+    (hζprim : IsPrimitiveRoot ζ n) {b : F} (hb : b ≠ 0) :
+    (dilate b (nthRootsFinset n (1 : F))).card = n ∧
+      ∀ g ∈ nthRootsFinset n (1 : F),
+        ‖eta ψ (nthRootsFinset n (1 : F)) (g * b)‖
+          = ‖eta ψ (nthRootsFinset n (1 : F)) b‖ :=
+  ⟨coset_card_eq_n hζprim hb, fun g hg => eta_norm_const_on_coset hg b⟩
+
 end ArkLib.ProximityGap.I031DilationOrbitReduction
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only.
@@ -130,3 +164,6 @@ end ArkLib.ProximityGap.I031DilationOrbitReduction
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.eta_norm_const_on_coset
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.objective_dilation_invariant
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.sup'_norm_dilate_index
+#print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.coset_card_eq
+#print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.coset_card_eq_n
+#print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.orbit_norm_const_card_n
