@@ -976,6 +976,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerSparseF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerTrinomialFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.WickMomentCapability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AgreementPolyUncertainty
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalAgreementScope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
