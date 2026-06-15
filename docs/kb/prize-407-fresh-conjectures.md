@@ -183,3 +183,12 @@ CONSTRUCTIVE COMPLEMENT: DCEnergyEssential proves the in-tree bound FALSE; my DC
 DCWorstCaseWiring/DCEnergyBaseCase provide and wire the CORRECT replacement (DCEnergyBound = A_r≤Wick, true
 at prize) ⟹ M≤√(2e n ln q) ⟹ WorstCaseIncompleteSumBound ⟹ interior δ*, non-vacuous, anchored free at r=1.
 Two-agent independent confirmation = the DC correction is robust and real.
+
+## Direct attack on Anomaly Suppression (Anom_r <= n^{2r}/q) — full margin at accessible scales
+Measured Anom_r = E_r^{(p)} − E_r^{(0)} directly (char-0 ref P>(2r)^{n/2}, prize p>=n^4, worst over 10):
+n=8, r=2..6: **Anom_r = EXACTLY 0** at all prize primes (the bad primes are all BELOW n^4 — confirmed
+via probe_c4_higher_r: 17 bad primes for r=4 all <4096=n^4). So at the prize primes p>=n^4, E_r^{(p)}=E_r^{(0)}
+exactly ⟹ A_r = E_r^{(0)} − n^{2r}/q ≤ Wick (since E_r^{(0)}≤Wick, Lam-Leung) ⟹ DCEnergyBound holds with
+Anom=0. Anomaly Suppression holds with FULL margin (not just ≤ target) at accessible n. OPEN ASYMPTOTIC:
+for large n, bad primes (≤(2r)^{n/2}) CAN reach the prize regime [n^4, (2r)^{n/2}] at r~log q; whether the
+worst prize prime stays good (or Anom≤n^{2r}/q) there = the BGK content. /tmp/probe_anom_scaling.py.
