@@ -1000,6 +1000,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SalemZygmundMomentAssembly
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeChebotarev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StepanovStructuredVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StructuredUncertaintySharpFloor
