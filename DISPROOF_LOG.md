@@ -3305,3 +3305,40 @@ that the binding constraint at prize depth must be the W4 sub-exponential CANCEL
 DC-subtracted A_r <= Wick char-p validity), NOT the supply count. Localizes the open core AWAY from
 the §6.5 supply-count object. CORE (M(mu_n) <= C sqrt(n log m)) UNCHANGED/OPEN. -- zeta lane,
 co-author wakesync.
+
+================================================================================
+CONSTRAINT LEMMA (push CrossStepCeilingInsufficient.lean, lane m3r2, 2026-06-15):
+The LOOSE Lam-Leung ceiling alone CANNOT discharge M3CrossStepBound for r >= 2.
+================================================================================
+
+The recursion-closure (_wf5M3_crossstep_ceiling) localized the prize energy ladder onto ONE open
+Prop: M3CrossStepBound G : forall r, crossMass G r <= 2r*(2r-1)!!*n^{r+1}, where
+crossMass G r = E_{r+1} - n*E_r (off-diagonal cross mass of the proven recursion E_{r+1}=n*E_r+cross_r).
+CrossStepRungOne discharged r=0,1 from the proven r<=2 energy ceilings. This entry maps the wall on
+the OBVIOUS next strategy (keep using ceilings) and proves it insufficient, axiom-clean.
+
+INPUTS available without new analytic work:
+ - Lam-Leung upper ceiling  E_{r+1} <= (2r+1)!!*n^{r+1}  (LamLeungCeiling G (r+1))
+ - UNCONDITIONAL diagonal floor  E_r >= n^r  (pow_card_le_rEnergy, proven here: the n^r pairs (v,v)).
+
+Subtracting floor from ceiling:
+  crossMass G r = E_{r+1} - n*E_r  <=  (2r+1)!!*n^{r+1} - n*n^r  =  ((2r+1)!! - 1)*n^{r+1}.
+M3 step target = 2r*(2r-1)!!*n^{r+1}. Since (2r+1)!! = (2r+1)*(2r-1)!!:
+  ((2r+1)!! - 1) - 2r*(2r-1)!!  =  (2r-1)!! - 1.    [ceiling_slack_eq, exact]
+So the loose-ceiling bound EXCEEDS the M3 step target by EXACTLY ((2r-1)!! - 1)*n^{r+1}.
+ = 0  iff  (2r-1)!! = 1  iff  r <= 1   ((-1)!!=(1)!!=1, (3)!!=3, (5)!!=15, ...).
+
+VERDICT (ceiling_insufficient_of_two_le): for every r >= 2 (and n >= 1) the loose Lam-Leung ceiling +
+diagonal floor STRICTLY overshoot the M3CrossStepBound target by ((2r-1)!!-1)*n^{r+1} > 0. The deep
+rungs therefore CANNOT be closed by ceilings alone -- they require genuine off-diagonal autocorrelation
+CANCELLATION (C_r(delta) << E_r on average), which is precisely the open BGK content. This explains
+mechanistically why r=1 (CrossStepRungOne) closes from ceilings and r>=2 does not: the overshoot
+(2r-1)!! - 1 vanishes only at r<=1.
+
+Probe corroboration (probe_crossstep_r2.py, PROPER mu_n, n=2^a, n|p-1, p>>n^4, NEVER n=q-1): the TRUE
+cross_2 <= 12n^3 holds (ratio 0.33->0.89), but the composite-ceiling bound 15n^3 - n*E_2 = 12n^3 + 3n^2
+overshoots 12n^3 by 3n^2 = ((2*2-1)!!-1)*n^3 at every prime -- matching the lemma exactly.
+
+NOT a refutation of M3CrossStepBound (which IS true). A refutation of the ceiling-only PROOF STRATEGY
+for r >= 2, with the exact slack. CORE (M(mu_n) <= C sqrt(n log(p/n))) UNCHANGED/OPEN. -- m3r2 lane,
+co-author wakesync.

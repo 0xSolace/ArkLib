@@ -934,7 +934,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleAssembled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CountLaneNotSecondOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepCeilingInsufficient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOne
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCSubtractedCoshMGF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFromTermwise
@@ -967,8 +969,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnve
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromDCSaddle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromSaddle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NonprincipalWickIsDCWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OptimizedSupFromNonprincipalWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
@@ -986,6 +990,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ResolveFieldIndependent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SalemZygmundMomentAssemblyA3
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StepanovStructuredVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StructuredUncertaintySharpFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
@@ -1606,6 +1611,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MDSMaxAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.MDSNearCountVolume
 import ArkLib.Data.CodingTheory.ProximityGap.MannFiberCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.ManyTermResultantBound
+import ArkLib.Data.CodingTheory.ProximityGap.ManyTermResultantSharp
 import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.MarkedCurveDecodableVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.MasterLoop45
@@ -1944,6 +1950,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalNthRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SidonRepCountCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonResultantImproved
+import ArkLib.Data.CodingTheory.ProximityGap.WeightedSparseResultant
+import ArkLib.Data.CodingTheory.ProximityGap.SixTermResultantImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
