@@ -964,6 +964,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ExplainableAmalgamation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FloorAsymptoticRadius
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DilationOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DistinctPeriodCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031OrbitCountPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ImprimitiveSpikeStructure
