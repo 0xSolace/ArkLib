@@ -1592,6 +1592,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MomentCountSupNotSharper
 import ArkLib.Data.CodingTheory.ProximityGap.MomentLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupNormBridge
 import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplyIdentity
+import ArkLib.Data.CodingTheory.ProximityGap.MomentSupplySaturation
 import ArkLib.Data.CodingTheory.ProximityGap.MonodromyConductorScaffold
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDivisorWitness
 import ArkLib.Data.CodingTheory.ProximityGap.MonomialDomainRootSpectrum
