@@ -10626,3 +10626,40 @@ false floor-signals in the uncertainty/lacunary lanes. The classical uncertainty
 vacuous (off by a full power of n). Does NOT refute the prize: it confirms (from a new, c.348-immune PROOF-
 object angle) that the far-line/uncertainty face cannot reach the floor; the open core remains the per-frequency
 BGK √-cancellation wall. p-independent, exact, multi-prime, proper subgroups, never n=q−1.
+
+---
+
+## wf-NK (#444): Khovanskii / fewnomial bound on the binding over-determined incidence — REFUTED as a tight bound
+
+**Lens.** The binding far-line incidence `I(a,b;r*)` counts γ such that `f_γ(X)=X^a+γX^b−h(X)`
+(`h∈RS[k]`, deg<k) vanishes on ≥ n−r* points of μ_n. `f_γ` is a SPARSE Laurent polynomial:
+support `{a,b,0,…,k−1}` = at most `m=k+2` distinct exponents (CONFIRMED exact on all binders).
+Khovanskii fewnomial theory bounds solution counts of a sparse system by the number of monomials
+`m`, degree-free and field-free — formally the right regime for the now-combinatorial object.
+
+**Measured binding data (exact, p-independent; n=16 in-tree verified e167dd9de):**
+- n=8 k=2: r*=4 size=4 binder(5,2) `I=9`, support {0,1,2,5}, m=4=k+2
+- n=12 k=3: r*=6 size=6 binder(6,4) `I=13`, support {0,1,2,4,6}, m=5=k+2
+- n=16 k=4: r*=10 size=6 binder(10,4) `I=89` (PRIME), support {0,1,2,3,4,10}, m=6=k+2
+
+**Why it fails (precise, two-sided):**
+1. Classical Khovanskii `2^C(m,2)·(n_var+1)^m` (1 eliminated γ-variable) = 1024/32768/2097152 —
+   OVERSHOOTS I by 100×–24000× and grows EXPONENTIALLY in k. Gives δ*→1: vacuous.
+2. Descartes-on-circle / cyclic `2(m−1)=2(k+1)` = 6/8/10 UNDERSHOOTS I=9/13/89 — it caps
+   roots-PER-γ, not the COUNT of γ, so it is not even a valid upper bound on I.
+3. I(n) is NOT a fewnomial-polynomial sequence: I(16)=89 is PRIME; the (n/2−1)² form (9,25,49)
+   is REFUTED by it (matches n=8 only coincidentally). A degree-free fewnomial bound is a
+   *polynomial* in (n,k); a non-polynomial prime-valued target cannot be matched tightly.
+4. The fewnomial cap governs the per-γ root count, but I is a UNION over C(n,size) witnesses; the
+   distinctness collapse (89 distinct out of 8008 size-6 witnesses, n=16) is governed by how the
+   forced γ's COINCIDE — the additive/multiplicative structure of μ_n, i.e. the BGK residual the
+   lens is structurally blind to.
+5. The sharpest fewnomial-on-a-cyclic-group bound (Tao uncertainty: nonzero fn on ℤ/n with t
+   nonzero Fourier coeffs has ≤ n−t zeros) requires n PRIME; for n=2^μ it is VACUOUS. The prize's
+   defining smooth highly-composite domain is exactly what defeats the fewnomial/uncertainty lens
+   (corroborates in-tree 6507e61aa).
+
+**Net:** the loosest VALID fewnomial bound is `C(n,size)` (= the NH union bound itself); fewnomial
+theory adds nothing tighter. Probe: `scripts/probes/probe_wf3NK_fewnomial_incidence.py` (self-
+contained, fast). Tag: **refuted** as a tight degree-free/p-free bound on I(n); the (k+2)-sparsity
+and the precise failure mode are proven-per-fixed-n. — wf-NK
