@@ -13098,3 +13098,44 @@ cStar_n16_rate_bounded, cStar_n16_rate_pos, cStarQuarter_values, cStar_grows_in_
 cStar_n32_exceeds_prior_range, deltaStarNumerQuarter_values, capacity_defect_eq_cStar,
 deltaStar_lt_capacity, offBGK_survives_growth.
 `result_type = reconciled(rate-flat ∧ n-growing) + corrected("bounded c*" ⟶ "c*/n→0, off-BGK strengthened")`.
+
+---
+
+## pin-coset (#444): the supply→prize "coset-structured pinning subsets" residual is REFUTED — pinning subsets are GENERIC, the only collision is the antipodal γ=0 (2026-06-15)
+
+**Lane mission:** `SinglePencilQIndependence.mca_badscalar_packing` (axiom-clean) gives the packing
+bound `#bad · C(a,k+1) ≤ C(|μ|,k+1)`, landing in the W5 SUPPLY STRIP. Its `mca_badscalar_sharp`
+docstring flags the honest residual to the exact δ* prize pin as: *"the pinning (k+1)-subsets are
+COSET-STRUCTURED, not arbitrary"* — i.e. that the witness subsets are forced into the KKH26
+fibre/coset shape, collapsing the supply-strip count `C(n,k+1)` to the prize budget
+`2^r·C(2^{μ-1},r)`. This entry MAPS that residual.
+
+**Refutation (exact char-0, `probe_pinning_subset_coset_rigidity.py` + `probe_antipodal_gamma0_check.py`,
+PROPER μ_n, p≡1 mod n, p≫n³, multi-prime, thick control, never n=q-1):** on the r=2..3 worst-case
+far line (Q0=x^{rm}, Q1=x^{(r-1)m}, k=(r-2)m+1, m=1 → pure 2-power core), the pinning (k+1)-subsets
+are OVERWHELMINGLY GENERIC, not coset-structured:
+- n=8  r=2: coset-structured pinning 4/28,  GENERIC 24/28;  realized-γ=25 ≈ C(n,2)=28 (NOT prize 24).
+- n=8  r=3: coset-structured 0/56,  GENERIC 56/56;  realized-γ=40, C(n,3)=56 (NOT prize 32).
+- n=16 r=2: coset-structured 8/120, GENERIC 112/120; realized-γ=113 ≈ C(n,2)=120 (NOT prize 112).
+- n=16 r=3: coset-structured 0/560, GENERIC 560/560; realized-γ=464, C(n,3)=560 (NOT prize 448).
+THICK control (n=6,12): SAME genericity ⇒ the (non-)rigidity is NOT 2-power-specific ⇒ thickness-
+monotone = wrong mechanism (rule 3).
+
+**Collision structure (the real packing slack — `probe_collision_structure.py`):** the realized #bad =
+C(n,a) minus a SPARSE, O(1) set of collisions. At r=2 there is EXACTLY ONE collided scalar, γ=0,
+of multiplicity n/2, realized by the n/2 antipodal pairs {x,−x} (the only coset-structured collision;
+−x = x·g^{n/2}). At r=3 the collisions are small mult-(r-1) clusters that are NOT coset-structured
+(0/8 at n=8, 0/16 at n=16). So realized #bad = Θ(C(n,a)) = the SUPPLY STRIP, never the prize budget.
+
+**Verdict:** the coset-rigidity of pinning subsets does NOT collapse the supply-strip packing bound to
+the prize window (the single antipodal collision saves only n/2−1 of Θ(C(n,2))). The supply→prize
+collapse must be the W4 sub-exponential cancellation, NOT a coset-structure restriction on which
+subsets occur. CORE stays OPEN.
+
+**IN-TREE (axiom-clean: propext, Classical.choice, Quot.sound; 0 sorryAx):**
+`ArkLib/Data/CodingTheory/ProximityGap/PairPinnedScalarAntipodal.lean`:
+- `pairPinnedScalar_eq` — the r=2 line x²+γx agrees with a constant on {x,y} (x≠y) iff γ = −(x+y).
+- `pairPinned_zero_iff_antipodal` — that scalar = 0 iff y = −x (the γ=0 fibre = antipodal pairs).
+- `antipodal_mem_nthRoots` — even n ⇒ (−x)^n=1 from x^n=1 (antipodal partner stays in μ_n).
+`result_type = refuted(coset-structured-pinning-subsets supply→prize residual) + proven(r=2 pinned
+scalar = −(x+y), γ=0 fibre = antipodal pairing, the unique coset-structured collision)`.
