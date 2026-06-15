@@ -3163,3 +3163,57 @@ to n=8,12,20 (n=8,12 are +2 boundary exceptions; n>=16 confirms the in-range for
 independent NON-GPU + Rust reconfirmation that the wf-D2 in-range law is exact. The far-line delta* stays
 Johnson-region (-> 1/2), off the floor. NOT a CORE result; NO pinning-resolution claim. The regime-B
 n=32 exact value remains open + compute-bound. Python+numpy + in-tree Rust, no Lean changed => axiom-clean.
+
+--------------------------------------------------------------------------------
+2026-06-15 DECOUPLING / INCIDENCE-DECAY frontier (#444 caveat #2): the budget crossing is
+DEEPLY OVER-DETERMINED (c* = m-1 = n/4-1 = Theta(n)) -- resolves the §6 dichotomy in the
+"deeply over-determined / OFF-BGK" horn. Axiom-clean Lean: DecouplingDecayCrossingDepth.lean.
+--------------------------------------------------------------------------------
+LANE: the decoupling/incidence-decay edge. OverdetIncidenceUnionCount.lean settled caveat #1
+(p-independence: each far witness forces <=1 gamma). The remaining CHAR-0 OPEN ITEM (caveat #2,
+explicitly NOT closed there) is the DECAY-vs-BUDGET threshold: at what over-determination depth
+c = s-k does the decaying incidence I(s) cross the budget n? The §6 dichotomy pins the prize on this:
+"deeply over-det (s-k ~ Theta(n/log n)) => p-indep cyclotomic root-count floor OFF BGK" vs
+"under-det => re-couple to BGK". The brief's open question: is the crossing at s*-k ~ Theta(n/log n)?
+
+DATA (all EXACT, q-invariant/p-independent, PROPER mu_n m=(p-1)/n>1, p>>n^3, p==1 mod n, NEVER n=q-1):
+
+(1) k=2 axis (the closed-form axis), ANTIPODAL dir (n/2,n/2-1) -- probe_407_decoupling_decay_law.py:
+    Decay is a CLIFF. I(c=2) = 2m^3-2m^2+1 (the in-tree closed form: 9,37,97 at n=8,12,16, HIT exactly,
+    multi-prime). Then I(c>=3) COLLAPSES to {0,1}. => on k=2, s* = k+3 always. (Antipodal IS the k=2
+    maximizer; the cliff is exact + p-independent at n=8,12,16.)
+
+(2) rho=1/4 axis (k=n/4) = the PRIZE axis, FULL (a,b) direction sweep, two-engine exact (the
+    DISPROOF two-engine s* table + a fresh independent full-sweep multi-prime reconfirm at n=12):
+      n=12 (full sweep, p=13873 AND 138241 IDENTICAL): I(c)=17,13,7,6,0 at c=2,3,4,5,6 -> s* at c*=4.
+      Two-engine s* table (rho=1/4): s*=5,7,7,9,11 at n=8,12,16,20,24 => c*=s*-k=3,4,3,4,5.
+      For n>=16 (the in-range regime, s*=n/2-1 exact two-engine): c* = (n/2-1)-n/4 = n/4-1 = m-1.
+      I-profile near crossing (n=24, k=6, budget=24): c2->1153, c3->65, c4->25, c5->24[=budget,CROSS].
+
+DECAY-LAW STRUCTURE (the general I(c), derived + data-matched):
+  I(c) = [a fast-decaying CUBIC BULK ~n^3/32 at c=2, dropping ~20-50x per step, gone by c~3-4]
+       + [a persistent FLOOR PLATEAU of height ~n (the in-tree B1 count law = n), holding to c~m].
+  The budget crossing c* is exactly where the cubic bulk drops below the ~n-height B1 floor: the LAST
+  c before only the n-floor remains. At the crossing I(c*) ~ budget = n (n=24: I(c*=5)=24=budget exact;
+  n=16: I(c*=3)=9; n=12: I(c*=4)=7).
+
+VERDICT (the answer to the §6 / brief open question):
+  c*(n) = s*-k = m-1 = n/4-1 = Theta(n) for n>=16  -- DEEPLY over-determined, LINEAR in n,
+  EVEN DEEPER than the Theta(n/log n) posed in §6. (n=8,12 are the s*=n/2+1 boundary exceptions.)
+  => FIRST HORN of the §6 dichotomy: the far-line incidence stays deeply over-determined at the
+  binding radius, so it is a p-independent CYCLOTOMIC ROOT-COUNT FLOOR, OFF the BGK wall. It does
+  NOT re-couple to BGK at the crossing.
+
+SCOPE (rule-3, rule-6 -- NOT a CORE result): this RESOLVES the §6 combinatorial sub-question in the
+deeply-over-determined direction, reached from the DECAY-CURVE angle. It CORROBORATES c.348 (far-line
+is Johnson-region, delta* = (n-s*)/n -> 1/2, OFF the prize floor 1-rho-Theta(1/log n)) and gives the
+MECHANISM: the deep over-determination (c*=Theta(n)) is exactly WHY the far-line object cannot reach
+the floor -- it crosses the budget against a p-independent cyclotomic floor, never re-coupling to the
+open BGK character-sum max. So the far-line/numeric enumeration route is confirmed OFF the prize wall.
+CORE (the BGK sup-norm M(n) <= C sqrt(n log m)) remains OPEN -- this maps WHY the count face is not it.
+
+LEAN (axiom-clean, [propext, Quot.sound] subset {propext,Classical.choice,Quot.sound}, 0 sorryAx):
+DecouplingDecayCrossingDepth.lean -- crossingDepth_eq (c*=m-1), crossingDepth_values (3,4,5 at m=4,5,6),
+crossingDepth_unbounded (c* exceeds any constant => not O(1)), crossingDepth_linear (m <= c*+1 => Theta(n),
+not o(n)), crossingDistanceNumer_eq (delta*.n = 2m+1), crossingDistance_lt_capacity (2m+1 < 3m = capacity,
+Johnson-side). Full locked build OK (3297 jobs). probe_407_decoupling_{decay_law,rho14_decay,full_decay}.py.
