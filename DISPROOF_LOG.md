@@ -1535,3 +1535,39 @@ quantization pins s* AT-OR-ABOVE random + is structure-blind in value => the pro
 real but points the WRONG way for the floor (it is the residual open Prop "does the aligned orbit EXCEED
 budget" that carries the prize, and the orbit being exactly =budget at the binding is the knife-edge).
 CORE not closed. Python-only exact => axiom-clean trivially. probe_407_ld_plateau_dilation_orbit.py.
+
+================================================================================
+2026-06-15 The e2=0 over-det census (the prize FLOOR's load-bearing R1 object) is
+THINNESS-ESSENTIAL: built on antipodal pairing, VANISHES for random domains (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the in-tree prize skeleton. DeltaStarEqEdge.lean reduces the FLOOR to ONE open hyp (R1, `hgood`):
+the e2=0 over-det locus is the BINDING worst-case bad-scalar family at the window edge. _E2Dilation
+DirectCount.lean reduces that count EXACTLY to #bad = n*K, K = #dilation-orbits of e1(S) over
+{S subset mu_n, |S|=w=n/2, e2(S)=0, e1(S)!=0}. In-tree: K=1,3,38 at n=8,16,32. K(n) IS the open
+extremal census. NO live worker / report had applied a rule-3 thinness gate to K. UNCONTESTED.
+
+METHOD: exact e2=0 enumeration over all C(n,w) w-subsets (feasible n<=16), smooth mu_n vs 11 random
+non-subgroup domains, prize prime p~n^4, never n=q-1. + mechanism probe (antipodal/density/p-indep).
+
+RESULT (refutation-grade, rule-6 hardened):
+1. RANDOM domains have ZERO e2=0 bad-sets (0/11 draws at BOTH n=8 and n=16). Smooth has n*K (8, 48=#bad,
+   matching n*K exactly; bad-SETS 8, 64).
+2. NOT a density artifact: density baseline E[random hits] = C(n,w)/p = 0.017 (n=8), 0.196 (n=16); smooth
+   EXCESS over baseline = 7.98, 63.80 => overwhelmingly STRUCTURAL.
+3. p-INDEPENDENT (char-0 structural): #e2=0 subsets identical across 2 prize primes each (8,8 / 64,64) =>
+   genuine cyclotomic count, not a mod-p accident.
+4. MECHANISM: EVERY e2=0 subset contains >=1 ANTIPODAL PAIR (8/8, 64/64; none fully antipodal-closed). The
+   locus is built on the subgroup's antipodal pairing x,-x=h^{n/2}x both in mu_n — a structure random
+   domains lack entirely.
+
+VERDICT (rule-3 PASS, strongest form): the e2=0 over-det census K(n) — the load-bearing open object the
+ENTIRE prize FLOOR reduces to (DeltaStarEqEdge R1 + Attack-2 #bad=n*K) — is THINNESS-ESSENTIAL in the
+strongest sense: it is a pure subgroup-antipodal-pairing object and VANISHES identically for random
+domains. This is the RIGHT-DIRECTION thinness signature the prize needs (unlike the LD-radius plateau /
+even-moment profile, which were anti-helpful). The K(n) growth (1,3,38,...) is the genuine prize content,
+structurally anchored to antipodal pairs. Formalization target: K(n) = orbit-census of e1 over the
+antipodal-pair-supported e2=0 locus. CONSEQUENCE for R1: the e2=0 family being thin-only SUPPORTS its
+candidacy as the binding worst-case family (a random/generic family contributes 0 here), but does NOT by
+itself bound K(n) — the open content is purely the K growth law (the additive-energy twin). CORE not
+closed, not faked. Python-only exact => axiom-clean trivially.
+probe_407_e2_census_K_thinness.py + probe_407_e2_census_mechanism.py.
