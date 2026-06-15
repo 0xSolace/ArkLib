@@ -925,6 +925,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetMaximal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetPacking
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetTuplePacking
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AlignedAmalgamation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B1XkIncidenceForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
@@ -946,6 +947,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFour
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOne
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungTwo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossingDepthLinearTracking
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCSubtractedCoshMGF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFromTermwise
