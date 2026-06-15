@@ -12710,3 +12710,47 @@ b-independent unit. Distinct horn from A3 (vacuous at the 2-adic place) — here
 yet carries no `b`-dependent magnitude information. Reduces ONLY to the magnitude/sup question = the BGK
 wall; NOT to Johnson. Probes (committed): `scripts/probes/probe_a4_amice_iwasawa.py`,
 `scripts/probes/probe_a4_padic_valuation.py`, `scripts/probes/probe_a4_iwasawa_invariants.py`.
+
+---
+
+## A2-chaining-entropy (route 54, ★, #444): generic chaining with RS-structured entropy — REDUCES-TO-WALL
+
+**Date:** 2026-06-15. **Angle:** relocate the cancellation locus from the n-point domain to the
+b-index process viewed as an entropy/chaining FUNCTIONAL. `M(mu_n)=max_{b≠0}|X_b|`,
+`X_b=Σ_{x∈μ_n}e_p(bx)`, is the supremum of a sub-Gaussian process indexed by `b∈F_p^*`. Generic
+chaining (Talagrand/Dudley) bounds `sup ≤ √n·γ₂`, `γ₂=∫√(log N(T,d,ε))dε`, where `N` is the
+covering number of the index under the **canonical increment metric**
+`d(b,b')² = (2/n)Σ_{x∈μ_n}(1−cos(2π(b−b')x/p))` (the metric making `X_b` sub-Gaussian). The
+route-54 NEW LEMMA: the 2-adic dilation self-similarity (`X_b(G_{i+1})=X_b(G_i)+X_{ζb}(G_i)`,
+in-tree `SubgroupGaussSumDilationRecursion`) collapses the index entropy to `o(log q)`, absorbing
+the `√log` excess and yielding the floor.
+
+**Verdict = REDUCES-TO-WALL (W4).** Probes (p PRIME, n=2^μ, n|p−1, p≈n^{3.2}, μ_n PROPER):
+`probe_a2_chaining_entropy_v2.py` and `probe_a2_dilation_collapse.py` (both committed).
+
+1. **The index metric entropy is `Θ(log q)`, NOT `o(log q)`.** `probe_a2_chaining_entropy_v2`:
+   at the finest scale `maxlogN/logq = 1.00` EXACTLY for every `(n,p)` tested
+   (μ=2..7, q from 89 to 5.5M). The metric `d` separates almost all of `F_p`, so `N(ε)≈q` at fine
+   scale — the entropy is exactly `log q`. Plain chaining therefore gives `√(log q)` = the W4 wall.
+   The chaining is also TIGHT up to a constant (`γ₂/√(log(q/n))≈1.8` const, `M/(√n·γ₂)≈0.6` const),
+   so the entropy integral genuinely reproduces the floor SCALE — but with `log N=log q`, that scale
+   is the wall, not the floor.
+2. **The crux: the dilation orbit does NOT collapse the metric.** `probe_a2_dilation_collapse`:
+   `d(b, ζb) ≈ avg_d` (1.40 vs 1.38 at n=8; 1.41 vs 1.41 at n=128) — dilation neighbors are
+   metrically GENERIC, never close. So the multiplicative orbit `b~ζb~…~ζ^{n-1}b` does not quotient
+   the index onto few classes; there is no entropy collapse and no relocation.
+
+**Why it falls (the conservation law, sharpened — the SAME shape as the refuted 2-adic NP angle).**
+The chaining metric `d` is **archimedean and ADDITIVE** (translation-invariant on `F_p`: `d(b,b')`
+depends only on `b−b'`). The self-similarity the L²-doubling exploits is **MULTIPLICATIVE** (the
+dilation `b↦ζb`). For `c=(ζ−1)b`, `{cx mod p : x∈μ_n}=(ζ−1)b·μ_n` is just another μ_n-coset, so as
+`b` ranges `d(b,ζb)` has the SAME distribution as `d(0,c)` for generic `c`. The multiplicative orbit
+is "diagonal" to the additive metric — they do not align. This is exactly the manifesto's
+"Cayley-gap = the wall" reappearing: the increment metric is the additive Paley-graph metric whose
+spectral radius IS `M(μ_n)`, so chaining over it cannot beat `M` — it is W4 wearing entropy clothes.
+The L²-doubling (which IS multiplicative-orbit-aware) only controls `γ₂` in the `√2`-per-level
+average direction; the L^∞ sup over the high-entropy additive index is untouched. NOT a reduction to
+Johnson; a faithful reduction to the BGK/Paley wall W4. Probes committed:
+`scripts/probes/probe_a2_chaining_entropy_v2.py`, `scripts/probes/probe_a2_dilation_collapse.py`
+(and the v1 `probe_a2_chaining_entropy.py`, kept as the documented FALSE-floor pitfall: it measured
+the covering number of the 2D VALUE cloud, trivially `O(log)`, which is NOT the index entropy).
