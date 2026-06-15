@@ -826,6 +826,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicEnergyK1
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicHalvingRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.DyadicOddMomentVanishing
+import ArkLib.Data.CodingTheory.ProximityGap.DyadicTowerRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.E2CharFreeLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.E2DilationDirectCount
 import ArkLib.Data.CodingTheory.ProximityGap.E2SquaringRecursion

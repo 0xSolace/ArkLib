@@ -30,7 +30,7 @@ Issue #407.
 
 open Finset
 
-namespace ProximityGap.Frontier.DyadicTowerRecursion
+namespace ArkLib.ProximityGap.DyadicTowerRecursion
 
 variable {F : Type*} [Field F] [DecidableEq F]
 
@@ -51,9 +51,9 @@ second moment is conserved and split between the period and its twist — the ex
 naive `√`-cancellation descent. -/
 theorem period_parallelogram (a b : ℂ) :
     ‖a + b‖ ^ 2 + ‖a - b‖ ^ 2 = 2 * (‖a‖ ^ 2 + ‖b‖ ^ 2) := by
-  simpa using parallelogram_identity a b
+  exact parallelogram_law_with_norm ℂ a b
 
-end ProximityGap.Frontier.DyadicTowerRecursion
+end ArkLib.ProximityGap.DyadicTowerRecursion
 
-#print axioms ProximityGap.Frontier.DyadicTowerRecursion.sum_tower_split
-#print axioms ProximityGap.Frontier.DyadicTowerRecursion.period_parallelogram
+#print axioms ArkLib.ProximityGap.DyadicTowerRecursion.sum_tower_split
+#print axioms ArkLib.ProximityGap.DyadicTowerRecursion.period_parallelogram
