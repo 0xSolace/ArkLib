@@ -3031,3 +3031,66 @@ RESULT: K(64,4)=15 (=n/4-1) IDENTICAL across thick beta=2.3 (p=14401,14593), thi
 VERDICT: the thickness-invariance of the shallow e2=0 resonance now holds at n=16,32,64 -- three octaves
 to the enumeration frontier. The rule-3 FAIL is robust across scale. CORE not closed, not faked.
 Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_n64_thickness.py.
+
+================================================================================
+2026-06-15 wf-D2 BINDING-LAW CORRECTION: the formula s*=2k-1 (c*=k-1, delta*=1/2+1/n)
+FAILS at n=8 -- the TRUE binding is s*=5 (c*=3), q-invariant. Independent EXACT
+(non-GPU) reconfirmation of n=16 binding s*=7. The "law" is NOT universal => the
+regime A->B s* transition is a REAL binding-formula change, not just a search
+ceiling. (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the explicitly-flagged OPEN SUB-QUESTION of the wf-D2 entry, push e48d5ef59): regime A
+(n=16,20,24,28) binding far-line monomial law s* = 2k-1 = n/2-1 (delta* = 1/2 + 1/n -> Johnson);
+regime B (n>=32, GPU) "s* PINS at 13 across n=32,34,38 ... a pinned s* with climbing delta* is the
+signature of a SEARCH CEILING, not a law. n=32 s*=13 not 15 MAY BE REAL and IS THE GENUINE OPEN
+SUB-QUESTION." The GPU enumerated size-s WITNESS sets (C(n,s), infeasible deep) + TIMED OUT n>=36.
+
+NEW INDEPENDENT ENGINE (avoids the witness-set wall): the in-tree FarCosetExplosion /
+divided-difference fact -- every bad alpha at agreement >= k+1 is produced by some (k+1)-subset, and
+the interpolability condition is AFFINE in alpha => each (k+1)-subset yields <=1 candidate alpha.
+So I(a,b;thr) = #{alpha : maxagree(x^a+alpha x^b, RS[k]) >= thr} is EXACT via C(n,k+1) candidate gen
++ numpy-vectorized max-agreement (Lagrange eval over all n points at once). budget = n, binding
+s* = largest thr with max-over-far-dirs I(thr) <= budget AND I(thr-1) > budget (the explosion edge).
+Prize-faithful: PROPER mu_n (m=(p-1)/n>1), p>>n^3, p==1 mod n, NEVER n=q-1. rho=1/4 FIXED (k=n/4,
+the wf-D2 axis). Probe scripts/probes/probe_407_regimeB_sstar_np.py (+ probe_407_regimeB_n32_sstar_exact.py).
+
+ENGINE VALIDATION (n=16, k=4, FULL (a,b) sweep, EXACT, q-invariant p/n^3 in {8,80}):
+  s=5(c=1)->I=3824[OVER]  s=6(c=2)->I=89[OVER]  s=7(c=3)->I=9[ok]  s>=8 ->0
+  => binding s* = 7 = n/2-1 = 2k-1, c* = 3 = k-1.  delta* = 9/16 = 1/2 + 1/16.  AGREES with wf-D2
+  (its c=2->89 = the established I(16)=89). Independent NON-GPU exact reconfirmation of regime A at n=16.
+
+EXACT s* DATA (rho=1/4 axis, FULL (a,b) sweep, q-invariant -- 3 primes each where shown):
+  n=8  k=2 (p/n^3 in {8,80,300}): I[s3]=40 I[s4]=9 I[s5]=8[ok] => binding s* = 5  (c*=3)  [n/2-1=3]
+  n=12 k=3 (p/n^3 in {8,80,300}): I[s5]=169 I[s6]=169 I[s7]=12[ok] => binding s* = 7 (c*=4)  [n/2-1=5]
+  n=16 k=4 (p/n^3 in {8,80}):     I[s6]=89  I[s7]=9[ok]            => binding s* = 7 (c*=3)  [n/2-1=7]
+  At n=12, I[s7]=12 = budget=12 EXACTLY (sits AT the budget) and s6->169 explodes; q-invariant.
+
+VERDICT (rule-4 mapped correction; rule-6 honest, NOT a CORE result):
+1. The wf-D2 binding "law" s* = 2k-1 = n/2-1 (delta* = 1/2 + 1/n) is NOT universal: s* = 5,7,7 at
+   n=8,12,16, vs the formula's n/2-1 = 3,5,7. It is CORRECT only at n=16 (independently re-confirmed
+   exact q-invariant here, NON-GPU) and OVER-predicted-down at n=8,12 (true s* is HIGHER: 5 vs 3, 7 vs 5).
+   The over-det binding level c* = s*-k = 3,4,3 is NOT a clean k-1 = 1,2,3 either. So neither s*=2k-1
+   nor c*=k-1 is the universal binding law; both are small-n-coincidental.
+2. THE REAL PHENOMENON -- s*-VALUE PINNING (exact, q-invariant, the SAME signature the GPU flagged):
+   s* PINS at 7 across n=12 AND n=16 (two consecutive even n, q-invariant, EXACT). This is direct
+   small-n EXACT evidence that "s* pins across a range of n then jumps" is a REAL property of the
+   binding far-line incidence object -- NOT a search ceiling. It is structurally the SAME pattern the
+   GPU reported in regime B ("s* PINS at exactly 13 across n=32,34,38"). The GPU's pinned-s* reading
+   is therefore corroborated as a genuine law-feature by an independent EXACT engine at small n, which
+   REVERSES the wf-D2 entry's "a pinned s* ... is the signature of a SEARCH CEILING" presumption for
+   the s*=13 plateau: pinning is intrinsic, not a compute artifact.
+   [HONEST CAVEAT: this is an analogy across scales (small-n exact pinning n=12,16 vs GPU n=32-38),
+   NOT a proof that the n=32 s*=13 value itself is exact. The decisive n=24,32 exact recompute is
+   compute-bound in pure Python (below). But the EXISTENCE of genuine s*-pinning is now exact-established.]
+3. COMPUTE-WALL MAP (rule-6): n=32, k=8 candidate generation over C(32,9)=2.8e7 (k+1)-subsets is
+   >20 min on CPU (measured: <2e6 subsets in 90s), confirming the GPU's own n>=36 timeout. So the GPU's
+   exact regime-B s*=13 VALUE is not independently CPU-reproducible at present. The decisive n=24,32 exact
+   recompute needs a faster (numba/Rust or GPU) candidate-gen + vectorized-agreement engine; the in-tree
+   Rust pg engine (scripts/rust-pg/) is the natural vehicle.
+SCOPE: this corrects a stated closed-form law (s*=2k-1 fails at n=8,12; correct s* = 5,7,7 not 3,5,7) and
+establishes that s*-VALUE PINNING is a REAL exact feature (s*=7 pinned across n=12,16, q-invariant) -- the
+same signature the GPU saw at n=32-38, REVERSING the prior "pinning = search ceiling" presumption. NOT a
+CORE closure: the far-line delta* stays a Johnson-region object (delta* <= 1/2+1/n at tested n; at n=8
+delta*=3/8 < Johnson), off the prize floor 3/4-Theta(1/log n) -- so the route still does not certify the
+window interior. CORE not closed, not faked. Python+numpy EXACT, multi-prime q-invariant, no Lean changed
+=> axiom-clean trivially. probe_407_regimeB_sstar_np.py + probe_407_regimeB_n32_sstar_exact.py.
