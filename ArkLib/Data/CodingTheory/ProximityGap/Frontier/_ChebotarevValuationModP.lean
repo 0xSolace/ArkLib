@@ -187,9 +187,19 @@ def GeneralizedVandermondeNonzeroModP (p : ℕ) [Fact p.Prime] (n : ℕ) : Prop 
 
 /-- **Named structural input — the lower Taylor coefficients vanish.** The coefficients of the
 `(X − 1)`-expansion `taylor 1 (detPoly ri ci)` below the alternant order `binom(n,2)` all vanish,
-i.e. `X^{binom(n,2)} ∣ taylor 1 (detPoly ri ci)`. This is the determinant-expansion / repeated-column
-vanishing fact (a Cauchy–Binet / multilinear-determinant census, not deep number theory). Proven for
-`n ≤ 2` (`lowerTaylorVanishes_two`); named-open in general. -/
+i.e. `X^{binom(n,2)} ∣ taylor 1 (detPoly ri ci)`.
+
+⚠️ REFUTED for `n ≥ 3` (sibling `_ChebotarevStructuralInputs.lowerTaylorVanishes_refuted`, machine-
+checked countermodel `p=3, n=3`: `detPoly = X⁴−3X²+2X`, `taylor 1` has degree-2 coeff `3 ≠ 0` but
+`binom(3,2)=3`, so `X³ ∤ taylor 1 detPoly` over `ℤ`). The "Cauchy–Binet / not deep number theory"
+claim below is WRONG: the exponents `e_ij = (−(ci_j·ri_i)).val` are products reduced mod `p`, hence
+NOT distinct-per-column, so the *integer* Taylor order drops to `≈ n−1 ≪ binom(n,2)`. Consequently
+`chebotarev_of_alternant` / `chebotarev_all_of_alternant` below — which consume this input — are
+**VACUOUS as all-`n` reductions** (`hLow` unsatisfiable for `n ≥ 3`), exactly like the refuted
+`(X−1)^{p−1}` siblings. The CORRECT all-`n` statement is the finer `(1−ζ)`-adic valuation
+`LowerTaylorValuationDominant` (`(p−1)·v_p(c_k) + k > binom(n,2)` for `k < binom(n,2)` — the integer
+coeffs are nonzero but `p`-divisible, matching brick 32's mod-`p` `rootMultiplicity = binom(n,2)`), in
+the sibling file; it is genuine deep NT. Proven here only for `n ≤ 2` (`lowerTaylorVanishes_two`). -/
 def LowerTaylorVanishes (p : ℕ) [Fact p.Prime] (n : ℕ) : Prop :=
   ∀ (ri ci : Fin n → ZMod p), Function.Injective ri → Function.Injective ci →
     (X : ℤ[X]) ^ (n * (n - 1) / 2) ∣ taylor 1 (detPoly ri ci)
@@ -204,7 +214,13 @@ in `ℤ[ζ]` (Mathlib: `IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'`,
 rational integer `A` is `0` iff `p ∤ A`, while `(ζ − 1) w` has valuation `≥ 1`; a sum of valuations
 `0` and `≥ 1` is nonzero. It carries **no coding-theory content** and the same statement is the engine
 of Tao's blog proof of Chebotarev. The full `ℤ[ζ]` ideal/Dedekind theory over `ℂ` is heavy; per the
-honesty contract this is **named, not faked**. -/
+honesty contract this is **named, not faked**.
+
+✓ NOW PROVEN (sibling `_ChebotarevStructuralInputs.subOneValuationFinite_holds`), via an elementary
+cyclotomic-divisibility argument reusing `_ChebotarevReductionModP` (`cyclotomic_dvd_of_aeval_eq_zero`,
+`cyclotomic_p_mod_p`) — no heavy `IsCyclotomicExtension`/Dedekind/norm theory after all. So this input
+is genuinely discharged; the only remaining deep core is the alternant crux
+`GeneralizedVandermondeNonzeroModP` plus the corrected valuation-dominance input. -/
 def SubOneValuationFinite (p : ℕ) [Fact p.Prime] : Prop :=
   ∀ (A : ℤ) (w : ℂ), w ∈ Algebra.adjoin ℤ ({(stdAddChar (1 : ZMod p) : ℂ)} : Set ℂ) →
     ¬ (p : ℤ) ∣ A → (A : ℂ) + ((stdAddChar (1 : ZMod p) : ℂ) - 1) * w ≠ 0
