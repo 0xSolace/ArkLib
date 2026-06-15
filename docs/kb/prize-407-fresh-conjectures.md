@@ -329,3 +329,21 @@ Tracing the whole ladder to its root via in-tree `RigidityIterated2kLift`:
 **This is the single tightest statement of the open core: bounded-coefficient cyclotomic independence of
 dyadic roots mod the prize prime, support up to ~2 ln q.** Char-0 done (in-tree); each support level needs
 its own char-p threshold transfer (r=2 done); the prize support sits provably above the reachable threshold.
+
+## Unification mechanized + char-p leaf fully scoped (2026-06-14, bricks 32-33)
+Closed the conceptual loop to the single leaf, mechanically:
+- Char-0 ladder is 100% DONE in-tree: `DyadicEnergyK1.zeroSumCount_le_doubleFactorial_dyadic [CharZero L]`
+  proves E_r≤(2r−1)‼·n^r ∀r, via `LamLeungMultisetAntipodal.count_antipodal_of_sum_eq_zero` (char-0).
+- `BoundedCyclotomicIndep.lean` names the char-p object `BoundedHalfBasisIndep ζ N C` (+ char-0 discharge).
+- `BridgeBounded.lean` (LANDED) mechanizes the UNIFICATION: the rigidity chain uses independence at one
+  place (`bridgeZ`); contribZ coeffs are ≤2 uniformly (fiber⊆antipodal pair), so `bridgeZ_bounded` +
+  `disjoint_equal_sum_antipodal_int_bounded` run the whole antipodal closure off `BoundedHalfBasisIndep ζ N 4`
+  (char-p-realizable) instead of the char-p-FALSE unbounded `HalfBasisIndepZ`. ONE hypothesis ⟹ all RepK.
+- REMAINING LEAF (fully scoped, clean swap): char-p `count_antipodal_of_sum_eq_zero`. Its char-0 proof
+  transports M.sum=0 to a ZMod weight surface `∑_e w_e ζ^e=0` (lines 198-214, CHAR-INDEPENDENT); grouping
+  antipodal pairs `ζ^{e+2^{j'}}=−ζ^e` gives a HALF-basis relation with coeffs `(w_e−w_{e+2^{j'}})` bounded by
+  |M|=2r; the only char-0 step is the final independence — swap for `BoundedHalfBasisIndep ζ (2^{j'}) (2r)`.
+  Then char-p Wick ∀r ⟸ BoundedHalfBasisIndep, holding above threshold ~(2r)^{2^{m-1}} (exponential; r=2
+  landed sidonModNeg; prize prime n^4 ≪ threshold = BGK). The prize is now ONE named char-p Prop with the
+  entire reduction mechanized around it; only the bounded-cyclotomic-independence transfer at prize support
+  is open = BGK.
