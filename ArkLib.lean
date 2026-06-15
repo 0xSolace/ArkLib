@@ -1611,6 +1611,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PowerWordListBound
 import ArkLib.Data.CodingTheory.ProximityGap.PrimePowerMultisetWindow
 import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeEnergyHeadline
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
