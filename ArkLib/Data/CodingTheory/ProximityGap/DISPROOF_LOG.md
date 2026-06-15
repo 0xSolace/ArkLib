@@ -1,5 +1,70 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — ANGLE A6 "Schur-Siegel-Smyth trace problem on the Gaussian period polynomial" REDUCES-TO-JOHNSON (probe_a6_*.py)
+
+Angle A6 (issue #444, manifesto angle 6, "truly novel, 0 in-tree"): relocate the cancellation
+locus to the ALGEBRAIC-INTEGER TRACE. The `m=(p-1)/n` Gauss periods `eta_i` are the roots of the
+integer period polynomial `Psi_p(T) in ZZ[T]`, deg `m`. NEW LEMMA tried: bound the largest period
+`|eta_max|` via Schur-Siegel-Smyth trace-problem machinery (absolute trace + Newton/Schur power-sum
+inequalities on `Psi_p`) to get `|eta_max| <= C sqrt(n)` past the Mann boundary, using ONLY the
+integer structure of `Psi_p`, not the domain arithmetic.
+
+**Exact identity established (load-bearing, verified):** `M(mu_n)=max_{b!=0}|Sum_{x in mu_n}e_p(bx)|
+= max_i |eta_i|` — the prize sup-norm IS the largest absolute value of a Gaussian period of degree
+`m`. (As `b` ranges over coset reps the period sum takes exactly the `m` values `eta_i`.) For `n`
+even, `-1 in mu_n`, so the `eta_i` are REAL and `Psi_p` has `m` real roots — the clean
+totally-real Schur-Siegel-Smyth setting. Parseval pins `Sum_i |eta_i|^2 = p-n`, so the RMS period
+`= sqrt((p-n)n/(p-1)) -> sqrt(n)`: the second moment is RIGIDLY FIXED and gives only the trivial
+`sqrt(n)` scale (no information), exactly the manifesto's "energy is blind" warning.
+
+Verdict: **reduces-to-johnson** (periods too spread — the `★`-flagged A6 failure mode). Three
+independent refutations, all on proper subgroups `n=2^mu`, `n|p-1`, `p` PRIME, `p>>n^3`,
+`NEVER n=p-1`:
+
+1. **Low-order integer-trace invariants are VACUOUS.** The only cheap integer invariants are
+   `P_1=Sum eta_i=-1` (the trace) and `P_2=Sum eta_i^2=p-n`. The maximum root consistent with
+   just `P_1,P_2` and `m` real roots is `~sqrt((m-1)/m)*sqrt(P_2) ~ sqrt(p)` — ENORMOUSLY larger
+   than the true `M~sqrt(n log)`. Measured `M/permitted ~ 0.05->0.01` and shrinking with `n`
+   (PROBE `probe_a6_powersum_diagnostic.py`). The absolute-trace structure does NOT cap the max
+   anywhere near `sqrt(n)`. Higher power sums are rigid `p,n`-determined Jacobi-sum/cyclotomic
+   quantities: `P_3=-n^2`, `P_5=-n^3` (tiny odd sums), even sums `~p^{k/...}` — computing them is
+   recomputing the domain.
+
+2. **The truncated moment-LP (= best-possible SSS bound from `P_1..P_K`, any finite `K`) is loose
+   at every `K`.** The largest support point of any measure matching the first `K` integer power
+   sums (Hankel pencil upper edge) grows with `K`: `K=2 -> sqrt(n)`, `K=4 -> 1.68 sqrt(n)`,
+   `K=6 -> 2.2 sqrt(n)`, ... reaching the true `M~4.6 sqrt(n)` only as `K->m`. So the
+   Schur-auxiliary-polynomial machinery needs ALL `~m` power sums = the full polynomial = the
+   domain content again — the moment-ladder horn (PROBE `probe_a6_sss_applicability.py`). SSS
+   proper, moreover, LOWER-bounds the AVERAGE trace of TOTALLY-POSITIVE integers; it cannot
+   UPPER-bound an `L^infinity` max, and the periods aren't totally positive (trace `-1`).
+
+3. **The decisive growth law: the saturated normalized edge `E_n := lim_{p->inf} M(mu_n)/sqrt(n)`
+   EXISTS but grows like `sqrt(log n)`.** At fixed `n` the normalized period measure converges in
+   moments to a `p`-independent limit (`L^{2k}` norm columns flat in `p` across decades — PROBE
+   `probe_a6_even_moment_growth.py`), and `E_n(p)` saturates (n=8: `2.766->2.827`, increments
+   `+.033,+.019,+.005,+.003->0`; PROBE `probe_a6_fixedn_limit.py`). But the saturated `E_n` GROWS
+   with `n`: at fixed honest ratio `p/n^3=300`, `E_n = 2.00,2.80,3.74,4.29,5.11,5.11` for
+   `n=4,8,16,32,64,128`; **const fit `R^2=0.00`, `sqrt(log n)` fit `R^2=0.98` (slope `3.26`)**
+   (PROBE `probe_a6_horn_confirm.py`; large-`n` rows undersaturated => true growth `>=` measured,
+   so robust). Hence in the prize regime where `n,p` co-grow (`log(p/n) ~ log n`), the limiting
+   edge `E_n ~ sqrt(log(p/n))` gives `M ~ sqrt(n log(p/n))` = the Johnson scale.
+
+**Constraint lemma (why the locus does not move):** the integer structure of `Psi_p` exposes only
+the symmetric functions of the periods (power sums = traces). The first two are Parseval-rigid
+(`= -1`, `= p-n`) and give exactly `sqrt(n)`; every higher one is a `p,n`-determined cyclotomic
+number whose computation reconstructs the domain. The genuinely new fact — that `lim_p M/sqrt(n)`
+exists as a fixed limiting-measure edge `E_n` — does not crack the wall because `E_n` itself
+carries the `sqrt(log)` excess (the periods ARE spread on the Johnson scale). The trace problem is
+an averaging machine; `M` is an `L^infinity` tail event, invisible to any bounded set of traces.
+This is DISTINCT from the moment ladder (#W?) and Mann/antipodal only in framing — mathematically
+it lands on the same Johnson boundary.
+
+Probes: `scripts/probes/probe_a6_schur_siegel_smyth.py`, `probe_a6_powersum_diagnostic.py`,
+`probe_a6_sss_applicability.py`, `probe_a6_even_moment_growth.py`, `probe_a6_edge_growth_verdict.py`,
+`probe_a6_fixedn_limit.py`, `probe_a6_horn_confirm.py` (committed on branch main).
+
+
 ## 2026-06-15 — CONJECTURE C13 "Vertical Sato-Tate Sup-Control via Katz Uniform Equidistribution Rate" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_c13_vertical_satotate_torus_dim.py)
 
 Conjecture C13 (issue #444, algebraic-geometry, feasibility 1): claim the effective discrepancy of
