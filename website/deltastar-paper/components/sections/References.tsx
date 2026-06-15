@@ -16,7 +16,7 @@ const refs: { id: string; text: string; href?: string }[] = [
   },
   {
     id: "KKH26",
-    text: "Kambir\u00e9, Kopparty, Hab\u00f6ck (KKH26). IACR ePrint 2026/782. The near-capacity strip exclusion: \u03b4* \u2264 1 \u2212 r/2^\u03bc for explicit smooth evaluation codes.",
+    text: "D. Krachun, S. Kazanin, U. Hab\u00f6ck (KKH26). Failure of proximity gaps close to capacity. IACR ePrint 2026/782. The near-capacity strip exclusion: \u03b4* \u2264 1 \u2212 r/2^\u03bc for explicit smooth evaluation codes.",
     href: "https://eprint.iacr.org/2026/782",
   },
   {
