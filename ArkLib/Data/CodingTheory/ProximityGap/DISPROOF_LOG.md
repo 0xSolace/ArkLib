@@ -10842,3 +10842,53 @@ and for the GM-MDS certificate it is provably FALSE. So GM-MDS cannot be the off
 the route-elimination meta-theorem (closed/cyclotomic objects cap at Johnson).
 
 Probe: `scripts/probes/probe_c23_gmmds_fixed_vs_generic.py` (commit `ce07c4033`). Python-only; no Lean changed.
+
+## 2026-06-14 (#444 C42): SECRETLY-OPEN — CZ25 Subspace-Design List-Recovery Coordinate-Fiber Cap (R2)
+
+**Conjecture C42 (gmmds-homds, feas 4).** Via the CZ25 subspace-design framework, claim the
+δ-close codewords on a far line span dimension ≤ r (`CZ25CoordFiberCap`), so list-recovery gives
+a constant list PAST Johnson; the determining-tuple existence is axiom-clean in-tree. REDUCES-TO:
+CZ25 subspace-design list-recovery + in-tree `exists_determining_tuple` (axiom-clean) +
+`CZ25CoordFiberCap`.
+
+**Verdict: secretly-open** (and where actually proven in-tree, only reaches Johnson). The
+load-bearing claim "the δ-close codewords span dim ≤ r" IS the in-tree OPEN Prop
+`CZ25CoordFiberCap`, not a theorem. This is a clean structural/logical horn — no μ_n number-theory
+counterexample needed; the audit is of the in-tree CZ25 / Guruswami–Wang chain itself.
+
+**The audit (all from axiom-clean in-tree files).**
+1. `CZ25CoordFiberCap` is a `def … : Prop` (a named hypothesis), the affine-flat coordinate-fiber
+   cap `∑_i #{c∈L : c_i=f_i} ≤ ((|L|−1)·τ(r₀)+1)·n`
+   (`ListDecoding/CZ25SpanBoundBridge.lean:92`). The workbench
+   (`PROXIMITY_PRIZE_WORKBENCH.lean:142`) lists it verbatim as the **R2 GAP**.
+2. The ONLY unconditional, axiom-clean discharge of `CZ25CoordFiberCap` in-tree is
+   `cz25CoordFiberCap_of_ncard_le_one` (`ListDecoding/CZ25UniqueDecodingSlice.lean:80`), whose
+   hypothesis `hle` is "every candidate list has ≤ 1 codeword" = the **unique-decoding /
+   sub-Johnson** regime. Past Johnson a coordinate fiber is a full affine flat of size `q^{dim} ≫
+   dim+1` (the documented "q^dim vs dim+1" obstruction, `CZ25SpanDimension.lean:292–302`); the cap
+   is then OPEN. (Probe: at q=2^30, dim≥2 the flat exceeds the naive linear cap by >1e17×.)
+3. Every other in-tree path is conditional `*_of_*`:
+   `cz25CoordFiberCap_of_interp_and_multiplicity` ⟸ {BRICK-I, BRICK-V, BRICK-W, BRICK-L}, and:
+   - **BRICK-W** (`GWDirectionFinrankLe`) was MACHINE-REFUTED as false for genuine codes
+     (see "R2 / GW kernel mis-wiring catch" entry above; `GWDirectionScopedWiring.lean`).
+   - **BRICK-L** (`GWAffineFiberCharge`) was REFUTED as literally stated (empty close list ⇒
+     `finrank ≤ −1`) and re-reduced to `GWFiberCardCharge`, whose own honesty note states it is
+     "**as deep as the GW capacity theorem itself … the irreducible algebraic kernel**"
+     (`GWFiberChargeRepair.lean:52–59`); discharged ONLY on the singleton/sub-Johnson slice
+     (`GWFiberCardCharge_holds_of_singleton`).
+4. `exists_determining_tuple` IS axiom-clean (as C42 says) — but it **consumes** the dimension
+   bound as a hypothesis `hr : finrank F H ≤ r`; it does NOT produce it
+   (`SubspaceDesignLineDecodable.lean:81`). So the "span dim ≤ r" C42 calls closed is the *input*,
+   supplied by the OPEN `CZ25CoordFiberCap`.
+5. Framework mismatch: this is the FOLDED-RS / s-folded subspace-design route (carrier
+   `ι → Fin s → F`, hypothesis `IsSubspaceDesign s τ C`). The PRIZE object is PLAIN RS over an
+   explicit μ_n (s=1), where the design profile collapses (ABF26 Lemma 2.17 repair: `τ ≥ ρ−1/n`)
+   and the worst-case far-line incidence is not controlled by any nonvacuous design budget —
+   exactly GG25's plain-RS gap (R1).
+
+**Mechanism.** C42 reduces past-Johnson list-decoding to `CZ25CoordFiberCap`, the named OPEN
+in-tree Prop (= the irreducible GW capacity kernel, "as deep as the whole theorem"), proven ONLY
+on the sub-Johnson / unique-decoding slice (`|L| ≤ 1`). The "span dim ≤ r" is the open input, not
+a closed fact. Hidden open step = the affine-flat coordinate-fiber cap past Johnson.
+
+Probe: `scripts/probes/probe_c42_cz25_coordfibercap_open.py` (structural audit + q^dim-vs-dim+1).
