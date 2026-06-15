@@ -1716,6 +1716,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConverse
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountConsumerBridge
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountFreeActionWeld
+import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountFreeActionMCA
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountCrossingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
 import ArkLib.Data.CodingTheory.ProximityGap.OrderStatResort
