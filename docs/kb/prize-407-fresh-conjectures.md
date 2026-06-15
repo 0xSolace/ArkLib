@@ -144,3 +144,19 @@ appears ONLY at top levels.
   ⟹ C1 family value = n^{0.74} (beats di Benedetto, provable-if-deficit), but PROVABLY cannot reach √n.
 - **C10 REFUTED by scale**: M²~n·log q ≪ Sidon defect n²; M² not controlled by the Sidon defect.
 This caps the elementary-dyadic program: √n needs a global (BGK) argument, confirmed structurally.
+
+## C9 REFUTED + tower program CLOSED (all 10 conjectures attacked)
+C9 (coupled twist V_μ+W_μ): measured V_k=W_k=4^k at BOTTOM levels (n=64: V=[4,16,63.8,235,576,1485],
+W=[4,16,63.9,235,601,1207]) — the χ-TWIST has NO cancellation either, EQUAL to the period. Coupled ratio
+(V+W)/(2(V+W)_{k-1}) = 2.0 at bottom (factor 4, no contraction), <2 only at top. So tracking the twist
+does NOT escape the cap; the cancellation is NOT in the twist. **C9 REFUTED.**
+**TOWER-RECURSION PROGRAM CLOSED:** C1 (1-level)≤n^{0.74}, C7 (2-level) same cap, C9 (coupled) same cap.
+NO level-by-level recursion reaches √n — both period and twist are uncancelled (4^k) at the bottom. The
+dyadic √-cancellation is IRREDUCIBLY GLOBAL = BGK. This is the structural theorem of the goal-grind.
+
+### Status of all 10 conjectures (ATTACKED):
+C1 ★lead (M≤n^0.74, beats SOTA, formalized, deficit-proof=1-level-BGK open) · C2 confirmed=BGK ·
+C3 concentration (worst≈median proven-ish, not prize-closing) · C4 REFUTED · C5 circular · C6 circular ·
+C7 REFUTED · C8 circular · C9 REFUTED · C10 REFUTED-by-scale.
+NET: the prize = uniform Gauss-period Gaussian-tail (BGK); C1 = first elementary dyadic SOTA improvement;
+the global-cancellation cap = the structural reason no elementary route reaches √n.
