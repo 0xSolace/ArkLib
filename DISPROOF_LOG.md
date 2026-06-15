@@ -396,3 +396,34 @@ prize scale (r* -> small as n -> infinity). Only the DC-subtracted A_r <= Wick s
 (confirmed separately: A_r/Wick collapses, never crosses 1). The char-0 Lam-Leung pairing structure is
 not "loose at high r" but actively false from a low, n-shrinking rung onward — the DC subtraction is
 the only repair. Reinforces: prize object = DC-subtracted A_r <= Wick, forall-field, = BGK wall.
+
+## Anomaly-suppression in-window survival — bad primes INVADE the prize window (β_bad grows in n), but Anom_r ≤ n^{2r}/p STILL HOLDS there (2026-06-15)
+
+LENS: the HEAD anomaly route (dbbe1b01e). `Anom_r(p) = E_r^(p) − E_r^(0) ≤ n^{2r}/p` is the SUFFICIENT
+condition for `A_r ≤ Wick` (the DC-subtracted prize core). Orchestrator showed `Anom = EXACTLY 0` at n=8
+prize primes (r≤6) and flagged the OPEN asymptotic: for large n the bad primes (where Anom>0) can reach the
+prize window `[n^4, (2r)^{n/2}]` at r~log q.
+
+TEST (exact, NEW angle = NORMS, no per-prime FFT for the onset):
+`Anom_r(p) > 0  ⟺  p | N(α)` for some r-collision difference `α = Σζ^{a_i} − Σζ^{b_j} ≠ 0` in `Z[ζ_n]`.
+So r-bad primes = prime factors of the norms `N(α)` (computed exactly via the φ=n/2 conjugate product,
+ζ^φ=−1 for n=2^a). Probe `scripts/probes/probe_407_anom_badprime_norm_onset.py`.
+
+RESULT 1 — bad-prime onset exponent β_bad = log_n(p_bad) GROWS in n, invading the prize window at LOWER r:
+  n=8:  first r with p_bad ≥ n^4 is r=6 (β_bad 4.28)
+  n=16: r=4 (β_bad 4.60)
+  n=32: r=2 (β_bad 4.87)
+=> the orchestrator's "Anom=0 at prize primes" is a SMALL-n ARTIFACT (at n=8 the window is bad-prime-free
+below r=6). Matches the independently-observed pairing-rung descent (r* 15→6→4→3, b58cf1d03): the char-p
+anomaly is NOT confined below the prize window asymptotically.
+
+RESULT 2 — but the SUFFICIENT condition SURVIVES at the in-window bad primes (the real BGK test at scale):
+n=16, r=4, ALL 26 in-window bad primes p ∈ [n^4=65536, 1.5e6]: `Anom_4(p) ≤ n^8/p` HELD at **26/26**,
+TRUE WORST ratio = **0.4757** at p=76001 (β=4.053), i.e. ~2.1× margin. Probe
+`scripts/probes/probe_407_anom_suppression_inwindow.py` (vectorized norms + exact FFT integer-count Anom).
+
+NET (honest): a POSITIVE mapped-frontier result for the anomaly route — bad primes do invade the window
+but the anomaly is suppressed there with margin at accessible scale. NOT a closure: sub-prize-budget primes
+(p ≤ 1.5e6), fixed r; the worst PRIZE prime at r~log q, p~2^128 (the BGK content) is untouched. Complements
+`probe_407_bgkproof_onset_growth` (which tracks the ratio along the r-axis at a fixed prime); this pins the
+worst-case ACROSS the bad-prime set inside the window at fixed r. Both axes now bounded at accessible scale.
