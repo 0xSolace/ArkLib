@@ -2915,3 +2915,15 @@ per beta; n=32 beta=5 sup-sweep (p~3.3e7) untested (heavy). Does NOT close/refut
   anomaly enters at a thickness-generic, scale-tracking depth one rung above the prize rung, and stays
   there -- it is neither thin-essential at its onset nor descending to the prize-defining rung. CORE not
   closed/refuted; the onset structure mapped as thickness-generic + plateaued. probe_407_anomaly_onset_rule3.py.
+
+  FURTHER (anomaly MAGNITUDE, same session): the Anom_3 quantization ladder is ALSO thickness-generic.
+  GCD-factorization across thin 2-power vs thick 4|n at r=3 (probe_407_anom3_quantization_rule3.py):
+      n=64 thin: 2^10*3^2*5 | n=96 thk: 2^6*3^2*5 | n=112 thk: 2^8*3^2*5*7 | n=128 thin: 2^10*3^2*5 |
+      n=80 thk: 2^7*3*5^2
+  ALL GCDs are the SAME smooth-number family 2^a*3^b*5^c*7^d -- thin and thick share the quantization
+  structure => the anomaly MAGNITUDE quantization is thickness-generic too (rule-3 FAIL on magnitude,
+  consistent with the onset-depth verdict). HONEST CAVEAT (rule 6): the nonzero-anomaly DENSITY #nz/#p is
+  non-monotone + n-arithmetic-sensitive (n=96=2^5*3 is 20/20 anomalous vs thin n=64 1/20, n=128 5/20) --
+  the density tracks the divisor/2-adic structure of n, NOT a clean thin-vs-thick signal. Net: neither the
+  onset depth NOR the magnitude quantization of the bad-prime anomaly is thin-essential; the density is a
+  separate n-arithmetic phenomenon, not a prize lever. probe_407_anom3_quantization_rule3.py.
