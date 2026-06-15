@@ -6,6 +6,7 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevValuationModP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantThree
 import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.LinearAlgebra.Vandermonde
 
 /-!
 # The `n = 4` instance of the generalized-Vandermonde alternant crux of Chebotarev (#407)
@@ -359,6 +360,56 @@ theorem generalizedVandermondeNonzeroModP_four (hp7 : 7 ≤ p) :
       (vandermonde_four_ne_zero ci hci)
   exact hrhs hsix.symm
 
+/-! ## Route B (NAMED, not proven): the all-`n` constant-factorization conjecture + easy reduction.
+
+The probe (`probe_407_chebotarev_alternant_n4.py`, and the `n=3,5` sweep) suggests that for *every*
+`n` the alternant factors as a *constant* times the product of the two `n`-point Vandermonde
+difference products:
+
+  `alternantModP ri ci = c_n · V_r(ri) · V_c(ci)`     (`c_3 = −1/2`, `c_4 = 1/12`),
+
+with `V_r(ri) = det (vandermonde ri) = ∏_{i<j}(ri j − ri i)`. The structural reason (NOT formalized
+here) is antisymmetry: swapping two rows of the minor matrix negates `det`, hence negates every
+`(X−1)`-Taylor coefficient, hence the alternant; so the alternant (as a polynomial in the `ri`)
+vanishes whenever two `ri` coincide, so is divisible by `V_r`, symmetrically by `V_c`, and a
+total-degree count (`deg = 2·binom(n,2) = deg V_r + deg V_c`) forces the quotient to be a constant.
+Mathlib's multivariate antisymmetric ⟹ Vandermonde-divisibility support is thin, so we do **NOT**
+prove the factorization; it is stated as the named conjecture below, with the genuine (easy-direction)
+reduction `crux_of_factorConstant`. This is a NON-vacuous reduction: it really does reduce the deep
+`n`-crux to the single arithmetic fact `c_n ≠ 0 (mod p)` — *given* the (unproven) factorization. -/
+
+/-- **NAMED conjecture (Route B).** `AlternantFactorsConstant p n` asserts the alternant factors as a
+fixed scalar `c` times the product of the two `n`-point Vandermonde determinants, uniformly over all
+injective row/column selections. Probe-verified for `n = 3` (`c = −1/2`) and `n = 4` (`c = 1/12`);
+NOT proven for general `n` (the antisymmetry⟹divisibility⟹degree-count argument is not formalized). -/
+def AlternantFactorsConstant (p : ℕ) [Fact p.Prime] (n : ℕ) : Prop :=
+  ∃ c : ZMod p, ∀ (ri ci : Fin n → ZMod p),
+    Function.Injective ri → Function.Injective ci →
+      alternantModP ri ci = c * Matrix.det (Matrix.vandermonde ri) * Matrix.det (Matrix.vandermonde ci)
+
+/-- **The easy-direction reduction (PROVEN).** If the alternant factors as a *nonzero* constant times
+the two Vandermonde determinants (`AlternantFactorsConstant` with witness `c ≠ 0`), then the deep crux
+`GeneralizedVandermondeNonzeroModP p n` holds: for injective `ri ci`, both Vandermonde determinants are
+nonzero (`det_vandermonde_eq_zero_iff`) and `c ≠ 0`, so the product `alternantModP = c·V_r·V_c ≠ 0`.
+This is the genuine, non-vacuous reduction of the crux to the single arithmetic fact `c ≠ 0`; the
+factorization hypothesis itself (the `∃ c`) is the named-open Route B. -/
+theorem crux_of_factorConstant {n : ℕ} {c : ZMod p}
+    (hfac : ∀ (ri ci : Fin n → ZMod p), Function.Injective ri → Function.Injective ci →
+      alternantModP ri ci = c * Matrix.det (Matrix.vandermonde ri) * Matrix.det (Matrix.vandermonde ci))
+    (hc : c ≠ 0) :
+    GeneralizedVandermondeNonzeroModP p n := by
+  intro ri ci hri hci
+  rw [hfac ri ci hri hci]
+  have hVr : Matrix.det (Matrix.vandermonde ri) ≠ 0 := by
+    rw [Ne, Matrix.det_vandermonde_eq_zero_iff]
+    rintro ⟨i, j, hij, hne⟩
+    exact hne (hri hij)
+  have hVc : Matrix.det (Matrix.vandermonde ci) ≠ 0 := by
+    rw [Ne, Matrix.det_vandermonde_eq_zero_iff]
+    rintro ⟨i, j, hij, hne⟩
+    exact hne (hci hij)
+  exact mul_ne_zero (mul_ne_zero hc hVr) hVc
+
 end ProximityGap.Frontier.ChebotarevAlternantFour
 
 /-! ## Axiom audit (expected: `propext, Classical.choice, Quot.sound` only — no `sorryAx`). -/
@@ -369,3 +420,4 @@ end ProximityGap.Frontier.ChebotarevAlternantFour
 #print axioms ProximityGap.Frontier.ChebotarevAlternantFour.sevenTwenty_alternantModP_eq
 #print axioms ProximityGap.Frontier.ChebotarevAlternantFour.vandermonde_four_ne_zero
 #print axioms ProximityGap.Frontier.ChebotarevAlternantFour.generalizedVandermondeNonzeroModP_four
+#print axioms ProximityGap.Frontier.ChebotarevAlternantFour.crux_of_factorConstant
