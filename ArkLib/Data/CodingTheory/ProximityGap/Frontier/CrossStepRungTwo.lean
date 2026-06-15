@@ -202,6 +202,33 @@ theorem crossStepBound_two_of_exact_moments (G : Finset F) (hn : 3 ≤ G.card)
     crossMass G 2 ≤ 12 * G.card ^ 3 :=
   crossStepBound_two_of_sidon_sharpE3 G (by omega) hE2 (exactE3_le_sharpCeiling G hn hE3)
 
+/-- **The EXACT `r = 2` cross mass closed form.** From the two exact moments `E_2 = 3n²−3n` and
+`E_3 = 15n³−45n²+40n` (`n ≥ 3`) and the recursion `crossMass G 2 = E_3 − n·E_2`:
+
+> `crossMass G 2 = (15n³−45n²+40n) − n·(3n²−3n) = 12n³ − 42n² + 40n`.
+
+So the `r = 2` rung is satisfied with an EXACT slack of `42n² − 40n` below the `12n³` target
+(`crossMass G 2 = 12n³ − (42n²−40n) < 12n³` for `n ≥ 1`). This quantifies precisely how far the
+`r = 2` rung sits below its step bound — the `O(n²)` deficit — information the deep-rung attack can
+use (the step target `12n³` is loose at `r=2` by a full `Θ(n²)`). (`n ≥ 4` so the displayed
+ℕ-truncated form is faithful; `μ_n` has `n = 2^a ≥ 4` in the prize regime.) -/
+theorem crossMass_two_exact_of_moments (G : Finset F) (hn : 4 ≤ G.card)
+    (hE2 : rEnergy G 2 = 3 * G.card ^ 2 - 3 * G.card)
+    (hE3 : rEnergy G 3 = 15 * G.card ^ 3 - 45 * G.card ^ 2 + 40 * G.card) :
+    crossMass G 2 = 12 * G.card ^ 3 - 42 * G.card ^ 2 + 40 * G.card := by
+  have hrec := rEnergy_three_eq G
+  -- hrec : E_3 = n·E_2 + crossMass G 2 ; n·E_2 = n·(3n²−3n) = 3n³−3n²
+  have hmul : G.card * rEnergy G 2 = 3 * G.card ^ 3 - 3 * G.card ^ 2 := by
+    rw [hE2, Nat.mul_sub]; congr 1 <;> ring
+  -- bounds for the ℕ truncated subtractions (n ≥ 4)
+  have hc4 : (4 : ℕ) ≤ G.card := hn
+  have h1 : 45 * G.card ^ 2 ≤ 15 * G.card ^ 3 := by nlinarith [hc4, sq_nonneg G.card]
+  have h2 : 3 * G.card ^ 2 ≤ 3 * G.card ^ 3 := by nlinarith [hc4, sq_nonneg G.card]
+  have h3 : 42 * G.card ^ 2 ≤ 12 * G.card ^ 3 := by nlinarith [hc4, sq_nonneg G.card]
+  rw [hE3, hmul] at hrec
+  -- hrec : (15n³−45n²)+40n = (3n³−3n²) + crossMass G 2, solve for crossMass
+  omega
+
 end ArkLib.ProximityGap.CrossStepRungTwo
 
 /-! ## Axiom audit -/
@@ -213,3 +240,4 @@ end ArkLib.ProximityGap.CrossStepRungTwo
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.repThreeCeiling_overshoot_two
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.exactE3_le_sharpCeiling
 #print axioms ArkLib.ProximityGap.CrossStepRungTwo.crossStepBound_two_of_exact_moments
+#print axioms ArkLib.ProximityGap.CrossStepRungTwo.crossMass_two_exact_of_moments
