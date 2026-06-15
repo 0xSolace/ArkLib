@@ -1998,6 +1998,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeRatClassification
 import ArkLib.Data.CodingTheory.ProximityGap.ThreePrimeWindowObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.ThreeRootsSumZeroCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.TopDirectionLineCount
+import ArkLib.Data.CodingTheory.ProximityGap.TowerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMomentBinomial
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMomentBridge
 import ArkLib.Data.CodingTheory.ProximityGap.TowerMonotonicity
