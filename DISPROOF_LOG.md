@@ -1833,3 +1833,47 @@ VERDICT (rule-4 mapped structural law; rule-6 honest, NOT a closure):
    at the binding depth (the L7 Prop), not this per-width census. Python-only exact, p-independent =>
    axiom-clean trivially.
 probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
+
+================================================================================
+2026-06-15 ★ LIVE-LEAD (route 36, never-tried per ledger): mu_n deep holes ARE concentration
+points; deep-hole monomials are EXACTLY x^j with j == k (mod 4) -- a FINITE n/4-size candidate
+set for the worst-case u0 (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: route 36 (deltastar-100-routes.md), flagged "★ GENUINELY LIVE (never-tried)": "deep-hole
+classification of RS (Cheng-Murray, Zhu-Wan) -- explicit worst u0 = deep hole; first step: are
+smooth-domain deep holes concentration points? (probe)". 0 hits in DISPROOF_LOG => genuinely untouched.
+The L7 open core WorstCaseIncidenceBounded is a sup over stacks (u0,u1); if the worst u0 is a deep hole,
+route 36 reduces the sup to a FINITE deep-hole candidate family (the never-tried payoff).
+
+METHOD: exact mod-p. RS[k] eval code on D=mu_n. distance(u,RS)=n-max_{deg<k g}agreement (exact via
+k-subset interpolation). covering radius R=max_u dist; deep hole = dist=R. Then the concentration object:
+for monomial pencils (x^a,x^b), #bad-gamma(agree>=smin) = #{gamma: x^a+gamma*x^b agrees with deg<k on
+>=smin pts}. Test whether the WORST (max #bad) pencil uses a deep-hole exponent. n=8,16, k=3, prize prime.
+probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
+
+RESULT (exact):
+1. DEEP-HOLE CLASSIFICATION over mu_n (monomial scan): the deep-hole monomials x^j are EXACTLY
+   j == k (mod 4):
+   - n=8, k=3:  deep holes j in {3,7}      (covering radius R=5=n-k=n-3, max-agree=k=3)
+   - n=16, k=3: deep holes j in {3,7,11,15} (R=13=n-k, max-agree=k=3) -- exactly j==3 (mod 4).
+   The x^{n/2-family} exponents (j=8,9,10 at n=16) are NOT deep holes (agree=n/2=8, much higher).
+   So deep holes = the minimal-agreement (=k) monomials at j==k mod 4: a FINITE set of size ~n/4.
+2. CONCENTRATION: the WORST-case pencil DOES use a deep-hole exponent. n=8 k=3 smin=k+1=4:
+   worst #bad-gamma=40 achieved by pencils (3,4),(3,6),(4,7),(6,7) -- EVERY one includes a deep-hole
+   exp in {3,7}; the pure-non-deep-hole pencils (4,5),(5,6) cap at #bad=32 < 40. So mu_n deep holes
+   ARE concentration points (route-36 premise CONFIRMED at n=8).
+   CAVEAT (rule 6): the two-deep-hole pencil (3,7) (gcd=4=n/2) gives only #bad=8 -- the worst is
+   ONE deep-hole exp paired with a coprime-step neighbor, not both deep holes. So "deep hole" is
+   NECESSARY-flavored for the worst pencil but the pairing structure also matters.
+
+VERDICT (rule-4 mapped, but a POSITIVE LIVE LEAD not a refutation): route 36 is NOT dead -- its premise
+holds at probed scale: (a) mu_n deep holes have a clean closed classification (x^j, j==k mod 4, size
+~n/4), and (b) the worst-case concentration u0 uses a deep-hole exponent. This gives a FINITE candidate
+family for the L7 sup-over-u0 (the never-tried payoff the ledger flagged). NEXT STEP (the genuine open
+work): bound #bad-gamma over the deep-hole family directly -- if the deep-hole exps' #bad is itself
+capped (the deep-hole list curve L(a) the KB mentions has no closed form, but it is now restricted to
+j==k mod 4, a structured finite set). This connects to the wf-D2 worst pencil (composite-step) -- the
+worst pairing is deep-hole-exp + coprime/composite-step neighbor. Whether the deep-hole-restricted sup
+beats Johnson is the live question. CORE not closed; this OPENS a finite-candidate handle on the L7 sup.
+Python-only exact => axiom-clean trivially.
+probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
