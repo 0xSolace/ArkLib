@@ -1041,6 +1041,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TaoFromChebotarev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WickMonotonicityReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDFTParseval
