@@ -146,3 +146,17 @@ barrier** — exactly the type the campaign has consistently identified as the g
 (finite base proven; negative correction proven; only the sign at depth open) as the single cleanest provable
 surface, and lock the target by extending the W1 MGF-envelope numerics. This is the one place where a *finite +
 sign* statement — not a full half-power character-sum miracle — could close the prize.
+
+---
+
+## CORRECTION (2026-06-15, post-attack) — avenue 1 feasibility 6–7 ⟹ 2
+
+The #1 path (char-p deep Wick / MGF) was attacked at the prize prime and **reduces to the wall** — feasibility
+**2/10, NOT independent**. My initial 6–7 rating relied on a misread "MGF envelope holds to n=256" claim; that
+was only AT THE SADDLE, and even there delivers C=√2. Confirmed by three independent angles:
+- per-level sign condition (W3/F2) REFUTED: contractivity off by orders of magnitude at depth r≈89 (ρ→740);
+- aggregate-MGF envelope (W1) REFUTED: breaches its own envelope-break threshold c\*≈1.243;
+- v₂(p−1)-stratified exact M(n): the v₂-gating is real but a finite-n effect — even the best stratum (v₂=μ,
+  generic prize prime) has c rising monotonically toward √2 (1.057→1.162→1.234→1.264→1.323 for n=8..128).
+The empirical law is `M ~ √2·√(n ln m)` at ALL primes incl v₂=μ. The only survivor is the saddle bound at C=√2
+= the generic wall the prize must BEAT. See BGK-proving-attack-result-2026-06-15.md.

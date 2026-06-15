@@ -10396,3 +10396,9 @@ exact F_p counters. Verdicts:
 
 NET: no tool crosses or isolates a strictly-weaker statement. Sole surviving off-BGK computable frontier =
 distinct-gamma union-count |U_R{gamma_R}| growth law (see GAMMA_GROWTH_LAW measurement).
+
+## 2026-06-15 — #1 BGK-proving path (char-p deep Wick / MGF) REFUTED at the prize prime (3 angles)
+- W3/F2 per-level sign condition (StepRatioAntitone / RhoContractiveAtDepth) FALSE with no margin: rho=Cum(G,r)/2Cum(H,r)=2.8@r=2 -> ~123 (n=32,r=7) -> ~740 (r=9); proven negative principal-subtraction term dwarfed 3-1700x. W3 R(1)<=1, W7 GEN_r<0 fail at ~30% of prize-regime primes.
+- W1 aggregate Gaussian-MGF envelope: "holds to n=256" was SADDLE-ONLY; uniform-in-y bulges to 1.24-1.29 (Fermat 65537); breaches its own envelope-break threshold c*~1.243.
+- v2(p-1)-gating refinement REAL but finite-n: at n=64 c monotone in v2 (v2=mu best ~1.25, v2=8 ~1.49). Trend of BEST stratum v2=mu (=generic prize prime): mean c = 1.057/1.162/1.234/1.264/1.323 for n=8/16/32/64/128 -> rising toward sqrt2=1.414, crosses envelope-break 1.243 by n~32. So all strata -> BGK constant sqrt2 asymptotically; v2=mu does NOT stay safe.
+- NET: #1 path reduces to the wall (feasibility 2, NOT independent). Only survivor = saddle bound at C=sqrt2 = generic BGK wall the prize must BEAT. Probes: scripts/probe(s)/probe_v2_stratified_M.py, probe_v2mu_trend.py. Keepable: obstruction sharpest at high-v2 primes = exactly the FRI/STARK prime regime (Goldilocks v2=32, BabyBear v2=27).
