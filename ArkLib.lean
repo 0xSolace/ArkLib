@@ -939,6 +939,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyThreeExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueDecayPigeonholeVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFArcoshInversion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
