@@ -13842,3 +13842,32 @@ Orchestrator re-ran the two flagged survivors at PRIZE SCALE (Rust, scripts/prob
 - **D5-3 "extreme bad set = O(1) cosets" — REFUTED (small-m artifact).** #{b : |η_b| ≥ 0.8·M} over the m=(p−1)/n cosets, n=64, m swept 85→4.7e6: 1,16,11,56,92,**228** — grows ~m^0.19 (white-noise order statistic), NOT O(1). The lane's "1–4" was because it only tested m≤1024 (m^0.19≈3.6 there). At prize m=2^128 the near-max coset count is ~2^24, not O(1). The "O(1) bad cosets" sufficient lemma is FALSE at prize scale. (Same failure mode as the M4 shallow-depth over-claim.)
 - **D8-3 "GUE level repulsion ⟨r⟩→0.575" — REFUTED (mis-measurement).** Nearest-neighbor spacing ratio of {|η_b|}, independently measured: ⟨r⟩ = 0.368/0.383/0.384 (n=64), 0.389 (n=128), 0.386 (n=256) — exactly Poisson (0.386), NOT GUE (0.603). The period spectrum is Poisson/white-noise (confirms the covariance finding); no level repulsion. No RMT-repulsion handle exists.
 Net: NO genuine new survivor from the 100-avenue sweep. The sole live target remains the char-p deep-moment crux (M1 count-route / M3 cross-step, axiom-clean reductions), with no coset-container or RMT shortcut.
+
+================================================================================
+2026-06-15 wf-UNDERDET: the agreement-set INCLUSION packing bound #pinnedScalars ≤ n/(a−k)
+is REFUTED (the overlap-≤k condition permits dense DESIGNS, not sunflowers).
+================================================================================
+LANE: under-det / agreement-sharing. After landing AgreementSetPacking (push c5258ae16:
+distinct pinned scalars' agreement sets overlap NON-degenerately in ≤k points, #pinned ≤ C(n,k+1)),
+the natural tightening was an INCLUSION bound: agreement sets of size ≥a, pairwise overlap ≤k ⟹
+#pinned·(a−k) ≤ |union| ≤ n ⟹ #pinned ≤ n/(a−k) = O(1) at the binding band (a~n/2, k~n/4).
+
+REFUTATION (probe_underdet_packing_inclusion.py + probe_n8_designcheck.py, exact, PROPER μ_n, p≫n³):
+At n=8, k=2, a=4 the worst (binder) line realizes #pinned = 9 with |union| = 8 = n, each |A_g|=4=a,
+pairwise overlap = 2 = k EXACTLY — a 2-design-like family, NOT a sunflower. The naive inclusion bound
+gives n/(a−k) = 4, but 9 > 4. Pure combinatorics: the max # of 4-subsets of [8] with pairwise
+intersection ≤2 is 14 (greedy), ≫ 4. So overlap-≤k does NOT force a linear sunflower packing; the
+correct cap is Frankl–Wilson / Ray-Chaudhuri–Wilson (~C(n,k)), POLYNOMIAL, not O(1). The inclusion
+lemma #pinned·(a−k) ≤ n is FALSE.
+
+NON-TRIVIAL RESIDUAL (the real finding): the DESIGN density is NOT achieved at larger n. The SAME
+probe shows #pinned COLLAPSES to 1 at n=12 and n=16 (the binder line), and to 0 for all random/
+deg-pencil stacks. So an ADDITIONAL constraint beyond pairwise-≤k overlap (a thinness/arithmetic
+rigidity of the μ_n divided-difference pencil) suppresses the dense designs for n≥12 — the n=8
+9-pinned family is a small-n design artifact, NOT a sustained mechanism. CONSEQUENCE: the packing
+DOES collapse the distinct-γ count at the binding band in the realized μ_n geometry (probe: #pinned=1
+at n=12,16), but NOT via the naive inclusion bound — it needs the extra μ_n-rigidity constraint,
+which is the open BGK-adjacent object. The proven, axiom-clean field-universal bound stays at the
+honest C(n,k+1) (AgreementSetPacking); the O(1) collapse is probe-observed, NOT yet a theorem, and
+the inclusion route to it is dead. CORE (M(μ_n) ≤ C√(n log(p/n))) UNCHANGED/OPEN. — wf-UNDERDET,
+co-author wakesync.
