@@ -106,25 +106,29 @@ def main():
               f"expected(-1/2)={expected}  zero-VrVc&nonzero-alt={zbad}")
 
     print()
-    print("=== n=4 census: ratio alternant/(Vr*Vc) over injective pairs (FULL) ===")
-    # full census feasible for p up to ~13 (P(p,4)^2 functions)
-    for p in [5, 7, 11, 13]:
+    print("=== n=4 census: ratio alternant/(Vr*Vc) over injective pairs ===")
+    # full census feasible only for p=5,7 (P(p,4)^2 functions); sample beyond
+    for p in [5, 7]:
         ratios, zbad, _ = census_ratio(4, p)
         print(f"  p={p:3d}  #distinct ratios={len(ratios)}  ratios={sorted(ratios)}  "
-              f"zero-VrVc&nonzero-alt={zbad}", flush=True)
+              f"zero-VrVc&nonzero-alt={zbad}  (FULL)", flush=True)
+    for p in [11, 13]:
+        ratios, zbad, _ = census_ratio(4, p, sample=6000)
+        print(f"  p={p:3d}  #distinct ratios={len(ratios)}  ratios={sorted(ratios)}  "
+              f"zero-VrVc&nonzero-alt={zbad}  (SAMPLE 6000)", flush=True)
 
     print()
     print("=== n=4: pin the rational ratio c_4/k_4 from the per-prime ratio r_p ===")
     # If alternant = (c/k) * Vr*Vc with c/k a fixed rational, then r_p = (c/k) mod p for all p.
     # Recover the rational via CRT-style guess: try small denominators.
     rp = {}
-    # full census for small primes; sampling for larger ones (to keep it fast)
-    full = {5, 7, 11, 13}
+    # full census for p=5,7; sampling for larger ones (to keep it fast)
+    full = {5, 7}
     for p in [5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]:
         if p in full:
             ratios, zbad, _ = census_ratio(4, p)
         else:
-            ratios, zbad, _ = census_ratio(4, p, sample=4000)
+            ratios, zbad, _ = census_ratio(4, p, sample=3000)
         if len(ratios) == 1:
             rp[p] = next(iter(ratios))
         else:
