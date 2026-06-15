@@ -995,6 +995,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevStructuralInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevValuationModP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevVandermondeCrux
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ContiguousBandBenign
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoshMGFSaddle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
