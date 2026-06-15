@@ -1024,6 +1024,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDFTParseval
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ZModDonohoStark
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NA_restriction_moment_collapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2ND_theta_fixedpoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf2NG_partition_rank_vacuous
