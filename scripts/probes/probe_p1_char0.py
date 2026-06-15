@@ -606,3 +606,45 @@ if __name__ == '__main__':
             print(f"   b={b:2d}  maxI={bestb[0]:6d}  best a={bestb[1]}", flush=True)
         rows.sort(key=lambda t: -t[1])
         print(f"   TOP binders (b,maxI,a): {rows[:6]}", flush=True)
+
+    elif args.mode == 'deltastar_targeted':
+        # n=32: TARGETED sweep — low far directions b in {k,k+1,k+2} (binder per n=16) x high a-values
+        # (binders at n=16 were a=high paired with b=k). Engine built once. Window rungs [rmin,rmax].
+        n, k = args.n, args.k; rho = k / n
+        p = find_prime_cong1(n, max(args.plo, 100000019) if n >= 24 else args.plo)
+        S = list(get_W(n, p).S); eng = AgreeEngine(S, p, k)
+        cand_b = [b for b in (k, k+1, k+2) if b != n//2 and b < n]
+        cand_a = sorted(set(list(range(n-1, max(k, n-10), -1)) + [k+1, n//4, n//2+1, n-1]))
+        cand_a = [a for a in cand_a if 0 <= a < n]
+        rmin = args.rmin if args.rmin > 0 else (k + 1)
+        rmax = args.rmax if args.rmax > 0 else (n - k + 1)
+        import math as _m
+        H = (-rho*_m.log2(rho) - (1-rho)*_m.log2(1-rho))
+        print(f"=== TARGETED CHAR-0 DELTA* n={n} k={k} rho={rho} budget=n={n} rungs[{rmin},{rmax}] "
+              f"p={p} ===", flush=True)
+        print(f"  cand_b={cand_b}  cand_a={cand_a}  (HONEST CAVEAT: restricted pencil set; "
+              f"justified by n=16 binder=x^k low-exp; cross-check with bindscan_fast)", flush=True)
+        last_good = None; first_bad = None
+        for r in range(rmin, rmax + 1):
+            size = n - r; best = (-1, None); surv_tot = 0
+            for b in cand_b:
+                if b >= size: continue
+                for a in cand_a:
+                    if a == b: continue
+                    c, surv = incidence_fast(S, p, k, a, b, r, eng)
+                    surv_tot += surv
+                    if c > best[0]: best = (c, (a, b))
+            mx, st = best
+            if mx < 0:
+                print(f"   r={r:2d}  (no valid far dir; size={size})", flush=True); break
+            tag = ""
+            if first_bad is None:
+                if mx <= n: last_good = r
+                else: first_bad = (r, st); tag = "  <-- FIRST BAD (delta* crossing)"
+            print(f"   r={r:2d}  delta={r/n:.4f}  I={mx:6d}  binder={st}  surv={surv_tot}{tag}", flush=True)
+        ds = (last_good / n) if last_good is not None else None
+        print(f"   => delta* (targeted) = {last_good}/{n} = {ds}  (first bad {first_bad})", flush=True)
+        if ds is not None:
+            print(f"      Johnson 1-sqrt(rho)={1-rho**0.5:.4f}  capacity 1-rho={1-rho:.4f}  "
+                  f"1-rho-1/log2(n)={1-rho-1/_m.log2(n):.4f}  1-rho-H/log2(n)={1-rho-H/_m.log2(n):.4f}  "
+                  f"1-rho-1/n={1-rho-1/n:.4f}", flush=True)
