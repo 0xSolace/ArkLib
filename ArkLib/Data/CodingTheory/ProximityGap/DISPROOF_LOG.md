@@ -1,5 +1,50 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C39 "Tao-Croot-Lev-Pach for the Bad-Scalar Set as a Cap Configuration in ℤ/p" REFUTED-FALSE / REDUCES-TO-JOHNSON (probe_c39_clp_cap_badset.py, commit c3b9cd438)
+
+Conjecture C39 (issue #444, additive-combinatorics, feasibility 2): claim the bad-scalar set
+`B_w` is 3-AP-free / a cap configuration in `(ℤ/p,+)`, so the polynomial-method cap bound
+(Croot–Lev–Pach / Ellenberg–Gijswijt) forces `|B_w| ≤ p^{1−c}` for fixed `c>0`, which with the
+gcd-coset law L3 caps the per-direction list below budget `n` past Johnson. REDUCES-TO: CLP/EG
+cap bound + in-tree orbit-count law L3 + FactorizationRigidity.
+
+**Verdict: refuted-false** (the cap bound is a category error / dimensionally vacuous in cyclic
+`ℤ/p`), and the salvageable core is **reduces-to-johnson/circular** (it pins only the already-known
+coset size `S`, never the open multiplicity `N`). Probe over proper `μ_n`, `p` prime `p≈n^4` (`p≫n³`,
+never `n=p−1`), `n∈{16,32,64,128}`. Three independent horns:
+
+**(H1) The cap hypothesis is actually TRUE for the L3 object — and that is the trap, not the win.**
+The single-codeword bad-α set is, by orbit-count law L3, `B = {−z^{j(a−b)} : j} ⊂ F_p`, a GEOMETRIC
+progression (multiplicative coset of `⟨z^{a−b}⟩` scaled by `−1`). The probe counts 3-APs `x+z=2y`
+inside `B` and finds **zero nontrivial 3-APs in every tested direction** (all `(a,b)`, all `n`): a
+geometric progression of roots of unity is generically 3-AP-free. So C39's hypothesis holds — but
+the object it holds for is exactly the L3 coset, whose size is already known.
+
+**(H2) The cap BOUND does not exist in cyclic `ℤ/p`.** CLP (`ℤ/4^N`) and Ellenberg–Gijswijt (`F_q^N`)
+give an EXPONENTIAL-IN-AMBIENT-DIMENSION saving: a 3-AP-free subset of `F_q^N` has size `≤ c_q^N`
+with `c_q<q`, the saving living in `N→∞`. `ℤ/p` is the `N=1` (one-dimensional) cyclic group — there
+the polynomial/slice-rank method gives NOTHING beyond trivial. The only proven 3-AP-free bound in
+`ℤ/p` is Behrend/Bloom–Sisask `r_3(p)=p/exp(c(log p)^t)=p^{1−o(1)}`, which is **NOT** `p^{1−c}` for any
+FIXED `c>0`. Importing the EG saving exponent into a cyclic group is the same category error as C05
+(additive vs multiplicative): there it was "AP-in-exponent vs AP-in-`F_p`"; here it is "cap-bound-in-
+`F_q^N` vs cap-bound-in-`ℤ/p`".
+
+**(H3) Even granting the FALSE `p^{1−c}`, it is strictly WEAKER than the trivial in-tree L3 bound, and
+bounds the wrong quantity.** With `n≈p^{1/4}` the budget is `O(n)=O(p^{1/4})`; `p^{1−c}≫n` for every
+`c<3/4`. But L3 already gives `|B| = n/gcd(b−a,n) ≤ n` EXACTLY, for free. A cap bound of size `~p^{1−c}`
+(≫ `n`) therefore caps nothing L3 does not already cap better. More decisively, a SIZE bound on the
+cap `B` controls only the coset size `S`; the orbit-count law is `I_pencil = N_pencil · S` and
+`_B2DoorAOrbitCount.lean` flags `S` as **circular** ("#bad=O(n) is the prize floor itself"). The open
+quantity is the MULTIPLICITY `N_pencil` (how many `deg<k` codewords realize the same bad α / the full
+gate over all codewords), which a cap/size bound on `B` cannot reach. So even a perfect cap bound
+pins `S` (known) and leaves `N` (open BGK character-sum count) untouched — same horn as C05.
+
+**Conclusion.** C39 is the cap-bound sibling of C05's Freiman-doubling claim. C05 conflated additive
+vs multiplicative structure; C39 conflates the high-dimensional `F_q^N` polynomial method with cyclic
+`ℤ/p` (no fixed-exponent cap bound exists there) AND, even granting the bound, only pins the already-
+known coset size `S`, never the open multiplicity `N`. Refuted-false on the cap-bound step;
+reduces-to-johnson/circular on whatever survives. Confidence high.
+
 ## 2026-06-15 — CONJECTURE C14 "Kloosterman-Sheaf Purity on the Antipodal-Paired Dyadic Period (Katz Kl_{n/2}, Sp/SL)" REFUTED-FALSE (probe_c14_kloosterman_purity.py)
 
 Conjecture C14 (issue #444, algebraic-geometry, feasibility 2): Mann's antipodal decomposition
