@@ -2036,6 +2036,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StaircaseBandTheorem
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovAuxFramework
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovContradictionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovCountingLemma
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovEvenSharpEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovFrobeniusReduction
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovGeneratorIndep
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovGenericInsufficiency
