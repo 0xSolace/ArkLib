@@ -715,6 +715,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CosetUnionSuperAdditive
 import ArkLib.Data.CodingTheory.ProximityGap.CosetVanishingDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.CosetWallDeepInteriorNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.CosetWordCap
+import ArkLib.Data.CodingTheory.ProximityGap.CountAntipodalBounded
 import ArkLib.Data.CodingTheory.ProximityGap.CountingGapConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.CoveragePigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.CoveringFromFarCount
@@ -958,6 +959,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CountAntipodalBounded
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecayLawPIndep

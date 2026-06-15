@@ -27,7 +27,7 @@ Issue #407.
 open ArkLib.ProximityGap.AntipodalBalanceBounded
 open ArkLib.ProximityGap.BoundedCyclotomicIndep
 
-namespace ProximityGap.Frontier.CountAntipodalBounded
+namespace ArkLib.ProximityGap.CountAntipodalBounded
 
 variable {F : Type*} [Field F]
 
@@ -45,11 +45,9 @@ theorem count_antipodal_fin_of_boundedIndep {N C : ℕ} {ζ : F} (hhalf : ζ ^ N
         + (∑ i : Fin N, ((m (Fin.natAdd N i) : ℕ) : F) * ζ ^ ((i : ℕ) + N))
       = ∑ k : Fin (N + N), (m k : F) * ζ ^ (k : ℕ) := by
     rw [Fin.sum_univ_add]
-    congr 1
-    · apply Finset.sum_congr rfl; intro i _; rw [Fin.val_castAdd]
-    · apply Finset.sum_congr rfl; intro i _
-      rw [Fin.val_natAdd, Nat.add_comm]
+    congr 1 <;>
+      exact Finset.sum_congr rfl (fun i _ => by simp [Fin.val_natAdd, Nat.add_comm])
   rw [hsplit]; exact hsum
 
-end ProximityGap.Frontier.CountAntipodalBounded
-#print axioms ProximityGap.Frontier.CountAntipodalBounded.count_antipodal_fin_of_boundedIndep
+end ArkLib.ProximityGap.CountAntipodalBounded
+#print axioms ArkLib.ProximityGap.CountAntipodalBounded.count_antipodal_fin_of_boundedIndep
