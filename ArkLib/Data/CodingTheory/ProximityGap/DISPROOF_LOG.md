@@ -13467,3 +13467,52 @@ replacing "Θ(n²) collinear triples" by "Θ(n) cyclotomic triples" mis-locates 
 (degenerate, energy n^5), which is the OPPOSITE of the "few isolated incidences" the idea hoped for; and
 the genuine di Benedetto trilinear input acts on additive (off-torus) sets where no cyclotomic structure
 survives. Either way there is no n^c (c<1/4) handle. No gain toward M(μ_n) ≤ C√(n log(p/n)). CORE OPEN.
+
+---
+
+## I037 — Bordenave non-backtracking trace on the CHARACTER-WEIGHTED period multigraph (NO GAIN / refuted as a route to M)
+
+IDEA: M(μ_n)=max_{b≠0}|η_b| is the non-principal spectral radius of the n-regular Cayley graph
+Cay(F_p,μ_n) (adjacency A_{xy}=1 iff x−y∈μ_n; eigenvalues exactly the Gauss periods η_b). Attach a
+NON-constant edge weight w(x,y)=χ(x−y) (χ a multiplicative character) to make the graph irregular,
+take the Hashimoto non-backtracking operator B_χ. Bordenave's tangle-free trace E[tr B^{2k}] is
+counted by Catalan C_k (non-crossing) not Wick (2k−1)!!, exponentially smaller — the claim being
+this kills the moment-ladder main term that caps additive-energy moments at Johnson, yielding
+ρ(B_χ)≤2√n and recovering M ≤ ρ(B)+1/ρ(B) ≤ 2√n+tail.
+
+PROBES (prize-faithful: μ_n=2-power subgroup, n=2^μ, n|p−1, p PRIME, p≫n³ (β≈3.0–3.1), proper
+m=(p−1)/n>1, NEVER n=p−1), EXACT dense/sparse eigenvalues n∈{4,8}:
+scripts/probes/probe_bordenave_nbt_charweight.py, scripts/probes/probe_bordenave_nbt_bridge.py.
+
+THREE LOAD-BEARING CLAIMS, MEASURED EXACTLY:
+
+(A) UNWEIGHTED graph — Ihara–Bass gives NOTHING (confirmed). For the regular Cayley graph the
+non-principal NBT eigenvalue is μ_+=(M+√(M²−4(n−1)))/2 and reconstructs M=μ_+ +(n−1)/μ_+ EXACTLY
+(n=4: μ_+=2.5638 → 3.7339=M0; n=8: μ_+=5.2219 → 6.5624=M0). The NBT radius is a DETERMINISTIC
+function of M — it cannot bound an M you don't already know. (The bare ρ(B) max-magnitude is the
+PERRON sheet μ=n−? from the trivial η_0=n, irrelevant to the prize.)
+
+(B) The CHARACTER WEIGHT does break the regular-graph algebraic tie, and the best weighted NBT
+radius gives a recovered value ρ(B_χ)+1/ρ(B_χ) NUMERICALLY BELOW M0 (n=4: 2.9273 < 3.7339;
+n=8: 5.0017 < 6.5624). LOOKS like a win — but the weighted NBT radius brackets the TWISTED period
+M_χ := max_b|Σ_{u∈μ_n} χ(u) e_p(b u)| (n=4: M_χ=2.7810; n=8: M_χ=4.8863), a DIFFERENT sum from the
+prize quantity M = max_b|Σ_{u∈μ_n} e_p(b u)|.
+
+(C) Catalan vs Wick IS real but lands on the wrong matrix. NBT trace moments T_k^B=tr(B_χ^{2k})/(q n^k)
+sit far below both Catalan C_k and Wick (2k−1)!! (k=4: T_4^B=0.594 vs C_4=14 vs Wick=105), while the
+ADJACENCY moments T_k^A track Wick (k=4: 19.14). The Catalan suppression genuinely exists for B_χ —
+but it suppresses the trace of B_χ, whose radius bounds M_χ, NOT M.
+
+THE FATAL LOGIC (the refutation): minimizing ρ(B_χ) over χ minimizes the twisted sum M_χ. A number
+that is < M0 cannot be an upper bound for M0. So a "win" (recov < M0) is, by construction, a bound on
+M_χ (the χ chosen to make ITS OWN sum small), and says NOTHING about the untwisted M. The bridge
+ρ(A)≤ρ(B)+1/ρ(B) is a theorem ONLY for the unweighted operator, where (A) shows it reconstructs M
+exactly = no gain. There is no weighted bridge from ρ(B_χ) to the untwisted M.
+
+VERDICT: NO GAIN (refuted as a route to M). The multiplicative-character weight relocates the
+spectral object from the n-regular Cayley graph (whose non-principal radius IS M) to a graph whose
+non-principal radius is a twisted period M_χ — a different incomplete character sum. This is an
+instance of the campaign's PROVEN-FUTILE relocation pattern: the Catalan/non-backtracking machinery
+is sound, but the only operator whose spectrum equals M is the regular adjacency, for which NBT is an
+exact reparametrization (Ihara–Bass) carrying zero new information. M(μ_n) is intrinsic; weighting the
+SAME group with χ changes the sum being bounded.
