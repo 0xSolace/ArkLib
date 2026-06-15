@@ -24,16 +24,17 @@ Verified exactly and identically across primes `p ≡ 1 (mod n)` for `n = 8,16,3
 (`/tmp/up_extremal.py`): `#zeros(x^{n/2}+1 on μ_n) = n/2`, with Fourier support `{0, n/2}` (size 2).
 
 More generally, the measured max single-line agreement over ALL far directions `(a,b)` is
-`s* = n/2 + (k−1)` (extremal `(a,b) = (n/2, n/2+k−1)`; e.g. `n=8,k=2 ⟹ 5`; `n=16,k=2 ⟹ 9`;
-`n=16,k=4 ⟹ 11`; verified by exact complex-DFT max-zeros AND by direct codeword search over `F_p`,
-e.g. `x^8+x^9 = (x+1)(x^4+1)·…` giving the real codeword witness `c = 16+16x` over `F_17`).  This
-GROWS like `n/2` and EXCEEDS the Johnson `√(kn)` by a constant factor `≈ 3/2` in the `ρ=1/4` regime
-(`s*/√(kn) → 1.50` as `n→∞`, measured `n` up to `2^20`).
+`s* = n/2 + 2^{⌊log₂(k−1)⌋}` — **CORRECTED** from the earlier prose `n/2 + (k−1)`, which over-counted
+(see `StructuredUncertaintySharpFloor.lean` `prose_kMinusOne_overcounts_at_k4` + `FloorAsymptoticRadius.lean`
+exact brute over all far pairs).  The true extremal witness is `(x^{n/2}+1)·(x^{2^e}−x₀^{2^e})` with
+`2^e ≤ k−1`, giving `n/2 + 2^e` zeros; maximised at `e = ⌊log₂(k−1)⌋`.  Exact values: `n=8,k=2 ⟹ 5`;
+`n=16,k=2 ⟹ 9`; **`n=16,k=4 ⟹ 10`** (not `11`); `n=32,k=8 ⟹ 20`.  At `ρ=1/4` this is `s* = 5n/8`,
+EXCEEDING Johnson `√(kn) = n/2` by the constant `n/8` (a `≈ 5/4` factor, constant in `n`).
 
 ## THE HONEST DICHOTOMY this file pins
 
-* The single-line extremal `s* = n/2 + (k−1)` is the **maximal agreement of ONE far line with ONE
-  codeword**.  It saturates the Donoho–Stark near-capacity ceiling (`s* ≈ n(k+1)/(k+2)` for the
+* The single-line extremal `s* = n/2 + 2^{⌊log₂(k−1)⌋}` is the **maximal agreement of ONE far line with
+  ONE codeword**.  It saturates the Donoho–Stark near-capacity ceiling (`s* ≈ n(k+1)/(k+2)` for the
   full block; `n/2` for the 2-sparse witness) — confirming `_UncertaintyTwoPowerCeiling`'s verdict
   that *no Fourier bound goes below Johnson*.
 
@@ -112,9 +113,11 @@ theorem subgroupBinomialExtremal_card_le_two (μ : ℕ) (b : ZMod (2 ^ μ)) :
   simp
 
 /-- **The extremal achieves `s* = n/2` zeros.**  This is the explicit `√(kn)`-EXCEEDING witness:
-for `μ ≥ 1`, `sStar = 2^μ / 2 = n/2`, which for any fixed rate `ρ = k/n` dominates the Johnson
-radius `√(kn) = √ρ · n` once `√ρ < 1/2`, i.e. `ρ < 1/4`, and is within a factor `3/2` of it at
-`ρ = 1/4`.  (Numeric: `s*/√(kn) → 3/2` at `ρ=1/4`; `> 1` for all measured `ρ ≤ 1/4`.) -/
+for `μ ≥ 1`, `sStar = 2^μ / 2 = n/2`, which for any fixed rate `ρ = k/n` STRICTLY exceeds the
+Johnson agreement `√(kn) = √ρ · n` once `√ρ < 1/2`, i.e. `ρ < 1/4` (super-Johnson at the prize low
+rates `ρ ∈ {1/8,1/16}`), and EQUALS it at `ρ = 1/4` (`n/2 = √(kn)`).  The richer structured extremal
+`n/2 + 2^{⌊log₂(k−1)⌋} = 5n/8` (`StructuredUncertaintySharpFloor.lean`) exceeds Johnson by the
+constant factor `5/4` even at `ρ = 1/4`. -/
 theorem sStar_subgroupBinomialExtremal (μ : ℕ) (b : ZMod (2 ^ μ)) (hμ : 1 ≤ μ) :
     sStar (subgroupBinomialExtremal μ b) = 2 ^ μ / 2 := by
   show 2 ^ μ - 2 ^ μ / 2 = 2 ^ μ / 2
@@ -137,7 +140,7 @@ theorem subgroupBinomialExtremal_meets_donohoStark (μ : ℕ) (b : ZMod (2 ^ μ)
 /-! ### The single-line vs list-decoding separation (the honest content) -/
 
 /-- **Refuting Prop — single-line agreement is NOT the list radius.**  The measured single-line
-extremal `s* = n/2 + (k−1)` shows a far line agreeing with ONE codeword on `~n/2` points.  The prize
+extremal `s* = n/2 + 2^{⌊log₂(k−1)⌋}` shows a far line agreeing with ONE codeword on `~n/2` points.  The prize
 `δ*` is a LIST bound: the number of distinct deg-`<k` codewords within radius `δn` of a worst word.
 This Prop records the (machine-observed) FACT that the subgroup-binomial extremal contributes only a
 bounded list — `listAtExtremal ≤ 2` (the `±1` coset interpolants) — so the `n/2`-size single-line
