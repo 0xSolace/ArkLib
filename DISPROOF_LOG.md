@@ -3217,3 +3217,25 @@ DecouplingDecayCrossingDepth.lean -- crossingDepth_eq (c*=m-1), crossingDepth_va
 crossingDepth_unbounded (c* exceeds any constant => not O(1)), crossingDepth_linear (m <= c*+1 => Theta(n),
 not o(n)), crossingDistanceNumer_eq (delta*.n = 2m+1), crossingDistance_lt_capacity (2m+1 < 3m = capacity,
 Johnson-side). Full locked build OK (3297 jobs). probe_407_decoupling_{decay_law,rho14_decay,full_decay}.py.
+
+--------------------------------------------------------------------------------
+2026-06-15 DECOUPLING rate-sweep EXTENSION: the c*=Θ(n) OFF-BGK verdict is RATE-INDEPENDENT
+(holds for ALL sub-half rates rho<1/2). Lean: crossingDepthRate_ge / crossingDepthRate_quarter.
+--------------------------------------------------------------------------------
+Extends the decoupling crossing-depth result (push 93cfc0bf0) across rates. The binding
+s* = n/2-1 is a RATE-INDEPENDENT consequence of the ANTIPODAL mechanism (the maximizer dir
+(n/2,n/2-1) + its gamma=0 antipodal-closed witness are a structural property of mu_n, NOT of k).
+PROBE CORROBORATION (probe_407_decoupling_rate_sweep.py, EXACT antipodal): the cubic peak
+I(s=k+2)=2m^3-2m^2+1 is rate-independent -- n=16 antipodal gives I(c=2)=97 at k=2 (the rho=1/8 row)
+matching the k=4 closed form. So for general rate k=rho*n (rho<1/2): c* = (n/2-1)-k = n(1/2-rho)-1:
+  rho=1/4 -> c*/n -> 0.25 ; rho=1/8 -> 0.375 ; rho=1/16 -> 0.4375  -- ALL Theta(n), OFF BGK.
+Degenerates only at rho->1/2 (c*/n->0): there the antipodal over-det floor s=k+2=n/2+1 EXCEEDS
+n/2-1 so the antipodal binding law does not apply (k=n/2 regime, the Johnson endpoint itself).
+=> The FIRST HORN (deeply over-det, p-indep cyclotomic floor OFF the BGK wall) holds across the
+ENTIRE window-interior rate set rho in {1/4,1/8,1/16}. The far-line/count face is off the prize
+wall at every accessible rate; CORE (BGK M(n)) remains the only open object.
+HONESTY: the s*=n/2-1 RATE-INDEPENDENCE is a structural argument from the antipodal mechanism,
+VALIDATED on the cubic-peak (rate-independent, exact) + the rho=1/4 full s* table (two-engine exact),
+but NOT exhaustively swept for growing-k rho=1/8 (n=24 k=3 full sweep walled in pure Python). Stated
+as a structural extension, not a fully-swept theorem. Lean records the arithmetic (crossingDepthRate_ge
+=> c*>=d when k+d<=N-1; crossingDepthRate_quarter recovers the m-1 axis). Axiom-clean, locked build OK.

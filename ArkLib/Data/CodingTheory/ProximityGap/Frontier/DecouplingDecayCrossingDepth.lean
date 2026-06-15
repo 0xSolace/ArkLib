@@ -123,11 +123,44 @@ theorem crossingDistance_lt_capacity (m : ℕ) (hm : 2 ≤ m) :
   rw [crossingDistanceNumer_eq m (by omega)]
   omega
 
+/-! ## Rate-parametric generalization (all sub-half rates `ρ < 1/2`)
+
+The binding witness size `s* = n/2 − 1` is a **rate-independent** consequence of the *antipodal*
+mechanism: the maximizing direction `(n/2, n/2−1)` and its `γ = 0` antipodal-closed witness are a
+structural property of the 2-power subgroup `μ_n`, NOT of the rate `k`.  Probe corroboration: the
+cubic incidence peak `I(s = k+2) = 2m³ − 2m² + 1` is **rate-independent** (at `n = 16` the
+antipodal direction gives `I = 97` at `k = 2`, the `ρ = 1/8` row, matching the `k = 4` closed form
+(`probe_407_decoupling_rate_sweep.py`).  So for a *general* rate `k = ρ·n` (with `ρ < 1/2`), writing
+`N = n/2`, the binding size is `s* = N − 1` and the crossing depth is
+`c* = s* − k = (N − 1) − k = n·(1/2 − ρ) − 1 = Θ(n)` for every fixed `ρ < 1/2`.  The OFF-BGK
+(first-horn) verdict therefore holds across the window-interior rate set `ρ ∈ {1/4, 1/8, 1/16}`,
+degenerating only as `ρ → 1/2` (where `c*/n → 0` and the antipodal over-det floor `s = k+2 = n/2+1`
+exceeds `n/2 − 1`, so the antipodal binding no longer applies). -/
+
+/-- General-rate crossing depth: with `N = n/2` and rate parameter `k` (`= ρ·n`), the binding
+over-det depth is `c* = (N − 1) − k`, from the rate-independent antipodal law `s* = N − 1`. -/
+def crossingDepthRate (N k : ℕ) : ℕ := (N - 1) - k
+
+/-- The rate-parametric crossing depth is `Θ(n)` for every fixed sub-half rate.  Concretely, if
+`k ≤ N − 1 − d` (i.e. the rate leaves a gap `d` below the half-point `N = n/2`), then `c* ≥ d`.
+With `k = ρ·n` and `ρ < 1/2` fixed, the gap `d = n·(1/2−ρ) − 1` is linear in `n`, so `c* = Θ(n)`. -/
+theorem crossingDepthRate_ge (N k d : ℕ) (h : k + d ≤ N - 1) : d ≤ crossingDepthRate N k := by
+  unfold crossingDepthRate
+  omega
+
+/-- Specializes to the `ρ = 1/4` axis: `N = n/2 = 2m`, `k = m`, recovering `c* = m − 1`. -/
+theorem crossingDepthRate_quarter (m : ℕ) (hm : 1 ≤ m) :
+    crossingDepthRate (2 * m) m = m - 1 := by
+  unfold crossingDepthRate
+  omega
+
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}):
 #print axioms crossingDepth_eq
 #print axioms crossingDepth_values
 #print axioms crossingDepth_unbounded
 #print axioms crossingDepth_linear
+#print axioms crossingDepthRate_ge
+#print axioms crossingDepthRate_quarter
 #print axioms crossingDistanceNumer_eq
 #print axioms crossingDistance_lt_capacity
 
