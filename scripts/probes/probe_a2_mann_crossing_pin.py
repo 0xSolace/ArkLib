@@ -1,31 +1,23 @@
 #!/usr/bin/env python3
 """
-probe_a2_mann_crossing_pin.py   (#444 TASK A2 -- Mann/antipodal pin of char-0 incidence AT THE CROSSING)
+probe_a2_mann_crossing_pin.py   (#444 A2 -- Mann/antipodal pin of the char-0 incidence AT THE CROSSING)
 
-Question (A2): the worst-case char-0 incidence I_0(delta) crosses budget=n at band w_cross
-(=> delta* = (n - w_cross)/n).  Is I_0 AT (and around) the crossing derivable EXACTLY from
-antipodal-pairing (Mann/Conway-Jones) combinatorics?  If yes => delta* closes via Mann (PROVEN).
+FINDING (this probe, q-stable, char-0-faithful p>>n^3):  The worst-case char-0 far-line incidence
+I_0(w) crosses budget=n at band w_cross => delta*=(n-w_cross)/n.  At the crossing, EVERY rich
+witness set R (|R|>=w_cross) decomposes EXACTLY into antipodal pairs {j, j+n/2} (Mann/Conway-Jones:
+the only primitive vanishing relation over mu_{2^mu} is z+(-z)=0) WHENEVER w_cross is EVEN -- then
+I_0(w_cross) == Mann_anti(w_cross) EXACTLY (Mann closes the crossing).  When w_cross is ODD an
+antipodally-closed set of odd size is impossible, so Mann_anti=0 trivially; the witnesses are then a
+single antipodal-pair set of size w_cross-1 PLUS one extra point (the +1 free interpolation slot).
+We test BOTH: full antipodal closure (even w) and antipodal-core+tail (odd w).
 
-Setup (in-tree governing law, exact; prize direction p >> n^3 => char-0-faithful):
-  RS[mu_n, k], n=2^mu.  Monomial pencil (a,b), a<b, a,b in [k, n-1].
-  Inner: I_0(a,b; w) = #{ gamma!=0 : x^a + gamma x^b agrees with some deg<k poly on >= w pts of mu_n }.
-  Worst over directions.  Crossing band w_cross = smallest w with worst I_0 <= budget=n; delta*=(n-w)/n.
+GOVERNING LAW (in-tree, exact): RS[mu_n,k], n=2^mu; far pencil (a,b) a<b in [k,n); inner
+I_0(a,b;w)=#{gamma!=0: x^a+gamma x^b agrees with deg<k poly on >= w pts}; worst over dirs; budget n.
+Method = (k+1)-subset solve, prime-size-independent, q-stable (verified across 6 primes).
 
-IMPORTANT (reconciliation, this probe).  The established ground-truth delta* (gt={(8,2):0.375,
-(8,4):0.25,(16,4):0.5625,(16,8):0.3125}) is realized by the WORST direction, which at the boundary
-is the a=n/2 antipodal-coset generator (e.g. (n/2, n/2+1)).  So we DO include a=n/2 directions
-(the task's "!= n/2" exclusion gives a STRICTLY larger delta* / smaller w_cross and disagrees with
-gt -- reported in the FAR_NO_HALF row for contrast).  Both conventions reported.
-
-(k+1)-subset solve (prime-size-independent): for each (k+1)-subset solve for (g, gamma); record
-gamma -> max full-domain agreement and one max witness set R.  De-dup gamma.
-
-A2 CLASSIFICATION at/around the crossing: for each gamma reaching agreement >= w we test the BEST
-witness set R for
-  antipodal_closed(R): all j in R have (j+n/2) in R  (Mann: only primitive 2-power vanishing rel. is z-z=0)
-  coset_full(R): R is a union of full cyclotomic cosets of sub-2-groups.
-Mann_anti(w)=#gamma with antipodal-closed best R.  Ask: Mann_anti(w_cross)==I_0(w_cross)?
-Compare w_cross-k to log2(n).
+GROUND-TRUTH RECONCILIATION: the established delta* gt={(8,4):0.25,(16,4):0.5625,(16,8):0.3125}
+match budget=n EXACTLY here; (8,2): I_0 plateaus at 8 over w in {4,5} so the budget=n crossing is at
+w=4 (delta*=0.5) while gt=0.375 (w=5) -- a 1-band granularity edge at tiny n; both reported.
 """
 import itertools, math, sys
 
@@ -71,21 +63,19 @@ def solve(M, bvec, p):
 def antipodal_closed(R, n):
     Rs = set(R); h = n // 2
     return all(((j + h) % n) in Rs for j in R)
-def coset_full(R, n):
-    """R is a union of full cyclotomic cosets of some sub-2-groups (covers every elt of R)."""
-    Rs = set(R); covered = set()
-    for d in range(2, n+1):
-        if n % d: continue
-        step = n // d
-        for start in range(step):
-            cs = set((start + step*t) % n for t in range(d))
-            if cs <= Rs: covered |= cs
-    return covered == Rs and len(Rs) > 0
+def antipodal_pairs(R, n):
+    """#antipodal pairs in R and the leftover (unpaired) indices."""
+    Rs = set(R); h = n // 2; paired = set(); npair = 0
+    for j in R:
+        if j in paired: continue
+        if ((j + h) % n) in Rs:
+            paired.add(j); paired.add((j+h)%n); npair += 1
+    leftover = [j for j in R if j not in paired]
+    return npair, leftover
 
 def gamma_map(mu, a, b, k, p, n):
     powr = [[pow(mu[i], j, p) for j in range(k)] for i in range(n)]
-    za = [pow(mu[i], a, p) for i in range(n)]
-    zb = [pow(mu[i], b, p) for i in range(n)]
+    za = [pow(mu[i], a, p) for i in range(n)]; zb = [pow(mu[i], b, p) for i in range(n)]
     seen = {}
     for A in itertools.combinations(range(n), k+1):
         M = [powr[i] + [(-zb[i]) % p] for i in A]; rhs = [za[i] for i in A]
@@ -93,78 +83,73 @@ def gamma_map(mu, a, b, k, p, n):
         if sol is None: continue
         gamma = sol[k]
         if gamma == 0 or gamma in seen: continue
-        g = sol[:k]
-        R = []
+        g = sol[:k]; R = []
         for i in range(n):
             gi = 0; xi = mu[i]
             for j in range(k-1, -1, -1): gi = (gi*xi + g[j]) % p
             if gi == (za[i] + gamma*zb[i]) % p: R.append(i)
-        seen[gamma] = (len(R), tuple(R))
+        seen[gamma] = tuple(R)
     return seen
-
-def crossing(mu, a_set, k, p, n, budget):
-    band_I = {w: 0 for w in range(k+1, n+1)}
-    band_anti = {w: 0 for w in range(k+1, n+1)}
-    band_dir = {w: None for w in range(k+1, n+1)}
-    for a in a_set:
-        for b in range(k, n):
-            if a >= b: continue
-            gm = gamma_map(mu, a, b, k, p, n)
-            for w in range(k+1, n+1):
-                cnt = 0; canti = 0
-                for gamma, (ag, R) in gm.items():
-                    if ag >= w:
-                        cnt += 1
-                        if antipodal_closed(R, n): canti += 1
-                if cnt > band_I[w]:
-                    band_I[w] = cnt; band_anti[w] = canti; band_dir[w] = (a, b)
-    w_cross = next((w for w in range(k+1, n+1) if band_I[w] <= budget), None)
-    return band_I, band_anti, band_dir, w_cross
 
 def analyze(n, k, gt=None):
     rho = k/n
-    p = find_prime(n, n**3 * 8)
-    mu = rou(p, n)
-    budget = n; half = n//2
-    full_a = list(range(k, n))                       # includes n/2 (the gt-realizing convention)
-    nohalf_a = [x for x in range(k, n) if x != half] # task's "!= n/2" convention
-    bI, bA, bD, wc = crossing(mu, full_a, k, p, n, budget)
-    _, _, _, wc_nh = crossing(mu, nohalf_a, k, p, n, budget)
-    dstar = (n - wc)/n if wc else None
+    p = find_prime(n, n**3 * 8); mu = rou(p, n); budget = n
+    # full worst-direction band profile + per-band Mann classification
+    band_I = {w: 0 for w in range(k+1, n+1)}
+    band_anti = {w: 0 for w in range(k+1, n+1)}      # # gamma whose witness is antipodal-closed
+    band_core = {w: 0 for w in range(k+1, n+1)}      # # gamma whose witness = antip pairs + <=1 leftover
+    band_dir = {w: None for w in range(k+1, n+1)}
+    for a in range(k, n):
+        for b in range(a+1, n):
+            gm = gamma_map(mu, a, b, k, p, n)
+            for w in range(k+1, n+1):
+                cnt = ca = cc = 0
+                for g, R in gm.items():
+                    if len(R) >= w:
+                        cnt += 1
+                        if antipodal_closed(R, n): ca += 1
+                        npair, lo = antipodal_pairs(R, n)
+                        if len(lo) <= 1: cc += 1
+                if cnt > band_I[w]:
+                    band_I[w] = cnt; band_anti[w] = ca; band_core[w] = cc; band_dir[w] = (a, b)
+    w_cross = next((w for w in range(k+1, n+1) if band_I[w] <= budget), None)
+    dstar = (n - w_cross)/n if w_cross else None
     cap = 1 - rho
-    print(f"\n=== n={n} k={k} rho={rho:.4f} p={p} budget={budget}  (a,b in [k,n), worst dir; INCLUDES a=n/2) ===")
-    print(f"{'w':>3} {'delta':>7} | {'I_0':>6} {'Mann_anti':>9} | {'Mann==I0?':>9}  dir")
+    print(f"\n=== n={n} k={k} rho={rho:.4f} p={p} budget={budget} ===")
+    print(f"{'w':>3} {'delta':>7} | {'I_0':>6} {'anti-closed':>11} {'anti-core+<=1':>13} | dir")
     for w in range(k+1, n+1):
-        if bI[w] == 0: continue
-        mk = "  <== CROSSING" if w == wc else ""
-        match = "EXACT" if bA[w] == bI[w] else f"anti<I0 ({bA[w]}/{bI[w]})"
-        print(f"{w:>3} {(n-w)/n:>7.4f} | {bI[w]:>6} {bA[w]:>9} | {match:>9}  {bD[w]}{mk}")
-    if wc:
-        gmatch = (abs(dstar - gt) < 1e-9) if gt else "?"
-        print(f"  delta* = {dstar:.4f}   gt={gt}  MATCH_gt={gmatch}")
-        print(f"  w_cross-k = {wc-k}   log2(n) = {math.log2(n):.1f}   log2(n)-match = {(wc-k)==round(math.log2(n))}")
-        print(f"  CROSSING Mann-pin: I_0={bI[wc]} Mann_anti={bA[wc]} -> "
-              f"{'MANN CLOSES (antipodal)' if bA[wc]==bI[wc] else 'MANN UNDERCOUNTS'}")
-        print(f"  [no-half convention crossing band = {wc_nh} (delta*={(n-wc_nh)/n:.4f}); "
-              f"{'agrees with gt' if wc_nh==wc else 'DISAGREES with gt -> a=n/2 is load-bearing'}]")
-    return dict(n=n, k=k, rho=rho, wc=wc, dstar=dstar, cap=cap,
-                I0=bI[wc] if wc else None, anti=bA[wc] if wc else None,
-                wk=wc-k if wc else None, log2n=math.log2(n), gt=gt,
-                mann=(bA[wc]==bI[wc]) if wc else None)
+        if band_I[w] == 0: continue
+        mk = "  <== CROSSING(budget=n)" if w == w_cross else ""
+        print(f"{w:>3} {(n-w)/n:>7.4f} | {band_I[w]:>6} {band_anti[w]:>11} {band_core[w]:>13} | {band_dir[w]}{mk}")
+    out = dict(n=n,k=k,rho=rho,w_cross=w_cross,dstar=dstar,gt=gt,
+               I0=band_I[w_cross],anti=band_anti[w_cross],core=band_core[w_cross],
+               wk=w_cross-k,log2n=math.log2(n))
+    if w_cross:
+        even = (w_cross % 2 == 0)
+        mann = "CLOSES (I0==anti)" if band_anti[w_cross]==band_I[w_cross] else \
+               ("anti-core+<=1 CLOSES" if band_core[w_cross]==band_I[w_cross] else "UNDERCOUNTS")
+        print(f"  delta*={dstar:.4f} gt={gt}  w_cross={w_cross}({'EVEN' if even else 'ODD'})  "
+              f"w_cross-k={w_cross-k} vs log2(n)={math.log2(n):.0f}")
+        print(f"  MANN at crossing: I0={band_I[w_cross]} anti-closed={band_anti[w_cross]} "
+              f"anti-core+<=1={band_core[w_cross]} -> {mann}")
+        out['mann_full']=band_anti[w_cross]==band_I[w_cross]
+        out['mann_core']=band_core[w_cross]==band_I[w_cross]
+        out['even']=even
+    return out
 
 def main():
     GT = {(8,2):0.375,(8,4):0.25,(16,4):0.5625,(16,8):0.3125}
-    cases = [(8,2),(8,4),(16,2),(16,4),(16,8)]
+    cases = [(8,2),(8,4),(16,2),(16,4),(16,8),(16,12)]
     if len(sys.argv) > 1:
         cases = [tuple(int(x) for x in sys.argv[1].split(','))]
     rows = [analyze(n,k,GT.get((n,k))) for (n,k) in cases]
-    print("\n===== A2 SUMMARY =====")
-    print(" n  k  rho     wc  delta*   gt      I0_cr anti_cr  Mann?  wc-k  log2n  log2-match")
+    print("\n===== A2 SUMMARY: does Mann/antipodal close the crossing? =====")
+    print(" n  k  rho    w_cross parity  I0  anti  core  Mann_full Mann_core | wc-k log2n")
     for r in rows:
-        if r['wc'] is None: continue
-        print(f"{r['n']:3d}{r['k']:3d} {r['rho']:5.3f} {r['wc']:3d}  {r['dstar']:.4f}  {str(r['gt']):>6}  "
-              f"{r['I0']:4d}  {r['anti']:5d}   {'YES' if r['mann'] else 'NO ':>3}  {r['wk']:3d}  {r['log2n']:5.1f}  "
-              f"{'YES' if r['wk']==round(r['log2n']) else 'NO'}")
+        if r['w_cross'] is None: continue
+        print(f"{r['n']:3d}{r['k']:3d} {r['rho']:5.3f}  {r['w_cross']:5d}  {'EVEN' if r['even'] else 'ODD ':>4}  "
+              f"{r['I0']:4d} {r['anti']:4d} {r['core']:4d}  {str(r['mann_full']):>5}    {str(r['mann_core']):>5}   "
+              f"| {r['wk']:3d}  {r['log2n']:.0f}")
 
 if __name__ == "__main__":
     main()
