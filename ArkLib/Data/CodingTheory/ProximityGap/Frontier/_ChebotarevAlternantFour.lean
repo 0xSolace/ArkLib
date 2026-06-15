@@ -325,6 +325,10 @@ theorem vandermonde_four_ne_zero (ri : Fin 4 → ZMod p) (hri : Function.Injecti
 
 /-! ## The headline: the `n = 4` instance of the crux (`p ≥ 7`). -/
 
+/-- Local instance so `GeneralizedVandermondeNonzeroModP 5 4` (the named `p = 5` residual below)
+type-checks; `5` is prime. -/
+instance : Fact (Nat.Prime 5) := ⟨by decide⟩
+
 /-- **The lone unresolved prime for `n = 4`: `p = 5` (NAMED, not proven).** This is exactly the
 statement `GeneralizedVandermondeNonzeroModP 5 4`, recorded as its own name because the order-`6`
 descending-factorial mechanism degenerates at `p = 5` (`720, 60 ≡ 0 (mod 5)`) and a finite `decide`
