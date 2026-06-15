@@ -12292,3 +12292,52 @@ obstruction D9.
 **Probes committed:** `scripts/probes/probe_c38_bsg_scalar_energy.py`,
 `scripts/probes/probe_c38_bsg_scalar_coset_followup.py` (self-contained, exact GF(p), proper `μ_n`,
 `p` prime `p≫n³`, NEVER `n=p−1`). Probe commit `be92452b1`.
+
+---
+
+## [C45] Lam-Leung Antipodal Saturation Caps List Exactly at Johnson — REDUCES-TO-JOHNSON (the honest boundary statement, by its own construction) — 2026-06-15
+
+**Conjecture C45 (additive-combinatorics, feas 1).** Claim the iterated Lam-Leung coset
+saturation proves the worst-case far-line list size equals exactly `|H^{(+r)}(μ_n)|` at the
+Johnson radius and NO further, i.e. the closed antipodal object caps **precisely at Johnson
+`1−√ρ`**. Explicitly self-described as "the honest boundary pin (closed and true but NOT past
+Johnson)." Reduces-to: in-tree iterated Lam-Leung coset saturation + Mann/Conway-Jones + L8
+meta-theorem (2nd-order capped at `√S`).
+
+**Verdict: reduces-to-johnson** (the single most-common horn — and here it is admitted in the
+statement itself). C45 is true and closed: it reduces only to named axiom-clean in-tree bricks
+(`EvenOddAntipodalCharFree.eval_neg_eq_eval_of_oddCoeffZero` / `LamLeungMultisetAntipodal.
+count_antipodal_of_sum_eq_zero`; `LamLeungUnconditionalQ` unconditional t=1 antipodal tightness;
+`_wf3D5_lamleung_orbit_backbone.card_dvd_of_free_orbits`; `_MetaTheoremSecondOrderFloor.
+secondMoment_method_floor`/`momentDepth_method_floor`). But its OWN conclusion is the Johnson
+value — it pins the cap **at** `1−√ρ`, NOT in the window interior `(1−√ρ, 1−ρ−Θ(1/log n))`. So
+it does not pin δ* past Johnson; it is exactly the route-elimination meta-theorem restated as a
+positive boundary claim.
+
+**Why it cannot reach past Johnson (the mechanism, not just the self-admission).** The Lam-Leung
+antipodal object is **char-0 / p-INDEPENDENT**: Mann/Conway-Jones gives the ONLY primitive
+vanishing relation among `2^μ`-th roots of unity is the antipodal pair `z+(−z)=0`, so the
+saturated object `H^{(+r)}(μ_n)` is a fixed combinatorial set independent of the prime `p`. Its
+list count is governed purely by the second-moment / L2 geometric-mean = `√S = √(n/gcd)` scale
+(`_MetaTheoremSecondOrderFloor`: no second-moment-only method, at any depth `r`, beats `√S`).
+That scale **is** the Johnson radius `1−√ρ`. The extra list elements that appear strictly inside
+the window are exactly the p-DEPENDENT fibre points the antipodal skeleton **cannot see**
+(`LamLeungUnconditionalQ` docstring: char-p independence FAILS in `F_q`, and those failures = the
+open BGK problem). The cap C45 produces is therefore not just admittedly-at-Johnson — it is
+**provably-at-Johnson**, because a p-independent antipodal/2nd-order object is L8-capped at `√S`.
+
+**Probe (honesty contract satisfied).** `scripts/probes/probe_c45_lamleung_antipodal_johnson_cap.py`
+(commit `7a8422f6d`): proper subgroup `μ_n < F_p*`, `p` PRIME, `p ≫ n³`, NEVER `n=p−1`.
+- n=16, k=2, ρ=1/8: `p=65537` (p/n³=16.0, prime, n proper subgroup), Johnson δ*=0.6464, `w_J=5`;
+  Johnson list proxy 256, `√n=4` (antipodal/L2 scale).
+- n=32, k=4, ρ=1/8: `p=1048609` (p/n³=32.0, prime), Johnson δ*=0.6464, `w_J=11`;
+  list proxy 1024, `√n=5.66` (L2 scale).
+The antipodal count tracks the `√n` (L2 = Johnson) scale exactly; it has no p-dependent term and
+therefore cannot grow into the window interior.
+
+**Distinction from C01 (refuted-false).** C01 claimed an antipodal-sumset mechanism pins δ*
+= `(1−ρ)−log₂(n)/n` PAST Johnson and was refuted (true offset is `n/4`, linear, not `log₂ n`).
+C45 makes the OPPOSITE, honest claim: the same antipodal object caps AT Johnson and no further.
+C45 is the correct (true) reading of what the closed antipodal saturation actually delivers; the
+gap to the prize is precisely the p-dependent BGK sup-norm `M(μ_n) ≤ C√(n log(p/n))` that no
+closed/antipodal/2nd-order lever can supply (route-elimination meta-theorem, L8).
