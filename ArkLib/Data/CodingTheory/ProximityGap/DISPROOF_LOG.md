@@ -13032,3 +13032,37 @@ the catalogue's route-88 verdict ("association-scheme eigenvalue = Krawtchouk = 
 (`TerwilligerDiagonalizes ⟹ (operator bound ⟺ wall bound)`), `terwilliger_no_independent_gain`.
 Probes: `scripts/probes/probe_a5_terwilliger{,_collapse,_norm,_decomp,_exact}.py`.
 `result_type = reduces-to-wall(Delsarte-diagonalization = Krawtchouk eigenvalue = incomplete-Gauss-period = W4)`.
+
+---
+
+## wf-OFG (#444): `OverDetFloorGood` at `δbind=(n−s*)/n` is REFUTED — over-det DISTINCT-γ count exceeds budget at the binding radius (2026-06-15)
+
+**Lane mission:** discharge the D3 bracket's lower-side residual `OverDetFloorGood C ε* δbind`
+(`δbind ≤ 1 ∧ epsMCA C δbind ≤ ε*`) from the over-det incidence bricks, on the premise it is
+"reachable without the BGK wall".
+
+**Refutation (exact char-0, `probe_wf4OFG_true_mcaevent_floor.py`, p≡1 mod n, p>n⁴, distinct-γ
+count is p-independent):** at `δbind=(n−s*)/n`, `s*=n/2−1` (ρ=1/4), budget `=n`, the TRUE
+mcaEvent **distinct-γ** count per stack EXCEEDS budget:
+- n=8: 2-term max #{γ}=56 > 8.
+- n=12 (k=3, non-degenerate): MONOMIAL max #{γ}=17 > 12; 2-term max=61 > 12.
+
+Even the pure over-det MONOMIAL distinct-γ count is over budget at `δbind`. So `δbind` is a BAD
+radius (`ε* < epsMCA C δbind`), hence `δ* < δbind` and the floor `δ* ≥ (n−s*)/n` is FALSE there.
+
+**Root cause / reconciliation:** the campaign's crossing depth `s*` is where the `(subset, γ)`
+INCIDENCE `I(n)` crosses budget, but `epsMCA` is governed by the DISTINCT-γ count (each γ once,
+however many witness subsets). These functionals differ; the distinct-γ count is above budget at
+`δbind`. The honest D3 lower side must use a strictly smaller radius where distinct-γ ≤ budget —
+pinning which IS the open under-det/BGK wall. No free Johnson-side lower bound exists at `δbind`.
+
+**IN-TREE (axiom-clean: propext, Classical.choice, Quot.sound; fast-path audit green):**
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_wf4OFG_overdet_floor_bridge.lean`:
+- `epsMCA_le_of_perStackBudget` / `OverDetFloorGood_of_perStackBudget` — the EXACT reduction of
+  the D3 lower side to ONE counting Prop `PerStackBadScalarBudget C δ B` (uniform per-stack
+  distinct-γ count ≤ B with B/q ≤ ε*). UNCONDITIONAL bridge.
+- `epsMCA_gt_of_stack_over_budget` — a single over-budget stack ⟹ `ε* < epsMCA` (the machine
+  shape of the probe refutation).
+- `OverDetIncidenceSuppliesBudgetAtBinding` — documented refuted `Prop` (probe-refuted at n∈{8,12}).
+`result_type = refuted(OverDetFloorGood@δbind) + reduced(D3-lower-side ⟶ PerStackBadScalarBudget,
+which is the under-det/BGK wall, NOT the over-det count)`.
