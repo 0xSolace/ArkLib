@@ -12660,3 +12660,53 @@ whose summands are 2-adic UNITS. The 2-adic completion sees no size separation a
 boundary; the 2-adic NP carries strictly LESS — it is vacuous. NOT a reduction to the BGK wall and
 NOT a reduction to Johnson: it is a vacuous relocation that never reaches either. Probe:
 `scripts/probes/probe_a3_newton_polygon_2adic.py` (committed).
+
+---
+
+## A4-amice-iwasawa (#444) = REFUTED (the measure is REAL but the period is a p-adic UNIT, b-independent)
+
+**Angle.** Manifesto relocation (B)/angle 4 (truly novel, `Amice/Iwasawa: 0` in-tree): the period
+`f(b)=Sum_{x in mu_n} e_p(bx)` (`e_p(z)=exp(2 pi i z / p)`), viewed along the dilation tower
+`b -> zeta b` (in-tree recursion `f_{i+1}(b)=f_i(b)+f_i(zeta b)`), interpolates to a **p-adic measure**
+`mu` on `Z_2` whose Amice transform `A_mu(T)` has bounded Iwasawa `mu/lambda`-invariants, giving
+`|f(b)| <= sqrt(2 n log(p/n))` via the p-adic-analytic norm. The relocation hoped the p-adic universe
+(where `n < sqrt(q)` is no obstruction) makes the sup computable.
+
+**The NEW LEMMA invented & PROVEN exact (the load-bearing math, even though it kills the angle).**
+Work in `Q_p(zeta_p)`, totally ramified of degree `p-1` over `Q_p`, uniformizer `lambda = zeta_p - 1`,
+`v(lambda)=1/(p-1)` (normalize `v(p)=1`). Write `zeta_p = 1 + lambda`. Then the period has the EXACT
+`lambda`-adic (genuine p-adic, at the prime `p`) expansion
+> `f(b) = Sum_{x in mu_n} (1+lambda)^{bx} = Sum_{j>=0} ( Sum_{x in mu_n} C(bx, j) ) lambda^j`
+> `     = n + 0*lambda + ... + 0*lambda^{n-1} + C_n(b)*lambda^n + ...`
+because `Sum_{x in mu_n} C(bx,j)` is a Z-combination of the **power sums** `S_t = Sum_{x in mu_n} x^t`,
+and for a **proper 2-power subgroup** (`n | p-1`, `n<p-1`) subgroup orthogonality gives `S_t = n` if
+`n | t` and `S_t = 0` otherwise. Hence **the first non-constant `lambda`-coefficient appears at `lambda^n`**,
+and the constant term is exactly `n` — a `p`-adic **UNIT** (coprime to `p`). Therefore:
+> `v_lambda(f(b)) = 0` and `f(b)` is a p-adic UNIT, for EVERY `b != 0`.
+
+This is exact and new (the power-sum gap forcing the unit + the `lambda^n` onset). Probe-verified at
+`(n,beta) in {(8,4),(8,5),(16,4),(16,5),(32,4)}`, prize-faithful (`p` PRIME, `p=1 mod n`, `p>=n^4`,
+`mu_n` PROPER, `(p-1)/n > 1`, never `n=p-1`): nonzero `lambda`-coeffs (mod p) at exactly `j in {0, n, n+1, ...}`,
+`c_0 mod p = n`, for the argmax-`b`, argmin-`b`, and arbitrary `b` ALIKE.
+
+**Verdict = REFUTED (reduces-to-wall / magnitude).** The Amice/Iwasawa machine reads precisely this
+p-adic valuation data. The measure on the dilation tower genuinely EXISTS (the period is an algebraic
+integer, so its finite-difference/Mahler coefficients are p-adically bounded — the Amice criterion holds)
+and its `mu`-invariant `= min valuation = 0` (unit), `lambda`-invariant finite. But the entire
+invariant package is **`b`-INDEPENDENT**: every period is a unit with constant term `n`, regardless of
+`b`. The archimedean ratio `M_arch/sqrt(n log(p/n))` ranges `0.96 .. 1.26` across these configs and the
+worst-`b` vs typical-`b` separation is purely **archimedean phase** information — provably invisible to
+the p-adic absolute value, which equals `1` (unit) uniformly. The p-adic-analytic norm cannot produce
+`sqrt(2 n log)` because it cannot even distinguish the worst `b` from the best.
+
+**Why it falls (the conservation law, third confirmation).** Relocation (B) hoped `mu_n` being 2-power
+makes the hardest structure non-archimedean. At the prime `p` (this angle, distinct from A3's 2-adic
+place): the summands `zeta_p^{bx}` are `1 + (b x) lambda + ...`, all units, and the leading p-adic term
+of their sum is the COUNT `n` — the trivial/Johnson-side datum. The `sqrt(log)` excess separating the
+floor from Johnson is a rare-event archimedean tail (Manifesto Sec. I), and tail phenomena are invisible
+to a valuation that only sees the leading unit. The relocation is REAL (a genuine Iwasawa measure, not
+vacuous like A3's flat Newton polygon) but **STERILE**: it transports the object to a place where it is a
+b-independent unit. Distinct horn from A3 (vacuous at the 2-adic place) — here the measure is well-defined
+yet carries no `b`-dependent magnitude information. Reduces ONLY to the magnitude/sup question = the BGK
+wall; NOT to Johnson. Probes (committed): `scripts/probes/probe_a4_amice_iwasawa.py`,
+`scripts/probes/probe_a4_padic_valuation.py`, `scripts/probes/probe_a4_iwasawa_invariants.py`.
