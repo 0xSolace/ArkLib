@@ -427,3 +427,37 @@ but the anomaly is suppressed there with margin at accessible scale. NOT a closu
 (p ≤ 1.5e6), fixed r; the worst PRIZE prime at r~log q, p~2^128 (the BGK content) is untouched. Complements
 `probe_407_bgkproof_onset_growth` (which tracks the ratio along the r-axis at a fixed prime); this pins the
 worst-case ACROSS the bad-prime set inside the window at fixed r. Both axes now bounded at accessible scale.
+
+---
+
+## [over-det δ*] s* budget-crossing: s*−k appears CONSTANT (=3) at accessible n — honest tension with floor (2026-06-15, opus-4-8 subagent)
+
+Follow-up to the over-det incidence MAX closed form `I_max(n)=n³/32−n²/8+1` (push 0c7492b0d) and the
+union-of-singletons p-independence brick (47dcd71b3, sibling). The δ* open item #2 is the budget-crossing
+`s* = min{s : maxI(s) ≤ budget=n}`, giving `δ* = (n−s*)/n`.
+
+PROBE (probe_407_sstar_budget_crossing.py, char-0 p≫n³, far-incidence COUNT per direction, s swept up
+from k+2; MAX over directions; full-direction at n=16, antipodal-nbhd lower-bound at n=20):
+- **n=16, k=2: s*=5 (FULL-direction verified — maxI(4)=97>16, maxI(5)=16≤16). s*−k=3. δ*=0.6875.**
+- **n=16, k=4: s*=7 (antipodal-nbhd; matches the campaign's independently-published δ*=0.5625). s*−k=3.**
+- **n=20, k=2: s*=5 (antipodal-nbhd ⟹ s* LOWER BOUND). s*−k=3. δ*=0.75.**
+
+OBSERVATION: `s*−k = 3` is CONSTANT across n=16,20 AND k=2,4 in the accessible range — both k-independent
+and n-independent here. This SHARPENS the prior `deltastar-407-char0-logn-over-n-candidate` note, which
+conjectured `s*−k = log₂(n)` from only n=16,32 at ρ=1/8 (where log₂16=4, but my n=16 gives s*−k=3, not 4 —
+the discrepancy is the budget/direction convention: my budget is exactly n, full-direction MAX).
+
+HONEST TENSION (the decisive open question, NOT resolved here):
+- IF `s*−k` stays constant → `δ* = 1 − (k+s*−k)/n → 1` (capacity) as n→∞, which would CONTRADICT the
+  conjectured floor `δ* = 1−ρ−Θ(1/log n)` (a Θ(1/log n) gap BELOW capacity). i.e. constant-defect ⟹ δ*
+  rises ABOVE the floor (toward capacity) asymptotically.
+- BUT: this is exactly the doc's flagged pre-asymptotic regime (small n, coarse 1/n band granularity,
+  the conjectured floor is itself below Johnson at these n = degenerate window). Constant-3 at n∈{16,20}
+  CANNOT be extrapolated — n=32,64 (army's Rust engine, ~9.6h+ at ρ=1/4) is needed to see if s*−k grows.
+- CAVEAT: my n=20 antipodal-nbhd s* is a LOWER BOUND (a non-antipodal direction could keep maxI above
+  budget at s=5, pushing the true s* up). The constant could be an undercount artifact at n>16.
+
+NET: a mapped data point (n=16 full-verified s*=5 ⟹ δ*=0.6875) + an honest tension (constant s*−k ⟹
+δ*→capacity, contra the floor) that the army's large-n Rust must resolve. NOT a refutation of the floor
+(small n, lower-bound s* at n>16). Logged, not receipted (over-det lane actively sibling-owned, 47dcd71b3 —
+one-active-speaker; not crowding with a competing receipt).
