@@ -1142,6 +1142,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyThreeRepThree
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.GeneralMomentPeriodBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralOrchardIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralOrchardSumZero
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralPacketCombination
