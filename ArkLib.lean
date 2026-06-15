@@ -954,6 +954,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossingDepthLinearTrackin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCSubtractedCoshMGF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFromTermwise
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFiniteException
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickWraparoundTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthGrowsInN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthRateConstant
