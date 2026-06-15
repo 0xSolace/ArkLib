@@ -20,3 +20,18 @@ FINDINGS:
   stays <1. A proof must be thinness-essential (use β≥4; a thickness-monotone method wrongly covers β<4 where
   the bound is FALSE). Does NOT prove the prize (needs the analytic deep-moment bound), but pins the target as
   true + the constant as ~√2 + the bad set as empty at β=4 (computable range).
+
+## Norm-bound route addresses the WRONG quantity (size vs p-divisibility) — probe finding
+True min nonzero |N(S)| of a short non-antipodal sum in Z[ζ_{2^μ}] is CONSTANT = 2 (not t^{n/4}):
+  weight-2 non-antipodal diff = ζ^a(1−ζ^{odd}), N(1−ζ_{2^μ})=Φ_{2^μ}(1)=2. (Verified n=8,16,32.)
+⟹ The cyclotomic-norm UPPER bound (crude t^{n/2}, refined t^{n/4}) is WILDLY loose — actual norms of short
+sums are tiny (≈2–poly), far below the ceiling. The spurious-collision obstruction is NOT norm SIZE but
+p-DIVISIBILITY: a short S contributes a char-p-extra collision iff p | N(S), and N(S)=2 (weight 2) is never
+divisible by the odd prize prime. So improving the norm ceiling (n/2→n/4→…) CANNOT close the prize — it bounds
+the wrong object. The real quantity is #{short S : p | N(S)} = the additive-energy excess = BCHKS 1.12.
+Heuristic: typical N(S)≈t^{n/4} (random-walk conjugates), p|N(S) w.p. ~1/p, #(weight≤2r S)≈(2n)^{2r} ⟹
+spurious start at 2r≈4 log n/log(2n)≈4 (r≈2-3), matching proven char-p=char-0 only for r≤2(3). The conjecture
+is that beyond there the p-divisible count stays ≤ Wick (random-like) — the open BCHKS-1.12 core, an arithmetic
+(divisibility) not metric (size) statement. CONSEQUENCE for the assault: norm/height-bound angles are
+fundamentally size-instruments and cannot reach the divisibility count; the live target is the direct
+deep-moment / p-divisible-collision count at r≈log m.
