@@ -1,5 +1,64 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — IDEA [I008] / C51 "Walsh/Haar-packet DYADIC-TOWER Stepanov auxiliary" NO-GAIN (probe_i008_walsh_dyadic_stepanov.py)
+
+IDEA [I008] (stepanov-2adic, novelty 9): coordinatize x in mu_n (cyclic of order n=2^mu) by its
+2-adic digit vector and build a Walsh-packet / dyadic-tower auxiliary
+`Q(X) = prod_{i=1}^{mu} (X^{2^{i-1}} - s_i)` so that "vanishing to high order on mu_n is achieved by
+TOWER TELESCOPING — each factor kills one dyadic level — order ~ mu at LINEAR degree, not n/r."
+CLAIMED NEW LEMMA: exists Q, deg Q = O(n/log n), vanishing to ORDER >= log n on mu_n, giving via
+Stepanov `|mu_n cap (shift)| <= O(n/(log n)^2)`, then summing cosets => `M(mu_n) <= sqrt(n log n)`
+(past Johnson). Borrowed where-it-shows-up: Daubechies maximal-vanishing-moment two-scale filter
+identities + Carlitz-Wan permutation polynomials.
+
+VERDICT: **NO-GAIN.** The lemma is FALSE for the same reason the in-tree `mu_n_roots_simple`
+(StepanovStructuredVacuous.lean) and C27 (Hasse-Davenport telescope) failed: the dyadic tower
+TELESCOPES IN THE NUMBER OF ROOTS (across nested dyadic levels = DIFFERENT points), it does NOT
+concentrate into VANISHING ORDER (multiplicity) at the points Stepanov must count. Stepanov consumes
+`|Z| * M <= deg Q`, where M = the COMMON multiplicity (= min over the counted root set Z), NOT the
+max at one designated point.
+
+EXACT, CLOSED-FORM MECHANISM (verified vs sympy poly-division, `_sanity` True):
+For x0 in mu_n (so x0 != 0) and p odd, every factor `(X^{2^{i-1}} - s_i)` has derivative
+`2^{i-1} X^{2^{i-1}-1}` which is a UNIT at x0 (`2^{i-1}` is a unit mod p, x0 != 0). Hence x0 is a
+SIMPLE root of factor i where it vanishes (`x0^{2^{i-1}} = s_i`) and not a root otherwise. Therefore
+`mult_Q(x0) = #{ i : s_i = x0^{2^{i-1}} }` — a COUNT of factors, each contributing order EXACTLY 1.
+To get common multiplicity m over Z roots you need each of the Z roots hit by >= m of the mu factors:
+`m * Z <= sum_i (#roots of factor i in mu_n) = sum_i gcd(2^{i-1}, n) = sum_{i=1}^{mu} 2^{i-1} = n-1
+= deg Q`. So `m * Z <= deg Q = n-1` is EXACTLY the trivial Stepanov inequality, with no saving.
+The product buys NOTHING past the trivial degree bound.
+
+DECISIVE PROBE (proper mu_n, p prime, p > n^3, p-1 div by n=2^mu, NEVER n=p-1; mu=3..7, beta=4):
+- Forcing ALL mu factors to vanish at ONE point x0 (shifts `s_i = x0^{2^{i-1}}`) DOES give
+  `mult(x0) = mu = log2 n` (the telescoping the idea wanted) — BUT this concentrates at a SINGLE
+  point; the n/2 OTHER mu_n roots created are each SIMPLE (min-mult-over-roots = 1). Measured for
+  mu=3..7: `mult(x0)=mu`, `#roots_on_mu_n=n/2`, `min-mult-over-roots=1`, `deg Q=n-1` uniformly.
+- EXHAUSTIVE search over ALL shift vectors `s_i in mu_n` (mu=3: 8^3, mu=4: 16^4) via the closed-form
+  multiplicity: BEST achievable COMMON multiplicity = **1** for every choice (lemma WANTS >= log n).
+  Stepanov bound stays `|Z| <= deg Q / 1 = n-1` — the trivial bound, > n^{1/2}, never past Johnson.
+- True `M(mu_n)` sanity (mu=3,4): exponent `log M / log n = 0.97, 0.95` (sitting at n^{1-o(1)}, the
+  BGK SOTA the idea claimed to beat). The dyadic-tower auxiliary supplies no descent below it.
+
+WHY THE WAVELET ANALOGY MISLEADS: Daubechies "vanishing moments" are vanishing of INTEGRALS
+(sum_x x^k phi(x) = 0), an L^1/orthogonality condition — NOT vanishing to high ORDER (multiplicity)
+of a polynomial at a point. The two-scale relation `phi(x)=sum c_k phi(2x-k)` is a self-similarity of
+the FUNCTION, not a high-order root. Transporting "maximal vanishing moments" to "maximal root
+multiplicity on mu_n" is the category error: separability of `X^n-1` (char p, p nmid n=2^mu) forbids
+ANY polynomial from having order-2 contact on mu_n at sub-(M*n) degree. The 2-power / 2-adic
+structure does not help — `gcd(2^{i-1}, 2^mu) = 2^{i-1}` makes the dyadic factors maximally
+ROOT-RICH (good for spreading roots, the opposite of multiplicity).
+
+MECHANISM CLASS: same horn as the entire Stepanov family on mu_n (C36 HBK REFUTED-FALSE;
+StepanovStructuredVacuous `stepanov_collapses_to_degree`): mu_n manufactures NO multiplicity because
+`X^n-1` is separable, so Stepanov collapses to the trivial `deg`-bound. A product/tower is structurally
+blind in multiplicity exactly as it is blind in the conjugate-house (C27): it computes an AGGREGATE
+(here, total incidence n-1 spread over roots), never a CONCENTRATION (multiplicity at one root) usable
+by the inequality. NOT a new lever toward sqrt(n).
+
+Probe committed: scripts/probes/probe_i008_walsh_dyadic_stepanov.py.
+
+# Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
+
 ## 2026-06-15 — ANGLE A7 "Croot-Sisask almost-periodicity -> Bohr-set forcing of the worst u0" REFUTED (probe_a7_croot_sisask_bohr.py)
 
 ANGLE (manifesto #7, route 30, relocation (C)/almost-periodicity): the far-line incidence
