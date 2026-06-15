@@ -1,15 +1,14 @@
-/* The one memorable motion idea.
-   A small fleet of candidate proofs. Hash-noise scrambles in each cell; on a
-   staggered cadence, a cell "resolves": its hash fades and a kernel-checked
-   line locks in green. One brick at a time, like a rig finding a block.
+/* The movement's visual centerpiece.
+   A fleet of candidate proofs. Hash-noise scrambles in each cell; on a
+   staggered cadence a cell resolves: its hash fades and a kernel-checked
+   line locks in green. Two honest cells resolve amber, refutations the
+   guard refused to fake. One brick at a time, like a rig finding a block.
    Pure CSS keyframes. Deterministic. Honors prefers-reduced-motion. */
 
 const HASH = "0xa7f3c91e";
 
 type Cell = {
-  // the line that locks in when verified
   proof: string;
-  // refutation cells show amber "not provable" honesty
   refuted?: boolean;
   delay: number;
 };
@@ -17,24 +16,27 @@ type Cell = {
 const CELLS: Cell[] = [
   { proof: "lemma decoupling := by", delay: 0.0 },
   { proof: "theorem sub_johnson", delay: 1.4 },
-  { proof: "¬ conjecture_A", refuted: true, delay: 2.1 },
+  { proof: "\u00ac conjecture_A", refuted: true, delay: 2.1 },
   { proof: "lemma window_pin := by", delay: 0.7 },
   { proof: "theorem ceiling_exact", delay: 2.8 },
   { proof: "audit_guard.passed", delay: 1.05 },
-  { proof: "¬ floor_naive", refuted: true, delay: 3.2 },
+  { proof: "\u00ac floor_naive", refuted: true, delay: 3.2 },
   { proof: "lemma agreement := by", delay: 0.35 },
   { proof: "theorem decouple_field", delay: 2.45 },
+  { proof: "lemma proximity := by", delay: 1.75 },
+  { proof: "theorem mca_bound", delay: 0.95 },
+  { proof: "lemma list_decode", delay: 2.95 },
 ];
 
 export function MiningRig() {
   return (
     <div
       className="brick relative overflow-hidden"
-      style={{ padding: "clamp(0.9rem, 2.5vw, 1.4rem)" }}
+      style={{ padding: "clamp(1.1rem, 3vw, 2rem)" }}
       aria-hidden="true"
     >
-      {/* header strip: looks like a rig dashboard */}
-      <div className="flex items-center justify-between mb-4">
+      {/* header strip: the rig dashboard */}
+      <div className="flex items-center justify-between mb-5">
         <span className="eyebrow" style={{ letterSpacing: "0.18em" }}>
           fleet · lean 4 kernel
         </span>
@@ -56,17 +58,17 @@ export function MiningRig() {
       />
 
       <div
-        className="grid gap-2"
-        style={{ gridTemplateColumns: "repeat(3, minmax(0,1fr))" }}
+        className="grid gap-2.5"
+        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(8.5rem, 1fr))" }}
       >
         {CELLS.map((c, i) => (
           <div
             key={i}
-            className="mono relative rounded-md px-2.5 py-3 text-[0.62rem] leading-tight overflow-hidden"
+            className="mono relative rounded-md px-3 py-4 text-[0.66rem] leading-tight overflow-hidden"
             style={{
               border: "1px solid var(--rule)",
               background: "var(--bg-sunk)",
-              minHeight: "3.1rem",
+              minHeight: "3.6rem",
               animation: c.refuted
                 ? undefined
                 : `lock-in 6s ease-in-out ${c.delay}s infinite`,
@@ -92,14 +94,14 @@ export function MiningRig() {
 
             {/* the verified line */}
             <span
-              className="absolute inset-0 flex items-center px-2.5"
+              className="absolute inset-0 flex items-center px-3"
               style={{
                 color: c.refuted ? "var(--no)" : "var(--ok)",
                 animation: `flip-true 6s ease-in-out ${c.delay}s infinite`,
               }}
             >
               <span className="truncate">
-                {c.refuted ? "✕ " : "✓ "}
+                {c.refuted ? "\u2715 " : "\u2713 "}
                 {c.proof}
               </span>
             </span>
@@ -108,10 +110,10 @@ export function MiningRig() {
       </div>
 
       <div
-        className="flex items-center justify-between mt-4 pt-3 text-[0.66rem] mono"
+        className="flex items-center justify-between mt-5 pt-4 text-[0.68rem] mono"
         style={{ borderTop: "1px solid var(--rule-faint)", color: "var(--ink-3)" }}
       >
-        <span>~150 bricks mined</span>
+        <span>~150 bricks mined in one night</span>
         <span style={{ color: "var(--ok)" }}>every accepted result typechecks</span>
       </div>
     </div>

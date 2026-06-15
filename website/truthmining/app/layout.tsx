@@ -17,9 +17,9 @@ const mono = IBM_Plex_Mono({
   display: "swap",
 });
 
-const title = "Truth Mining · formal verification, mined and re-checkable";
+const title = "Truth Mining · proof of work, except the work is real";
 const description =
-  "An agent fleet mines a formal target against a cheap trustless verifier and ships a kernel-certified proof you re-check with one command. We mined a 25-year-open problem this way. Now we do it on commission, for ZK circuits and smart-contract invariants. A false truth does not typecheck.";
+  "Bitcoin spends compute to mine hashes that prove nothing. We spend compute to mine things that are true. A kernel decides truth, compute mines it, a false truth does not typecheck. We mined a 25-year-open problem in one night. The frontier expands wherever a cheap trustless verifier exists.";
 
 export const metadata: Metadata = {
   title,
