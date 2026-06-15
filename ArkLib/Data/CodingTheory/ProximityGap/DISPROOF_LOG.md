@@ -12858,3 +12858,37 @@ This is DISTINCT from W4=#49 (additive Cayley) only in framing; mathematically i
 Probes: `scripts/probes/probe_a8_bourgain_gamburd_dilation.py`,
 `scripts/probes/probe_a8_affine_group_transport.py`, `scripts/probes/probe_a8_affine_p_collapse.py`
 (commit on branch main).
+
+---
+
+## A10 entropy-compression (#444, open-avenue C7) — REFUTED + reduces-to-Johnson (2026-06-15)
+
+**Angle.** Relocate the cancellation locus to INFORMATION: new lemma "worst-case far-line
+list L ≤ Lambda_r := 2^{H(P_r)}, the Shannon-entropy envelope of the (r+1)-subset-sum
+distribution P_r over mu_n, which 2-power rigidity caps below budget past Johnson."
+
+**Two independent kill-shots (exact probes, proper mu_n, p PRIME, p>>n^3):**
+
+1. **The inequality is BACKWARDS (refuted).** In-tree (probe_jump_subsetsum) the worst-case
+   list at the jump radius delta=1-(k+1)/n EQUALS N_dist = #distinct (k+1)-subset sums. Since
+   Shannon entropy H ≤ log2(support), Lambda_r = 2^H ≤ N_dist = L always. The entropy envelope
+   is a LOWER bound on the list, not an upper bound. `probe_a10_list_vs_entropy.py`: Lambda_r
+   < N_dist in every row (e.g. n=32,t=8: Lambda=580227 < N_dist=1018113).
+
+2. **The residual gain = the antipodal/Mann count = reduces-to-Johnson.** Even setting (1)
+   aside and asking whether N_dist itself beats volume: the deficit log2(C/N_dist) (a)
+   VANISHES relative to log2 C at the floor-end (small t) as n grows (def/log2C: 0.126→0.052
+   →0.020→0.0085 for t=4, n=8→16→32→64 — `probe_a10_ndist_scaling.py`), and (b) at t=n/2 is a
+   stable constant fraction ~0.144 that DISAPPEARS for antipodal-free random Sidon sets
+   (mu_n def/l2C=0.144 vs Sidon=0.0019 at n=16 — `probe_a10_mann_identification.py`). The
+   concentration is entirely the {z,-z} pairing (mu_{2^mu} ∋ -1) = the vanishing-sum / Mann
+   structure = the PROVEN-DEAD Johnson-boundary object.
+
+**Verdict:** A10 falls on BOTH horns — the literal lemma is refuted (entropy bounds the list
+from below), and the only real concentration it detects is the Mann antipodal count
+(reduces-to-Johnson). The p-scaling DID show the concentration is algebraic (p-stable, not a
+mod-p wraparound artifact) — that part is a genuine clean sub-finding — but algebraic = Mann.
+
+Probes: `scripts/probes/probe_a10_entropy_compression.py`, `probe_a10_entropy_pscaling.py`,
+`probe_a10_list_vs_entropy.py`, `probe_a10_ndist_scaling.py`, `probe_a10_mann_identification.py`
+(commit cf51879f7 on branch main).
