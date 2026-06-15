@@ -43,6 +43,10 @@ pin the (harder) MCA `δ*`. Nothing here closes the prize core; it isolates whic
 harder. Issue #407.
 -/
 
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+
 open Finset
 
 namespace ProximityGap.LDLeMCANoGo
@@ -167,7 +171,7 @@ minima of the two good-agreement sets. -/
 theorem mca_min_goodA_ge_ld_min_goodA
     (C : Finset (Fin n → F)) (f g : Fin n → F) (B : ℕ) (As : Finset ℕ)
     {aLD aMCA : ℕ}
-    (hLD : aLD ∈ As.filter (fun a => (singleWordList C f a).card ≤ B))
+    (_hLD : aLD ∈ As.filter (fun a => (singleWordList C f a).card ≤ B))
     (hLDmin : ∀ a ∈ As.filter (fun a => (singleWordList C f a).card ≤ B), aLD ≤ a)
     (hMCA : aMCA ∈ As.filter (fun a => (pencilIncidence C f g a).card ≤ B)) :
     aLD ≤ aMCA :=
@@ -184,6 +188,8 @@ list strictly undercounts the pencil incidence. This is the witness that an LD b
 namespace ProximityGap.LDLeMCANoGo.Instance
 
 open ProximityGap.LDLeMCANoGo
+
+instance : Fact (Nat.Prime 5) := ⟨by norm_num⟩
 
 /-- The constant code over `ZMod 5` on a 3-point domain (Reed–Solomon, `k = 1`). -/
 def Ccode : Finset (Fin 3 → ZMod 5) :=
