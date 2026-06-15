@@ -14036,3 +14036,23 @@ capstone trio (SubgroupGaussSumOrbitReduction, I031MatchedGaussianCovariance, I0
 arithmetic needs a clean re-formalization (import Mathlib Real.logb; fix the named-arg) when the box is
 not saturated. Honesty note: I propagated the synthesis agent's "axiom-clean bridge" claim without
 running #print axioms myself; corrected here.
+
+## 2026-06-15 — all-routes assault: 3 sub-property refutations (M(n) open avenues)
+
+The 7-route prove-or-refute assault on `M(n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)|` (#444) refuted three hoped
+sub-properties (each would have beaten BGK; each is machine-checked / probe-decisive):
+
+- **ρ-contractive bootstrap (wf-F2) — REFUTED.** The named hypothesis "per-level dyadic descent ratio
+  `ρ ≤ 1` at depth `r*=⌊ln q/2⌋`" is false: exact full-character enumeration gives `ρ ≈ 29.1, 97.4, 129.3`
+  at `n=8,16,32` (never ≤1); even the sharp `ρ ≤ 2^{r-1}` is refuted (n=32 machine-checked in Lean). The
+  dyadic butterfly does NOT self-improve — cross-moments dominate, no free decorrelation.
+- **Bernstein–Markov–Turán sparsity — REFUTED as an improvement.** The sparsity COUNT of `η_b` (n nonzero
+  Fourier coeffs) gives only the trivial ℓ¹ ceiling `‖η_b‖ ≤ |G| = n` (triangle inequality), which is
+  ATTAINED (`η_0 = n`). Any bound below `n` needs the coefficient VALUES (= back to BGK); sparsity alone
+  buys nothing. (Axiom-clean trivial-ℓ¹-ceiling brick records the positive face.)
+- **F4 dyadic subgroup-decomposition (uniform per-level) — REFUTED.** The butterfly
+  `η_b(μ_n)=η_b(μ_{n/2})+η_{bg}(μ_{n/2})` makes both children values of the SAME half-level sup object,
+  so a uniform per-level `M(n) ≤ M(n/2)+small` descent fails (the twist term is not decorrelated) — same
+  non-decorrelation obstruction as the cocycle route.
+
+All three reduce the route to the same `WickEnergyBound at r~log q` = BGK/Paley √-cancellation wall.
