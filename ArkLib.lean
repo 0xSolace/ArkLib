@@ -1607,6 +1607,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormHeadline
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionBoundaryFailure
 import ArkLib.Data.CodingTheory.ProximityGap.ProductionJohnsonBudget
