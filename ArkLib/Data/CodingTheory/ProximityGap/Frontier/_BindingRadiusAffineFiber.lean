@@ -91,6 +91,23 @@ theorem mem_activeWitnesses {B : Ω → J → F} {ω : Ω} :
   simp [activeWitnesses]
 
 open Classical in
+/-- Witnesses where two fixed affine slots are both moving and impose the same
+pinned scalar.  This is the finite-field shell of the over-determined case:
+two non-heavy equations in one scalar are useful only on the equality locus of
+their residual ratios. -/
+noncomputable def pairConsistentWitnesses (A B : Ω → J → F) (j₁ j₂ : J) : Finset Ω :=
+  Finset.univ.filter fun ω =>
+    B ω j₁ ≠ 0 ∧ B ω j₂ ≠ 0 ∧ -A ω j₁ / B ω j₁ = -A ω j₂ / B ω j₂
+
+omit [Fintype F] [Inhabited Ω] [Fintype J] in
+open Classical in
+/-- Membership in the fixed two-slot consistency locus. -/
+theorem mem_pairConsistentWitnesses {A B : Ω → J → F} {j₁ j₂ : J} {ω : Ω} :
+    ω ∈ pairConsistentWitnesses A B j₁ j₂ ↔
+      B ω j₁ ≠ 0 ∧ B ω j₂ ≠ 0 ∧ -A ω j₁ / B ω j₁ = -A ω j₂ / B ω j₂ := by
+  simp [pairConsistentWitnesses]
+
+open Classical in
 /-- **Affine-fibre counting gate.**
 
 Let `P γ` be any bad-scalar predicate.  Suppose each bad scalar chooses a witness
@@ -138,6 +155,58 @@ theorem badScalar_card_le_activeWitnesses
       exact affineConstraint_eq_neg_div hB hc
     rw [hγratio, hγ'ratio]
 
+omit [Fintype J] in
+open Classical in
+/-- **Two-slot over-determined affine-fibre gate.**
+
+This strengthens `badScalar_card_le_activeWitnesses` in the fixed-two-slot
+case.  If every bad scalar chooses a witness whose two named slots are both
+moving, then those witnesses must lie in the ratio-consistency locus, and the
+bad scalar set injects into that locus.
+
+In #407 terms: after the binding-radius reduction chooses two independent
+residual equations on a witness set, the count is bounded by the number of
+witnesses on which the two residual ratios agree.  The hard work left outside
+this lemma is to identify the right slots and count that cyclotomic coincidence
+locus. -/
+theorem badScalar_card_le_pairConsistentWitnesses
+    (P : F → Prop) [DecidablePred P]
+    (A B : Ω → J → F) (j₁ j₂ : J)
+    (owner : ∀ γ : F, P γ → Ω)
+    (hj₁ : ∀ γ hγ, B (owner γ hγ) j₁ ≠ 0)
+    (hj₂ : ∀ γ hγ, B (owner γ hγ) j₂ ≠ 0)
+    (hconstraints : ∀ γ hγ, ∀ j : J,
+      affineConstraint (A (owner γ hγ) j) (B (owner γ hγ) j) γ) :
+    (Finset.univ.filter fun γ : F => P γ).card ≤
+      (pairConsistentWitnesses A B j₁ j₂).card := by
+  classical
+  refine Finset.card_le_card_of_injOn
+    (fun γ => if hγ : P γ then owner γ hγ else default) ?maps ?inj
+  · intro γ hγ
+    have hPγ : P γ := (Finset.mem_filter.mp hγ).2
+    change (if h : P γ then owner γ h else default) ∈
+      pairConsistentWitnesses A B j₁ j₂
+    simp only [hPγ, dite_true]
+    rw [mem_pairConsistentWitnesses]
+    exact ⟨hj₁ γ hPγ, hj₂ γ hPγ,
+      ratio_eq_of_two_affine_constraints (hj₁ γ hPγ) (hj₂ γ hPγ)
+        (hconstraints γ hPγ j₁) (hconstraints γ hPγ j₂)⟩
+  · intro γ hγ γ' hγ' howner
+    have hPγ : P γ := (Finset.mem_filter.mp hγ).2
+    have hPγ' : P γ' := (Finset.mem_filter.mp hγ').2
+    have howner' : owner γ hPγ = owner γ' hPγ' := by
+      simpa [hPγ, hPγ'] using howner
+    have hB : B (owner γ hPγ) j₁ ≠ 0 := hj₁ γ hPγ
+    have hγratio :
+        γ = -A (owner γ hPγ) j₁ / B (owner γ hPγ) j₁ :=
+      affineConstraint_eq_neg_div hB (hconstraints γ hPγ j₁)
+    have hγ'ratio :
+        γ' = -A (owner γ hPγ) j₁ / B (owner γ hPγ) j₁ := by
+      have hc := hconstraints γ' hPγ' j₁
+      rw [← howner'] at hc
+      exact affineConstraint_eq_neg_div hB hc
+    rw [hγratio, hγ'ratio]
+
 end Counting
 
 end ProximityGap.Frontier.BindingRadiusAffineFiber
@@ -146,3 +215,6 @@ end ProximityGap.Frontier.BindingRadiusAffineFiber
 #print axioms ProximityGap.Frontier.BindingRadiusAffineFiber.affineConstraint_eq_neg_div
 #print axioms ProximityGap.Frontier.BindingRadiusAffineFiber.ratio_eq_of_two_affine_constraints
 #print axioms ProximityGap.Frontier.BindingRadiusAffineFiber.badScalar_card_le_activeWitnesses
+namespace ProximityGap.Frontier.BindingRadiusAffineFiber
+#print axioms badScalar_card_le_pairConsistentWitnesses
+end ProximityGap.Frontier.BindingRadiusAffineFiber
