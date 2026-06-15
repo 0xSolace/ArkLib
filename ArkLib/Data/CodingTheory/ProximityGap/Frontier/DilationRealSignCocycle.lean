@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumDilationRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumRawMoment
+import ArkLib.Data.CodingTheory.ProximityGap.CosetPeriodOrthogonal
 
 set_option linter.style.longLine false
 set_option linter.unusedSectionVars false
@@ -195,5 +196,33 @@ theorem union_norm_le_M_of_opposite_sign {ψ : AddChar F ℂ} (G : Finset F) (hG
       ≤ max ‖eta ψ G b‖ ‖eta ψ G (ζ * b)‖ :=
         union_norm_le_max_of_opposite_sign G hG hζ hdisj b hopp
     _ ≤ M := max_le (hM b) (hM (ζ * b))
+
+/-- **The sign-balance law (the L²-budget identity that forces the cocycle).** For a negation-closed
+`G` with disjoint dilate, the REAL signed cross-products sum to ZERO over all frequencies:
+`∑_b (η_b(G)).re · (η_{ζb}(G)).re = 0`. This is the cross-orthogonality `coset_period_orthogonal`
+(`∑_b η_b(G)·conj η_{ζb}(G) = 0`) with reality applied (`conj η_{ζb}(G) = η_{ζb}(G)`), read off the
+real part. It is the EXACT reason the L² doubles by precisely `2` (the cross term vanishes), and it
+constrains the sign cocycle: the `+`-sign (doubling) frequencies must be balanced against the
+`−`-sign (cancelling) ones in the `|η|·|η|`-weighted aggregate — so a uniformly-`+` (full-doubling)
+sign word over all frequencies is impossible. The open content is the WORST-CASE (single-frequency,
+deep-descent) sign word, not this global average. -/
+theorem sign_balance_zero {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hdisj : Disjoint G (dilate ζ G)) :
+    ∑ b : F, (eta ψ G b).re * (eta ψ G (ζ * b)).re = 0 := by
+  -- reality: each summand's complex product is real and equals the real-part product.
+  have hreal : ∀ b : F,
+      eta ψ G b * (starRingEnd ℂ) (eta ψ G (ζ * b))
+        = (((eta ψ G b).re * (eta ψ G (ζ * b)).re : ℝ) : ℂ) := by
+    intro b
+    rw [eta_eq_ofReal_re G hG b, eta_eq_ofReal_re G hG (ζ * b)]
+    simp [Complex.ext_iff]
+  -- the cross-orthogonality (dilate uses the same `image (ζ * ·)` as `coset_period_orthogonal`).
+  have horth :
+      ∑ b : F, eta ψ G b * (starRingEnd ℂ) (eta ψ G (ζ * b)) = 0 :=
+    ArkLib.ProximityGap.CosetPeriodOrthogonal.coset_period_orthogonal hψ hdisj
+  have hcast : (((∑ b : F, (eta ψ G b).re * (eta ψ G (ζ * b)).re) : ℝ) : ℂ) = 0 := by
+    rw [Complex.ofReal_sum, ← horth]
+    exact Finset.sum_congr rfl (fun b _ => (hreal b).symm)
+  exact_mod_cast hcast
 
 end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
