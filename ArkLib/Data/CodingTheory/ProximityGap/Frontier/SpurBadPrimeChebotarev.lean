@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungUnconditionalGeneral
 import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # The `p ≡ 3 mod 4` Chebotarev exclusion for the char-`p` spurious-collision prime set (Issue #444)
@@ -40,6 +41,12 @@ primes `μ_{2^m}` does not even embed, so there are no antipodal-free relations 
 in-field spurious count is `0`. This is a **density-`1/2` exclusion** on the bad-prime set, exactly the
 arithmetic input the effective-Chebotarev count (wf-C1) needs (the bad primes are confined to the
 `p ≡ 1 mod 4` half, then further to the `p ≡ 1 mod 2^m` splitting class for genuine embedding).
+
+**Sharper `mod 8` cut (`m ≥ 3`).** `ℚ(ζ_{2^m}) ⊇ ℚ(ζ_8) = ℚ(i, √2)`, so embedding `μ_{2^m}` (`m ≥ 3`)
+also forces `√2` into the residue field: `s := ζ_8 + ζ_8⁻¹` has `s² = 2`. By
+`ZMod.exists_sq_eq_two_iff`, `2` a square ⇔ `p ≡ ±1 mod 8`; with `p ≡ 1 mod 4` this forces `p ≡ 1
+mod 8`. So the bad-prime support is confined to the density-`1/4` class `1 mod 8`
+(`prize_prime_one_mod_eight`) — a strict sharpening of the `mod 4` exclusion.
 
 ## Probe corroboration
 
@@ -131,9 +138,71 @@ theorem prize_prime_one_mod_four [Fact p.Prime] {m : ℕ} (hm : 2 ≤ m)
   -- p % 4 ∈ {0,1,2,3}; oddness (p % 2 = 1 ⇒ p % 4 % 2 = 1) kills 0,2; hne3 kills 3.
   omega
 
+/-! ### The sharper `mod 8` cut (`m ≥ 3`): `√2` lives in the field, forcing `2` a square -/
+
+/-- **`2` is a square mod `p` whenever a primitive `2^m`-th root exists (`m ≥ 3`).**
+If `g : ZMod p` is a primitive `2^m`-th root of unity with `m ≥ 3`, then `z := g^{2^{m−3}}` is a
+primitive `8`-th root of unity, and `s := z + z⁻¹ = z + z^7` satisfies `s² = 2`: expanding,
+`s² = z² + 2 + z⁻² = (z² + z⁶) + 2`, and `z²` is a primitive `4`-th root with `z⁶ = (z²)³ = −z²`
+(since `(z²)² = z⁴ = −1`), so `z² + z⁶ = 0` and `s² = 2`. Hence `2` is a square in `ZMod p`. This is
+the `ℚ(√2) ⊆ ℚ(ζ_8) ⊆ ℚ(ζ_{2^m})` constraint at the residue-field level. -/
+theorem isSquare_two_of_primitiveRoot_two_pow [Fact p.Prime] {m : ℕ} (hm : 3 ≤ m)
+    {g : ZMod p} (hg : IsPrimitiveRoot g (2 ^ m)) :
+    IsSquare (2 : ZMod p) := by
+  -- z := g ^ (2 ^ (m - 3)) is a primitive 8-th root of unity.
+  set z : ZMod p := g ^ (2 ^ (m - 3)) with hz
+  have hm1 : 1 ≤ m := le_trans (by norm_num) hm
+  -- z ^ 4 = g ^ (2^(m-3) * 4) = g ^ (2^(m-1)) = -1.
+  have hz4 : z ^ 4 = -1 := by
+    have hhalf : g ^ (2 ^ (m - 1)) = -1 := R12.pow_half_eq_neg_one hm1 hg
+    have hexp : 2 ^ (m - 3) * 4 = 2 ^ (m - 1) := by
+      have h2 : (2 : ℕ) ^ (m - 3) * 4 = 2 ^ ((m - 3) + 2) := by
+        rw [pow_add]; norm_num
+      have h3 : (m - 3) + 2 = m - 1 := by omega
+      rw [h2, h3]
+    rw [hz, ← pow_mul, hexp, hhalf]
+  -- z ^ 8 = 1.
+  have hz8 : z ^ 8 = 1 := by
+    have : z ^ 8 = (z ^ 4) ^ 2 := by ring
+    rw [this, hz4]; ring
+  -- z⁻¹ = z ^ 7  (since z ^ 8 = 1, z is a unit). Use s = z + z^7.
+  refine ⟨z + z ^ 7, ?_⟩
+  -- Write everything in terms of z^4 and z^2 so that hz4 (z^4 = -1) collapses it to 2.
+  -- (z+z^7)^2 = z^2 + 2 z^8 + z^14, with z^7 = z^4 z^2 z, z^8 = z^4 z^4, z^14 = z^4 z^4 z^4 z^2.
+  have e7 : z ^ 7 = (z ^ 4) * (z ^ 2) * z := by ring
+  have e2sum : (z + z ^ 7) * (z + z ^ 7)
+      = z ^ 2
+        + 2 * ((z ^ 4) * (z ^ 4))
+        + ((z ^ 4) * (z ^ 4) * (z ^ 4) * (z ^ 2)) := by
+    rw [e7]; ring
+  rw [e2sum, hz4]
+  ring
+
+/-- **THE SHARP CHEBOTAREV CUT (`m ≥ 3`): only `p ≡ 1 mod 8` primes carry `μ_{2^m}`.**
+For `m ≥ 3`, a prime `p` admitting a primitive `2^m`-th root of unity in `ZMod p` (in particular every
+prize prime `p ≡ 1 mod 2^m`) satisfies `p % 8 = 1`. Mechanism: such a root forces both `−1` a square
+(`p ≡ 1 mod 4`, `m ≥ 2`) AND `2` a square (`p ≡ ±1 mod 8` by `exists_sq_eq_two_iff`, the `√2 ∈ ℚ(ζ_8)`
+witness above); together `p ≡ 1 mod 8`. So the bad-prime support is confined to the density-`1/4`
+residue class `1 mod 8` — a sharpening of the `mod 4` exclusion that the wf-C1 effective-Chebotarev
+count builds on. -/
+theorem prize_prime_one_mod_eight [Fact p.Prime] {m : ℕ} (hm : 3 ≤ m)
+    (hg : ∃ g : ZMod p, IsPrimitiveRoot g (2 ^ m)) (hodd : p ≠ 2) :
+    p % 8 = 1 := by
+  obtain ⟨g, hgr⟩ := hg
+  have hp : p.Prime := (Fact.out : p.Prime)
+  -- p ≡ 1 mod 4 from the mod-4 result (m ≥ 2).
+  have h4 : p % 4 = 1 := prize_prime_one_mod_four (le_trans (by norm_num) hm) ⟨g, hgr⟩ hodd
+  -- 2 is a square ⇒ p % 8 ∈ {1, 7}.
+  have hsq2 : IsSquare (2 : ZMod p) := isSquare_two_of_primitiveRoot_two_pow hm hgr
+  have h8 : p % 8 = 1 ∨ p % 8 = 7 := (ZMod.exists_sq_eq_two_iff (p := p) hodd).mp hsq2
+  -- p % 4 = 1 forces p % 8 ∈ {1, 5}; intersect with {1, 7} ⇒ p % 8 = 1.
+  omega
+
 end ArkLib.ProximityGap.SpurBadPrimeChebotarev
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SpurBadPrimeChebotarev.isSquare_neg_one_of_primitiveRoot_two_pow
 #print axioms ArkLib.ProximityGap.SpurBadPrimeChebotarev.spur_field_excludes_three_mod_four
 #print axioms ArkLib.ProximityGap.SpurBadPrimeChebotarev.prize_prime_one_mod_four
+#print axioms ArkLib.ProximityGap.SpurBadPrimeChebotarev.isSquare_two_of_primitiveRoot_two_pow
+#print axioms ArkLib.ProximityGap.SpurBadPrimeChebotarev.prize_prime_one_mod_eight
