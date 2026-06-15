@@ -1015,6 +1015,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderAntitone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderExceedsPrize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
