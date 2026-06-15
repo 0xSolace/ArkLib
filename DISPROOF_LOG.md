@@ -1787,3 +1787,49 @@ does NOT close floor-vs-Johnson (the w=5 family sits AT budget, neither above=fa
 floor-slack; the binding among ALL widths/families is the R1 residual) but it pins the cleanest knife-
 edge witness. Consistent w/ wf-D2 Johnson-tracking + the shared n/4 structure. CORE not closed, not
 faked. Python-only exact => axiom-clean trivially. probe_407_e2_w5_knife_edge.py.
+
+================================================================================
+2026-06-15 The shallow e2=0 over-det census is a w==0 (mod 4) RESONANCE: K(n,w)=n/4-1
+iff 4|w, else K<=1 -- so the over-det floor object is within budget UNLESS k==2 (mod 4)
+(opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: generalizing the e2=0 census R1 budget map (my push 74a54cdce: K<=1 across the deep floor window
+except the w=4 resonance) + the K(n,4)=n/4-1 closed form (convergent entry). KEY QUESTION nobody asked:
+the e2=0 vanishing is the over-det constraint for the pencil x^k + alpha x^{k+2} at agreement w=k+2 (in-tree
+_E2DilationDirectCount line 13). The e2=0 constraint is the SAME quadratic for ANY k; only w=k+2 varies.
+So K(n, w=k+2) depends on the WIDTH w only. Does the w=4 resonance PERSIST at prize-rate k (w=k+2>4)?
+
+METHOD: exact shallow census K(n,w) = #dilation-orbits of e1(S) over {|S|=w, e2(S)=0, e1!=0}, brute
+C(n,w) for shallow w, proper mu_n, prize prime p=n^4, never n=q-1. n=16,32,64. Vary k=2..6 (w=k+2=4..8).
+probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
+
+RESULT (exact, the SHALLOW over-det regime w<=8, the prize-relevant shallowest over-det width):
+  K(n,w) by width (n=16 / n=32 / n=64):
+    w=2: 0/0/0   w=3: 0/0/0   w=4: 3/7/15   w=5: 1/1/1   w=6: 0/0/-   w=7: 0/0/-   w=8: 3/7/-
+  => CLEAN RESONANCE: K(n,w) = n/4 - 1 EXACTLY when 4 | w (w=4: 3,7,15 = n/4-1 at n=16,32,64; w=8: 3,7
+     at n=16,32), and K <= 1 (mostly 0, occasionally 1 at w=5) when 4 does NOT divide w.
+  k-form: since w=k+2, the over-det census at the shallowest width OVERFLOWS budget (#bad=n*K~n^2/4)
+     iff 4|(k+2) iff k == 2 (mod 4); for k !== 2 (mod 4) the shallow e2=0 over-det census is WITHIN
+     floor budget (K<=1).
+
+VERDICT (rule-4 mapped structural law; rule-6 honest, NOT a closure):
+1. The e2=0 over-det census budget-overflow is an ARITHMETIC RESONANCE on the agreement width:
+   4 | w => K = n/4-1 (overflow), else K <= 1 (within budget). This SHARPENS my floor-window result
+   (74a54cdce) from "single w=4 resonance" to the periodic law "4|w resonance" and explains the
+   w=4 AND w=8 spikes.
+2. PRIZE-RATE CONSEQUENCE: the prize is forall-rate (rho free); for the AP of rates with k == 2 (mod 4)
+   the shallowest over-det e2=0 family overflows budget by Theta(n) at w=k+2, but for k !== 2 (mod 4) it
+   is within budget at that width. So the e2=0 over-det census does NOT uniformly defeat the floor across
+   rates -- it has a width-divisibility structure. (This is consistent with the n/4 over-determination
+   depth being the universal object: 4|w is exactly when the antipodal-quadruple {x,-x,y,-y} vanishing
+   saturates the orbit count to n/4-1.)
+3. The DEEPER widths (w>=9, approaching Johnson) LOSE the clean 4|w law (K=23,4,2,21,32,... at n=32) --
+   that is the BGK/additive-energy regime where the census is the analytic wall's twin. The clean
+   resonance law holds in the SHALLOW over-det regime only (the floor-edge-relevant widths).
+4. NET: the over-det e2=0 census is NOT a uniform floor obstruction; it is a 4|w arithmetic resonance
+   that is within budget for 3/4 of rates (k !== 2 mod 4) at the shallowest width, and the only structural
+   overflow is the antipodal-quadruple saturation at 4|w. CORE not closed: this maps WHERE the over-det
+   census obstructs (4|w) vs is benign, but the actual prize floor still needs the COLLECTIVE BGK bound
+   at the binding depth (the L7 Prop), not this per-width census. Python-only exact, p-independent =>
+   axiom-clean trivially.
+probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
