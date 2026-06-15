@@ -222,3 +222,11 @@ prize = BGK at the anomaly level: it is the equidistribution of dyadic-subgroup 
 - **C20 ergodic equidistribution** [feas 3]: {bω^j} equidistribution = the char sum = BGK.
 NOTE (structural cap predicts): all reduce to BGK (the global cancellation); C14 (Stein CLT) is the most
 novel framing. The period → complex-Gaussian is the content (measured c→1/2); proving it uniformly = BGK.
+
+## C14 attacked (Stein CLT) — period is SUB-Gaussian; CLT uniform-in-n = BGK
+Measured period kurtosis A_2/A_1² = 2.62, 2.81, 2.91 (n=8,16,32) → 3 (GAUSSIAN). Normalized moments
+A_r/Wick ≤ 1 and DECREASING for all r (n=32: [1,0.97,0.91,0.82,0.72,0.61,0.50,0.39]) ⟹ the dyadic period
+is SUB-GAUSSIAN (lighter tails than Gaussian). So: prize ⟺ dyadic period uniformly sub-Gaussian (CLT with
+uniform-in-n tail). The 4th-moment CLT (kurtosis→3, provable via E_2=3n²-3n for p>2^n) is the provable
+instance; uniform sub-Gaussianity at r~log q = BGK. C14=BGK (the CLT/distributional form), as the
+structural cap predicts. All of C11-C20 reduce to BGK; the period→Gaussian convergence IS the open core.
