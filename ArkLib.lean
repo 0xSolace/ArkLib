@@ -1967,6 +1967,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SumProductBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SumZeroSubsetsBound
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetDistinctDissociation
 import ArkLib.Data.CodingTheory.ProximityGap.SumsetLowerBoundMuN
+import ArkLib.Data.CodingTheory.ProximityGap.SupNormBracket
 import ArkLib.Data.CodingTheory.ProximityGap.SuperCodeListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyFoldInjection
 import ArkLib.Data.CodingTheory.ProximityGap.SupplyForcingLowerBound
