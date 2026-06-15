@@ -968,6 +968,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondDescentParity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondMomentGapQuantified
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
