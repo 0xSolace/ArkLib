@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSpectralSpread
+import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodParsevalFloor
 
 set_option linter.style.longLine false
 set_option linter.unusedSectionVars false
@@ -51,6 +52,7 @@ See `SubgroupGaussSumSpectralSpread.lean` (the support lower bound) and
 open Finset AddChar Polynomial
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.SubgroupGaussSumSpectralSpread
+open ArkLib.ProximityGap.GaussPeriodParsevalFloor
 
 namespace ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling
 
@@ -169,9 +171,39 @@ theorem exists_support_eta_sq_le (hn2 : n = 2 ^ m) (hm : 1 ≤ m) (hp : 2 ^ n < 
   rw [hcomm] at hsumgt
   linarith [hmul, hsumgt]
 
+/-! ### The UNCONDITIONAL average two-sided frame -/
+
+/-- **The average two-sided spectral frame for the thin `μ_n` — both sides UNCONDITIONAL.**
+The thin-`μ_n` spectrum is pinned to the `√n` scale *on average* from both sides, with NO open
+hypothesis:
+
+* (floor, `GaussPeriodParsevalFloor`) **some** `b ≠ 0` has `‖η_b‖² ≥ (q·n − n²)/(q − 1) ≈ n`, and
+* (ceiling, this file) the **average** squared period over the support is `≤ 3(n−1) ≈ 3n`.
+
+Contrast with `GaussPeriodSpectralFrame.spectral_frame`, whose *ceiling* is the OPEN
+near-Ramanujan-`√log` hypothesis on **every** frequency: there the worst-case ceiling is conditional;
+here the *average* ceiling is **proven**.  So the typical/average behaviour is unconditionally
+`√n`-scale on both sides; ALL remaining open content is the worst-case deviation above the typical
+scale — exactly the BGK / Paley `√`-cancellation `M(n) ≤ C√(n·log(q/n))`. -/
+theorem avg_spectral_frame (hn2 : n = 2 ^ m) (hm : 1 ≤ m) (hp : 2 ^ n < p)
+    {ω : ZMod p} (hω : IsPrimitiveRoot ω n) {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive)
+    (hn2le : 2 ≤ n) (hsupp_pos : 0 < (support ψ n).card)
+    (hq : 2 ≤ Fintype.card (ZMod p)) :
+    -- floor: some nonzero frequency realises the ≈ n Parseval scale
+    (∃ b : ZMod p, b ≠ 0 ∧
+      ((Fintype.card (ZMod p) : ℝ) * (nthRootsFinset n (1 : ZMod p)).card
+          - ((nthRootsFinset n (1 : ZMod p)).card : ℝ) ^ 2) / ((Fintype.card (ZMod p) : ℝ) - 1)
+        ≤ ‖eta ψ (nthRootsFinset n (1 : ZMod p)) b‖ ^ 2)
+    -- ceiling: the average squared period over the support is ≤ 3(n−1)
+    ∧ (∑ b : ZMod p, ‖eta ψ (nthRootsFinset n (1 : ZMod p)) b‖ ^ 2) / ((support ψ n).card : ℝ)
+        ≤ 3 * ((n : ℝ) - 1) := by
+  refine ⟨exists_eta_sq_ge_parseval_floor hψ (nthRootsFinset n (1 : ZMod p)) hq, ?_⟩
+  exact avg_eta_sq_on_support_le hn2 hm hp hω hψ hn2le hsupp_pos
+
 end ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound only) -/
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling.sum_eta_sq_le_mul_support
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling.avg_eta_sq_on_support_le
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling.exists_support_eta_sq_le
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSupportAvgCeiling.avg_spectral_frame
