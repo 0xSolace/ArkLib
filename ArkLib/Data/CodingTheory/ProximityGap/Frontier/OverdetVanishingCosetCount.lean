@@ -65,6 +65,17 @@ supply is coset-union-dominated and grows like `2^{n/2^{⌊log₂ r⌋+1}}`.
   power of two `> r` (`dyadicBlock_gt`, `r_lt_dyadicBlock`, `dyadicBlock_le` minimality), and the
   **square/self-similar law** at the count level (`overdetVanishingCount_square`:
   the count for index `2n` is the square of the count for `n`, the §6.5 tower recursion).
+- **PROVED, axiom-clean** — the **supply-profile shape** for the §6.4 m∗ growth-law: the count
+  **plateaus** on each dyadic block `[2^j, 2^{j+1})` (`overdetVanishingCount_eq_of_log_eq`) and takes
+  an **exact square root at every threshold** `r = 2^j` (`overdetVanishingCount_dyadic_sqrt`:
+  `V_{2^j}(n) = (V_{2^{j+1}}(n))²` when `2^{j+2} ∣ n`) — the per-threshold supply contraction any
+  `Z(t)`-pole / m∗ argument consumes.
+- **PROVED, axiom-clean** — the **supply-vs-budget gap** (constraint lemma,
+  `budget_exponent_lt_supply_exponent`): for `n = 2^L` with `2L² + 2L ≤ n` (i.e. `L ≥ 8`), at every
+  depth `1 ≤ r ≤ L` (in particular the prize binding depth `r ≈ log₂ n`) the supply exponent strictly
+  exceeds the budget exponent `L`, so `V_r(n) > 2^L = q·ε*` — the coset-union vanishing supply is
+  super-exponentially LOOSE at prize depth and is **not the binding constraint** (crossover to the
+  budget only at `r* ≈ n/(2 log₂ n)`; logged to `DISPROOF_LOG.md`).
 - **PROBE-CARRIED (not formalized; honest)** — the identification `vanishing ⟺ coset-union` over
   `ℤ[ζ_n]` and the equality of the vanishing count with the coset-union count.  That cyclotomic
   identity is exactly Lam–Leung char-0 / the antipodal–coset law (in-tree elsewhere); here we carry
@@ -212,6 +223,48 @@ by `n` (`g(r) = 1/dyadicBlock r`).  Stated as the exponent identity. -/
 theorem overdetVanishingCount_log (n r : ℕ) :
     overdetVanishingCount n r = 2 ^ (n / dyadicBlock r) := rfl
 
+/-! ## Structural consequences for the §6.4 m∗ growth-law (supply profile shape) -/
+
+/-- `dyadicBlock` is constant on each dyadic block `[2^j, 2^{j+1})`: if `r, r'` have the same
+`⌊log₂⌋`, their block sizes (hence vanishing counts) agree.  The supply **plateaus** between
+consecutive powers of two. -/
+theorem dyadicBlock_eq_of_log_eq (r r' : ℕ) (h : Nat.log 2 r = Nat.log 2 r') :
+    dyadicBlock r = dyadicBlock r' := by
+  unfold dyadicBlock; rw [h]
+
+/-- **Supply plateau**: the vanishing count is constant on each dyadic block. -/
+theorem overdetVanishingCount_eq_of_log_eq (n r r' : ℕ) (h : Nat.log 2 r = Nat.log 2 r') :
+    overdetVanishingCount n r = overdetVanishingCount n r' := by
+  unfold overdetVanishingCount; rw [dyadicBlock_eq_of_log_eq r r' h]
+
+/-- `dyadicBlock (2^j) = 2^{j+1}` (the block size at a power-of-two depth). -/
+theorem dyadicBlock_pow_two (j : ℕ) : dyadicBlock (2 ^ j) = 2 ^ (j + 1) := by
+  unfold dyadicBlock; rw [Nat.log_pow (by decide)]
+
+/-- **Dyadic square-root law**: across the threshold `r = 2^j`, the supply takes an exact square
+root.  Precisely, when `2^{j+1} ∣ n` the count at depth `2^j` is the square of the count at depth
+`2^{j+1}`:  `V_{2^j}(n) = (V_{2^{j+1}}(n))²`.  (Powers of two with exponents `n/2^{j+1}` and
+`n/2^{j+2}`, and `n/2^{j+1} = 2·(n/2^{j+2})` when `2^{j+2} ∣ n`.)  This is the exact per-threshold
+supply contraction the §6.4 `Z(t)`-pole / m∗ growth-law argument consumes. -/
+theorem overdetVanishingCount_dyadic_sqrt (n j : ℕ) (hd : 2 ^ (j + 2) ∣ n) :
+    overdetVanishingCount n (2 ^ j) = (overdetVanishingCount n (2 ^ (j + 1))) ^ 2 := by
+  unfold overdetVanishingCount
+  rw [dyadicBlock_pow_two, dyadicBlock_pow_two, ← pow_mul]
+  congr 1
+  -- n/2^{j+1} = (n/2^{j+2})*2, using 2^{j+2} ∣ n and 2^{j+2} = 2^{j+1}*2
+  obtain ⟨c, rfl⟩ := hd
+  have hp1 : 0 < (2:ℕ) ^ (j + 1) := Nat.two_pow_pos _
+  have hp2 : 0 < (2:ℕ) ^ (j + 2) := Nat.two_pow_pos _
+  -- LHS exponent:  (2^{j+2}*c) / 2^{j+1} = 2*c
+  have hL : 2 ^ (j + 2) * c / 2 ^ (j + 1) = 2 * c := by
+    rw [show (2:ℕ) ^ (j + 2) * c = 2 ^ (j + 1) * (2 * c) by
+          rw [pow_succ, Nat.mul_assoc],
+        Nat.mul_div_cancel_left _ hp1]
+  -- RHS exponent doubled:  ((2^{j+2}*c) / 2^{j+2}) * 2 = c*2
+  have hR : 2 ^ (j + 2) * c / 2 ^ (j + 2) * 2 = 2 * c := by
+    rw [Nat.mul_div_cancel_left _ hp2, Nat.mul_comm]
+  rw [hL, hR]
+
 /-- **Connection to the coset-union heart.**  If a depth-`r` vanishing family is realized exactly by
 the unions of the `m = n / dyadicBlock r` cosets (the probe-verified `vanishing ⟺ coset-union`
 identity), then its cardinality equals `overdetVanishingCount n r`.  This composes the combinatorial
@@ -224,5 +277,46 @@ theorem vanishingCount_eq_of_cosetUnion
     {n r : ℕ} (hcard : Fintype.card β = n / dyadicBlock r) :
     (Finset.univ.image (blockUnion block)).card = overdetVanishingCount n r := by
   rw [overdetVanishingCount, coset_union_card block hdisj hne, hcard]
+
+/-! ## The supply-vs-budget gap (constraint lemma): the coset-union supply is loose at prize depth
+
+The prize budget is `q·ε* ≈ n` (the `#bad` cap), so the **budget exponent** is `log₂ n = L` (for
+`n = 2^L`).  The over-det vanishing supply is `2^{n / dyadicBlock r}`.  At any depth `r ≤ L`
+(in particular the prize binding depth `r ≈ log₂ n`), `dyadicBlock r ≤ 2L`, so the supply exponent
+`n / dyadicBlock r ≥ n / (2L)` — which **exceeds the budget exponent `L`** once `n > 2L²`.  Hence the
+coset-union vanishing supply is super-exponentially ABOVE the budget throughout the shallow
+prize-relevant regime: it is NOT the binding constraint at prize depth (probe `r*/n = 1/(2 log₂ n)`
+crossover, `probe_zeta_supply_vs_budget.py`). -/
+
+/-- For `1 ≤ r ≤ L`, the dyadic block size at depth `r` is at most `2L`: `dyadicBlock r ≤ 2L`.
+(`log₂ r ≤ log₂ L` and `2^{log₂ L} ≤ L`, so `dyadicBlock r = 2^{log₂ r + 1} ≤ 2·2^{log₂ L} ≤ 2L`.) -/
+theorem dyadicBlock_le_two_mul (r L : ℕ) (hr : 1 ≤ r) (hrL : r ≤ L) :
+    dyadicBlock r ≤ 2 * L := by
+  have hLpos : 1 ≤ L := le_trans hr hrL
+  unfold dyadicBlock
+  calc 2 ^ (Nat.log 2 r + 1)
+      = 2 * 2 ^ (Nat.log 2 r) := by rw [pow_succ, Nat.mul_comm]
+    _ ≤ 2 * 2 ^ (Nat.log 2 L) := by
+          apply Nat.mul_le_mul_left
+          exact Nat.pow_le_pow_right (by decide) (Nat.log_mono_right hrL)
+    _ ≤ 2 * L := by
+          apply Nat.mul_le_mul_left
+          exact Nat.pow_log_le_self 2 (Nat.one_le_iff_ne_zero.mp hLpos)
+
+/-- **Supply-vs-budget gap (constraint lemma).**  For `n = 2^L` with the prize relation
+`2L² + 2L ≤ n` (holds for `L ≥ 8`: `2·64 + 16 = 144 ≤ 256 = 2^8`), at every depth `1 ≤ r ≤ L` the
+over-det vanishing supply exponent strictly exceeds the budget exponent `L`: `L < n / dyadicBlock r`.
+Equivalently `V_r(n) = 2^{n/dyadicBlock r} > 2^L = budget`.  So the coset-union vanishing supply is
+(super-exponentially) LOOSE at prize depth — it is not the binding constraint. -/
+theorem budget_exponent_lt_supply_exponent
+    (L r : ℕ) (hr : 1 ≤ r) (hrL : r ≤ L) (hbig : 2 * L * L + 2 * L ≤ 2 ^ L) :
+    L < (2 ^ L) / dyadicBlock r := by
+  have hdpos : 0 < dyadicBlock r := by unfold dyadicBlock; exact Nat.two_pow_pos _
+  have hdle : dyadicBlock r ≤ 2 * L := dyadicBlock_le_two_mul r L hr hrL
+  -- L < N/d ⇔ L+1 ≤ N/d ⇔ (L+1)*d ≤ N; and (L+1)*d ≤ (L+1)*2L = 2L²+2L ≤ 2^L.
+  rw [Nat.lt_iff_add_one_le, Nat.le_div_iff_mul_le hdpos]
+  calc (L + 1) * dyadicBlock r ≤ (L + 1) * (2 * L) := Nat.mul_le_mul_left _ hdle
+    _ = 2 * L * L + 2 * L := by rw [Nat.add_mul, Nat.one_mul]; rw [Nat.mul_comm L (2 * L)]
+    _ ≤ 2 ^ L := hbig
 
 end ProximityGap.Frontier.OverdetVanishingCosetCount
