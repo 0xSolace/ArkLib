@@ -9,7 +9,7 @@ import { CopyCommand } from "../CopyCommand";
  */
 export function Contribute() {
   return (
-    <section id="contribute" className="wide-col mt-10 mb-6 scroll-mt-24">
+    <section id="contribute" className="wide-col mt-5 mb-6 scroll-mt-24">
       <div className="mine-hero">
         <p className="mine-eyebrow">
           <span aria-hidden>⛏</span> open problem · live · embarrassingly parallel
