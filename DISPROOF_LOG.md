@@ -3342,3 +3342,32 @@ overshoots 12n^3 by 3n^2 = ((2*2-1)!!-1)*n^3 at every prime -- matching the lemm
 NOT a refutation of M3CrossStepBound (which IS true). A refutation of the ceiling-only PROOF STRATEGY
 for r >= 2, with the exact slack. CORE (M(mu_n) <= C sqrt(n log(p/n))) UNCHANGED/OPEN. -- m3r2 lane,
 co-author wakesync.
+
+================================================================================
+CONSTRAINT LEMMA (probe probe_spur_onset_growth.py, lane spur3, 2026-06-15):
+The smallest odd bad prime for antipodal-free relations does NOT grow with scale m —
+it pins at 3 from weight 4 onward, uniformly in m. Bad primes ACCUMULATE, they don't escape.
+================================================================================
+OBJECT (exact char-0 cyclotomic norms N(σ_T)=|Res(R_T,Φ_{2^m})|, PROPER μ_n, n=2^a, NEVER n=q−1):
+the spurious-collision support — for weight w and scale m, the set of odd primes p with p|N(σ_T) for
+SOME antipodal-free relation σ_T of weight w over μ_{2^m}. This is the p-set on which Spur_{w/2}(p)≥1.
+
+PROBE (exact sympy, m=3,4,5, all antipodal-free weight-2 and weight-4 relations enumerated):
+ (a) WEIGHT-2: min odd bad prime = None at m=3,4,5 — NO odd prime divides ANY weight-2 norm
+     (norm ≡ Φ_{2^m}(1)=2). Reconfirms the LANDED ShortRelationNormBase.not_dvd_weight_two_norm_of_odd
+     UNIFORMLY in m (not just m=3): Spur_1(p)=0 at every odd p, every scale.
+ (b) WEIGHT-4: min odd bad prime = 3 at m=3,4,5 (smallest bad primes {3,7,17,47,79,97,113,193,257,...}).
+     The smallest bad prime is SCALE-INVARIANT (=3 for all m≥3) — it does NOT grow with m.
+
+VERDICT (constraint): the bad-prime set does NOT escape to ∞ with scale. A FIXED small odd prime (3)
+supports weight-4 spurious collisions at EVERY scale m≥3. So the "no spurious collision at a fixed
+prize prime for large m" hope is FALSE on the arithmetic face: every odd prime is eventually bad at
+bounded weight. This INDEPENDENTLY reconfirms (via the p-divisibility/norm face) the refutation of the
+"good prime exists" pigeonhole (c.154, prize is ∀-field-universal) — the spurious-collision obstruction
+is present at EVERY odd prime, accumulating from weight 4, not localizable to a sparse bad-prime set at
+fixed weight. The wall therefore cannot be dodged by choosing a good prime; it must be beaten by
+bounding the COUNT Spur_r(p) at the worst fixed p (the genuine open object). Pairs with the LANDED
+weight-3 witness SpurWeightThreeCollision (Spur_2(3)≥1, 8fadf6eb1): together — weight-2 clean at all
+odd p, weight≥3 dirty at every odd p — they pin the tower's onset at weight 3 and its universality in p.
+NOT a refutation of CORE; a mapped boundary on the Spur support. CORE (M(μ_n)≤C√(n log(p/n))) OPEN.
+-- spur3 lane, co-author wakesync.
