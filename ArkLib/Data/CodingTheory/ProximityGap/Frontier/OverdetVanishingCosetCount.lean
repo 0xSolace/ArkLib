@@ -65,6 +65,11 @@ supply is coset-union-dominated and grows like `2^{n/2^{⌊log₂ r⌋+1}}`.
   power of two `> r` (`dyadicBlock_gt`, `r_lt_dyadicBlock`, `dyadicBlock_le` minimality), and the
   **square/self-similar law** at the count level (`overdetVanishingCount_square`:
   the count for index `2n` is the square of the count for `n`, the §6.5 tower recursion).
+- **PROVED, axiom-clean** — the **supply-profile shape** for the §6.4 m∗ growth-law: the count
+  **plateaus** on each dyadic block `[2^j, 2^{j+1})` (`overdetVanishingCount_eq_of_log_eq`) and takes
+  an **exact square root at every threshold** `r = 2^j` (`overdetVanishingCount_dyadic_sqrt`:
+  `V_{2^j}(n) = (V_{2^{j+1}}(n))²` when `2^{j+2} ∣ n`) — the per-threshold supply contraction any
+  `Z(t)`-pole / m∗ argument consumes.
 - **PROBE-CARRIED (not formalized; honest)** — the identification `vanishing ⟺ coset-union` over
   `ℤ[ζ_n]` and the equality of the vanishing count with the coset-union count.  That cyclotomic
   identity is exactly Lam–Leung char-0 / the antipodal–coset law (in-tree elsewhere); here we carry
@@ -211,6 +216,48 @@ theorem overdetVanishingCount_square (n r : ℕ) (hd : dyadicBlock r ∣ n) :
 by `n` (`g(r) = 1/dyadicBlock r`).  Stated as the exponent identity. -/
 theorem overdetVanishingCount_log (n r : ℕ) :
     overdetVanishingCount n r = 2 ^ (n / dyadicBlock r) := rfl
+
+/-! ## Structural consequences for the §6.4 m∗ growth-law (supply profile shape) -/
+
+/-- `dyadicBlock` is constant on each dyadic block `[2^j, 2^{j+1})`: if `r, r'` have the same
+`⌊log₂⌋`, their block sizes (hence vanishing counts) agree.  The supply **plateaus** between
+consecutive powers of two. -/
+theorem dyadicBlock_eq_of_log_eq (r r' : ℕ) (h : Nat.log 2 r = Nat.log 2 r') :
+    dyadicBlock r = dyadicBlock r' := by
+  unfold dyadicBlock; rw [h]
+
+/-- **Supply plateau**: the vanishing count is constant on each dyadic block. -/
+theorem overdetVanishingCount_eq_of_log_eq (n r r' : ℕ) (h : Nat.log 2 r = Nat.log 2 r') :
+    overdetVanishingCount n r = overdetVanishingCount n r' := by
+  unfold overdetVanishingCount; rw [dyadicBlock_eq_of_log_eq r r' h]
+
+/-- `dyadicBlock (2^j) = 2^{j+1}` (the block size at a power-of-two depth). -/
+theorem dyadicBlock_pow_two (j : ℕ) : dyadicBlock (2 ^ j) = 2 ^ (j + 1) := by
+  unfold dyadicBlock; rw [Nat.log_pow (by decide)]
+
+/-- **Dyadic square-root law**: across the threshold `r = 2^j`, the supply takes an exact square
+root.  Precisely, when `2^{j+1} ∣ n` the count at depth `2^j` is the square of the count at depth
+`2^{j+1}`:  `V_{2^j}(n) = (V_{2^{j+1}}(n))²`.  (Powers of two with exponents `n/2^{j+1}` and
+`n/2^{j+2}`, and `n/2^{j+1} = 2·(n/2^{j+2})` when `2^{j+2} ∣ n`.)  This is the exact per-threshold
+supply contraction the §6.4 `Z(t)`-pole / m∗ growth-law argument consumes. -/
+theorem overdetVanishingCount_dyadic_sqrt (n j : ℕ) (hd : 2 ^ (j + 2) ∣ n) :
+    overdetVanishingCount n (2 ^ j) = (overdetVanishingCount n (2 ^ (j + 1))) ^ 2 := by
+  unfold overdetVanishingCount
+  rw [dyadicBlock_pow_two, dyadicBlock_pow_two, ← pow_mul]
+  congr 1
+  -- n/2^{j+1} = (n/2^{j+2})*2, using 2^{j+2} ∣ n and 2^{j+2} = 2^{j+1}*2
+  obtain ⟨c, rfl⟩ := hd
+  have hp1 : 0 < (2:ℕ) ^ (j + 1) := Nat.two_pow_pos _
+  have hp2 : 0 < (2:ℕ) ^ (j + 2) := Nat.two_pow_pos _
+  -- LHS exponent:  (2^{j+2}*c) / 2^{j+1} = 2*c
+  have hL : 2 ^ (j + 2) * c / 2 ^ (j + 1) = 2 * c := by
+    rw [show (2:ℕ) ^ (j + 2) * c = 2 ^ (j + 1) * (2 * c) by
+          rw [pow_succ, Nat.mul_assoc],
+        Nat.mul_div_cancel_left _ hp1]
+  -- RHS exponent doubled:  ((2^{j+2}*c) / 2^{j+2}) * 2 = c*2
+  have hR : 2 ^ (j + 2) * c / 2 ^ (j + 2) * 2 = 2 * c := by
+    rw [Nat.mul_div_cancel_left _ hp2, Nat.mul_comm]
+  rw [hL, hR]
 
 /-- **Connection to the coset-union heart.**  If a depth-`r` vanishing family is realized exactly by
 the unions of the `m = n / dyadicBlock r` cosets (the probe-verified `vanishing ⟺ coset-union`
