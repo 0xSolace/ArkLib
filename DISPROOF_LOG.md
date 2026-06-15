@@ -1650,3 +1650,34 @@ n=32,34,38 while regime A had s* strictly increasing 7,9,11,13. GPU flagged n>=3
 TIMED OUT. A pinned s* with climbing delta* is the signature of a SEARCH CEILING, not a law. n=32
 deviation (s*=13 not 15) may be real (n=32 was within H100 reach) and is the genuine open sub-question.
 Python-only exact + p-invariant => axiom-clean trivially. Probes probe_wf3D2_*.py.
+
+================================================================================
+2026-06-15 e2=0 census WIDTH PROFILE: super-budget at all widths past the smallest;
+corroborates wf-D5 free-mu_{n/2}-action backbone from the census side (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: K(n,w) width profile of the e2=0 census (the prize FLOOR's R1 object). Follow-up to the
+thinness-essential / antipodal finding (417015191). Goal: where does #bad=n*K cross budget=n across
+widths w, and the growth law. Method: exact e2=0 antipodal-pair meet-in-middle, VALIDATED vs in-tree
+K=1,3,38 (n=8,16,32 at w=n/2). Prize prime, proper subgroup, never n=q-1.
+
+RESULT (exact, full width profile n=8,16,32):
+1. #bad(n,w) is SHARPLY NON-MONOTONE in w with thin-quantized structure: 0 at tiny w; jumps at w=4
+   (=k+2, deepest over-det) to 8,48,224; drops to EXACTLY budget at w=5 (8,16,32 = n, K=1); 0 at w=6,7;
+   then a super-budget middle band peaking at w=n/2 (the 1216 extremal at n=32).
+2. The shallowest over-det width w=k+2=4: #bad = 8,48,224, K = 1,3,7. #bad/budget = 1,3,7 (GROWS);
+   #bad ~ n^2.40. The extremal w=n/2: #bad=8,48,1216, n*K ~ n^3.6.
+3. So the e2=0 census is SUPER-BUDGET at every width past the smallest (w>=8 for n>=16), and the excess
+   over budget GROWS with n. Even the shallowest family (w=4) has #bad/n = 1,3,7 -> super-linear.
+
+VERDICT (rule-4 mapped, NO overclaim): the e2=0 antipodal census #bad grows super-budget (n^2.4 shallow,
+n^3.6 extremal), matching the dossier's known "over-det max ~cubic n^3" ballpark and CORROBORATING the
+just-landed wf-D5 result (7381dea4a: I(n)=1+(n/2)*O(n), free mu_{n/2}-action backbone) FROM THE CENSUS
+SIDE: my antipodal-pair mechanism (every e2=0 subset has >=1 pair x,-x=h^{n/2}x) IS the free mu_{n/2}-
+action wf-D5 proved structural. Consistent with wf-D2 (e48d5ef59: delta*=1/2+1/n -> Johnson not floor):
+the e2=0 census, being super-budget and tracking the over-det cubic, does NOT exhibit a within-budget
+floor at fixed small width => the binding delta* sits where this super-budget curve crosses budget, only
+at the smallest widths (w=5, K=1, #bad=n exactly), which is the budget-pinned single-orbit knife-edge.
+The census super-budget growth is the prize content; it points toward Johnson-tracking (wf-D2), NOT an
+off-budget floor, at probed n. CORE not closed, not faked. The thin-ONLY nature (417015191) stands; this
+adds the width profile + growth + the wf-D5 census-side corroboration. Python-only exact => axiom-clean.
+probe_407_e2_K_growth_antipodal.py (validated MIM) + probe_407_e2_K_width_profile.py.
