@@ -1,5 +1,72 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C40 "BCH/RS Weight-Distribution List Bound via MacWilliams Duality" REDUCES-TO-JOHNSON (probe_c40_macwilliams_bch_weightdist.py)
+
+Conjecture C40 (issue #444, gmmds-homds, feasibility 2): the dual (BCH) weight distribution of
+RS[k] over μ_n, computed via MacWilliams + the proven antipodal/cyclotomic-coset structure, bounds
+the number of low-weight dual words and hence the far-line list size below budget PAST Johnson.
+REDUCES-TO: MacWilliams identity + BCH weight-distribution moments + in-tree cyclotomic-coset
+structure + L3 orbit-count.
+
+**Verdict: reduces-to-johnson** (with a secretly-open undertone on the only past-Johnson lever).
+The MacWilliams / weight-distribution object is exactly the second-moment functional already in the
+tree — domain-INDEPENDENT, its list bound is the Johnson/annulus bound, and it is provably blind to
+the structure δ* depends on. Probe `scripts/probes/probe_c40_macwilliams_bch_weightdist.py` (exact
+integer arithmetic mod prime p, proper subgroup μ_n, p > n³, NEVER the full group): all four
+predictions pass.
+
+**Horn 1 — the weight distribution is a DOMAIN-INDEPENDENT functional (it forgets μ_n).** A weight
+distribution `A_w = #{c : wt(c)=w}` is a permutation-invariant functional of the code; MacWilliams is
+the exact Krawtchouk transform `A^⊥ = (1/|C|)·K·A` between `C` and `C^⊥`. RS[k] over ANY n-subset of
+F_p is MDS (in-tree `reedSolomonFrame_isMDS`; O109 CENSUS 1 confirms the empirical weight dist matches
+the classical MDS closed form `A_w = C(n,w)·Σ_j(−1)^j C(w,j)(q^{w−d+1−j}−1)` at every tested instance).
+- **P1 (probe, empirical at small q):** `A_w(μ_n) == A_w(random subset) == A_w(arithmetic-progression
+  domain) == MDS formula` — IDENTICAL at every tested (n,k,q) (n=4,6; q=13,17; proper subgroups).
+- **P2 (probe):** the MacWilliams transform of A[RS[k]] equals A[RS[n−k]] (the dual GRS is again MDS),
+  i.e. the "dual BCH weight distribution" is itself the SAME fixed MDS form — domain-blind. The
+  antipodal/cyclotomic-coset structure lives in the DOMAIN, which the weight distribution has already
+  forgotten; nothing about μ_n survives the transform that was not already in (n,k,q). Verified
+  n∈{8,12,16}, k=4, p>n³.
+
+⟹ The entire MacWilliams/BCH-weight-distribution object depends only on (n,k,q). But δ* is provably
+DOMAIN-DEPENDENT past Johnson (μ_n is the worst case; BKR10 / BCHKS Thm 1.13). A functional that is
+identical for μ_n and for a random domain cannot pin the worst-case-over-μ_n threshold.
+
+**Horn 2 — its list bound IS the second-moment / Johnson bound, vacuous past Johnson.** The only list
+bound a symmetric weight functional yields is the "many low-weight codewords in a ball" / annulus
+count = the second moment. This is exactly the in-tree object: `AgreementMomentTwo.sum_agreement_
+spectrum_sq` proves M2 "enters through the weight enumerator alone, which MDS pins" — the variance is
+weight-distribution-determined and domain-independent. And `CandidateBridgeLoop16` proves its wall:
+`second_moment_fails_in_band` / `sq_gt_iff_large_gap` — the second-moment denominator `a²−n·b`
+(`a=(1−δ)n`, `b=ρn`) is `> 0` iff `(1−δ)²>ρ` iff `δ < 1−√ρ` = Johnson, and `≤ 0` (no bound) strictly
+past Johnson.
+- **P3 (probe):** for n=16, k∈{2,4,8}, the denominator is `>0` at `δ_J−0.01` and `≤0` at `δ_J+0.01`
+  — the bound is silent over the ENTIRE window interior `(1−√ρ, 1−ρ)` it is supposed to control.
+
+**Horn 3 — the real far-line list is domain-DEPENDENT, invisible to the functional (SECRETLY-OPEN
+undertone).** The far-line incidence `I(δ)` (the prize object) is NOT a permutation-invariant
+functional of the weight distribution: a far line `x^a+α x^b` close to RS[k] is a low-degree-pencil
+object whose α-count obeys the orbit-count law L3 (`I = N·n/gcd(b−a,n)`), depending on WHICH points the
+domain uses.
+- **P4 (probe, genuinely past Johnson):** over the actual subgroup μ_n the structured bad-scalar set
+  (the KK/O11″ mechanism, `bad α = −e₁(S)` over r-subsets S) DIFFERS from the same combinatorial count
+  over a random domain (m=8,r=3: 40 vs 56; m=16,r=4: 1185 vs 1507; m=32,r=5: 32672 vs 32707; all at
+  radii δ strictly past the effective Johnson radius). The far-line list distinguishes μ_n from a
+  random domain; the weight distribution (P1/P2: identical for both) provably cannot.
+
+So to reach past Johnson C40 must inject a domain-DEPENDENT input — which is precisely the open
+p-dependent BGK sup-norm `M(μ_n) ≤ C√(n·log(p/n))` (faces 3↔4 of the open core). MacWilliams duality,
+being a domain-blind symmetric transform, cannot supply it.
+
+**Why not refuted-false:** MacWilliams duality and the MDS weight distribution are genuinely true and
+formalized (in-tree O109/M2). C40 is not false; it is a TRUE-but-Johnson-only object whose past-Johnson
+rider ("bounds the far-line list past Johnson") is unsubstantiated and would require the open BGK core.
+Same horn-family as C41 (GS/MDS, reduces-to-johnson), C32/C21 (the past-Johnson lever is the open BGK
+bound renamed).
+
+**Probe:** `scripts/probes/probe_c40_macwilliams_bch_weightdist.py`, commit pinned below. Python-only
+(exact arithmetic mod prime); no Lean changed.
+
 ## 2026-06-15 — CONJECTURE C41 "Guruswami-Sudan / Johnson is Tight for Explicit μ_n + potential-function Θ(1/log n) strip" REDUCES-TO-JOHNSON (degenerates to secretly-open on the past-Johnson lever)
 
 Conjecture C41 (issue #444, gmmds-homds, feasibility 2): the GS list-decoding analysis combined
