@@ -846,6 +846,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.E2VanishRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.E2VanishWidthFourFullCount
 import ArkLib.Data.CodingTheory.ProximityGap.E2W4CyclotomicNonCollision
 import ArkLib.Data.CodingTheory.ProximityGap.EffectiveTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.EnergyBoundImplication
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyCharacterTransport
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyDilationReduction
 import ArkLib.Data.CodingTheory.ProximityGap.EnergyExcessCore
@@ -963,6 +964,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodFirstMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodRealValued
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GrossKoblitzPhaseNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HankelPronyCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealLatticeMinkowskiCorrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealSVPGirthVerdict
