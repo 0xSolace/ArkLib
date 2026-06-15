@@ -144,6 +144,64 @@ theorem farIncidence_affine_le_witnesses
       (hfar S hS)
   exact hsub
 
+/-- **The exact in-tree `farIncidence` shape, bounded by the large-witness count.**
+This matches the deployed `B1IncidenceBridge.farIncidence` filter *verbatim*: `γ` is bad iff there
+exists a witness set `S` of size `≥ (1−δ)·n` and a codeword `w ∈ C` agreeing with the line
+`u₀ + γ·u₁` on all of `S`.  We range the witness family over a finite index type `σ` carrying the
+sets `wit : σ → Finset ι` and the size predicate `big : σ → Prop`.  Given the **per-witness pinning
+hypothesis** — for each big witness `S`, at most one `γ` admits an agreeing codeword — the whole
+far incidence is `≤ #(big witnesses)`, a combinatorial (subset) count uniform in `F`.
+
+HONEST: the per-witness pinning hypothesis `hpin` is exactly the hard over-determination content
+(`incidence_subsingleton_of_not_mem` once the agreement system is read as submodule membership); it
+is kept an explicit input, NOT discharged here.  This lemma is the type-checked statement that *if*
+each far witness pins `γ`, the open `WorstCaseFarIncidenceBounded` reduces to bounding the
+(p-independent) big-witness count — the precise remaining obligation, not a fake closure. -/
+theorem farIncidence_shape_le_bigWitnesses
+    {F : Type*} [Fintype F] [DecidableEq F]
+    {ι : Type*} {A : Type*} [SMul F A] [Add A]
+    {σ : Type*} [Fintype σ] [DecidableEq σ]
+    (C : Set (ι → A)) (u₀ u₁ : ι → A)
+    (wit : σ → Finset ι) (big : σ → Prop) [DecidablePred big]
+    (hcover : ∀ {S : Finset ι} {γ : F},
+        (∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) → (∃ j : σ, big j ∧ wit j = S))
+    [DecidablePred (fun γ : F => ∃ S : Finset ι,
+        (∃ j : σ, big j ∧ wit j = S) ∧ ∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i)]
+    [∀ j : σ, DecidablePred (fun γ : F => ∃ w ∈ C, ∀ i ∈ wit j, w i = u₀ i + γ • u₁ i)]
+    (hpin : ∀ j : σ, big j →
+        {γ : F | ∃ w ∈ C, ∀ i ∈ wit j, w i = u₀ i + γ • u₁ i}.Subsingleton) :
+    (Finset.univ.filter (fun γ : F => ∃ S : Finset ι,
+        (∃ j : σ, big j ∧ wit j = S) ∧ ∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i)).card
+      ≤ (Finset.univ.filter big).card := by
+  classical
+  set bigW : Finset σ := Finset.univ.filter big with hbigW
+  -- the γ-filter is contained in the bUnion over big witnesses j of the per-witness γ-sets.
+  set perWit : σ → Finset F :=
+    fun j => Finset.univ.filter (fun γ : F => ∃ w ∈ C, ∀ i ∈ wit j, w i = u₀ i + γ • u₁ i)
+    with hperWit
+  calc
+    (Finset.univ.filter (fun γ : F => ∃ S : Finset ι,
+        (∃ j : σ, big j ∧ wit j = S) ∧ ∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i)).card
+        ≤ (bigW.biUnion perWit).card := by
+          apply Finset.card_le_card
+          intro γ hγ
+          simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hγ
+          obtain ⟨S, ⟨j, hbj, hjS⟩, hagree⟩ := hγ
+          refine Finset.mem_biUnion.mpr ⟨j, ?_, ?_⟩
+          · simp only [hbigW, Finset.mem_filter, Finset.mem_univ, true_and]; exact hbj
+          · simp only [hperWit, Finset.mem_filter, Finset.mem_univ, true_and]
+            subst hjS; exact hagree
+    _ ≤ ∑ j ∈ bigW, (perWit j).card := Finset.card_biUnion_le
+    _ ≤ ∑ _j ∈ bigW, 1 :=
+          Finset.sum_le_sum (fun j hj => by
+            simp only [hbigW, Finset.mem_filter, Finset.mem_univ, true_and] at hj
+            rw [hperWit, Finset.card_le_one]
+            intro a ha b hb
+            simp only [Finset.mem_filter, Finset.mem_univ, true_and] at ha hb
+            exact hpin j hj ha hb)
+    _ = bigW.card := by simp
+    _ = (Finset.univ.filter big).card := by rw [hbigW]
+
 end ProximityGap.Frontier.OverdetIncidenceUnionCount
 
 /-! ## Axiom audit -/
@@ -153,3 +211,5 @@ end ProximityGap.Frontier.OverdetIncidenceUnionCount
   ProximityGap.Frontier.OverdetIncidenceUnionCount.card_filter_exists_subsingleton_le'
 #print axioms
   ProximityGap.Frontier.OverdetIncidenceUnionCount.farIncidence_affine_le_witnesses
+#print axioms
+  ProximityGap.Frontier.OverdetIncidenceUnionCount.farIncidence_shape_le_bigWitnesses
