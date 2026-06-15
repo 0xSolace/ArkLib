@@ -35,3 +35,18 @@ The 2-power recursion is self-similar and bottoms out trivially IN CHAR 0, where
 Wick energy (clean, recordable). But the prize lives in char-p at r≈log q, and every route — char-p excess,
 the exponential realizability subset-sum, the irrecoverable √2 singleton arc — hits the SAME irreducible wall.
 No closure. The campaign's deepest, most self-similar attack confirms the open core with maximal precision.
+
+## UPDATE: orbits workflow (q-independence CONFIRMED + structure found, my "O(1)" corrected)
+- p-INDEPENDENCE rigorously confirmed: at q=97(<n^4) count=3 (polluted); at q=2e9(>n^4) count=23 = EXACT char-0.
+  So char-0 = q>>n^4 object exactly. The q-independent incidence is the right (finite) prize object; char-p is a red herring.
+- CORRECTION: my "#orbits=1 at window edge" (from c32) was an UNDERCOUNT (saw only the 6-pairs+1-free core-size-1 family).
+  Full pure-e_2=0 count at n=32,w=13 = 23 = 1 + 22 (the 5-pairs+3-core families). So #orbits = Theta(n), NOT O(1).
+- CLEAN STRUCTURE (genuine new math, char-0 q-indep):
+  * P6 closed form: #orbits = n/4 EXACTLY in the plateau band (n=8,16,32,64,128 -> 2,4,8,16,32).
+  * P7 free-rank step law: gamma=-e_1(S), e_2(S)=0 <=> e_1(S)^2 = p_2(S) (Newton). Balanced sets exist only w=0,1 mod 4.
+    #orbits keyed to free-rank r(w) (min deletions to reach a zero-sum core): r=1 at shallowest balanced band (1 orbit
+    sub-family), r=2,3 deeper. The Theta(n) growth is driven by the rank-2,3 core families.
+- RECONCILIATION: Theta(n) incidence at the window edge is CONSISTENT with the crossing (I=n=budget) being there;
+  the prize floor is now a CONSTANT-FACTOR question (is the q-indep incidence <= n at the window edge?), a FINITE
+  cyclotomic problem (NOT char-p analytic). The clean handle: e_1^2 = p_2 in sumset(mu_{n/2}); count #distinct e_1.
+- The Theta-constant in delta*=1-rho-Theta(1/log n) is exactly this finite count's constant. Live Q-workflow attacks it.
