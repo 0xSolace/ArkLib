@@ -18,3 +18,14 @@ to build/refute, ranked by feasibility (can I land an axiom-clean Lean brick or 
 
 ATTACK ORDER: 1, 2, 4 (all HIGH), then 3, 6, then the rest. Build each as an axiom-clean brick or a
 decisive probe; refute conjectures with countermodels; never fabricate closure.
+
+## Refutations log (goal-grind)
+- **REFUTED** "first bad additive-energy prime grows exponentially in n": first-bad-prime = 17,17,97 for
+  n=8,16,32 (SMALL, not exponential, below prize n^4). Bad primes are a sparse finite set; the r=2
+  threshold cannot be improved to p>n². (Prize primes p~n^4 measured clean anyway — bad primes don't
+  land near n^4 for tested n; whether they do for large n is avenue #3, in workflow.)
+  Probe: /tmp/probe_first_bad_energy_prime.py.
+
+## Bricks landed (goal-grind)
+- KambireNotExtremal.lean (a52a82467) — choose_le/lt_multichoose: Kambiré subset-sum not extremal.
+- DyadicTowerRecursion.lean (da6837408) — sum_tower_split + period_parallelogram: tower substrate.
