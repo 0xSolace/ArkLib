@@ -77,18 +77,22 @@ def kernel_basis(q, n, k, D_eval):
     return basis
 
 def run(q, n, k, r, cap=8_000_000):
+    # PARAMETER SPACE = F_q^{dimD}: S(u0) depends on u0 only via t_i = (basis_i . u0). The distinct
+    # values of t range over ALL of F_q^{dimD} (basis independent), so sweeping t in F_q^{dimD} is
+    # the EXACT sup over the q^{k+1}-coset parameter family (verified vs full q^n sweep, /tmp).
     D_eval = [pow(primroot(q), ((q-1)//n)*i, q) for i in range(n)]
     basis = kernel_basis(q, n, k, D_eval)
     dimD = len(basis)
     assert dimD == n-k-1
-    if q**n > cap or q**dimD > cap:
-        return dict(skip=f"q^n={q**n} q^dimD={q**dimD} > cap")
+    if dimD <= 0 or q**dimD > cap:
+        return dict(skip=f"dimD={dimD} q^dimD={q**dimD} (cap {cap})")
     def kraw_shell(l, j):
         return sum((-1)**i*(q-1)**(l-i)*comb(j, i)*comb(n-j, l-i)
                    for i in range(0, l+1) if 0 <= l-i <= n-j and i <= j)
     Kball = [sum(kraw_shell(l, j) for l in range(0, r+1)) for j in range(n+1)]
     Ball = Kball[0]
-    # Build D elements with their Krawtchouk weights, DROP trivial xi=0.
+    # Each D element <-> coefficient vector coeffs in F_q^{dimD}; xi.u0 = sum coeffs_i t_i.
+    # Store (coeffs, K_w(wt xi)), DROP trivial xi=0.
     Dw = []
     for coeffs in itertools.product(range(q), repeat=dimD):
         if not any(coeffs): continue
@@ -97,17 +101,18 @@ def run(q, n, k, r, cap=8_000_000):
             if ci:
                 for t in range(n): xi[t] = (xi[t] + ci*bvec[t]) % q
         wj = sum(1 for t in xi if t != 0)
-        if Kball[wj] != 0:
-            Dw.append((tuple(xi), Kball[wj]))
+        Kw = Kball[wj]
+        if Kw != 0:
+            Dw.append((coeffs, Kw))
     w = cmath.exp(2j*math.pi/q)
     wpow = [w**a for a in range(q)]
     R_inf = 0.0; sum2 = 0.0; sum4 = 0.0; cnt = 0
-    for u0 in itertools.product(range(q), repeat=n):
+    for tvec in itertools.product(range(q), repeat=dimD):
         S = 0j
-        for xi, Kw in Dw:
+        for coeffs, Kw in Dw:
             ph = 0
-            for t in range(n):
-                if xi[t]: ph += xi[t]*u0[t]
+            for ci, ti in zip(coeffs, tvec):
+                if ci: ph += ci*ti
             S += Kw*wpow[ph % q]
         a = abs(S)
         if a > R_inf: R_inf = a
@@ -131,33 +136,34 @@ if __name__ == "__main__":
            f"{'sup|S|':>11} {'L2(S)':>11} {'c_eff':>7} {'L4':>6} {'sup/Bl':>9} {'L2/Bl':>9}")
 
     print("="*112)
-    print("BLOCK 1 — n-scaling at FIXED smallest-q, rate k/n -> 1/2, window r/n ~ 1/4 (push n=4,8,16).")
-    print("c_eff flat => bounded conductor (CRACK signal); c_eff grows => reduces-to-wall.")
+    print("BLOCK 1 — n-scaling at FIXED dimD=2 (rate k/n -> 1), window r/n ~ 1/4. Grows n with feasible sweep.")
+    print("c_eff flat as n grows => bounded conductor (CRACK signal); c_eff grows => reduces-to-wall.")
     print("="*112); print(hdr)
-    # rate 1/2: k = n/2 ; r ~ n/4. dimD = n-k-1 = n/2-1.  q^dimD feasible only small.
-    for n in [4, 8, 16]:
-        k = n//2; r = max(1, n//4)
+    # dimD = n-k-1 = 2 => k = n-3. r ~ n/4 (interior window). Sweep cost q^2*q^2 = q^4, cheap; push n.
+    for n in [4, 8, 16, 32, 64, 128]:
+        k = n-3; r = max(1, n//4)
         q = smallest_q(n)
         show(run(q, n, k, r))
 
     print()
     print("="*112)
-    print("BLOCK 2 — n-scaling at FIXED rate, HIGH rate k/n=3/4 (smaller dimD => deeper n reachable).")
+    print("BLOCK 2 — dimD-scaling at FIXED n=16 (vary k => dimD=1..5), window r=4. Tests conductor vs |D|.")
     print("="*112); print(hdr)
-    for n in [4, 8, 16, 32]:
-        k = (3*n)//4; r = max(1, n//4)
+    for dimD in [1, 2, 3, 4, 5]:
+        n = 16; k = n - dimD - 1; r = 4
         q = smallest_q(n)
-        show(run(q, n, k, r))
+        show(run(q, n, k, r, cap=30_000_000))
 
     print()
     print("="*112)
-    print("BLOCK 3 — q-dependence at FIXED n,k,r (does c_eff grow toward the prize regime q>>n^3?).")
+    print("BLOCK 3 — q-dependence at FIXED n,k,r=dimD=2 (toward the prize regime q>>n^3).")
     print("="*112); print(hdr)
-    n, k, r = 8, 5, 2   # dimD=2, |D|=q^2 -> sweep q^8 expensive; keep q modest
-    for q in [17, 41, 113]:
+    n, k, r = 8, 5, 2   # dimD=2; sweep q^2, cost q^4
+    for qq in [17, 41, 113, 257, 1033, 4099]:
+        q = qq
         if not (is_prime(q) and (q-1) % n == 0):
-            q = smallest_q(n, qmin=q)
-        show(run(q, n, k, r, cap=60_000_000 if q <= 17 else 6_000_000))
+            q = smallest_q(n, qmin=qq)
+        show(run(q, n, k, r, cap=200_000_000))
 
     print()
     print("READING:")

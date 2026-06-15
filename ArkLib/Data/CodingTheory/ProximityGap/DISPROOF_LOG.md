@@ -1,5 +1,51 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — ANGLE A7 "Croot-Sisask almost-periodicity -> Bohr-set forcing of the worst u0" REFUTED (probe_a7_croot_sisask_bohr.py)
+
+ANGLE (manifesto #7, route 30, relocation (C)/almost-periodicity): the far-line incidence
+N(u0)=|Ball|+S(u0), S(u0)=Sum_{xi in D} K_w(wt xi) e_p(xi.u0), is the FT of a weighted measure on
+the dual support D; Croot-Sisask almost-periodicity of the convolution 1_C * 1_Ball would give a
+Bohr set B of offsets on which N(u0) is almost-constant. NEW LEMMA (invented, tested): if B is
+large enough it forces the worst-case N(u0*) <= 2*avg = the floor, past Johnson. Faithful reduction
+to the prize core: the period f(b)=Sum_{x in mu_n} e_p(bx)=FT(1_{mu_n}) is the simplest faithful
+realization of S (worst u0 <-> worst b=argmax|f(b)|), so the Croot-Sisask program was tested ON f.
+
+PROBE (prize-faithful: p PRIME, p=1 mod n, mu_n PROPER (n|p-1, (p-1)/n>1), p>>n^3 i.e. beta in {4,5,6},
+NEVER n=p-1), n in {8,16,32,64}:
+  PART 1 (the almost-period set). With eps=1 in ||f||_2=sqrt(np) units, the L2-almost-period set is
+    EMPTY: |T_{1.0}|/p = 0.0000 at every n. The favorable (L2, not sup) reading of Croot-Sisask gives
+    NO nontrivial almost-periods at the floor scale. The worst peak is DILATION-FIXED (|f(h b*)|=M),
+    i.e. it sits in a rigid multiplicative orbit, not a translation-Bohr structure. M/floor (floor =
+    sqrt(2 n ln(p/n))) = 0.756, 0.848, 0.891 -> 1 (the floor is real and approached, NOT 2*avg).
+  PART 2 (peak vs Bohr set). On the Bohr-set translates b*+B (B from the large Fourier spectrum of
+    1_{mu_n}), mean|f| is 1.235 (n=8, BELOW the bulk avg 2.005), 6.803 (n=16), 4.409 (n=32), 4.305
+    (n=64) -- vs random+B = 2.005, 3.245, 4.672, 5.506. The peak is either ISOLATED (n=8: translates
+    collapse below average -> the worst u0 ESCAPES the Bohr set) or a partial PLATEAU (n=16: b*+B ~2x
+    random+B -> almost-periodicity PRESERVES the peak, the opposite of forcing it to the average).
+    Neither produces N(u0*) <= 2*avg.
+  PART 3 (THE KILL). The Croot-Sisask forcing target is M <= 2*avg. But M/(2*avg) GROWS MONOTONICALLY:
+    1.653, 2.150, 2.538, 3.012 for n=8,16,32,64 (beta=4); and at FIXED n=16 it rises 2.150 -> 2.256
+    as beta goes 4 -> 5 (p: 65537 -> 1048609). The ratio tracks sqrt(2 ln(p/n)) = the floor's excess
+    factor exactly. Meanwhile avg|f|/sqrt(n) is FLAT at ~0.80 (Johnson scale), while M/sqrt(n) grows
+    as sqrt(2 ln(p/n)). So the "2*avg" target is (i) only Johnson-scale even if achieved, and (ii)
+    plainly FALSE here -- M exceeds 2*avg by precisely the sqrt(log) excess that separates the floor
+    from Johnson.
+
+VERDICT = REFUTED (the forcing fails on both horns; the surviving content reduces-to-wall, with a
+Johnson-scale ceiling even in the best case). WHY (the conservation law, restated): Croot-Sisask
+almost-periodicity is a SECOND-MOMENT / L2 statement -- the Bohr set is built from the large Fourier
+spectrum and controls ||tau_t f - f||_2. Per the manifesto's Sec. I, the sqrt(log) excess is a
+rare-event/tail phenomenon INVISIBLE to second moments. Concretely: (a) the L2 almost-period set is
+empty at the floor scale (Part 1); (b) almost-periodicity, where it holds, makes the worst peak a
+ROBUST PLATEAU (b*+B elevated, Part 2) -- it certifies the peak's stability, it does NOT push it down;
+(c) the only bound the program could yield, 2*avg ~ 2 sqrt(n), is Johnson-scale, and the actual M
+exceeds it by sqrt(2 ln(p/n)) (Part 3). The relocation to almost-periodicity is real but STERILE for
+the sup: it reads the bulk (avg ~ sqrt(n) = Johnson) and is blind to the rare worst-b tail. Distinct
+horn from A6 (which capped exactly at Johnson via trace structure): here the target is not merely
+Johnson-capped but actively VIOLATED, and the violation IS the prize gap. Reduces ONLY to the
+magnitude/sup question (the BGK/Paley wall); the secondary 2*avg ceiling is Johnson-scale. Probe
+(committed): scripts/probes/probe_a7_croot_sisask_bohr.py.
+
 ## 2026-06-15 — ANGLE A6 "Schur-Siegel-Smyth trace problem on the Gaussian period polynomial" REDUCES-TO-JOHNSON (probe_a6_*.py)
 
 Angle A6 (issue #444, manifesto angle 6, "truly novel, 0 in-tree"): relocate the cancellation
