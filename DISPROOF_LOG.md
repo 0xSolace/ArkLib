@@ -767,3 +767,21 @@ different cone).
 NET: a correction (032525 break off-spec) + a precise location of the genuine wall in the realizable cone the
 chain consumes (BHBI(ω,16,2) FALSE at n=32, β=4, on-spec disjoint witness, exact) + the ∀-field obstruction
 (prime-fluctuating, c.154). No CORE closure; no fake. Small n (16 exact, 32 via MITM + exact-int verify).
+
+### Follow-up (universal at n=32): realizable BHBI(ω,16,1) FALSE at ALL prize-band primes; height is 1 not 2; n=16 holds (2026-06-15)
+
+Reconciling the above with 1fa2d5e58 (which reported C*(n=32)=1). Confirmed + universalized
+(probe_407_n32_height1_check.py, MITM): at n=32, β=4.00, a HEIGHT-1 realizable {−1,0,1} relation
+Σ g_j ω^j ≡ 0 (p) exists at **8/8** prize-band primes (p=1048609..1049569). A {−1,0,1} sign-relation
+is trivially a realizable contribZ-difference (g_j = a_j − b_j, one of a_j,b_j = 0), so the minimal
+realizable height at n=32 is **1**, not the 2 of my first witness — my n=32 height-2 witnesses were
+non-minimal. The chain's required hypothesis BHBI(ω,16,C) thus fails for EVERY C≥1 at n=32 prize-band,
+∀-field (not lucky-prime). And re-confirmed: n=16/p=65537 has NO realizable relation at height ≤2
+(min height = None) ⟹ the n=16 chain holds at realizable support, the off-spec (height-4) 032525
+witness was the only thing making n=16 look broken.
+
+CLEAN STATEMENT OF THE WALL: realizable BHBI holds at n=16/prize (the chain's hypothesis is satisfied
+there) but fails UNIVERSALLY at n=32/prize at height 1. The bounded-cyclotomic-independence lever's
+required hypothesis is already ∀-field-FALSE by n=32. Combined with 9a0868c62 (no thin-vs-thick
+discrimination), the BHBI lever cannot prove CORE: its hypothesis is false where needed and carries no
+thinness discriminator. Mapped wall, not a closure. n=16 exact-brute, n=32 MITM + exact-int verified.
