@@ -24,6 +24,47 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#444 C43): GG25 curve-decodability ⟹ MCA for explicit plain RS — SECRETLY-OPEN (R1 route, pinned not closed)
+
+**Conjecture C43 (gmmds-homds):** "Via GG25 Thm 3.3 (done in-tree), MCA past Johnson follows from
+curve-decodability; claim explicit plain RS over μ_n is curve-decodable past Johnson by combining the
+proven FRS/multiplicity instances with the antipodal structure to remove the field-linear-in-n
+requirement (the R1 route)."
+
+**Verdict: secretly-open.** The conjecture is exactly the R1 route, and the in-tree formalization
+*itself* names the open step. Two-part mechanism, both legs axiom-clean in-tree:
+
+1. **The engine is genuinely done; the input is the open quantity, and it is PINNED not closed.**
+   `GG25MCAFromCurveDecodability.all_seeds_relClose_of_curveDecodable` (axiom-clean) is GG25 Thm 3.3:
+   curve-decodability ⟹ MCA. `GG25CurveDecodFromListSize.curveDecodable_of_curveListSize` (axiom-clean,
+   single pigeonhole) proves curve-decodability reduces *exactly* to a curve list-size bound `m`
+   (`CurveListSizeLe`), losslessly — the same reduction GG25 uses, with the list-recovery/subspace-design
+   input abstracted to its numeric content `m`. Its own docstring (lines 30-46) states the horn verbatim:
+   "for explicit plain RS at the prize point … the curve list-size `m` is the **open** quantity. It is
+   exactly `BCIKS20.Curves.ListSizeResidual.RSCurveListSizeResidual` / the BCHKS Conjecture 1.12 floor —
+   for s=1 (plain RS, fixed field) no `m=poly(n)` bound above Johnson is known. **This reduction does not
+   advance that open core; it pins it.**" The field-linear-in-`n` of GG25 is *precisely* what makes
+   `m=O(1/η)` provable for folded/random RS and unavailable for plain RS. So MCA past Johnson via R1
+   requires a poly(n) curve list-size for plain RS above Johnson = the open BGK/BCHKS-1.12 wall.
+
+2. **The named lever — "antipodal structure removes the field-linear-in-n requirement" — is FALSE; it
+   is an obstruction, not a lever.** Antipodal pairs {x,−x} are exactly the Sidon-permitted `a+b=0`
+   relation present in every even μ_n. The in-tree axiom-clean theorems
+   `HigherOrderMDSOrderThreeFail.reedSolomonFrame_not_isHigherMDS_three_of_sumZeroPairs` +
+   `antipodal_example_not_isHigherMDS_three` prove the σ=0 (antipodal) case FORCES order-3 higher-MDS
+   failure — i.e. negation-closure DESTROYS the higher-MDS / generic-position structure that the
+   small-field list-size bound would need, rather than supplying it. Confirmed by P7
+   (`corank_Fp(μ_a;E) = a − #distinct(e mod a)` grows Θ(a), char-faithful 2400/2400): no O(1)-corank
+   structured family exists for μ_n. So the antipodal structure cannot remove the field-linear-in-n
+   requirement; it is the algebraic shadow of the BGK wall.
+
+**Conclusion.** C43 is the R1 route; R1's engine is closed but its only input for plain RS is the open
+curve list-size (= BCHKS Conj 1.12 = the BGK character-sum wall). The proposed "antipodal" bypass is
+refuted by the in-tree HOMDS order-3 failure. Same wall as faces 3↔4 of the open core. Sibling to C44
+(reduces-to-johnson via the generic-position GM-MDS conflation); C43 is the *list-size* face of the
+same gap and is best classified secretly-open (it does pin past Johnson IF the open list-size holds,
+but the list-size is unresolved).
+
 ## 2026-06-14 (#444 C10): Gupta-Zagier crossing pin δ*=(1−ρ)−log₂n/n — REFUTED (false counting identity) + secretly-open
 
 **Conjecture C10** (gauss-period-exact, feasibility 5): claim the worst-case far-line list size at
