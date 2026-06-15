@@ -10377,3 +10377,22 @@ offset 3 != log2(16)=4. So `delta*=(1-rho)-log2(n)/n` (probe_char0_deltastar_pin
 holds ONLY at rho=1/8 -- the crossing offset is RATE-DEPENDENT, refuting it as a rho-uniform
 closed form. (n=32 used a binder-region a-scan justified by the n=16 binder=x^k low-exponent
 direction; the full a-sweep is compute-bound but the binder localizes the worst pencil.)
+
+## 2026-06-15 — New Mathematics essay tools: 4 of 5 REFUTED (adversarial, fresh exact computation)
+
+The five "New Mathematics" tools (NEW_MATHEMATICS-2026-06-15.md) were adversarially probed with independent
+exact F_p counters. Verdicts:
+- **Tool 4 (antipodal-complex torsion = far-line bad primes): REFUTED.** SNF integral-homology torsion primes
+  = trivial {2,3}; measured far-line incidence-bad primes all >3 (n=16 {17,97,241,257,...}; n=32 {97,...,65537}).
+  Antipodal pairing char-uniform (count = n for every n|p-1 in [17,70000], 0 deviations). p-independence is
+  ARITHMETIC (over-det Norm-divisibility), NOT topological/homological torsion.
+- **Tool 5 (depth-graded conductor depth-sparsity): REFUTED.** Engaged depth D grows ~2r (NOT O(1)): n=16
+  Fermat p=65537 D=0,0,1,4 (r=2..5), max_depth ~2r; same under distinct-value and antipodal-defect gradings.
+  Wall returns as r->log m. (Consistent with prior cumulant-dichotomy: raw moment explodes at structured primes.)
+- **Tool 2 (root-number phase-flatness): REFUTED-as-stated.** The 15-20% "advantage over random" is an
+  extreme-value artifact; permutation-of-actual-eta null gives D_arith/D_perm = 0.97-1.06. Residual diffuse = wall.
+- **Tool 1 (Shaw operator exact identity): NOT refuted but RENAMES the wall.** incidence=avg+Shaw exact (1e-13);
+  MCAShawConjecture provably = BGK/E_r object (ShawSecondMoment + eta_pow_le_energyR). Expository/modular only.
+
+NET: no tool crosses or isolates a strictly-weaker statement. Sole surviving off-BGK computable frontier =
+distinct-gamma union-count |U_R{gamma_R}| growth law (see GAMMA_GROWTH_LAW measurement).

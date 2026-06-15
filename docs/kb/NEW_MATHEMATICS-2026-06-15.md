@@ -713,3 +713,33 @@ CONJECTURED (NOT proven; the isolated open core):
 - `BoundedDepthConductor` at the prize point: that the cumulant deviation is depth-sparse — concentrated on a bounded number $D=O(1)$ of carrier depths, each with $r$-independent rank giving $|\delta_d|\le\kappa\sqrt q$. This is geometry (étale cohomology of the depth slices) that Mathlib cannot express, carried as a named Prop. It is the chapter's new conjecture; it is strictly weaker than the refuted monolithic conductor bound but is NOT proven. Supporting evidence (numerical/structural, NOT a proof): $K\approx1.28$, and the exchangeable single-constraint period covariance. The honest worry (also stated): if the required depth $D$ must grow with $r$, the wall returns; the bet is that it does not.
 
 NOT claimed: the prize is NOT closed. No proof of the wall is fabricated; no vacuous hypothesis discharges the open input.
+---
+
+# Addendum (2026-06-15) — All Five Tools Adversarially Tested
+
+After publication the five tools were adversarially probed with fresh exact computation (own `F_p`
+counters, independent of the authoring agents). The honest result: **no tool crosses the wall or isolates a
+strictly-weaker statement.**
+
+- **Tool 1 (Shaw operator) — CONFIRMED exact, but renames the wall.** The decomposition `incidence =
+  average + 𝒮` is exact (verified to 1e-13 abstract / 1e-14 in live RS syndrome space) and δ*=9/16
+  reconfirmed at n=16, ρ=1/4 (one rung above Johnson 8/16). But its open input `MCAShawConjecture` provably
+  equals the BGK/`E_r` object (`ShawSecondMoment` + `eta_pow_le_energyR`), so a bound on it *is* the prize,
+  not a lever. The tool is expository/modular — it organizes the wall, it does not breach it.
+- **Tool 2 (root-number phase-flatness) — REFUTED as stated.** The "15–20% better than random" advantage is
+  an extreme-value artifact: a permutation-of-actual-η null gives `D_arith/D_perm = 0.97–1.06` (sometimes
+  below the null mean). The residual is diffuse = the same wall.
+- **Tool 4 (antipodal complex torsion = p-independence) — REFUTED.** The integral-homology torsion primes
+  (Smith normal form) are the trivial `{2,3}`; the measured far-line incidence-bad primes are all `>3`
+  (n=16: {17,97,241,257,353,449,1217,…}; n=32: {97,…,65537}). The antipodal pairing is char-uniform (count
+  `= n` for every prime `n | p−1` tested). So the verified p-independence is **arithmetic** (Norm-divisibility
+  of the over-determined count), **not topological**. The cleanest refutation in the bundle.
+- **Tool 5 (depth-graded conductor depth-sparsity) — REFUTED.** The engaged depth `D` is **not** `O(1)`: it
+  grows monotonically `≈ 2r` (n=16, Fermat p=65537, D=0,0,1,4 then 5,7 for r=2..7; same under both gradings).
+  The wall returns as `r → log m`.
+
+**Net.** Only the Shaw exact decomposition (Tool 1) is a genuine, machine-verified, non-trivial object, and
+it is organizational. The essay's own central thesis stands as the honest verdict: these are five coordinate
+charts on **one** wall. The single object that provably does **not** reduce to the BGK sup-norm wall and is
+computable-in-principle is the **p-independent distinct-γ far-line union-count `|⋃_R{γ_R}| ≤ n`** — whose
+**growth law** is the only prize-floor decision the wall-renaming tools cannot make, and is the live frontier.
