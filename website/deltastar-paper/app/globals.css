@@ -513,6 +513,12 @@ table.paper-table .num {
   margin-top: 0;
 }
 
+.miner-hint {
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  margin-top: 0.7rem;
+}
+
 /* click-to-copy shell command */
 .cmd {
   display: block;
