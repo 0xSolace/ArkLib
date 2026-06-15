@@ -24,6 +24,45 @@ Loops 27 through 38 are present as self-contained arithmetic bricks in the curre
 (`CandidateStructureLoop37.lean` and `CandidateStructureLoop38.lean` added 2026-06-08, sorry-free,
 axiom-clean, indexed in `ArkLib.lean`).
 
+## 2026-06-14 (#407): over-det δ* DECOUPLING is REAL but reaches only PLOTKIN ½, NOT the floor
+
+**The lead (most promising "route around BGK" for days):** δ* binds in the OVER-determined (s−k≥2)
+far-line incidence regime, which is p-INDEPENDENT (char-0 = char-p, Lam–Leung vanishing sums of
+n-th roots) — so the prize would reduce to a pure combinatorial count, decoupled from the open
+analytic BGK/Paley character-sum wall.
+
+**Status after the decay-law verification wave (2 agents completed before a session limit; concurrent
+swarm independently converged — commits `be740f6c2`, `98aadfb42`, `18a63a1ef`):** the decoupling
+(p-independence) is a GENUINE result and now precisely characterized — **but it does NOT, by itself,
+deliver the prize floor.** At the literal prize budget `B = ε*·q = n` (critical field q=n·2¹²⁸,
+ε*=2⁻¹²⁸), the over-det δ* → **½ (Plotkin / half-agreement)**, which is *below* the floor
+`1−ρ−Θ(1/log n)` (and below Johnson `1−√ρ` for ρ<¼). The far-line/monomial incidence is a Plotkin
+**proxy** that upper-bounds the true MCA δ*; the floor lives either at a super-linear budget
+`B~n^{3−ε}` (deeper in the decay curve, `s*−k~Θ(n/log n)`) OR in the UNDER-determined (s=k+1)
+p-DEPENDENT regime where `I(k+1)~Θ(C(n,k+1))` — and that under-det regime IS the BGK/Paley wall.
+
+**Established (axiom-clean, verified `[propext,Classical.choice,Quot.sound]`, no sorryAx):**
+- `OverdetIncidenceMaxClosedForm.lean` (in-tree): the s=k+2 EDGE closed form, k=2:
+  `overdetIncidenceMax(m) = 2m³−2m²+1 = n·C(n/4,2)+1 ~ n³/32` (m=n/4); values 9,37,97,201,361,…;
+  `overdetIncidenceMax_gt_budget` (edge > budget n for m≥2, so binding is never the edge). Matches
+  numerics char-0 AND char-p (37,97,201,361,589 at n=12,16,20,24,28), maximizer antipodal-adjacent
+  (n/2, n/2±1).
+- `_DecayLawPIndep.lean` (commit c179fac0e, 212 lines, 9 thms axiom-clean): the p-independence
+  MECHANISM — bad-γ ⟺ divided-diff columns parallel (rank-1), witness γ=−(A_{j0})/(B_{j0}) ∈ Q(ζ_n);
+  transfer mod p when the pivot survives ⟹ p-independent outside a finite bad-prime set.
+- Decay structure (derived, not fully proven): `I(s=k+j) = #{S⊂μ_n, |S|=k+j : j−1 consecutive
+  cyclotomic resultants R_w=0}`; each window is an affine-in-γ Schur condition (DD of x^m = complete
+  homogeneous h_{m−k}); decays geometrically n³→plateau ~2k+1 near s~n/2.
+
+**The honest negative (record so no one re-claims it):** the over-det/over-determined regime does
+NOT close the floor on its own. **DO NOT** re-claim "δ* decouples from BGK ⟹ prize solved." The
+decoupling is true and clean; it relocates — not removes — the wall. **Open core (now isolated, no
+char-p / no BGK in the over-det part):** (1) the GENERAL-s decay law `I(s;n,k)` (only edge ~n^{k+1}
+and budget=n crossing s*~n/2 are known); (2) does an admissible (still-polynomial) field size q make
+`B=ε*q` cross the decay law at `s*−k~Θ(n/log n)` (floor) or cap at Plotkin; (3) the under-det edge
+`I(k+1)` worst-incidence-vs-budget = the open Paley/incomplete-Gauss-sum wall (W4) that the over-det
+decoupling deliberately excludes. Issue comments 4703998012 + 4704320702.
+
 ## 2026-06-14 (#407 laneB): Action-Orbit per-line bound is MONOMIAL-EXCLUSIVE — general-f gap-localized
 **Lane B = R4 Action-Orbit general-`f` (gcd-irreducible / primitive direction).** Question: does the
 `n·#orbits` per-line bad-scalar bound (`ActionOrbitFRI.badSet_orbit_closed`, for the two-monomial
