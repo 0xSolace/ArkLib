@@ -2517,3 +2517,50 @@ sub-subleading structure (exactly the term whose accumulated effect over r* step
 question). Tightens the brick-4 picture: g(r)=1-r/n is built from two neg-closure-generic orders; the thin
 deviation is below O(1/n^2) in the per-step margin. CORE not closed, no overclaim. Python-only exact =>
 axiom-clean trivially. probe_407_Er_subleading_rule3.py.
+
+================================================================================
+2026-06-15 The ACCUMULATED 2nd-ORDER correction to the Wick ratio is NEGATIVE and
+ASYMPTOTICALLY SUBDOMINANT => the "2nd-order rescues a positive prize margin"
+hypothesis is REFUTED at the joint limit r*~log n (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (flagged-open, uncontested): the HONEST OPEN residual of the E_r closed-form bricks
+(44234dc3d/5b0873ddb): "whether 1-g(r*) = r*/n + (accumulated O(1/n^2) corrections over r*
+steps) stays BOUNDED BELOW threshold at the JOINT (r*~log n, n->inf) limit -- the leading r/n
+law -> 0 (consistent with BOTH prize-true AND BGK-tight)." Resolved the 2nd-order rung.
+
+ENGINE: in-tree cyclotomic-lattice E_r^(0) (zeta^{n/2}=-1, n=2^a) = EXACT char-0 negation-closure
+additive energy, p-FREE. = A_r/Wick to O(n^{2r}/p)=O(1/n^{2r}) (DC term negligible at p~n^4).
+Cross-verified bit-for-bit vs board E_4 closed form 105n^4-630n^3+1435n^2-1155n at n=8..64.
+probe_407_Er_thirdcoeff_accumulated.py.
+
+RESULT 1 -- THIRD coeff (n^{r-2}) of E_r pinned (was the open carrier of O(1/n^2)):
+  E_2 third/lead = 0,  E_3 third/lead = 8/3,  E_4 third/lead = 41/3.
+  (lead=(2r-1)!!, sub/lead=-C(r,2) reconfirmed; E_3=15n^3-45n^2+40n, E_4 board cf re-verified.)
+
+RESULT 2 -- ACCUMULATED 2nd-order law (EXACT, the load-bearing brick):
+  W(r) := E_r^(0)/((2r-1)!! n^r) = prod_{s<r} g(s)  (Wick ratio = product of step margins).
+  log W(r) = -r(r-1)/(2n) + c2(r)/n^2 + O(r/n^3),  with EXACT CLOSED FORM
+        c2(r) = -r(r-1)(2r+5)/36.
+  c2(r): -1/2,-11/6,-13/3,-25/3,-85/6 at r=2..6. c2 is the FULL accumulated 2nd-order coeff
+  INCLUDING the -x^2/2 Jensen term of log(1-x) (an earlier naive "-sum c2(step)" mis-signed it;
+  the corrected c2(r) MATCHES the exact integer W(r) at n=8,16,32 to the c3/n drift -- verified).
+
+RESULT 3 -- VERDICT (rule-4 wall map, rule-6 honest, NOT a closure):
+  At the prize joint limit r*~c*log n:
+    leading |term1| = r*(r*-1)/(2n) ~ (c log n)^2/(2n) -> 0.
+    2nd-ord |term2| = |c2(r*)|/n^2 ~ (r*)^3/(18 n^2) ~ (c log n)^3/(18 n^2) -> 0  (extra 1/n).
+    term2/term1 ~ (c log n)/(9n) -> 0.
+  => BOTH terms -> 0; log W(r*) -> 0; W(r*) -> 1 (A_r=Wick in the limit, the BGK knife-edge).
+  => The 2nd-order accumulated correction is NEGATIVE (DEEPENS cancellation at finite n) AND
+     asymptotically SUBDOMINANT => it does NOT keep W(r*) bounded away from 1.
+  => The "the accumulated O(1/n^2) correction over r* steps rescues a positive prize margin"
+     hypothesis is REFUTED at the joint limit. Consistent with BGK-tight, NOT prize-positive.
+     The thin advantage (known O(1/n) subleading in E_r) is NOT resurrected at 2nd order in the
+     accumulated Wick ratio.
+  HONEST: r* capped at lattice-tractable r<=6; the c2(r)=-r(r-1)(2r+5)/36 closed form is EXACT
+  (cubic, 4 anchor pts r=1..4) and its r^3 growth (vs leading r^2/n) is what drives the verdict.
+  Does NOT close CORE; SHARPENS the 44234dc3d open residual one order: the irreducible prize
+  content is NOT carried by the 2nd-order accumulation -- it must live in a NON-perturbative
+  (all-order / r*-resummed) effect, since every fixed perturbative order in 1/n vanishes at the
+  joint limit. Pure-Python exact integer counts + Vandermonde over Q, no Lean => axiom-clean
+  trivially. probe_407_Er_thirdcoeff_accumulated.py.
