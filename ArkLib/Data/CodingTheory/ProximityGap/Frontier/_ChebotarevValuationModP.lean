@@ -73,11 +73,14 @@ mechanism has three parts:
   `(∀ n, GeneralizedVandermondeNonzeroModP p n) → SubOneValuationFinite p →
   (∀ n, LowerTaylorVanishes p n) → ChebotarevMinorNonvanishing p`.
 
-* **`alternant_two_eq`, `generalizedVandermondeNonzeroModP_two`** : the `n = 2` instance of the crux,
-  PROVEN (any prime, including `p = 2`): the alternant is `±(ci 0 − ci 1)(ri 1 − ri 0) ≠ 0` mod `p`
-  (the transported `chebotarev_two` content). The `n = 2` `LowerTaylorVanishes` instance is also
-  proven (`lowerTaylorVanishes_two`), so the `n = 2` Chebotarev minor reduces to *only*
-  `SubOneValuationFinite` — the genuine all-`n` mechanism exhibited end-to-end at `n = 2`.
+* ⚠️ CORRECTION: an earlier draft of this docstring claimed `n = 2` crux instances
+  `alternant_two_eq` / `generalizedVandermondeNonzeroModP_two` / `lowerTaylorVanishes_two` exist here —
+  **they were never actually formalized in this file** (only the reduction `chebotarev_of_alternant`
+  was). The FIRST genuinely-proven instance of the alternant crux beyond `n ≤ 1` is `n = 3`, in the
+  sibling `_ChebotarevAlternantThree.lean` (`generalizedVandermondeNonzeroModP_three`, every prime `p`,
+  closed form `6·alternant = −3·V_r·V_c`). Note also that `LowerTaylorVanishes` is REFUTED for `n ≥ 3`
+  (see the `def`'s ⚠️ marker below), so any "reduces to only `SubOneValuationFinite`" reading is wrong
+  for `n ≥ 3`; `SubOneValuationFinite` itself is now PROVEN (`_ChebotarevStructuralInputs`).
 
 ## What stays the NAMED OPEN crux / named structural inputs
 
@@ -178,7 +181,11 @@ For every `n` and every pair of *injective* selections `ri ci : Fin n → ZMod p
 unity** (Stevenhagen–Lenstra, the `(1 − ζ)`-adic valuation / generalized-Vandermonde appendix): the
 only place primality of `p` is genuinely used — it is *false* for composite `p`. Per the #407 honesty
 contract it is a named `Prop` (carries no axioms); we never prove the general case nor `sorry` it. The
-`n ≤ 2` cases ARE discharged (`generalizedVandermondeNonzeroModP_two`). -/
+`n = 3` case IS genuinely discharged for every prime in sibling `_ChebotarevAlternantThree.lean`
+(`generalizedVandermondeNonzeroModP_three`, closed form `6·alternant = −3·V_r·V_c`); `n ≥ 4` is the
+named-open deep core (probes suggest a `c_n·V_r·V_c` factorization but `c_n` is unexplained — NOT
+proven). (An earlier draft wrongly cited a `generalizedVandermondeNonzeroModP_two` that was never
+formalized.) -/
 def GeneralizedVandermondeNonzeroModP (p : ℕ) [Fact p.Prime] (n : ℕ) : Prop :=
   ∀ (ri ci : Fin n → ZMod p), Function.Injective ri → Function.Injective ci →
     alternantModP ri ci ≠ 0
@@ -199,7 +206,8 @@ NOT distinct-per-column, so the *integer* Taylor order drops to `≈ n−1 ≪ b
 `(X−1)^{p−1}` siblings. The CORRECT all-`n` statement is the finer `(1−ζ)`-adic valuation
 `LowerTaylorValuationDominant` (`(p−1)·v_p(c_k) + k > binom(n,2)` for `k < binom(n,2)` — the integer
 coeffs are nonzero but `p`-divisible, matching brick 32's mod-`p` `rootMultiplicity = binom(n,2)`), in
-the sibling file; it is genuine deep NT. Proven here only for `n ≤ 2` (`lowerTaylorVanishes_two`). -/
+the sibling file; it is genuine deep NT. (An earlier draft cited a `lowerTaylorVanishes_two` that was
+never formalized; and `LowerTaylorVanishes` itself is REFUTED for `n ≥ 3`, see the ⚠️ marker above.) -/
 def LowerTaylorVanishes (p : ℕ) [Fact p.Prime] (n : ℕ) : Prop :=
   ∀ (ri ci : Fin n → ZMod p), Function.Injective ri → Function.Injective ci →
     (X : ℤ[X]) ^ (n * (n - 1) / 2) ∣ taylor 1 (detPoly ri ci)
