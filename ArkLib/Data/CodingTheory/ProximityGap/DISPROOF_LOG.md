@@ -13244,3 +13244,32 @@ in every operative reading. (Salvage note: an Artin-Schreier auxiliary can carry
 if the Frobenius multiplicity is sought on the y-side / in an extension F_{p^k} — a DIFFERENT object
 than μ_n⊂F_p, and one where the y^p−y=bx ramification gives the standard Weil bound, vacuous at n≪√p.)
 No Lean brick (the refuted lemma was the only candidate statement). CORE stays OPEN.
+
+## I006 REFUTED — q-difference (Jackson) confluent Stepanov gives no multiplicity on μ_n (2026-06-15)
+
+**Idea.** Replace `d/dX` by the Jackson q-difference `D_ζ f = (f(ζX)−f(X))/((ζ−1)X)`, ζ a
+primitive 2^μ-th root (the canonical derivation of μ_n). Since `[n]_ζ = 0` we have
+`D_ζ(X^n−1) ≡ 0` identically (verified): the whole subgroup is one D_ζ-orbit, so the
+separability obstruction that caps ordinary Stepanov should be bypassed and q-multiplicity be
+free, giving `μ·|Z| ≤ deg_q f`.
+
+**Verdict: REFUTED.** The orbit-invariance that bypasses separability is exactly what *voids*
+the multiplicity. `D_ζ` is a NON-LOCAL finite-difference operator coupling z to ζz; on the
+orbit-closed μ_n it maps {functions on μ_n} → {functions on μ_n}, so once f vanishes on the
+whole orbit (the j=0 conditions, n of them) every iterate `D_ζ^j f` vanishes there
+AUTOMATICALLY. The higher q-vanishing conditions are linearly *dependent* on the value
+conditions — q-vanishing on the orbit is a global circulant condition, not a local jet.
+
+**Measured** (`scripts/probes/probe_i006_qdifference_stepanov.py`; proper μ_n, n=2^μ | p−1, p
+prime ~ n^4, p ≫ n^3, never n=p−1; μ=2,3,4):
+- **M1:** rank of q-vanish-to-order-m conditions on full μ_n collapses to exactly |Z|=n,
+  INDEPENDENT of m. Stepanov needs m·n. (μ=4, m=5: needs 80, rank=16.) Multiplicity gain = 0.
+- **M2:** minimal nonzero f q-vanishing to order m on μ_n has total ordinary root-multiplicity
+  = n (simple zeros only), deg = n; divisibility `(∏(X−z))^m | f` FAILS. q-vanishing yields
+  only ordinary simple vanishing — no high-order zero, hence no degree leverage.
+- single-point q-multiplicity SATURATES at n (rank stops growing past m=n): at most n
+  independent q-conditions exist at any orbit point.
+
+So `μ·|Z| ≤ deg_q` is false; only the trivial `|Z| ≤ deg` holds. Confirms the existing W3 wall
+(confluent Stepanov stalls) at its structural root: a multiplicative/orbit derivation cannot
+manufacture multiplicity on its OWN orbit. No gain toward M(μ_n) ≤ C√(n log(p/n)).
