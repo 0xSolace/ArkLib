@@ -1019,6 +1019,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RealizerL2NotSup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ResolveFieldIndependent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SalemZygmundMomentAssemblyA3
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurRatioRotationEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeCeiling
