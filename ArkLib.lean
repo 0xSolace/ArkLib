@@ -955,6 +955,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
