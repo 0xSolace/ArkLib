@@ -10192,3 +10192,33 @@ transform is a fixed point, not a contraction; no recursion to a smaller modulus
 **result_type = value-dist-is-Gaussian-not-DAM-theta (no self-similar law) + Poisson-is-fixed-point
 (no contraction, proven) + geometric-phase≠quadratic-phase (no metaplectic horocycle).** Does NOT
 bound B; explains why the theta avenue cannot. Intrinsic pin, not a BGK/energy re-label.
+
+### O179 [wf-NG] Partition-rank / multiplicative-CLP / analytic-rank PINNED on the relation count N0
+
+**Lane:** NG (polynomial method beyond diagonal slice-rank). **Verdict: walled (NEW reason,
+distinct from O21 / SliceRankDiagonalVacuous).** Attacked the §407 open object
+N0(mu_n,r)=#{(x_1..x_r) in mu_n^r : sum=0} via the genuinely distinct stronger tensor methods:
+Croot-Lev-Pach with MULTIPLICATIVE (cyclic Z/n) indexing, Naslund partition rank, Lovett analytic
+rank of the cyclotomic relation tensor S(a)=1 iff zeta^{a_1}+...+zeta^{a_r}=0.
+
+Three machine-checked obstructions (probes probe_wf2NG_{relation_tensor_rank,clp_count_lemma}.py,
+exact, char-0=char-p in clean regime p~n^5; Lean brick Frontier/_wf2NG_partition_rank_vacuous.lean
+axiom-clean [propext,Classical.choice,Quot.sound]):
+
+1. Support 100% OFF-diagonal even after multiplicative re-indexing (diag_support=0 at every n,r);
+   the Tao/Naslund COUNT theorem (|X|<=r*rank for a DIAGONAL-supported tensor) bounds the empty
+   diagonal -> vacuous. Multiplicative indexing does not move support off zero.
+2. THE NEW reason: single-mode line-size <=1 (the favorable matching hypothesis, which the relation
+   tensor SATISFIES: maxLineSize=1) yet slice/partition rank = FULL n. The method's only output
+   r*n is LINEAR in n and is a FALSE upper bound on N0 (N0(mu_8,4)=168 > r*n=32; N0(mu_4,4)=36 >
+   16). Proven in Lean: SingleModeMatching A does NOT imply r*n < |A| is false -- witness
+   A=sumZeroSupport 4 4 has |A|=4^3=64 > r*n=16 and IS single-mode matching
+   (matching_does_not_bound_count). The favorable matching does not bound the off-diagonal fiber.
+3. Index group Z/2^mu is CYCLIC (d=1), not a cube (Z/2)^mu; CLP/EG exponent saving needs d->inf
+   cube factors. Index-side analogue of the additive-side no-cube/Sidon-like no-go (O21).
+
+result_type = rank-method-bounds-diagonal-not-fiber-count (the matching hypothesis is met but its
+conclusion fails as an N0 bound). Genuinely new INPUT not provided; precise structural pin, not a
+BGK re-label. NEXT LEVER for any future rank attempt: must bound an OFF-diagonal (r-1)-dim variety
+count, which no diagonal/partition rank delivers -- would need a fundamentally non-rank polynomial
+identity (e.g. a Combinatorial Nullstellensatz coefficient extraction on the relation, untried).
