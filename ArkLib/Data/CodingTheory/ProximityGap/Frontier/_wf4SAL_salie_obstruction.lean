@@ -7,6 +7,8 @@ import Mathlib
 
 set_option linter.style.longLine false
 set_option autoImplicit false
+set_option linter.unusedSectionVars false
+set_option linter.unusedVariables false
 
 /-!
 # wf-SAL (Issue #444) — the Salié obstruction for the under-determined (s−k=1) δ\* floor.
@@ -100,9 +102,9 @@ theorem sq_fiber_card_two (hF : ringChar F ≠ 2) {x y : F} (hy : y ≠ 0) (hxy 
   constructor
   · intro hz
     have : z ^ 2 = y ^ 2 := by rw [hz, hxy]
-    have hfac : (z - y) * (z + y) = 0 := by ring_nf; linear_combination this
+    have hfac : (z - y) * (z + y) = 0 := by linear_combination this
     rcases mul_eq_zero.mp hfac with h | h
-    · left; linarith [sub_eq_zero.mp h]
+    · left; linear_combination h
     · right; linear_combination h
   · rintro (rfl | rfl)
     · exact hxy.symm
@@ -113,7 +115,7 @@ is strictly 2-to-1 (not injective) — the structural reason the Salié square-s
 collapse the dyadic subgroup period to a single Gauss sum. -/
 theorem sqrt_pair_distinct (hF : ringChar F ≠ 2) {y : F} (hy : y ≠ 0) : y ≠ -y := by
   intro h
-  have h2 : (2 : F) * y = 0 := by linear_combination -h
+  have h2 : (2 : F) * y = 0 := by linear_combination h
   rcases mul_eq_zero.mp h2 with h0 | h0
   · exact (Ring.two_ne_zero hF) h0
   · exact hy h0
