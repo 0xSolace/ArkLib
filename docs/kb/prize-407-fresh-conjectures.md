@@ -276,3 +276,14 @@ The corrected reduction's open input is `DCEnergyBound G r` (`A_r ≤ Wick`, i.e
 **SHARPENED OPEN CORE:** not "all r open" but specifically **`E_r(μ_{2^m}) ≤ (2r−1)‼·n^r` for r≥3** (the
 higher-order additive-energy Wick bound in char-p, r≈ln q). r=1,2 are theorems. Each successive rung
 needs the exact/Wick higher additive energy; r=2 had it (Sidon), r≥3 is the open Lam–Leung transfer.
+
+## r=3 Wick target CONFIRMED + the honest low-r gap (probe /tmp/probe_e3_wick.py)
+Numerically (large p, incl. n=16/p=65537≈n⁴ at prize scale): E_3(μ_{2^m}) = 15n³ − Θ(n²) ≤ 15n³.
+Ratio E_3/n³ = 2.5, 6.25, 10, 12.34 (n=2,4,8,16) climbing to 15 (Wick); correction −Θ(n²). So the
+r=3 Wick UPPER bound holds — the open part is the PROOF in char-p at n=2^30, p~2^120 (6-term ±1
+relations mod p; higher Lam-Leung). HONEST GAP: discharging low-r rungs does NOT approach the prize.
+DCEnergyBound G r at a FIXED small r gives M ≤ (q·(2r−1)‼·n^r)^{1/(2r)}; at r=2: (3qn²)^{1/4} ~ n^{1.5}
+(prize q~n^4) ≫ √n. The prize sup-norm M≤√(2n ln q) needs DCEnergyBound UNIFORMLY UP TO r≈ln q (≈83
+at prize), then optimize r. So the irreducible core is precisely: **E_r(μ_{2^m}) ≤ (2r−1)‼·n^r holding
+UNIFORMLY for all r ≤ ~ln q in char-p at the prize prime** — proven r=1,2 (low end), open at r~ln q (BGK).
+The r=2 discharge is a genuine ladder rung + method-validation, NOT prize-closing (correctly scoped).
