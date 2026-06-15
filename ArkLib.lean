@@ -927,6 +927,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetMaximal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetPacking
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetTuplePacking
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AlignedAmalgamation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AntipodalSigmaUnique
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B1XkIncidenceForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BadScalarsEqPinned
