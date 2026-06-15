@@ -14056,3 +14056,55 @@ sub-properties (each would have beaten BGK; each is machine-checked / probe-deci
   non-decorrelation obstruction as the cocycle route.
 
 All three reduce the route to the same `WickEnergyBound at r~log q` = BGK/Paley √-cancellation wall.
+
+---
+
+## 2026-06-15 — AVENUE E "NEAR-RAMANUJAN FACE" residual MAP (NOT a refutation — confirms the face) (probe_near_ramanujan_face_scaling.py)
+
+Following the C14 refutation of STRICT Ramanujan (`M ≤ 2√(n−1)` is false at every prize `n`,
+`M/(2√(n−1))` grows 1.43→2.43, `n=8..128`), this probe maps the precise open residual of the
+**near**-Ramanujan face that the in-tree consumer `GeneralizedPaleyRamanujan.lean` actually needs:
+`GeneralizedPaleyNearRamanujan C ψ μ_n := ∀b≠0, ‖η_b‖² ≤ C·n·log(q/n)`, i.e. `M ≤ C√(n log(q/n))`.
+
+**Prize-faithful** throughout: proper `μ_n` (`n=2^μ`), `p` PRIME, `n|p−1`, `p≫n³` (hard floor),
+`m=(p−1)/n>1`, NEVER `n=p−1`. Exact coset-reduced sup-norm sweep over `b`.
+Probe `scripts/probes/probe_near_ramanujan_face_scaling.py` (self-contained, sympy-free, runs ~9 min).
+
+**Finding 1 — the deviation is n-DRIVEN, not field-driven (the shape).** At FIXED `n`, push `p`
+up many decades: `M` SATURATES to its char-0 limit (`D²/log(p/n)` FALLS as `p` grows: `n=8`:
+1.27→0.64; small LSQ slope 0.24 vs intercept 5.35). So `M` is essentially `p`-INDEPENDENT in the
+prize regime `p≫n³` (consistent with char-`p` `E_r` = char-0 `E_r` for `p≫n³`). The growth is in
+`n`: saturated `M/√n` = 2.00, 2.82, 3.85, 4.60 for `n=4,8,16,32`; `M²/(n ln n)` = 2.9, 3.8, 5.3,
+6.1 (slowly creeping). So the law is `M ≈ √(n · c·log n)`, between `√(log n)` and the moment ceiling
+— NOT a constant edge (strict Ramanujan, refuted) and NOT a `√(log(q/n))` field-driven term.
+
+**Finding 2 — the bridge constant `C_bridge := M/√(n log(p/n))` is BOUNDED ~1.0–1.4.** Measured in
+BOTH regimes: prize-faithful (`p~n³–n⁴`, the C14 rows): `C_bridge ∈ [1.07, 1.36]`; saturated
+(`p~n⁵–n¹¹`): `C_bridge ∈ [0.53, 1.23]`. The MOMENT-METHOD upper ceiling
+`C_up := √(2 log p / log(p/n)) ≈ 1.48–1.58` ENVELOPES the measured `C_bridge` in EVERY cell.
+
+| n | p (saturated) | M | C_bridge | C_up(moment) | envelopes? |
+|---|---|---|---|---|---|
+| 4  | 5000077  | 4.000  | 0.534 | 1.482 | YES |
+| 8  | 8000009  | 7.990  | 0.760 | 1.517 | YES |
+| 16 | 12000017 | 15.386 | 1.046 | 1.552 | YES |
+| 32 | 40000033 | 26.016 | 1.227 | 1.579 | YES |
+
+**Verdict — the near-Ramanujan face is the CORRECT residual; no NEW gap, no closure.**
+The shape `C√(n log(q/n))` (`GeneralizedPaleyNearRamanujan`) is empirically right and `C` is
+numerically BOUNDED (~√2). The OPEN part is PURELY the ANALYTIC proof of that bounded `C`, which the
+moment method shows is EXACTLY the char-`p` energy transfer `E_r ≤ (2r−1)‼·n^r` carried to `r≈log p`
+— **identical to the open core faces 3↔4** (the BGK/Paley sup-norm wall). The Ramanujan face does not
+open a new residual; it re-expresses the same wall in spectral-graph language with a pinned constant.
+
+**Non-backtracking (Friedman/Bordenave) is INAPPLICABLE here** (recorded so it is not re-tried):
+`Cay(F_p,μ_n)` is an ABELIAN Cayley graph, so its eigenvalues ARE the Gauss periods `η_b`; the
+unweighted Hashimoto/Ihara–Bass operator reconstructs `M` EXACTLY (`μ²−Mμ+(n−1)=0`, prior
+`probe_bordenave_nbt_bridge.py`) and the character-weighted NBT bounds the WRONG (twisted) sum
+`M_χ`, not `M`. The "random `n`-regular graph is near-Ramanujan" theorem does NOT transfer to this
+STRUCTURED abelian graph: Alon–Boppana forces `λ ≥ 2√(n−1)−o(1)`, and the measured `M` sits ABOVE
+that floor by the growing 1.4–2.4× factor (C14) — exactly the structured-graph deviation a random
+graph avoids. So Avenue E's spectral-graph framing is a faithful RE-STATEMENT of the open core, with
+a numerically bounded constant, but supplies no new proof technique (NBT/random-graph closes nothing).
+
+**Probe committed:** `scripts/probes/probe_near_ramanujan_face_scaling.py`.
