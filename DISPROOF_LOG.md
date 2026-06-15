@@ -720,3 +720,50 @@ WALL: the odd-moment / odd-Sidon-depth object splits into (a) a rigid identity t
 to depth but says nothing about M, and (b) a thinness-essential depth that decouples from the sup.
 The "deeper Sidon depth ⟹ smaller M" bootstrap FAILS empirically here. No CORE closure; the brick
 is the exact moment↔census substrate, the wall is honest. Small n (8,16 exact).
+
+## BHBI break — REALIZABLE-cone correction: 032525 break is OFF-SPEC; real break at n=32 β=4; ∀-field fluctuating (2026-06-15)
+
+Lens: the freshest BHBI unification capstone (BridgeBounded / BoundedCyclotomicIndep / CountAntipodalBounded).
+Adversarial check (rule 6) of the 032525 grind claim "C*(n=16, prize prime)=4 ⟹ chain BHBI(ω,8,4) FALSE,
+witness g=(−4,−4,−4,−1,−1,−1,0,0)".
+
+CHAIN SOURCE FACT (BridgeBounded.lean + RigidityGeneralT1.lean): the chain (bridgeZ_bounded → RepK) only ever
+feeds BHBI a coefficient vector g_j = contribZ A j − contribZ B j with A,B FINSETS of signed half-basis points.
+fiber A j ⊆ {(j,T),(j,F)}, isgn(j,T)=+1, isgn(j,F)=−1 ⟹ contribZ A j ∈ {−1,0,+1} (the in-tree `≤2` bound is a
+loose card-≤2 overestimate; T+F cancel). ⟹ REALIZABLE g_j = a_j − b_j, a_j,b_j ∈ {−1,0,1} ⟹ g_j ∈ {−2..2}.
+So the chain needs only BHBI(ω, n/2, 2) over the realizable {−2..2} cone — NOT C=4.
+
+Probes: scripts/probes/probe_407_realizable_{bhbi,bhbi_verify,n32_exact,disjoint_check}.py (exact integer,
+proper thin 2-power μ_n ⊊ F_p*, ω^{N}=−1 verified, prize primes p~n^β).
+
+PART 1 — 032525 BREAK IS OFF-SPEC. n=16/p=65537 (β=4) exact brute: #relations in [−h,h]^8 = 0 at h=2 AND h=3;
+1152 at h=4 (first = exactly the 032525 witness). The 032525 witness has max|coeff|=4 > 2 ⟹ NOT a realizable
+contribZ-difference. At the REALIZABLE support {−2..2}, n=16/p=65537 is INDEPENDENT with margin (empty at h=2,3).
+So "chain breaks at n=16 prize prime" was a generic-BHBI break, not the realizable-BHBI the chain consumes.
+
+PART 2 — THE REAL BREAK (BGK wall in the realizable cone). At n=32 (N=16), realizable {−2..2} relations EXIST
+at β∈{3,4,5}, exact-integer verified (Σ g_j ω^j = −5p, −10p, −9p respectively; ω^16=−1; max|g|=2; nonzero):
+  β=4.00, p=1048609: g=(−1,−1,0,2,1,1,−1,2,−2,−2,−2,−2,−2,−2,−2,−2), Σ=−10·p. BHBI(ω,16,2) FALSE.
+And ON-SPEC (probe_407_realizable_disjoint_check.py): every witness is realizable as contribZ A − contribZ B
+with A,B DISJOINT and Σ_A sval = Σ_B sval mod p == 0 — exactly the domain of disjoint_equal_sum_antipodal_int_bounded.
+⟹ the chain's required hypothesis BHBI(ω,16,2) already FAILS at the prize support (β=4) by n=32, on-spec.
+
+PART 3 — ∀-FIELD-UNIVERSALITY (the c.154 trap). Realizable independence is PRIME-FLUCTUATING: n=16, β≈3.5 band,
+realizable {−2..2} independence holds at only 2/12 prize-band primes. p=65537 being independent is a lucky-prime
+false positive (the refuted "good prime exists" pigeonhole, §6/c.154). The prize is ∀-prize-field-universal;
+realizable-BHBI must hold at EVERY prize-band prime, which it does not.
+
+THINNESS (rule 3): C*_real (min realizable height) grows with β at SPECIFIC primes (n=16: 2 for β≤3.5 → 4 at
+β=4 → none at β=6), but NON-UNIFORM across the field (prime-fluctuating, Part 3). CONSISTENT with the
+matched-pair finding of 9a0868c62 (thin-vs-thick at FIXED prize prime sign-flips; neither C* nor the height-1
+relation count discriminates thin from thick at n=32): there is NO clean ∀-field thinness invariant in the
+bounded/realizable cone. NOT claiming a thinness invariant — deferring to that matched-pair rule-3-incompatible
+conclusion. Distinct complementary content of THIS entry vs 9a0868c62: (i) the 032525 break is OFF-SPEC
+(height-4 cone, not the realizable {−2..2} contribZ-difference cone the chain consumes); (ii) realizable
+BHBI(ω,16,2) is FALSE at n=32 β=4 by an ON-SPEC DISJOINT contribZ-difference witness (exact Σ=−10p), locating
+the wall at the chain's exact height-2 hypothesis (9a0868c62 measures the height-1 sign-relation COUNT, a
+different cone).
+
+NET: a correction (032525 break off-spec) + a precise location of the genuine wall in the realizable cone the
+chain consumes (BHBI(ω,16,2) FALSE at n=32, β=4, on-spec disjoint witness, exact) + the ∀-field obstruction
+(prime-fluctuating, c.154). No CORE closure; no fake. Small n (16 exact, 32 via MITM + exact-int verify).
