@@ -2882,3 +2882,22 @@ VERDICT (rule-4 mapped result, rule-6 honest -- NOT a closure/refutation):
   - Does NOT close/refute CORE. MAPS the onset-depth trend to its next octave + resolves the prior entry's
     open question (plateau, not ->2). Pure-Python exact integer counts, no Lean => axiom-clean trivially.
     probe_407_anomaly_onset_n128.py + probe_407_anomaly_onset_n128_verify.py.
+
+================================================================================
+THIN-SIDON depth->sup-norm bootstrap (§7.2, the only-live thinness-essential lead):
+the conversion failure is beta-ROBUST. (push edc3a3913, receipt #444 ic-4705330516,
+probe_407_supnorm_gate_beta_invariance.py)
+
+CONSTRAINT LEMMA (rule-4, tightening §7.2): mu_n's Sidon DEPTH advantage grows with n
+AND is LARGER at beta=5 (+8 vs +4 at n=32). But the sup-norm gate ratio
+M_thin/M_neg-closed-random is FLAT across BOTH n and beta:
+   beta=4 n=16: ~0.93 (p=65537,65617)
+   beta=5 n=16: ~0.96 (p=1048609,1048721)  -- if anything WEAKER at beta=5.
+=> the deeper beta=5 Sidon depth (where depth is LARGEST) buys NO sup-norm saving.
+The depth->sup-norm bootstrap is necessary-not-sufficient (known) AND beta-robust (new):
+a growing depth does not convert, and the conversion wall does not soften in the deepest-
+depth regime. Also M_thin/M_generic-random ~1.07-1.14 (thin WORSE than generic random;
+only beats neg-closed-random -- the 0.93-0.96 gap is the control's antipodal penalty,
+not a 2-power-subgroup bonus). M_thin tracks ~0.92*sqrt(n log p), never a power below.
+Builds on probe_407_supnorm_thinness_gate (n-axis flatness at beta=4). n=16 two-prime
+per beta; n=32 beta=5 sup-sweep (p~3.3e7) untested (heavy). Does NOT close/refute CORE.
