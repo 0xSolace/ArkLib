@@ -11371,3 +11371,50 @@ nothing tighter than the union bound), and the in-tree `mason_stothers_iso_feed_
 sympy GF(p); exact radicals + ragged/pure-coset split).
 
 ---
+
+## C32 (#444) — BGK Sum-Product Sup-Norm via BSG + 2-power antipodal collision — **SECRETLY-OPEN**
+
+**Claim.** The BGK sum-product bound `M(μ_n) ≤ n^{1−o(1)}` (ineffective) can be *sharpened* to the
+prize target `√(n log(p/n))` past Johnson by combining the Balog–Szemerédi–Gowers (BSG) structure of
+low-energy subgroups with the proven antipodal-only (`z + (−z) = 0`) collision structure at 2-power.
+
+**Horn: secretly-open.** This conjecture *is the open core itself* (the prize statement
+`max_{b≠0}|Σ_{x∈μ_n} e_p(bx)| ≤ √(2n log m)`, see `the-prize-isolated-direct-bgk-statement.md`),
+re-stated with a *named proof strategy* attached. The strategy (BSG + antipodal) supplies **nothing
+new**; the half-power gap remains exactly the named open BGK sup-norm bound.
+
+**Why BSG is vacuous here (machine witness, proper `μ_n`, `p` prime, `p ≫ n³`, NEVER `n=p−1`).**
+BSG is a *high-energy* theorem: it extracts an approximate subgroup from a set whose additive energy is
+*large*. But `μ_n` is at the **minimum-energy endpoint** — it is Sidon, and *jointly* Sidon with every
+dilate. Measured exactly over GF(p):
+
+| n | p | p/n³ | M | log M / log n | prize √(2n log(p/n)) | E²(μ_n,ξμ_n) | diagonal n² |
+|---|---|------|---|----------------|----------------------|--------------|-------------|
+| 8  | 5009   | 9.78 | 7.48  | **0.968** | 10.15 | 64   | 64   |
+| 16 | 16417  | 4.01 | 13.11 | **0.928** | 14.90 | 256  | 256  |
+| 32 | 131297 | 4.01 | 19.21 | **0.853** | 23.08 | 1024 | 1024 |
+
+- **(A)** The true sup-norm sits at `log M / log n ≈ 0.85–0.97 = BGK SOTA (n^{1−o(1)})`, **not 1/2**.
+  No square-root cancellation is visible; the prize exponent `1/2` is nowhere in the measured data.
+- **(B′)** The joint dilate energy `E⁺(μ_n, ξμ_n)` is **diagonal-only = n²** for every tested dilate ξ
+  ∉ μ_n. So `μ_n` is already the *best possible* additive input. BSG's hypothesis ("large energy ⇒
+  approximate subgroup") is vacuously satisfied: **there is no excess energy to harvest.** BSG +
+  best-possible energy gives **zero exponent gain** — consistent with Kowalski 2024 (arXiv:2401.04756)
+  and dual-assault L8: the BGK losses are **regime-driven (n = p^γ, γ < 1/2), not seed-energy-driven.**
+- **(C)** The sup-norm-from-energy conversion `M^{2r} ≤ Σ_b|η_b|^{2r} = p·E_r` needs near-Gaussian `E_r`
+  up to `r ~ log p`. Measured `E_r/((2r−1)!!nʳ)` departs from the Gaussian baseline already at small r
+  (char-p wrap excess), and BSG/sum-product controls **only low-order (r=2,3)** energy. The deep-moment
+  object at `r ~ log p` is exactly the named open residual, untouched by BSG.
+
+**The structural point.** The antipodal-only collision structure (Mann/Conway–Jones, in-tree
+`AntipodalBalanceBounded`) governs which char-0 vanishing relations exist; it provably **caps at
+Johnson** (route-elimination meta-theorem). Combining a Johnson-capped closed object (antipodal) with
+a high-energy theorem (BSG) whose hypothesis is vacuous on a Sidon set produces no past-Johnson lever.
+The "sharpening" is just the original open BGK bound under a new name. The half-power `√(p)/n` deficit
+is the recognised ~25-year-open analytic-NT problem (di Benedetto `n^{0.989}` needs `p^{1/4}<H<p^{1/2}`,
+*outside* the prize band `n ≪ √p`).
+
+**Probe committed:** `scripts/probes/probe_c32_bsg_antipodal_supnorm.py` (self-contained, sympy GF(p);
+exact sup-norm, additive/dilate energy, r-th energy vs Gaussian). Commit `4bdcc12ea`.
+
+---
