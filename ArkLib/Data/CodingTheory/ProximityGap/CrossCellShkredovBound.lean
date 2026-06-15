@@ -125,9 +125,17 @@ def ShkredovDiagonalBound (H : Finset F) (ζ : F) : Prop :=
   ∃ ε : ℚ, ε < 1 ∧ ∀ r : ℕ, 2 ≤ r →
     (crossCell H ζ r : ℚ) ≤ ε * (2 * N0 H r : ℚ)
 
-/-- **The correct OPEN form — the absolute BCHKS-1.12 bound.** `crossCell ≤ (2^r)·|H|^r / q`, the
-random/diagonal-free count. This is the genuine open core (NOT refuted; remains the wall). Stated
-with `q = Fintype.card F`. -/
+/-- **The absolute BCHKS-1.12 bound — TRUE ONLY ASYMPTOTICALLY (pointwise form REFUTED).**
+`crossCell·q ≤ 2^r·|H|^r`, the random/diagonal-free count. ⚠️ **The per-`r` pointwise statement is
+FALSE** at finite `n` for every `r ≥ 3` (exact sweep `probe_407_crosscell_absolute_pointwise.py`,
+multi-prime, proper `μ_n`): e.g. `p=97,n=8,r=4` gives `crossCell·q = 9312 > 4096 = 2⁴·4⁴`, and the
+violation ratio GROWS with `p` (`60×` at `p=2593`) since `crossCell` stabilizes `p`-independently for
+`p≫n³` while `crossCell·q ~ q`. Even the DC-subtracted forms `(2^r−2)|H|^r` and `(2^r−2)|H|^r + Wick`
+are pointwise-false at finite `n` when `q ≱ 2^r·|H|^r` (`probe_407_crosscell_dcsub_form.py`;
+`DISPROOF_LOG` 2026-06-15). The genuine open core is the **asymptotic** bound in the prize budget
+`q ~ n·2¹²⁸ ≫ 2^r·|H|^r` at depth `r ≈ ln q` — i.e. exactly the char-`p` validity of `A_r ≤ Wick`
+(§2 mandatory form), NOT this finite pointwise inequality. Stated with `q = Fintype.card F`; kept as a
+named `Prop` for the consumer chain, with the honest caveat that it is satisfiable only in the limit. -/
 def CrossCellAbsoluteBound (H : Finset F) (ζ : F) : Prop :=
   ∀ r : ℕ, 2 ≤ r →
     (crossCell H ζ r : ℚ) * (Fintype.card F : ℚ) ≤ (2 ^ r : ℚ) * (H.card : ℚ) ^ r

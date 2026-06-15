@@ -11189,3 +11189,56 @@ system can fit ALL n points at degenerate (non-far) directions -- the known "I=p
 degenerate radius" saturation. => the meaningful single-line s* object is the FIXED-far-direction count,
 and the clean non-degenerate trinomial brick is the t=3/k=1 boundary; the k>=2 naive count is vacuous.
 Do NOT pursue a "t=4/k=2 sparse floor" lane -- it saturates trivially. CORE unaffected, OPEN.
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent) — crossCell UPPER-BOUND FORM AUDIT: the in-tree
+`CrossCellAbsoluteBound` POINTWISE form is REFUTED, and so is the DC-subtracted form
+(at finite n). Constraint lemma: the only true crossCell bound is ASYMPTOTIC (prize
+budget q >> 2^r|H|^r), NEVER a finite-instance pointwise inequality.
+--------------------------------------------------------------------------------
+CONTEXT. `CrossCellShkredovBound.lean` defines (and its docstring labels "the genuine open
+core (NOT refuted; remains the wall)"):
+    CrossCellAbsoluteBound :  crossCell(H,zeta,r) * q  <=  2^r * |H|^r   (all r>=2).
+where crossCell(H,zeta,r) = N0(G,r) - 2*N0(H,r), G=mu_n, H=mu_{n/2}, q=p.
+Round-1 L1 (#444 sec.11) flagged the single point p=97,n=8,r=4 as a violation but never
+swept it. I settled it EXACTLY, multi-prime, PROPER mu_n (m=(p-1)/n>1), p==1 mod n,
+NEVER n=q-1, via exact N0 counts (poly powering mod x^p-1, big-int).
+  probe_407_crosscell_absolute_pointwise.py  +  probe_407_crosscell_dcsub_form.py.
+
+RESULT 1 — the POINTWISE absolute bound A: crossCell*q <= 2^r|H|^r is REFUTED everywhere r>=3.
+  - r=2: cross=0 EXACTLY at every prime (matches `crossCell_eq_zero_of_r_eq_one` / E_1 halving;
+    the descent is exact at the 2nd moment). So the bound is non-trivial only for r>=3.
+  - r>=3: VIOLATED at EVERY tested (n,p). The violation ratio (cross*q)/(2^r|H|^r) GROWS with p
+    (= thinner subgroup at fixed n): e.g. n=8,r=4: ratio 2.27 (p=97) -> 13.5 (p=577) -> 60.8 (p=2593);
+    n=32,r=4: 2.32 (p=577) -> ... . It is WORST at the thinnest (most prize-like) primes.
+  - p-pattern: cross itself stabilizes to a p-independent count for p>>n^3 (n=8,r=8 cross=180320 for
+    all p>=577), so cross*q ~ q grows linearly while 2^r|H|^r is fixed => unbounded violation.
+  => the per-r absolute bound CANNOT hold pointwise; it is the wrong shape. The docstring's
+     "NOT refuted; remains the wall" is FALSE for this pointwise statement.
+
+RESULT 2 — even the DC-SUBTRACTED forms are pointwise-refuted at finite n (sharper than L1):
+    C: crossCell*q <= (2^r - 2)|H|^r                 [random main term only]
+    B: crossCell*q <= (2^r - 2)|H|^r + (2r-1)!!|H|^r  [random + Wick, the #444 sec.2 mandatory shape]
+  - C: REFUTED for all r>=4 (and r>=3 at n=16,32) at every prime.
+  - B (the +Wick MANDATORY-form analogue): REFUTED at n=8 p>=577 r=4 (ratio>1), and n=16 p=257 r=3,
+    and similar — i.e. B FAILS pointwise exactly when q is too SMALL relative to 2^r|H|^r. B HOLDS
+    whenever q is large enough (n=8 p<=193 all r tested), confirming it is an ASYMPTOTIC bound.
+
+CONSTRAINT LEMMA (the precise wall shape):
+  crossCell*q is an exact additive-resonance count whose leading behaviour is the RANDOM term
+  (2^r - 2)|H|^r PLUS a positive arithmetic excess from spurious mod-p collisions. At FINITE n the
+  excess can exceed BOTH the random term and the random+Wick budget when q = p is not yet >> 2^r|H|^r
+  (i.e. when the subgroup is not yet "thin enough" for the budget). The bound becomes true ONLY in the
+  asymptotic prize regime q ~ n*2^128 >> 2^r|H|^r at depth r~89. Therefore NO pointwise/per-instance
+  crossCell upper bound (A, B, or C) is provable as stated; the genuine open core is the ASYMPTOTIC
+  inequality crossCell*q <= (2^r-2)|H|^r + (2r-1)!!|H|^r in the limit q/(2^r|H|^r) -> infinity, i.e.
+  exactly the char-p validity of A_r <= Wick at depth r~ln q (#444 sec.2). This is the SAME BGK wall;
+  it just cannot be phrased as the finite pointwise `CrossCellAbsoluteBound` currently in the tree.
+
+SCOPE (rule-6, honest): NOT a CORE closure. This is a FORM CORRECTION + refutation: it removes a
+mislabeled "open core" (the pointwise absolute bound), shows the DC-subtracted pointwise form is also
+finite-n-false, and re-localizes the genuine open statement to the asymptotic budget regime (consistent
+with the mandatory A_r form, sec.2). rule-3: the violation is thickness-MONOTONE (worse at small m =
+thicker-relative subgroup, better as p grows) and p-budget-driven, NOT a thin-vs-thick CORE signal -- so
+this is purely a statement-shape correction, not a CORE lever. Python+numpy EXACT, multi-prime,
+proper subgroup => axiom-clean trivially (no Lean proof changed; docstring corrected separately).
