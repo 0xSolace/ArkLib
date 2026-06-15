@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleAssembled
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodSpectralFrame
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
 
 /-!
 # Bridging the two in-tree CORE encodings: saddle floor ⟹ `NearRamanujanSqrtLog` (#444 §6.2 / §407)
@@ -48,6 +49,7 @@ open ArkLib.ProximityGap.SubgroupGaussSumMoment
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.GaussPeriodSpectralFrame
 open ProximityGap.Frontier.CoshMGFSaddleAssembled
+open ProximityGap.Frontier.ConvergenceHub
 
 namespace ProximityGap.Frontier.NearRamanujanFromSaddle
 
@@ -110,8 +112,43 @@ theorem saddleConst_sq (G : Finset F) {y : ℝ} (hn : (G.card : ℝ) ≠ 0)
   -- saddleConst² = num² / (y² · (√L)²) = num² / (y² · L) = num² / (2 log q · log(q/n))
   rw [saddleConst, ← hnum, div_pow, mul_pow, hsq, hyL]
 
+omit [Field F] [DecidableEq F] in
+/-- The shared constant is nonnegative when `1 ≤ q` (so `2q² ≥ 1`, hence `log(2q²) ≥ 0`) and the
+length scale is positive: numerator `≥ 0`, denominator `> 0`. -/
+theorem saddleConst_nonneg (G : Finset F) {y : ℝ} (hy : 0 < y) (hq1 : (1 : ℝ) ≤ Fintype.card F)
+    (hL : 0 < (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) :
+    0 ≤ saddleConst F G y := by
+  rw [saddleConst]
+  have hspos : 0 < Real.sqrt ((G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card)) :=
+    Real.sqrt_pos.mpr hL
+  have hnum : 0 ≤ Real.log (2 * (Fintype.card F : ℝ) ^ 2) := by
+    apply Real.log_nonneg
+    nlinarith [hq1, sq_nonneg ((Fintype.card F : ℝ) - 1)]
+  positivity
+
+/-- **End-to-end: the single open MGF inequality ⟹ the δ*-pinning hub.**  Composing the bridge
+`nearRamanujan_of_saddle` (saddle ⟹ spectral predicate) with the in-tree convergence-hub face
+`prizeFloor_of_nearRamanujan` (spectral ⟹ `PrizeFloor`), the single open MGF inequality at the
+saddle discharges **`PrizeFloor ψ G C₀`** — the `WorstCaseIncompleteSumBound` at the prize scale that
+(downstream, via `addEnergy_le_of_worstCase → mcaDeltaStar`) pins `δ*`.  This is the explicit weld of
+the §6.2 saddle/Wick face to the δ*-pinning census/hub face: BOTH in-tree CORE encodings now consume
+the SAME single open hypothesis through one explicit constant `C₀ = saddleConst F G y*`.  Still NOT a
+CORE closure — the MGF inequality itself is the open prize. -/
+theorem prizeFloor_of_saddle {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    {y : ℝ} (hy : 0 < y) (hn : 0 < (G.card : ℝ)) (hq1 : (1 : ℝ) ≤ Fintype.card F)
+    (hq : (G.card : ℝ) ≤ Fintype.card F)
+    (hL : 0 < (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card))
+    (hsaddle : y ^ 2 = 2 * Real.log (Fintype.card F : ℝ) / (G.card : ℝ))
+    (hMGF : (∑' r : ℕ, ((Fintype.card F : ℝ) * rEnergy G r) * y ^ (2 * r) / ((2 * r).factorial : ℝ))
+        ≤ (Fintype.card F : ℝ) * Real.exp ((G.card : ℝ) * y ^ 2 / 2)) :
+    PrizeFloor ψ G (saddleConst F G y) :=
+  prizeFloor_of_nearRamanujan hq (saddleConst_nonneg G hy hq1 hL)
+    (nearRamanujan_of_saddle hψ G hy hn hL hsaddle hMGF)
+
 end ProximityGap.Frontier.NearRamanujanFromSaddle
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx):
 #print axioms ProximityGap.Frontier.NearRamanujanFromSaddle.nearRamanujan_of_saddle
 #print axioms ProximityGap.Frontier.NearRamanujanFromSaddle.saddleConst_sq
+#print axioms ProximityGap.Frontier.NearRamanujanFromSaddle.saddleConst_nonneg
+#print axioms ProximityGap.Frontier.NearRamanujanFromSaddle.prizeFloor_of_saddle
