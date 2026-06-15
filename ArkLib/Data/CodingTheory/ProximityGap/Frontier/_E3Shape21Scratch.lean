@@ -1,5 +1,8 @@
 import ArkLib.Data.CodingTheory.ProximityGap.LamLeungMultisetAntipodal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3StrataCount
 import Mathlib.Tactic
+
+open ArkLib.ProximityGap.Frontier.E3StrataCount (twoValue_count)
 
 set_option linter.style.longLine false
 set_option autoImplicit false
@@ -296,6 +299,69 @@ theorem balanced_valued_count (x y : F)
       · rw [Finset.disjoint_left]; intro i hi hi'
         rw [Finset.mem_filter] at hi hi'; exact hx (hi.2 ▸ hi'.2)
     rw [hsplit, hbx]; exact ⟨_, rfl⟩
+
+/-- Among balanced tuples valued in `{x,-x,y,-y}`, those with image exactly `{x,-x}` are the
+ones with `x` in 3 positions (valued in `{x,-x}`, balanced) — `C(6,3)=20` of them. -/
+theorem valued_image_two (x y : F)
+    (hx : x ≠ -x) (hy : y ≠ -y) (hxy : x ≠ y) (hxy' : x ≠ -y) (hmxy : -x ≠ y) (hmxy' : -x ≠ -y) :
+    ((Finset.univ.filter (fun c : Fin 6 → F =>
+        (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+        ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+        ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card)).filter
+      (fun c => Finset.image c Finset.univ = {x, -x})).card = 20 := by
+  classical
+  rw [show (20 : ℕ) = Nat.choose (Fintype.card (Fin 6)) 3 by decide,
+      ← twoValue_count (ι := Fin 6) 3 x hx]
+  congr 1
+  ext c
+  simp only [Finset.mem_filter, Fintype.mem_piFinset, Finset.mem_univ, true_and]
+  -- helper: a tuple valued in {x,-x} has #x + #(-x) = 6
+  have twoSum : (∀ i, c i ∈ ({x, -x} : Finset F)) →
+      (Finset.univ.filter (fun i => c i = x)).card + (Finset.univ.filter (fun i => c i = -x)).card = 6 := by
+    intro hval
+    have hdisj : Disjoint (Finset.univ.filter (fun i => c i = x)) (Finset.univ.filter (fun i => c i = -x)) := by
+      rw [Finset.disjoint_left]; intro i hi hi'
+      rw [Finset.mem_filter] at hi hi'; exact hx (hi.2 ▸ hi'.2)
+    have hcov : (Finset.univ.filter (fun i => c i = x)) ∪ (Finset.univ.filter (fun i => c i = -x)) = Finset.univ := by
+      ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and, iff_true]
+      rcases Finset.mem_insert.mp (hval i) with h | h
+      · exact Or.inl h
+      · exact Or.inr (Finset.mem_singleton.mp h)
+    have hu := Finset.card_union_of_disjoint hdisj
+    rw [hcov, Finset.card_univ, Fintype.card_fin] at hu; omega
+  constructor
+  · rintro ⟨⟨_, hbx, _⟩, himg⟩
+    have hval2 : ∀ i, c i ∈ ({x, -x} : Finset F) :=
+      fun i => himg ▸ Finset.mem_image_of_mem c (Finset.mem_univ i)
+    exact ⟨hval2, by have := twoSum hval2; omega⟩
+  · rintro ⟨hval2, hk⟩
+    have hsum := twoSum hval2
+    have hnegx3 : (Finset.univ.filter (fun i => c i = -x)).card = 3 := by omega
+    have hempty : ∀ w : F, w ≠ x → w ≠ -x → (Finset.univ.filter (fun i => c i = w)).card = 0 := by
+      intro w hwx hwnx
+      rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]; intro i _ hci
+      rcases Finset.mem_insert.mp (hval2 i) with h | h
+      · exact hwx (hci ▸ h)
+      · exact hwnx (hci ▸ Finset.mem_singleton.mp h)
+    refine ⟨⟨fun i => ?_, ?_, ?_⟩, ?_⟩
+    · rcases Finset.mem_insert.mp (hval2 i) with h | h
+      · exact Or.inl h
+      · exact Or.inr (Or.inl (Finset.mem_singleton.mp h))
+    · rw [hk, hnegx3]
+    · rw [hempty y (fun h => hxy h.symm) (fun h => hmxy h.symm),
+          hempty (-y) (fun h => hxy' h.symm) (fun h => hmxy' h.symm)]
+    · apply Finset.Subset.antisymm
+      · intro w hw; rw [Finset.mem_image] at hw; obtain ⟨i, _, hi⟩ := hw; exact hi ▸ hval2 i
+      · intro w hw
+        rw [Finset.mem_image]
+        rcases Finset.mem_insert.mp hw with h | h
+        · have hpos : 0 < (Finset.univ.filter (fun i => c i = x)).card := by rw [hk]; norm_num
+          obtain ⟨i, hi⟩ := Finset.card_pos.mp hpos; rw [Finset.mem_filter] at hi
+          exact ⟨i, Finset.mem_univ i, by rw [hi.2]; exact h.symm⟩
+        · have h' := Finset.mem_singleton.mp h
+          have hpos : 0 < (Finset.univ.filter (fun i => c i = -x)).card := by rw [hnegx3]; norm_num
+          obtain ⟨i, hi⟩ := Finset.card_pos.mp hpos; rw [Finset.mem_filter] at hi
+          exact ⟨i, Finset.mem_univ i, by rw [hi.2]; exact h'.symm⟩
 
 end E3Shape21Scratch
 
