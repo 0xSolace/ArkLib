@@ -82,3 +82,15 @@ is the cleanest statement of the precise probabilistic input the deterministic p
 mode (ii), "absent randomness", made exact: the missing thing is sub-Gaussian increment concentration).
 Ledger entry: "generic chaining → CORE ⟺ sub-Gaussian η-increments; deterministic ⟹ needs the
 probabilistic input the subgroup doesn't supply unconditionally."
+
+## ADDENDUM 2 — autocorrelation / positive-definite framing (cleanest statement, same wall)
+M(n)² = max_{b≠0} \hat r(b), where r(d)=#{(x,y)∈μ_n²: x−y=d} is the subgroup autocorrelation (non-negative,
+positive-definite, r(0)=n, Σ_d r(d)=n², Σ_d r(d)²=E(μ_n)=3n²−3n). By Wiener–Khinchin \hat r(b)=|η_b|²≥0,
+with Σ_{b≠0}|η_b|²=pn−n² (Parseval) ⟹ mean of {|η_b|²}_{b≠0} = n. So the prize CORE is EXACTLY:
+**the non-negative spectrum {|η_b|²} has max ≤ C·n·log m = C·(mean)·log m** — i.e. the subgroup
+autocorrelation's Fourier spectrum is "flat up to a log m factor" (positive-definite flatness). This is
+the cleanest equivalent of the sub-Gaussian-periods statement: max-within-log-of-mean for a non-negative
+positive-definite spectrum. Same wall, but the most economical phrasing — and it shows the prize is a
+pure "max-vs-mean for a non-negative Fourier spectrum" flatness question (no character theory needed to
+STATE it). β=4 quartic angle also checked: μ_n is Sidon-like (E=3n²) but the L⁴ bound M⁴≤qE₂=3n⁶ gives
+only n^{3/2} (the q^{1/4} loss); no quartic-residue algebraic lever at β=4 (criticality is smooth).
