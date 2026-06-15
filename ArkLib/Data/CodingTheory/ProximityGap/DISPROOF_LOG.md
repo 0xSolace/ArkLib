@@ -1,6 +1,43 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
 
+IDEA [DSAR-BMT] (#444, route: Bernstein–Markov–Turán on η). `η_b = Σ_{x∈μ_n} e_p(bx)` is a SPARSE
+trig polynomial: as `P(z)=Σ_{x∈μ_n} z^x` it has exactly `n` nonzero Fourier coefficients (the indicator
+of `μ_n ⊂ ℤ/pℤ`), all unit, spread over `[0,p)`. PROPOSED: the sparsity (`n` coeffs) + multiplicative-
+subgroup support structure gives a Turán/Bernstein–Markov-type ceiling `M(n)=max_{b≠0}‖η_b‖ ≤ f(n,sparsity)`
+better than trivial `n` — WITHOUT the BGK coefficient/support arithmetic.
+
+VERDICT: **REDUCES TO THE BGK WICK BOUND AT LOG DEPTH (no sparsity escape).** Two faces:
+(i) The sparsity COUNT alone gives *exactly* the trivial `ℓ¹` ceiling `‖η_b‖ ≤ n` (triangle inequality on
+`n` unit terms), and that ceiling is REALISED. (ii) Turán's power-sum method — the only "sparse-support"
+tool that engages the coefficient LOCATIONS — bounds the sup from BELOW (`max_ν|Σ z_k^ν| ≥ c√n`), the
+WRONG direction. The genuine UPPER bound on `Σ_{x∈H}ψ(x)` for a multiplicative subgroup `H` is precisely
+the Bourgain–Glibichuk–Konyagin / Heath-Brown–Konyagin problem (`Σψ ≪ p^{-β}|H|`), proven via the
+sum–product/Stepanov ARITHMETIC of `H` = the named BGK wall, open at the prize depth `n=2^μ≈p^{1/4}`,
+`r∼log q`.
+
+PROBE (`scripts/probes/probe_dsar_sparsity.py`; proper `μ_n`, `n=2^μ`, `p` prime, `p≫n³`):
+
+| n | p | M | M/√n | M/√(n·log q) | **arbitrary `n`-sparse (consecutive) max** |
+|---|---|---|------|--------------|--------------------------------------------|
+| 8 | 4129 | 7.56 | 2.67 | 1.07 | **8.00 = trivial n** |
+| 16 | 65537 | 13.84 | 3.46 | 1.20 | **16.00 = trivial n** |
+| 32 | 1048609 | 22.98 | 4.06 | 1.26 | **32.00 = trivial n** |
+
+DECISIVE KILL (last column): a DIFFERENT `n`-sparse unit support (`n` consecutive frequencies) attains the
+trivial value `n` at a genuine NONZERO frequency. So the subgroup `M≈C√(n·log q) ≪ n` is a property of
+*which* `n` frequencies (the multiplicative arithmetic), never of *how many* (the sparsity count). Any
+inequality keyed only to the coefficient COUNT cannot distinguish `μ_n` from the consecutive set, hence
+cannot certify `M<n`. (Same class as the [I027] PAPR↔merit and exhausted-moment findings: bounding `L^∞`
+above from a count/`L^p` datum needs the sub-Gaussian flatness that IS the conjecture.)
+
+LEAN BRICK (axiom-clean, `[propext, Classical.choice, Quot.sound]`, no sorry/native_decide):
+`Frontier/_AR_BernsteinMarkovSparsity.lean` — `eta_norm_le_card` (`‖η_b‖ ≤ |G|`, the ℓ¹ ceiling),
+`eta_zero_eq_card`/`eta_zero_norm_eq_card` (ceiling attained: `η_0 = |G|`), `no_subunital_sparsity_ceiling`
+(no `θ<1` improvement holds for all configs). Signed DSAR-BMT. (The honest content of the sparsity route is
+the ℓ¹ ceiling; the escape is the BGK arithmetic, kept as the named Wick/Paley wall — no shortcut.)
+
+
 IDEA: M(μ_n)/√n is the PAPR (peak-to-average power ratio) of the coset spectrum b↦η_b
 (η_b=Σ_{x∈μ_n}e_p(bx), constant on cosets of F_p*/μ_n, an m-vector, m=(p-1)/n). Its "dual" is the
 m-power-residue (Sidelnikov/generalized Legendre) sequence whose merit factor is KNOWN bounded
@@ -13871,3 +13908,131 @@ which is the open BGK-adjacent object. The proven, axiom-clean field-universal b
 honest C(n,k+1) (AgreementSetPacking); the O(1) collapse is probe-observed, NOT yet a theorem, and
 the inclusion route to it is dead. CORE (M(μ_n) ≤ C√(n log(p/n))) UNCHANGED/OPEN. — wf-UNDERDET,
 co-author wakesync.
+
+---
+
+## wf-F1 (#444): hypercontractivity / sub-Gaussian on the period family — SHARPENED + Lean-pinned
+
+ROUTE: does X_b = |eta_b| (b in F_q) have a (2,2r)-hypercontractive / sub-Gaussian moment
+structure ||X||_{2r} <= C*sqrt(r)*||X||_2 (Bonami-Beckner / log-Sobolev on the character group)
+that supplies the Wick bound for free, giving M <= C'*sqrt(n log q)?
+
+VERDICT: NO ESCAPE — the hypercontractive bound IS the Wick bound (reduction, not a new route),
+and the textbook hypercontractive *machinery* is denied by direct super-Gaussianity measurement.
+
+(1) EQUIVALENCE (Lean, axiom-clean). Frontier/_AR_HypercontractiveWickEquivalence.lean proves,
+    from the in-tree full-frequency moment identities (sum_b|eta|^{2r}=q*E_r, sum_b|eta|^2=q*n):
+        HypercontractiveMomentBound psi G r  <->  GaussianEnergyBound G r        (r >= 1)
+    i.e. the sub-Gaussian L^{2r}-vs-L^2 inequality WITH ITS SHARP WICK CONSTANT ((2r-1)!!)^{1/2r}
+    is *logically identical* to Route B's named open core E_r <= (2r-1)!!*n^r. Proving it at
+    r ~ log q (the depth the prize floor needs) = proving the char-p Wick wall at that depth.
+    `hypercontractive_iff_wick`, `hypercontractive_one` (r=1 base, unconditional), `l2_sq_eq`.
+    Axioms [propext, Classical.choice, Quot.sound]; no sorry/native_decide.
+
+(2) NO FREE STRUCTURE (probes, exact FFT). probe_dsar_hypercontractivity_wf_F1.py measures
+    K(r) = ||X||_{2r}/||X||_2 against the sub-Gaussian envelope G(r) = ((2r-1)!!)^{1/2r}:
+      * generic primes: K/G <= 1, DECREASING in r (sub-Gaussian, fine);
+      * MAXIMALLY 2-adically resonant prime p=65537=2^16+1: K/G GROWS with r to ~1.43 at n=64
+        (K/G: 1.00 -> 1.12 -> 1.26 -> 1.35 -> ... ), i.e. SUPER-GAUSSIAN. The standard (2,4)
+        Bonami-Beckner step (which assumes a FLAT C~1 and bootstraps higher moments) therefore
+        FAILS — the 4th/6th-moment excess (kurtosis ~4.8) is the obstruction; no log-Sobolev /
+        noise-operator inequality on (F_q, mu_n) yields the constant for free.
+    probe_dsar_hyperc_constant_growth_wf_F1.py: the LEAST constant any hyperc bound needs is
+        C_floor(n,p) = M / sqrt(2 n log(p-1)),
+    which is exactly the BGK / Paley-graph eigenvalue ratio. It spikes at Fermat 65537
+    (M/sqrt(n)=5.45 at n=64, vs ~2-3 generic). Bounding C_floor = proving the open core.
+
+MECHANISM CLASS: reformulation-of-Wick + denied-by-super-Gaussian-tail. Hypercontractivity does
+NOT inject phase the second moment lacks; the constant it would need IS the wall. Reduces to the
+char-p Wick / BGK bound at log depth — same status as wf-D4 A5 (now sharpened with the exact
+K/G growth measurement and the Lean equivalence). CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN.
+— wf-F1
+
+## wf-F4 — Dyadic subgroup-decomposition (butterfly) descent: REFUTED (uniform per-level), reduces to BGK at log depth
+
+ROUTE: F4. The exact subgroup-coset partition `μ_n = μ_{n/2} ⊔ g·μ_{n/2}` gives the **butterfly
+identity** `η_b(μ_n) = η_b(μ_{n/2}) + η_{bg}(μ_{n/2})` (★): the parent Gauss period is the sum of
+two values of the SAME half-level object, at frequencies `b` and the twist `bg`. Hope: an inductive
+sup bound `M(n) ≤ M(n/2) + (cross)` with controllable cross term yields `M(n) ≤ √(n log q)` by
+tower induction `μ_n ⊃ … ⊃ μ_8`.
+
+PROVEN (Lean, axiom-clean — `Frontier/_AR_DyadicButterflyDecorrelation.lean`):
+- `butterfly_split` / `coset_sum_eq_twist`: the exact identity (★) (Finset coset partition + twist).
+- `triangle_le_two` / `M_le_two_mul`: the ONLY inductively provable step is `M(n) ≤ 2·M(n/2)`
+  (both children ≤ M(n/2)). Iterated: `M(2^μ) ≤ 2^{μ-3}·M(8)` — LINEAR in n, not √n.
+- `sqrt2_descent_of_decorrelation`: √2-descent at one octave holds IFF the worst-case cross term
+  `2 Re(a₁ā₂) ≤ 0` (named `DyadicDecorrelationLaw`). This is the closed consumer.
+
+REFUTED (FFT-exact, `scripts/probes/probe_dsar_butterfly.py`; p=65537/262xxx/1048xxx, n=16..128,
+proper subgroups μ_n ⊊ Fₚˣ):
+- At the MAXIMIZING frequency b* of M(n), the two butterfly children are **perfectly phase-aligned**:
+  `cos∠(a₁,a₂) = +1.000` EVERY configuration. Cross term = +2|a₁||a₂| (maximally constructive).
+- Realized ratio M(n)/M(n/2) reaches 1.76, 1.79, 1.82 > √2 ≈ 1.414; childmax/M(n/2) = 1.000 in
+  several cases (a child of b* is itself a worst half-frequency). The uniform per-level step
+  `M(n) ≤ √2·M(n/2)` is FALSE worst-case — confirms `_DyadicPhaseChainingSubmaxRefuted` with the
+  sharper alignment mechanism (`cos=+1`, not just ratio>√2).
+- `decorrelation_fails_of_aligned`: machine-checked that aligned children (t>0, a₁≠0) refute
+  `DyadicDecorrelationLaw`. `no_sqrt2_saving_of_aligned`: aligned + comparable (t≥1) ⇒ parent
+  ≥ √2·|a₁| with no headroom (at t=1, ratio→2).
+
+MECHANISM CLASS: exact-identity + denied-by-constructive-cross-term. The subgroup decomposition is a
+saving-PRESERVING identity (cf. `_TowerDescentNoSaving`), not saving-CREATING: it reproduces the
+same non-decorrelation obstruction. The genuine residual = the PATH / geometric-mean relaxation of
+the cross term (`_DyadicCocycleLargeDeviation.CocycleGeometricMeanLaw`) = the BGK/Paley
+incomplete-character-sum wall, at log depth. NO ESCAPE. CORE M(μ_n) ≤ C√(n log(q/n)) UNCHANGED/OPEN.
+— wf-F4
+
+---
+
+## CHAR-0 WICK EXACT + FAITHFULNESS THRESHOLD — char-0 half PROVEN, char-p half = NO ESCAPE (#444, wf-DSAR)
+
+ROUTE: prove char-0 Wick `E_r(μ_{2^k}) ≤ (2r−1)‼·n^r` exactly (the PROVABLE half), then pin the
+char-p faithfulness threshold `T(n,r)` = smallest `q` for which the bound transfers, and ask whether
+`T(n,r) < q_prize` at the optimal depth `r ≈ ln q`.
+
+CHAR-0 HALF — ALREADY FULLY PROVEN IN TREE (axiom-clean, unconditional):
+`Frontier/_CharZeroWickEnergy.lean :: gaussianEnergyBound_dyadic` — for `G ⊆ μ_{2^k}` (k≥1) in a
+char-0 field, `E_r(G) ≤ (2r−1)‼·n^r`, NO hypothesis. The full chain is closed: Lam–Leung multiset
+antipodal balance (`count_antipodal_of_sum_eq_zero`) + the index-pairing LIFT
+(`NegationClosedPairingLifting.exists_isPairing_of_count_balanced`: count-balance ⟹ ∃ fpf-involution
+σ with f(σi)=−fi) + the K1 counting core (`zeroSumCount_le_pairings`) + negation-closure energy↔
+zero-sum bijection (`rEnergy_eq_zeroSumCount`). So the route's PROVABLE half needs no new Lean.
+
+CHAR-p HALF — NO ESCAPE (the decisive measurement + a PROVEN obstruction):
+The char-p energy carries the DC (principal-character) mass: the full moment `Σ_b‖η_b‖^{2r}=q·E_r`
+contains `‖η_0‖^{2r}=n^{2r}`, forcing `E_r ≥ n^{2r}/q` (`DCEnergyEssential.energy_ge_dc`, in tree).
+NEW PROVEN BRICK (`Frontier/_AR_FaithfulnessThreshold.lean`, axiom-clean
+[propext,Classical.choice,Quot.sound]):
+  `faithfulness_threshold_lower_bound` — `GaussianEnergyBound G r` over F_q (primitive ψ) FORCES
+    `n^r ≤ q·(2r−1)‼`, i.e. the faithfulness threshold `T(n,r) ≥ n^r/(2r−1)‼` (UNCONDITIONAL in r).
+  `field_card_ge_threshold` — restated: char-p Wick at depth r ⟹ `q ≥ n^r/(2r−1)‼`.
+  `faithful_sup_ceiling_ge_dc` — at any faithful depth the moment sup CEILING `X=q(2r−1)‼n^r ≥ n^{2r}`.
+This is the contrapositive of the in-tree refutation `not_gaussianEnergyBound_of_card_pow_gt`, recast
+as the POSITIVE necessary condition on q that the route's "pin T(n,r)" step names.
+
+THE WALL (probe `scripts/probes/probe_dsar_faithfulness_window.py`, exact, all scales n=2^3..2^30):
+faithfulness caps the usable depth from ABOVE — since `(2r−1)‼ ≤ (2r)^r`, faithful ⟺
+`r(ln n − ln 2r) ≤ ln q`, i.e. `r ≲ ln q/ln n` for `n ≫ (2r)²`. But the moment sup bound
+`M_r=(q(2r−1)‼n^r)^{1/2r}` beats prize `√(n ln q)` only at `r ≈ ln q` (to kill `q^{1/2r}`). The two
+pulls meet ONLY when `ln n = O(1)` (tiny n). At prize n=2^30: best FAITHFUL r* ≈ 3–4, giving
+`M ≈ q^{1/2r*} ≈ 1.9·10^9 ≫ √(n ln q) ≈ 3·10^5`. At EVERY scale measured, the best faithful depth
+gives `M ≥ prize target` (route LOSES): n=2^6 → M=69 vs 33; n=2^12 → 7.3e3 vs 369; n=2^30 → 1.9e9 vs 3e5.
+
+NET: the char-0 face is closed and in tree; the char-p transfer of it to log depth is exactly the
+BGK/Paley Wick wall — the faithful window is empty at the depth the prize needs. REDUCES TO WICK AT
+LOG DEPTH. No escape. — wf-DSAR
+
+## 2026-06-15 CORRECTION (#444): the "M->delta* exponent-transfer bridge" was OVERCLAIMED as axiom-clean
+The Frontier scaffolds `_e09_exponent_transfer_bridge.lean` (swept by autosync) and
+`_e04_bridge_avg_vs_worst.lean` (which I wrongly committed as "durable/proven") do NOT compile:
+`Real.logb` unknown constant (missing import) + invalid argument name `F` => the audit shows
+`sorryAx`. The `pastJohnson_threshold_correct` threshold arithmetic (delta* >= 1-rho-H(rho)/log2 B,
+past-Johnson iff log2 B > H(rho)/(sqrt rho - rho)) is therefore NOT proven in a compiling file; it is
+sound ARITHMETIC but unformalized. Removed the broken `_e04` file. What IS genuinely tracked + clean:
+(1) `mcaDeltaStar_ge_of_uniform_mcaBad` (MCADeltaStarListReduction.lean) -- the real bridge primitive
+(worst-case mcaBad-cardinality budget B with B/q <= eps* => delta <= mcaDeltaStar); (2) the I031
+capstone trio (SubgroupGaussSumOrbitReduction, I031MatchedGaussianCovariance, I031SubGaussianMaxBridge)
+-- these I DID verify #print axioms = [propext,Classical.choice,Quot.sound] myself. The threshold
+arithmetic needs a clean re-formalization (import Mathlib Real.logb; fix the named-arg) when the box is
+not saturated. Honesty note: I propagated the synthesis agent's "axiom-clean bridge" claim without
+running #print axioms myself; corrected here.
