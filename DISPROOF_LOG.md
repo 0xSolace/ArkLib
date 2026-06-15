@@ -1178,3 +1178,39 @@ COLLECTIVE refutation of the even-moment thin-suppression hope, NOT a CORE closu
 the surviving structural hope is the ODD signed family-level Sidon bootstrap (B_inf<-B_{log n}), which lives
 in the signed/odd object, NOT the even energy profile measured here. CORE not closed. Python-only, no Lean =>
 axiom-clean trivially. Multi-prime (incl. non-Fermat) -> not a Fermat artifact.
+
+### crossCell is p-INDEPENDENT (char-0 structural) + SUPER-random in the thin regime: the proposed "sub-random via mod-p collisions" open input is WALLED (2026-06-15)
+
+Follow-up to the crossCell dyadic-tower no-go (push ad90dc8d5). That entry showed iterating the per-level
+crossCell gap (granting BCHKS-1.12) leaks to trivial M<=n. CrossCellShkredovBound.lean's own CONCLUSION then
+proposes that the genuine open input "must come from the ARITHMETIC of the q-reduction (spurious mod-p
+collisions)" -- i.e. it hopes crossCell is SUB-random (< the BCHKS-1.12 expectation) because collisions cancel
+structure. This entry tests that hope directly in the thin prize regime and WALLS it.
+
+OBJECT (exact char-p, proper subgroup, NEVER n=q-1): G=mu_n=H u zeta*H, H=mu_{n/2}, crossCell(r)=
+N0(G,r)-2*N0(H,r) (>=0 by the descent). Random/BCHKS-1.12 expectation E_rand(r)=(2^r-2)|H|^r/p.
+Probe probe_407_crosscell_superrandom_pindep.py (exact running-sum DP counting, multi-prime, rule-3 control).
+
+RESULTS:
+1. crossCell is PERFECTLY p-INDEPENDENT in the thin regime (beta>=4): n=8 -> 96 (r=4), 4320 (r=6) at EVERY
+   prime {4129,4153,4177,4201}; n=16 -> 384, 40320 at EVERY prime {65537,65617,65633,65713}. => it is the
+   char-0 STRUCTURAL relation count (#{sum u + zeta sum w = 0} holding over Z, hence at every large p), with
+   ZERO spurious mod-p collision component (collisions scale like 1/p; crossCell does not move at all).
+2. SUPER-random, diverging with thinness: ratio crossCell/E_rand ~ (p-indep count)/(C/p) ~ p. beta=4: n=8
+   r=4 ratio 110x, n=16 r=4 438x; beta=5: 878x / 7022x. crossCell is FAR ABOVE random, never below.
+3. rule-3 THINNESS control: thick beta=2.3 ratio O(1)-4x; thin beta=4-5 ratio 100x-7000x. The super-random
+   excess is the char-0 structural floor dominating as p->infty -- thinness-ESSENTIAL, not a collision artifact.
+4. At thick/small p the count can EXCEED the char-0 value (n=16 r=6: 48000 at p=593 vs 40320 char-0) =>
+   collisions only ADD to crossCell, never give a sub-random saving.
+
+VERDICT (rule-4 constraint map; NOT a CORE result, NOT a prize refutation): there is NO sub-random saving in
+crossCell to extract. crossCell >= its char-0 structural count at all p (collisions only add). The proposed
+"arithmetic-of-the-q-reduction / mod-p-collision" open input of CrossCellShkredovBound.lean is WALLED: the
+binding object is the p-INDEPENDENT char-0 structural relation count, exactly the (super-random,
+BCHKS-1.12-saturating) quantity, with no mod-p cancellation available. CONSEQUENCE: any CORE proof routing
+through crossCell must bound the CHAR-0 structural count itself (= vanishing-sums-of-roots-of-unity /
+Lam-Leung over the 2-power tower), NOT hope for collision savings -- which re-localizes the open content onto
+the already-mapped char-0 antipodal/Sidon object (ConverseLamLeung2Power, the surviving thin Sidon bootstrap),
+NOT a new arithmetic mechanism. Combined with the tower no-go (ad90dc8d5): granting BCHKS-1.12 doesn't close
+(tower leaks to n), AND the proposed route to PROVE a sub-BCHKS crossCell bound (collisions) is empty. CORE
+not closed. Python-only, exact DP, multi-prime (Fermat + non-Fermat), no Lean => axiom-clean trivially.
