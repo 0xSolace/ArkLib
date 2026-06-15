@@ -1089,6 +1089,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TaoFromChebotarev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ThornerZamanPNTStatement
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerDescentNoSaving
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
