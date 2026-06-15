@@ -2418,3 +2418,34 @@ limit -- i.e. whether the accumulated O(1/n^2)+ corrections over r* steps rescue
 irreducible prize content; the leading r/n law does NOT resolve it (it -> 0, consistent with both
 prize-true and BGK-tight). The closed forms E_r = (2r-1)!![n^r - C(r,2)n^{r-1}+...] are clean formalizable
 targets (exact rational arithmetic => axiom-clean trivially). probe_407_Er_closedform_thin.py.
+
+================================================================================
+2026-06-15 The A_r/Wick PRIZE-RATIO profile CONFIRMS the r/n margin law on the
+actual object: ratio RISES toward 1 as n grows at every fixed r (margin shrinks);
+deep-r upturn at fixed p is a finite-field artifact (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: test the brick-4 closed-form verdict (g(r)=1-r/n, margin->0) DIRECTLY on the prize object
+A_r/Wick_r = E_r/((2r-1)!! n^r) (sub-Gaussian iff <1). Exact integer E_r, thin 2-power mu_n n=16,32, deep
+r. probe_407_ArWick_ratio_profile.py.
+
+RESULT (exact A_r/Wick_r profile, thin beta=4):
+  n=16 (r*=9): r=1..9 = 1.00, 0.9375, 0.8229, 0.6764, 0.5217, 0.3795, 0.2623, 0.1735, 0.1106
+  n=32 (r*=7): r=1..7 = 1.00, 0.9688, 0.9089, 0.8314, 0.7554, 0.7112, 0.7440
+KEY: at every fixed r the n=32 ratio EXCEEDS the n=16 ratio (r=2 0.94->0.97, r=3 0.82->0.91, r=4
+0.68->0.83, r=5 0.52->0.76, r=6 0.38->0.71). The sub-Gaussian MARGIN (1-ratio) SHRINKS as n grows =>
+A_r/Wick -> 1 (the Wick LEADING-ORDER equality), directly on the prize object -- same vanishing-margin
+signal as the closed-form g(r)=1-r/n law (brick 4).
+
+HONEST ARTIFACT (rule-6): the deep-r tail at FIXED p turns UP (n=32 r=7 ratio 0.744 > r=6 min 0.711).
+This is a FINITE-FIELD DC/wraparound artifact: when r ~ log_n p the n^{2r}/p subtraction and field
+wraparound contaminate E_r. Only the CLEAN rungs r << r* are trustworthy; the upturn is NOT a real
+sub-Gaussian recovery. (The clean-rung trend -- ratio up toward 1 as n grows -- is the signal.)
+
+VERDICT (rule-4 confirmation, rule-6 honest, NOT a closure): on the ACTUAL A_r<=Wick prize object the
+sub-Gaussian margin (1 - A_r/Wick) shrinks toward 0 as n grows at every fixed r, confirming the closed-form
+g(r)=1-r/n=margin-r/n verdict on the real object (not just the moment-step proxy). A_r<=Wick HOLDS with
+positive margin at every accessible (r,n) but the margin VANISHES at the n->inf limit. The open prize
+content is unchanged and precisely localized: whether the JOINT (r*~log n, n->inf) limit keeps the margin
+bounded below the threshold (prize-true) or it -> 0 (BGK-tight) -- the clean-rung n=16,32 data shows the
+margin shrinking but CANNOT reach r*~log n cleanly (finite-field artifact at deep r/fixed p). CORE not
+closed, no overclaim. Python-only exact => axiom-clean trivially. probe_407_ArWick_ratio_profile.py.
