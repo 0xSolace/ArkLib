@@ -47,21 +47,28 @@ on the full `k`-range `[2,6]` (the prior file only swept the high-rate end `k �
 
 | `n`            |  8 | 12 | 16 | 20 | 32 |
 |----------------|----|----|----|----|----|
-| `k = n/4`      |  2 |  3 |  4 |  5 |  8 |
-| `c*(n, n/4)`   |  3 |  4 |  3 |  4 |  5 |
+| `n`            |  8 | 12 | 16 | 20 | 24 | 32 |
+| `k = n/4`      |  2 |  3 |  4 |  5 |  6 |  8 |
+| `c*(n, n/4)`   |  3 |  4 |  3 |  4 |  5 |  5 |
 
-(`n = 8,12,16,20` re-measured here with `secondhorn`, multi-prime, matching the GPU's cross-validation
-set exactly; `n = 32` from the GPU run `e91c34348`.)  The sequence `3,4,3,4,…,5` is **NOT bounded**:
-its `n = 32` value `5` strictly exceeds every value at `n ≤ 20`.  So `c*(n)` **GROWS in `n`** (slowly,
-with a parity wobble — consistent with `~log₂ n` at the GPU's three points, but the campaign's `k = 2`
-per-direction `n/4`-linear datum is a DIFFERENT object: a single antipodal direction, not the max).
+(`n = 8,12,16,20,24` re-measured here with `secondhorn`, multi-prime, matching the GPU's
+cross-validation set; `n = 32` from the GPU run `e91c34348`.)  The sequence `3,4,3,4,5,5` is **NOT
+bounded**: its `n = 24, 32` value `5` strictly exceeds every value at `n ≤ 20`.  So `c*(n)` **GROWS in
+`n`**.  The `n = 24` datum `5` is the sharp one (`s* = 11`, `maxI = 24 = budget` exactly; `s = 10` had
+`maxI = 25 > 24`) and it **breaks** the `{3,4}` parity reading of the `n ≤ 20` tail — confirming real
+growth, not parity oscillation.  The growth is sub-linear with `c*/n → 0` (a `log`-like rate;
+not a clean closed form: `c*(16) = 3 < log₂ 16 = 4`, `c*(20) = 4 < ⌈log₂ 20⌉ = 5`, so neither
+`⌊log₂ n⌋` nor `⌈log₂ n⌉` fits exactly).  The campaign's `k = 2` per-direction `n/4`-linear datum is a
+DIFFERENT object (a single antipodal direction, not the max) — no conflict.
 
 ## The honest consequence — `c*` is bounded in the RATE, unbounded in `n`; `δ* → capacity`
 
 The prior file's §6 verdict used "`c*` bounded" in two senses the docstring did not separate:
 - **bounded in `k` (TRUE, reconfirmed here):** `c*(n,·) ∈ {3,4}` flat across all rates at `n = 16`;
   the depth never collapses to `0`, so no second horn opens by varying the *rate*.  ✓ (unchanged)
-- **bounded in `n` (FALSE):** `c*(n)` grows (`5` at `n = 32` > all `n ≤ 20`).  The off-BGK conclusion
+- **bounded in `n` (FALSE):** `c*(n)` grows (`5` at `n = 24, 32` > all `n ≤ 20`; the `n = 24` datum
+  `c* = 5` breaks the apparent `{3,4}` parity wobble — the growth is real, not a parity artifact).
+  The off-BGK conclusion
   does **not** rest on `n`-boundedness — it rests on `c*(n)/n → 0`, i.e. `δ*(n) = (1−ρ) − c*(n)/n`
   **approaches capacity** `(1−ρ)`.  Growing `c*(n)` with `c*(n)/n → 0` makes `δ*` approach capacity
   while still sitting a `Θ(c*/n) → 0` margin below it — strictly OFF (above) the BGK/Johnson floor at
@@ -79,13 +86,16 @@ All results `#print axioms ⊆ {propext, Classical.choice, Quot.sound}`.
 namespace ArkLib.ProximityGap.DecouplingCrossingDepthGrowsInN
 
 /-- The measured max-over-directions crossing depth `c*(n, n/4)` on the `ρ = 1/4` axis, as a finite
-data table (indexed by `n ∈ {8,12,16,20,32}`).  Values from `secondhorn` (`n ≤ 20`, re-measured here,
-matching the GPU cross-validation set) and the GPU run `e91c34348` (`n = 32`). -/
+data table (indexed by `n ∈ {8,12,16,20,24,32}`).  Values from `secondhorn` (`n ≤ 24`, re-measured
+here, matching the GPU cross-validation set) and the GPU run `e91c34348` (`n = 32`).  `n = 24` is the
+sharp datum: `s* = 11` (`maxI = 24 = budget` exactly at the worst direction `(21,8)`), `s = 10` had
+`maxI = 25 > 24` — so `c*(24) = 5`. -/
 def cStarQuarter : ℕ → ℕ
   | 8  => 3
   | 12 => 4
   | 16 => 3
   | 20 => 4
+  | 24 => 5
   | 32 => 5
   | _  => 0
 
@@ -115,19 +125,30 @@ theorem cStar_n16_rate_pos :
 
 /-! ### `n`-growth on the `ρ = 1/4` axis (the correction to "bounded `c*`") -/
 
-/-- The `ρ = 1/4` axis values, listed: `c*(n,n/4) = 3,4,3,4,5` at `n = 8,12,16,20,32`. -/
+/-- The `ρ = 1/4` axis values, listed: `c*(n,n/4) = 3,4,3,4,5,5` at `n = 8,12,16,20,24,32`. -/
 theorem cStarQuarter_values :
     cStarQuarter 8 = 3 ∧ cStarQuarter 12 = 4 ∧ cStarQuarter 16 = 3 ∧
-    cStarQuarter 20 = 4 ∧ cStarQuarter 32 = 5 := by
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> rfl
+    cStarQuarter 20 = 4 ∧ cStarQuarter 24 = 5 ∧ cStarQuarter 32 = 5 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> rfl
 
-/-- **`c*` is NOT bounded in `n`.**  The `n = 32` value strictly exceeds every value at `n ≤ 20`:
-`c*(32) = 5 > 4 = max{ c*(n) : n ≤ 20 }`.  So the offset GROWS in `n` — refuting any reading of
-`DecouplingCrossingDepthRateConstant`'s "bounded `c*`" as `n`-boundedness. -/
+/-- **`c*` is NOT bounded in `n`.**  The `n = 24` and `n = 32` values strictly exceed every value at
+`n ≤ 20`: `c*(24) = c*(32) = 5 > 4 = max{ c*(n) : n ≤ 20 }`.  So the offset GROWS in `n` — refuting any
+reading of `DecouplingCrossingDepthRateConstant`'s "bounded `c*`" as `n`-boundedness. -/
 theorem cStar_grows_in_n :
-    cStarQuarter 32 > cStarQuarter 8 ∧ cStarQuarter 32 > cStarQuarter 12 ∧
-    cStarQuarter 32 > cStarQuarter 16 ∧ cStarQuarter 32 > cStarQuarter 20 := by
-  refine ⟨?_, ?_, ?_, ?_⟩ <;> decide
+    cStarQuarter 24 > cStarQuarter 8 ∧ cStarQuarter 24 > cStarQuarter 12 ∧
+    cStarQuarter 24 > cStarQuarter 16 ∧ cStarQuarter 24 > cStarQuarter 20 ∧
+    cStarQuarter 32 > cStarQuarter 20 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> decide
+
+/-- **The growth is NOT a parity wobble (the `n = 24` datum).**  The values at `n ≤ 20` alternate in
+`{3,4}` (`3,4,3,4`), which alone could read as a parity-only oscillation.  `c*(24) = 5 ∉ {3,4}` breaks
+that reading: it is a genuine upward step, not parity.  (Stated: `c*(24) ≠ 3 ∧ c*(24) ≠ 4`, while all
+`n ≤ 20` values `∈ {3,4}`.) -/
+theorem cStar_n24_breaks_parity :
+    (cStarQuarter 24 ≠ 3 ∧ cStarQuarter 24 ≠ 4) ∧
+    (∀ n ∈ ({8,12,16,20} : Finset ℕ), cStarQuarter n = 3 ∨ cStarQuarter n = 4) := by
+  refine ⟨⟨by decide, by decide⟩, ?_⟩
+  decide
 
 /-- **The `n`-growth is strict past `n = 20`.**  `c*(32) = 5` exceeds the prior file's entire data
 range `{3,4}` (`n ≤ 20`).  Stated as: `c*(32) ∉ {3,4}` while every `n ≤ 20` value `∈ {3,4}`. -/
@@ -153,8 +174,8 @@ boundary granularity; from `n = 16` on `δ*` settles toward capacity `3/4` from 
 theorem deltaStarNumerQuarter_values :
     deltaStarNumerQuarter 8 = 3 ∧ deltaStarNumerQuarter 12 = 5 ∧
     deltaStarNumerQuarter 16 = 9 ∧ deltaStarNumerQuarter 20 = 11 ∧
-    deltaStarNumerQuarter 32 = 19 := by
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> (unfold deltaStarNumerQuarter cStarQuarter; rfl)
+    deltaStarNumerQuarter 24 = 13 ∧ deltaStarNumerQuarter 32 = 19 := by
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩ <;> (unfold deltaStarNumerQuarter cStarQuarter; rfl)
 
 /-- **The capacity defect equals exactly `c*(n)`.**  On the `ρ = 1/4` axis, the capacity numerator is
 `n − k = n − n/4` (the `(1−ρ)·n` edge); the binding distance numerator is `n − k − c*`; their
@@ -170,7 +191,7 @@ For each `n ∈ {8,12,16,20,32}`, `δ*·n < (n − k)` (capacity numerator), sin
 This is the off-BGK direction: the far-line crossing is interior to capacity, never on it, at every
 `n` — and the defect is the GROWING `c*(n)`, not a fixed constant. -/
 theorem deltaStar_lt_capacity :
-    ∀ n ∈ ({8,12,16,20,32} : Finset ℕ),
+    ∀ n ∈ ({8,12,16,20,24,32} : Finset ℕ),
       deltaStarNumerQuarter n < n - n / 4 := by
   decide
 
@@ -180,8 +201,8 @@ the-floor condition), AND `c*(n)` grows in `n` (so the prior "bounded `c*`" was 
 the verdict is unchanged because off-BGK needs only `c* ≥ 1` (positivity), which growth preserves a
 fortiori. -/
 theorem offBGK_survives_growth :
-    (∀ n ∈ ({8,12,16,20,32} : Finset ℕ), 1 ≤ cStarQuarter n) ∧
-    cStarQuarter 32 > cStarQuarter 20 := by
+    (∀ n ∈ ({8,12,16,20,24,32} : Finset ℕ), 1 ≤ cStarQuarter n) ∧
+    cStarQuarter 24 > cStarQuarter 20 := by
   refine ⟨by decide, by decide⟩
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}):
@@ -189,6 +210,7 @@ theorem offBGK_survives_growth :
 #print axioms cStar_n16_rate_pos
 #print axioms cStarQuarter_values
 #print axioms cStar_grows_in_n
+#print axioms cStar_n24_breaks_parity
 #print axioms cStar_n32_exceeds_prior_range
 #print axioms deltaStarNumerQuarter_values
 #print axioms capacity_defect_eq_cStar

@@ -13139,3 +13139,10 @@ subsets occur. CORE stays OPEN.
 - `antipodal_mem_nthRoots` — even n ⇒ (−x)^n=1 from x^n=1 (antipodal partner stays in μ_n).
 `result_type = refuted(coset-structured-pinning-subsets supply→prize residual) + proven(r=2 pinned
 scalar = −(x+y), γ=0 fibre = antipodal pairing, the unique coset-structured collision)`.
+
+**EXTENSION (n=24 sharp datum, decoupling crossing-growth lane):** secondhorn n=24 k=6 (rho=1/4,
+p=331777, PROPER mu_n, p>>n^3): s=10 maxI=25 (>budget=24, bad), s=11 maxI=24 (=budget exactly, GOOD)
+=> s*=11, c*=5. The n=24 value 5 BREAKS the {3,4} parity wobble of the n<=20 tail (3,4,3,4) => the
+c* growth is REAL, not a parity artifact. Full rho=1/4 axis: c*=3,4,3,4,5,5 @ n=8,12,16,20,24,32.
+Sub-linear (c*/n->0), log-like but NO clean closed form (c*(16)=3<log2 16=4; c*(20)=4<ceil log2 20=5).
+Lean updated: cStar_n24_breaks_parity added (axiom-clean).
