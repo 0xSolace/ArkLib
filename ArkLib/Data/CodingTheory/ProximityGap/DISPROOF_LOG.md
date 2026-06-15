@@ -12138,3 +12138,35 @@ sieve already collapsed in-tree. In the multiplicative reading it is dimension-o
 `r ≈ ln q`. No new non-BGK lever; the open core is not discharged. Consistent with the
 route-elimination meta-theorem: every closed/orthogonality/second-moment object caps at Johnson, and
 passing it requires the open p-dependent moment.
+
+---
+
+## C31 (issue #444) — Katz Vertical/Horizontal Sato-Tate "support edge bounds uniform sup" — SECRETLY-OPEN
+
+**Date:** 2026-06-15. **Probe:** `scripts/probes/probe_c31_satotate_support_edge.py` (commit f86e902f7).
+
+**Claim:** the period-family geometric monodromy yields a limiting Sato-Tate measure whose SUPPORT
+EDGE bounds `max_c|η_c| ≤ √(2n log p)` past Johnson (reduces-to Katz vert/horiz Sato-Tate +
+Rojas-León classification + Deligne Weil II).
+
+**Verdict: SECRETLY-OPEN.** Two independent horns, both confirmed prize-faithfully (proper μ_n,
+n=2^μ, p prime, p≫n³, m=(p-1)/n>1, never n=p-1):
+
+- **HORN-EDGE (category error, load-bearing).** A Sato-Tate measure governs the LIMITING
+  DISTRIBUTION of the normalized value `z_c = η_c/√n`; its support is the closure of attainable
+  normalized values. By Rojas-León (monodromy = GL(1)^f, only Hasse–Davenport relations), `z_c` is a
+  normalized sum of f=(p-1)/n independent unit Gauss phases ⟹ COMPLEX GAUSSIAN by CLT. Measured:
+  `E|z|^{2r}/r! → 1` in low orders (0.999, 1.31, …), the Gaussian signature; the limiting measure has
+  support = **all of C, NO compact edge**. So there is no "support edge" object to bound the sup. The
+  factor √(2 log p) is the EXTREME VALUE of this unbounded Gaussian over the p/n cosets:
+  `max|z| / √(2 ln(#cosets)) = 0.71 → 0.81 → 0.89 → 0.96` (climbs to 1 as coset count grows) — i.e.
+  the union-bound tail max ~ √(n log(p/n)), which IS the OPEN BGK/Paley sup-norm, not an edge.
+- **HORN-DIM (inherited from C13).** Monodromy torus dim = f=(p-1)/n ~ 2^128, not μ/n. Deligne/Weil II
+  effective discrepancy = f/√q ~ √p/n ~ 2^46…2^56 ≫ 1 — catastrophically vacuous for n ≪ p^{1/4}.
+- **HORN-VERT/HORIZ.** Both vertical (vary sheaf/χ) and horizontal (vary field, q→∞) Sato-Tate are
+  DISTRIBUTIONAL limiting statements; neither controls the DETERMINISTIC MAX over a thin designed
+  subgroup at one FIXED prize prime.
+
+Net: the "support edge" is precisely the open BGK extreme value (the conjecture asserts its own open
+conclusion). Consistent with the route-elimination meta-theorem and the prior C13 SECRETLY-OPEN
+finding. No new non-BGK lever; the open core is not discharged.
