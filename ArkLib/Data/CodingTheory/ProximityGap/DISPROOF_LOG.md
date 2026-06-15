@@ -12170,3 +12170,66 @@ n=2^μ, p prime, p≫n³, m=(p-1)/n>1, never n=p-1):
 Net: the "support edge" is precisely the open BGK extreme value (the conjecture asserts its own open
 conclusion). Consistent with the route-elimination meta-theorem and the prior C13 SECRETLY-OPEN
 finding. No new non-BGK lever; the open core is not discharged.
+
+## [C37] (issue #444) — Burgess-Type Amplification for the Thin Dyadic Subgroup Sum — REFUTED-FALSE (2026-06-15)
+
+**Date:** 2026-06-15. **Probe:** `scripts/probes/probe_C37_burgess_amplification.py` (commit e9697347a).
+
+**Claim:** a Burgess-style shifted-multiplicative amplification of the period sum
+`S_a(μ_n)=Σ_{x∈μ_n} e_p(ax)` "recovers cancellation in the prize band by exploiting many small shifts
+within μ_n," giving `M(μ_n) ≤ √(n log p)` past Johnson (reduces-to Burgess machinery + in-tree antipodal
++ char transfer).
+
+**Verdict: REFUTED-FALSE.** The load-bearing Burgess step is structurally inapplicable to a thin
+multiplicative subgroup, demonstrated by direct probe over proper μ_n (n=2^μ, p prime, p≫n⁴, β=5,
+n<p^{1/4}, never n=p-1).
+
+- **What Burgess actually does (and what the claim mis-states).** The Burgess amplifier for a SHORT
+  character sum `T=Σ_{x∈I}χ(x)`, `|I|=N`, works because `I` is an **interval**: the load-bearing first
+  step replaces `T` by an average over translations `T ≈ (1/|Sh|)Σ_{t∈Sh}Σ_{x∈I}χ(x+t)`, which is nearly
+  lossless precisely because `|(I+t)∩I| = N−|t| ≈ N` for the relevant small shifts. The 2r-th moment
+  over `t` is then a COMPLETE multiplicative correlation sum bounded by Weil/√p. The whole gain
+  `N^{1−1/r}p^{(r+1)/(4r²)}` is nontrivial only for `N ≫ p^{1/4}`. The conjecture's phrase "many small
+  shifts WITHIN μ_n" conflates this with multiplicative shifts: `x↦xh` for `h∈μ_n` merely PERMUTES μ_n
+  (zero amplification, `S_a` is fixed up to the `a↦a h` relabel), while the only structurally-real shift
+  is the ADDITIVE translation Burgess uses — and that needs the set to be an interval.
+- **The amplification is identically zero for a subgroup (probe, decisive).** Measured the load-bearing
+  overlap `|(μ_n+t)∩μ_n|` over 600 random nonzero `t`, strictly in the prize band p≫n⁴ (β=5):
+
+  | μ | n | p (prime) | β=log_n p | p/n³ | mean `|(μ_n+t)∩μ_n|` | n²/p (random-set value) | max |
+  |---|---|-----------|-----------|------|----------------------|--------------------------|-----|
+  | 4 | 16 | 1048609 | 5.00 | 256 | **0.0000** | 0.000229 | **0** |
+  | 5 | 32 | 33554593 | 5.00 | 1024 | **0.0000** | 0.000030 | **0** |
+  | 6 | 64 | 1073741953 | 5.00 | 4096 | **0.0000** | 0.000004 | **0** |
+  | 7 | 128 | 34359740801 | 5.00 | 16384 | **0.0000** | 0.0000004 | **0** |
+  | 8 | 256 | 1099511630593 | 5.00 | 65536 | **0.0000** | ~0 | **0** |
+  | 10 | 1024 | 1125899906856961 | 5.00 | 10⁶ | **0.0000** | ~0 | **0** |
+
+  (At the β=3 boundary `p≈n³`, the in-tree run gives mean `n²/p ≈ 0.005–0.11`, max 2 — still negligible.)
+  The subgroup behaves like a RANDOM set under additive translation: `E|(μ_n+t)∩μ_n| = n(n−1)/(p−1) ≈
+  n²/p → 0` for `n<p^{1/4}` (since `n²/p < p^{1/2}/p = p^{−1/2}`). Translating the summation set by any
+  small `t` annihilates the overlap, so the Burgess average `≈(1/|Sh|)Σ_t Σ_{x∈μ_n}χ(x+t)` carries NO
+  information about `Σ_{x∈μ_n}χ(x)`. **Amplification efficiency = mean_overlap/n = 0.** There is nothing
+  to amplify.
+- **The threshold is exactly the prize-excluded side.** Burgess (and every short-interval/GRH variant)
+  is non-trivial only for `N≫p^{1/4}`; the whole prize band is `n=p^δ` with `δ∈[0.135,0.215] < 1/4`
+  (β>4). This is the same `p^{1/4}` wall that excludes di Benedetto et al. (the in-tree gaussperiods
+  reading list, line 79-81: "Requires n>p^{1/4}; the prize has n<p^{1/4} strictly") and is the exact
+  twin of the **C36 REFUTED-FALSE** Heath-Brown–Konyagin Stepanov entry: both are `q^{1/3}`/`p^{1/4}`-blind
+  to the thin prize subgroup. "Many small shifts" cannot move the threshold because the gain is
+  exponent-fixed by the completion-to-Weil step, not by a constant.
+- **No char-transfer / antipodal rescue.** The antipodal structure of `μ_{2^μ}` (Lam–Leung: only the
+  pair relation `z+(−z)=0`) governs the CHAR-0 additive-energy bound; it says nothing about additive
+  translates of μ_n in F_p, and the probe's overlap-collapse holds AT the prize prime regardless. The
+  char transfer brick (L5) transfers incidence, not a Burgess interval-gain that does not exist.
+
+**Mechanism class.** Same horn as the entire interval/short-sum family (C36 Stepanov, all Weil/√q): the
+method's nontriviality threshold (`N>p^{1/4}`) is precisely the prize-excluded boundary, and its
+load-bearing translation-amplification step is identically lossless only for an INTERVAL — for a thin
+multiplicative subgroup the additive shift-overlap is a measured 0 (random-set `n²/p`), so the amplifier
+produces no cancellation. Matches the DEAD-ROUTES note ("Weil/√q: vacuous for n<√q") and the
+gaussperiods reading-list headline ("even GRH/Burgess control intervals not subgroups, and need
+n>p^{1/4}"). No new non-BGK lever; the open core is not discharged — the bound it claims to deliver
+(`√(n log p)` for n<p^{1/4}) IS the open BGK/Paley sup-norm.
+
+**Probe committed:** `scripts/probes/probe_C37_burgess_amplification.py`.
