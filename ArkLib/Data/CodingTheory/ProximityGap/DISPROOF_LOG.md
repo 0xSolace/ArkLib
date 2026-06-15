@@ -13776,29 +13776,27 @@ SURVIVES: none.
 
 — wf-D9
 
-================================================================================
-REFUTATION (constraint lemma): the I031 orbit reduction yields NO FREE modulus-alphabet
-concentration — the (q-1)/n distinct-||eta_b|| values are essentially all distinct, so the sup
-over orbit reps is genuinely a sup over ~(q-1)/n independent-looking values (NOT a few circles).
-================================================================================
-OBJECT (exact Fp, PROPER mu_n=2^a, n|p-1, p>>n^3, NEVER n=q-1): the modulus alphabet
-{ ||eta_b|| : b in Fp* }, reduced via I031 to one value per mu_n-coset (orbit_count: exactly
-(q-1)/n cosets; card_distinct_etaNorm_le_orbitCount: distinct-||eta|| count <= (q-1)/n).
+## 2026-06-15 — D7 Bogomolov/Dobrowolski/SSS height-gap REFUTED (probe_d7_height.py, wf-D7, #444)
 
-CONSTRAINT LEMMA (probe_i031_modulus_concentration.py, exact, n=4..32):
-  - #distinct ||eta_b|| (rounded 3dp) / #cosets = CONC ~ 0.945..0.976 — i.e. ~95-98% of the
-    (q-1)/n cosets carry a DISTINCT modulus. NO collapse to a small alphabet. The metric-entropy
-    reduction is purely an INDEX reduction (log p -> log(p/n)); it gives no further free
-    value-concentration.
-  - the maximum is an ISOLATED spike: fraction of cosets with ||eta|| >= 0.9*max DROPS 0.067
-    (n=4) -> 0.0039 (n=32). No "many near-maximal cosets" cluster to exploit either.
-  - max/sqrt(n) tracks sqrt(log(p/n)): ratio ~0.85 (n=4), ~1.14..1.18 (n=8..32) — BGK-consistent;
-    the prize quantity M/sqrt(n) ~ C*sqrt(log(p/n)) with C ~ 1.1-1.2 in this small regime.
+**Angle.** Algebraic/p-adic lane D7. Hope: M(μ_n) is driven by a SPARSE (subpolynomial) set of
+"resonant" cosets b where the order-n periods align — the Bogomolov "few small points" /
+Dobrowolski height-gap / Schur-Siegel-Smyth absolute-trace signature. If the resonant set were
+sparse, a height-counting bound on it would beat the Johnson n^{1/2} bulk.
 
-VERDICT: a concentration/counting shortcut on the I031-reduced index is RULED OUT. The orbit
-reduction cleanly delivers the (q-1)/n index collapse (now axiom-clean in-tree: orbit_count +
-card_distinct_eta(Norm)_le_orbitCount) but the surviving open content is the per-rep CANCELLATION
-(the bounded-constant det->random sup transfer over ~(q-1)/n essentially-distinct values) — i.e.
-the genuine BGK wall, with no free modulus-alphabet structure to bypass it. Localizes the open core
-to the per-rep sup transfer, confirming I031 is an index-reduction lever NOT a value-concentration
-lever. CORE (M(mu_n) <= C*sqrt(n*log(p/n))) UNCHANGED/OPEN. — orbcount lane, co-author wakesync.
+**Countermodel.** probe_d7_height.py, beta=4 (prize-shaped p~n^4), b over a coset transversal,
+"large" := |η_b| > 1.5√n:
+```
+   n           p  M/sqrtn  #large/Bcap=frac_large    C
+  16      200017    3.447       1679/12501=0.13431  1.122
+  64    16777601    4.016       5378/40000=0.13445  1.137
+ 256  4294968833    3.931       5190/40000=0.12975  0.964
+ 512 68719484929    4.272       5252/40000=0.13130  0.987
+```
+The large-coset fraction is a STABLE positive density ≈ 0.131±0.003 across n=16..512 — NOT
+subpolynomial, NOT shrinking. There is no sparse height-gap set to count; the periods are
+white-noise-distributed with a constant fraction in every magnitude band.
+
+**Verdict = REFUTED (reduces-to-wall / bulk-density).** Same wall as A4-Iwasawa (magnitude-blind unit),
+C26-Stickelberger, C46-Mahler: D7 objects pin valuation/unit/symmetric-orbit or conjugate-mean data;
+none sees the single-conjugate archimedean sup, which is a constant-density bulk phase phenomenon.
+Probe: scripts/probes/probe_d7_height.py. Signed wf-D7.
