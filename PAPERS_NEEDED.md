@@ -544,3 +544,22 @@ Johnson radius γ=1−√(1−δ) (confirms ACFY24 conjecture), bound |E|≤(ℓ
 same as ordinary CA in BCI+20." Method: GS list-decoder over F_q(Z). Zero window-interior content; window past
 Johnson for explicit RS remains the open core. Verbose update w/ BCH+25 (2025/2055) improvements promised.
 Extraction: docs/kb/hab25-2025-2110-MCA-for-RS-extracted.md.
+
+## Automorphic sup-norm / theta-sum lens — 2026-06-15 (my deep-dive on the #1 exotic lead)
+The automorphic-form sup-norm problem IS "bound the max of a theta-like sum" — closest-in-spirit
+active field. Assessment: the theta-sum machinery (Cellarosi–Marklof renormalization, horocycle lift)
+handles QUADRATIC phase e((½n²+βn)x), and at RATIONAL parameters reduces to a quadratic Gauss sum that
+is BOUNDED via "closed horocycle orbit ⟹ sup bounded" (2306.11119). OUR sum Σ_j e_p(b·ζ^j) has a
+GEOMETRIC/exponential phase (ζ^j), not quadratic ⟹ direct transfer BLOCKED (= the campaign's known
+quadratic-vs-geometric wall). Papers on disk:
+- 2306.11119 — Bounds for Smooth Theta Sums with Rational Parameters (rational = roots-of-unity regime;
+  quadratic phase; closed-orbit boundedness — the framing, not directly transferable).
+- 2203.06274 — Improved tail estimates, distribution of quadratic Weyl sums (value-distribution tail).
+- 2305.06995 — Bounds for theta sums in higher rank II (adding linear term improves a.e. bounds).
+- Khayutin–Steiner 2024 "Theta functions, fourth moments of eigenforms, and the sup-norm problem"
+  (I+II) — 4th-moment/theta method for sup-norms; NOT yet downloaded (find ids).
+ONE GENUINELY NEW SUB-IDEA (worth a probe): the automorphic framing says sup-norm = sup of an
+automorphic function along a horocycle orbit, BOUNDED when the orbit is CLOSED (rational params). If
+our geometric μ_n sum lifts to an automorphic function on a TORUS/GL1-metaplectic setting (not SL2),
+the same "closed orbit ⟹ bounded sup" logic might bound M(n) — IF the lift exists. The lift is the open
+question; without it, collapses to the geometric-phase wall. Tag: partial-handle, lift-existence open.
