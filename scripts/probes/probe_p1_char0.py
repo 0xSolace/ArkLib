@@ -174,6 +174,77 @@ def max_far_incidence_kplus1(S, p, k, r, half_excluded=True):
             if c > best[0]: best = (c, (a, b))
     return best[0], best[1], tot_amb
 
+# ---------------- numpy-batched histogram (for n=32 scale) ----------------
+import numpy as _np
+
+def _gamma_hist_np(S, p, k, a, b, batch=6000):
+    """Fully-vectorized modular Gauss-Jordan over batches of (k+1)-subset systems. Returns
+       {gamma: multiplicity}. Validated equal to _gamma_hist on n=16 (all directions tested).
+       Requires p^2 < 2^63 (use p ~ 1e8); p must satisfy p >> n^3."""
+    assert p * p < 2**63, "p too large for int64 modular products"
+    n = len(S)
+    Sx = _np.array([int(x) for x in S], dtype=_np.int64)
+    pw = lambda e: _np.array([pow(int(v), e, p) for v in Sx], dtype=_np.int64)
+    Xj = [pw(j) for j in range(k)]
+    rowmat = _np.stack(Xj + [(-pw(b)) % p, pw(a)], axis=1).astype(_np.int64)  # (n, k+2)
+    ncols = k + 1
+    inv_cache = {}
+    def vinv(arr):
+        of = _np.empty(arr.shape, dtype=_np.int64); fl = arr.reshape(-1); ofl = of.reshape(-1)
+        for i in range(fl.shape[0]):
+            v = int(fl[i]) % p; r = inv_cache.get(v)
+            if r is None:
+                r = pow(v, p - 2, p) if v != 0 else 1; inv_cache[v] = r
+            ofl[i] = r
+        return of
+    hist = {}; buf = []
+    def flush(buf):
+        if not buf: return
+        M = _np.stack([rowmat[list(A)] for A in buf]).astype(_np.int64)
+        B = M.shape[0]; alive = _np.ones(B, dtype=bool)
+        for c in range(ncols):
+            for rr in range(c + 1, ncols):
+                need = alive & (M[:, c, c] % p == 0)
+                if not need.any(): break
+                cand = need & (M[:, rr, c] % p != 0)
+                if cand.any():
+                    tmp = M[cand, c, :].copy(); M[cand, c, :] = M[cand, rr, :]; M[cand, rr, :] = tmp
+            dead = alive & (M[:, c, c] % p == 0); alive = alive & ~dead
+            if not alive.any(): break
+            piv = M[:, c, c].copy(); piv[~alive] = 1
+            ip = vinv(piv % p); M[:, c, :] = (M[:, c, :] * ip[:, None]) % p
+            for rr in range(ncols):
+                if rr == c: continue
+                fct = M[:, rr, c].copy(); M[:, rr, :] = (M[:, rr, :] - fct[:, None] * M[:, c, :]) % p
+        for bsys in range(B):
+            if not alive[bsys]: continue
+            Mb = M[bsys]
+            if Mb[k, k] % p == 1 and all(Mb[k, j] % p == 0 for j in range(ncols) if j != k):
+                g = int(Mb[k, ncols]) % p; hist[g] = hist.get(g, 0) + 1
+    for A in itertools.combinations(range(n), k + 1):
+        buf.append(A)
+        if len(buf) >= batch: flush(buf); buf = []
+    flush(buf)
+    return hist
+
+def incidence_np(S, p, k, a, b, r):
+    """n=32-scale exact I(a,b;r): numpy histogram + multiplicity prefilter + exact threshold test."""
+    n = len(S); t = n - r
+    if t <= k: return p, 0
+    hist = _gamma_hist_np(S, p, k, a, b)
+    pa = [pow(int(x), a, p) for x in S]; pb = [pow(int(x), b, p) for x in S]
+    need = math.comb(t, k + 1)
+    survivors = [g for g, m in hist.items() if m >= need]
+    count = 0
+    for g in survivors:
+        f = [(pa[i] + g * pb[i]) % p for i in range(n)]
+        ok, _ = _agreement_atleast(S, p, k, f, t)
+        if ok: count += 1
+    if 0 not in survivors:
+        ok0, _ = _agreement_atleast(S, p, k, pa, t)
+        if ok0: count += 1
+    return count, len(survivors)
+
 # ---------------- delta* sweep ----------------
 def delta_star_kplus1(n, k, p, budget=None):
     S = list(get_W(n, p).S); budget = budget or n
@@ -196,6 +267,9 @@ if __name__ == '__main__':
     ap.add_argument('--k', type=int, default=4)
     ap.add_argument('--plo', type=int, default=200003)
     ap.add_argument('--r', type=int, default=10)
+    ap.add_argument('--rmin', type=int, default=-1)
+    ap.add_argument('--rmax', type=int, default=-1)
+    ap.add_argument('--nprimes', type=int, default=3)
     args = ap.parse_args()
 
     if args.mode == 'validate':
@@ -207,6 +281,7 @@ if __name__ == '__main__':
         for r in range(k + 1, n - k + 2):
             size = n - r
             for b in range(k, size):
+                if b == n // 2: continue   # antipodal direction excluded by governing law
                 for a in range(n):
                     if a == b: continue
                     cb, sat = incidence_brute(S, p, k, a, b, r)
@@ -232,6 +307,7 @@ if __name__ == '__main__':
         for r in range(rlo, rhi + 1):
             size = n - r
             for b in range(k, size):
+                if b == n // 2: continue   # antipodal direction excluded by governing law
                 for a in range(n):
                     if a == b: continue
                     cb, sat = incidence_brute(S, p, k, a, b, r)
@@ -248,22 +324,30 @@ if __name__ == '__main__':
         # FULL char-0 delta* table at constant rate (feasible n: full far sweep), multi-prime check.
         n, k = args.n, args.k
         rho = k / n
-        primes = [find_prime_cong1(n, args.plo), find_prime_cong1(n, args.plo + 300000),
-                  find_prime_cong1(n, args.plo + 800000)]
-        print(f"=== CHAR-0 DELTA* TABLE  n={n} k={k} rho={rho} budget=n={n} ===", flush=True)
+        allp = [find_prime_cong1(n, args.plo), find_prime_cong1(n, args.plo + 300000),
+                find_prime_cong1(n, args.plo + 800000)]
+        primes = allp[:args.nprimes]
+        rmin = args.rmin if args.rmin > 0 else (k + 1)
+        rmax = args.rmax if args.rmax > 0 else (n - k + 1)
+        print(f"=== CHAR-0 DELTA* TABLE  n={n} k={k} rho={rho} budget=n={n}  rungs[{rmin},{rmax}] ===", flush=True)
         print(f"primes (all >> n^3={n**3}): {primes}", flush=True)
         for p in primes:
             S = list(get_W(n, p).S)
-            print(f"-- p={p} --   r  delta=r/n  maxI(far)  binder(a,b)  amb", flush=True)
+            print(f"-- p={p} --   r  delta=r/n  maxI(far)  binder(a,b)  survivors", flush=True)
             last_good = None; first_bad = None
-            for r in range(k + 1, n - k + 2):
+            for r in range(rmin, rmax + 1):
                 mx, st, amb = max_far_incidence_kplus1(S, p, k, r)
+                if mx < 0:   # no valid far direction at this size -> stop (boundary reached)
+                    print(f"   r={r:2d}  {r/n:.4f}  (no valid far direction; size={n-r})", flush=True)
+                    break
                 tag = ""
-                if mx <= n: last_good = r
-                elif first_bad is None: first_bad = (r, st); tag = "  <-- FIRST BAD"
-                print(f"   r={r:2d}  {r/n:.4f}  I={mx:6d}  {str(st):10s}  amb={amb}{tag}", flush=True)
+                # delta* = sup of contiguous good rungs: stop at FIRST bad
+                if first_bad is None:
+                    if mx <= n: last_good = r
+                    else: first_bad = (r, st); tag = "  <-- FIRST BAD (delta* crossing)"
+                print(f"   r={r:2d}  {r/n:.4f}  I={mx:6d}  {str(st):10s}  surv={amb}{tag}", flush=True)
             ds = (last_good / n) if last_good is not None else None
-            print(f"   => delta* = {last_good}/{n} = {ds}", flush=True)
+            print(f"   => delta* = {last_good}/{n} = {ds}   (first bad rung: {first_bad})", flush=True)
             # closed-form candidate comparison
             import math as _m
             H = (-rho*_m.log2(rho) - (1-rho)*_m.log2(1-rho)) if 0<rho<1 else 0.0
@@ -330,3 +414,65 @@ if __name__ == '__main__':
             print(f"   b={b:2d}  maxI={bestb[0]:6d}  best a={bestb[1]}", flush=True)
         rows.sort(key=lambda t:-t[1])
         print(f"   TOP binders: {rows[:5]}", flush=True)
+
+    elif args.mode == 'bindscan_np':
+        # n=32-scale FULL-direction scan at one rung r using the numpy histogram.
+        n, k, r = args.n, args.k, args.r
+        p = find_prime_cong1(n, max(args.plo, 100000019)); S = list(get_W(n, p).S); size = n - r
+        print(f"=== NP FULL-DIR SCAN n={n} k={k} r={r} delta={r/n:.4f} (size={size}) p={p} ===", flush=True)
+        rows = []
+        for b in range(k, size):
+            if b == n // 2: continue
+            bestb = (-1, None)
+            for a in range(n):
+                if a == b: continue
+                c, surv = incidence_np(S, p, k, a, b, r)
+                if c > bestb[0]: bestb = (c, a)
+            rows.append((b, bestb[0], bestb[1]))
+            print(f"   b={b:2d}  maxI={bestb[0]:6d}  best a={bestb[1]}", flush=True)
+        rows.sort(key=lambda t: -t[1])
+        print(f"   TOP binders (b,maxI,a): {rows[:6]}", flush=True)
+
+    elif args.mode == 'deltastar_np':
+        # n=32-scale char-0 delta* via numpy histogram. Sweep candidate far directions across rungs.
+        # cand_b includes low-exponent (binder per n=16) + a representative spread; b != n/2.
+        n, k = args.n, args.k; rho = k / n
+        primes = [find_prime_cong1(n, max(args.plo, 100000019))]
+        if args.nprimes > 1:
+            primes.append(find_prime_cong1(n, max(args.plo, 100000019) + 5000000))
+        cand_b = sorted(set([k, k+1, k+2, k+3, n//8 if n//8>=k else k, n//4 if n//4>=k else k]))
+        cand_b = [b for b in cand_b if k <= b < n and b != n//2]
+        rmin = args.rmin if args.rmin > 0 else (k + 1)
+        rmax = args.rmax if args.rmax > 0 else (n - k + 1)
+        print(f"=== NP CHAR-0 DELTA* n={n} k={k} rho={rho} budget=n={n} rungs[{rmin},{rmax}] ===", flush=True)
+        print(f"candidate far directions b (restricted): {cand_b}  (full-scan confirm via bindscan_np)", flush=True)
+        for p in primes:
+            S = list(get_W(n, p).S)
+            print(f"-- p={p} (>> n^3={n**3}) --", flush=True)
+            last_good = None; first_bad = None
+            for r in range(rmin, rmax + 1):
+                size = n - r
+                best = (-1, None); surv_tot = 0
+                for b in cand_b:
+                    if b >= size: continue
+                    for a in range(n):
+                        if a == b: continue
+                        c, surv = incidence_np(S, p, k, a, b, r)
+                        surv_tot += surv
+                        if c > best[0]: best = (c, (a, b))
+                mx, st = best
+                if mx < 0:
+                    print(f"   r={r:2d}  (no valid far direction; size={size})", flush=True); break
+                tag = ""
+                if first_bad is None:
+                    if mx <= n: last_good = r
+                    else: first_bad = (r, st); tag = "  <-- FIRST BAD (delta* crossing)"
+                print(f"   r={r:2d}  delta={r/n:.4f}  I={mx:6d}  binder={st}{tag}", flush=True)
+            ds = (last_good / n) if last_good is not None else None
+            import math as _m
+            H = (-rho*_m.log2(rho) - (1-rho)*_m.log2(1-rho))
+            print(f"   => delta* (restricted dirs) = {last_good}/{n} = {ds}  (first bad {first_bad})", flush=True)
+            if ds is not None:
+                print(f"      Johnson 1-sqrt(rho) = {1-rho**0.5:.4f}   capacity 1-rho = {1-rho:.4f}", flush=True)
+                print(f"      1-rho-1/log2(n) = {1-rho-1/_m.log2(n):.4f}   1-rho-H/log2(n) = {1-rho-H/_m.log2(n):.4f}"
+                      f"   1-rho-1/n = {1-rho-1/n:.4f}", flush=True)
