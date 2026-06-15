@@ -10480,3 +10480,21 @@ LLL row was an LLL-resolution artifact (no relation found in thick configs at th
 EXCLUDED. Does NOT refute the prize (the reduction is sound; the hypothesis being false-where-needed IS the
 BGK wall). No Lean change (empirical refutation + thickness-invariance map; axiom-clean trivially). No CORE
 closure. Probe-first, dual-engine on the headline, honest on the rule-3 closure.
+
+### STRENGTHENING (same lever, finer invariant): the height-1 relation COUNT is also non-discriminating — 2026-06-15
+Follow-up to the C* closure above. A finer invariant than C\* is the NUMBER of height-1 (sign) relations
+`#{g∈{−1,0,1}^N : Σ g_j ω^j = 0}`. If thin had systematically FEWER, the bounded-indep deficit would be
+graded (a surviving thinness signal). Probe `scripts/probes/probe_407_bhbi_relcount.py` (exact, vectorized
+3^16 count). **Result (n=32, N=16, FOUR prize primes p≈n⁴, β=4.000):**
+  | p | thin # | thick # (med/5) | direction |
+  |---|--------|------------------|-----------|
+  | 1048609 | 32 | 16 | THIN>thick (anti-rule-3!) |
+  | 1048897 | 16 | 24 | thin<thick (rule-3) |
+  | 1049057 | 32 | 19 | THIN>thick |
+  | 1049089 | 16 | 21 | thin<thick |
+The count SIGN-FLIPS above/below thick across primes at FIXED β=4 — NO monotone thinness direction. At
+the prize prime the 2-power coset's arithmetic (closure under doubling: ω^{2j} relations) can even create
+MORE low-height relations than a generic set (anti-rule-3). Confirms decisively: neither C\* NOR the
+bounded-relation count is a thinness discriminator in the prize regime ⟹ the bounded-cyclotomic-independence
+lever is rule-3-incompatible at large n by both invariants. (n=16: zero sign-relations for thin AND thick,
+consistent with C\*>1 there.) Strengthens the mapped wall; no new receipt (same object as push 1fa2d5e58).
