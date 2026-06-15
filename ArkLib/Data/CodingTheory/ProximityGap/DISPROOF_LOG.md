@@ -11400,3 +11400,7 @@ VERDICT (rule-3, rule-4, rule-6): a WIN that MAPS the §6 dichotomy more precise
   prior_quarter_axis_slice, prior_rate_law_refuted_at_n20_k9.
   OPEN refinement (sub-goal b): exact closed-form constants of the per-direction decay I(c) and the
   exact c*(n) law (n=16->3/4 wobble, n=20->4; n>=24 deferred, engine too slow under load).
+
+
+## O181 (#444 R2 2026-06-15) — see docs/kb/deltastar-444-round2-2026-06-15.md
+OVER-DET FAR-LINE JOHNSON-LOCKED (c*=k-1, delta*=1/2+1/n, exact n<=28, n=32 predicted) => off-BGK floor NOT via far-lines (lead-closure, _wf3D6 axiom-clean). Nonlinear levers A0 telescope p^2n / A1 signed-cube Z3=0 thin-vacuous / SOS=moment wall. C21-C28 dead. C28 LESSON: non-telescoping NECESSARY-NOT-SUFFICIENT, lever must pin peak to M argmax. CORE OPEN.
