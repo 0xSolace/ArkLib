@@ -1,5 +1,66 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+
+IDEA: M(μ_n)/√n is the PAPR (peak-to-average power ratio) of the coset spectrum b↦η_b
+(η_b=Σ_{x∈μ_n}e_p(bx), constant on cosets of F_p*/μ_n, an m-vector, m=(p-1)/n). Its "dual" is the
+m-power-residue (Sidelnikov/generalized Legendre) sequence whose merit factor is KNOWN bounded
+Θ(1) (Schmidt/Jedwab, Legendre MF≈6). The proposed NEW LEMMA: a PAPR↔merit (L^∞↔L⁴) duality plus
+the bounded dual merit factor gives M/√n = O(√(log m)) — an L⁴ phase-sensitive object the L²
+conservation law misses.
+
+PROBES (prize-faithful: μ_n = 2-power subgroup n=2^μ, n|p−1, p PRIME, p≫n³ (β≈3.0–3.1), proper
+m=(p−1)/n>1, NEVER n=p−1), n∈{8,…,256}, scripts/probes/probe_papr_merit_duality_I027.py,
+probe_papr_merit_directionality_I027b.py, probe_papr_merit_l4linf_gap_I027c.py:
+
+THE LITERATURE IDENTITY (Jedwab merit-factor survey; Borwein–Lockhart): for the Littlewood
+polynomial p(z)=Σ s_j z^j of a length-N sequence, ‖p‖₄⁴ = N²(1 + 1/F), F = merit factor. So
+"bounded merit factor F=Θ(1)" is EXACTLY "bounded L⁴/L² ratio of the spectrum" — an L⁴ flatness
+statement, nothing more. (Also note the cited Θ(1) Legendre value ≈6 is the APERIODIC merit factor;
+the object Fourier-dual to M is the PERIODIC power spectrum / 4th moment — a conflation, but
+immaterial to the verdict below.)
+
+(MEASUREMENT — the premise is TRUE, the conclusion is not deducible.) The coset spectrum IS
+L⁴-flat: L4/L2 = 1.267, 1.291, 1.303, 1.310, 1.313, 1.325 at n=8→256 (4th-moment ratio
+mean|η|⁴/(mean|η|²)² → ~3, i.e. periodic merit factor F=1/(ρ₄−1)→1/2, BOUNDED Θ(1) — the idea's
+premise holds numerically). L2(η)=√(p−n)/√m ≈ √n exactly (Parseval floor, as known). But Linf(η)=M
+is NOT controlled: M/√n = 2.43, 2.73, 3.40, 3.98, 3.77, 5.15 — it GROWS, and (M/√n)/√(log m) DRIFTS
+UP 1.17,1.15,1.28,1.37,1.21,1.54 (does not stabilize at a constant). The only inequality the merit
+factor (L⁴ flatness) actually licenses is Hölder in the WRONG direction: M ≤ m^{1/4}·L4 ≈ √n·m^{1/4}
+≈ √n·n^{(β−1)/4} ≈ n^{1.75} at β=4 — WORSE than the trivial M≤n. The "Holder m^.25*L4" column is
+10.7, 22.2, 45.6, 93, 190 (≫ the actual M of 6.9–46): vacuous.
+
+(THE STRUCTURAL KILL — parameter-free, probe_…I027c.py.) Hold the spectrum at the SAME bounded
+merit factor the real η has (ρ₄=3, F=1/2, L4/L2=3^{1/4}=1.316) and ask the LARGEST L^∞ that bounded
+merit ALLOWS over m entries with mean|·|²=n fixed: solve the spike-plus-flat extremal. Answer:
+max Linf ≈ (ρ₄−1)^{1/4}(mn)^{1/4} ≈ n·m^{1/4} ≈ n^{1.75}. The ratio (allowed Linf)/(target
+√(n log m)) GROWS as a power of n: 2.30, 3.32, 4.97, 7.62, 11.9, 18.7, …, 6043 at n=2^20. So a
+bounded merit factor is CONSISTENT with M as large as ≈n^{1.75} — it does NOT imply, and cannot
+imply, M=O(√(n log m)). The single worst frequency (the spike = the open problem's argmax) is
+invisible to the 4th moment: you can move all the mass into one spike of height n^{1.75} without
+changing L⁴/L² by more than O(1).
+
+WHY (the crisp reason): merit factor ↔ L⁴ flatness ↔ 4th moment; M = L^∞. Bounding L^∞ ABOVE from L⁴
+requires sub-Gaussian/L^∞↔L⁴-equivalence of the spectrum (Salem–Zygmund flatness), which is an
+ADDITIONAL hypothesis equivalent to the conjecture itself, NOT a free consequence of bounded merit.
+The √(log m) loss the idea wants is exactly the sub-Gaussian-tail bound that L⁴ cannot certify. The
+real η does happen to be far flatter in L^∞ than the worst L⁴-flat vector — but that flatness is a
+fact about Gauss periods we are trying to PROVE; the duality merely re-states it. This is the SAME
+class-4-average / L^∞-from-moments wall as [I025] (Levenshtein weighted moment) and the campaign's
+exhausted-moment finding: even moments (the merit factor is the 2nd even moment of the spectrum)
+cannot pin a sup. The PAPR↔merit relationship runs L^∞ ≥ (L⁴/m^{1/4}) — a LOWER bound on PAPR from
+merit, the OPPOSITE direction from the prize.
+
+VERDICT: NO-GAIN. The merit-factor premise (L⁴/L² = Θ(1), bounded dual merit) is genuinely TRUE for
+μ_n and the cited literature transfers correctly, but it is an L⁴ statement that is structurally the
+WRONG DIRECTION for an upper bound on the L^∞ quantity M: bounded merit factor is provably (probe
+I027c) consistent with M up to ≈n^{1.75}, so it gives no handle toward √n·polylog. CORE stays OPEN.
+No Lean brick (the only provable statement that emerges is the Hölder inequality M ≤ m^{1/4}·L4,
+vacuous; and the merit-factor identity ‖·‖₄⁴=N²(1+1/F), which is the additive-4th-moment object
+already in the energy substrate).
+
+---
+
+
 ## 2026-06-15 — IDEA [I008] / C51 "Walsh/Haar-packet DYADIC-TOWER Stepanov auxiliary" NO-GAIN (probe_i008_walsh_dyadic_stepanov.py)
 
 IDEA [I008] (stepanov-2adic, novelty 9): coordinatize x in mu_n (cyclic of order n=2^mu) by its
