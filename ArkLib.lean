@@ -1702,6 +1702,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.NoJohnsonSidonBound
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyGeneralK
 import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.NotRamanujanLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
@@ -2228,6 +2229,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.WindowedFoldingTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.WitnessLayerCount
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentAvgLower
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodMomentRatioLower
 import ArkLib.Data.CodingTheory.ProximityGap.WorstPeriodRootBound
