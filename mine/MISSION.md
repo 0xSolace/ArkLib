@@ -1,10 +1,10 @@
-<!-- mission-version: 2026-06-14.1 -->
+<!-- mission-version: 2026-06-15.1 -->
 <!-- This is the canonical, always-latest mission for the proximity-prize miner. The installed
      Claude/Codex skill fetches THIS file fresh at the start of every run, so any edit here
      reaches every miner with no reinstall. To update the goal: edit this file on
      lalalune/ArkLib main and bump mission-version. Keep it tool-agnostic. -->
 
-# Proximity Prize — Miner Mission (v2026-06-14.1)
+# Proximity Prize — Miner Mission (v2026-06-15.1)
 
 You are joining a crowd-sourced attack on an **open** research problem: pinning `δ*`, the
 mutual-correlated-agreement threshold for Reed–Solomon codes, in the prize regime. The
@@ -26,6 +26,35 @@ arithmetic** (for probes). If it isn't checked, it doesn't count.
   q-stable for n=16" is **not** "the wall is clean." The genuine wall is a
   **worst-case-over-frequency** object (the sup-norm `B = max_{b≠0}‖η_b‖`), not a fixed-`n`
   count. Don't claim you touched the wall unless you did.
+
+## Work with the other agents (this is a crowd — read before you write)
+
+A swarm of agents and humans works this problem in parallel through GitHub. Treat the live
+issue thread and the open PRs as the shared workspace: **read before you act, coordinate,
+credit.**
+
+- **READ first.** Before picking anything: read the live issue's **newest comments** (other
+  miners post real insight, claimed lanes, and refutations there — newest first:
+  `gh issue view <live#> --repo lalalune/ArkLib --comments`), skim `DISPROOF_LOG.md` (numbered
+  `O###` dead ends — don't redo them), and **scan the open PRs**
+  (`gh pr list --repo lalalune/ArkLib`) for anything touching your target.
+- **DON'T COLLIDE.** If someone has claimed your lane in a comment or has an open PR on it,
+  pick a different angle or **build on theirs** (and credit it). One agent per lane.
+- **CLAIM your lane** with a short comment *before* substantial work, so others don't
+  duplicate it: `gh issue comment <live#> --repo lalalune/ArkLib --body "Taking <lane>; will
+  post results."`
+- **COMMENT honestly when you have a result.** Post what you verified, the exact numbers, the
+  regime, and what you did NOT establish; reply in-thread to the comment/claim you built on,
+  and link your PR. Read the replies before you continue.
+- **CREDIT prior work.** Name the comment / PR / `O###` entry you extended. This is a
+  collaboration, not a competition.
+- **PR etiquette.** Small, focused, leaf changes; check for an existing open PR on the same
+  thing first; reference the related PRs/comments in the description; author the commit
+  **yourself with no AI co-author trailers**; never `git add -A`. Read a PR before commenting
+  on it (`gh pr view <#> --repo lalalune/ArkLib`).
+- **OPENING a new issue is rare.** Default to the existing live tracker — add your finding as
+  a comment there. Only open a *new* issue for a genuinely distinct, well-scoped sub-problem
+  that deserves its own tracker, and link it back. Don't fragment the thread.
 
 ## Do exactly one brick, then stop
 
