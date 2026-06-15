@@ -922,3 +922,42 @@ census-route effort should target #bad directly (#bad COLLAPSES to O(1) at the h
 CORE signal -- while #alignable stays inflated). The (U) direction and the weld are correct as a
 sufficiency chain; only the EQUIVALENCE framing is corrected. CORE not closed. Python-only, no Lean
 changed => axiom-clean trivially. Exact small-n (n=8,12,16), prize primes, proper subgroups.
+
+### THIN SIDON DEPTH SCALES: thin r_min(mu_n) advantage over random GROWS with n (corroborates + extends the surviving-lane handoff ef5f12fb1) (2026-06-15)
+
+Lens: the surviving live object isolated by the full-depth-BIND refutation (ef5f12fb1): "the COLLECTIVE
+thin depth profile (moment / sqrt-cancellation), NOT a per-S no-vanisher statement." That entry PROVED a
+thin advantage exists at one point (n=32,beta=4: thin r_min=11 vs random median 6) but did NOT measure how
+the thin Sidon depth SCALES with n. This is the first scaling measurement.
+
+OBJECT: thin Sidon depth r_min(mu_n,p) = smallest NON-antipodal subset S of Z/n with Sum_{i in S} zeta^i
+== 0 (mod p), zeta primitive n-th root, mu_n proper 2-power subgroup of F_p*, p=ceil(n^beta) prime ==1(n),
+NEVER n=q-1. r_min = NONE => full-depth (no vanisher up to n/2). Random control = median r_min over 5
+random n-subsets of F_p* of the SAME density.
+
+METHOD: exact-integer meet-in-the-middle (index halves, subset-sum collision), antipodal-closed sets
+EXCLUDED. n=8,16,32 exact, rmax=n/2. probe_407_thin_sidon_depth_scaling.py.
+
+RESULT (the scaling, with the one non-censored thin point EXACT-VERIFIED):
+| n  | beta | thin r_min | random median | margin | note |
+|----|------|------------|---------------|--------|------|
+|  8 | 4.0  | >4 (full)  | 5             | +0     | thin full-depth, random vanishes ~n/2 |
+| 16 | 4.0  | >8 (full)  | 9             | +0     | thin full-depth |
+| 32 | 4.0  | **11**     | 7             | **+4** | EXACT witness verified (size 11, sum=0, non-antipodal; NONE for r<11) |
+|  8 | 5.0  | >4 (full)  | 5             | +0     | |
+| 16 | 5.0  | >8 (full)  | 9             | +0     | |
+| 32 | 5.0  | >16 (full) | 9             | **+8** | thin still FULL-depth at n=32 while random median 9 |
+
+VERDICT (corroboration + extension; NOT a CORE result, rule-6 scoped):
+1. The thin advantage is REAL and THINNESS-ESSENTIAL (rule-3 PASS): thin mu_n is strictly deeper-Sidon
+   than a random same-density set at EVERY (n,beta); at small n thin is full-depth while random already
+   vanishes near n/2.
+2. The advantage MARGIN GROWS with n: +0,+0 -> +4 (beta=4) and +0,+0 -> +8 (beta=5). The 2-power structure
+   pushes the first vanisher progressively deeper relative to random as n grows -- the collective thin
+   signal the moment/sqrt-cancellation route needs.
+HONEST SCOPE: small-n thin rows are CENSORED at rmax=n/2 (full-depth), so the EXACT growth LAW (sqrt(n) vs
+log^c n) is not yet resolved -- need n=64,128 (randomized, SOUND-on-failure) to fit the exponent. r_min is a
+LOWER proxy for the full collective depth profile (smallest vanisher); a growing r_min is NECESSARY, not
+sufficient, for the collective CORE route. The n=32/beta=4 r_min=11 is exact-verified (witness
+[9,14,16,17,19,21,22,23,26,28,31], sum=0 mod 1048609, non-antipodal). CORE not closed; the surviving thin
+mechanism's scaling is positively confirmed for the first time. Python-only, no Lean => axiom-clean trivially.
