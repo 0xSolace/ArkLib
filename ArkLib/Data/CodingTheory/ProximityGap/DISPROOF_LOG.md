@@ -11068,3 +11068,54 @@ to the integer offset (always exactly 4,8,16).
 table n=16,32, dual-prime), `scripts/probes/probe_c01_antipodal_sumset_pin.py` (general engine);
 re-confirmed with the in-tree `probe_char0_deltastar_n64_BIG.py --n 64 --k 2`
 (`w_cross=18, s*−k=16=n/4, δ*=0.71875`). Consistent with commit `ce8cb602e`.
+
+
+---
+
+## [C21] (gmmds-homds) Affine-General-Position Restriction: δ*=capacity via genpos far-line incidence — REFUTED
+
+**Claim:** the worst-case far-line candidate list (bad-alpha messages of `RS[k]` that
+δ-agree with `x^a+α x^b`) is **affinely independent** in the window interior, so the
+in-tree `mds_genpos_list_bound` caps it at `L<budget`, pinning `δ*≥1−ρ−c/log n` past
+Johnson. Defense: "affine independence is forced because any low-degree μ_n-supported
+vanishing is capped at `2(k−1)<a` roots by Mann/Conway-Jones."
+
+**Verdict: refuted-false.** The premise confuses two unrelated objects. `mds_genpos_list_bound`
+(`ArkLib/Data/CodingTheory/HigherOrderMDSListGenPos.lean:104`) requires `hindep :
+LinearIndependent K (fun j => m_{j+1} − m_0)` — affine independence of the **candidate
+message list** in the `k`-dimensional message space. That has nothing to do with root
+counts of μ_n-supported vanishings; it is hard-capped by `dim = k`: any set of messages
+(deg `< k` polys) has affine rank `≤ k+1`. The moment the list exceeds `k+1` elements —
+which it does massively in the deep window interior — the family is **necessarily affinely
+DEPENDENT** and `mds_genpos_list_bound` is vacuous. This is exactly the affinely-dependent
+line/incidence case the in-tree docstrings flag as the open higher-order-MDS direction
+(`HigherOrderMDSListGenPos.lean:24-26`, `LineListBound.lean:28-29`,
+`MonomialLineListBridge.lean:37-38`: "the RS[k+1] list concentrates to its first moment,
+i.e. the list-decoding prize itself").
+
+**Decisive datum — list size I vs affine rank R, exact over F_p, p>>n^3, μ_n PROPER subgroup,
+NEVER n=p−1** (`scripts/probes/probe_c21_genpos_affine_rank.py`, commit `545a978274`):
+
+| n  | k | pencil (a,b) | thr (deep interior) | list I | affine rank R | cap k+1 |
+|----|---|--------------|---------------------|--------|---------------|---------|
+| 8  | 2 | (3,2)        | 3                   | **40** | 3             | 3       |
+| 8  | 2 | (4,2)        | 3                   | 17     | 3             | 3       |
+| 8  | 4 | (5,4)        | 5                   | **40** | 5             | 5       |
+| 8  | 4 | (6,4)        | 5                   | 20     | 5             | 5       |
+| 16 | 4 | (5,4)        | 5                   | **2256**| 5            | 5       |
+
+Everywhere the deep-interior list is nontrivial, `I >> R` and `R` saturates at exactly
+`k+1` (the affine-rank cap). The worst-case list is affinely dependent by a factor of
+`I/R = 13.3, 5.7, 8, 4, 451`. C21's affine-independence premise is false precisely where
+it is needed.
+
+**Which horn:** secretly-open masquerading as closed via a false premise. C21's only
+beyond-Johnson lever (`mds_genpos_list_bound`) is **vacuous on the worst-case object**;
+the real worst case is the affinely-dependent far-line incidence = the open BGK / line-ball
+core (`OpenCoreConditionalPin.WorstCaseIncidenceBounded`). Mann/Conway-Jones caps the
+INNER per-witness μ_n-root count, not the OUTER affine rank of the bad-alpha message family;
+conflating them is the error. Consistent with the route-elimination meta-theorem (genpos
+caps at Johnson; past Johnson needs the open p-dependent BGK moment) and with
+`probe_407_lacunary_pencil_Npencil.py` (deep-interior I jumps far above budget n).
+
+**Probe committed:** `scripts/probes/probe_c21_genpos_affine_rank.py` (commit `545a978274`).
