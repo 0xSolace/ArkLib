@@ -1,5 +1,12 @@
 # I_∞ campaign — iinf-qindep workflow verdict (wf_84b1d071-195, 2026-06-15)
 
+> **CORRECTION (see doc 06):** the "floor HOLDS at the window edge with margin" headline below was
+> TOO OPTIMISTIC. It rested on a worst-direction `exp(c·n)` extrapolation that never measured the exact
+> n=32 edge cell. The fuller core-stratified decay-rate workflow (06) shows the PURE window-edge
+> multiplier GROWS 1→13, the "3504 spike" was char-p polluted, and all 10 decay angles reduce to the
+> open Gauss-period bound. The PROVEN bricks below (p-independence, support law, recursion) stand;
+> the floor-holds conclusion does NOT. Read doc 06 for the reconciled verdict.
+
 9-thread workflow on the q-independent finite incidence. Synthesis of 8 completed threads
 (+ 9th, a √2-orbit plateau lower-bound for n=64, consistent). **This is the most positive
 result of the campaign: the prize FLOOR HOLDS at the window edge, empirically n≤32 + 3 proven
