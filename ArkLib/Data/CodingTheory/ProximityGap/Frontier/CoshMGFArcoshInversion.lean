@@ -95,6 +95,52 @@ theorem core_supNorm_le_arcosh_mgf {F : Type*} [Field F] [Fintype F] [DecidableE
   period_le_arcosh_of_cosh_le hy (norm_nonneg _)
     (cosh_period_le_evenMoment_tsum hψ G y b₀)
 
+/-- **arcosh-to-log upper bridge.**  For `x ≥ 1`, `arcosh x ≤ log (2*x)`.  Since
+`arcosh x = log (x + √(x²−1))` and `√(x²−1) ≤ √(x²) = x` (as `x ≥ 0`), the argument is `≤ 2x`,
+and `log` is monotone on the positives.  This converts the `arcosh`-form CORE bound into the
+**log-MGF / cumulant** form the §6.2 saddle `y* = √(2 log q / n)` actually consumes. -/
+theorem arcosh_le_log_two_mul {x : ℝ} (hx : 1 ≤ x) : Real.arcosh x ≤ Real.log (2 * x) := by
+  have hx0 : (0 : ℝ) ≤ x := le_trans zero_le_one hx
+  -- √(x²−1) ≤ √(x²) = x
+  have hsqrt : Real.sqrt (x ^ 2 - 1) ≤ x := by
+    calc Real.sqrt (x ^ 2 - 1) ≤ Real.sqrt (x ^ 2) :=
+            Real.sqrt_le_sqrt (by nlinarith)
+      _ = x := by rw [Real.sqrt_sq hx0]
+  have harg : x + Real.sqrt (x ^ 2 - 1) ≤ 2 * x := by linarith
+  have hpos : (0 : ℝ) < x + Real.sqrt (x ^ 2 - 1) := by positivity
+  rw [Real.arcosh]
+  exact (Real.log_le_log_iff hpos (by positivity)).mpr harg
+
+/-- **log-to-arcosh lower bridge.**  For `x ≥ 1`, `log x ≤ arcosh x`.  Immediate from
+`arcosh x = log (x + √(x²−1))` and `√(x²−1) ≥ 0`.  Pins the cumulant form as a faithful
+(constant-factor-tight) surrogate: `log x ≤ arcosh x ≤ log (2x)`. -/
+theorem log_le_arcosh {x : ℝ} (hx : 1 ≤ x) : Real.log x ≤ Real.arcosh x := by
+  have hx0 : (0 : ℝ) < x := lt_of_lt_of_le zero_lt_one hx
+  rw [Real.arcosh]
+  exact (Real.log_le_log_iff hx0 (by positivity)).mpr
+    (le_add_of_nonneg_right (Real.sqrt_nonneg _))
+
+/-- **The explicit log-MGF (cumulant) CORE sup-norm bound (the §6.2 saddle form).**  For `y > 0`
+and any subset `G` whose even-moment MGF `S(y) := ∑_r (q·E_r/(2r)!)·y^{2r}` is `≥ 1` (always true:
+the `r=0` term is `q·E_0/0! = q ≥ 1` for nonempty `F`, but we keep `1 ≤ S` as an explicit hypothesis
+to stay unconditional), the single Gauss period satisfies
+`‖η_{b₀}‖ ≤ log (2 · S(y)) / y`.
+This is the cumulant-generating-function form the saddle `y* = √(2 log q / n)` plugs into directly
+(a Wick bound `S(y) ≤ exp(n·y²/2)` then gives `‖η‖ ≤ (log 2 + n·y²/2)/y`, minimised at the saddle).
+Proof: chain `core_supNorm_le_arcosh_mgf` with `arcosh_le_log_two_mul`, divide by `y > 0`. -/
+theorem core_supNorm_le_log_mgf {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (y : ℝ) (hy : 0 < y) (b₀ : F)
+    (hS : (1 : ℝ) ≤ ∑' r : ℕ, ((Fintype.card F : ℝ) * rEnergy G r) * y ^ (2 * r)
+            / ((2 * r).factorial : ℝ)) :
+    ‖eta ψ G b₀‖
+      ≤ Real.log
+          (2 * ∑' r : ℕ, ((Fintype.card F : ℝ) * rEnergy G r) * y ^ (2 * r)
+            / ((2 * r).factorial : ℝ)) / y := by
+  refine (core_supNorm_le_arcosh_mgf hψ G y hy b₀).trans ?_
+  -- divide both sides of `arcosh S ≤ log (2S)` by `y > 0`
+  gcongr
+  exact arcosh_le_log_two_mul hS
+
 end ProximityGap.Frontier.CoshMGFArcoshInversion
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only, NO sorryAx)
@@ -102,3 +148,9 @@ open ProximityGap.Frontier.CoshMGFArcoshInversion in
 #print axioms period_le_arcosh_of_cosh_le
 open ProximityGap.Frontier.CoshMGFArcoshInversion in
 #print axioms core_supNorm_le_arcosh_mgf
+open ProximityGap.Frontier.CoshMGFArcoshInversion in
+#print axioms arcosh_le_log_two_mul
+open ProximityGap.Frontier.CoshMGFArcoshInversion in
+#print axioms log_le_arcosh
+open ProximityGap.Frontier.CoshMGFArcoshInversion in
+#print axioms core_supNorm_le_log_mgf
