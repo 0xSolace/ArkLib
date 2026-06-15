@@ -922,9 +922,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.C1SecondMomentBGKGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.C4PoissonAdmissibilityWall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusScalarPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFArcoshInversion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CountLaneNotSecondOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
@@ -955,6 +957,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
@@ -1216,6 +1219,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HalfJohnsonDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.HalfPairSliceExact
 import ArkLib.Data.CodingTheory.ProximityGap.HalfSumNormClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.HalfSumRunNormUniform
+import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeDivisibility
 import ArkLib.Data.CodingTheory.ProximityGap.HaloFreeThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.HalvingWindowExit
 import ArkLib.Data.CodingTheory.ProximityGap.HammingBound
