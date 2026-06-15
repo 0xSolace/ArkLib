@@ -2015,3 +2015,43 @@ HONEST SCOPE: rho* at large n (m>20000) uses a uniform coset-rep SAMPLE (so M is
 worst coset => rho* is a lower bound; a higher true rho* only STRENGTHENS the sub-doubling-but-invariant
 reading, never creates a thin advantage). Multi-prime incl. non-Fermat, p-stable. align is exact (full b*).
 CORE not closed, not faked. Python-only, no Lean => axiom-clean trivially. probe_407_worstcoset_perfreq_descent.py.
+
+### THIN SIDON DEPTH does NOT grow: n=64 EXACT computation REFUTES the "thin r_min advantage grows with n" lane (2026-06-15, opus-4-8 subagent)
+
+LANE (the SURVIVING positive thin signal, rule-3 PASS RIGHT-sign, w/ its own flagged open): the prior
+"THIN SIDON DEPTH SCALES" entry reported the thin Sidon depth r_min(mu_n) margin over random GROWING
+(+0,+0->+4 at beta=4; +0,+0->+8 at beta=5, n=8/16/32) but flagged: "the EXACT growth LAW (sqrt(n) vs
+log^c n) is NOT yet resolved -- need n=64,128 to fit the exponent." n=8/16/32 thin rows were CENSORED at
+rmax=n/2 (full-depth) EXCEPT the single n=32/beta=4 r_min=11 point => the exponent was DEGENERATE-UNFIT.
+No live worker on the n=64 extension. Ran it.
+
+OBJECT (identical to probe_407_thin_sidon_depth_scaling.py, validated): r_min(mu_n,p) = smallest
+NON-antipodal subset S of Z/n with Sum_{i in S} zeta^i == 0 (mod p), zeta primitive n-th root, mu_n
+PROPER 2-power subgroup of F_p*, p=ceil(n^beta) prime ==1(n), m=(p-1)/n>1, NEVER n=q-1. Antipodal pairs
+{i,i+n/2} excluded. r_min=NONE up to rmax => full-depth.
+
+METHOD: SOUND BRACKET (full n=64 MITM infeasible, C(32,16)~6e8/half). EXACT exhaustive lower bound (no
+non-antipodal vanisher of size <= r0 => r_min>=r0+1, RIGOROUS) + randomized SOUND upper witness (explicit
+witness => r_min <= s). SELF-CHECK n=32 beta=4 -> exact witness at 11 (reproduces published r_min=11).
+probe_407_thin_sidon_depth_n64_bracket.py.
+
+RESULT (exact, n=64 added; the thin depth DROPS, the margin SHRINKS):
+| n  | beta=4 thin r_min | beta=4 rand median | margin | r/sqrt(n) | beta=5 thin r_min |
+|----|-------------------|--------------------|--------|-----------|--------------------|
+| 16 | >8 (full)         | 9                  | +0     | --        | >8 (full)          |
+| 32 | 11 (exact)        | 7                  | +4     | 1.94      | >16 (full)         |
+| 64 | **8 (exact)**     | 6                  | **+2** | **1.00**  | **10 (exact)**     |
+
+EXPLICIT n=64/beta=4 WITNESS (p=16777601, zeta=6014800): S={15,17,22,29,32,33,38,63}, |S|=8, sum==0 mod p,
+NON-antipodal; exhaustive MITM confirms NO non-antipodal zero-sum of size<8 => r_min(mu_64,beta=4)=8 EXACTLY.
+Predictions: sqrt(n) law => r_min(64)~11*sqrt(2)=15.6; log law => 11*6/5=13.2. ACTUAL=8, BELOW BOTH.
+
+VERDICT (refutation-grade for the SCALING claim; rule-4 wall, rule-6 honest, NOT a CORE result):
+the "thin Sidon depth r_min advantage GROWS with n" reading does NOT survive the n=64 exact point at beta=4:
+the absolute thin depth DROPS 11->8 and the thin-minus-random margin SHRINKS +4->+2 (not monotone). The
+small-n growth was a CENSORING/CEILING artifact (n=16,32 thin rows full-depth-censored at rmax=n/2; n=32
+r_min=11 sits near the ceiling 16). So the smallest-vanisher depth r_min is NOT the carrier of a growing
+collective thin signal -- it is non-monotone and small-n biased. CONSEQUENCE: the surviving-thin effort
+should target the HIGHER-ORDER collective moment profile (the L7 BGK aggregate the whole board converges
+to), NOT r_min. This CLOSES the smallest-vanisher sub-lane. CORE not closed, no overclaim. Python-only
+exact, no Lean changed => axiom-clean trivially. probe_407_thin_sidon_depth_n64_bracket.py.
