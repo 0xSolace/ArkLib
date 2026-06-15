@@ -461,3 +461,25 @@ NET: a mapped data point (n=16 full-verified s*=5 ⟹ δ*=0.6875) + an honest te
 δ*→capacity, contra the floor) that the army's large-n Rust must resolve. NOT a refutation of the floor
 (small n, lower-bound s* at n>16). Logged, not receipted (over-det lane actively sibling-owned, 47dcd71b3 —
 one-active-speaker; not crowding with a competing receipt).
+
+## ★ REFINEMENT (sharpens the in-window survival entry above) — the SUFFICIENT proxy `Anom_r ≤ n^{2r}/p` FAILS at deep r at the worst prime, but the TARGET `A_r ≤ Wick` survives with margin (2026-06-15)
+
+Combined-axes trajectory at the WORST in-window bad prime p=76001 (n=16, β=4.05), r=2..r*=round(log p)=7:
+  r : Anom_r/(n^2r/p) [sufficient proxy] | A_r/Wick [actual target]
+  2 : 0.000 | 0.936     5 : 0.870 | 0.517
+  3 : 0.000 | 0.819     6 : 1.091 | 0.374  <-- proxy CROSSES 1
+  4 : 0.476 | 0.671     7 : 1.188 | 0.255  <-- proxy > 1
+So `Anom_r ≤ n^{2r}/p` (the clean sufficient form) FAILS at r=6,7 at the worst in-window prime — it does
+NOT survive to the optimizer depth r*. The fixed-r=4 survival result (26/26) is correct but does NOT extend
+to deep r at the worst prime.
+
+CRUCIAL: the ACTUAL target `A_r ≤ Wick` HOLDS at EVERY r (0.94→0.67→0.52→0.37→0.26, monotone decreasing),
+because `A_r ≤ Wick ⟸ Anom_r ≤ n^{2r}/p + (Wick − R_r)` and the `(Wick − R_r)` headroom absorbs the anomaly
+overshoot at deep r. (Consistent with probe_407_bgkproof_onset_growth's decomposition.)
+
+NET: the clean sufficient proxy `Anom_r ≤ n^{2r}/p` is the WRONG (too-strong) sufficient form at deep r — it
+overshoots exactly where the moment optimizer sits. The true open object is `A_r ≤ Wick` directly (= the
+DC-subtracted BGK core), which survives with margin at this accessible-scale prime but is NOT implied by the
+clean Anom-proxy past r=5. Anyone trying to close CORE via `Anom_r ≤ n^{2r}/p` will hit this proxy-failure at
+deep r; must use the `(Wick − R_r)` headroom (i.e. the full `A_r ≤ Wick`), not the clean proxy.
+Probe scripts/probes/probe_407_anom_worst_rtraj.py.
