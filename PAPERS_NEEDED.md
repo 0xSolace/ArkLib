@@ -563,3 +563,24 @@ automorphic function along a horocycle orbit, BOUNDED when the orbit is CLOSED (
 our geometric μ_n sum lifts to an automorphic function on a TORUS/GL1-metaplectic setting (not SL2),
 the same "closed orbit ⟹ bounded sup" logic might bound M(n) — IF the lift exists. The lift is the open
 question; without it, collapses to the geometric-phase wall. Tag: partial-handle, lift-existence open.
+
+## Geometric→quadratic phase conversion — settled 2026-06-15 (answer: NO direct, but exact Mordell reduction; m=2 IS quadratic = thick non-prize)
+Q: can the geometric phase e_p(b·ζ^j) be turned into a quadratic phase e_p(aj²+cj) to use theta-sum/
+Cellarosi-Marklof machinery? FINDINGS (verified err~1e-16, probe inline):
+1. DIRECT conversion IMPOSSIBLE. Weyl/van der Corput differencing of f(j)=b·ζ^j gives
+   f(j+h)-f(j)=b(ζ^h-1)·ζ^j — STILL geometric in j (just rescaled), never linear. Quadratic phases
+   linearize under one differencing (that's why they're tractable); geometric ones don't (that IS why
+   subgroup exponential sums are the hard BGK class). g^{cj} is not a quadratic in j over Z/p.
+2. EXACT reduction (verified): S(b)=Σ_{x∈μ_n}e_p(bx) = (1/m)Σ_{y∈F_p*}e_p(b·y^m), m=(p-1)/n — a
+   MORDELL sum over the m-th power map = (1/m)Σ_{χ^m=1} g(χ)χ̄(b) (m Gauss sums, each |g|=√p). Trivial
+   bound √p; beating it to √n = cancellation among the m Gauss-sum phases = THE BGK open core.
+3. m=2 (n=(p-1)/2 = squares) IS a literal quadratic Gauss sum, exactly √p — but that's the THICK
+   regime (n≈p/2), NOT the thin prize (n≈p^{1/4}, m≈p^{3/4} large). So the one place geometric→quadratic
+   works is exactly where the problem is easy/irrelevant.
+4. DUALITY framing: our object = LINEAR phase over a MULTIPLICATIVE subgroup; theta sums = QUADRATIC
+   phase over an ADDITIVE interval. The bridge = additive-multiplicative duality = sum-product = BGK home.
+5. ONE speculative non-collapsed thread: METAPLECTIC Eisenstein series have Gauss-sum coefficients
+   (Kazhdan-Patterson, Patterson cubic-Gauss-sum 3rd moment). A "multiplicative/torus theta" whose
+   coefficients are subgroup sums could inherit automorphic sup-norm bounds — but the lift is unproven
+   and the relevant metaplectic sup-norm is itself likely BGK-hard. Worth a literature check (Patterson,
+   Heath-Brown cubic Gauss sums; Brubaker-Bump-Friedberg Weyl-group multiple Dirichlet series).
