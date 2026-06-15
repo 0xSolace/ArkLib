@@ -76,3 +76,24 @@ Both isolate the SAME thing: the smooth μ_n structure must break the √-loss /
 antipodal/Lam-Leung rigidity (closed, fully classified) is the candidate that does it. Line-decoding is
 strictly stronger than MCA and bounds the close-codeword list structure, so a single line-decoding
 theorem for explicit smooth RS could close BOTH grand challenges simultaneously (the goal's requirement).
+
+## SHARPENED MECHANISM (Def 4.3 + own n=8 check): "good" = SHARED agreement set
+ABF26 Def 4.3 (exact): ε_mca(C,δ) = max_{f1,f2} Pr_γ[ ∃S, |S|≥(1−δ)n, Δ_S(f1+γf2,C)=0 ∧
+Δ_S((f1,f2),C^{≡2})>0 ]. A point γ is BAD iff f1+γf2 matches a codeword on some large S but (f1,f2)
+do NOT both match codewords on S. KEY mechanism (derived): if two points γ1≠γ2 share the SAME agreement
+set S (both match codewords on S), then f2=(g_{γ1}−g_{γ2})/(γ1−γ2) and f1 are BOTH codeword-restrictions
+on S ⟹ both γ1,γ2 GOOD. So **good ⟺ agreement set S_γ is shared with ≥1 other line-point; bad ⟺ S_γ
+is unique to γ.** This recasts "force collinearity / line-decodability" as "force agreement-set SHARING".
+
+Own independent n=8 k=2 check (eps_mca_sanity.py): for random AND monomial lines, #bad = #close at every
+radius (a=3 δ=0.625 window: bad=close=48≫budget=8; a=4 δ=0.5=Johnson: bad=close=8=budget). So at n=8,
+ε_mca = far-line incidence (every S unique ⟹ all close points bad) ⟹ δ*_MCA ≈ Johnson. BUT this is a
+FINITE-SIZE ARTIFACT: at tiny n the close-fraction beyond Johnson is a large constant (0.42), so random
+lines saturate bad=close. At LARGE n a random line has FEW close points beyond Johnson, and the open
+question is whether smooth μ_n forces agreement-set SHARING (alignment) among those few ⟹ bad ≤ budget
+beyond Johnson. This is exactly what the running fleet (wf_d769b9c5) computes at larger n.
+
+IMPLICATION for the conjecture: the antipodal-rigidity lever must be aimed at "agreement sets of close
+points on a smooth-RS line are SHARED / concentrated (few distinct S)", NOT merely "few close points".
+Sharing is the GOOD-making property. The FRS subspace-design property gives sharing (that is why GG25
+gets beyond-Johnson for FRS); the question is whether μ_n antipodal structure gives sharing for explicit RS.
