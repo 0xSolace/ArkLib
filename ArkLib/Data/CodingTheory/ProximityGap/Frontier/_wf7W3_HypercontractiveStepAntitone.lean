@@ -32,7 +32,7 @@ The Gaussian step-law is exactly `R(r) ≤ 1 ∀r`. Lane-W3 exact numerics
   `sup_r K_eff(r) = K_eff(1) = M_2/s ≈ 1`.)
 
 So the open step-law `R(r) ≤ 1 ∀r` reduces to TWO hypercontractive facts:
-  (W3-base)  `R(1) ≤ 1`  — the **second-/fourth-moment** inequality `M_4 ≤ 3·s·M_2` (a fixed, finite
+  (W3-base)  `R(1) ≤ 1`  — the **second-and-fourth-moment** inequality `M_4 ≤ 3·s·M_2` (a fixed, finite
              check; the `r=1` Parseval/hypercontractive base, NOT a deep-moment statement); and
   (W3-anti)  `R` antitone — the **cumulant-ratio monotonicity**, the genuine log-Sobolev /
              Bonami–Beckner content of the dyadic cube.
@@ -61,6 +61,7 @@ Axiom-clean (`propext, Classical.choice, Quot.sound`). Issue #444, lane wf-W3.
 -/
 
 set_option autoImplicit false
+set_option linter.style.longLine false
 
 namespace ArkLib.ProximityGap.Frontier.WF7W3
 
@@ -97,7 +98,6 @@ separately; see `gaussian_moment_bound_of_antitone_base`.)
 This is the W3 reduction: the open all-`r` step-law collapses to ONE base inequality + ONE
 monotonicity, the natural hypercontractive object. Axiom-clean. -/
 theorem normStepRatio_le_one_of_antitone_base {M : ℕ → ℝ} {s : ℝ}
-    (hs : 0 < s) (hM : ∀ r, 0 < M r)
     (hbase : NormStepRatio M s 1 ≤ 1)
     (hanti : StepRatioAntitone M s) :
     ∀ r : ℕ, 1 ≤ r → NormStepRatio M s r ≤ 1 := by
@@ -105,13 +105,11 @@ theorem normStepRatio_le_one_of_antitone_base {M : ℕ → ℝ} {s : ℝ}
   induction r with
   | zero => exact absurd hr (by norm_num)
   | succ k ih =>
-    rcases Nat.eq_or_gt_of_le hr with hk | hk
-    · -- k + 1 = 1, i.e. k = 0: this is the base
-      have : k = 0 := by omega
-      subst this; exact hbase
-    · -- k + 1 ≥ 2, so 1 ≤ k: use antitonicity step then IH
-      have hk1 : 1 ≤ k := by omega
-      exact le_trans (hanti k hk1) (ih hk1)
+    rcases Nat.eq_zero_or_pos k with hk | hk
+    · -- k = 0, so k + 1 = 1: this is the base
+      subst hk; exact hbase
+    · -- k ≥ 1: use antitonicity step then IH
+      exact le_trans (hanti k hk) (ih hk)
 
 /-- **W3 end-to-end via the in-tree telescope.** From positivity, the variance base
 `M 1 ≤ s·M 0`, the hypercontractive base `R(1) ≤ 1`, the antitonicity `StepRatioAntitone`, and
@@ -131,7 +129,7 @@ theorem gaussian_moment_bound_of_antitone_base {M : ℕ → ℝ} {s : ℝ}
     ∀ r : ℕ, M r ≤ (Nat.doubleFactorial (2 * r - 1) : ℝ) * s ^ r := by
   -- assemble the full Gaussian step-law for all r
   have hRle : ∀ r : ℕ, 1 ≤ r → NormStepRatio M s r ≤ 1 :=
-    normStepRatio_le_one_of_antitone_base hs hM hbase hanti
+    normStepRatio_le_one_of_antitone_base hbase hanti
   have hstep : GaussianStepLaw M s := by
     intro r
     rcases Nat.eq_zero_or_pos r with hr0 | hrpos
