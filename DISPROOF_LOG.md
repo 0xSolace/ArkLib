@@ -3239,3 +3239,40 @@ VALIDATED on the cubic-peak (rate-independent, exact) + the rho=1/4 full s* tabl
 but NOT exhaustively swept for growing-k rho=1/8 (n=24 k=3 full sweep walled in pure Python). Stated
 as a structural extension, not a fully-swept theorem. Lean records the arithmetic (crossingDepthRate_ge
 => c*>=d when k+d<=N-1; crossingDepthRate_quarter recovers the m-1 axis). Axiom-clean, locked build OK.
+
+--------------------------------------------------------------------------------
+2026-06-15 wf-RB: REGIME-B DECISIVE TEST — over-det far-line s* is JOHNSON-side, NOT a floor
+climb; the n=32 "s*=13" climb is the engine b<s direction-cap ARTIFACT (lead refuted).
+--------------------------------------------------------------------------------
+Reimplemented the over-det far-line incidence I(a,b;s) = #{gamma : x^a+gamma x^b agrees with
+RS[mu_n,k] on s pts} as a numpy-VECTORIZED EXACT F_p engine over the FULL b-range (no b<s
+direction cap). Per witness set: the (s-k) consecutive order-k divided-difference RS-parity
+functionals applied to u0,u1 in batched int64 mod-p; gamma=parallel-ratio verified across all
+s-k comps; heavy=>p. CROSS-VALIDATED EXACT vs the proven in-tree CPython `incidence`: n=16 dir
+(10,4) s=6->89/s=7->9/s=8->9; n=20 (18,5)s7->20,(16,5)s7->21,(10,5)s6->6521,(8,6)s7->121 — all OK.
+Files scripts/probes/probe_wf4RB_{vec_rprofile,decisive,boundary,overdet_rprofile}.py.
+
+VERIFIED EXACT r-profiles (p-INDEPENDENT, two primes p=1 mod n, p>>n^3; budget=q*eps*=n):
+ n=16 k=4: BAD r=11,10 (binders (14,4),(11,4)); GOOD r=9(I=9),8(I=9). smallest BAD r=10 =>
+   r*=9=n/2+1, delta*=9/16=1/2+1/n, s*=7=n/2-1. JOHNSON+1rung. (complete exact profile)
+ n=20 k=5: BAD r=14,13,12 (binders (18,5),(16,5)); GOOD r=11,10(I=5). smallest BAD r=12 =>
+   r*=11=n/2+1, delta*=11/20=1/2+1/n, s*=9=n/2-1. JOHNSON+1rung. (complete exact profile)
+ n=24 k=6: BAD r=16,15 (binders (21,6),(15,6)). Binder (15,6) by rung: s8(r16)=1153, s9(r15)=49,
+   s10(r14)=9, s11(r13)=9 — crosses budget=24 between r=15(BAD) and r=14(GOOD). (21,6): s8=57(BAD),
+   s9=8,s10=0,s11=0. Consistent with the campaign's exact full-sweep s*=11=n/2-1 => r*=13=n/2+1
+   JOHNSON+1rung. (binder-family transition exact; the FULL r=14 sweep over all far-valid dirs hit
+   the CPython enumeration wall C(24,14)~1.96M x ~70 dirs — reported as such, not claimed.)
+
+THE n=32 s*=13 ARTIFACT: confirms KB farline-engine-bs-direction-cap-artifact.md — the Rust/CUDA
+engine caps far dirs to b in [k,s), dropping the binding directions throughout their BAD phase,
+so it UNDER-counts incidence => OVER-estimates delta* (0.594 vs true ~0.531). My full-b-range
+engine reproduces JOHNSON exactly at n=16,20 with NO climb; n=32 exhaustive boundary is
+compute-walled (C(32,16)~6e8), so the n=32 climb is killed by the artifact mechanism + the exact
+n=16,20,24 pattern, NOT by a direct n=32 exhaustive recompute.
+
+VERDICT: over-det far-line is JOHNSON-side (delta*=1/2+1/n -> 1/2), NOT a window-interior floor
+climb. The far-line over-det FLOOR-mechanism lead is REFUTED. Reconfirms the campaign over-det
+Johnson-lock (9629193c6, DecouplingDecayCrossingDepth, antipodal mechanism) by independent exact
+full-b-range enumeration. Far-line is the Plotkin/Johnson PROXY (epsMCA >= far_inc/q); the open
+prize is the UNDER-determined (s-k<=1) BGK char-sum wall M(n)=max_{b!=0}|sum_{x in mu_n} e_p(bx)|,
+UNCHANGED. No closure claimed. — wf-RB (proven-per-fixed-n n=16,20; binder-exact n=24)
