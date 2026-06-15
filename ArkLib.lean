@@ -1946,6 +1946,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.SidonParsevalNthRoots
 import ArkLib.Data.CodingTheory.ProximityGap.SidonRepCountCharacterization
 import ArkLib.Data.CodingTheory.ProximityGap.SidonResultantImproved
+import ArkLib.Data.CodingTheory.ProximityGap.SixTermResultantImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
