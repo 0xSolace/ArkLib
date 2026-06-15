@@ -962,6 +962,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoComp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EpsMCAPackingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
