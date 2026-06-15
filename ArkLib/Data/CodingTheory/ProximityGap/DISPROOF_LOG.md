@@ -11553,3 +11553,47 @@ is the recognised ~25-year-open analytic-NT problem (di Benedetto `n^{0.989}` ne
 exact sup-norm, additive/dilate energy, r-th energy vs Gaussian). Commit `4bdcc12ea`.
 
 ---
+
+## [C36] Heath-Brown-Konyagin Single-Curve Stepanov at the Prize Boundary — REFUTED-FALSE (2026-06-15)
+
+**Claim.** The proven single-curve HBK Stepanov bound `M(mu_n) <= min(n^{5/8} p^{1/8}, n^{3/8} p^{1/4})`
+"becomes nontrivial (below n) exactly at the prize boundary via a sharpened auxiliary-degree budget,"
+giving a past-Johnson sup-norm — the elementary (Mathlib-formalizable) route via
+`StepanovWeilEngine.weil_form_card_lt` + `exists_stepanov_auxiliary`.
+
+**Verdict: REFUTED-FALSE.** Elementary arithmetic (probe
+`scripts/probes/probe_c36_hbk_stepanov_boundary.py`). Writing `p = n^beta`, the two HBK bounds are, as
+powers of n: `e1 = 5/8 + beta/8` and `e2 = 3/8 + beta/4`, so `M <= n^{min(e1,e2)}`.
+
+- **Sub-trivial (below n) only for `beta < 3`** (`e1<1 <=> beta<3`, `e2<1 <=> beta<2.5`). At `beta=3`
+  exactly, `e_min = 1` (equals trivial). The **prize band is `beta in {4,5}`** (`n < p^{1/4}`), where
+  `e_min = 9/8 = 1.125` (beta=4) or `5/4 = 1.25` (beta=5): the bound is **WORSE than the trivial `n`**,
+  by a factor `n^{1/8}` (= 2^3.8 at n=2^30) to `n^{1/4}` (= 2^7.5). It is not "nontrivial below n"; it
+  exceeds n. This matches the in-tree literature ledger verbatim:
+  `docs/kb/deltastar-407-reading-list-gaussperiods.md` line 60-62 ("Non-trivial only for `n >~ p^{1/3+e}`
+  ... Prize regime? NO — VACUOUS") and line 112 ("HBK ... NO (vacuous)"), and
+  `docs/kb/proximity-paley-gauss-period-litsweep-2026-06-13.md` line 70-71 (HBK applies for
+  `n in [p^{1/3}, p^{1/2}]` only; below `p^{1/3}` "HBK is VACUOUS").
+- **Past-Johnson? Never.** Johnson scale needs `e_min <= ~1/2`; `e1<=1/2` is impossible (`beta<=-1`) and
+  `e2<=1/2 <=> beta<=1/2` (`p<=sqrt(n)`, deep in the FORBIDDEN full-group regime `n=p-1`). For every
+  legal `beta`, HBK is `>= n^{5/8} >> n^{1/2}`. Even where (illegally) sub-trivial it is "sub-trivial but
+  `>> sqrt(n)`" (litsweep line 70) — it never crosses Johnson, let alone past it.
+- **The "sharpened auxiliary-degree budget" cannot help.** The exponent is fixed by the Stepanov
+  degree/multiplicity accounting: the `p^{1/2}`-strength saving in the HBK exponents comes from the
+  Frobenius relation `x^q=x` plus the QR-character multiplicity `g^{(q-1)/2}` (encoded in
+  `weil_form_card_lt` via the `g^((q-1)/2)` factor and the `2A+deg g<q` block window). But
+  `StepanovStructuredVacuous.lean` (`mu_n_roots_simple`, `stepanov_collapses_to_degree`) PROVES the
+  subgroup relation `X^n-1` is SEPARABLE (char `p` odd, `p` nmid `n=2^mu`), so it manufactures NO
+  multiplicity: Stepanov on `mu_n` collapses to the trivial `deg P` bound. The sqrt-saving the HBK
+  exponents encode does not even apply to the subgroup object; tightening the linear-algebra constant in
+  `exists_stepanov_auxiliary` moves no EXPONENT. `StepanovWeilEngine.lean`'s own "Honest scope" docstring
+  (lines 29-32) states it carries "no `sqrt(q)`-strength claim by itself" and "even the full Weil bound
+  recovers only the Johnson radius `sqrt(rho)`, never the past-Johnson delta*."
+
+**Mechanism class.** Same horn as the entire HBK/Stepanov family: the proven bound is VACUOUS in the
+prize band (`beta>=4`, `n<p^{1/4}`), exceeding even the trivial `n`; it is non-vacuous only at `n>p^{1/3}`
+(beta<3, forbidden) where it is still `>> sqrt(n)` (never Johnson). The route is `q^{1/3}`-blind to the
+thin prize subgroup — exactly as `deltastar-407-reading-list-gaussperiods.md` and the campaign DEAD-ROUTES
+note ("Weil/sqrt(q): vacuous for n<sqrt(q)") already record.
+
+**Probe committed:** `scripts/probes/probe_c36_hbk_stepanov_boundary.py`.
