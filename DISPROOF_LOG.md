@@ -626,3 +626,38 @@ NET (honest, no closure): the over-det far-line incidence δ* is a CLEAN, formul
 s*−k). Both are the (rigorous UPPER bound) far-line δ*, NOT the MCA δ* — the prize BGK content lives in the
 GAP between this upper bound and the true MCA δ*≥floor, untouched. Engine scripts/rust-pg (bmax mode);
 companion to probe_407_k2_sstar_formula_break.py. Small n (≤24 exact). NOT a CORE closure.
+
+## ★ SHARPENING + REGIME CLARIFICATION — at FIXED ρ=1/4 the far-line δ* DECREASES to Johnson (linear s*−k=n/4−1), NOT the floor (2026-06-15)
+
+Sharpens the proportional-k companion + clarifies the orchestrator's RESOLUTION doc
+(deltastar-RESOLUTION-tracks-floor-not-half.md, 1d78bb751), which concludes far-line δ* "tracks toward 1−ρ
+(floor), not ½." That is correct AT k=2 (ρ→0), but the limit is REGIME-DEPENDENT. Exact 3-point ρ=1/4 data
+(full-sweep rust-pg, all re-verified with the corrected saturating_add binary; valid subgroup p≡1 mod n, β=4):
+
+| n  | k | s* | s*−k | δ*=(n−s*)/n | Johnson 1−√ρ | cap 1−ρ |
+|----|---|----|------|-------------|--------------|---------|
+| 16 | 4 | 7  | 3    | 0.5625      | 0.5000       | 0.7500  |
+| 20 | 5 | 9  | 4    | 0.5500      | 0.5000       | 0.7500  |
+| 24 | 6 | 11 | 5    | 0.5417      | 0.5000       | 0.7500  |
+
+EXACT LINEAR LAW at ρ=1/4: s*−k = n/4 − 1 (3,4,5 for n=16,20,24 — matches the in-tree formula ½+1/n exactly),
+so δ* = (n − (n/4+1))/n = 3/4 − 1/n → 3/4? NO: s* = k + n/4 − 1 = n/4 + n/4 − 1 = n/2 − 1, so δ* = (n−s*)/n
+= (n/2+1)/n = 1/2 + 1/n → **1/2 = Johnson** (since ρ=1/4 ⟹ Johnson=1−√(1/4)=1/2). DECREASING (0.5625→0.5417),
+toward Johnson from ABOVE — NOT toward the floor 1−ρ=3/4.
+
+REGIME CLARIFICATION (the two limits differ):
+- k=2 FIXED (ρ=2/n → 0): δ* INCREASES 0.6875→0.8125 toward 1−ρ → 1 (orchestrator's RESOLUTION — correct here;
+  the gap (1−√ρ, 1−ρ) itself shrinks to 0 as ρ→0, so δ* rising tracks the collapsing window).
+- ρ=1/4 FIXED: δ* DECREASES 0.5625→0.5417 toward Johnson = 1/2 (the LOWER window edge), linear s*−k=n/4−1.
+So the far-line incidence δ* does NOT uniformly "track the floor": at fixed ρ it tends to JOHNSON (lower edge),
+at ρ→0 it tends to 1−ρ. As a RIGOROUS UPPER bound on MCA δ* (epsMCA≥far_inc/q), at fixed ρ it pins MCA δ* ≤
+~Johnson+O(1/n) — i.e. the far-line upper bound is ASYMPTOTICALLY AT JOHNSON at fixed ρ, hence CANNOT certify
+the floor 1−ρ−Θ(1/log n) > Johnson. The prize floor (strictly above Johnson) is NOT reachable via the far-line
+incidence upper bound at fixed ρ; it needs the true MCA object (the BGK gap), exactly as localized. NOT a closure.
+
+ENGINE BUG TRANSPARENCY (rule 6): a SCRATCH copy /tmp/pg-fast used `k + bmax` which OVERFLOWED when bmax
+defaulted to usize::MAX (5 + MAX wraps to 4 < k ⟹ empty dirs ⟹ spurious maxI=0/"GOOD"). This affected ONLY
+the DEFAULT (no-bmax) path of the scratch binary. ALL reported/pushed data used EXPLICIT bmax 4/6 (overflow-safe)
+and was cross-validated against the unpatched original engine. The IN-REPO engine uses `k.saturating_add(bmax)`
+(correct) — every pushed point (n=16,32 k=2; n=16,20,24 k=4..6) RE-VERIFIED with the correct repo full-sweep
+binary, all identical. Scratch copy deleted. No pushed result was affected.
