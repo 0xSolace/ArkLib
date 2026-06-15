@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickMGFFromTermwise
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromDCSaddle
 
 /-!
 # The **finite-exception** (slack-tolerant) DC-Wick MGF producer
@@ -47,6 +48,10 @@ open Finset AddChar
 open ArkLib.ProximityGap.SubgroupGaussSumMoment
 open ProximityGap.Frontier.WickMGFFromTermwise
 open ProximityGap.Frontier.DCWickMGFFromTermwise
+open ProximityGap.Frontier.ConvergenceHub
+open ProximityGap.Frontier.NearRamanujanFromSaddle
+open ProximityGap.Frontier.NearRamanujanFromDCSaddle
+open ArkLib.ProximityGap.GaussPeriodSpectralFrame
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
@@ -171,6 +176,40 @@ theorem dcMGF_le_of_dcWick_except_finite_aggNonpos {ψ : AddChar F ℂ} (hψ : �
   have := dcMGF_le_of_dcWick_except_finite hψ G y s h
   linarith
 
+/-- **End-to-end (finite-exception): `DCWickBound` off a finite `s` with non-positive aggregate
+excess at the saddle implies `NearRamanujanSqrtLog`.**  Composes the finite-exception producer
+`dcMGF_le_of_dcWick_except_finite_aggNonpos` (delivering the clean `hDCMGF`) with the universal DC
+saddle weld `nearRamanujan_of_dcSaddle`.  The deductively-weaker twin of
+`DCWickMGFFromTermwise.nearRamanujan_of_dcWick`: it does **not** need `DCWickBound` at the violating
+depths, only that their aggregate excess is absorbed within the finite `s`. -/
+theorem nearRamanujan_of_dcWick_except_finite {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    {y : ℝ} (hy : 0 < y) (hn : 0 < (G.card : ℝ))
+    (hL : 0 < (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card))
+    (hsaddle : y ^ 2 = 2 * Real.log (Fintype.card F : ℝ) / (G.card : ℝ))
+    (s : Finset ℕ) (h : ∀ r ∉ s, DCWickBound G r)
+    (hagg : ∑ r ∈ s, (dcTerm G y r - gaussTerm G y r) ≤ 0) :
+    NearRamanujanSqrtLog ψ G (saddleConst F G y) := by
+  refine nearRamanujan_of_dcSaddle hψ G hy hn hL hsaddle ?_
+  have := dcMGF_le_of_dcWick_except_finite_aggNonpos hψ G y s h hagg
+  simpa [dcTerm] using this
+
+/-- **End-to-end (finite-exception): the δ*-pinning prize floor.**  The full satisfiable spine on
+the finite-exception hypothesis: `DCWickBound` off a finite `s` with non-positive aggregate excess
+at the saddle implies `PrizeFloor`, through `C₀ = saddleConst F G y*`.  Deductively-weaker twin of
+`DCWickMGFFromTermwise.prizeFloor_of_dcWick`.  Still NOT a CORE closure: the open prize is whether a
+thin `μ_n` realizes such a finite-exception `DCWickBound` configuration at depth `r ≈ log q`. -/
+theorem prizeFloor_of_dcWick_except_finite {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    {y : ℝ} (hy : 0 < y) (hn : 0 < (G.card : ℝ)) (hq1 : (1 : ℝ) ≤ Fintype.card F)
+    (hq : (G.card : ℝ) ≤ Fintype.card F)
+    (hL : 0 < (G.card : ℝ) * Real.log ((Fintype.card F : ℝ) / G.card))
+    (hsaddle : y ^ 2 = 2 * Real.log (Fintype.card F : ℝ) / (G.card : ℝ))
+    (s : Finset ℕ) (h : ∀ r ∉ s, DCWickBound G r)
+    (hagg : ∑ r ∈ s, (dcTerm G y r - gaussTerm G y r) ≤ 0) :
+    PrizeFloor ψ G (saddleConst F G y) := by
+  refine prizeFloor_of_dcSaddle hψ G hy hn hq1 hq hL hsaddle ?_
+  have := dcMGF_le_of_dcWick_except_finite_aggNonpos hψ G y s h hagg
+  simpa [dcTerm] using this
+
 end ProximityGap.Frontier.DCWickMGFFiniteException
 
 /-! ## Axiom audit -/
@@ -180,3 +219,7 @@ end ProximityGap.Frontier.DCWickMGFFiniteException
   ProximityGap.Frontier.DCWickMGFFiniteException.dcMGF_le_of_termwise_dcWick_via_finite
 #print axioms
   ProximityGap.Frontier.DCWickMGFFiniteException.dcMGF_le_of_dcWick_except_finite_aggNonpos
+#print axioms
+  ProximityGap.Frontier.DCWickMGFFiniteException.nearRamanujan_of_dcWick_except_finite
+#print axioms
+  ProximityGap.Frontier.DCWickMGFFiniteException.prizeFloor_of_dcWick_except_finite
