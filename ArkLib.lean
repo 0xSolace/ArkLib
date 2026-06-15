@@ -975,6 +975,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenWitnessReverseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ExplainableAmalgamation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FloorAsymptoticRadius
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountSigmaUniform
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ClassInjectiveCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountTransversal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericSuperDiagonalLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DilationOrbitReduction
