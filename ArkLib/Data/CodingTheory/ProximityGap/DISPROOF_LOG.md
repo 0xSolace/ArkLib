@@ -11995,3 +11995,72 @@ open-avenue inventory (Stickelberger/Hasse-Davenport "orthogonal" to the sup-nor
 
 **Net:** C28 is NOT a closure. The "exact evaluation" is genuine but lands in the WRONG metric (p-adic),
 leaving the archimedean sup-of-DFT — the BGK joint-phase wall — fully open. Falls on the secretly-open horn.
+
+## 2026-06-15 — CONJECTURE C30 "Sawin–Shusterman Large Sieve for Gauss Sums (orthogonality over the family)" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_c30_sawin_shusterman_largesieve.py)
+
+Conjecture C30 (issue #444, algebraic-geometry, feasibility 1): apply the large sieve /
+orthogonality over the Gauss-sum family to bound the second moment, and claim an *amplified*
+version reaches the MAX `max_c|η_c|` PAST Johnson rather than just the `√n` average. REDUCES-TO:
+Sawin–Shusterman large sieve for Gauss sums (family orthogonality) + Parseval + in-tree exact
+large-sieve identity.
+
+Verdict: **secretly-open** (with a reduces-to-johnson sub-finding). Both readings of "large sieve"
+fall on a horn; the amplification adds NOTHING over the diagonal moment it is built from. Probe
+`scripts/probes/probe_c30_sawin_shusterman_largesieve.py`, commit
+`41fdfecce98c858843fab46311c8b969ae16d577`. All rows measured prize-faithfully: PROPER `μ_n`
+(`n = 2^μ`, `z^{n/2} = −1`), `p` PRIME, `n | p−1`, `p ≫ n³`, NEVER `n = p−1`.
+
+**This object is already characterized in-tree** (this is the third pass over it):
+`Frontier/LargeSieveParsevalCollapse.lean` (axiom-clean: `largeSieve_eq_two_parseval`,
+`parseval_le_largeSieve`, `largeSieve_sup_ge_parseval_sup`) and
+`docs/kb/deltastar-407-large-sieve-dimension-obstruction-2026-06-13.md`. C30 does not escape
+either finding.
+
+**Horn 1 — the MULTIPLICATIVE Sawin–Shusterman family is OVER-DIMENSIONED in the prize regime
+(the named machinery does not even fire).** The literal "Gauss-sum family" is `{g(χ_s)}_{s∈Z/f}`,
+`f = (p−1)/n`. A large sieve over an `N`-character family has discrepancy `~ N/√q`; at depth `r`
+the rank is `d_r ~ f^r/r!`, so the discrepancy is `~ f^r/(r!√q)`, effective (`<1`) **iff** `f ≤ √q
+⟺ (p−1)/n ≤ √p ⟺ n ≥ √p`. The prize regime is `n ≪ √p` (β ≥ 4 ⟹ `n = p^{1/4} ≪ p^{1/2}`).
+Measured over-dimensioning factor `f/√p = √p/n` (probe):
+
+| n | β | f=(p−1)/n | √p | f/√p | n≥√p? | Sawin–Shusterman sieve |
+|---|---|---|---|---|---|---|
+| 8 | 4.00 | 516 | 64.3 | 8.03 | no | VACUOUS |
+| 16 | 4.00 | 4096 | 256.0 | 16.0 | no | VACUOUS |
+| 2³⁰ | 4.0 | ~1.24e27 | ~1.15e18 | **~1.07e9** | no | VACUOUS |
+| 2³⁰ | 5.0 | ~1.33e36 | ~3.78e22 | **~3.52e13** | no | VACUOUS |
+
+The family-orthogonality machine is structurally vacuous by a factor `√p/n` (`= n` at β=4) exactly
+in the prize regime. This is the geometric mirror of the additive-combinatorial wall (BGK/Shkredov
+want `n` LARGE; Deligne/large-sieve wants `n ≥ √p`; the prize `n ≪ √p` defeats both).
+
+**Horn 2 — the AMPLIFIED additive large sieve is SATURATED and its sup IS the open energy moment.**
+The `2r`-th moment in the frequency variable is a pure additive count: `Σ_b|η_b|^{2r} = q·E_r(μ_n)`
+(verified to machine precision at every row, `|q·E_r − Σ|η|^{2r}| ≤ 1e−7` for the elaborated rows).
+The additive large-sieve RHS `(M+δ⁻¹)·‖f‖₂² = (q+q)·E_r = 2q·E_r` is **exactly twice** the Parseval
+value — the sieve strictly LOSES a factor 2 (in-tree `largeSieve_eq_two_parseval`). So the amplified
+sup `(q·E_r)^{1/2r}` is just the Parseval/moment sup, and "reaching the MAX past Johnson" is exactly
+the question "is `E_r ≤ (2r−1)‼·n^r` to depth `r ≈ ln q`?" — the OPEN BGK/energy moment (face 3 of
+the open core), NOT a theorem one may invoke. Measured sup descent (n=16, β=4, `M/√n` must reach
+the Johnson-passing floor `√(2 log(p/n)) ≈ 4.08`):
+
+| r | E_r/Wick | sup via Parseval /√n | sup via LargeSieve /√n | if-Wick-granted /√n | past Johnson? |
+|---|---|---|---|---|---|
+| 1 | 1.000 | 256.0 | 362.0 | 256.0 | no |
+| 3 | 0.823 | 9.65 | 10.84 | 9.97 | no |
+| 5 | 0.522 | 5.64 | 6.04 | 6.01 | no |
+| 8 | 0.173 | 4.44 | 4.64 | 4.96 | no |
+
+Even GRANTING the open Wick bound the sup is still above Johnson at every feasible `r`; the descent
+past Johnson lives at `r ≈ ln q ≈ 90`, which is precisely the char-`p` energy transfer that is OPEN
+for the prize `n = 2³⁰` (norm bound `q > (2r)^{n/2}` covers only `n ≲ 40`). The large sieve adds
+nothing past the diagonal — `largeSieve_sup_ge_parseval_sup` proves it is always the WRONG side of
+the exact moment.
+
+**Net:** C30 names a real machine (Sawin–Shusterman family orthogonality) but it is the same large
+sieve already collapsed in-tree. In the multiplicative reading it is dimension-obstructed (vacuous by
+`√p/n ~ 10⁹` in-regime); in the additive reading it is saturated to the exact moment and the
+"amplified sup reaching the MAX past Johnson" IS the open BGK energy bound `E_r ≤ (2r−1)‼n^r` at
+`r ≈ ln q`. No new non-BGK lever; the open core is not discharged. Consistent with the
+route-elimination meta-theorem: every closed/orthogonality/second-moment object caps at Johnson, and
+passing it requires the open p-dependent moment.
