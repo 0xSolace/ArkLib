@@ -785,3 +785,24 @@ there) but fails UNIVERSALLY at n=32/prize at height 1. The bounded-cyclotomic-i
 required hypothesis is already ∀-field-FALSE by n=32. Combined with 9a0868c62 (no thin-vs-thick
 discrimination), the BHBI lever cannot prove CORE: its hypothesis is false where needed and carries no
 thinness discriminator. Mapped wall, not a closure. n=16 exact-brute, n=32 MITM + exact-int verified.
+
+### BHBI-failure ⟷ (BIND)-failure are the SAME object at the half-basis (bridge, 2026-06-15)
+
+Unifies the realizable-BHBI failure (above) with the §5.0 (BIND) non-antipodal-vanishing entry. A
+half-basis height-1 relation Σ_{g_j=+1} ω^j − Σ_{g_j=−1} ω^j ≡ 0 (ω primitive 2^m-th root, ω^N=−1,
+N=2^{m-1}) lifts to a FULL-index (Z/2N = Z/n) subset-sum vanisher via the antipode ω^{j+N}=−ω^j:
+    S = {j : g_j=+1} ∪ {j+N : g_j=−1} ⊆ Z/n,   then  Σ_{i∈S} ω^i ≡ 0 (p)  — the BIND object.
+
+PROBE (probe_407_bhbi_bind_bridge.py): for ALL 8/8 n=32 prize-band primes (p≈1.0486e6..1.0496e6,
+β=4.00), the height-1 BHBI witness lifts to a NON-ANTIPODAL S with Σ_{i∈S} ω^i ≡ 0 (directly verified
+in F_p). 8/8 non-antipodal, 0 antipodal. So the realizable-BHBI failure IS exactly a (BIND)-gate failure
+on the half-basis face — they are not two independent walls but ONE object.
+
+SCOPE/CONSISTENCY (rule 6, NO refutation): these primes are p~2^20, NOT the prize budget p~2^128. The
+house hypothesis (#S)^φ(32)<p is FALSE here ((#S)^16 ≈ 2^51..59 ≫ 2^20 for #S≈9..13) — exactly the
+regime where the sibling's BIND entry already predicts non-antipodal vanishing occurs. So this CONFIRMS
++ unifies (does not extend the refutation): BHBI-failure and BIND-failure coincide precisely when the
+house bound fails. The prize is NOT refuted (small primes). What's mapped: the bounded-cyclotomic-
+independence lever and the (BIND)/house-gate lever are the SAME wall viewed through two formalizations;
+closing either at the prize budget needs the thinness-essential B_∞←B_{log n} Sidon bootstrap, not a
+sharper bound on either equivalent face. No CORE closure.
