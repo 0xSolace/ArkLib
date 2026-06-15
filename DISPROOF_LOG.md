@@ -2960,3 +2960,37 @@ VERDICT (rule-3 mapped, rule-6 honest -- NOT a closure/refutation):
     content is the deep-rung connected/cumulant Wick bound itself, nothing in its surrounding passages.
   - Does NOT close/refute CORE. Maps the domination step as a non-lever. Pure-Python exact (FFT-free real
     period sums), no Lean => axiom-clean trivially. probe_407_singlefreq_domination_slack.py.
+
+================================================================================
+2026-06-15 The SHALLOW e2=0 over-det resonance K(n,4)=n/4-1 is THICKNESS-INVARIANT
+(rule-3 FAIL): subgroup-essential but NOT thin-essential (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the §6 honest-open-question combinatorial face -- the e2=0 over-det census R1 object. Follow-up to
+(a) the EXACT shallow closed form K(n,w=4)=n/4-1, #bad=n^2/4-n (push e2_K_w4_n64), and (b) the width-sweep
+finding that the w=4 resonance is the SOLE budget-overflow width across the whole deep floor window, which
+left OPEN: "does the w=4 resonance (a) realize a delta*-window-edge bad config or (b) get dominated/excluded?"
+417015191 proved the census thin-essential via RANDOM-SET vanishing; the THICK 2-POWER SUBGROUP control at
+the shallow closed-form width was NEVER run. probe_407_shallow_resonance_thickness_rule3.py.
+
+METHOD: same 2-power group mu_n (antipodal x->-x intact in ALL cases), vary ONLY beta=log_n(q). Exact,
+2 prize-shaped primes per (n,beta), proper subgroup, never n=q-1. THICK prize-FALSE beta=2.3,3.0 vs THIN
+prize beta=4.0,5.0.
+
+RESULT 1 (exact, p-independent): K(n,w=4) is IDENTICAL across thick AND thin:
+  n=16: K=3=n/4-1 at beta=2.3,3.0,4.0,5.0 (8/8 primes, #bad=48)
+  n=32: K=7=n/4-1 at beta=2.3,3.0,4.0,5.0 (8/8 primes, #bad=224)
+  => K(n,4)=n/4-1 is BETA-INVARIANT (thickness-independent + p-independent).
+RESULT 2 (rule-6 disambiguation): negation-closed RANDOM sets (size n, x->-x closed, NOT a subgroup) give
+  #bad=0 (4/4 draws at n=16 AND n=32) => the n/4-1 VALUE needs the cyclic 2-power SUBGROUP, not mere
+  negation-closure. Sharpens 417015191 (random vanishes) to: neg-random ALSO vanishes at this width.
+
+VERDICT (rule-3 constraint lemma, NO overclaim): the shallow e2=0 resonance K(n,4)=n/4-1 is SUBGROUP-
+ESSENTIAL (random + neg-random both give 0) but THICKNESS-INVARIANT (same value in the prize-FALSE thick
+beta=2.3-3.0 window as in the prize thin beta=4-5 window). CORE is FALSE in the thick window (rule-3), so a
+thickness-invariant quantity CANNOT be the thin-essential mechanism. The w=4 resonance, though IN-WINDOW
+(delta=1-4/n below cap, k-independent per probe_407_e2_census_general_k_resonance) and realizing e2=0 bad
+configs (NOT excluded above cap), carries NO thin-vs-thick signal => NOT a thin-essential prize lever; a
+generic 2-power-subgroup cyclotomic-antipodal count. This RESOLVES the sibling's open R1 w=4 sub-question
+in the REFUTATION direction (in-window but thin-blind => Johnson-region/thickness-generic, consistent with
+wf-D2 delta*->Johnson and #bad=n^2/4-n super-budget). CORE not closed, not faked. Pure-Python exact, no
+Lean => axiom-clean trivially. probe_407_shallow_resonance_thickness_rule3.py.
