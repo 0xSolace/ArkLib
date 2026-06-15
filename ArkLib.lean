@@ -974,6 +974,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PeriodOrbitQuotientReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarMultDivision
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeFloorFromCrossStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
