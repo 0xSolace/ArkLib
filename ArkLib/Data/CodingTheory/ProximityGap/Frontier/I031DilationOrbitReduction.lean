@@ -156,6 +156,56 @@ theorem orbit_norm_const_card_n {ψ : AddChar F ℂ} {n : ℕ} {ζ : F}
           = ‖eta ψ (nthRootsFinset n (1 : F)) b‖ :=
   ⟨coset_card_eq_n hζprim hb, fun g hg => eta_norm_const_on_coset hg b⟩
 
+/-! ### Freeness + disjointness: the orbits genuinely PARTITION `Fp*` into equal size-`n` blocks
+
+The orbit reduction is only a clean `(q-1)/n` reduction if the `μ_n`-orbits actually partition the
+nonzero frequencies into blocks of size exactly `n` (no smaller/degenerate orbits). These pin that:
+the dilation action is **free** on `Fp*` (`dilation_free`), and two cosets are equal-or-disjoint
+(`coset_disjoint_or_eq`), with equality iff the ratio lies in `μ_n`. -/
+
+/-- **The `μ_n`-dilation action is free on `Fp*`.** A nonzero frequency `b` has trivial stabilizer:
+`ζ · b = b` forces `ζ = 1`. Hence every orbit has exactly `|μ_n| = n` elements (no fixed points
+shrink an orbit), so the `(q-1)→(q-1)/n` reduction is exact with no degenerate orbits. -/
+theorem dilation_free {ζ b : F} (hb : b ≠ 0) (h : ζ * b = b) : ζ = 1 := by
+  have h1 : ζ * b = 1 * b := by rw [one_mul]; exact h
+  exact mul_right_cancel₀ hb h1
+
+/-- **Cosets are equal or disjoint** (the partition property). For `b₁, b₂ ≠ 0`, the cosets
+`b₁•μ_n` and `b₂•μ_n` are equal when `b₂/b₁ ∈ μ_n`, and otherwise disjoint. Here we land the
+`Disjoint` direction: if `b₂ * b₁⁻¹ ∉ μ_n` then the cosets share no frequency — so the `(q-1)/n`
+orbits tile `Fp*` without overlap. -/
+theorem coset_disjoint_of_ratio_notMem {n : ℕ} {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0)
+    (hn : 0 < n)
+    (hratio : b₂ * b₁⁻¹ ∉ nthRootsFinset n (1 : F)) :
+    Disjoint (dilate b₁ (nthRootsFinset n (1 : F))) (dilate b₂ (nthRootsFinset n (1 : F))) := by
+  rw [Finset.disjoint_left]
+  intro y hy1 hy2
+  rw [dilate, Finset.mem_image] at hy1 hy2
+  obtain ⟨x₁, hx₁, rfl⟩ := hy1
+  obtain ⟨x₂, hx₂, hxe⟩ := hy2
+  -- `b₁ * x₁ = b₂ * x₂` ⇒ `b₂ * b₁⁻¹ = x₁ * x₂⁻¹ ∈ μ_n` (closure + inverse), contradicting `hratio`.
+  have hx₂ne : x₂ ≠ 0 := ne_zero_of_mem_nthRootsFinset one_ne_zero hx₂
+  have hinv : x₂⁻¹ ∈ nthRootsFinset n (1 : F) := by
+    rw [mem_nthRootsFinset hn] at hx₂ ⊢
+    rw [inv_pow, hx₂, inv_one]
+  have hmem : x₁ * x₂⁻¹ ∈ nthRootsFinset n (1 : F) := by
+    simpa using mul_mem_nthRootsFinset hx₁ hinv
+  -- `hxe : b₂ * x₂ = b₁ * x₁`  ⇒  `b₂ * b₁⁻¹ = x₁ * x₂⁻¹`
+  have hkey : b₂ * b₁⁻¹ = x₁ * x₂⁻¹ := by
+    have hb₁i : b₁ * b₁⁻¹ = 1 := mul_inv_cancel₀ hb₁
+    have hx₂i : x₂ * x₂⁻¹ = 1 := mul_inv_cancel₀ hx₂ne
+    have : (b₂ * b₁⁻¹) * (b₁ * x₂) = (x₁ * x₂⁻¹) * (b₁ * x₂) := by
+      calc (b₂ * b₁⁻¹) * (b₁ * x₂)
+            = (b₁ * b₁⁻¹) * (b₂ * x₂) := by ring
+        _ = b₂ * x₂ := by rw [hb₁i, one_mul]
+        _ = b₁ * x₁ := hxe
+        _ = (x₂ * x₂⁻¹) * (b₁ * x₁) := by rw [hx₂i, one_mul]
+        _ = (x₁ * x₂⁻¹) * (b₁ * x₂) := by ring
+    have hbx₂ : b₁ * x₂ ≠ 0 := mul_ne_zero hb₁ hx₂ne
+    exact mul_right_cancel₀ hbx₂ this
+  rw [hkey] at hratio
+  exact hratio hmem
+
 end ArkLib.ProximityGap.I031DilationOrbitReduction
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only.
@@ -167,3 +217,5 @@ end ArkLib.ProximityGap.I031DilationOrbitReduction
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.coset_card_eq
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.coset_card_eq_n
 #print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.orbit_norm_const_card_n
+#print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.dilation_free
+#print axioms ArkLib.ProximityGap.I031DilationOrbitReduction.coset_disjoint_of_ratio_notMem
