@@ -169,9 +169,10 @@ theorem badSet_closed_under_reparam {V : Type*} [AddCommGroup V] [Module F V]
 /-- **The `n`-uniform worst-direction Prop (named open core for the binding incidence).**
 
 The structural facts above show: (i) only the monomial direction has the line-preserving dilation
-eigenvector symmetry (`orbit_closed_dir_forces_monomial`), so only its bad-γ set is `⟨μ^{b−a}⟩`-orbit
-aligned (`badSet_closed_under_reparam`); (ii) every other far direction is a subsingleton *per
-witness* and pays an extra over-determination condition (`badSet_subsingleton_far`, wf-NH).  What
+eigenvector symmetry (`orbit_closed_dir_forces_monomial`), so only its bad-γ set is
+`⟨μ^{b−a}⟩`-orbit aligned (`badSet_closed_under_reparam`); (ii) every other far direction is a
+subsingleton *per witness* and pays an extra over-determination condition
+(`badSet_subsingleton_far`, wf-NH).  What
 remains *quantitatively* — verified exhaustively at `n=16,k=4` (`I_mono=89` is the strict max; the
 only 2-term tie is the degenerate `1 + X^k` whose `X^0` term is sub-degree-`k`) but not yet proven
 `n`-uniformly — is:
