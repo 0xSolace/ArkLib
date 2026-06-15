@@ -13146,3 +13146,59 @@ p=331777, PROPER mu_n, p>>n^3): s=10 maxI=25 (>budget=24, bad), s=11 maxI=24 (=b
 c* growth is REAL, not a parity artifact. Full rho=1/4 axis: c*=3,4,3,4,5,5 @ n=8,12,16,20,24,32.
 Sub-linear (c*/n->0), log-like but NO clean closed form (c*(16)=3<log2 16=4; c*(20)=4<ceil log2 20=5).
 Lean updated: cStar_n24_breaks_parity added (axiom-clean).
+
+## 2026-06-15 — IDEA [I025] "Levenshtein weighted higher-moment escape from the Welch=√n trap" — NO-GAIN (refuted as a route to an UPPER bound on M(μ_n))
+
+IDEA: M(μ_n) is the max cross-correlation of the Sidelnikov family S_b(t)=e_p(bζ^t). Welch
+(unweighted k=1) gives only √n (the Parseval floor). Levenshtein 1999 / Boztaş introduce a free
+weight w and higher even moments; the proposed NEW LEMMA: ∃ probability weight w (a positive
+combination of additive characters OFF μ_n) and C with
+    M^{2k} ≤ (1/w_min)·[ k-th weighted moment − Welch floor ],
+the optimal w over-weighting the worst frequencies and making the bracket O((n log m)^k) — the
+L^∞-from-moments step the conservation law forbids unweighted.
+
+PROBES (prize-faithful: μ_n = 2-power subgroup, n|p-1, p PRIME, p≫n³ (β≈3.0), proper m=(p-1)/n>1,
+NEVER n=p-1), n∈{8,16,32}, scripts/probes/probe_levenshtein_weighted_moment_I025.py and
+probe_levenshtein_kernel_I025b.py:
+
+(Q1 — DIRECTION, the fatal one.) Welch/Levenshtein/Delsarte-LP bounds are LOWER bounds on the
+max-coherence of a sequence FAMILY given its size (equivalently upper bounds on packing/code size),
+proved by LP duality on the Gram measure against a positive-Gegenbauer weight. The probe confirms the
+Welch value is a genuine LOWER bound: family-Welch |η| = 2.68 / 3.88 / 5.57 ≤ true M = 6.86 / 10.94 /
+17.25 at n=8/16/32. The prize needs an UPPER bound on M for the FIXED family μ_n. These are OPPOSITE
+directions. The weighted higher moment (a degree-k positive Gegenbauer combination) sharpens the
+LOWER/packing bound by a moment-depth factor (the literature result that is real) but provides no
+upper bound on the coherence of a given family.
+
+(Q2/Q3 — the over-weight, granting the only valid upper-bound form.) The ONLY valid weighted-moment
+upper bound is the trivial Markov inequality: for ANY nonneg weight ν_b ≥ 0 with argmax b*,
+    ν_{b*}·M^{2k} ≤ Σ_b ν_b|η_b|^{2k} =: WM_k(ν),  so  M^{2k} ≤ WM_k(ν)/ν_{b*}.
+This beats the unweighted power-mean only if ν over-weights b*. The probe measures the best bound from
+weights the lemma ACTUALLY permits — a positive-definite (Bochner) function of the coset index, i.e. a
+positive additive-character combination off μ_n (tested as clipped shifted Fejér kernels on ℤ/m,
+scanning shifts but NOT allowed to lock onto argmax). RESULT: the best legitimate over-weight upper
+bound is ALWAYS ≥ M, converging to M strictly FROM ABOVE as k→∞:
+  n=8 : k=1→9.17  k=2→7.50  k=4→6.97  k=8→6.87  (M=6.86)   [ratio /M: 1.34→1.09→1.02→1.001]
+  n=16: k=1→538   k=2→44.4  k=4→17.0  k=8→12.2  (M=10.94)  [ratio /M: 49→4.06→1.55→1.11]
+  n=32: k=1→168   k=2→33.6  k=4→20.1  k=8→17.8  (M=17.25)  [ratio /M: 9.8→1.95→1.16→1.03]
+The over-weight reaches M only once it has effectively concentrated ALL mass on the worst coset (k→∞),
+which (a) requires KNOWING the worst frequency (the whole open problem) and (b) even in that limit
+recovers M, never √n. The unweighted power-mean (E|η|^{2k})^{1/2k} crawls toward M from BELOW (matching
+the in-tree probe_407_moment_order_ceiling.py); the weighted version crawls from ABOVE. Neither
+crosses √n·polylog from the correct side without locking onto argmax.
+
+WHY (the crisp reason, restating the conservation law): a weight ν you can write down without peeking
+at argmax has ν_{b*} ≤ 1/|supp ν|, so WM_k(ν)/ν_{b*} ≥ |supp ν|·mean_supp(|η|^{2k}) ≥ M^{2k} only
+captures the sup when ν is already a point mass at b*. The "over-weight the worst frequency" step IS
+the L^∞-from-moments step, and the free weight does not break the phase-blindness — it relocates it
+into the requirement "ν_{b*} large", which is exactly argmax knowledge. The weighted moment is still a
+class-4 average (the RISK flagged in the idea: "weighted moments may still be class-4 averages" — they
+are). This is the same Parseval/Welch=√n trap, not an escape from it.
+
+VERDICT: NO-GAIN. Levenshtein's weighted moment is a real and superior LOWER bound for sequence-design
+packing (the literature claim transfers and is correct in that direction), but it is structurally the
+WRONG DIRECTION for an upper bound on M(μ_n), and the only valid upper-bound reading (Markov against a
+permitted positive-definite weight) cannot beat exponent 1−o(1) without encoding argmax. Consistent
+with the campaign's exhausted-moment finding (moments cannot pin a sup). CORE stays OPEN. No Lean brick
+(no new provable upper-bound statement emerged; a Lean formalization would only restate the trivial
+Markov inequality, which is already implicit in the energy substrate).
