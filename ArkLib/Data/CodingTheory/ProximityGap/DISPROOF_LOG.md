@@ -13273,3 +13273,41 @@ prime ~ n^4, p ≫ n^3, never n=p−1; μ=2,3,4):
 So `μ·|Z| ≤ deg_q` is false; only the trivial `|Z| ≤ deg` holds. Confirms the existing W3 wall
 (confluent Stepanov stalls) at its structural root: a multiplicative/orbit derivation cannot
 manufacture multiplicity on its OWN orbit. No gain toward M(μ_n) ≤ C√(n log(p/n)).
+
+---
+
+## I031 group-invariant Dudley chaining — REFINES the prior A2 "reduces-to-wall" (2026-06-15)
+
+**Verdict: promising-partial.** The prior A2 chaining attack (route 54, verdict
+"reduces-to-wall": chaining metric entropy = Θ(log q), dilation does NOT collapse it)
+chained over the FULL index F_p* under the increment metric d. That was the wrong index set.
+
+**The fact it missed (verified, `probe_i031_orbit_invariance.py`, machine precision):**
+`|X_b| = |Σ_{x∈μ_n} e_p(bx)|` is EXACTLY invariant under the dilation `b ↦ ζb` (ζ∈μ_n).
+So `M = max_{b≠0}|X_b|` is a sup over only `m = (p-1)/n` ORBIT representatives, and chaining
+over F_p* double-counts each value n times. The honest chaining is over the QUOTIENT F_p*/μ_n.
+
+**What the quotient gives (`probe_i031_fullset_vs_quotient.py`):** FULL-set `maxlogN/log p = 1.000`
+(the wall, reproduces A2) vs QUOTIENT `mxlNq/log p ≈ 0.58–0.66` (≈ `log m / log p ≈ 0.71`).
+The entropy collapses from `log p` to `log(p/n)` — exactly the I031 "process isometry collapses
+cosets to n orbits." Dudley `γ_2` on the quotient scales as `√(log m)`:
+`slope log(g2q) vs log(log m) = 0.41 ≤ 1/2` (`probe_i031_dudley_exponent.py`, fixed n) — the
+EXPONENT 1/2 in `log(p/n)` is recovered, NOT the BGK 1−o(1).
+
+**The remaining gap = THE RISK in I031 (`probe_i031_det_vs_random_transfer.py`):** the
+random sub-Gaussian model with the Gauss-period covariance provably obeys the floor
+`E sup_b|G_b| ≤ C√(n log m)` (Krahmer–Mendelson–Rauhut / Rudelson–Vershynin RIP; measured
+`rand/floor = 0.74–0.95`). The DETERMINISTIC `M` is a BOUNDED factor `M/rand ≈ 1.3–1.4`
+(stable across n=4..32, not blowing up) above it. So I031 reduces the open content from
+"BGK exponent gap (1 vs 1/2)" down to "a bounded-constant deterministic→random transfer for
+THIS specific cyclotomic frame." No current theorem supplies that transfer (Maurey
+derandomization yields a good SUBSET of rows, not equality of the deterministic sup with the
+random expectation). The constant `C ≈ M/floor` still creeps `1.07→1.36` over n=4..64
+(`probe_i031_quotient_nscaling.py`, `mxlNq/log m → 1`), so the constant is not pinned.
+
+**Net:** NOT a closure, but a GENUINE new handle that the prior A2 verdict wrongly closed off:
+the orbit-quotient chaining recovers the floor EXPONENT 1/2 (the exact target, beating 1−o(1))
+for the RANDOMIZED frame, isolating the open piece to a bounded deterministic-vs-random
+constant transfer — a much smaller and more concrete target than the raw BGK sup bound.
+Probes: `scripts/probes/probe_i031_*.py` (6 files, all proper regime p prime, n=2^μ, n|p−1,
+p≫n³, proper 2-power subgroup, never n=p−1).
