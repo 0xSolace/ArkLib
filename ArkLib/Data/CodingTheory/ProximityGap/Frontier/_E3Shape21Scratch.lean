@@ -149,6 +149,156 @@ theorem fiber_card (P : Finset (Fin 6)) (x y : F)
         have h1 : i ∉ pr.1 := fun hh => (hAyP i h) (hAxP hh)
         rw [if_neg h1, if_neg (hAyP i h), if_pos h]
 
+/-- `#{balanced ∧ valued in {x,-x,y,-y}} = 400` (4 distinct values). Via
+`card_eq_sum_card_fiberwise` over the x-position map: each fiber over `P` equals `fiber_card P`'s
+set when `|P|` is even (balance forces even x-positions) and is empty for odd `|P|`; the resulting
+even-guarded binomial sum is `400` (`decide`). -/
+theorem balanced_valued_count (x y : F)
+    (hx : x ≠ -x) (hy : y ≠ -y) (hxy : x ≠ y) (hxy' : x ≠ -y) (hmxy : -x ≠ y) (hmxy' : -x ≠ -y) :
+    ((Finset.univ.filter (fun c : Fin 6 → F =>
+        (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+        ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+        ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card))).card
+      = 400 := by
+  classical
+  rw [Finset.card_eq_sum_card_fiberwise
+      (f := fun c => Finset.univ.filter (fun i => c i = x ∨ c i = -x))
+      (t := (Finset.univ : Finset (Fin 6)).powerset)
+      (fun c _ => Finset.mem_powerset.mpr (Finset.filter_subset _ _))]
+  rw [show (400 : ℕ) = ∑ P ∈ (Finset.univ : Finset (Fin 6)).powerset,
+        (if Even P.card then Nat.choose P.card (P.card / 2) * Nat.choose Pᶜ.card (Pᶜ.card / 2) else 0)
+        by decide]
+  refine Finset.sum_congr rfl (fun P _ => ?_)
+  -- key: for a tuple valued in {x,-x,y,-y}, the x-position set is exactly {i : c i = x ∨ c i = -x},
+  -- and #x + #(-x) over it = its card.
+  by_cases hev : Even P.card
+  · rw [if_pos hev]
+    obtain ⟨kP, hkP⟩ := hev
+    have hPc6 : Pᶜ.card = 6 - P.card := by rw [Finset.card_compl, Fintype.card_fin]
+    rw [show ((Finset.univ.filter (fun c : Fin 6 → F =>
+            (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+            ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+            ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card)).filter
+          (fun c => Finset.univ.filter (fun i => c i = x ∨ c i = -x) = P))
+        = (Finset.univ.filter (fun c : Fin 6 → F =>
+            (∀ i, i ∈ P → (c i = x ∨ c i = -x)) ∧ (∀ i, i ∉ P → (c i = y ∨ c i = -y))
+            ∧ (Finset.univ.filter (fun i => c i = x)).card = P.card / 2
+            ∧ (Finset.univ.filter (fun i => c i = y)).card = Pᶜ.card / 2)) from ?_]
+    · exact fiber_card P x y hx hy hxy hxy' hmxy hmxy'
+    · ext c
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+      constructor
+      · rintro ⟨⟨hval, hbx, hby⟩, hpos⟩
+        -- x-positions = P
+        have hxpos : ∀ i, (c i = x ∨ c i = -x) ↔ i ∈ P := by
+          intro i; rw [← hpos]; simp [Finset.mem_filter]
+        -- on P, c is ±x ; off P, c is ±y
+        have hP : ∀ i, i ∈ P → (c i = x ∨ c i = -x) := fun i hi => (hxpos i).mpr hi
+        have hPc : ∀ i, i ∉ P → (c i = y ∨ c i = -y) := by
+          intro i hi
+          rcases hval i with h | h | h | h
+          · exact absurd ((hxpos i).mp (Or.inl h)) hi
+          · exact absurd ((hxpos i).mp (Or.inr h)) hi
+          · exact Or.inl h
+          · exact Or.inr h
+        -- #x + #(-x) = |P|
+        have hsumP : (Finset.univ.filter (fun i => c i = x)).card
+            + (Finset.univ.filter (fun i => c i = -x)).card = P.card := by
+          rw [← Finset.card_union_of_disjoint, show (Finset.univ.filter (fun i => c i = x))
+                ∪ (Finset.univ.filter (fun i => c i = -x)) = P from ?_]
+          · ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and]
+            rw [← hxpos i]
+          · rw [Finset.disjoint_left]; intro i hi hi'
+            rw [Finset.mem_filter] at hi hi'; exact hx (hi.2 ▸ hi'.2)
+        have hsumPc : (Finset.univ.filter (fun i => c i = y)).card
+            + (Finset.univ.filter (fun i => c i = -y)).card = Pᶜ.card := by
+          rw [← Finset.card_union_of_disjoint, show (Finset.univ.filter (fun i => c i = y))
+                ∪ (Finset.univ.filter (fun i => c i = -y)) = Pᶜ from ?_]
+          · ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_compl]
+            constructor
+            · rintro (h | h)
+              · intro hiP; rcases (hxpos i).mpr hiP with h' | h'
+                · exact hxy (h'.symm.trans h)
+                · exact hmxy (h'.symm.trans h)
+              · intro hiP; rcases (hxpos i).mpr hiP with h' | h'
+                · exact hxy' (h'.symm.trans h)
+                · exact hmxy' (h'.symm.trans h)
+            · intro hiP; rcases hPc i hiP with h | h
+              · exact Or.inl h
+              · exact Or.inr h
+          · rw [Finset.disjoint_left]; intro i hi hi'
+            rw [Finset.mem_filter] at hi hi'; exact hy (hi.2 ▸ hi'.2)
+        refine ⟨hP, hPc, ?_, ?_⟩
+        · omega
+        · omega
+      · rintro ⟨hP, hPc, hxk, hyk⟩
+        have hxpos : Finset.univ.filter (fun i => c i = x ∨ c i = -x) = P := by
+          ext i; simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+          constructor
+          · rintro (h | h)
+            · by_contra hiP; rcases hPc i hiP with h' | h'
+              · exact hxy (h.symm.trans h')
+              · exact hxy' (h.symm.trans h')
+            · by_contra hiP; rcases hPc i hiP with h' | h'
+              · exact hmxy (h.symm.trans h')
+              · exact hmxy' (h.symm.trans h')
+          · exact hP i
+        refine ⟨⟨fun i => ?_, ?_, ?_⟩, hxpos⟩
+        · by_cases hiP : i ∈ P
+          · rcases hP i hiP with h | h
+            · exact Or.inl h
+            · exact Or.inr (Or.inl h)
+          · rcases hPc i hiP with h | h
+            · exact Or.inr (Or.inr (Or.inl h))
+            · exact Or.inr (Or.inr (Or.inr h))
+        · have hsumP : (Finset.univ.filter (fun i => c i = x)).card
+              + (Finset.univ.filter (fun i => c i = -x)).card = P.card := by
+            rw [← Finset.card_union_of_disjoint, show (Finset.univ.filter (fun i => c i = x))
+                  ∪ (Finset.univ.filter (fun i => c i = -x)) = P from ?_]
+            · ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and]
+              rw [← hxpos]; simp [Finset.mem_filter]
+            · rw [Finset.disjoint_left]; intro i hi hi'
+              rw [Finset.mem_filter] at hi hi'; exact hx (hi.2 ▸ hi'.2)
+          omega
+        · have hsumPc : (Finset.univ.filter (fun i => c i = y)).card
+              + (Finset.univ.filter (fun i => c i = -y)).card = Pᶜ.card := by
+            rw [← Finset.card_union_of_disjoint, show (Finset.univ.filter (fun i => c i = y))
+                  ∪ (Finset.univ.filter (fun i => c i = -y)) = Pᶜ from ?_]
+            · ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_compl]
+              constructor
+              · rintro (h | h)
+                · intro hiP; rw [← hxpos] at hiP; simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hiP
+                  rcases hiP with h' | h'
+                  · exact hxy (h'.symm.trans h)
+                  · exact hmxy (h'.symm.trans h)
+                · intro hiP; rw [← hxpos] at hiP; simp only [Finset.mem_filter, Finset.mem_univ, true_and] at hiP
+                  rcases hiP with h' | h'
+                  · exact hxy' (h'.symm.trans h)
+                  · exact hmxy' (h'.symm.trans h)
+              · intro hiP; rcases hPc i hiP with h | h
+                · exact Or.inl h
+                · exact Or.inr h
+            · rw [Finset.disjoint_left]; intro i hi hi'
+              rw [Finset.mem_filter] at hi hi'; exact hy (hi.2 ▸ hi'.2)
+          omega
+  · rw [if_neg hev, Finset.card_eq_zero, Finset.filter_eq_empty_iff]
+    intro c hc
+    rw [Finset.mem_filter] at hc
+    intro hpos
+    -- x-positions = P, but its card = #x + #(-x) = 2·#x is even
+    apply hev
+    rw [← hpos]
+    obtain ⟨_, hbx, _⟩ := hc.2
+    have hsplit : (Finset.univ.filter (fun i => c i = x ∨ c i = -x)).card
+        = (Finset.univ.filter (fun i => c i = x)).card + (Finset.univ.filter (fun i => c i = -x)).card := by
+      rw [← Finset.card_union_of_disjoint]
+      · congr 1; ext i; simp only [Finset.mem_filter, Finset.mem_union, Finset.mem_univ, true_and]
+      · rw [Finset.disjoint_left]; intro i hi hi'
+        rw [Finset.mem_filter] at hi hi'; exact hx (hi.2 ▸ hi'.2)
+    rw [hsplit, hbx]; exact ⟨_, rfl⟩
+
 end E3Shape21Scratch
 
 #print axioms E3Shape21Scratch.fiber_card
+
+#print axioms E3Shape21Scratch.balanced_valued_count
