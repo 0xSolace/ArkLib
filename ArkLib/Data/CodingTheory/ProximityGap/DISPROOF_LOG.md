@@ -63,7 +63,7 @@ archimedean conjugate-spread = BGK sup-norm open core (secretly-open). "Non-anal
 moment wall" is correct but irrelevant: the bound never leaves the L²/Johnson scale — it lands on
 a DIFFERENT wall (the house-vs-norm archimedean gap). NOT refuted-false (the true M(μ_n)≈√(n log p));
 the MECHANISM cannot prove it. Probe: scripts/probes/probe_c27_hassedavenport_telescope.py,
-commit PROBECOMMIT. Same wall as C26/C9/A3 (the house≠norm archimedean gap).
+commit aa781ec66. Same wall as C26/C9/A3 (the house≠norm archimedean gap).
 
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
