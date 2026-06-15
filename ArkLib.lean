@@ -938,6 +938,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusScalarPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyThreeExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFArcoshInversion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
@@ -1018,6 +1019,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeChebotarev
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurSuccessiveMinimaCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StepanovStructuredVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StructuredUncertaintySharpFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
