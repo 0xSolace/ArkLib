@@ -1,5 +1,79 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C13 "Vertical Sato-Tate Sup-Control via Katz Uniform Equidistribution Rate" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_c13_vertical_satotate_torus_dim.py)
+
+Conjecture C13 (issue #444, algebraic-geometry, feasibility 1): claim the effective discrepancy of
+the Gauss-sum-family equidistribution, against trig-polynomial test functions of degree
+`≤ log(p/n)` and RESTRICTED to a `μ`-dimensional dyadic sub-torus, is `D = μ·2^μ/√q ≪ 1`, forcing
+`max_b |η_b| ≤ √(2n log(p/n))` past Johnson. **THE EXPLICIT BET: "the relevant torus has dimension
+`μ` rather than `f`."** REDUCES-TO: Katz Sato–Tate (large monodromy ⟹ equidistribution) + Rojas-León
+Cor 7 (only Hasse–Davenport ⟹ `GL(1)^f`) + Deligne Weil II effective form + in-tree
+`GeneralizedPaleyRamanujan` reduction.
+
+Verdict: **secretly-open** (degenerating to **reduces-to-johnson** on the only effective reading).
+The conjecture's `D ≪ 1` premise — the sole thing that derives the `√(2n log(p/n))` bound — rests
+entirely on the FALSE dimension bet. Probe `scripts/probes/probe_c13_vertical_satotate_torus_dim.py`,
+commit `2690fef9cc80cc17f3be5a314a3aaeeec5e187a4`. All measured prize-faithfully (proper `μ_n`,
+`n=2^μ`, `p` PRIME, `n|p−1`, `p≫n³`, `m=(p−1)/n>1`, NEVER `n=p−1`).
+
+HORN-DIM (the load-bearing horn — the torus dimension is `f=(p−1)/n`, not `μ`). The Rojas-León
+equidistribution monodromy is `GL(1)^f` where `f` = the number of monomial Gauss sums in the family
+= the INDEX `m=(p−1)/n ~ p/n`. The DFT identity `η_c = −1/m + (1/m)Σ_{j=1}^{m−1} τ(χ^j) e(−jc/m)`
+writes the period as a length-`(m−1)` LINEAR FORM in the `f=m−1` INDEPENDENT Gauss sums `τ(χ^j)`, so
+the equidistribution lives on a torus of dimension `f=m−1 ~ p/n`, and the honest discrepancy is
+`f/√q ~ √p/n`. At PRIZE scale (`q=p~n·2^128`, `n<p^{1/4}`):
+
+| μ | n=2^μ | log₂ p | β=log_n p | `D_μ=μ·2^μ/√q` (C13's bet) | `D_f=f/√q` (TRUTH) |
+|---|-------|--------|-----------|----------------------------|---------------------|
+| 16 | 2^16 | 144 | 9.00 | 2.2e−16 | 2^56 |
+| 20 | 2^20 | 148 | 7.40 | 1.1e−15 | 2^54 |
+| 30 | 2^30 | 158 | 5.27 | 5.3e−14 | 2^49 |
+| 35 | 2^35 | 163 | 4.66 | 3.5e−13 | 2^46.5 |
+
+`D_μ ≪ 1` ONLY because of the bet; with the correct `f`, `D_f = 2^46..2^56 ≫ 1` — CATASTROPHICALLY
+VACUOUS. A `μ`-dimensional "sub-torus" is just `μ` of the `m−1` Gauss-sum coordinates; restricting
+the test functions to it simply DROPS the other `m−1−μ` coordinates and proves nothing about the
+full period `η_c`. This is precisely the recorded large-sieve / Katz dimension obstruction
+(`deltastar-407-large-sieve-dimension-obstruction-2026-06-13.md`, `…katz-monodromy-research…`,
+in-tree `MonodromyConductorScaffold.lean` lines 64–73): equidistribution is effective only when
+`f ≤ √q ⟺ n ≳ √p`; the prize has `n ≪ p^{1/4} ≪ √p` by construction.
+
+HORN-EFF (even granting dimension `f`, equidistribution is `q→∞`, not the deterministic max). Katz
+Sato–Tate / Deligne Weil II is a distributional limit as `q→∞` for a FIXED sheaf; it gives the
+TYPICAL (average) value, never the deterministic `max_b` over a thin DESIGNED subgroup at fixed
+large `q`. Measured `M(n)=max_b|η_b|` tracks the random/BGK value `√(n log(p/n))` within O(1) and
+DRIFTS (no fixed effective constant), the random signature — the same effectivity barrier already
+recorded for C14, C29, and the Katz/Rojas-León route:
+
+| n | p | p/n³ | m=(p−1)/n | M(n) | √(2n log(p/n)) | M/that | √(n log(p/n)) | M/that |
+|---|---|------|-----------|------|----------------|--------|---------------|--------|
+| 8  | 11593    | 22.6 | 1449   | 7.676  | 10.792 | 0.711 | 7.631  | 1.006 |
+| 16 | 262193   | 64.0 | 16387  | 14.215 | 17.622 | 0.807 | 12.461 | 1.141 |
+| 32 | 1048609  | 32.0 | 32769  | 22.983 | 25.796 | 0.891 | 18.240 | 1.260 |
+| 64 | 16777601 | 64.0 | 262150 | 38.529 | 39.963 | 0.964 | 28.258 | 1.363 |
+
+`M(n)/√n` GROWS `2.71 → 3.55 → 4.06 → 4.82` (n=8→64), tracking `√(log(p/n))` — the random Gaussian
+large-deviation law, NOT a fixed Sato–Tate semicircle edge (which would force `M/√n → 2`).
+
+HORN-TARGET (moot but decisive on closure). The claimed conclusion `√(2n log(p/n))` IS the open
+BGK/Paley target itself (`M(n)` tracks `√(n log(p/n))` to O(1)). So even if the dimension bet were
+granted, C13 would assert the open core AS its conclusion — it does not reduce to proven math; it
+reduces to the recognized-open thin-subgroup sup-norm bound. Hence **secretly-open**: pinning δ*
+from C13 requires exactly the open BGK sup-norm. The in-tree `GeneralizedPaleyRamanujan`/
+`MonodromyConductorScaffold` it cites are NAMED-OPEN hypotheses (`ConductorGeometricBound`,
+`DeligneEffectiveEquidistribution`), not theorems — so "reduces-to in-tree reduction" is reducing to
+another open residual, not closing anything.
+
+Sibling to the REFUTED C14 (Kloosterman-purity, same object-mismatch/dimension family) and C29
+(Kowalski–Sawin path CLT, same effectivity + growing-dimension horns). The genuine torus dimension
+is `f=(p−1)/n`, fixed forever by Rojas-León Cor 7 — the bet `dim=μ` contradicts the very Corollary
+the conjecture cites.
+
+**Probe committed:** `scripts/probes/probe_c13_vertical_satotate_torus_dim.py`, commit
+`2690fef9cc80cc17f3be5a314a3aaeeec5e187a4`.
+
+---
+
 ## 2026-06-15 — CONJECTURE C48 "Effective Sauermann-Wigderson Polynomial-Method Rank Bound for the Agreement System" REDUCES-TO-JOHNSON (probe_c48_sauermann_wigderson_rank.py)
 
 Conjecture C48 (issue #444, algebraic-geometry, feasibility 2): claim the Sauermann–Wigderson
