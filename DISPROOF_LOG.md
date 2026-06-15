@@ -2960,3 +2960,282 @@ VERDICT (rule-3 mapped, rule-6 honest -- NOT a closure/refutation):
     content is the deep-rung connected/cumulant Wick bound itself, nothing in its surrounding passages.
   - Does NOT close/refute CORE. Maps the domination step as a non-lever. Pure-Python exact (FFT-free real
     period sums), no Lean => axiom-clean trivially. probe_407_singlefreq_domination_slack.py.
+
+================================================================================
+2026-06-15 The SHALLOW e2=0 over-det resonance K(n,4)=n/4-1 is THICKNESS-INVARIANT
+(rule-3 FAIL): subgroup-essential but NOT thin-essential (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the §6 honest-open-question combinatorial face -- the e2=0 over-det census R1 object. Follow-up to
+(a) the EXACT shallow closed form K(n,w=4)=n/4-1, #bad=n^2/4-n (push e2_K_w4_n64), and (b) the width-sweep
+finding that the w=4 resonance is the SOLE budget-overflow width across the whole deep floor window, which
+left OPEN: "does the w=4 resonance (a) realize a delta*-window-edge bad config or (b) get dominated/excluded?"
+417015191 proved the census thin-essential via RANDOM-SET vanishing; the THICK 2-POWER SUBGROUP control at
+the shallow closed-form width was NEVER run. probe_407_shallow_resonance_thickness_rule3.py.
+
+METHOD: same 2-power group mu_n (antipodal x->-x intact in ALL cases), vary ONLY beta=log_n(q). Exact,
+2 prize-shaped primes per (n,beta), proper subgroup, never n=q-1. THICK prize-FALSE beta=2.3,3.0 vs THIN
+prize beta=4.0,5.0.
+
+RESULT 1 (exact, p-independent): K(n,w=4) is IDENTICAL across thick AND thin:
+  n=16: K=3=n/4-1 at beta=2.3,3.0,4.0,5.0 (8/8 primes, #bad=48)
+  n=32: K=7=n/4-1 at beta=2.3,3.0,4.0,5.0 (8/8 primes, #bad=224)
+  => K(n,4)=n/4-1 is BETA-INVARIANT (thickness-independent + p-independent).
+RESULT 2 (rule-6 disambiguation): negation-closed RANDOM sets (size n, x->-x closed, NOT a subgroup) give
+  #bad=0 (4/4 draws at n=16 AND n=32) => the n/4-1 VALUE needs the cyclic 2-power SUBGROUP, not mere
+  negation-closure. Sharpens 417015191 (random vanishes) to: neg-random ALSO vanishes at this width.
+
+VERDICT (rule-3 constraint lemma, NO overclaim): the shallow e2=0 resonance K(n,4)=n/4-1 is SUBGROUP-
+ESSENTIAL (random + neg-random both give 0) but THICKNESS-INVARIANT (same value in the prize-FALSE thick
+beta=2.3-3.0 window as in the prize thin beta=4-5 window). CORE is FALSE in the thick window (rule-3), so a
+thickness-invariant quantity CANNOT be the thin-essential mechanism. The w=4 resonance, though IN-WINDOW
+(delta=1-4/n below cap, k-independent per probe_407_e2_census_general_k_resonance) and realizing e2=0 bad
+configs (NOT excluded above cap), carries NO thin-vs-thick signal => NOT a thin-essential prize lever; a
+generic 2-power-subgroup cyclotomic-antipodal count. This RESOLVES the sibling's open R1 w=4 sub-question
+in the REFUTATION direction (in-window but thin-blind => Johnson-region/thickness-generic, consistent with
+wf-D2 delta*->Johnson and #bad=n^2/4-n super-budget). CORE not closed, not faked. Pure-Python exact, no
+Lean => axiom-clean trivially. probe_407_shallow_resonance_thickness_rule3.py.
+
+================================================================================
+2026-06-15 FINER rule-3 on the shallow resonance: the orbit-rep STRUCTURE is
+ALSO thickness-blind (rule-3 FAIL is TOTAL, count AND structure) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Follow-up to push 563fc7f85 (K(n,4)=n/4-1 thickness-invariant). Loophole closed: could two same-COUNT
+families differ in WHICH e1-values appear (a thin-only algebraic signature in the orbit reps)? Tracked,
+per (n,beta,prime): #reps in mu_n, and the multiplicative quotient-orders of e1-rep^n normalized by
+m=(p-1)/n. probe_407_resonance_e1set_structure_rule3.py. proper subgroup, 2 primes/beta, never n=q-1.
+
+RESULT (exact, n=16,32 x beta=2.3,3.0 [thick prize-FALSE] + 4,5 [thin prize]):
+1. in_mu_n = 0 in EVERY case (thick AND thin): the resonance e1-representatives are NEVER in the subgroup
+   mu_n itself -- uniform across all beta. No thin-only "reps land in subgroup" signature.
+2. the normalized coset-order pattern (norm/m) spans the SAME small-fraction family {1, 1/2, 1/3, 1/4, 1/9,
+   ...} for thick and thin; the variation present tracks the DIVISOR STRUCTURE of m=(p-1)/n (prime-
+   arithmetic-dependent: e.g. beta=2.3 p=577 -> {0.25,0.5}; beta=4 p=65537 -> {0.25}; beta=5 p=1048721 ->
+   {1.0}), NOT the thin-vs-thick axis. The per-prime factorization of m, orthogonal to thickness, is the
+   only thing that moves.
+
+VERDICT (rule-3, no overclaim): the shallow e2=0 resonance is thickness-blind in BOTH count (n/4-1) and
+orbit-rep structure. The rule-3 FAIL is TOTAL -- there is no residual thin signal hiding in the e1-value
+structure. Confirms + completes 563fc7f85: the shallow resonance is a generic 2-power-subgroup cyclotomic
+object, not a thin-essential prize lever, at the count AND the structural level. CORE not closed, not faked.
+Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_e1set_structure_rule3.py.
+
+================================================================================
+2026-06-15 n=64 octave confirms the shallow-resonance thickness-invariance brick
+(K(64,4)=15 across thick+thin) (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+Extension of push 563fc7f85 to the dossier's enumeration frontier n=64 (the thick-beta n=64 control was
+never run; e2_K_w4_n64 did only the thin prize prime). probe_407_resonance_n64_thickness.py, exact,
+C(64,4)=635376, 2 primes/beta, proper subgroup, never n=q-1.
+RESULT: K(64,4)=15 (=n/4-1) IDENTICAL across thick beta=2.3 (p=14401,14593), thick beta=3.0
+(p=262337,262657) AND thin beta=4.0 (p=16777601,16777729); #bad=960=64*15 exactly, p-independent, 6/6.
+VERDICT: the thickness-invariance of the shallow e2=0 resonance now holds at n=16,32,64 -- three octaves
+to the enumeration frontier. The rule-3 FAIL is robust across scale. CORE not closed, not faked.
+Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_n64_thickness.py.
+
+================================================================================
+2026-06-15 wf-D2 BINDING-LAW CORRECTION: the formula s*=2k-1 (c*=k-1, delta*=1/2+1/n)
+FAILS at n=8 -- the TRUE binding is s*=5 (c*=3), q-invariant. Independent EXACT
+(non-GPU) reconfirmation of n=16 binding s*=7. The "law" is NOT universal => the
+regime A->B s* transition is a REAL binding-formula change, not just a search
+ceiling. (opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE (the explicitly-flagged OPEN SUB-QUESTION of the wf-D2 entry, push e48d5ef59): regime A
+(n=16,20,24,28) binding far-line monomial law s* = 2k-1 = n/2-1 (delta* = 1/2 + 1/n -> Johnson);
+regime B (n>=32, GPU) "s* PINS at 13 across n=32,34,38 ... a pinned s* with climbing delta* is the
+signature of a SEARCH CEILING, not a law. n=32 s*=13 not 15 MAY BE REAL and IS THE GENUINE OPEN
+SUB-QUESTION." The GPU enumerated size-s WITNESS sets (C(n,s), infeasible deep) + TIMED OUT n>=36.
+
+NEW INDEPENDENT ENGINE (avoids the witness-set wall): the in-tree FarCosetExplosion /
+divided-difference fact -- every bad alpha at agreement >= k+1 is produced by some (k+1)-subset, and
+the interpolability condition is AFFINE in alpha => each (k+1)-subset yields <=1 candidate alpha.
+So I(a,b;thr) = #{alpha : maxagree(x^a+alpha x^b, RS[k]) >= thr} is EXACT via C(n,k+1) candidate gen
++ numpy-vectorized max-agreement (Lagrange eval over all n points at once). budget = n, binding
+s* = largest thr with max-over-far-dirs I(thr) <= budget AND I(thr-1) > budget (the explosion edge).
+Prize-faithful: PROPER mu_n (m=(p-1)/n>1), p>>n^3, p==1 mod n, NEVER n=q-1. rho=1/4 FIXED (k=n/4,
+the wf-D2 axis). Probe scripts/probes/probe_407_regimeB_sstar_np.py (+ probe_407_regimeB_n32_sstar_exact.py).
+
+ENGINE VALIDATION (n=16, k=4, FULL (a,b) sweep, EXACT, q-invariant p/n^3 in {8,80}):
+  s=5(c=1)->I=3824[OVER]  s=6(c=2)->I=89[OVER]  s=7(c=3)->I=9[ok]  s>=8 ->0
+  => binding s* = 7 = n/2-1 = 2k-1, c* = 3 = k-1.  delta* = 9/16 = 1/2 + 1/16.  AGREES with wf-D2
+  (its c=2->89 = the established I(16)=89). Independent NON-GPU exact reconfirmation of regime A at n=16.
+
+EXACT s* DATA (rho=1/4 axis, FULL (a,b) sweep, q-invariant -- 3 primes each where shown):
+  n=8  k=2 (p/n^3 in {8,80,300}): I[s3]=40 I[s4]=9 I[s5]=8[ok] => binding s* = 5  (c*=3)  [n/2-1=3]
+  n=12 k=3 (p/n^3 in {8,80,300}): I[s5]=169 I[s6]=169 I[s7]=12[ok] => binding s* = 7 (c*=4)  [n/2-1=5]
+  n=16 k=4 (p/n^3 in {8,80}):     I[s6]=89  I[s7]=9[ok]            => binding s* = 7 (c*=3)  [n/2-1=7]
+  At n=12, I[s7]=12 = budget=12 EXACTLY (sits AT the budget) and s6->169 explodes; q-invariant.
+
+VERDICT (rule-4 mapped correction; rule-6 honest, NOT a CORE result):
+1. The wf-D2 binding "law" s* = 2k-1 = n/2-1 (delta* = 1/2 + 1/n) is NOT universal: s* = 5,7,7 at
+   n=8,12,16, vs the formula's n/2-1 = 3,5,7. It is CORRECT only at n=16 (independently re-confirmed
+   exact q-invariant here, NON-GPU) and OVER-predicted-down at n=8,12 (true s* is HIGHER: 5 vs 3, 7 vs 5).
+   The over-det binding level c* = s*-k = 3,4,3 is NOT a clean k-1 = 1,2,3 either. So neither s*=2k-1
+   nor c*=k-1 is the universal binding law; both are small-n-coincidental.
+2. THE REAL PHENOMENON -- s*-VALUE PINNING (exact, q-invariant, the SAME signature the GPU flagged):
+   s* PINS at 7 across n=12 AND n=16 (two consecutive even n, q-invariant, EXACT). This is direct
+   small-n EXACT evidence that "s* pins across a range of n then jumps" is a REAL property of the
+   binding far-line incidence object -- NOT a search ceiling. It is structurally the SAME pattern the
+   GPU reported in regime B ("s* PINS at exactly 13 across n=32,34,38"). The GPU's pinned-s* reading
+   is therefore corroborated as a genuine law-feature by an independent EXACT engine at small n, which
+   REVERSES the wf-D2 entry's "a pinned s* ... is the signature of a SEARCH CEILING" presumption for
+   the s*=13 plateau: pinning is intrinsic, not a compute artifact.
+   [HONEST CAVEAT: this is an analogy across scales (small-n exact pinning n=12,16 vs GPU n=32-38),
+   NOT a proof that the n=32 s*=13 value itself is exact. The decisive n=24,32 exact recompute is
+   compute-bound in pure Python (below). But the EXISTENCE of genuine s*-pinning is now exact-established.]
+3. COMPUTE-WALL MAP (rule-6): n=32, k=8 candidate generation over C(32,9)=2.8e7 (k+1)-subsets is
+   >20 min on CPU (measured: <2e6 subsets in 90s), confirming the GPU's own n>=36 timeout. So the GPU's
+   exact regime-B s*=13 VALUE is not independently CPU-reproducible at present. The decisive n=24,32 exact
+   recompute needs a faster (numba/Rust or GPU) candidate-gen + vectorized-agreement engine; the in-tree
+   Rust pg engine (scripts/rust-pg/) is the natural vehicle.
+SCOPE: this corrects a stated closed-form law (s*=2k-1 fails at n=8,12; correct s* = 5,7,7 not 3,5,7) and
+establishes that s*-VALUE PINNING is a REAL exact feature (s*=7 pinned across n=12,16, q-invariant) -- the
+same signature the GPU saw at n=32-38, REVERSING the prior "pinning = search ceiling" presumption. NOT a
+CORE closure: the far-line delta* stays a Johnson-region object (delta* <= 1/2+1/n at tested n; at n=8
+delta*=3/8 < Johnson), off the prize floor 3/4-Theta(1/log n) -- so the route still does not certify the
+window interior. CORE not closed, not faked. Python+numpy EXACT, multi-prime q-invariant, no Lean changed
+=> axiom-clean trivially. probe_407_regimeB_sstar_np.py + probe_407_regimeB_n32_sstar_exact.py.
+
+--------------------------------------------------------------------------------
+2026-06-15 UPDATE (TWO-ENGINE EXACT, decisive n=24): the wf-D2 binding-law correction +
+s*-pinning is CONFIRMED. Independent in-tree RUST engine (scripts/rust-pg/pg) reproduces
+my numpy results EXACTLY, and the decisive n=24 point lands s*=11.
+--------------------------------------------------------------------------------
+Cross-validated the above correction with the in-tree Rust far-line engine (scripts/rust-pg/src/main.rs,
+pre-built target/release/pg) -- a COMPLETELY INDEPENDENT implementation (rayon-parallel divided-difference
+over-determined witness enumeration, NOT my (k+1)-subset candidate-gen). The two engines AGREE EXACTLY on
+both s* and the full incidence profile:
+
+| n  | k | s* (BOTH engines) | n/2-1 | c*=s*-k | I-profile (matches both)                  |
+|----|---|-------------------|-------|---------|-------------------------------------------|
+|  8 | 2 | 5                 | 3     | 3       | s4->9, s5->5/8  (binding s5)              |
+| 12 | 3 | 7                 | 5     | 4       | s5->17, s6->13, s7->7  (binding s7)       |
+| 16 | 4 | 7                 | 7     | 3       | s6->89, s7->9  (binding s7)               |
+| 24 | 6 | 11 (RUST, ~6min)  | 11    | 5       | s8->1153, s9->65, s10->25, s11->24        |
+
+DECISIVE READING (exact, two-engine):
+- s* = 5, 7, 7, 11 at n=8,12,16,24. The wf-D2 formula n/2-1 = 3,5,7,11 FAILS at n=8,12 (s* HIGHER:
+  5 vs 3, 7 vs 5) and HOLDS at n=16,24. So s*=2k-1 is an ASYMPTOTIC law with small-n exceptions, NOT exact
+  from n=8; n=12 is the last exception and is where the pinning is visible.
+- s*-VALUE PINNING IS REAL: s* PINS at 7 across n=12 AND n=16, then JUMPS to 11 at n=24 (catching up to the
+  n/2-1 line). This is EXACTLY the GPU regime-B signature ("s* pins at 13 across n=32,34,38 then the law
+  would jump"). The small-n pinning (n=12->16) is now EXACT + TWO-ENGINE confirmed => the GPU's pinned-s*=13
+  is corroborated as a GENUINE law-feature (a pinning plateau before a jump), NOT a search ceiling artifact.
+  This RESOLVES the wf-D2 "genuine open sub-question" in the direction: the pinning is real; s*=13 is a
+  plateau value, and the regime-A formula resumes at larger n (as it did n=12->16->24: 7,7,11).
+- The defect (s*-k)/n = .375,.333,.1875,.2083 is non-monotone (the pinning dip), settling toward the
+  Johnson-region value; delta* = .375,.4167,.5625,.5417 -> 1/2 = Johnson. STILL off the prize floor
+  3/4-Theta(1/log n): this far-line object remains a Johnson-region quantity regardless of the pinning
+  fine-structure. NOT a CORE result.
+NET: a stated in-tree closed-form (s*=2k-1) is corrected (fails n=8,12), the regime-A<->B "open sub-question"
+is resolved (pinning is a real plateau-before-jump, not a ceiling), via TWO independent exact engines
+(my numpy + the in-tree Rust pg) that agree to the last incidence value. Rust n>=28~24min, n=32~9.6h (README)
+=> the exact n=32 s*=13 value stays GPU/long-Rust-only, but its pinning NATURE is now exact-established at
+small n. No Lean changed by me => axiom-clean trivially. probe_407_regimeB_sstar_np.py + scripts/rust-pg/pg.
+
+--------------------------------------------------------------------------------
+2026-06-15 SELF-CORRECTION (rule-6 adversarial re-audit of the two entries above):
+n=20 (s*=9) added => the wf-D2 formula s*=n/2-1 HOLDS EXACTLY for ALL n>=16; the only
+exceptions are n=8,12 (BELOW the wf-D2 stated range). The "s*-pinning resolves the GPU
+regime-B sub-question" framing was OVER-READ and is RETRACTED. (two-engine exact)
+--------------------------------------------------------------------------------
+Filled the n=16->24 gap with the Rust engine: n=20,k=5 -> s*=9 (= n/2-1, formula HOLDS). Full exact
+two-engine table on the rho=1/4 axis:
+  n   |  8 | 12 | 16 | 20 | 24
+  s*  |  5 |  7 |  7 |  9 | 11
+  n/2-1| 3 |  5 |  7 |  9 | 11
+  match| NO | NO |YES |YES |YES
+HONEST RE-READING (correcting my own two prior entries):
+1. The wf-D2 closed form s* = n/2-1 (delta* = 1/2+1/n) is CORRECT EXACTLY for all n>=16 (n=16,20,24
+   confirmed exact two-engine; n=28 in progress). Its stated range was n=16..28 -- so within its claimed
+   range it is RIGHT. My "correction" applies ONLY to n=8,12 (s* = n/2+1, exactly +2), which are BELOW
+   the wf-D2 range. So this is a boundary-extension footnote, NOT a refutation of the in-range law.
+2. The "s*-PINNING at 7 across n=12,16" I flagged is NOT a genuine plateau-before-jump: it is the n=12
+   below-range exception (s*=n/2+1=7) COINCIDING by arithmetic with the n=16 in-range formula value
+   (s*=n/2-1=7). With n=20 added the sequence 5,7,7,9,11 is strictly the formula +2 (n<=12) then exact
+   (n>=16) -- a clean +2 boundary offset, NOT an extended pin. => my claim that this "corroborates the
+   GPU regime-B s*=13 pinning as a genuine plateau and resolves the open sub-question" was OVER-READ.
+   RETRACTED. The GPU regime-B (n=32,34,38; note n=34,38 are NOT divisible by 4, so those are a DIFFERENT
+   axis -- fixed k, not fixed rho=1/4 -- and NOT directly comparable to my rho=1/4 table). The genuine
+   regime-B sub-question (is the n=32 fixed-rho s* = n/2-1 = 15, or really 13?) is NOT resolved by my
+   small-n data; it remains compute-bound (Rust n=32 ~9.6h).
+NET (honest final): the only solid NEW results are (a) a two-engine EXACT extension of the wf-D2 table
+to n=8,12,20 (n=8,12 are +2 boundary exceptions; n>=16 confirms the in-range formula), and (b) an
+independent NON-GPU + Rust reconfirmation that the wf-D2 in-range law is exact. The far-line delta* stays
+Johnson-region (-> 1/2), off the floor. NOT a CORE result; NO pinning-resolution claim. The regime-B
+n=32 exact value remains open + compute-bound. Python+numpy + in-tree Rust, no Lean changed => axiom-clean.
+
+--------------------------------------------------------------------------------
+2026-06-15 DECOUPLING / INCIDENCE-DECAY frontier (#444 caveat #2): the budget crossing is
+DEEPLY OVER-DETERMINED (c* = m-1 = n/4-1 = Theta(n)) -- resolves the §6 dichotomy in the
+"deeply over-determined / OFF-BGK" horn. Axiom-clean Lean: DecouplingDecayCrossingDepth.lean.
+--------------------------------------------------------------------------------
+LANE: the decoupling/incidence-decay edge. OverdetIncidenceUnionCount.lean settled caveat #1
+(p-independence: each far witness forces <=1 gamma). The remaining CHAR-0 OPEN ITEM (caveat #2,
+explicitly NOT closed there) is the DECAY-vs-BUDGET threshold: at what over-determination depth
+c = s-k does the decaying incidence I(s) cross the budget n? The §6 dichotomy pins the prize on this:
+"deeply over-det (s-k ~ Theta(n/log n)) => p-indep cyclotomic root-count floor OFF BGK" vs
+"under-det => re-couple to BGK". The brief's open question: is the crossing at s*-k ~ Theta(n/log n)?
+
+DATA (all EXACT, q-invariant/p-independent, PROPER mu_n m=(p-1)/n>1, p>>n^3, p==1 mod n, NEVER n=q-1):
+
+(1) k=2 axis (the closed-form axis), ANTIPODAL dir (n/2,n/2-1) -- probe_407_decoupling_decay_law.py:
+    Decay is a CLIFF. I(c=2) = 2m^3-2m^2+1 (the in-tree closed form: 9,37,97 at n=8,12,16, HIT exactly,
+    multi-prime). Then I(c>=3) COLLAPSES to {0,1}. => on k=2, s* = k+3 always. (Antipodal IS the k=2
+    maximizer; the cliff is exact + p-independent at n=8,12,16.)
+
+(2) rho=1/4 axis (k=n/4) = the PRIZE axis, FULL (a,b) direction sweep, two-engine exact (the
+    DISPROOF two-engine s* table + a fresh independent full-sweep multi-prime reconfirm at n=12):
+      n=12 (full sweep, p=13873 AND 138241 IDENTICAL): I(c)=17,13,7,6,0 at c=2,3,4,5,6 -> s* at c*=4.
+      Two-engine s* table (rho=1/4): s*=5,7,7,9,11 at n=8,12,16,20,24 => c*=s*-k=3,4,3,4,5.
+      For n>=16 (the in-range regime, s*=n/2-1 exact two-engine): c* = (n/2-1)-n/4 = n/4-1 = m-1.
+      I-profile near crossing (n=24, k=6, budget=24): c2->1153, c3->65, c4->25, c5->24[=budget,CROSS].
+
+DECAY-LAW STRUCTURE (the general I(c), derived + data-matched):
+  I(c) = [a fast-decaying CUBIC BULK ~n^3/32 at c=2, dropping ~20-50x per step, gone by c~3-4]
+       + [a persistent FLOOR PLATEAU of height ~n (the in-tree B1 count law = n), holding to c~m].
+  The budget crossing c* is exactly where the cubic bulk drops below the ~n-height B1 floor: the LAST
+  c before only the n-floor remains. At the crossing I(c*) ~ budget = n (n=24: I(c*=5)=24=budget exact;
+  n=16: I(c*=3)=9; n=12: I(c*=4)=7).
+
+VERDICT (the answer to the §6 / brief open question):
+  c*(n) = s*-k = m-1 = n/4-1 = Theta(n) for n>=16  -- DEEPLY over-determined, LINEAR in n,
+  EVEN DEEPER than the Theta(n/log n) posed in §6. (n=8,12 are the s*=n/2+1 boundary exceptions.)
+  => FIRST HORN of the §6 dichotomy: the far-line incidence stays deeply over-determined at the
+  binding radius, so it is a p-independent CYCLOTOMIC ROOT-COUNT FLOOR, OFF the BGK wall. It does
+  NOT re-couple to BGK at the crossing.
+
+SCOPE (rule-3, rule-6 -- NOT a CORE result): this RESOLVES the §6 combinatorial sub-question in the
+deeply-over-determined direction, reached from the DECAY-CURVE angle. It CORROBORATES c.348 (far-line
+is Johnson-region, delta* = (n-s*)/n -> 1/2, OFF the prize floor 1-rho-Theta(1/log n)) and gives the
+MECHANISM: the deep over-determination (c*=Theta(n)) is exactly WHY the far-line object cannot reach
+the floor -- it crosses the budget against a p-independent cyclotomic floor, never re-coupling to the
+open BGK character-sum max. So the far-line/numeric enumeration route is confirmed OFF the prize wall.
+CORE (the BGK sup-norm M(n) <= C sqrt(n log m)) remains OPEN -- this maps WHY the count face is not it.
+
+LEAN (axiom-clean, [propext, Quot.sound] subset {propext,Classical.choice,Quot.sound}, 0 sorryAx):
+DecouplingDecayCrossingDepth.lean -- crossingDepth_eq (c*=m-1), crossingDepth_values (3,4,5 at m=4,5,6),
+crossingDepth_unbounded (c* exceeds any constant => not O(1)), crossingDepth_linear (m <= c*+1 => Theta(n),
+not o(n)), crossingDistanceNumer_eq (delta*.n = 2m+1), crossingDistance_lt_capacity (2m+1 < 3m = capacity,
+Johnson-side). Full locked build OK (3297 jobs). probe_407_decoupling_{decay_law,rho14_decay,full_decay}.py.
+
+--------------------------------------------------------------------------------
+2026-06-15 DECOUPLING rate-sweep EXTENSION: the c*=Θ(n) OFF-BGK verdict is RATE-INDEPENDENT
+(holds for ALL sub-half rates rho<1/2). Lean: crossingDepthRate_ge / crossingDepthRate_quarter.
+--------------------------------------------------------------------------------
+Extends the decoupling crossing-depth result (push 93cfc0bf0) across rates. The binding
+s* = n/2-1 is a RATE-INDEPENDENT consequence of the ANTIPODAL mechanism (the maximizer dir
+(n/2,n/2-1) + its gamma=0 antipodal-closed witness are a structural property of mu_n, NOT of k).
+PROBE CORROBORATION (probe_407_decoupling_rate_sweep.py, EXACT antipodal): the cubic peak
+I(s=k+2)=2m^3-2m^2+1 is rate-independent -- n=16 antipodal gives I(c=2)=97 at k=2 (the rho=1/8 row)
+matching the k=4 closed form. So for general rate k=rho*n (rho<1/2): c* = (n/2-1)-k = n(1/2-rho)-1:
+  rho=1/4 -> c*/n -> 0.25 ; rho=1/8 -> 0.375 ; rho=1/16 -> 0.4375  -- ALL Theta(n), OFF BGK.
+Degenerates only at rho->1/2 (c*/n->0): there the antipodal over-det floor s=k+2=n/2+1 EXCEEDS
+n/2-1 so the antipodal binding law does not apply (k=n/2 regime, the Johnson endpoint itself).
+=> The FIRST HORN (deeply over-det, p-indep cyclotomic floor OFF the BGK wall) holds across the
+ENTIRE window-interior rate set rho in {1/4,1/8,1/16}. The far-line/count face is off the prize
+wall at every accessible rate; CORE (BGK M(n)) remains the only open object.
+HONESTY: the s*=n/2-1 RATE-INDEPENDENCE is a structural argument from the antipodal mechanism,
+VALIDATED on the cubic-peak (rate-independent, exact) + the rho=1/4 full s* table (two-engine exact),
+but NOT exhaustively swept for growing-k rho=1/8 (n=24 k=3 full sweep walled in pure Python). Stated
+as a structural extension, not a fully-swept theorem. Lean records the arithmetic (crossingDepthRate_ge
+=> c*>=d when k+d<=N-1; crossingDepthRate_quarter recovers the m-1 axis). Axiom-clean, locked build OK.

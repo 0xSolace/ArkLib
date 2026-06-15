@@ -12341,3 +12341,240 @@ C45 makes the OPPOSITE, honest claim: the same antipodal object caps AT Johnson 
 C45 is the correct (true) reading of what the closed antipodal saturation actually delivers; the
 gap to the prize is precisely the p-dependent BGK sup-norm `M(μ_n) ≤ C√(n log(p/n))` that no
 closed/antipodal/2nd-order lever can supply (route-elimination meta-theorem, L8).
+
+## O180 (#444 2026-06-15 live-frontier sweep) — see docs/kb/deltastar-444-livefrontier-sweep-2026-06-15.md
+Q1-d32 false-refutation OVERTURNED (V_32^prim empty, cross-prime 0/64=mod-p noise); over-det s*-k=n/4 AND =3-const both REFUTED (Johnson-region); moment-step 1-g~r/n knife-edge ALL rungs (thickness-invariant); C11-C20 9 dead (thickness-inv/group-taut/M-in-disguise); IPR diagnostic axiom-clean but q*E2-reducible. CORE OPEN.
+
+--------------------------------------------------------------------------------
+2026-06-15 (push e69afd587) — t=3 TRINOMIAL n/2 floor PROVEN (axiom-clean) + t=4/k>=2 single-line count SATURATES (boundary note)
+--------------------------------------------------------------------------------
+POSITIVE (UncertaintyTwoPowerTrinomialFloor.lean, axiom-clean [propext,Classical.choice,Quot.sound]):
+the GENUINE 3-term trinomial g(X)=(X^{n/4}-1)(X^{n/4}-i)=X^{n/2}-(1+i)X^{n/4}+i (i:=zeta^{n/4}, prim 4th
+root, support {0,n/4,n/2}, all 3 coeffs nonzero) has EXACTLY n/2 roots in mu_n: (zeta^j)^{n/4}=i^j in
+{1,i} iff j%4 in {0,1} (half of [0,n)). So s* >= n/2 already at t=3 -> the n/2 sparse-zero floor is
+STRUCTURAL, not an artifact of degenerate t=2 single-coset sparsity. Sharpens UncertaintyTwoPowerJohnson
+Refuted (binomial). 2-power-specific (needs order-4 zeta^{n/4}; Tao forbids it for prime n). p-indep
+n=8..64 (probe_407_trinomial_n2_floor.py). NOT CORE (s* != prize delta*; the prize is the LIST, O(1) here).
+
+BOUNDARY NEGATIVE (probe_t4_k2_floor.py, exact): the analogous k>=2 single-line sparse-zero count does
+NOT give a clean n/2+(k-1) extension -- it SATURATES at the FULL group n (k=2: 8@n=8, 16@n=16). When the
+codeword span {1,x,...,x^{k-1}} (k>=2) is allowed to vary jointly with 2 far monomials, the agreement
+system can fit ALL n points at degenerate (non-far) directions -- the known "I=p, every gamma, at the
+degenerate radius" saturation. => the meaningful single-line s* object is the FIXED-far-direction count,
+and the clean non-degenerate trinomial brick is the t=3/k=1 boundary; the k>=2 naive count is vacuous.
+Do NOT pursue a "t=4/k=2 sparse floor" lane -- it saturates trivially. CORE unaffected, OPEN.
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent) — crossCell UPPER-BOUND FORM AUDIT: the in-tree
+`CrossCellAbsoluteBound` POINTWISE form is REFUTED, and so is the DC-subtracted form
+(at finite n). Constraint lemma: the only true crossCell bound is ASYMPTOTIC (prize
+budget q >> 2^r|H|^r), NEVER a finite-instance pointwise inequality.
+--------------------------------------------------------------------------------
+CONTEXT. `CrossCellShkredovBound.lean` defines (and its docstring labels "the genuine open
+core (NOT refuted; remains the wall)"):
+    CrossCellAbsoluteBound :  crossCell(H,zeta,r) * q  <=  2^r * |H|^r   (all r>=2).
+where crossCell(H,zeta,r) = N0(G,r) - 2*N0(H,r), G=mu_n, H=mu_{n/2}, q=p.
+Round-1 L1 (#444 sec.11) flagged the single point p=97,n=8,r=4 as a violation but never
+swept it. I settled it EXACTLY, multi-prime, PROPER mu_n (m=(p-1)/n>1), p==1 mod n,
+NEVER n=q-1, via exact N0 counts (poly powering mod x^p-1, big-int).
+  probe_407_crosscell_absolute_pointwise.py  +  probe_407_crosscell_dcsub_form.py.
+
+RESULT 1 — the POINTWISE absolute bound A: crossCell*q <= 2^r|H|^r is REFUTED everywhere r>=3.
+  - r=2: cross=0 EXACTLY at every prime (matches `crossCell_eq_zero_of_r_eq_one` / E_1 halving;
+    the descent is exact at the 2nd moment). So the bound is non-trivial only for r>=3.
+  - r>=3: VIOLATED at EVERY tested (n,p). The violation ratio (cross*q)/(2^r|H|^r) GROWS with p
+    (= thinner subgroup at fixed n): e.g. n=8,r=4: ratio 2.27 (p=97) -> 13.5 (p=577) -> 60.8 (p=2593);
+    n=32,r=4: 2.32 (p=577) -> ... . It is WORST at the thinnest (most prize-like) primes.
+  - p-pattern: cross itself stabilizes to a p-independent count for p>>n^3 (n=8,r=8 cross=180320 for
+    all p>=577), so cross*q ~ q grows linearly while 2^r|H|^r is fixed => unbounded violation.
+  => the per-r absolute bound CANNOT hold pointwise; it is the wrong shape. The docstring's
+     "NOT refuted; remains the wall" is FALSE for this pointwise statement.
+
+RESULT 2 — even the DC-SUBTRACTED forms are pointwise-refuted at finite n (sharper than L1):
+    C: crossCell*q <= (2^r - 2)|H|^r                 [random main term only]
+    B: crossCell*q <= (2^r - 2)|H|^r + (2r-1)!!|H|^r  [random + Wick, the #444 sec.2 mandatory shape]
+  - C: REFUTED for all r>=4 (and r>=3 at n=16,32) at every prime.
+  - B (the +Wick MANDATORY-form analogue): REFUTED at n=8 p>=577 r=4 (ratio>1), and n=16 p=257 r=3,
+    and similar — i.e. B FAILS pointwise exactly when q is too SMALL relative to 2^r|H|^r. B HOLDS
+    whenever q is large enough (n=8 p<=193 all r tested), confirming it is an ASYMPTOTIC bound.
+
+CONSTRAINT LEMMA (the precise wall shape):
+  crossCell*q is an exact additive-resonance count whose leading behaviour is the RANDOM term
+  (2^r - 2)|H|^r PLUS a positive arithmetic excess from spurious mod-p collisions. At FINITE n the
+  excess can exceed BOTH the random term and the random+Wick budget when q = p is not yet >> 2^r|H|^r
+  (i.e. when the subgroup is not yet "thin enough" for the budget). The bound becomes true ONLY in the
+  asymptotic prize regime q ~ n*2^128 >> 2^r|H|^r at depth r~89. Therefore NO pointwise/per-instance
+  crossCell upper bound (A, B, or C) is provable as stated; the genuine open core is the ASYMPTOTIC
+  inequality crossCell*q <= (2^r-2)|H|^r + (2r-1)!!|H|^r in the limit q/(2^r|H|^r) -> infinity, i.e.
+  exactly the char-p validity of A_r <= Wick at depth r~ln q (#444 sec.2). This is the SAME BGK wall;
+  it just cannot be phrased as the finite pointwise `CrossCellAbsoluteBound` currently in the tree.
+
+SCOPE (rule-6, honest): NOT a CORE closure. This is a FORM CORRECTION + refutation: it removes a
+mislabeled "open core" (the pointwise absolute bound), shows the DC-subtracted pointwise form is also
+finite-n-false, and re-localizes the genuine open statement to the asymptotic budget regime (consistent
+with the mandatory A_r form, sec.2). rule-3: the violation is thickness-MONOTONE (worse at small m =
+thicker-relative subgroup, better as p grows) and p-budget-driven, NOT a thin-vs-thick CORE signal -- so
+this is purely a statement-shape correction, not a CORE lever. Python+numpy EXACT, multi-prime,
+proper subgroup => axiom-clean trivially (no Lean proof changed; docstring corrected separately).
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent, AUDIT-GUARD+CORE lane) — the E_3 (6th-moment) route is
+NOT thin-essential: its finite-n spikes are pure E_2 (2nd-order additive-energy)
+artifacts. Extends the §3 meta-theorem "no third route" to an explicit r=3 measurement.
+--------------------------------------------------------------------------------
+CONTEXT. The §0/§7-lane-2 hope is that the thin Sidon DEPTH advantage (W_r=0 to depth ℓ)
+converts to a higher-moment saving on μ_n. The cheapest test of "does depth help at r=3":
+is the 6th moment E_3(μ_n) = #{(a₁..a₃,b₁..b₃)∈μ_n^6 : Σa=Σb mod p} cleanly below the
+random/Wick value 15·n³, p-independently, in the thin regime — and is any sub-Wick saving a
+GENUINE thin signal or just an inherited 2nd-order (E_2) effect?
+
+PROBE (exact, multi-prime, PROPER μ_n m=(p−1)/n>1, p≡1 mod n, q≫n³ i.e. p>n³, NEVER n=q−1):
+  probe_407_e3_thin_sidon.py / probe_407_e3_e2_anomaly_correlation.py / probe_407_e3_spike_diagnose.py.
+Exact N₀-counts via Counter over μ_n^r; E_r = Σ_t N(t)².
+
+RESULT 1 — baseline E_3/Wick is p-INDEPENDENT and DROPS toward 1 as n grows (advantage shrinks):
+  n=8:  E_3/15n³ = 0.667 (flat across p=521,569,577)
+  n=16: 0.823 (flat across p=4129,4177,4241)
+  n=32: ~0.91 baseline (flat across most thin primes)
+  => the sub-Wick "saving" is real but its FRACTION → 1 with n (0.667→0.823→0.91); it does NOT
+     compound into a power saving. Consistent with the §7-lane-2 finding that depth-growth is
+     necessary-not-sufficient and the thin/random sup-norm ratio is a FLAT ~0.92 constant.
+
+RESULT 2 — the route has STRUCTURED-PRIME SPIKES that break any pointwise A_r ≤ Wick at finite n:
+  at n=32, p=32993 (=2⁵·1031+1, m=1031), E_3/Wick = 1.706 > 1 while every neighbouring thin prime
+  is ~0.91. DC-subtraction does NOT explain it (E_3−n⁶/p still 1.640·Wick; DC≈32545 is negligible
+  at q≈n³). So the per-instance A_3 = E_3−DC ≤ Wick is POINTWISE-FALSE at finite n — exactly
+  mirroring the crossCell pointwise refutation (this log, earlier 2026-06-15 entry). Same wall shape:
+  finite-n excess > Wick when q is not yet ≫ the random budget.
+
+RESULT 3 (DECISIVE, rule-3) — the E_3 spike is DRIVEN ENTIRELY by the E_2 (2nd-order) anomaly:
+  at the spike prime, E_2/2n² = 1.828 vs the FLAT baseline 1.453 at EVERY non-spike prime
+  (all non-spike primes share IDENTICAL E_2=2976); E_3 spikes in lockstep (1.706 vs ~0.9). The
+  driver is a cluster of 64 off-zero 3-term additive resonances (N₂(t)>2, up to 5) in μ_32 at
+  p=32993 — a per-prime additive accident, NOT a thinness mechanism.
+
+CONSTRAINT LEMMA (extends §3 meta-theorem to r=3, explicitly measured):
+  E_3(μ_n) carries NO independent thin-CORE information beyond E_2: its sub-Wick baseline shrinks
+  toward random with n (no compounding), and its only deviations (finite-n spikes that violate
+  A_3 ≤ Wick) are slaved to the E_2 additive-energy anomaly. The 6th-moment route is therefore the
+  SAME route-eliminated second-order signal of the meta-theorem, propagating self-similarly into
+  depth 3 — it is thickness-/structure-generic, not thin-essential. Any CORE proof must be
+  thinness-essential (rule-3); a depth-3 moment bound is not, so this lane is dead as a CORE lever.
+  (Re-confirms: the genuine open object is the ASYMPTOTIC char-p A_r ≤ Wick at depth r≈ln q≈89,
+  q~n·2¹²⁸, which provably cannot be reached by finite-n moment data — §2/§3.)
+
+SCOPE (rule-6, honest): NOT a CORE closure. A reproducible probe + constraint lemma closing the
+"does depth-3 moment help?" sub-question NEGATIVELY (it doesn't; the route is 2nd-order-slaved and
+thickness-generic). Python+numpy EXACT, multi-prime, proper subgroup => axiom-clean trivially (no
+Lean proof added/changed). Do NOT pursue an "E_3 thin Sidon moment bound" CORE lane.
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent, CORE non-moment lane) — CORRECTION: the "first
+floor-consistent signal on the CANONICAL #bad object" (shallowest band, ~0.26
+bounded-below-1) is a JOINT artifact of (1) census-vs-eps* BUDGET CONFLATION and
+(2) an UNDERCOUNTING engine. Corrected, the shallow-band incidence is super-linear
+(super-budget vs B~n) = Johnson-side, not floor.
+--------------------------------------------------------------------------------
+CONTEXT. Brick ed1db3379 + the 2147 growth report claimed: on the CANONICAL
+OpenCoreConditionalPin object #bad (the deployed WorstCaseIncidenceBounded, NOT a
+surrogate), the shallowest band (k=1, a=3) ratio #bad/budget with
+budget = 2^r*C(2^{mu-1},r) [= 4*C(n/2,2) at r=2] stays bounded below 1 (~0.26) =
+"FLOOR-consistent, the FIRST canonical-#bad face that does not march to Johnson."
+
+THE CANONICAL OBJECT (OpenCoreConditionalPin.lean, exact):
+  WorstCaseIncidenceBounded C delta B : I(delta) = #{gamma : x^a+gamma*x^b is
+  delta-close to RS[k]} <= B, with the GOVERNING-LAW budget B = floor(q*eps*) ~ n
+  (eps*=2^-128, q~n*2^128). At k=1, a=3: delta-close = a deg-<=1 codeword agrees on
+  >=3 points = >=3 of the points (x_i, u0(x_i)+gamma*u1(x_i)) COLLINEAR.
+
+PROBE (exact mod-p, PROPER mu_n m=(p-1)/n>1, p~n^4..n^4.3, p==1 mod n, NEVER n=q-1,
+MULTI-PRIME, far-line family): scripts/probes/probe_407_truecore_budget_conflation.py.
+
+ARTIFACT 1 -- BUDGET CONFLATION. The "budget" 2^r*C(2^{mu-1},r) is the per-band
+CENSUS / stack-enumeration budget. At r=2 it is ~n^2/2, and SUMMED over all bands
+sum_r 2^r*C(2^{mu-1},r) = (1+2)^{n/2} = 3^{n/2} -- EXPONENTIAL in n (3^32 ~ 1.85e15
+at n=64), NOT a decomposition of q*eps* ~ n. A method "feasible within the 3^{n/2}
+census budget" is VACUOUS w.r.t. the prize budget ~n. Dividing a Theta(n^2) count by
+a Theta(n^2) per-band census budget yields a flat ~0.26 BY CONSTRUCTION; it is not a
+sub-(q*eps*) floor.
+
+ARTIFACT 2 -- THE PUBLISHED ENGINE UNDERCOUNTS. probe_407_truecore_B_growth.py counts
+a 3-subset only if ALL THREE pairwise 1st-divided-difference ratios coincide AND no
+pair is 'NOROOT' (e1=0, e0!=0) -- a NOROOT pair ABORTS the whole subset. But 3 points
+can be COLLINEAR (a genuine deg-<=1 agreement => a real bad gamma) even when one pair
+is vertical/NOROOT. The collinearity-determinant engine (the correct >=3-agreement
+object) is a strict SUPERSET: at n=8, line (4,2), published=5 vs correct=17 (the 5 are
+a SUBSET of the 17; 12 valid gamma dropped). So the published #bad (5,25,113,481 =
+n^2/8 - n/2 + 1 EXACTLY, p-independent) UNDERCOUNTS the true incidence.
+
+CORRECTED MEASUREMENT (collinearity engine, multi-prime, worst over far-line family):
+  n        :   8     16      32       64
+  #bad_corr:  17    232    2320    20224     (#bad/n: 2.1, 14.5, 72.5, 316 -- SUPER-linear)
+  #bad/census(~n^2/2): 0.71  2.07  4.83  10.19  (CROSSES 1 and grows -- "0.26 floor" evaporates)
+  (fixed line (4,2) is p-INDEPENDENT; the worst-OVER-lines value has mild p-jitter at n=64.)
+
+CONSTRAINT LEMMA / VERDICT (rule-4 mapped correction; rule-3 + rule-6 honest):
+  Against the CANONICAL eps* budget B ~ n, the shallowest-band incidence is super-linear
+  (Theta(n^2) even by the undercount; faster by the correct engine) = SUPER-budget and
+  GROWING = Johnson-side, NOT floor. The "0.26 floor-consistent canonical signal" is the
+  JOINT product of a census-vs-eps* budget conflation and an undercounting engine; both
+  push the true picture MORE Johnson-side. SEPARATE honest caveat: a=3 reads incidence at
+  near-trivial agreement (delta ~ 1, OUTSIDE the prize window (1-sqrt(rho), 1-rho-Theta(1/log n))),
+  so this super-budget growth does NOT by itself refute the WINDOW-RADIUS floor -- it is the
+  wrong delta AND the wrong budget to read floor-vs-Johnson on. Net: removes a budget-conflated
+  + undercounted "floor" read; the canonical window-radius WorstCaseIncidenceBounded at B~n
+  remains OPEN and UNMEASURED at the prize delta*. CORE not closed, not faked. Python-only,
+  no Lean changed => axiom-clean trivially. Do NOT cite the shallow-band #bad/census ~0.26 as a
+  delta* floor signal.
+
+================================================================================
+REFUTATION (2026-06-15 09:31 UTC) — the decoupling crossing-depth `c* = n(1/2-rho)-1
+= Theta(n)` RATE-LAW is WRONG; c* is RATE-CONSTANT O(1). (#444 §6 decoupling, second horn)
+Lane: decoupling2. Engine: scripts/rust-pg/src/bin/secondhorn.rs (FULL (a,b) sweep, exact,
+multi-prime, PROPER mu_n, p>>n^3, p==1 mod n, NEVER n=q-1) + probe_407_decoupling_secondhorn_boundary.py.
+--------------------------------------------------------------------------------
+CLAIM REFUTED (from DecouplingDecayCrossingDepth.lean / commits 93cfc0bf0, 04f210c9f):
+  "s* = n/2-1 is rate-independent (antipodal mechanism), so the over-determination depth
+   c* = s*-k = (n/2-1)-k = n(1/2-rho)-1 = Theta(n) for every fixed rho<1/2."
+That prior file FIXED k=n/4 (the rho=1/4 axis) and varied n; it NEVER varied k at fixed n.
+The rate-generalization was an extrapolation, not measured.
+
+THE MEASUREMENT (fix n, vary k = the actual rate sweep), s*=min{s: maxI(s)<=budget=n}:
+  n=20, p=160001 (m=8000, PROPER):
+    k :  5    6    7    8    9      (rho .25 .30 .35 .40 .45)
+    s*:  9   10   11   12   13
+    c*:  4    4    4    4    4      <-- CONSTANT in the rate
+    d*: .55  .50  .45  .40  .35
+  n=16, p=65537 AND p=1048609 (p-independent, PROPER):
+    k :  4    5    6    7
+    s*:  7    9    9   11
+    c*:  3    4    3    4          <-- O(1), {3,4} parity wobble (NOT shrinking with rho)
+
+CONSTRAINT LEMMA (the corrected law):
+  c*(n,k) = c*(n) is CONSTANT IN THE RATE k.  Equivalently s*(n,k) = k + c*(n) (the binding
+  crossing TRACKS k, it is NOT pinned at n/2-1).  Hence delta* = (1-rho) - c*(n)/n = a fixed
+  Theta(1/n) below CAPACITY (KKH26 ceiling shape), at every rate.  The prior Theta(n) is ONLY
+  the value of the constant c*(n) at the k=n/4 SLICE (c*(n)=n/4-1 there), NOT a function of rho.
+
+WHY THE PRIOR ERRED: at k=n/4, s*=n/2-1 so c* = (n/2-1)-n/4 = n/4-1, which is Theta(n) only
+  because k=n/4 is itself Theta(n).  The prior read off "c*=n/4-1 at the data point" and wrote
+  it as the rho=1/4 instance of "n(1/2-rho)-1", inferring a falling-with-rho law.  But the true
+  s* GROWS with k (s*=k+const), so c* is rate-FLAT.  The prior's predicted c*=0 at k->n/2-3
+  (BGK re-coupling) is FALSE: at n=20,k=9 the prior predicts c*=(N-1)-k=0 but the data gives c*=4.
+
+VERDICT (rule-3, rule-4, rule-6): a WIN that MAPS the §6 dichotomy more precisely. The far-line
+  crossing depth NEVER collapses to 0 by varying the rate => NO second horn opens within the
+  accessible window-interior rate range; the far-line/numeric-enumeration face stays a bounded-depth
+  (c*>=3) over-determined cyclotomic object OFF the BGK wall at EVERY rate rho in [1/4,1/2)
+  (strengthens c.348 from the rate direction: off-floor at all rho, not just rho=1/4).  The §6
+  "under-determined / re-coupling to BGK" direction is NOT reachable by the rate parameter.  CORE
+  (BGK M(n)<=C sqrt(n log m)) stays OPEN.  Lean: DecouplingCrossingDepthRateConstant.lean
+  (axiom-clean, [propext,Quot.sound]): crossingDepth_rate_constant, crossingDepth_rate_flat,
+  crossingDepth_no_collapse, crossingDepth_pos_all_rates, capacity_defect_eq,
+  prior_quarter_axis_slice, prior_rate_law_refuted_at_n20_k9.
+  OPEN refinement (sub-goal b): exact closed-form constants of the per-direction decay I(c) and the
+  exact c*(n) law (n=16->3/4 wobble, n=20->4; n>=24 deferred, engine too slow under load).
+
+
+## O181 (#444 R2 2026-06-15) — see docs/kb/deltastar-444-round2-2026-06-15.md
+OVER-DET FAR-LINE JOHNSON-LOCKED (c*=k-1, delta*=1/2+1/n, exact n<=28, n=32 predicted) => off-BGK floor NOT via far-lines (lead-closure, _wf3D6 axiom-clean). Nonlinear levers A0 telescope p^2n / A1 signed-cube Z3=0 thin-vacuous / SOS=moment wall. C21-C28 dead. C28 LESSON: non-telescoping NECESSARY-NOT-SUFFICIENT, lever must pin peak to M argmax. CORE OPEN.
