@@ -2177,3 +2177,33 @@ correct object at one band -- it does NOT prove a floor (the deeper bands / larg
 it is the first face whose #bad-to-budget ratio does NOT march to Johnson. The deep-band growth law +
 the multi-band + larger-n confirmation are the open residual. CORE not closed, not faked. Python-only,
 no Lean => axiom-clean trivially. probe_407_truecore_B_growth.py.
+
+================================================================================
+2026-06-15 The TRUE-CORE B (max_stack #distinct-bad-gamma) feasibility margin is
+THICKNESS-INVARIANT -- B/budget identical thin vs thick => finite-n feasibility is
+Johnson-margin, NOT thin-essential; thin content is purely in B's ASYMPTOTIC growth
+(opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: complement to 0xSolace ed1db3379 (POSITIVE: B=max_stack #distinct-bad-gamma is WITHIN the eps*
+budget at every finite r, ratio 0.04-0.41x, at beta=4.0/4.5 BOTH THIN). That probe did NOT test the
+THICK regime. QUESTION (rule-3): is the B/budget feasibility margin THINNESS-ESSENTIAL (grows toward 1
+as mu_n thickens => thin content) or thickness-invariant (Johnson-margin)?
+
+METHOD: reused the sibling's EXACT engine (nbad_at_band, charline) VERBATIM; swept beta from THICK
+(2.3, prize-FALSE) to THIN (5.0, prize-shape) at the SAME bands r=4 (census-overflow band) + r=8
+(Johnson band). Exact mod-p, PROPER mu_16, never n=q-1. probe_407_truecore_B_thinness.py.
+
+RESULT (exact):
+  r=4: B=40 at EVERY beta (2.3,2.6,3.0,3.5,4.0,5.0), ratio=0.0357 IDENTICAL (bit-for-bit)
+  r=8: B=104 at beta 2.3,3.0,3.5,4.0,5.0 (ratio 0.4062); 96 at beta=2.6 (sporadic structured-prime dip)
+  => B at fixed (n,r) is THICKNESS-INVARIANT. The B/budget feasibility margin is identical in the thick
+     prize-FALSE regime and the thin prize regime.
+
+VERDICT (rule-3 FAIL on the feasibility-margin face): the sibling's positive "B within budget" result
+is a THICKNESS-INVARIANT (Johnson-margin) feasibility, NOT a thin-specific signal. Finite-n B feasibility
+holds identically in BOTH regimes => finite-n feasibility CANNOT distinguish thin from thick. The thin
+content lives PURELY in the ASYMPTOTIC GROWTH RATE of B(n), NOT in finite B values or the budget ratio.
+This SHARPENS ed1db3379: targeting #bad directly is right, but the feasibility is necessary-not-sufficient
+(thin-blind at finite n); the prize is the GROWTH law of B (consistent with c.348: numerics can't decide
+floor-vs-Johnson below n=256). RULE-6: does NOT close CORE, does NOT contradict ed1db3379 (B IS within
+budget) -- it maps that the WITHIN-budget margin is thin-independent. Python-only exact => axiom-clean.
