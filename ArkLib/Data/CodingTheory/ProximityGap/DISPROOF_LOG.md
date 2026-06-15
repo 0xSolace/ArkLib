@@ -13066,3 +13066,35 @@ pinning which IS the open under-det/BGK wall. No free Johnson-side lower bound e
 - `OverDetIncidenceSuppliesBudgetAtBinding` — documented refuted `Prop` (probe-refuted at n∈{8,12}).
 `result_type = refuted(OverDetFloorGood@δbind) + reduced(D3-lower-side ⟶ PerStackBadScalarBudget,
 which is the under-det/BGK wall, NOT the over-det count)`.
+
+## RECONCILIATION (2026-06-15) — the far-line crossing depth `c*(n)` is rate-FLAT but GROWS in `n`; "bounded `c*`" was imprecise — off-BGK verdict UNCHANGED (strengthened)
+
+**What:** three campaign statements about the max-over-directions over-det crossing offset
+`c*(n,k) = s*(n,k) − k` (binding `s* = min{s : maxI(s) ≤ budget = n}`) looked to conflict:
+(1) `DecouplingCrossingDepthRateConstant.lean`: `c*` rate-FLAT, "bounded ⟹ off-BGK at every rate";
+(2) DISPROOF "C01": `k=2` single-antipodal-direction offset is `n/4` LINEAR (4,8,16 @ n=16,32,64);
+(3) GPU `e91c34348` (validated vs rust-pg n=8,12,16,20): `ρ=1/4` axis MAX offset `m*` = 3,3,5 @
+n=8,16,32 ("grows ~log₂n").
+
+**Reconciliation (object-precise, re-measured here with `secondhorn.rs`, PROPER μ_n, p≫n³, p≡1 mod n,
+never n=q−1):**
+- RATE-FLAT (in k, fixed n=16), FULL sweep k=2..6: c*(16,k) = 3,4,3,4,3 — stays in {3,4}, never
+  collapses to 0, never grows with k. CONFIRMS (1) on the whole rate range (prior only swept k∈[4,7]).
+- n-GROWTH (ρ=1/4 axis, k=n/4): c*(n,n/4) = 3,4,3,4,5 @ n=8,12,16,20,32. The n=32 value 5 STRICTLY
+  exceeds every n≤20 value {3,4} ⟹ c* GROWS in n. (n≤20 mine via secondhorn matching the GPU
+  cross-val set; n=32 from the GPU run.)
+- The `n/4`-linear C01 datum is a DIFFERENT object (single antipodal direction, not the max), not in
+  conflict with the max-over-dir {3,4,5} growth.
+
+**Verdict:** the prior file's "bounded `c*`" conflated bounded-in-k (TRUE) with bounded-in-n (FALSE).
+The off-BGK / no-second-horn conclusion does NOT need n-boundedness — it needs only c*≥1 (positivity,
+preserved a fortiori by growth) and c*/n→0 (so δ* = (1−ρ) − c*/n APPROACHES capacity from below). The
+n-growth thus STRENGTHENS off-BGK (far-line crossing rides ever-closer to capacity, ever-further from
+the BGK/Johnson floor). NOT a CORE closure (BGK M(n)≤C√(n log m) stays OPEN); a precision-correction +
+extension of the §6 decoupling sub-question.
+
+Lean: `Frontier/DecouplingCrossingDepthGrowsInN.lean` (axiom-clean [propext,Quot.sound]):
+cStar_n16_rate_bounded, cStar_n16_rate_pos, cStarQuarter_values, cStar_grows_in_n,
+cStar_n32_exceeds_prior_range, deltaStarNumerQuarter_values, capacity_defect_eq_cStar,
+deltaStar_lt_capacity, offBGK_survives_growth.
+`result_type = reconciled(rate-flat ∧ n-growing) + corrected("bounded c*" ⟶ "c*/n→0, off-BGK strengthened")`.
