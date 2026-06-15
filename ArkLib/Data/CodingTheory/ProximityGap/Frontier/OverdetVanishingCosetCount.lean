@@ -70,6 +70,12 @@ supply is coset-union-dominated and grows like `2^{n/2^{⌊log₂ r⌋+1}}`.
   an **exact square root at every threshold** `r = 2^j` (`overdetVanishingCount_dyadic_sqrt`:
   `V_{2^j}(n) = (V_{2^{j+1}}(n))²` when `2^{j+2} ∣ n`) — the per-threshold supply contraction any
   `Z(t)`-pole / m∗ argument consumes.
+- **PROVED, axiom-clean** — the **supply-vs-budget gap** (constraint lemma,
+  `budget_exponent_lt_supply_exponent`): for `n = 2^L` with `2L² + 2L ≤ n` (i.e. `L ≥ 8`), at every
+  depth `1 ≤ r ≤ L` (in particular the prize binding depth `r ≈ log₂ n`) the supply exponent strictly
+  exceeds the budget exponent `L`, so `V_r(n) > 2^L = q·ε*` — the coset-union vanishing supply is
+  super-exponentially LOOSE at prize depth and is **not the binding constraint** (crossover to the
+  budget only at `r* ≈ n/(2 log₂ n)`; logged to `DISPROOF_LOG.md`).
 - **PROBE-CARRIED (not formalized; honest)** — the identification `vanishing ⟺ coset-union` over
   `ℤ[ζ_n]` and the equality of the vanishing count with the coset-union count.  That cyclotomic
   identity is exactly Lam–Leung char-0 / the antipodal–coset law (in-tree elsewhere); here we carry
@@ -271,5 +277,46 @@ theorem vanishingCount_eq_of_cosetUnion
     {n r : ℕ} (hcard : Fintype.card β = n / dyadicBlock r) :
     (Finset.univ.image (blockUnion block)).card = overdetVanishingCount n r := by
   rw [overdetVanishingCount, coset_union_card block hdisj hne, hcard]
+
+/-! ## The supply-vs-budget gap (constraint lemma): the coset-union supply is loose at prize depth
+
+The prize budget is `q·ε* ≈ n` (the `#bad` cap), so the **budget exponent** is `log₂ n = L` (for
+`n = 2^L`).  The over-det vanishing supply is `2^{n / dyadicBlock r}`.  At any depth `r ≤ L`
+(in particular the prize binding depth `r ≈ log₂ n`), `dyadicBlock r ≤ 2L`, so the supply exponent
+`n / dyadicBlock r ≥ n / (2L)` — which **exceeds the budget exponent `L`** once `n > 2L²`.  Hence the
+coset-union vanishing supply is super-exponentially ABOVE the budget throughout the shallow
+prize-relevant regime: it is NOT the binding constraint at prize depth (probe `r*/n = 1/(2 log₂ n)`
+crossover, `probe_zeta_supply_vs_budget.py`). -/
+
+/-- For `1 ≤ r ≤ L`, the dyadic block size at depth `r` is at most `2L`: `dyadicBlock r ≤ 2L`.
+(`log₂ r ≤ log₂ L` and `2^{log₂ L} ≤ L`, so `dyadicBlock r = 2^{log₂ r + 1} ≤ 2·2^{log₂ L} ≤ 2L`.) -/
+theorem dyadicBlock_le_two_mul (r L : ℕ) (hr : 1 ≤ r) (hrL : r ≤ L) :
+    dyadicBlock r ≤ 2 * L := by
+  have hLpos : 1 ≤ L := le_trans hr hrL
+  unfold dyadicBlock
+  calc 2 ^ (Nat.log 2 r + 1)
+      = 2 * 2 ^ (Nat.log 2 r) := by rw [pow_succ, Nat.mul_comm]
+    _ ≤ 2 * 2 ^ (Nat.log 2 L) := by
+          apply Nat.mul_le_mul_left
+          exact Nat.pow_le_pow_right (by decide) (Nat.log_mono_right hrL)
+    _ ≤ 2 * L := by
+          apply Nat.mul_le_mul_left
+          exact Nat.pow_log_le_self 2 (Nat.one_le_iff_ne_zero.mp hLpos)
+
+/-- **Supply-vs-budget gap (constraint lemma).**  For `n = 2^L` with the prize relation
+`2L² + 2L ≤ n` (holds for `L ≥ 8`: `2·64 + 16 = 144 ≤ 256 = 2^8`), at every depth `1 ≤ r ≤ L` the
+over-det vanishing supply exponent strictly exceeds the budget exponent `L`: `L < n / dyadicBlock r`.
+Equivalently `V_r(n) = 2^{n/dyadicBlock r} > 2^L = budget`.  So the coset-union vanishing supply is
+(super-exponentially) LOOSE at prize depth — it is not the binding constraint. -/
+theorem budget_exponent_lt_supply_exponent
+    (L r : ℕ) (hr : 1 ≤ r) (hrL : r ≤ L) (hbig : 2 * L * L + 2 * L ≤ 2 ^ L) :
+    L < (2 ^ L) / dyadicBlock r := by
+  have hdpos : 0 < dyadicBlock r := by unfold dyadicBlock; exact Nat.two_pow_pos _
+  have hdle : dyadicBlock r ≤ 2 * L := dyadicBlock_le_two_mul r L hr hrL
+  -- L < N/d ⇔ L+1 ≤ N/d ⇔ (L+1)*d ≤ N; and (L+1)*d ≤ (L+1)*2L = 2L²+2L ≤ 2^L.
+  rw [Nat.lt_iff_add_one_le, Nat.le_div_iff_mul_le hdpos]
+  calc (L + 1) * dyadicBlock r ≤ (L + 1) * (2 * L) := Nat.mul_le_mul_left _ hdle
+    _ = 2 * L * L + 2 * L := by rw [Nat.add_mul, Nat.one_mul]; rw [Nat.mul_comm L (2 * L)]
+    _ ≤ 2 ^ L := hbig
 
 end ProximityGap.Frontier.OverdetVanishingCosetCount

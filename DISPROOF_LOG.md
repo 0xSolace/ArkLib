@@ -3276,3 +3276,32 @@ Johnson-lock (9629193c6, DecouplingDecayCrossingDepth, antipodal mechanism) by i
 full-b-range enumeration. Far-line is the Plotkin/Johnson PROXY (epsMCA >= far_inc/q); the open
 prize is the UNDER-determined (s-k<=1) BGK char-sum wall M(n)=max_{b!=0}|sum_{x in mu_n} e_p(bx)|,
 UNCHANGED. No closure claimed. — wf-RB (proven-per-fixed-n n=16,20; binder-exact n=24)
+
+================================================================================
+REFUTATION (constraint lemma): the over-det VANISHING (coset-union) supply is NOT the binding
+constraint at prize depth — it is super-exponentially LOOSE there. (zeta lane, push pending)
+================================================================================
+OBJECT (exact char-0 cyclotomic, PROPER mu_n, n=2^a, NEVER n=q-1): the over-det vanishing-subset
+count V_r(n) = #{S subset mu_n : p_1(S)=...=p_r(S)=0}, the §6.5 generating-function object. CLOSED
+FORM (axiom-clean, OverdetVanishingCosetCount.lean, pushes 29b45f180 + f4e864a8b):
+   V_r(n) = 2^{ n / 2^{floor(log2 r)+1} }   (r>=1)   [= coset-unions of the order-2^{floor(log2 r)+1}
+   subgroup; vanishing <=> coset-union; #cosets = n/d, each in/out].
+
+CONSTRAINT LEMMA (probe_zeta_supply_vs_budget.py, exact integer, multi-n 2^8..2^128):
+The prize budget is q*eps* ~ n (the #bad cap). Comparing V_r to the budget n:
+ (a) At the PRIZE BINDING DEPTH r ~ log2 n (the deep-rung r* ~ ln q ~ depth log m, where the BGK
+     wall lives): V_{log2 n}(n) = 2^{n/(2 log2 n)} -- SUPER-EXPONENTIALLY above the budget n
+     (supply/budget = 2^{n/(2 log2 n) - log2 n}; e.g. n=2^16: 2^2048 vs 2^16; n=2^30: 2^33554432
+     vs 2^30). The coset-union vanishing supply is ASTRONOMICALLY loose at prize depth.
+ (b) V_r(n) only DROPS to the budget n at depth r* ~ n/(2 log2 n) (EXACT: r*/n = 1/(2 log2 n),
+     verified n=2^8..2^30, MATCH). That crossover depth r* ~ n/log n is FAR deeper than the
+     prize-relevant shallow depth r ~ log n.
+
+VERDICT: the over-det vanishing (coset-union) subset COUNT is NOT the constraint that binds at prize
+depth -- it is loose by a doubly-exponential margin throughout the shallow r ~ log n regime where the
+BGK wall lives. This is a mapped refutation WITH MECHANISM (the exact dyadic closed form): it rules
+out the coset-union supply-count as the prize binding object and confirms (per the §2 master chain)
+that the binding constraint at prize depth must be the W4 sub-exponential CANCELLATION (the
+DC-subtracted A_r <= Wick char-p validity), NOT the supply count. Localizes the open core AWAY from
+the §6.5 supply-count object. CORE (M(mu_n) <= C sqrt(n log m)) UNCHANGED/OPEN. -- zeta lane,
+co-author wakesync.
