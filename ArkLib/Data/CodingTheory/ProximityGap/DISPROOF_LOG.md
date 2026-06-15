@@ -12578,3 +12578,46 @@ VERDICT (rule-3, rule-4, rule-6): a WIN that MAPS the §6 dichotomy more precise
 
 ## O181 (#444 R2 2026-06-15) — see docs/kb/deltastar-444-round2-2026-06-15.md
 OVER-DET FAR-LINE JOHNSON-LOCKED (c*=k-1, delta*=1/2+1/n, exact n<=28, n=32 predicted) => off-BGK floor NOT via far-lines (lead-closure, _wf3D6 axiom-clean). Nonlinear levers A0 telescope p^2n / A1 signed-cube Z3=0 thin-vacuous / SOS=moment wall. C21-C28 dead. C28 LESSON: non-telescoping NECESSARY-NOT-SUFFICIENT, lever must pin peak to M argmax. CORE OPEN.
+
+## 2026-06-15 (#444 BATCH-VERIFY) — C16/C18/C22/C25/C49/C50: all 6 analyst verdicts CONFIRMED (no flip; route-elimination holds)
+
+Fresh reproducible probes over proper mu_n (n=2^mu), p PRIME, p>>n^3, p==1 mod n index>=2, NEVER n=p-1, multi-prime. None survive past Johnson.
+
+- **C16 (Lenstra-gap coset-core) = reduces-to-johnson.** `probe_444_batchverify_c16_c18.py`: the
+  binding far-line witness coset-core REACHES n/2 (literal "capped below n/2" is FALSE), but every
+  such witness is subgroup-SATURATED (a=n/2 antipodal / even-subgroup mu_{n/2} = the two-layer
+  degeneracy). GENUINE s* (saturation excluded) = 2,4,6 at n=8,16 — two SMALL-subgroup cosets
+  ({0,1,8,9},{0,1,2,8,9,10}), all <= Johnson sqrt(kn). So the only past-Johnson signal is the
+  degenerate artifact; the genuine binding object caps at Johnson. AGREE.
+- **C18 (Bi-Cheng-Gao sparse-root, coset core dominates) = reduces-to-johnson.** Same probe/data:
+  the "coset core dominates past Johnson" holds ONLY via the saturated witness; genuine binding =
+  two small cosets, sub-Johnson. AGREE.
+- **C22 (BDG field-size HOMDS, generic-vs-fixed) = secretly-open.** `probe_407_P7_homds_growth_law.py`
+  (re-run): explicit mu_n HOMDS list-excess corank L_max(n,n/2) = 2,4,8,16,32,64 (n=8..256),
+  L/(a-1)->1/2 = Theta(a), char-faithful at thick p. NOT O(1)/O(log n) -> relaxed rMDS_d with small
+  d FAILS over fixed mu_n; required field stays at the quasipoly n^Theta(log n) wall. GM-MDS exists
+  generically but the FIXED prize domain mu_n does not relax => pinning delta* still needs the open
+  structured/p-dependent bound. AGREE.
+- **C25 (GM-MDS resultant Galois, g(mu_n)=0 char-0 via n-core) = refuted-false.**
+  `probe_444_batchverify_c25_resultant_galois.py`: the resultant g = det(zeta^{beta_j i}) over the
+  FIXED mu_n VANISHES (ALL prize primes, char-faithful) exactly when the abacus n-core is NONEMPTY
+  (n nmid a) = the generic past-Johnson rectangle shapes; nonzero only when n|a (the coset/antipodal
+  = Johnson regime). So the Galois resultant is DEGENERATE on the relevant shapes -> it cannot cap
+  the list there -> "resultant Galois caps past Johnson" is vacuous. No char-p bad-prime artifact
+  past the n=p-1 trap (smallsubgroup_resultant: only p=17=n+1 for n=16). AGREE.
+- **C49 (two-layer-law L7 reduction) = secretly-open.** Source-verified `OpenCoreConditionalPin.lean`:
+  the Prop `WorstCaseIncidenceBounded C delta B` (I(delta)<=B at window radius) IS the recognized
+  open prize core (lines 64-67: "stated, NOT proved"; best uncond bound n^{1-o(1)} vacuous at budget
+  ~n). Only the conditional implication Prop ==> delta* lower pin and the boundary are proven
+  (axiom-clean). The L7 Prop = the open core, only the boundary discharged. AGREE.
+- **C50 (char-faithful saturation extrapolation) = refuted-false.** `probe_c01_worst_direction.py`
+  (re-run): the saturation crossing offset s*-k is n/4 (LINEAR: 4@n=16, 8@n=32), NOT log2(n) (4 vs 5
+  at n=32 — diverges; coincides only at n=16). The log2n form is the already-killed C01/C10. The
+  genuine char-0 offset n/4 gives delta*=3/4-rho, a CONSTANT 1/4 below capacity — a rigorous char-0
+  UPPER bound OFF the BGK wall, does NOT track the Theta(1/log n) floor; monotone extrapolation to
+  prize n is unproven and gives a wrong (too-aggressive) value. AGREE.
+
+NET: 6/6 confirmed, 0 flips. Consistent with the route-elimination meta-theorem — every
+closed/p-independent object (coset-core, sparse-root, HOMDS corank, Galois resultant, two-layer
+boundary, saturation offset) caps at Johnson or is an open named Prop; past-Johnson needs the open
+BGK sup-norm wall. Probes: probe_444_batchverify_c16_c18.py, probe_444_batchverify_c25_resultant_galois.py.
