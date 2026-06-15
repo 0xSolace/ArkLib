@@ -166,9 +166,21 @@ theorem twistedLineEnergy_le_card_sq {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
       ≤ ((S ×ˢ S).card : ℝ) := by exact_mod_cast hle
     _ = (S.card : ℝ) ^ 2 := by rw [Finset.card_product]; push_cast; ring
 
+/-- **Non-fold line-energy AVERAGE over the `q` line points is exactly `|S|` — the `√|S|` scale, no
+`B`.**  Dividing the non-fold line energy `q·|S|` by the number of line points `q = |F|`: the typical
+twisted line period has size `√|S| = √n`, the same average scale as the global second moment, with no
+appearance of the sup `B`.  This is the explicit L²/average-measurability of the twisted annihilator-
+line incidence on non-fold directions. -/
+theorem twistedLineEnergy_average_of_injOn {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (S : Finset ι) (φ : ι → F) (hinj : Set.InjOn φ S) (hq : 0 < Fintype.card F) :
+    (∑ t : F, ‖twistedLineEta ψ S φ t‖ ^ 2) / (Fintype.card F : ℝ) = S.card := by
+  rw [twistedLineEnergy_eq_card_of_injOn hψ S φ hinj, mul_comm, mul_div_assoc,
+    div_self (by exact_mod_cast hq.ne'), mul_one]
+
 end ArkLib.ProximityGap.TwistedLineCollisionParseval
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound only) -/
 #print axioms ArkLib.ProximityGap.TwistedLineCollisionParseval.twistedLineEnergy_eq_collisionCount
 #print axioms ArkLib.ProximityGap.TwistedLineCollisionParseval.twistedLineEnergy_eq_card_of_injOn
 #print axioms ArkLib.ProximityGap.TwistedLineCollisionParseval.twistedLineEnergy_le_card_sq
+#print axioms ArkLib.ProximityGap.TwistedLineCollisionParseval.twistedLineEnergy_average_of_injOn
