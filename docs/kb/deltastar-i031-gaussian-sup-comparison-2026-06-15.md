@@ -99,11 +99,34 @@ Salem–Zygmund note) · insight 8 (cleanly separates what chaining buys — ind
 the open per-period tail) · proximity 9 (exact prize frame) · feasibility 4 (the residual is the BGK
 wall, no genuine reduction; chaining adds nothing the union bound did not).
 
+## Adversarial verification (2026-06-15)
+
+Independent re-run reproduced all primary probes exactly: metric flatness (frac<½diam
+0.163→0.077→0.012→0→0), `sig_eff²/n ∈ [0.57, 0.92]` (n=8..512), `M/E sup|G| ∈ [1.26, 1.39]`,
+β-sweep *decreasing* 0.70→0.59. The Lean file rebuilt clean: real `lake build` (3312 jobs,
+`autoImplicit=false`), all six theorems on `[propext, Classical.choice, Quot.sound]`, no `sorryAx`,
+no Weil. The file honestly proves ONLY Step (i) — six algebraic facts about two `noncomputable def`s
+(`matchedCov`, `matchedSqMetric`); it does NOT claim the sup-comparison or the orbit-reduction as a
+theorem and hides no content in a hypothesis.
+
+NEW out-of-sample test of the knife-edge (`probe_i031_creep_adversarial_verify.py`, 3 primes/n):
+fit `sig_eff²/n` on n≤64, predict held-out n=128. **The constant model wins decisively** — held-out
+abs err: const 0.030, loglog 0.164, logn 0.195. The octave slopes are non-monotone with a *negative*
+last step (+0.086, +0.024, +0.102, **−0.140** for n=64→128: sig_eff²/n drops 0.80→0.66). The
+in-sample "loglog fits 3× better" finding does NOT survive out-of-sample: the apparent creep was a
+noisy single-point rise at n=64. This does not *prove* boundedness (the BGK `n^{o(1)}` residual is
+genuinely open and the accessible range is small), but it removes the empirical support for a creep —
+the bounded-constant (`isHandle`) reading is the one the data favors. **Verdict: faithful,
+not overclaimed.** The Lean is axiom-clean and correctly scoped; `isHandle=true` is defensible for
+the *structural* deliverable (covariance pinned, chaining = union bound), with the honest caveat that
+the *quantitative* exponent-1/2 claim still rests on the open BGK/Lamzouri per-period tail.
+
 ## Artifacts
 - `ArkLib/Data/CodingTheory/ProximityGap/I031MatchedGaussianCovariance.lean` (axiom-clean)
 - `scripts/probes/probe_i031_metric_flatness_vs_collapse.py`
 - `scripts/probes/probe_i031_deeptail_anomaly.py`
 - `scripts/probes/probe_i031_perperiod_subgaussian_tail.py`
 - `scripts/probes/probe_i031_proxy_creep_regression.py`
+- `scripts/probes/probe_i031_creep_adversarial_verify.py` (held-out / octave-slope verification)
 - prior: `probe_i031_det_vs_random_transfer.py`, `probe_i031_quotient_chaining.py`,
   `deltastar-salem-zygmund-gausssum-chaining-2026-06-13.md`
