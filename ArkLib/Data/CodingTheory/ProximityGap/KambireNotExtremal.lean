@@ -30,14 +30,16 @@ construction ⟹ failure at a SMALLER `δ` ⟹ the Kambiré formula is an upper 
 Issue #407.
 -/
 
-namespace ProximityGap.Frontier.KambireNotExtremal
+namespace ArkLib.ProximityGap.KambireNotExtremal
 
 /-- **The complete-homogeneous count dominates the subset-sum count.** For all `s r : ℕ`,
 `Nat.choose s r ≤ Nat.multichoose s r`. Equivalently `C(s,r) ≤ C(s+r−1, r)`: choosing `r` elements
 WITH repetition from `s` is at least as plentiful as choosing `r` DISTINCT elements. -/
 theorem choose_le_multichoose (s r : ℕ) : Nat.choose s r ≤ Nat.multichoose s r := by
   rw [Nat.multichoose_eq]
-  exact Nat.choose_le_choose r (by omega)
+  rcases Nat.eq_zero_or_pos r with rfl | hr
+  · simp
+  · exact Nat.choose_le_choose r (by omega)
 
 /-- **Pascal strict step.** For `1 ≤ r ≤ s`, `C(s,r) < C(s+1,r)` — the upper index strictly increases
 the binomial when `r ≤ s` (`C(s+1,r) = C(s,r−1)+C(s,r)` with `C(s,r−1) ≥ 1`). -/
@@ -45,8 +47,7 @@ theorem choose_lt_choose_succ {s r : ℕ} (hr : 1 ≤ r) (hrs : r ≤ s) :
     Nat.choose s r < Nat.choose (s + 1) r := by
   obtain ⟨k, rfl⟩ : ∃ k, r = k + 1 := ⟨r - 1, by omega⟩
   rw [Nat.choose_succ_succ s k]
-  have : 0 < Nat.choose s k := Nat.choose_pos (by omega)
-  omega
+  exact lt_add_of_pos_left _ (Nat.choose_pos (by omega))
 
 /-- **Strict domination in the prize-relevant range.** For `2 ≤ r ≤ s`, the complete-homogeneous count
 STRICTLY exceeds the subset-sum count: `C(s,r) < multichoose s r`. This is the formal content of "the
@@ -58,3 +59,8 @@ theorem choose_lt_multichoose (s r : ℕ) (hr : 2 ≤ r) (hrs : r ≤ s) :
   calc Nat.choose s r
       < Nat.choose (s + 1) r := choose_lt_choose_succ (by omega) hrs
     _ ≤ Nat.choose (s + r - 1) r := Nat.choose_le_choose r (by omega)
+
+end ArkLib.ProximityGap.KambireNotExtremal
+
+#print axioms ArkLib.ProximityGap.KambireNotExtremal.choose_le_multichoose
+#print axioms ArkLib.ProximityGap.KambireNotExtremal.choose_lt_multichoose
