@@ -520,6 +520,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.AffineLineJointAgreement
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.CollinearProximates
 import ArkLib.Data.CodingTheory.ProximityGap.BCKHS25.Interpolation
 import ArkLib.Data.CodingTheory.ProximityGap.BGKBridge
+import ArkLib.Data.CodingTheory.ProximityGap.BGKLimitConditional
 import ArkLib.Data.CodingTheory.ProximityGap.BGKNearRamanujan
 import ArkLib.Data.CodingTheory.ProximityGap.BGKSolSetSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.BadFamilyCensus
@@ -934,6 +935,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleAssembled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CountLaneNotSecondOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CurveDecodability
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCSubtractedCoshMGF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthGrowsInN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthRateConstant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingDecayCrossingDepth
@@ -965,6 +967,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PeriodOrbitQuotientReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarMultDivision
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
@@ -1001,6 +1004,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BindingRadiusAffineFiber
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroWickEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantFour
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevReductionModP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevStructuralInputs
@@ -1035,6 +1039,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodMomentCensus
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodRealValued
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GrossKoblitzPhaseNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HankelPronyCore
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._I031OrbitQuotient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealLatticeMinkowskiCorrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealSVPGirthVerdict
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ImprimitiveRatioLevelSet
@@ -1083,6 +1088,14 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf3D5_lamleung_orbit_back
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf3D6_overdet_johnson_lock
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf4OFG_overdet_floor_bridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf4SAL_salie_obstruction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5A2_sos_blindness
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5E1_WassersteinUnionNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5G1_osv_curve_floor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5G2_stepanov_supnorm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5M1_HeightCountRoute
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5M2_stickelberger_depth
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5M3_crossstep_ceiling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf5M4_NewtonPolygonDepthOpt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
@@ -1651,6 +1664,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConverse
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountConsumerBridge
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitCountCrossingLaw
 import ArkLib.Data.CodingTheory.ProximityGap.OrbitSpectrumBound
@@ -1698,6 +1712,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorAdmissible
 import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEnergyHeadline
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormFromPairing
@@ -2012,6 +2027,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLadder
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMomentLevelSet
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumRawMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
