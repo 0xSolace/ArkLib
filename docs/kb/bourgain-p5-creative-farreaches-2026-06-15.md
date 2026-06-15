@@ -70,3 +70,20 @@ No escape, for three sharp PROVEN reasons:
 This is the cleanest characterization of the prize's hardness the campaign has: it is not "a hard char sum,"
 it is BCHKS-1.12 in the one regime engineered (by FFT-friendliness) to remove every symmetry/cohomology/
 shortcut lever — leaving only the direct deep-moment estimate, which is the recognized 25-yr-open core.
+
+## 4th proven no-escape reason (deepest, from the FF survivor deep-dive)
+(4) ARCHIMEDEAN INFO DISCARDED IN FF: the genuine function-field analog of μ_n (Carlitz-torsion geometric
+Gauss sums) has a UNIFORM v-ADIC valuation (Gross-Koblitz, arXiv:2502.01109 Prop 1.3.4: normalized valuation
+−1/(q−1)), NOT an archimedean modulus on a circle in ℂ. The prize is the ARCHIMEDEAN magnitude / √-cancellation;
+the FF object has a completely-determined ALGEBRAIC v-adic size and has thrown away the archimedean phase info.
+So function fields — where the full Weil/Deligne machinery is available and everything is provable — are
+provable about the WRONG (v-adic) object; transfer back would need to re-manufacture archimedean cancellation
+from a v-adic identity, and the archimedean and v-adic places are DECOUPLED (no mechanism; would need a new
+Gross-Koblitz-style archimedean companion). This is why "lift to where it's provable" fundamentally fails:
+the provability comes precisely from having discarded the prize's content.
+
+So: 4 PROVEN structural reasons no far-reaches angle escapes the BCHKS-1.12 core — (1) trivial Frobenius kills
+Galois tools, (2) 0-dim base kills Weil cohomology, (3) low-moment union provably needs r~log m, (4) the FF
+analog is v-adic not archimedean. The prize is BCHKS Conj 1.12 in the symmetry/cohomology/shortcut-minimal
+regime; the only surviving target is the DIRECT char-p archimedean sup-norm at depth r~log m for the primitive
+character — the recognized 25-yr-open wall. CREATIVE-EXPLORATION LOOP COMPLETE (no closure; sharp WHY-map).
