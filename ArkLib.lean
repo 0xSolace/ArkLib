@@ -937,6 +937,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ConvergenceHub
@@ -970,6 +971,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderExceedsPrize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodTailMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinRealizabilityCodim
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinResidueDegree
@@ -1579,6 +1581,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.PencilNormalizerBand
 import ArkLib.Data.CodingTheory.ProximityGap.PencilSplitCount
 import ArkLib.Data.CodingTheory.ProximityGap.PeriodMomentLaw
+import ArkLib.Data.CodingTheory.ProximityGap.PeriodTailMarkov
 import ArkLib.Data.CodingTheory.ProximityGap.PermanentlyBlocked
 import ArkLib.Data.CodingTheory.ProximityGap.PinBeyondJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.PointwiseEnergyCeilingNoGo

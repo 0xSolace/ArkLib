@@ -27,7 +27,7 @@ Issue #407.
 
 open Finset
 
-namespace ProximityGap.Frontier.PeriodTailMarkov
+namespace ArkLib.ProximityGap.PeriodTailMarkov
 
 variable {ι : Type*} [Fintype ι]
 
@@ -47,6 +47,6 @@ theorem card_filter_mul_le_sum_pow (a : ι → ℝ) (ha : ∀ i, 0 ≤ a i) (T :
         Finset.sum_le_sum_of_subset_of_nonneg (Finset.subset_univ s)
           (fun i _ _ => pow_nonneg (ha i) r)
 
-end ProximityGap.Frontier.PeriodTailMarkov
+end ArkLib.ProximityGap.PeriodTailMarkov
 
-#print axioms ProximityGap.Frontier.PeriodTailMarkov.card_filter_mul_le_sum_pow
+#print axioms ArkLib.ProximityGap.PeriodTailMarkov.card_filter_mul_le_sum_pow
