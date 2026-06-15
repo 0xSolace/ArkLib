@@ -11206,3 +11206,68 @@ adds nothing past Johnson; the coset core (the closed/antipodal object) is where
 caps at Johnson by the route-elimination meta-theorem.
 
 **Probe committed:** `scripts/probes/probe_c17_dilation_pencil_sharp.py` (commit `b73fa70e8`).
+
+## C19 (#444): Mason-Stothers ABC degree-multiplicity pin via antipodal square descent — REFUTED (vacuous proof mechanism; the bound it claims to deliver IS the open core) — 2026-06-15
+
+**Claim.** After antipodal even/odd descent, the isolated (ragged) witnesses inject into the
+`μ_{n/2}`-roots of `F = E²−u·O²` with `E = u^{a/2}+γu^{b/2}−cE`, `deg E,O < k/2`. C19 asserts
+**Mason-Stothers** (`Polynomial.abc` in Mathlib) on the coprime triple `X=E², Y=−u·O², Z=F`
+(`X+Y=Z`) with *small* `rad(u·O²)` forces the distinct-root count `≤ 3k/2+1`, flat in `n`, giving
+`δ*=1/2−O(ρ)` past Johnson at `ρ=1/16`. Cites in-tree `_IsoSparsityMasonStothers` (`O(k)` sparsity)
++ `_AntipodalEvenOddDescent`.
+
+**The proof mechanism is VACUOUS — Mason-Stothers never beats the trivial `deg F` bound on the
+ragged triple.** MS gives `max(deg X,deg Y,deg Z) ≤ rad(X·Y·Z)−1 ≤ rad(E)+rad(u·O²)+rad(F)−1`.
+For the prize shape with `a,b ~ n`:
+- `deg F = deg(E²) = a ≈ n` (trivial bound);
+- `rad(E) ≈ (a−b)/2 ≈ n/2` — the sparse binomial head `u^{a/2}+γu^{b/2}` re-injects an `≈ n/2`
+  radical that `deg O<k/2` does **not** control;
+- `rad(u·O²) ≤ 1+deg O < 1+k/2` — the ONLY small radical (the only `deg O<k/2` lever);
+- `rad(F) ≈ deg F ≈ n` — in the genuinely-**ragged** case `F` is squarefree of full degree.
+
+So MS reads `a ≤ (a/2)+(k/2)+a−1 = (3a/2)+(k/2)−1 ≫ a`. The two `≈ n` radicals `rad(E)~n/2`,
+`rad(F)~n` DROWN the small `rad(u·O²)`. This is exactly the in-tree analytic statement
+`mason_stothers_iso_feed_vacuous` (`_IsoSparsityMasonStothers.lean:122`), whose own docstring says
+"MS-direct yields a *proven* O(k) sparsity, and **reduces** |iso|≤poly(k) to a named isolated /
+non-coset root conjecture; it does **not** beat the general Kelley/BGK count."
+
+**Machine/numeric witness (exact over GF(p), proper `μ_n`, `p` prime, `p>n³`, NEVER `n=p−1`).**
+Built extremal prize-shape `P=x^a+γx^b−c` (a,b even, deg c<k) planting `k+1` agreement points,
+ran the antipodal descent, computed actual polynomial radicals (squarefree parts) of `E²`, `u·O²`,
+`F` over `F_p`, and tested `rad(E)+rad(u·O²)+rad(F)−1 < deg F` (= "MS beats trivial"):
+
+| n | k | a | b | O≡0? | degF | radE² | rad(uO²) | radF | MS rhs | MS beats? |
+|---|---|---|---|------|------|-------|----------|------|--------|-----------|
+| 64 | 4 | 28 | 24 | no (ragged) | 28 | 14 | 2 | 28 | 43 | **no** |
+| 64 | 8 | 56 | 40 | no (ragged) | 56 | 28 | 4 | 54 | 85 | **no** |
+| 128 | 8 | 86 | 14 | no (ragged) | 86 | 43 | 4 | 85 | 131 | **no** |
+| 128 | 16 | 86 | 34 | no (ragged) | 86 | 43 | 8 | 86 | 136 | **no** |
+
+In **every genuinely-ragged (`O≢0`) row — the ONLY case C19's mechanism targets** — MS rhs ≈ 3n/2
+≫ deg F: MS is strictly vacuous. The only rows where MS "beats" the trivial bound are the
+**pure-coset `O≡0` case** (then `F=E²` is a perfect square, `radF=radE²=n/2`, `rad(uO²)=0`), which
+is **NOT** the ragged/isolated witnesses C19 needs — it is the in-tree closed-form antipodal case
+the route-elimination meta-theorem already proves **caps at Johnson**. And even there MS only
+recovers `root count ≈ n/2`, nowhere near the claimed `3k/2+1`.
+
+**The deeper structural point.** C19 conflates (i) the *measured* fact `|iso| ≤ 3k/2+1` flat in n
+(real — confirmed by probes here and by `_AntipodalEvenOddDescent`'s `IsolatedCountResidual`) with
+(ii) a *proof* that Mason-Stothers delivers it (false). The bound `|iso| ≤ poly(k)` is **exactly**
+the open isolated/non-coset root count = the recognised Kelley/BGK general-position cancellation one
+2-adic level down (`IsolatedCountResidual`, `IsolatedNonCosetCountResidual`), which both in-tree
+bricks explicitly NAME as the open residual they do NOT discharge. Mason-Stothers touches none of
+it: the `T`-sparsity of `F` does not bound roots in a subgroup (`u^e−1` is 2-sparse with `e` roots),
+and the MS radical bound is drowned by the sparse-square head.
+
+**Which horn:** **secretly-open** — the bound C19 claims Mason-Stothers proves IS the open BGK/Kelley
+isolated-root count; MS is provably vacuous on the ragged triple, so the past-Johnson pin requires
+the unresolved residual. Degenerates to **reduces-to-johnson** on the only reading where MS is
+non-vacuous (the pure-coset `O≡0` antipodal core, capped at Johnson by the meta-theorem). Consistent
+with **C20 (#444)** (no roots-of-unity Khovanskii analogue), **wf-NK (#444)** (fewnomial adds
+nothing tighter than the union bound), and the in-tree `mason_stothers_iso_feed_vacuous` /
+`IsolatedNonCosetCountResidual` self-documented gap.
+
+**Probe committed:** `scripts/probes/probe_conjecture_refute_C19_mason_stothers.py` (self-contained,
+sympy GF(p); exact radicals + ragged/pure-coset split).
+
+---
