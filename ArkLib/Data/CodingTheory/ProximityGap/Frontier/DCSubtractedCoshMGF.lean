@@ -92,9 +92,27 @@ theorem period_le_of_dcMGFBound {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G :
   rw [le_div_iff₀ hy]
   exact hlog
 
+/-- **Gaussian-form DC-subtracted cosh-MGF consumer.**  This is the call-site shape for the #444
+saddle: if the DC-subtracted MGF is bounded by `q·exp(|G| y²/2)`, then every nonzero period satisfies
+`‖η_b‖ ≤ log(2q exp(|G|y²/2))/y`. -/
+theorem period_le_of_dcGaussianMGFBound {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    {y : ℝ} (hy : 0 < y) {b₀ : F} (hb₀ : b₀ ≠ 0)
+    (hDCMGF : (∑' r : ℕ,
+          (((Fintype.card F : ℝ) * rEnergy G r - (G.card : ℝ) ^ (2 * r))
+            * y ^ (2 * r) / ((2 * r).factorial : ℝ)))
+        ≤ (Fintype.card F : ℝ) * Real.exp ((G.card : ℝ) * y ^ 2 / 2)) :
+    ‖eta ψ G b₀‖
+      ≤ Real.log
+          (2 * ((Fintype.card F : ℝ) * Real.exp ((G.card : ℝ) * y ^ 2 / 2))) / y := by
+  refine period_le_of_dcMGFBound hψ G hy ?_ hb₀ hDCMGF
+  have hqpos : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    have := Fintype.card_pos (α := F); exact_mod_cast this
+  positivity
+
 end ProximityGap.Frontier.DCSubtractedCoshMGF
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.DCSubtractedCoshMGF.nonzeroCoshMGF_eq_dcMoment_tsum
 #print axioms ProximityGap.Frontier.DCSubtractedCoshMGF.cosh_period_le_dcMoment_tsum
 #print axioms ProximityGap.Frontier.DCSubtractedCoshMGF.period_le_of_dcMGFBound
+#print axioms ProximityGap.Frontier.DCSubtractedCoshMGF.period_le_of_dcGaussianMGFBound
