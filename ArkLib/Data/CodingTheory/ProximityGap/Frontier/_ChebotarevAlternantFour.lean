@@ -325,6 +325,16 @@ theorem vandermonde_four_ne_zero (ri : Fin 4 → ZMod p) (hri : Function.Injecti
 
 /-! ## The headline: the `n = 4` instance of the crux (`p ≥ 7`). -/
 
+/-- **The lone unresolved prime for `n = 4`: `p = 5` (NAMED, not proven).** This is exactly the
+statement `GeneralizedVandermondeNonzeroModP 5 4`, recorded as its own name because the order-`6`
+descending-factorial mechanism degenerates at `p = 5` (`720, 60 ≡ 0 (mod 5)`) and a finite `decide`
+over the `5⁸` injective pairs is infeasible (see the file docstring). The probe confirms the alternant
+*is* nonzero mod `5` (ratio `≡ 3`, i.e. `2·alternant ≡ V_r V_c`); only a Lucas-type or symmetry-reduced
+argument would close it, and that is left open. It is implied by `AlternantFactorsConstant 5 4` with the
+witness `c = 1/12 ≡ 3 (mod 5) ≠ 0` (see `crux_of_factorConstant`), so Route B subsumes it. -/
+def GeneralizedVandermondeNonzeroAtFive : Prop :=
+  GeneralizedVandermondeNonzeroModP 5 4
+
 /-- **The `n = 4` instance of the generalized-Vandermonde alternant crux (PROVEN, `p ≥ 7`).**
 
 For every prime `p ≥ 7` and every pair of *injective* selections `ri ci : Fin 4 → ZMod p`, the
