@@ -396,3 +396,90 @@ prize scale (r* -> small as n -> infinity). Only the DC-subtracted A_r <= Wick s
 (confirmed separately: A_r/Wick collapses, never crosses 1). The char-0 Lam-Leung pairing structure is
 not "loose at high r" but actively false from a low, n-shrinking rung onward — the DC subtraction is
 the only repair. Reinforces: prize object = DC-subtracted A_r <= Wick, forall-field, = BGK wall.
+
+## Anomaly-suppression in-window survival — bad primes INVADE the prize window (β_bad grows in n), but Anom_r ≤ n^{2r}/p STILL HOLDS there (2026-06-15)
+
+LENS: the HEAD anomaly route (dbbe1b01e). `Anom_r(p) = E_r^(p) − E_r^(0) ≤ n^{2r}/p` is the SUFFICIENT
+condition for `A_r ≤ Wick` (the DC-subtracted prize core). Orchestrator showed `Anom = EXACTLY 0` at n=8
+prize primes (r≤6) and flagged the OPEN asymptotic: for large n the bad primes (where Anom>0) can reach the
+prize window `[n^4, (2r)^{n/2}]` at r~log q.
+
+TEST (exact, NEW angle = NORMS, no per-prime FFT for the onset):
+`Anom_r(p) > 0  ⟺  p | N(α)` for some r-collision difference `α = Σζ^{a_i} − Σζ^{b_j} ≠ 0` in `Z[ζ_n]`.
+So r-bad primes = prime factors of the norms `N(α)` (computed exactly via the φ=n/2 conjugate product,
+ζ^φ=−1 for n=2^a). Probe `scripts/probes/probe_407_anom_badprime_norm_onset.py`.
+
+RESULT 1 — bad-prime onset exponent β_bad = log_n(p_bad) GROWS in n, invading the prize window at LOWER r:
+  n=8:  first r with p_bad ≥ n^4 is r=6 (β_bad 4.28)
+  n=16: r=4 (β_bad 4.60)
+  n=32: r=2 (β_bad 4.87)
+=> the orchestrator's "Anom=0 at prize primes" is a SMALL-n ARTIFACT (at n=8 the window is bad-prime-free
+below r=6). Matches the independently-observed pairing-rung descent (r* 15→6→4→3, b58cf1d03): the char-p
+anomaly is NOT confined below the prize window asymptotically.
+
+RESULT 2 — but the SUFFICIENT condition SURVIVES at the in-window bad primes (the real BGK test at scale):
+n=16, r=4, ALL 26 in-window bad primes p ∈ [n^4=65536, 1.5e6]: `Anom_4(p) ≤ n^8/p` HELD at **26/26**,
+TRUE WORST ratio = **0.4757** at p=76001 (β=4.053), i.e. ~2.1× margin. Probe
+`scripts/probes/probe_407_anom_suppression_inwindow.py` (vectorized norms + exact FFT integer-count Anom).
+
+NET (honest): a POSITIVE mapped-frontier result for the anomaly route — bad primes do invade the window
+but the anomaly is suppressed there with margin at accessible scale. NOT a closure: sub-prize-budget primes
+(p ≤ 1.5e6), fixed r; the worst PRIZE prime at r~log q, p~2^128 (the BGK content) is untouched. Complements
+`probe_407_bgkproof_onset_growth` (which tracks the ratio along the r-axis at a fixed prime); this pins the
+worst-case ACROSS the bad-prime set inside the window at fixed r. Both axes now bounded at accessible scale.
+
+---
+
+## [over-det δ*] s* budget-crossing: s*−k appears CONSTANT (=3) at accessible n — honest tension with floor (2026-06-15, opus-4-8 subagent)
+
+Follow-up to the over-det incidence MAX closed form `I_max(n)=n³/32−n²/8+1` (push 0c7492b0d) and the
+union-of-singletons p-independence brick (47dcd71b3, sibling). The δ* open item #2 is the budget-crossing
+`s* = min{s : maxI(s) ≤ budget=n}`, giving `δ* = (n−s*)/n`.
+
+PROBE (probe_407_sstar_budget_crossing.py, char-0 p≫n³, far-incidence COUNT per direction, s swept up
+from k+2; MAX over directions; full-direction at n=16, antipodal-nbhd lower-bound at n=20):
+- **n=16, k=2: s*=5 (FULL-direction verified — maxI(4)=97>16, maxI(5)=16≤16). s*−k=3. δ*=0.6875.**
+- **n=16, k=4: s*=7 (antipodal-nbhd; matches the campaign's independently-published δ*=0.5625). s*−k=3.**
+- **n=20, k=2: s*=5 (antipodal-nbhd ⟹ s* LOWER BOUND). s*−k=3. δ*=0.75.**
+
+OBSERVATION: `s*−k = 3` is CONSTANT across n=16,20 AND k=2,4 in the accessible range — both k-independent
+and n-independent here. This SHARPENS the prior `deltastar-407-char0-logn-over-n-candidate` note, which
+conjectured `s*−k = log₂(n)` from only n=16,32 at ρ=1/8 (where log₂16=4, but my n=16 gives s*−k=3, not 4 —
+the discrepancy is the budget/direction convention: my budget is exactly n, full-direction MAX).
+
+HONEST TENSION (the decisive open question, NOT resolved here):
+- IF `s*−k` stays constant → `δ* = 1 − (k+s*−k)/n → 1` (capacity) as n→∞, which would CONTRADICT the
+  conjectured floor `δ* = 1−ρ−Θ(1/log n)` (a Θ(1/log n) gap BELOW capacity). i.e. constant-defect ⟹ δ*
+  rises ABOVE the floor (toward capacity) asymptotically.
+- BUT: this is exactly the doc's flagged pre-asymptotic regime (small n, coarse 1/n band granularity,
+  the conjectured floor is itself below Johnson at these n = degenerate window). Constant-3 at n∈{16,20}
+  CANNOT be extrapolated — n=32,64 (army's Rust engine, ~9.6h+ at ρ=1/4) is needed to see if s*−k grows.
+- CAVEAT: my n=20 antipodal-nbhd s* is a LOWER BOUND (a non-antipodal direction could keep maxI above
+  budget at s=5, pushing the true s* up). The constant could be an undercount artifact at n>16.
+
+NET: a mapped data point (n=16 full-verified s*=5 ⟹ δ*=0.6875) + an honest tension (constant s*−k ⟹
+δ*→capacity, contra the floor) that the army's large-n Rust must resolve. NOT a refutation of the floor
+(small n, lower-bound s* at n>16). Logged, not receipted (over-det lane actively sibling-owned, 47dcd71b3 —
+one-active-speaker; not crowding with a competing receipt).
+
+## ★ REFINEMENT (sharpens the in-window survival entry above) — the SUFFICIENT proxy `Anom_r ≤ n^{2r}/p` FAILS at deep r at the worst prime, but the TARGET `A_r ≤ Wick` survives with margin (2026-06-15)
+
+Combined-axes trajectory at the WORST in-window bad prime p=76001 (n=16, β=4.05), r=2..r*=round(log p)=7:
+  r : Anom_r/(n^2r/p) [sufficient proxy] | A_r/Wick [actual target]
+  2 : 0.000 | 0.936     5 : 0.870 | 0.517
+  3 : 0.000 | 0.819     6 : 1.091 | 0.374  <-- proxy CROSSES 1
+  4 : 0.476 | 0.671     7 : 1.188 | 0.255  <-- proxy > 1
+So `Anom_r ≤ n^{2r}/p` (the clean sufficient form) FAILS at r=6,7 at the worst in-window prime — it does
+NOT survive to the optimizer depth r*. The fixed-r=4 survival result (26/26) is correct but does NOT extend
+to deep r at the worst prime.
+
+CRUCIAL: the ACTUAL target `A_r ≤ Wick` HOLDS at EVERY r (0.94→0.67→0.52→0.37→0.26, monotone decreasing),
+because `A_r ≤ Wick ⟸ Anom_r ≤ n^{2r}/p + (Wick − R_r)` and the `(Wick − R_r)` headroom absorbs the anomaly
+overshoot at deep r. (Consistent with probe_407_bgkproof_onset_growth's decomposition.)
+
+NET: the clean sufficient proxy `Anom_r ≤ n^{2r}/p` is the WRONG (too-strong) sufficient form at deep r — it
+overshoots exactly where the moment optimizer sits. The true open object is `A_r ≤ Wick` directly (= the
+DC-subtracted BGK core), which survives with margin at this accessible-scale prime but is NOT implied by the
+clean Anom-proxy past r=5. Anyone trying to close CORE via `Anom_r ≤ n^{2r}/p` will hit this proxy-failure at
+deep r; must use the `(Wick − R_r)` headroom (i.e. the full `A_r ≤ Wick`), not the clean proxy.
+Probe scripts/probes/probe_407_anom_worst_rtraj.py.
