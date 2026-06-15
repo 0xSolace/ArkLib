@@ -13775,3 +13775,30 @@ Kolmogorov-incompressibility (=N12) vacuous because worst b is short-describable
 SURVIVES: none.
 
 — wf-D9
+
+================================================================================
+REFUTATION (constraint lemma): the I031 orbit reduction yields NO FREE modulus-alphabet
+concentration — the (q-1)/n distinct-||eta_b|| values are essentially all distinct, so the sup
+over orbit reps is genuinely a sup over ~(q-1)/n independent-looking values (NOT a few circles).
+================================================================================
+OBJECT (exact Fp, PROPER mu_n=2^a, n|p-1, p>>n^3, NEVER n=q-1): the modulus alphabet
+{ ||eta_b|| : b in Fp* }, reduced via I031 to one value per mu_n-coset (orbit_count: exactly
+(q-1)/n cosets; card_distinct_etaNorm_le_orbitCount: distinct-||eta|| count <= (q-1)/n).
+
+CONSTRAINT LEMMA (probe_i031_modulus_concentration.py, exact, n=4..32):
+  - #distinct ||eta_b|| (rounded 3dp) / #cosets = CONC ~ 0.945..0.976 — i.e. ~95-98% of the
+    (q-1)/n cosets carry a DISTINCT modulus. NO collapse to a small alphabet. The metric-entropy
+    reduction is purely an INDEX reduction (log p -> log(p/n)); it gives no further free
+    value-concentration.
+  - the maximum is an ISOLATED spike: fraction of cosets with ||eta|| >= 0.9*max DROPS 0.067
+    (n=4) -> 0.0039 (n=32). No "many near-maximal cosets" cluster to exploit either.
+  - max/sqrt(n) tracks sqrt(log(p/n)): ratio ~0.85 (n=4), ~1.14..1.18 (n=8..32) — BGK-consistent;
+    the prize quantity M/sqrt(n) ~ C*sqrt(log(p/n)) with C ~ 1.1-1.2 in this small regime.
+
+VERDICT: a concentration/counting shortcut on the I031-reduced index is RULED OUT. The orbit
+reduction cleanly delivers the (q-1)/n index collapse (now axiom-clean in-tree: orbit_count +
+card_distinct_eta(Norm)_le_orbitCount) but the surviving open content is the per-rep CANCELLATION
+(the bounded-constant det->random sup transfer over ~(q-1)/n essentially-distinct values) — i.e.
+the genuine BGK wall, with no free modulus-alphabet structure to bypass it. Localizes the open core
+to the per-rep sup transfer, confirming I031 is an index-reduction lever NOT a value-concentration
+lever. CORE (M(mu_n) <= C*sqrt(n*log(p/n))) UNCHANGED/OPEN. — orbcount lane, co-author wakesync.
