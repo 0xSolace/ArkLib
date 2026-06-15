@@ -28,6 +28,14 @@ Johnson radius `1 − √ρ`** exactly when `H(ρ)/log₂ B < √ρ − ρ`, i.e
 (the past-Johnson budget threshold) then `H(ρ)/log₂ B < √ρ − ρ` (the floor gap is below the
 Johnson margin), i.e. `δ* = 1 − ρ − H(ρ)/log₂ B > 1 − √ρ = Johnson`.
 
+This file now closes the equivalence into a full **iff** and packages the actual conclusion:
+* `threshold_of_floorGap_lt_margin` : the converse direction (floor gap below margin ⇒ budget
+  exponent clears threshold), on the positive-exponent regime `0 < log₂ B`.
+* `pastJohnson_threshold_iff` : the two combined — `H(ρ)/log₂ B < √ρ − ρ ↔ H(ρ)/(√ρ − ρ) < log₂ B`.
+* `deltaStar_gt_johnson_of_budget` : the **named deliverable** — a checkable sufficient condition
+  on the list-budget exponent (`log₂ B > H(ρ)/(√ρ − ρ)`) under which `1 − √ρ < δ*` (the recovered
+  list-decoding radius is strictly past Johnson), with no `δ*`-side hypotheses.
+
 Honest scope: this is the *arithmetic* of the bridge only. The bridge's open input — that a
 worst-case `M`-bound actually supplies such a budget `B` at the Ramanujan exponent — is the
 recognized open core (BGK/BCHKS 1.12) and is NOT addressed here.
@@ -63,4 +71,52 @@ theorem pastJohnson_threshold_correct {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 
   rw [div_lt_iff₀ hlb]
   nlinarith [h1]
 
+/-- **Past-Johnson threshold (converse direction).** For `ρ ∈ (0,1)`, if the implied floor gap is
+below the Johnson margin (`H(ρ)/log₂ B < √ρ − ρ`) *and* the budget exponent is positive
+(`0 < log₂ B`, automatic once any list at all is past trivial), then the budget exponent clears the
+threshold `log₂ B > H(ρ)/(√ρ − ρ)`. Together with `pastJohnson_threshold_correct` this makes the
+threshold an **iff** on the positive-exponent regime. -/
+theorem threshold_of_floorGap_lt_margin {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1)
+    (hlb : 0 < Real.logb 2 B)
+    (hgap : Real.binEntropy ρ / Real.logb 2 B < Real.sqrt ρ - ρ) :
+    Real.binEntropy ρ / (Real.sqrt ρ - ρ) < Real.logb 2 B := by
+  have hc : 0 < Real.sqrt ρ - ρ := johnson_margin_pos hρ0 hρ1
+  -- H/L < √ρ−ρ  ⟹  H < (√ρ−ρ)·L
+  have h1 : Real.binEntropy ρ < (Real.sqrt ρ - ρ) * Real.logb 2 B :=
+    (div_lt_iff₀ hlb).mp hgap
+  -- conclude H/(√ρ−ρ) < L
+  rw [div_lt_iff₀ hc]
+  nlinarith [h1]
+
+/-- **The threshold equivalence (iff).** On the positive-budget-exponent regime `0 < log₂ B`, the
+floor gap is below the Johnson margin **iff** the budget exponent clears the threshold. -/
+theorem pastJohnson_threshold_iff {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1)
+    (hlb : 0 < Real.logb 2 B) :
+    Real.binEntropy ρ / Real.logb 2 B < Real.sqrt ρ - ρ ↔
+      Real.binEntropy ρ / (Real.sqrt ρ - ρ) < Real.logb 2 B :=
+  ⟨threshold_of_floorGap_lt_margin hρ0 hρ1 hlb,
+   pastJohnson_threshold_correct hρ0 hρ1⟩
+
+/-- **The actual past-Johnson conclusion, packaged.** For `ρ ∈ (0,1)`, if the budget exponent clears
+the threshold `log₂ B > H(ρ)/(√ρ − ρ)`, then the floor `δ* = 1 − ρ − H(ρ)/log₂ B` strictly exceeds
+the Johnson radius `1 − √ρ`. This is the named deliverable of the bridge arithmetic: a sufficient,
+*checkable* condition on the list-budget exponent under which the recovered list-decoding radius is
+provably **past Johnson**. (The open input remains supplying such a `B` at the Ramanujan exponent —
+the BGK/BCHKS 1.12 core — and is NOT addressed here.) -/
+theorem deltaStar_gt_johnson_of_budget {ρ B : ℝ} (hρ0 : 0 < ρ) (hρ1 : ρ < 1)
+    (hbudget : Real.binEntropy ρ / (Real.sqrt ρ - ρ) < Real.logb 2 B) :
+    (1 : ℝ) - Real.sqrt ρ < 1 - ρ - Real.binEntropy ρ / Real.logb 2 B := by
+  -- floor gap below margin
+  have hgap : Real.binEntropy ρ / Real.logb 2 B < Real.sqrt ρ - ρ :=
+    pastJohnson_threshold_correct hρ0 hρ1 hbudget
+  -- 1 − √ρ < 1 − ρ − (gap)  ⟺  gap < √ρ − ρ
+  linarith [hgap]
+
 end ArkLib.ProximityGap.PastJohnsonThreshold
+
+-- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
+#print axioms ArkLib.ProximityGap.PastJohnsonThreshold.johnson_margin_pos
+#print axioms ArkLib.ProximityGap.PastJohnsonThreshold.pastJohnson_threshold_correct
+#print axioms ArkLib.ProximityGap.PastJohnsonThreshold.threshold_of_floorGap_lt_margin
+#print axioms ArkLib.ProximityGap.PastJohnsonThreshold.pastJohnson_threshold_iff
+#print axioms ArkLib.ProximityGap.PastJohnsonThreshold.deltaStar_gt_johnson_of_budget

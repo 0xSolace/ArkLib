@@ -1752,6 +1752,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
 import ArkLib.Data.CodingTheory.ProximityGap.PairingResidualFailsAtPrize
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
+import ArkLib.Data.CodingTheory.ProximityGap.PastJohnsonThresholdArith
 import ArkLib.Data.CodingTheory.ProximityGap.PencilAgreementUnique
 import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeBound
 import ArkLib.Data.CodingTheory.ProximityGap.PencilDegreeGeneral
