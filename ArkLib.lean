@@ -996,6 +996,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicJacobiCocycleNonCon
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicParallelogramInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChaining
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicPhaseChainingSubmaxRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicTowerDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2DilationDirectCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2NegationStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E2VanishWidthFourLaw
