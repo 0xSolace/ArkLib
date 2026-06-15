@@ -10262,3 +10262,35 @@ EQUALS the analytic BGK wall, CONFIRMED on the explicit subgroup (not just asser
 NEXT LEVER for any future HOMDS attempt: would need agreement sets that are NOT sub-subgroup
 cosets yet still beyond Johnson -- but the corank closed form shows the drop is exactly the
 mu_a-residue collision, so any structured (orbit/coset) window inherits Theta(a) corank.
+
+## 2026-06-14 (#407 P4): MANN/LAM-LEUNG does NOT pin the char-0 agreement-set count — REFUTED
+**Route under test:** the far monomial pencil `x^a + alpha*x^b` gives `f(x)=x^a+alpha*x^b-g(x)`
+(`g` deg `<k`), support `{0..k-1} U {a,b}` (`<=k+2` terms). Its agreement set `R` (size `w`) =
+roots of `f` in `mu_n`; each root is a vanishing sum of `<=k+2` roots of unity. Proposed closure:
+for `mu_{2^mu}` (Lam-Leung) minimal vanishing relations are antipodal pairs, so the achievable
+agreement sets — hence the orbit/incidence count — are governed by the PROVEN Mann/Lam-Leung
+antipodal combinatorics (=> closeable without the BGK analytic wall).
+
+**Test (probe `scripts/probes/probe_407_mann_agreement_count.py`, q-stable across q=262193,
+2621569; char-0 faithful q>>n^4):** compare `Mann_anti(a,b;w)` = #{distinct alpha admitting an
+antipodally-closed witness R} against the exact char-0 incidence `I_0(a,b;w)`.
+
+**Result — clean MISMATCH (Mann strictly undercounts in the window interior):**
+  n=16 k=4 (rho=1/4):  w=5 (delta .688) I0=3696 Mann_anti=0;  w=6 (.625) I0=88 Mann_anti=24;
+  w=7 (.562) I0=8 Mann_anti=0;  w=8 (.500, Johnson edge) I0=8 Mann_anti=8 EXACT;  w=9 (.438)
+  I0=16 Mann_anti=0.  Mann is EXACT only at the large-`w` Johnson edge (w=n/2), where EVERY
+  agreement set R is forced antipodally closed (diagnostic part (3): all w=8 R are antipodal).
+
+**Mechanism (root cause):** `g` carries `k` FREE field coefficients and `alpha` is free, so the
+vanishing sum at `zeta^j` has ARBITRARY coefficients. Lam-Leung/Mann governs vanishing sums with
++-1 / root-of-unity coefficients ONLY. With free coefficients ANY size-`(k+1)` set `R` can be
+interpolated into an agreement set (at w=k+1=5, n=16: 2256 of C(16,5)=4368 subsets each force a
+distinct alpha). Window-interior agreement sets are contiguous arcs like R=(0,1,2,3,4), NOT
+antipodal-pair unions — they are LINEAR-ALGEBRA (interpolation) realizable, not antipodal.
+
+**Verdict:** Mann/Lam-Leung pins the agreement count ONLY in the already-known near/below-Johnson
+regime. In the prize WINDOW INTERIOR (beyond Johnson, below capacity) the count is the
+free-coefficient interpolation incidence I(delta) of the governing law — the SAME open
+BGK/counting object, NOT closeable via Mann. (Consistent with `probe_actionorbit_count.py`:
+"#orbits=O(1)" is a restatement of "#bad=O(n)", the floor itself.) Probes committed:
+`probe_407_mann_agreement_count.py`, `probe_407_mann_diag.py`.
