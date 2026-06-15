@@ -111,6 +111,7 @@ fn main() {
     // usage: pg n k   (sweeps s to find s*, fixed prize-scale prime)
     let n: usize = args[1].parse().unwrap();
     let k: usize = args[2].parse().unwrap();
+    let curve: bool = args.get(3).map(|a| a == "curve").unwrap_or(false);
     let p = big_prime(n as u64);
     let g = proot(p);
     let h = powmod(g, (p - 1) / n as u64, p);
@@ -136,7 +137,8 @@ fn main() {
         }).reduce(|| (0u64,(0u64,0u64)), |x, y| if y.0 > x.0 { y } else { x });
         let good = mx <= budget;
         println!("  s={} (s-k={}): maxI={} at {:?}  {}", s, s-k, mx, arg, if good {"GOOD"} else {"bad"});
-        if good { sstar = s; break; }
+        if good && sstar == 0 { sstar = s; if !curve { break; } }
+        if curve && s >= n/2 + 1 { break; }
     }
     if sstar > 0 {
         let ds = (n - sstar) as f64 / n as f64;
