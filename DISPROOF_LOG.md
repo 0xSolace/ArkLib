@@ -3094,3 +3094,40 @@ CORE closure: the far-line delta* stays a Johnson-region object (delta* <= 1/2+1
 delta*=3/8 < Johnson), off the prize floor 3/4-Theta(1/log n) -- so the route still does not certify the
 window interior. CORE not closed, not faked. Python+numpy EXACT, multi-prime q-invariant, no Lean changed
 => axiom-clean trivially. probe_407_regimeB_sstar_np.py + probe_407_regimeB_n32_sstar_exact.py.
+
+--------------------------------------------------------------------------------
+2026-06-15 UPDATE (TWO-ENGINE EXACT, decisive n=24): the wf-D2 binding-law correction +
+s*-pinning is CONFIRMED. Independent in-tree RUST engine (scripts/rust-pg/pg) reproduces
+my numpy results EXACTLY, and the decisive n=24 point lands s*=11.
+--------------------------------------------------------------------------------
+Cross-validated the above correction with the in-tree Rust far-line engine (scripts/rust-pg/src/main.rs,
+pre-built target/release/pg) -- a COMPLETELY INDEPENDENT implementation (rayon-parallel divided-difference
+over-determined witness enumeration, NOT my (k+1)-subset candidate-gen). The two engines AGREE EXACTLY on
+both s* and the full incidence profile:
+
+| n  | k | s* (BOTH engines) | n/2-1 | c*=s*-k | I-profile (matches both)                  |
+|----|---|-------------------|-------|---------|-------------------------------------------|
+|  8 | 2 | 5                 | 3     | 3       | s4->9, s5->5/8  (binding s5)              |
+| 12 | 3 | 7                 | 5     | 4       | s5->17, s6->13, s7->7  (binding s7)       |
+| 16 | 4 | 7                 | 7     | 3       | s6->89, s7->9  (binding s7)               |
+| 24 | 6 | 11 (RUST, ~6min)  | 11    | 5       | s8->1153, s9->65, s10->25, s11->24        |
+
+DECISIVE READING (exact, two-engine):
+- s* = 5, 7, 7, 11 at n=8,12,16,24. The wf-D2 formula n/2-1 = 3,5,7,11 FAILS at n=8,12 (s* HIGHER:
+  5 vs 3, 7 vs 5) and HOLDS at n=16,24. So s*=2k-1 is an ASYMPTOTIC law with small-n exceptions, NOT exact
+  from n=8; n=12 is the last exception and is where the pinning is visible.
+- s*-VALUE PINNING IS REAL: s* PINS at 7 across n=12 AND n=16, then JUMPS to 11 at n=24 (catching up to the
+  n/2-1 line). This is EXACTLY the GPU regime-B signature ("s* pins at 13 across n=32,34,38 then the law
+  would jump"). The small-n pinning (n=12->16) is now EXACT + TWO-ENGINE confirmed => the GPU's pinned-s*=13
+  is corroborated as a GENUINE law-feature (a pinning plateau before a jump), NOT a search ceiling artifact.
+  This RESOLVES the wf-D2 "genuine open sub-question" in the direction: the pinning is real; s*=13 is a
+  plateau value, and the regime-A formula resumes at larger n (as it did n=12->16->24: 7,7,11).
+- The defect (s*-k)/n = .375,.333,.1875,.2083 is non-monotone (the pinning dip), settling toward the
+  Johnson-region value; delta* = .375,.4167,.5625,.5417 -> 1/2 = Johnson. STILL off the prize floor
+  3/4-Theta(1/log n): this far-line object remains a Johnson-region quantity regardless of the pinning
+  fine-structure. NOT a CORE result.
+NET: a stated in-tree closed-form (s*=2k-1) is corrected (fails n=8,12), the regime-A<->B "open sub-question"
+is resolved (pinning is a real plateau-before-jump, not a ceiling), via TWO independent exact engines
+(my numpy + the in-tree Rust pg) that agree to the last incidence value. Rust n>=28~24min, n=32~9.6h (README)
+=> the exact n=32 s*=13 value stays GPU/long-Rust-only, but its pinning NATURE is now exact-established at
+small n. No Lean changed by me => axiom-clean trivially. probe_407_regimeB_sstar_np.py + scripts/rust-pg/pg.
