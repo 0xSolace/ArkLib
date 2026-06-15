@@ -13202,3 +13202,45 @@ permitted positive-definite weight) cannot beat exponent 1−o(1) without encodi
 with the campaign's exhausted-moment finding (moments cannot pin a sup). CORE stays OPEN. No Lean brick
 (no new provable upper-bound statement emerged; a Lean formalization would only restate the trivial
 Markov inequality, which is already implicit in the energy substrate).
+
+================================================================================
+2026-06-15 — IDEA I001 (stepanov-2adic): Ore/Moore Frobenius-filtration Stepanov auxiliary
+================================================================================
+OBJECT: M(μ_n) = max_{b≠0}|Σ_{x∈μ_n} e_p(bx)|, μ_n = 2-power subgroup (n=2^μ, n|p−1, p prime,
+p≫n³, n≠p−1). Probe: scripts/probes/probe_i001_ore_moore_frobenius_stepanov.py.
+
+IDEA I001's NEW LEMMA (claimed): build the Stepanov auxiliary as an ADDITIVE/linearized (Ore)
+polynomial L(X)=Σ c_i X^{p^i}; count multiplicity as the p-adic order of vanishing in the
+Frobenius module (not ordinary tangency, which separability of X^n−1 pins to 1). The
+Moore-determinant rank on the "F_2-log-lattice of μ_n" is asserted to supply vanishing order
+μ=log_2 n, giving |μ_n∩Z(L)|·(μ+1) ≤ deg L via a Moore-minor rank-defect ≥ μ on a near-extremal
+bad set — beating the Johnson cap.
+
+VERDICT: NO-GAIN (refutes the literal NEW LEMMA; at best yields the TRIVIAL bound M ≤ n).
+
+WHY (four reproducible sub-tests over proper μ_n, n=8,16,32,64, p≫n³, n≠p−1):
+1. STRUCTURAL OBSTRUCTION. An Ore poly is F_p-linear; Z(L) is an F_p-subspace. μ_n ⊂ F_p, and F_p
+   is 1-DIMENSIONAL over F_p, so ANY single nonzero element of μ_n F_p-spans all of F_p ⇒ the only
+   Ore poly vanishing on μ_n is L = X^p − X (p-degree 1, ORDINARY degree p ≈ q). Stepanov needs
+   deg ≪ q ⇒ vacuous. AND Frobenius x↦x^p is the IDENTITY on F_p (verified all test primes), so the
+   "Frobenius filtration" on the x-coordinates (= μ_n) is TRIVIAL — no p-adic multiplicity to harvest.
+2. HASSE-JET DEFECT = 0 (the separability wall, measured). The (μ+1)-Hasse-jet vanishing matrix on
+   μ_n over F_p is FULL RANK n(μ+1) at every n (defect 0, vs needed ≥ μ). The (μ+1)-jet conditions
+   are INDEPENDENT precisely because X^n−1 is separable (simple roots). Smallest nonzero auxiliary has
+   deg D = n(μ+1); count·(μ+1) ≤ D ⇒ count ≤ n. The (μ+1) factor in the lemma is EXACTLY cancelled by
+   the (μ+1)-fold degree cost. NO tower discount.
+3. MOORE-DETERMINANT = WRONG DEFECT. Moore matrix [a_i^{p^j}] over F_p has rank 1 (Frobenius=id
+   collapses all columns), so "multiplicity" = 1, not μ; the rank-1 collapse just re-derives X^p−X
+   (degree p, useless). The genuinely full-rank object is the EXPONENT Vandermonde / character table
+   [h^{kj}] on Z/2^μ (defect 0) = the DFT Parseval already uses for the √n L²-average. The 2-power
+   tower adds NO vanishing order for a polynomial in x.
+4. THE BOUND. Even GRANTING I001's defect, count ≤ D/(μ+1) with D ≈ n(μ+1) ⇒ count ≤ n; best M-bound
+   = n = TRIVIAL, BELOW BGK's n^{1−o(1)}. (true M: n=8→7.70, n=16→13.46; the bound n never nears √n.)
+
+ROOT CAUSE: μ_n lives in the 1-dim F_p-space F_p AND X^n−1 is separable ⇒ no additive/Frobenius
+multiplicity > 1 to manufacture; the only nontrivial 2-power structure (the exponent/character
+lattice) is full-rank and already used by Parseval. The claimed Moore-minor rank-defect ≥ μ is FALSE
+in every operative reading. (Salvage note: an Artin-Schreier auxiliary can carry genuine content only
+if the Frobenius multiplicity is sought on the y-side / in an extension F_{p^k} — a DIFFERENT object
+than μ_n⊂F_p, and one where the y^p−y=bx ramification gives the standard Weil bound, vacuous at n≪√p.)
+No Lean brick (the refuted lemma was the only candidate statement). CORE stays OPEN.
