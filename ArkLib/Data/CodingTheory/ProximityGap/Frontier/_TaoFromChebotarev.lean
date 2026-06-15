@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+import Mathlib.LinearAlgebra.Vandermonde
 
 /-!
 # Reducing Tao's additive uncertainty to Chebotarev's minor-nonvanishing theorem (#407)
@@ -42,13 +43,38 @@ This file performs the *standard Tao reduction*, isolating Chebotarev as the sol
   minor is a single root of unity `stdAddChar (-(ci 0 * ri 0)) ≠ 0`). This de-names the smallest
   case; the general `n` case stays the named open input `ChebotarevMinorNonvanishing`.
 
+* **`chebotarev_two : the `n = 2` case (FULL general exponents) IS PROVEN.** For injective
+  `ri ci : Fin 2 → ZMod p`, `det = stdAddChar A − stdAddChar B` with `A − B = (c0 − c1)(r1 − r0) ≠ 0`
+  in the field `ZMod p`, so by `ZMod.injective_stdAddChar` the two character values differ and the
+  det is nonzero. This de-names the *whole* `n = 2` instance (arbitrary exponents), not a slice.
+
+* **The equal-spacing exponent sub-case for general `n` IS PROVEN** (`chebotarev_equalExponents`,
+  `chebotarev_minor_equalExponents`, any `n ≤ p`). When the column selection is the consecutive
+  exponent run `c_j = j` (here encoded as `ci j = -(↑j : ZMod p)` to match the DFT sign convention),
+  the minor entry is `stdAddChar(j·r_i) = (ζ^{r_i})^j`, i.e. the matrix *is* a Vandermonde in the
+  distinct nodes `ζ^{r_i} = stdAddChar (ri i)`. Mathlib's `Matrix.det_vandermonde_ne_zero_iff` then
+  gives `det = ∏_{i<i'} (ζ^{r_{i'}} − ζ^{r_i}) ≠ 0` directly from injectivity (the nodes are distinct
+  by `ZMod.injective_stdAddChar`). This is genuinely general-`n`. We also expose the underlying kernel
+  as a named `Prop` `StandardVandermondeNonzeroModP` with its proof `standardVandermondeNonzeroModP_holds`.
+
+  **Boundary:** this is ONLY the equal-spacing exponent slice. The deep content of Chebotarev's
+  theorem is precisely that *arbitrary* distinct exponents `c_j` (generalized Vandermonde, where the
+  Mathlib `det_vandermonde` formula does **not** apply and over a generic field the det **can**
+  vanish) still give a nonzero det for prime `p`. That general-exponent reduction (viewing
+  `D(ζ) ∈ ℤ[ζ_p]` and reducing mod the prime above `p` to a standard Vandermonde in the distinct
+  `r_i mod p`) is multi-file algebraic number theory not attempted here; the general `n` case stays
+  the named open input `ChebotarevMinorNonvanishing`.
+
 ## Honesty contract (per #407)
 
 `ChebotarevMinorNonvanishing` is a `def … : Prop` (a named classical hypothesis), so it carries no
 axioms; we never `sorry` it and never claim the general case proven. What is PROVEN here is the
-*reduction* `tao_of_chebotarev` (plus the `1 × 1` Chebotarev case `chebotarev_one`). This sharpens
-`_PrimeCapacityUncertainty`: the prime-capacity dichotomy is now conditional on the *canonical
-classical theorem of Chebotarev*, not on the looser folklore statement `TaoUncertainty`.
+*reduction* `tao_of_chebotarev`, plus the `1 × 1` case `chebotarev_one`, the FULL `2 × 2` case
+`chebotarev_two` (general exponents), and the equal-spacing general-`n` sub-case
+`chebotarev_equalExponents` (via `Matrix.det_vandermonde`). The general-exponent general-`n` case
+remains the named open input. This sharpens `_PrimeCapacityUncertainty`: the prime-capacity dichotomy
+is now conditional on the *canonical classical theorem of Chebotarev*, not on the looser folklore
+statement `TaoUncertainty`.
 
 Reference for the reduction and for Chebotarev's theorem: T. Tao, *An uncertainty principle for
 cyclic groups of prime order*, Math. Res. Lett. 12 (2005), 121–127; P. Stevenhagen & H. W. Lenstra,
@@ -98,6 +124,135 @@ theorem chebotarev_one (ri ci : Fin 1 → ZMod p) :
   simp only [Matrix.of_apply] at hzero
   rw [hzero, norm_zero] at hnorm
   exact one_ne_zero hnorm.symm
+
+/-- **The `2 × 2` case of Chebotarev's theorem (PROVEN, general exponents).** For `p` prime and any
+two *injective* selections `ri ci : Fin 2 → ZMod p` (so `ri 0 ≠ ri 1` and `ci 0 ≠ ci 1`), the `2 × 2`
+minor `M i j = stdAddChar (-(ci j * ri i))` has nonzero determinant.
+
+Proof (Tao's argument specialised to `n = 2`): by `Matrix.det_fin_two`,
+`det = stdAddChar(-(c0 r0))·stdAddChar(-(c1 r1)) − stdAddChar(-(c1 r0))·stdAddChar(-(c0 r1))`.
+Each product is a single character value (`AddChar.map_add_eq_mul`), so
+`det = stdAddChar A − stdAddChar B` with `A = -(c0 r0 + c1 r1)`, `B = -(c1 r0 + c0 r1)`. Then
+`A − B = (c0 − c1)(r1 − r0) ≠ 0` because `ZMod p` is a field (prime `p` ⟹ integral domain) and both
+factors are nonzero (injectivity). Hence `A ≠ B`, and by `ZMod.injective_stdAddChar` the two
+character values differ, so `det ≠ 0`. This de-names the `n = 2` instance of
+`ChebotarevMinorNonvanishing` in full (arbitrary exponents); the general `n` case stays open. -/
+theorem chebotarev_two (ri ci : Fin 2 → ZMod p)
+    (hri : Function.Injective ri) (hci : Function.Injective ci) :
+    (Matrix.of fun (i j : Fin 2) => (stdAddChar (-(ci j * ri i)) : ℂ)).det ≠ 0 := by
+  rw [Matrix.det_fin_two]
+  simp only [Matrix.of_apply]
+  -- Collapse each product of two character values into one (`stdAddChar` is multiplicative).
+  set A : ZMod p := -(ci 0 * ri 0) + -(ci 1 * ri 1) with hAdef
+  set B : ZMod p := -(ci 1 * ri 0) + -(ci 0 * ri 1) with hBdef
+  have hprod1 : (stdAddChar (-(ci 0 * ri 0)) : ℂ) * stdAddChar (-(ci 1 * ri 1))
+      = stdAddChar A := (AddChar.map_add_eq_mul _ _ _).symm
+  have hprod2 : (stdAddChar (-(ci 1 * ri 0)) : ℂ) * stdAddChar (-(ci 0 * ri 1))
+      = stdAddChar B := (AddChar.map_add_eq_mul _ _ _).symm
+  rw [hprod1, hprod2]
+  -- `det = stdAddChar A − stdAddChar B`; nonzero iff `A ≠ B` (injectivity of `stdAddChar`).
+  rw [sub_ne_zero]
+  intro hAB
+  have hABeq : A = B := ZMod.injective_stdAddChar hAB
+  -- But `A − B = (ci 0 − ci 1)·(ri 1 − ri 0) ≠ 0` in the field `ZMod p`.
+  have hc01 : ci 0 ≠ ci 1 := fun h => by simpa using hci h
+  have hr01 : ri 0 ≠ ri 1 := fun h => by simpa using hri h
+  have hfac : A - B = (ci 0 - ci 1) * (ri 1 - ri 0) := by rw [hAdef, hBdef]; ring
+  have hne : (ci 0 - ci 1) * (ri 1 - ri 0) ≠ 0 :=
+    mul_ne_zero (sub_ne_zero.mpr hc01) (sub_ne_zero.mpr (fun h => hr01 h.symm))
+  rw [hABeq, sub_self] at hfac
+  exact hne hfac.symm
+
+/-- **The standard (equal-spacing) Vandermonde determinant is nonzero mod `p` for distinct nodes
+(NAMED — but PROVEN below, `chebotarev_equalExponents`).** For distinct `r_i : ZMod p`, the
+determinant of the matrix `((ζ^{r_i})^{c_j})` with consecutive exponents `c_j = j` is nonzero. This
+is the elementary number-theoretic kernel of Chebotarev's theorem (the equal-spacing exponent
+slice), discharged directly from Mathlib's `Matrix.det_vandermonde` (since the nodes `ζ^{r_i}` are
+distinct). The *general*-exponent case is the deep part of Chebotarev's theorem and remains open. -/
+def StandardVandermondeNonzeroModP (p : ℕ) [Fact p.Prime] : Prop :=
+  ∀ (n : ℕ) (ri : Fin n → ZMod p), Function.Injective ri →
+    (Matrix.of fun (i j : Fin n) => (stdAddChar (ri i) : ℂ) ^ (j : ℕ)).det ≠ 0
+
+/-- The nodes `ζ^{r_i} = stdAddChar (ri i)` are distinct when the `ri` are distinct, since
+`ZMod.injective_stdAddChar` makes `stdAddChar` injective for prime `p`. -/
+theorem injective_stdAddChar_comp {n : ℕ} (ri : Fin n → ZMod p) (hri : Function.Injective ri) :
+    Function.Injective (fun i => (stdAddChar (ri i) : ℂ)) :=
+  ZMod.injective_stdAddChar.comp hri
+
+/-- **The equal-spacing Vandermonde kernel is PROVEN.** Directly from Mathlib's
+`Matrix.det_vandermonde_ne_zero_iff`: the determinant of the Vandermonde matrix in the distinct
+nodes `ζ^{r_i}` is `∏_{i<i'} (ζ^{r_{i'}} − ζ^{r_i}) ≠ 0`. -/
+theorem standardVandermondeNonzeroModP_holds : StandardVandermondeNonzeroModP p := by
+  intro n ri hri
+  -- the matrix `i j ↦ (stdAddChar (ri i))^j` IS `Matrix.vandermonde (fun i => stdAddChar (ri i))`.
+  have hmat : (Matrix.of fun (i j : Fin n) => (stdAddChar (ri i) : ℂ) ^ (j : ℕ))
+      = Matrix.vandermonde (fun i => (stdAddChar (ri i) : ℂ)) := by
+    ext i j; rfl
+  rw [hmat]
+  exact Matrix.det_vandermonde_ne_zero_iff.mpr (injective_stdAddChar_comp ri hri)
+
+/-- **The equal-exponents (`c_j = j`) general-`n` sub-case of Chebotarev's theorem (PROVEN, any
+`n`).** For `p` prime, any `n`, and any *injective* `ri : Fin n → ZMod p`, the `n × n` minor
+`M i j = stdAddChar (-(ci j * ri i))` with the *consecutive* columns `ci j = -(↑j : ZMod p)`
+has nonzero determinant.
+
+This is a genuine general-`n` slice of `ChebotarevMinorNonvanishing`: the columns use the equal-
+spacing exponents `0, 1, …, n−1` (up to the fixed sign convention of the DFT entry), and the result
+follows from Mathlib's `Matrix.det_vandermonde` because the nodes `ζ^{r_i} = stdAddChar (ri i)` are
+distinct (no `n ≤ p` needed for the determinant itself — the nodes are distinct complex numbers as
+soon as `ri` is injective). The *general*-exponent case (arbitrary injective `ci`) is the deep
+Chebotarev miracle and stays open. PROVEN, axiom-clean.
+
+Concretely the entry rewrites as `stdAddChar(-((-j)·r_i)) = stdAddChar(j·r_i)
+= stdAddChar(r_i)^j = (ζ^{r_i})^j`, the Vandermonde entry. -/
+theorem chebotarev_equalExponents {n : ℕ} (ri : Fin n → ZMod p)
+    (hri : Function.Injective ri) :
+    (Matrix.of fun (i j : Fin n) =>
+        (stdAddChar (-((-(↑(j : ℕ) : ZMod p)) * ri i)) : ℂ)).det ≠ 0 := by
+  -- rewrite each entry into the Vandermonde entry `(stdAddChar (ri i))^j`.
+  have hentry : ∀ i j : Fin n,
+      (stdAddChar (-((-(↑(j : ℕ) : ZMod p)) * ri i)) : ℂ)
+        = (stdAddChar (ri i) : ℂ) ^ (j : ℕ) := by
+    intro i j
+    have h1 : -((-(↑(j : ℕ) : ZMod p)) * ri i) = (j : ℕ) • ri i := by
+      rw [neg_mul, neg_neg, nsmul_eq_mul]
+    rw [h1, AddChar.map_nsmul_eq_pow]
+  have hmat : (Matrix.of fun (i j : Fin n) =>
+        (stdAddChar (-((-(↑(j : ℕ) : ZMod p)) * ri i)) : ℂ))
+      = Matrix.of fun (i j : Fin n) => (stdAddChar (ri i) : ℂ) ^ (j : ℕ) := by
+    ext i j; exact hentry i j
+  rw [hmat]
+  exact standardVandermondeNonzeroModP_holds n ri hri
+
+/-- The consecutive column selection `ci = fun j => -(↑(j : ℕ) : ZMod p)` is **injective when
+`n ≤ p`** (the nats `0, 1, …, n−1` are distinct mod `p`). This is exactly the hypothesis needed for
+`ci` to be an admissible column selection of `ChebotarevMinorNonvanishing`, and the only place the
+`n ≤ p` size restriction is genuinely used. -/
+theorem injective_consecutive_cols {n : ℕ} (hn : n ≤ p) :
+    Function.Injective (fun j : Fin n => -(↑(j : ℕ) : ZMod p)) := by
+  intro a b hab
+  -- strip the negation, then read off equal `val`s (both `< n ≤ p`).
+  have hcast : (↑(a : ℕ) : ZMod p) = (↑(b : ℕ) : ZMod p) := by
+    simpa using neg_injective hab
+  have ha : (↑(a : ℕ) : ZMod p).val = (a : ℕ) := ZMod.val_natCast_of_lt (lt_of_lt_of_le a.2 hn)
+  have hb : (↑(b : ℕ) : ZMod p).val = (b : ℕ) := ZMod.val_natCast_of_lt (lt_of_lt_of_le b.2 hn)
+  have : (a : ℕ) = (b : ℕ) := by rw [← ha, ← hb, hcast]
+  exact Fin.ext this
+
+/-- **The equal-exponents sub-case, exhibited as a genuine admissible instance of the
+`ChebotarevMinorNonvanishing` minor shape (PROVEN, `n ≤ p`).** The named hypothesis quantifies over
+*both* injective selections `ri ci`; here we discharge it for the specific consecutive column
+selection `ci = fun j => -(↑j : ZMod p)`, which (by `injective_consecutive_cols`) is injective when
+`n ≤ p` — so this `ci` is an admissible column selection and the conclusion is a true instance of the
+minor shape, with the determinant nonzero by `chebotarev_equalExponents`. The `n ≤ p` is needed only
+to make `ci` injective; the determinant fact itself holds for any `n`. The general-exponent `ci`
+(arbitrary injective columns) stays the named open input. -/
+theorem chebotarev_minor_equalExponents {n : ℕ} (hn : n ≤ p) (ri : Fin n → ZMod p)
+    (hri : Function.Injective ri) :
+    Function.Injective (fun j : Fin n => -(↑(j : ℕ) : ZMod p)) ∧
+      (Matrix.of fun (i j : Fin n) =>
+        (stdAddChar (-(((fun j => -(↑(j : ℕ) : ZMod p)) j) * ri i)) : ℂ)).det ≠ 0 :=
+  ⟨injective_consecutive_cols hn, chebotarev_equalExponents ri hri⟩
 
 /-- **Tao's additive uncertainty principle, reduced to Chebotarev (PROVEN reduction).**
 
@@ -205,4 +360,9 @@ end ProximityGap.Frontier.TaoFromChebotarev
 `ChebotarevMinorNonvanishing` is a `def … : Prop` (a named classical hypothesis), so it carries no
 axioms; the PROVEN content below consumes / discharges it. -/
 #print axioms ProximityGap.Frontier.TaoFromChebotarev.chebotarev_one
+#print axioms ProximityGap.Frontier.TaoFromChebotarev.chebotarev_two
+#print axioms ProximityGap.Frontier.TaoFromChebotarev.standardVandermondeNonzeroModP_holds
+#print axioms ProximityGap.Frontier.TaoFromChebotarev.chebotarev_equalExponents
+#print axioms ProximityGap.Frontier.TaoFromChebotarev.injective_consecutive_cols
+#print axioms ProximityGap.Frontier.TaoFromChebotarev.chebotarev_minor_equalExponents
 #print axioms ProximityGap.Frontier.TaoFromChebotarev.tao_of_chebotarev
