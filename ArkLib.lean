@@ -902,6 +902,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FpVanishingBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ArchimedeanPhaseRealDFT
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B1XkIncidenceForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
@@ -932,6 +933,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeConditionalPinCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
