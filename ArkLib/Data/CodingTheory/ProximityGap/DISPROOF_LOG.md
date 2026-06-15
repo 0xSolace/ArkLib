@@ -1,5 +1,80 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C29 "Kowalski–Sawin Kloosterman-Path Functional CLT Sup-Bound" SECRETLY-OPEN / REDUCES-TO-JOHNSON (probe_c29_kowalski_sawin_path_clt.py)
+
+Conjecture C29 (issue #444, algebraic-geometry, feasibility 2): apply the Kowalski–Sawin
+functional CLT for partial-sum *paths* to the period family and claim the sub-Gaussian sup of the
+limiting path process bounds `max_c |η_c| ≤ √(2 n log p)` past Johnson, via the proven
+large-monodromy support theorem (Deligne Weil II + functional CLT). REDUCES-TO: Kowalski–Sawin
+Kloosterman-paths + Deligne Weil II + large-monodromy support theorem.
+
+Verdict: **secretly-open** (degenerating to **reduces-to-johnson** on the only effective reading).
+The import fails on three independent, mutually reinforcing horns, all measured prize-faithfully
+(PROPER `μ_n`, `n = 2^μ`, `p` PRIME, `p ≫ n³`, NEVER `n = p−1`). Probe
+`scripts/probes/probe_c29_kowalski_sawin_path_clt.py`, commit `702858d5d35cddf2447a0283c9e886efb082f070`.
+Sibling to the REFUTED Brick-Ledger #1 ("Conjecture (G) periods jointly sub-Gaussian var n") and the
+Salem–Zygmund / Lamzouri-CLT route (`deltastar-salem-zygmund-gausssum-chaining-2026-06-13.md`).
+
+HORN A — OBJECT MISMATCH (the named theorem governs a *different* random object). The
+Kowalski–Sawin path process is `K_p(t) = (1/√p) Σ_{0≤a≤tp} Kl(a;1,1;p) ∈ C([0,1])` — the
+**partial-sum path of ONE Kloosterman sum indexed by the summation variable `a`**, normalized by
+`√p`. Its functional CLT (Deligne equidistribution as `p→∞` for the FIXED Kloosterman sheaf) gives a
+sub-Gaussian sup `sup_t |K_p(t)|`, which is the maximal *partial sum*, an O(1)-scale fluctuation of a
+length-`p` walk. The prize object is `max_{c≠0} |η_c|` where `η_c = Σ_{x∈μ_n} e_p(g^c x)` is the
+**COMPLETE (full) period sum** and the max runs over the **dual frequency index `c ∈ ℤ/m`**. Measured:
+path-sup = 0.74–0.88 (Weil O(1) scale) versus period-sup = 7.4–15.8 (the n-term object) at the SAME
+`(p,n)`. They are governed by different processes; the path CLT does not bound `max_c|η_c|`.
+
+| p | n | m | period max\|η_c\| | √(n log p) | ratio | KS path-sup \|K_p\| |
+|---|---|---|---|---|---|---|
+| 193 | 16 | 12 | 7.432 | 9.176 | 0.810 | 0.876 |
+| 769 | 16 | 48 | 9.100 | 10.311 | 0.883 | 0.741 |
+| 3329 | 16 | 208 | 11.085 | 11.392 | 0.973 | 0.828 |
+
+HORN B — EFFECTIVITY GAP (the decisive horn; the CLT is asymptotic-in-`p`, not effective at fixed
+prize `q`). The Kowalski–Sawin CLT is a distributional limit as `p→∞` at FIXED conductor/sheaf; the
+sub-Gaussian sup of the LIMIT process bounds the LIMIT, not the fixed-`q` tail with an explicit
+constant. The sub-Gaussian variance proxy `c(p,n) = 2 ln MGF(t*) / t*²` does NOT lock to `n`: over a
+β-sweep at `n=8` it sits at proxy/n = 0.77 → 0.76 → 0.72 and **drifts** as β = log_n p grows. A CLT
+that had landed effectively would force proxy/n → 1 with a `p`-independent constant; the observed drift
+is exactly the signature that the limit is approached only as `p→∞`, i.e. **ineffective at the prize's
+fixed (large) `q`** — the same effectivity barrier already recorded for the Katz/Rojas-León Gauss-sum
+equidistribution route (`deltastar-407-katz-monodromy-research-2026-06-13.md`).
+
+| p | n | β | m | max\|η\| | √(n ln p) | ratio | proxy/n |
+|---|---|---|---|---|---|---|---|
+| 2081 | 8 | 3.67 | 260 | 7.277 | 7.818 | 0.931 | 0.766 |
+| 4129 | 8 | 4.00 | 516 | 7.558 | 8.161 | 0.926 | 0.755 |
+| 32801 | 8 | 5.00 | 4100 | 7.843 | 9.121 | 0.860 | 0.717 |
+
+HORN C — GROWING-DIMENSION OBSTRUCTION (single fixed sheaf vs growing family). Via the DFT identity
+`η_c = −1/m + (1/m) Σ_{j=1}^{m−1} τ(χ_j) e(−jc/m)`, the period is a sum of `m−1 ≈ p/n` Gauss sums —
+a family whose **dimension / conductor grows with `p`** (the same large-sieve dimension obstruction
+noted for the FKM/Bombieri large-values route, `deltastar-407-large-sieve-dimension-obstruction-2026-06-13.md`).
+The large-monodromy support theorem is invoked for ONE fixed sheaf; it does not deliver a uniform
+sub-Gaussian sup over a `(p/n)`-growing family. Measured `max_c|η_c|/√(n log p) ∈ [0.86, 0.99]` — the
+period-sup tracks the **random / Salem–Zygmund value** `√(n log p)`. That scale IS the open BGK core:
+the target the CLT wants to deliver is precisely the random-model derandomization that is open
+everywhere (`deltastar-gate-is-sqrt-cancellation-BGK-fullpower-short-2026-06-13.md`).
+
+The deeper structural point. C29 names real theorems (Kowalski–Sawin Kloosterman-paths, Adv. Math.
+2016; Deligne Weil II) but applies them off-object and off-regime. The genuine probabilistic content
+the prize needs — a sub-Gaussian tail with proxy `O(n)` for the GROWING `(m−1)`-term Gauss-sum DFT,
+uniform and EFFECTIVE at fixed `n ≈ p^{1/8}` — is exactly the residual already isolated as
+"Lamzouri's CLT one regime further" (extend the 2-D Gaussian value-distribution CLT from length
+`p^{o(1)}` to length `p^{β}` at fixed `β`), which is the Bourgain barrier = the open BGK √-cancellation.
+The Kloosterman-path CLT supplies neither the right object (HORN A), the effectivity (HORN B), nor the
+growing-family uniformity (HORN C). Sub-Gaussian sup-control of a single-sheaf path process caps at the
+random-model `√(n log p)` value asymptotically — and that asymptotic value, made worst-case at fixed
+`q`, is the open core that itself sits at the Johnson↔capacity boundary the meta-theorem reserves for
+the open p-dependent regime. No new non-BGK lever is delivered.
+
+Probe committed: `scripts/probes/probe_c29_kowalski_sawin_path_clt.py` (self-contained, sympy/numpy
+GF(p); three horns: object mismatch, β-sweep proxy drift, random-scale tracking; proper `μ_n`,
+`p` prime, `p ≫ n³`, never `n=p−1`).
+
+---
+
 ## 2026-06-15 — CONJECTURE C24 "Relaxed-rMDS additive-inflation" REDUCES-TO-JOHNSON (probe_c24_relaxed_rmds_additive.py)
 
 Conjecture C24 (issue #444, gmmds-homds): use BGM's relaxed `MDS(L+1) ⟹ list ≤ L` and claim the
