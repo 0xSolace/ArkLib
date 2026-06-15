@@ -2788,3 +2788,31 @@ The accessible-r data is CONSISTENT with both A_{r*}<=Wick (prize) and A_{r*}>Wi
 extrapolate (the deficit is sub-leading + vanishing). HONEST: no new bound proven; this PINS the prize-
 equivalent target + its absolute constant sqrt(2/e) + confirms moment-route capability. Numeric + exact
 Stirling, no Lean => axiom-clean trivially. CORE not closed, not refuted. probe_407_wickbound_capability.py.
+
+## Route 36 deep-hole-RESTRICTED sup #bad-gamma is FIELD-SATURATED + thickness-invariant (rule-3 FAIL) -- the explicit open step CLOSED as thin-blind (2026-06-15, opus-4-8 subagent)
+
+LANE (uncontested): route 36 (push 1b3f947fa) reduced the L7 open core sup over stacks to the FINITE
+deep-hole family x^j, j==k mod 4, and its EXPLICIT next-open-step was "bound #bad-gamma over the deep-hole
+family directly; whether the deep-hole-restricted sup beats Johnson is the live question." No live worker
+on it (worker was on anom_worst_rtraj). probe_407_deephole_restricted_sup_growth.py, exact mod p,
+PROPER mu_n (NEVER n=q-1), fast #bad(smin=k+1)=#distinct over-det gammas (validated == route-36 #bad=40).
+
+RESULT (k=3):
+- GROWTH thin beta=4: deep-hole-sup = 40 (n=8), 1552 (n=16).
+- THINNESS GATE n=16 (thick prize-FALSE beta=2.4-3.2 vs thin): 752,1248,1440,1552,1552 -- LOOKS thin-
+  favoring (larger in thin), BUT:
+- FIELD-SIZE GATING (decisive rule-6 control): fixed n=16, sweep prime index m=(p-1)/n:
+    p~n^1:16, n^2:256, n^2.5:976, n^3.25:1456, n^4:1552, n^5:1552 (SATURATED, p-independent past p>>n^2).
+  => the deep-hole-sup is a p-INDEPENDENT SATURATED cyclotomic constant; the (B) thin 'advantage' is PURE
+     field-size saturation (thick-window small fields can't fit the full incidence count), NOT thinness-
+     essential. The thin value IS the large-field saturated value.
+- Fermat audit: p=65537 (1552) == non-Fermat near-primes (1536-1552) -> NOT a Fermat artifact (robust,
+  unlike the E_r r=4 anomaly which was Fermat/thick-special).
+
+VERDICT (rule-4 wall, rule-3 FAIL, rule-6 honest, NOT a closure): route 36's deep-hole-restricted sup is
+THICKNESS-INVARIANT + FIELD-SATURATED -- it joins the board meta-pattern (every per-direction/per-family
+finite-n object is thickness-invariant + Johnson-tracking). The deep-hole RESTRICTION does NOT escape the
+wall; its sup is the same large-field saturated value the full far-line incidence gives, the thick
+difference being pure small-field suppression. CLOSES the route-36 explicit open step as a thin-blind,
+field-saturated object. Python-only exact => axiom-clean trivially.
+probe_407_deephole_restricted_sup_growth.py.
