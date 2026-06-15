@@ -1571,3 +1571,54 @@ candidacy as the binding worst-case family (a random/generic family contributes 
 itself bound K(n) — the open content is purely the K growth law (the additive-energy twin). CORE not
 closed, not faked. Python-only exact => axiom-clean trivially.
 probe_407_e2_census_K_thinness.py + probe_407_e2_census_mechanism.py.
+
+================================================================================
+## ⚠️ REFUTATION + REPLACEMENT LAW — the char-0 far-line delta* candidate "delta* = (1-rho) - log2(n)/n" is FALSE at n=64; the true law is s*-k = n/4 i.e. delta* = 3/4 - rho (2026-06-15, opus-4-8 subagent)
+--------------------------------------------------------------------------------
+LANE: the full-assault-synthesis "live lead" (docs/kb/deltastar-444-full-assault-synthesis + 
+deltastar-407-char0-logn-over-n-candidate): a NEW candidate char-0 worst-case far-line crossing
+gave n*(cap-delta*)=log2(n) at n=16,32 (rho=1/8), conjecturing delta*=(1-rho)-log2(n)/n (a
+Theta(log n/n) gap, "much closer to capacity than the standing Theta(1/log n)"). FLAGGED "NOT
+confirmed -- needs n=64". The n=16-vs-n=20 convention discrepancy (s*-k = log2(n) vs constant 3)
+was the explicit OPEN tension (DISPROOF "s*-k appears CONSTANT" entry: "n=32,64 must resolve it").
+I ran the decisive n=64 computation.
+
+METHOD: the in-tree char-0 (k+1)-subset-solve engine (scripts/probes/probe_char0_deltastar_n64_BIG.py),
+cross-validated EXACTLY vs the wf-D1 reference. Char-0 = q-free worst-case far-line incidence I_0(w)
+crossing budget=n, MAX over far pencils (a,b), a,b>=k, a,b != n/2, gcd-stratified pencil sampling +
+deep antipodal directions. PROPER subgroup mu_n, p>>n^3, p==1 mod n, NEVER n=q-1. k=2 FIXED (so
+rho=k/n SHRINKS with n -- the constant-k axis the candidate was stated on).
+
+RESULT (refutation-grade, Q-INVARIANT -- two primes per n, p/n^3 = 4 AND 40 identical):
+| n  | k | rho   | s*-k | n/4 | log2(n) | delta*=(n-w_cross)/n | worst pencil (a,b) gcd(b-a,n) |
+|----|---|-------|------|-----|---------|----------------------|-------------------------------|
+| 16 | 2 | 1/8   | 4    | 4   | 4       | 0.62500              | (5,9)   gcd=4=n/4              |
+| 32 | 2 | 1/16  | 8    | 8   | 5       | 0.68750              | (9,17)  gcd=8=n/4              |
+| 64 | 2 | 1/32  | 16   | 16  | 6       | 0.71875              | (2,34)  gcd=32=n/2            |
+s*-k = 4,8,16 = EXACTLY n/4 (NOT log2(n) = 4,5,6). At n=64: s*-k=16, log2(64)=6 => the candidate is
+OFF BY 10. Q-invariant: n=64 gives s*-k=16 at BOTH p=1048609 (p/n^3=4) AND p=10486337 (p/n^3=40),
+same worst pencil (2,34). [The n=16,32 coincidence s*-k=log2(n) was a small-n ARTIFACT: 4=4 at n=16,
+8 vs 5 already diverges at n=32 under the full-direction MAX convention -- the candidate doc used a
+coarser pencil set that under-sampled the d=n/4 worst direction.]
+
+THE TRUE LAW (exact at n=16,32,64): **s*-k = n/4**  =>  **delta*_charline = 1 - (k+n/4)/n = 3/4 - k/n
+= 3/4 - rho**. Verified: 3/4-1/8=0.625, 3/4-1/16=0.6875, 3/4-1/32=0.71875 -- EXACT. The worst pencil
+is the deeply-composite direction gcd(b-a,n) in {n/4, n/2} (the antipodal/subgroup-coset family), not
+a generic pencil -- consistent with the dyadic Mann/Conway-Jones antipodal-pair mechanism (the only
+primitive vanishing relation over mu_{2^mu}).
+
+VERDICT (rule-4 mapped: refutes a candidate + installs the correct law; rule-6 honest):
+1. The "delta* = (1-rho) - log2(n)/n" candidate (Theta(log n/n) gap, "the live lead" of the
+   full-assault synthesis) is FALSE. The char-0 far-line gap below capacity is a CONSTANT 1/4
+   (delta* = 3/4 - rho => cap - delta* = 1/4 - 0 = 1/4 for k=2... precisely cap-delta* = (1-rho)-(3/4-rho)
+   = 1/4, a CONSTANT, NOT log2(n)/n -> 0). So the char-0 far-line delta* sits a FIXED 1/4 BELOW capacity.
+2. s*-k = n/4 is LINEAR in n (like the rho=1/4 law s*-k=n/4-1), NOT Theta(n/log n). So -- exactly as the
+   prior over-det entries concluded for fixed-rho -- this char-0 worst-case FAR-LINE delta* does NOT
+   track the conjectured BGK floor delta*=1-rho-Theta(1/log n); it is the (rigorous UPPER bound)
+   far-line object, converging to 3/4-rho, a clean cyclotomic combinatorial value OFF the BGK wall.
+3. NET for the synthesis: the "much closer to capacity" optimism was a small-n sampling artifact; the
+   true char-0 far-line delta* = 3/4 - rho is a fixed 1/4 below capacity and carries NO sub-log gap.
+   The genuine prize content remains in the collective BGK aggregate (the L7 WorstCaseIncidenceBounded
+   Prop), NOT in this per-pencil char-0 crossing.
+CORE not closed, not faked. Python-only exact, q-invariant 2-prime => axiom-clean trivially.
+Probe scripts/probes/probe_char0_deltastar_n64_BIG.py (--n {16,32,64} --k 2 --allfar / select).
