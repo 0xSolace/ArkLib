@@ -52,3 +52,17 @@ Computed Anom_r bad primes for n=8, r=2..5 (FFT energy vs char-0 ref P>(2r)^{n/2
 **C4-weak (A_r≤Wick despite Anom_r>0)** survives (measured) = BGK restated — no clean combinatorial
 bypass. The per-bad-prime anomaly contribution must be bounded (cyclotomic norm divisibility, av9) to
 prove A_r≤Wick; that bound IS the BGK content. /tmp/probe_c4_higher_r.py.
+
+## ★ C1 — STRONGEST LEAD (elementary dyadic recursion beats di Benedetto, measured)
+The parallelogram (DyadicTowerRecursion brick) gives `V_μ = max_b|η_b^{(μ)}|² ≤ 4·ratio_μ·V_{μ-1}`, where
+`ratio_μ = (|η_b^{(μ-1)}|²+|η_{bω}^{(μ-1)}|²)/(2V_{μ-1})` at level-μ's WORST b. MEASURED (prize p~n^4):
+- per-level ratios concentrate deficit at TOP levels: n=64 → [1.0,1.0,0.92,0.62,0.67], n=32 → [1.0,0.99,0.83,0.66].
+- implied M bound DECREASES with n: n^0.951 (n=16), n^0.914 (n=32), **n^0.884 (n=64)** — beats di
+  Benedetto n^0.989 already, trend ↓. Recursion is TIGHT (bound 39.6 vs measured M 33.6 at n=64).
+**This is an ELEMENTARY DYADIC-SPECIFIC mechanism** (the worst level-μ frequency does NOT maximize both
+sub-periods at b and bω — they interleave). The OPEN step = PROVE the per-level deficit `ratio_μ ≤ c < 1`.
+Provability sub-question: the worst-frequency set of level μ-1 is not ω-invariant (b and bω can't both
+be near-maximal) ⟺ the Paley-graph max eigenvalue has low multiplicity / few near-maximal periods.
+If `ratio_μ ≤ c`, then `M ≤ n^{1/2·log₂(4c)}` (c=1/2 ⟹ √n exactly; measured c≈0.7 ⟹ n^{0.74-0.88}).
+**ATTACK NEXT:** (1) is ratio_μ ≤ c<1 uniform & provable? (2) does the deficit deepen at higher levels
+toward c=1/2? Probe /tmp/probe_c1_clean.py. novelty 9, insight 9, proximity 9, feasibility 6 (deficit-proof open).
