@@ -11293,3 +11293,62 @@ SCOPE (rule-6, honest): NOT a CORE closure. A reproducible probe + constraint le
 "does depth-3 moment help?" sub-question NEGATIVELY (it doesn't; the route is 2nd-order-slaved and
 thickness-generic). Python+numpy EXACT, multi-prime, proper subgroup => axiom-clean trivially (no
 Lean proof added/changed). Do NOT pursue an "E_3 thin Sidon moment bound" CORE lane.
+
+--------------------------------------------------------------------------------
+2026-06-15 (opus-4-8 subagent, CORE non-moment lane) — CORRECTION: the "first
+floor-consistent signal on the CANONICAL #bad object" (shallowest band, ~0.26
+bounded-below-1) is a JOINT artifact of (1) census-vs-eps* BUDGET CONFLATION and
+(2) an UNDERCOUNTING engine. Corrected, the shallow-band incidence is super-linear
+(super-budget vs B~n) = Johnson-side, not floor.
+--------------------------------------------------------------------------------
+CONTEXT. Brick ed1db3379 + the 2147 growth report claimed: on the CANONICAL
+OpenCoreConditionalPin object #bad (the deployed WorstCaseIncidenceBounded, NOT a
+surrogate), the shallowest band (k=1, a=3) ratio #bad/budget with
+budget = 2^r*C(2^{mu-1},r) [= 4*C(n/2,2) at r=2] stays bounded below 1 (~0.26) =
+"FLOOR-consistent, the FIRST canonical-#bad face that does not march to Johnson."
+
+THE CANONICAL OBJECT (OpenCoreConditionalPin.lean, exact):
+  WorstCaseIncidenceBounded C delta B : I(delta) = #{gamma : x^a+gamma*x^b is
+  delta-close to RS[k]} <= B, with the GOVERNING-LAW budget B = floor(q*eps*) ~ n
+  (eps*=2^-128, q~n*2^128). At k=1, a=3: delta-close = a deg-<=1 codeword agrees on
+  >=3 points = >=3 of the points (x_i, u0(x_i)+gamma*u1(x_i)) COLLINEAR.
+
+PROBE (exact mod-p, PROPER mu_n m=(p-1)/n>1, p~n^4..n^4.3, p==1 mod n, NEVER n=q-1,
+MULTI-PRIME, far-line family): scripts/probes/probe_407_truecore_budget_conflation.py.
+
+ARTIFACT 1 -- BUDGET CONFLATION. The "budget" 2^r*C(2^{mu-1},r) is the per-band
+CENSUS / stack-enumeration budget. At r=2 it is ~n^2/2, and SUMMED over all bands
+sum_r 2^r*C(2^{mu-1},r) = (1+2)^{n/2} = 3^{n/2} -- EXPONENTIAL in n (3^32 ~ 1.85e15
+at n=64), NOT a decomposition of q*eps* ~ n. A method "feasible within the 3^{n/2}
+census budget" is VACUOUS w.r.t. the prize budget ~n. Dividing a Theta(n^2) count by
+a Theta(n^2) per-band census budget yields a flat ~0.26 BY CONSTRUCTION; it is not a
+sub-(q*eps*) floor.
+
+ARTIFACT 2 -- THE PUBLISHED ENGINE UNDERCOUNTS. probe_407_truecore_B_growth.py counts
+a 3-subset only if ALL THREE pairwise 1st-divided-difference ratios coincide AND no
+pair is 'NOROOT' (e1=0, e0!=0) -- a NOROOT pair ABORTS the whole subset. But 3 points
+can be COLLINEAR (a genuine deg-<=1 agreement => a real bad gamma) even when one pair
+is vertical/NOROOT. The collinearity-determinant engine (the correct >=3-agreement
+object) is a strict SUPERSET: at n=8, line (4,2), published=5 vs correct=17 (the 5 are
+a SUBSET of the 17; 12 valid gamma dropped). So the published #bad (5,25,113,481 =
+n^2/8 - n/2 + 1 EXACTLY, p-independent) UNDERCOUNTS the true incidence.
+
+CORRECTED MEASUREMENT (collinearity engine, multi-prime, worst over far-line family):
+  n        :   8     16      32       64
+  #bad_corr:  17    232    2320    20224     (#bad/n: 2.1, 14.5, 72.5, 316 -- SUPER-linear)
+  #bad/census(~n^2/2): 0.71  2.07  4.83  10.19  (CROSSES 1 and grows -- "0.26 floor" evaporates)
+  (fixed line (4,2) is p-INDEPENDENT; the worst-OVER-lines value has mild p-jitter at n=64.)
+
+CONSTRAINT LEMMA / VERDICT (rule-4 mapped correction; rule-3 + rule-6 honest):
+  Against the CANONICAL eps* budget B ~ n, the shallowest-band incidence is super-linear
+  (Theta(n^2) even by the undercount; faster by the correct engine) = SUPER-budget and
+  GROWING = Johnson-side, NOT floor. The "0.26 floor-consistent canonical signal" is the
+  JOINT product of a census-vs-eps* budget conflation and an undercounting engine; both
+  push the true picture MORE Johnson-side. SEPARATE honest caveat: a=3 reads incidence at
+  near-trivial agreement (delta ~ 1, OUTSIDE the prize window (1-sqrt(rho), 1-rho-Theta(1/log n))),
+  so this super-budget growth does NOT by itself refute the WINDOW-RADIUS floor -- it is the
+  wrong delta AND the wrong budget to read floor-vs-Johnson on. Net: removes a budget-conflated
+  + undercounted "floor" read; the canonical window-radius WorstCaseIncidenceBounded at B~n
+  remains OPEN and UNMEASURED at the prize delta*. CORE not closed, not faked. Python-only,
+  no Lean changed => axiom-clean trivially. Do NOT cite the shallow-band #bad/census ~0.26 as a
+  delta* floor signal.
