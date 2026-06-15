@@ -13516,3 +13516,57 @@ instance of the campaign's PROVEN-FUTILE relocation pattern: the Catalan/non-bac
 is sound, but the only operator whose spectrum equals M is the regular adjacency, for which NBT is an
 exact reparametrization (Ihara–Bass) carrying zero new information. M(μ_n) is intrinsic; weighting the
 SAME group with χ changes the sum being bounded.
+
+## 2026-06-15 — IDEA [I015] "MULTIVARIATE dyadic-digit Stepanov auxiliary" NO-GAIN (probe_i015_multivar_dyadic_stepanov.py)
+
+IDEA [I015] (stepanov-multivariate, novelty 9, the c2/STAB step): the single-orbit obstruction
+killed the univariate Stepanov family (I001 Ore-Moore-Frobenius, I006 Jackson q-difference, I008
+Walsh dyadic tower) because mu_n is ONE orbit under x->x^2 (j->2j on Z/2^mu) and X^n-1 is SEPARABLE
+in char p, pinning every standard-multiplicity construction to mult 1. The I015 TRANSVERSE proposal:
+coordinatize x in mu_n by its dyadic digits x = prod_j zeta_{2^{j+1}}^{e_j}, e in {0,1}^mu, and build
+a MULTIVARIATE auxiliary F(y_0,...,y_{mu-1}) in the digit-variables where the high vanishing
+multiplicity comes from the x->x^2 (digit-shift/squaring) RECURSION -- claimed transverse to the
+single-orbit structure -- so multivariate Stepanov beats the n^{2/3} single-variable stall, giving
+|bad| <= n/mu = n/log n or better.
+
+VERDICT: **NO-GAIN.** The multivariate version COLLAPSES to the same single-orbit multiplicity-1 wall.
+The natural squaring-tower coords the digit-shift auxiliary sees are y_i := x^{2^i} (so y_{i+1}=y_i^2,
+the digit shift). DECISIVE STRUCTURAL FACT (probe-verified IDENTICALLY at mu=2,3,4,5, proper
+minimal-2-adic mu_n, m=(p-1)/n ODD, p>>n^3, NON-Fermat): the map phi: x |-> (y_0,...,y_{mu-1})
+embeds mu_n BIJECTIVELY onto a SINGLE RATIONAL CURVE
+    C : { y_{i+1} = y_i^2 } intersect { y_0^n = 1 },   parametrized by t = y_0 = x  (dim 1),
+with the top relation y_{mu-1}^2 = x^{2^mu} = x^n = 1 (top digit wraps; carry off the top vanishes).
+So the n digit-points are the image of ONE curve parameter t -- there is NO transverse room.
+
+EXACT BOOKKEEPING (the kill, parameter-free): any multivariate F restricted to the actual mu_n points
+factors through the curve, i.e. pulls back to a UNIVARIATE g(t) = F(t, t^2, t^4, ..., t^{2^{mu-1}}) of
+curve-degree sum_i 2^i*deg_{y_i}F. Multivariate order-m vanishing of F at every phi(x) FORCES
+univariate order-m vanishing of g at every x in mu_n; on the SEPARABLE orbit t^n-1 that requires
+(t^n-1)^m | g, hence curve-deg(g) >= m*n. Stepanov then gives |bad| <= curve-deg(g)/m >= n -- the
+TRIVIAL bound. Measured exponent log|bad|/log n = 1.000 for EVERY mu=2,3,4,5,6,8,10. The construction
+does NOT even reach the n^{2/3} single-variable stall (which at least uses a genuine 2-variable
+incidence), let alone the sqrt(n) target. True M(mu_n) exponent sanity: log M/log n = 0.987 (mu=2),
+0.966 (mu=3) -- still sitting at the BGK n^{1-o(1)} SOTA the idea claimed to beat.
+
+WHY THE "TRANSVERSE" DIRECTION IS AN ILLUSION (the crisp reason, the multivariate edition of the
+single-orbit wall): the dyadic-digit map j <-> (e_0,...,e_{mu-1}) is a BIJECTION Z/2^mu <-> {0,1}^mu;
+the squaring map is the SHIFT REGISTER on the digit cube, but a single cyclic orbit relabeled by a
+bijection is STILL a single 1-dimensional set -- there is no genuine extra dimension to osculate into.
+The multivariate jet at phi(x) sees only the 1-dim tangent of the curve C (the squaring recursion
+y_{i+1}=y_i^2 ties every coordinate to y_0), so all higher mixed-partial conditions are linearly
+DEPENDENT on the value+curve-tangent conditions -- the EXACT rank-collapse mechanism documented for
+I006 (q-difference) recast geometrically. A direct kernel check (M3b): nonzero F of curve-degree < 2n
+DO exist in the digit-monomial space (#mon > rank), but every such F either vanishes identically on
+the curve (no point count) or fails to vanish to order 2 on mu_n -- it produces NO Stepanov saving,
+because the useful order-2 auxiliary needs curve-degree >= 2n, contradicting the < 2n cap.
+
+MECHANISM CLASS: same horn as the entire Stepanov family on mu_n. mu_n manufactures NO multiplicity
+because (a) X^n-1 is separable and (b) the multiplicative/squaring structure is INTERNAL to the one
+orbit -- multivariate digit coordinates only relabel that orbit as a rational curve, never add a
+transverse direction. NOT a new lever toward sqrt(n); the open core (worst-case incomplete char sum
+over mu_n) stays at BGK n^{1-o(1)}. No Lean brick (no axiom-clean statement emerges beyond the
+trivial Stepanov degree bound, already in StepanovStructuredVacuous).
+
+Probe committed: scripts/probes/probe_i015_multivar_dyadic_stepanov.py (proper mu_n, n=2^mu | p-1,
+p prime, p>>n^3, minimal-2-adic m ODD NON-Fermat, NEVER n=p-1; mu=2..10; exact mod-p rank + curve
+pullback bookkeeping).
