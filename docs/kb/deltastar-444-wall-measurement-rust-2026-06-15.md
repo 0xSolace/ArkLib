@@ -29,3 +29,13 @@ Validated EXACT vs the in-tree reference and RB's engine: **n=16,k=4 → δ*=9/1
 
 Both tools are ~100–1000× the CPython probes and reach n=128 (M) / exact n≤24 (δ*) in seconds–minutes on 8 cores;
 n≥256 (M) and exact n≥32 (δ*) remain compute-walled on CPU (GPU port is the next step if deeper points are wanted).
+
+## 3. `period_covariance.rs` — FHK log-correlated route, settled NEGATIVE
+Measures `Cov(log|S_b|, log|S_{b'}|)` vs `−log|b−b'|` (n=64, p≈n⁴). Result: `cov/var ≈ ±0.02` (noise floor)
+at **every** lag d≥1 — flat, NOT tracking `−ln d`. **The Gauss-period field is WHITE-NOISE, not log-correlated.**
+Consequence: the Fyodorov–Hiary–Keating log-correlated-max machinery (which would give `√(2n log m)` by chaining)
+**does not apply** — there is no log-correlation to exploit. The max *looks* i.i.d.-Gaussian-extreme (supporting the
+conjectured `C=O(1)`), but for a DETERMINISTIC family that is the wall itself, not a proof. Independently confirms the
+campaign's "log-correlated crown REFUTED / periods exchangeable white-noise" finding. Probabilistic extreme-value routes
+(FHK, EKYY local-law, RMT) are necessary-not-sufficient; per the §3 meta-theorem the only deterministic proof route is
+char-p deep moments.
