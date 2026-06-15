@@ -1,5 +1,32 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-15 — CONJECTURE C26 "Stickelberger-House" SECRETLY-OPEN (probe_c26_stickelberger_house.py)
+
+Conjecture C26 (issue #444): the dyadic Gauss-period house (= max archimedean conjugate
+modulus = M(μ_n), the open object) is ≤ C√(n log p) via the EXACT Stickelberger ideal
+factorization of τ(χ), which "forces the conjugates to be BALANCED without any moment/
+equidistribution input" (Duke–Garcia house framework). Verdict: **secretly-open** — it
+hides the open BGK/Paley sup-norm step. Reconfirms two prior 2026-06-14 entries below
+(Galois/house + p-adic/Stickelberger REFUTED; HANDLE A3 REFUTED) with a fresh prize-shaped probe.
+
+DECISIVE OBSTRUCTION (two independent, both measured at p~n^4 ≫ n^3, n=2^μ, NEVER n=p-1):
+- **Stickelberger is Galois-INVARIANT on the conjugate orbit.** The periods {η_c} are the full
+  Galois orbit of one algebraic integer; Stickelberger gives each conjugate the SAME prime-ideal
+  valuation profile (they are Galois-conjugate ideals; val = base-p digit-sum, Gross–Koblitz exact).
+  So the p-adic data carries ZERO information about WHICH conjugate is largest:
+  corr(|η_c|, p-adic valuation) = 0.020, 0.022, 0.019, −0.004 (n=8,16,32,64). The archimedean
+  size is the UNIT/root-of-unity (phase) factor of τ(χ) — explicitly NOT pinned by Stickelberger
+  (sign/unit-root ambiguity open even for index-2,4 Gauss sums; Yang–Xia, Aoki).
+- **The conjugates are NOT balanced** (the claim's load-bearing step is false). house/geomMean =
+  5.0, 6.4, 6.2, 7.2 (GROWING with n); house/min ≈ 2785 .. 14498. Balance would give house/geom≈1.
+  The norm |N|^{1/m} (= geomMean, what Duke–Garcia/Habegger compute) UNDER-estimates the house by
+  the growing factor 5–7×. Norm ↛ house unless conjugates are flat = the open equidistribution.
+- **Object is real but bound undelivered.** house ≈ 3.4–3.8·√n ≈ √(n log p) (below trivial n) — so
+  the TARGET shape is correct, but Stickelberger delivers only the p-adic valuation, not the √n
+  archimedean cancellation. Pinning house from norm = forcing balance = the open BGK/Paley sup-norm
+  (best PROVEN n^{1−o(1)} BGK; di Benedetto n^{0.989} only n>p^{1/4}, outside the prize).
+Probe: scripts/probes/probe_c26_stickelberger_house.py, commit 16a4ab116. Same wall as A3/Galois.
+
 Goal: keep trying to **disprove** the ABF26 Grand-Challenge-1 conjecture, then
 **disprove the disproof**. Record every attempt so we don't repeat ourselves and
 so we zero in. Keep lemmas that *constrain* even if they don't fully disprove.
