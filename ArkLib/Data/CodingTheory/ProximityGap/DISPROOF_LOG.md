@@ -11352,3 +11352,51 @@ CONSTRAINT LEMMA / VERDICT (rule-4 mapped correction; rule-3 + rule-6 honest):
   remains OPEN and UNMEASURED at the prize delta*. CORE not closed, not faked. Python-only,
   no Lean changed => axiom-clean trivially. Do NOT cite the shallow-band #bad/census ~0.26 as a
   delta* floor signal.
+
+================================================================================
+REFUTATION (2026-06-15 09:31 UTC) — the decoupling crossing-depth `c* = n(1/2-rho)-1
+= Theta(n)` RATE-LAW is WRONG; c* is RATE-CONSTANT O(1). (#444 §6 decoupling, second horn)
+Lane: decoupling2. Engine: scripts/rust-pg/src/bin/secondhorn.rs (FULL (a,b) sweep, exact,
+multi-prime, PROPER mu_n, p>>n^3, p==1 mod n, NEVER n=q-1) + probe_407_decoupling_secondhorn_boundary.py.
+--------------------------------------------------------------------------------
+CLAIM REFUTED (from DecouplingDecayCrossingDepth.lean / commits 93cfc0bf0, 04f210c9f):
+  "s* = n/2-1 is rate-independent (antipodal mechanism), so the over-determination depth
+   c* = s*-k = (n/2-1)-k = n(1/2-rho)-1 = Theta(n) for every fixed rho<1/2."
+That prior file FIXED k=n/4 (the rho=1/4 axis) and varied n; it NEVER varied k at fixed n.
+The rate-generalization was an extrapolation, not measured.
+
+THE MEASUREMENT (fix n, vary k = the actual rate sweep), s*=min{s: maxI(s)<=budget=n}:
+  n=20, p=160001 (m=8000, PROPER):
+    k :  5    6    7    8    9      (rho .25 .30 .35 .40 .45)
+    s*:  9   10   11   12   13
+    c*:  4    4    4    4    4      <-- CONSTANT in the rate
+    d*: .55  .50  .45  .40  .35
+  n=16, p=65537 AND p=1048609 (p-independent, PROPER):
+    k :  4    5    6    7
+    s*:  7    9    9   11
+    c*:  3    4    3    4          <-- O(1), {3,4} parity wobble (NOT shrinking with rho)
+
+CONSTRAINT LEMMA (the corrected law):
+  c*(n,k) = c*(n) is CONSTANT IN THE RATE k.  Equivalently s*(n,k) = k + c*(n) (the binding
+  crossing TRACKS k, it is NOT pinned at n/2-1).  Hence delta* = (1-rho) - c*(n)/n = a fixed
+  Theta(1/n) below CAPACITY (KKH26 ceiling shape), at every rate.  The prior Theta(n) is ONLY
+  the value of the constant c*(n) at the k=n/4 SLICE (c*(n)=n/4-1 there), NOT a function of rho.
+
+WHY THE PRIOR ERRED: at k=n/4, s*=n/2-1 so c* = (n/2-1)-n/4 = n/4-1, which is Theta(n) only
+  because k=n/4 is itself Theta(n).  The prior read off "c*=n/4-1 at the data point" and wrote
+  it as the rho=1/4 instance of "n(1/2-rho)-1", inferring a falling-with-rho law.  But the true
+  s* GROWS with k (s*=k+const), so c* is rate-FLAT.  The prior's predicted c*=0 at k->n/2-3
+  (BGK re-coupling) is FALSE: at n=20,k=9 the prior predicts c*=(N-1)-k=0 but the data gives c*=4.
+
+VERDICT (rule-3, rule-4, rule-6): a WIN that MAPS the §6 dichotomy more precisely. The far-line
+  crossing depth NEVER collapses to 0 by varying the rate => NO second horn opens within the
+  accessible window-interior rate range; the far-line/numeric-enumeration face stays a bounded-depth
+  (c*>=3) over-determined cyclotomic object OFF the BGK wall at EVERY rate rho in [1/4,1/2)
+  (strengthens c.348 from the rate direction: off-floor at all rho, not just rho=1/4).  The §6
+  "under-determined / re-coupling to BGK" direction is NOT reachable by the rate parameter.  CORE
+  (BGK M(n)<=C sqrt(n log m)) stays OPEN.  Lean: DecouplingCrossingDepthRateConstant.lean
+  (axiom-clean, [propext,Quot.sound]): crossingDepth_rate_constant, crossingDepth_rate_flat,
+  crossingDepth_no_collapse, crossingDepth_pos_all_rates, capacity_defect_eq,
+  prior_quarter_axis_slice, prior_rate_law_refuted_at_n20_k9.
+  OPEN refinement (sub-goal b): exact closed-form constants of the per-direction decay I(c) and the
+  exact c*(n) law (n=16->3/4 wobble, n=20->4; n>=24 deferred, engine too slow under load).
