@@ -12233,3 +12233,62 @@ n>p^{1/4}"). No new non-BGK lever; the open core is not discharged — the bound
 (`√(n log p)` for n<p^{1/4}) IS the open BGK/Paley sup-norm.
 
 **Probe committed:** `scripts/probes/probe_C37_burgess_amplification.py`.
+
+## C38 (#444) — Multiplicative Energy Concentration via BSG on Bad Scalars — **SECRETLY-OPEN** (premise REFUTED) — 2026-06-15
+
+**Claim.** The set of bad scalars `γ` (for a far monomial pencil) has *small multiplicative
+energy* by Balog–Szemerédi–Gowers ("since each contributes a structured agreement set"), so BSG
+extracts an approximate multiplicative subgroup, Plünnecke–Ruzsa controls its product set, and the
+proven antipodal coset closure forces `|bad γ| ≤ budget ~ n` PAST Johnson. REDUCES-TO: BSG +
+Plünnecke–Ruzsa + in-tree `FactorizationRigidity` coset closure + orbit-count law L3.
+
+**Two independent kills, both machine-witnessed (exact over proper `μ_n`, `p` prime, `p ≫ n³`,
+NEVER `n=p−1`; probes `probe_c38_bsg_scalar_energy.py`, `probe_c38_bsg_scalar_coset_followup.py`).**
+
+**(1) The "small multiplicative energy" premise is FALSE — the bad set is a multiplicative COSET
+UNION (maximal energy).** Computed the exact bad-scalar set `B(a,b,δ) = {α : x^a+αx^b is δ-close to
+RS[μ_n,k]}` for far pencils, then its multiplicative energy `E_mult(B)`, product set `|B·B|`, and
+coset structure. Across all non-degenerate rows `B` is **exactly a union of cosets of `μ_n`**
+(`coset|H|=8` at n=8, `coset|H|=16` at n=16 — verified by `b·μ_n ⊆ B ∀b∈B`):
+
+| n | k | ρ | p | (a,b) | δ | J | cap | \|B\| | budget n | E_mult | \|B·B\| | E/\|B\|² | structure |
+|---|---|---|---|-------|---|---|-----|-----|--------|--------|-------|--------|-----------|
+| 8 | 2 | 1/4 | 4129 | (3,4) | 0.637 | 0.500 | 0.750 | 24 | 8 | 7680 | 48 | 13.3 | coset \|H\|=8 |
+| 16 | 2 | 1/8 | 65537 | (3,4) | 0.841 | 0.646 | 0.875 | 400 | 16 | 5754880 | 4928 | 36.0 | coset \|H\|=16 |
+| 16 | 2 | 1/8 | 1048609 | (3,4) | 0.772 | 0.646 | 0.875 | 48 | 16 | 61440 | 96 | 3.8 | coset \|H\|=16 |
+
+A coset union has the *maximal* multiplicative energy for its size (`E_mult ≈ 56–100% of |B|³`,
+i.e. `13–36×` above the Sidon/random floor `|B|²`), with a *tiny* product set `|B·B| ≈ 2n`
+(products stay in a bounded number of cosets). This is the **polar opposite** of the small-energy /
+multiplicatively-Sidon set BSG needs. C38's premise is not merely unverified — it is *false on the
+actual object*. (Mirror of the C32 vacuity: BSG is a HIGH-energy theorem; its hypothesis is
+vacuous/inverted on these structured sets. Here, worse: `B` is the extremal coset, so BSG's
+*conclusion* — "approximate multiplicative subgroup" — is **given for free** by `FactorizationRigidity`
+and supplies nothing new.)
+
+**(2) BSG/PR run BACKWARDS — they never bound `|B|`; the cardinality is the open object.** Even
+granting structure: BSG (`E_mult ≥ |B|³/K ⟹ approx subgroup`) and Plünnecke–Ruzsa
+(`|B·B| ≤ K^{O(1)}|B|`) take a *cardinality* and *produce* structure; neither yields an *upper bound
+on `|B|`*. The only Cauchy–Schwarz relation runs the wrong way: `E_mult(B) ≥ |B|⁴/|B·B|` (verified:
+`7680 ≥ 24⁴/48 = 6912`), i.e. `|B| ≤ (E_mult·|B·B|)^{1/4}`. To force `|B| ≤ n` you must first bound
+`|B·B| ≤ n` (and `E ≤ n³`). But `|B·B|` = the number of cosets the product spans = the **orbit-count
+law L3 input** (`I_pencil = N_pencil·S`, `S = n/gcd(b−a,n)`), whose unconditional bound is `≤ n` via
+`gcd(b−a,n) ≤ n` — exactly the **Johnson-capped** object (meta-theorem: every closed/coset/
+orbit-count object caps at `1−√ρ`). Measured `|B| = 25n` and `|B·B| = 308n` past Johnson
+(n=16, δ=0.841): the bad set is genuinely large past Johnson, and bounding its coset count below
+budget is precisely the p-DEPENDENT BGK sup-norm `M(μ_n) ≤ C√(n log(p/n))` (open; SOTA `n^{1−o(1)}`,
+di Benedetto `n^{0.989}`). BSG/PR are p-INDEPENDENT low-order tools (their trilinear input is exactly
+p-independent, see D9); they cannot supply the p-dependent moment.
+
+**Verdict: secretly-open**, with the stated mechanism **refuted**. The "small multiplicative energy"
+premise is false (the bad set is a maximal-energy coset union); BSG's structure conclusion is free
+and inert (`FactorizationRigidity` already gives it); and the actual cardinality step — counting the
+cosets below budget past Johnson — is the open BGK/Paley sup-norm. C38 collapses to **the same wall
+as C32** (BSG vacuous), and to **reduces-to-johnson** on the only reading where the coset-closure /
+orbit-count L3 bound is the operative lever (it caps at `1−√ρ`). Consistent with O11 (bad count =
+subset-sumset size of the free set), the energy-method cap L8, and the p-independent-trilinear
+obstruction D9.
+
+**Probes committed:** `scripts/probes/probe_c38_bsg_scalar_energy.py`,
+`scripts/probes/probe_c38_bsg_scalar_coset_followup.py` (self-contained, exact GF(p), proper `μ_n`,
+`p` prime `p≫n³`, NEVER `n=p−1`). Probe commit `be92452b1`.
