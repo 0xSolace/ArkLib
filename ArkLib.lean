@@ -985,6 +985,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DilationOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DistinctPeriodCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031OrbitCountPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031SupTransversalCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031TransversalConcreteCover
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ImprimitiveSpikeStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Issue407SaturatedIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
