@@ -11166,3 +11166,43 @@ union bound; Tao-uncertainty needs `n` prime, vacuous for `n=2^μ`).
 
 **Probes committed:** `scripts/probes/probe_c20_khovanskii_ragged_root_count.py`,
 `scripts/probes/probe_c20_khovanskii_ragged_certificate.py` (commit `fb3785b58`).
+
+---
+
+## C17 (#444) — Kelley-Owen Dilation-Pencil "Sharp Constant" s* ≤ √((k+1)n) as EQUALITY: REFUTED → reduces-to-johnson
+
+**Claim.** Generalize the proven trinomial bound (`½+√n` roots, `t=3`, `k=1`) to `(k+2)`-term
+faces via the `k`-dimensional dilation pencil, asserting the sharp double-count gives
+`s* ≤ √((k+1)n) + O(k)` as an **EQUALITY realized by the antipodal pencil**, pinning `δ*` exactly
+at `1−√ρ(1+o(1))`. Reduces to in-tree `KelleyOwenDilationPencil.pencil_card_core` +
+`stepanov_sqrt_bound` + Heath-Brown-Konyagin Stepanov for the `k`-term case.
+
+**Why it falls (two horns at once).**
+
+1. **The "sharp equality / upper bound" is FALSE for the `(k+2)`-face.** The in-tree
+   machine-checked witness `_RThinSqrtNKRefuted` is exactly a `(k+2)`-sparse face (`k=2`):
+   `P(X) = (X^m+1)(X−1) = X^{m+1} − X^m + X − 1`, support `{0,1,m,m+1}` (`t=4=k+2`),
+   `m=n/2`. Its root set in `μ_n` is `{x : x^m=−1} ∪ {1}`, of size `n/2+1` — **linear in `n`,
+   not `√n`**, and `> √((k+1)n)` for every `n≥8`. So the dilation-pencil double-count is not
+   even a valid worst-case upper bound (let alone a tight equality): the `k`-dimensional pencil's
+   blocks overlap in a whole coset core, `M(S) ≥ n/2−1` by `PencilAutocorrelation.autocorr_ge_coset_core`,
+   and the Corrádi/Fisher count collapses to `r ≤ Θ(n)`. The antipodal pencil does NOT realize
+   `√((k+1)n)`; it realizes `n/2`. Probe `probe_c17_dilation_pencil_sharp.py` reproduces
+   `|S|=n/2+1` over proper dyadic `μ_n`, `p` prime, `p~n^4 ≫ n^3`, `n≠p−1` (commit `b73fa70e8`).
+
+2. **Even where the bound IS an upper bound, it lands EXACTLY at Johnson.** With `k=ρn`,
+   `√((k+1)n) ~ √(ρn·n) = n√ρ` = the Johnson agreement count, i.e. radius `1−√ρ` = the Johnson
+   radius. The conjecture's own stated conclusion ("pins `δ*` at `1−√ρ(1+o(1))`") is the Johnson
+   radius verbatim. The `√` upgrade special to `t=3` (1-D pencil, overlap-1) degrades to `√(kn)`
+   for `t=k+2` (`k`-D pencil, overlap-`k`) — documented in `_KelleyOwenDilationPencil.lean`
+   §"Honest scope". Heath-Brown-Konyagin Stepanov gives the same `√(kn)`; it never reaches the
+   `n`-independent isolated-excess budget (`Kelley Conj 3.2 / KO Heuristic 1.4`, recognized open).
+
+**Which horn:** `reduces-to-johnson` (the in-tree bricks it cites are real and axiom-clean, but
+they prove only the `t=3` `√n` rung and the `t=k+2` `√(kn)`=Johnson degradation), with the
+sharp-equality premise outright `refuted-false` by `_RThinSqrtNKRefuted`. Same family and same
+witness as the prior **C20 (Khovanskii ragged root count)** entry above. Khovanskii/HBK Stepanov
+adds nothing past Johnson; the coset core (the closed/antipodal object) is where the mass is and
+caps at Johnson by the route-elimination meta-theorem.
+
+**Probe committed:** `scripts/probes/probe_c17_dilation_pencil_sharp.py` (commit `b73fa70e8`).
