@@ -1259,6 +1259,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectrumClosedFormWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubgroupConvolutionIdempotent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumTotalMass
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TaoFromChebotarev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ThornerZamanPNTStatement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerBaseRungDegenerate
