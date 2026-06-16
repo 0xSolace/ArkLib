@@ -14198,3 +14198,56 @@ The prize regime spans ρ∈{1/2,1/4,1/8,1/16}, so I extended the exact computat
 upper-window δ* is insufficient at EVERY prize rate — the wall is worst-case extremality (BCHKS25
 1.12 / the structured KKH26 line), not any moment bound. No new closure; this closes O173's
 rate-coverage gap so the result holds across the full prize rate set.
+
+================================================================================
+REFUTATION-WITH-MECHANISM (lane binderflip, 2026-06-16): the spec-doc E3 claim
+"at the binding s* the worst direction is PRIMITIVE (d=1, S=n)" is FALSE up the
+dyadic tower. The binder primitivity FLIPS primitive (n=8) -> imprimitive (n=16).
+================================================================================
+OBJECT. The 50-bridge delta* program (docs/kb/deltastar-444-empirical-formulas-and-
+bridges-2026-06-15.md) reduces the whole prize to ONE open input: a bound on the plateau
+width w per dyadic tower level, carried as the hypothesis hclean in _BridgeB29.mStar_tower_shift
+(the clean shift m*(2n) <= m*(n)+1, requiring w=1) and plateauWidthBound in _BridgeB30.
+_BridgeB26.mStar_step_of_clean gives a ROUTE to discharge hclean: a PRIMITIVE binder
+(d = gcd(b-a,n) = 1) has an empty plateau (primitive_no_plateau_clean) => clean w=1 descent.
+The spec-doc E3 ASSERTS exactly this ("at the binding s* the worst direction is primitive,
+d=1, S=n"). IF that held up the tower it would discharge hclean => m* = O(log n) = THE PRIZE.
+
+PROBE (scripts/probes/probe_binder_primitivity_flip.py + the exact rust engine scripts/rust-pg
+binary binder_prim; PROPER thin mu_n ⊊ F_p*, exact char-0, p >> n^3, p == 1 mod n, THREE distinct
+primes per n for p-independence (rule 2), NEVER n=q-1; incidence via the divided-difference
+over-det witness condition):
+  * n=8,  k=2: binder (a,b)=(5,4),  b-a≡7,  gcd(7,8)=1  => PRIMITIVE   [p ∈ {4129,4153,4177}]
+  * n=16, k=4: binder (a,b)=(10,4), b-a≡10, gcd(10,16)=2 => IMPRIMITIVE [p ∈ {65537,65617,65633}]
+p-INDEPENDENT (identical verdict at all three primes each). The spec-doc's claimed n=16 binder
+(11,10) (primitive) is HEAVY (saturated: both x^11 and x^10 lie in the RS code) at the binding
+region s=6,7,8 => it carries ZERO over-det far-line information and is NOT the binder. The actual
+binder (10,4) is imprimitive.
+
+MECHANISM. The binder primitivity is NOT tower-invariant: it FLIPS from primitive (n=8) to
+imprimitive (n=16), at the very first tower step where the clean shift would have to hold. By the
+in-tree _BridgeB27 dichotomy (plateau_extra_rung_dichotomy / imprimitive_orbit_dvd_half), an
+imprimitive direction (2 | d) lands in the ANTIPODAL-INVARIANT extra-rung regime S | n/2 (the
+n=16 binder: S=8 | 8), NOT in the clean primitive regime primitive_no_extra_rung (which needs d=1,
+provably false here since 2 | 2). So the plateau-doubling mechanism is ACTIVE at the binder, and
+_BridgeB26's primitive route does NOT discharge _BridgeB29's hclean. The hoped-for clean-shift
+collapse of m* via "binder primitive" is blocked.
+
+CONSTRAINT LEMMA. At any imprimitive binder (2 | d, supply S*d = 2^μ, μ>=1) the clean precondition
+d=1 is FALSE; the binder orbit carries the extra rung S | n/2. Discharging hclean (and hence the
+m* = O(log n) collapse) CANNOT be done via the primitive-binder route; it requires bounding the
+plateau width w directly at an imprimitive binder = the genuine open input (BCHKS 1.12), named in
+B28/B30/B31/B50, never discharged. A real beyond-Johnson gap (if any) lives in the imprimitive-
+binder plateau dynamics, not in a primitive clean shift.
+
+FORMALIZED (axiom-clean ⊆ {propext, Classical.choice, Quot.sound}, in-graph build exit 0/8316 jobs):
+Frontier/_BridgeB29BinderImprimitive.lean :
+  * binder_imprimitive_has_extra_rung : the n=16 binder (d=2, S=8) satisfies S | n/2 (8 | 8) via
+    _BridgeB27.imprimitive_orbit_dvd_half, the antipodal-invariant extra rung is present.
+  * binder_not_clean_of_imprimitive : at any imprimitive binder (2 | d) the clean/primitive
+    precondition d=1 is FALSE, so _BridgeB26's primitive route is not applicable.
+  * clean_shift_route_blocked_at_n16_binder : the concrete n16 witness, HAS the extra rung
+    (8 | 8) AND is NOT primitive (2 ≠ 1), provably in B27's imprimitive case, not its primitive case.
+NOT a refutation of CORE; a refutation-with-mechanism of the spec-doc E3 "binder primitive" claim
+and the clean-shift discharge ROUTE. Makes NO capacity/beyond-Johnson claim; cliff-at-n/2 untouched.
+CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN. -- binderflip lane, co-author wakesync.
