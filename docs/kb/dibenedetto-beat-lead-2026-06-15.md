@@ -33,3 +33,10 @@ H>p^{1/7} ~ p^{0.143}, COVERING the prize regime H~q^{1/4..1/5}=p^{0.2..0.25} wh
   combining with a 2-power-specific trilinear prefactor (Lemma 4.1) pushes closer still.
 - HONEST: this is an improvement for CLOSENESS (0.989->0.958, into the prize regime) — exactly the GOAL — NOT a
   prize closure (0.958 >> 1/2). The half-power wall stands; this is genuine forward progress on the SOTA exponent.
+
+## Phase-1 REFINEMENTS (verified line-by-line, /tmp/diben.txt)
+- True di Benedetto threshold = p^{40/191}=p^{0.2094} (just above prize floor p^{0.20}), NOT exactly p^{1/4}.
+- T3 (Lemma 4.3) used TWICE (X,Y legs); T2 (Lemma 4.2) used ONCE (Z leg, |Z|^{7/8} in trilinear).
+- t3:4->3 alone: Hexp=271/40, exponent 0.9615, threshold p^{1/6.78}. Both Sidon-floor (t3=3,t2=2): Hexp=7, exponent 0.9583, threshold p^{1/7}=p^{0.143} (covers prize q^{1/4..1/5}). t2->2 alone: exponent 0.9861, threshold p^{1/5}.
+- UPGRADE: T2,T3 are EXACT (diff=0) for all tested n<=64 incl extreme structured primes => t3=3 is a VERIFIED IDENTITY for tested n, only 'persists for all n' (No-Excess) remains to prove.
+- The p^{1/4} prefactor (Lemma 4.1) is the ONLY route toward 1/2 and is open (Target for further push); the energy substitution does NOT need it for the closeness/regime gain.
