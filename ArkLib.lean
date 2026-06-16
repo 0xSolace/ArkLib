@@ -1001,6 +1001,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FarLineProxyBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FisherLevelLocked
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FisherRSListCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FloorAsymptoticRadius
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountSigmaUniform
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountTransversal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericSuperDiagonalLower
