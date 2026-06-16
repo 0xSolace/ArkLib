@@ -45,6 +45,15 @@ theorem e3_routes_agree (G : Finset F) (h2 : (2 : F) ≠ 0) (h0 : (0 : F) ∉ G)
   push_cast
   ring
 
+/-! ### Non-vacuity sign: the bridge fires on a concrete value set. -/
+
+private instance : Fact (Nat.Prime 5) := ⟨by norm_num⟩
+
+/-- The hypotheses are satisfiable: on `μ₂ = {1,-1} = {1,4} ⊂ ZMod 5` (`m = 1`) the bridge gives
+`negSymCount {1,4} 6 = balancedCount 6 1`. A standing witness that `e3_routes_agree` is not vacuous. -/
+example : (negSymCount ({1, 4} : Finset (ZMod 5)) 6 : ℤ) = balancedCount 6 1 :=
+  e3_routes_agree {1, 4} (by decide) (by decide) (by decide) (by decide)
+
 end ArkLib.ProximityGap.Frontier.E3RouteBridge
 
 /-! ## Axiom audit -/
