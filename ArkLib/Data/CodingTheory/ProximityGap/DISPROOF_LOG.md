@@ -14251,3 +14251,27 @@ Frontier/_BridgeB29BinderImprimitive.lean :
 NOT a refutation of CORE; a refutation-with-mechanism of the spec-doc E3 "binder primitive" claim
 and the clean-shift discharge ROUTE. Makes NO capacity/beyond-Johnson claim; cliff-at-n/2 untouched.
 CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN. -- binderflip lane, co-author wakesync.
+## 2026-06-15 — New Mathematics essay tools: 4 of 5 REFUTED (adversarial, fresh exact computation)
+
+The five "New Mathematics" tools (NEW_MATHEMATICS-2026-06-15.md) were adversarially probed with independent
+exact F_p counters. Verdicts:
+- **Tool 4 (antipodal-complex torsion = far-line bad primes): REFUTED.** SNF integral-homology torsion primes
+  = trivial {2,3}; measured far-line incidence-bad primes all >3 (n=16 {17,97,241,257,...}; n=32 {97,...,65537}).
+  Antipodal pairing char-uniform (count = n for every n|p-1 in [17,70000], 0 deviations). p-independence is
+  ARITHMETIC (over-det Norm-divisibility), NOT topological/homological torsion.
+- **Tool 5 (depth-graded conductor depth-sparsity): REFUTED.** Engaged depth D grows ~2r (NOT O(1)): n=16
+  Fermat p=65537 D=0,0,1,4 (r=2..5), max_depth ~2r; same under distinct-value and antipodal-defect gradings.
+  Wall returns as r->log m. (Consistent with prior cumulant-dichotomy: raw moment explodes at structured primes.)
+- **Tool 2 (root-number phase-flatness): REFUTED-as-stated.** The 15-20% "advantage over random" is an
+  extreme-value artifact; permutation-of-actual-eta null gives D_arith/D_perm = 0.97-1.06. Residual diffuse = wall.
+- **Tool 1 (Shaw operator exact identity): NOT refuted but RENAMES the wall.** incidence=avg+Shaw exact (1e-13);
+  MCAShawConjecture provably = BGK/E_r object (ShawSecondMoment + eta_pow_le_energyR). Expository/modular only.
+
+NET: no tool crosses or isolates a strictly-weaker statement. Sole surviving off-BGK computable frontier =
+distinct-gamma union-count |U_R{gamma_R}| growth law (see GAMMA_GROWTH_LAW measurement).
+
+## 2026-06-15 — #1 BGK-proving path (char-p deep Wick / MGF) REFUTED at the prize prime (3 angles)
+- W3/F2 per-level sign condition (StepRatioAntitone / RhoContractiveAtDepth) FALSE with no margin: rho=Cum(G,r)/2Cum(H,r)=2.8@r=2 -> ~123 (n=32,r=7) -> ~740 (r=9); proven negative principal-subtraction term dwarfed 3-1700x. W3 R(1)<=1, W7 GEN_r<0 fail at ~30% of prize-regime primes.
+- W1 aggregate Gaussian-MGF envelope: "holds to n=256" was SADDLE-ONLY; uniform-in-y bulges to 1.24-1.29 (Fermat 65537); breaches its own envelope-break threshold c*~1.243.
+- v2(p-1)-gating refinement REAL but finite-n: at n=64 c monotone in v2 (v2=mu best ~1.25, v2=8 ~1.49). Trend of BEST stratum v2=mu (=generic prize prime): mean c = 1.057/1.162/1.234/1.264/1.323 for n=8/16/32/64/128 -> rising toward sqrt2=1.414, crosses envelope-break 1.243 by n~32. So all strata -> BGK constant sqrt2 asymptotically; v2=mu does NOT stay safe.
+- NET: #1 path reduces to the wall (feasibility 2, NOT independent). Only survivor = saddle bound at C=sqrt2 = generic BGK wall the prize must BEAT. Probes: scripts/probe(s)/probe_v2_stratified_M.py, probe_v2mu_trend.py. Keepable: obstruction sharpest at high-v2 primes = exactly the FRI/STARK prime regime (Goldilocks v2=32, BabyBear v2=27).
