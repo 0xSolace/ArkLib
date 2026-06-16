@@ -3511,3 +3511,45 @@ exit 0 / 3298 jobs): Frontier/FarLineProxyBelowJohnson.lean --
 NOT a refutation of CORE; a precise structural SEPARATION refuting the over-identification
 "far-line incidence = delta*" in the prize regime, isolating the prize-hard residual.
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- plotkinsep lane, co-author wakesync.
+
+---
+
+## Orbit-count is doubling-INVARIANT: the plateau is INVISIBLE to the orbit skeleton (imprimrung)
+
+CONTEXT (master-open-thread item #3). _Close26_PrimitiveCleanRecursion proves the clean
+recursion D*_{2n}(m) = D*_n(m-1) (no plateau) at PRIMITIVE far directions (gcd(b-a,n)=1),
+and defers the IMPRIMITIVE analogue (the plateau-doubling rung, B27) as the open landable
+brick. lalalune's measurement: the plateau IS active at imprimitive binding directions
+(w(16)=1, w(32)=2).
+
+FINDING (probe scripts/probes/probe_imprimitive_rung_decomp.py + the gcd sweep, exact,
+n=2^a a=3..8, every in-range direction s, never n=q-1). The governing ORBIT COUNT
+N = d = gcd(b-a, n) (the OrbitCountCrossingLaw budget threshold) is DOUBLING-INVARIANT at a
+FIXED direction, at PRIMITIVE *and* IMPRIMITIVE directions ALIKE: for n=2^a and any in-range
+shift 1 <= s <= n, gcd(s, 2n) = gcd(s, n). Exhaustively verified 0 fails over 4094 cases.
+
+MECHANISM. Write t = v_2(s). For a power of two gcd(s, 2^a) = 2^min(t, a). The in-range
+bound s <= 2^a forces t <= a (else 2^(a+1) | s => s >= 2^(a+1) > 2^a >= s). So
+min(t, a) = min(t, a+1) = t, hence gcd(s, 2^a) = gcd(s, 2^(a+1)). The orbit count is fixed
+under n -> 2n at EVERY in-range direction; the imprimitivity (d even) does NOT create an
+extra orbit under doubling.
+
+CONSTRAINT LEMMA. The plateau-doubling lalalune measured (w(32)=2) is NOT visible at the
+orbit-count level. The orbit-count skeleton route to the imprimitive recursion is
+PLATEAU-BLIND: it gives N(2n)=N(n) just like the primitive case, so it cannot be the source
+of the extra rung. The plateau lives STRICTLY in the gap between the orbit count N and the
+distinct-gamma count D* (the BGK/incidence content) -- the open object. This refines item #3:
+any imprimitive "clean recursion" derived purely from the orbit-count crossing law inherits
+the primitive cleanness and therefore CANNOT capture the plateau; the plateau is an N->D*
+phenomenon, not an N phenomenon.
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, single-file lake-env-lean
+exit 0 + in-graph lake-locked exit 0): Frontier/OrbitCountDoublingInvariant.lean --
+  - gcd_two_pow_eq_two_pow_min_v2 : gcd(s, 2^a) = 2^min(v2 s, a) for s>0 (the pin).
+  - v2_le_of_le_two_pow : 1 <= s <= 2^a => v_2(s) <= a (in-range valuation bound).
+  - gcd_doubling_invariant : 1 <= s <= 2^a => gcd(s, 2*2^a) = gcd(s, 2^a) (headline).
+  - orbitCount_doubling_invariant : packaged on the supply identity; the orbit count d is
+    unchanged under n -> 2n at primitive AND imprimitive directions.
+NOT a CORE closure; a constraint lemma localizing the plateau to the N->D* gap. Field-
+universal arithmetic; thinness enters only via the tower n=2^a. ASYMPTOTIC GUARD cliff-at-n/2
+untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- imprimrung, co-author wakesync.
