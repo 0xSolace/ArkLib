@@ -1180,6 +1180,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DeFinettiPeriodCovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecayLawPIndep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecouplingTowerNoSaving
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DedupSlackStrictButVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DepthGradedConductor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoNearSidonImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo

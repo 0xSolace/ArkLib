@@ -3615,3 +3615,34 @@ thinness enters only via which (s*, m*) bind. NO capacity / beyond-Johnson / sub
 claim (the delta* values 3/8, 9/16 + the Johnson crossing are exactly the audit's); ASYMPTOTIC GUARD
 cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- mastergapfix, co-author
 wakesync.
+
+## The dedup N_r < C(n,r) is STRICT but FRACTIONALLY VANISHING at the binding log depth r=log2 n => the A3 WeakestSuff escape is strict-but-asymptotically-thin (leans WALL) (dedupstrict)
+The A3 escape question (_CoreA3_BackwardProof.lean; dossier deltastar-444-prize-regime-established-
+2026-06-16.md sec VI lever 2 + sec IX): WeakestSuff is weaker-or-equal to BCHKS 1.12, the gap being
+the dedup slack Sigma_r - D >= 0; a REAL escape (vs the wall) requires the dedup D <= Sigma_r to be
+STRICT at log depth r ~ log n. Instantiated on a concrete p-INDEPENDENT object via the just-landed
+spectrum closed form _SubsetSumSpectrumClosedForm.spectrumCount (push 89151523f) over the thin
+dyadic mu_n (n=2^a, m=n/2): Sigma_r = C(n,r) (r-subsets with multiplicity), D = N_r =
+spectrumCount m r = Sum_{k==r mod 2} C(m,k) 2^k (distinct r-subset-sums), slack = C(n,r) - N_r.
+PROBE (scripts/probes/probe_dedup_slack_strict_at_log_depth.py +
+probe_dedup_ratio_trend_at_log_depth.py, EXACT big-int, NEVER n=q-1): at the binding r=log2 n the
+dedup is STRICT at every tower level n=8..16384 and the slack GROWS in absolute terms (n=8:16,
+n=16:587, n=32:57088, ...), BUT the slack FRACTION f(n)=slack/C(n,r) is monotonically DECREASING
+from n=16 onward (0.323 -> 0.283 -> 0.219 -> 0.156 -> ... -> 0.0055 at n=16384), survival N_r/C ->1.
+VERDICT: the dedup is strict (escape direction non-vacuous as a strict inequality) but fractionally
+vanishing at the binding log depth: asymptotically almost all r-subsets have distinct sums at
+r=log n, so the dedup gives NO fractional savings there. This QUANTIFIES the dossier's 'in-tree
+evidence leans wall': a strict-but-fractionally-thin dedup is NOT a real escape. LANDED
+Frontier/_DedupSlackStrictButVanishing.lean (single-file lake-env-lean axiom-clean {propext,
+Classical.choice, Quot.sound} on all 8, no sorry; in-graph lake-locked 3297 jobs exit 0): anchor_n8/
+n16/n32 (exact C(n,r), N_r, slack at the binding depth, slack>0 STRICT), dedup_strict_on_tower,
+slack_grows_absolute, frac_dec_16_32, frac_dec_32_64 (slack fraction strictly decreasing via exact
+Nat cross-multiplication slack1*C2 > slack2*C1), strict_but_fractionally_vanishing (HEADLINE: strict
++ grows-absolute + fraction-decreasing combined). A CONSTRAINT/refutation-with-mechanism brick
+(rule 4), NOT a CORE closure: does NOT close BCHKS 1.12 (the budget-scale ~n relevance of the slack
+is not bounded here). EXTENDS _SubsetSumSpectrumClosedForm + the A3 reduction by measuring the
+named-open dedup-strictness quantity at the binding depth. Field-universal Nat combinatorics;
+thinness enters via the 2-power tower n=2^a. NO capacity / beyond-Johnson / sub-linear / growth-law
+claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+-- dedupstrict, co-author wakesync.
+
