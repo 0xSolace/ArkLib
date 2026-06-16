@@ -73,6 +73,24 @@ theorem diBenedettoSaving_ge_nearSidon {t₂ t₃ : ℝ} (h₂ : t₂ ≤ 2) (h�
   have := diBenedettoSaving_antitone (t₂' := t₂) (t₃' := t₃) (t₂ := 2) (t₃ := 3) h₂ h₃
   rwa [diBenedettoSaving_nearSidon] at this
 
+/-- **The structural ceiling of the energy method (HONESTY brick).** The two additive-energy exponents
+obey HARD floors: `t₂ ≥ 2` (Cauchy–Schwarz: `E₂ ≥ |H|²` always) and `t₃ ≥ 3` (the diagonal `Σ³h=Σ³h'`
+contributes `≥ |H|³`). Hence the di Benedetto edge saving can NEVER exceed `1/24` for ANY subset `H`:
+`diBenedettoSaving t₂ t₃ ≤ 1/24`. The dyadic near-Sidon subgroup *saturates* this (`t₂=2`, `t₃=3`), so
+`1/24` is the CEILING of the energy/sum-product/di-Benedetto family, not a frontier to push further. Since
+the prize needs cancellation exponent `1/2` (Paley/Ramanujan), and `1/24 < 1/2`, this method provably
+CANNOT close the prize — the gap requires a non-energy mechanism (correlated Gauss-phase cancellation). -/
+theorem diBenedettoSaving_le_ceiling {t₂ t₃ : ℝ} (h₂ : 2 ≤ t₂) (h₃ : 3 ≤ t₃) :
+    diBenedettoSaving t₂ t₃ ≤ 1 / 24 := by
+  unfold diBenedettoSaving; linarith
+
+/-- **The energy method cannot reach the prize.** The edge saving of any energy-method bound is bounded
+by `1/24`, which is strictly below the prize-required cancellation exponent `1/2`. Formal record that the
+di Benedetto / sum-product family is capped `12×` short of the prize. -/
+theorem energy_method_below_prize {t₂ t₃ : ℝ} (h₂ : 2 ≤ t₂) (h₃ : 3 ≤ t₃) :
+    diBenedettoSaving t₂ t₃ < 1 / 2 := by
+  have := diBenedettoSaving_le_ceiling h₂ h₃; linarith
+
 /-- **The conditional character-sum improvement.** Given (i) di Benedetto's edge bound at the realised
 energy exponents `(t₂,t₃)` — `hDB : M ≤ H^{1 − diBenedettoSaving t₂ t₃}` (the cited Thm 3.1, parameterised
 by the energies; a named hypothesis, NOT re-derived here), (ii) the near-Sidon energy bounds `t₂ ≤ 2`,
@@ -93,4 +111,6 @@ end ProximityGap.Frontier.DiBenedettoNearSidon
 #print axioms ProximityGap.Frontier.DiBenedettoNearSidon.diBenedettoSaving_nearSidon
 #print axioms ProximityGap.Frontier.DiBenedettoNearSidon.nearSidon_improves
 #print axioms ProximityGap.Frontier.DiBenedettoNearSidon.diBenedettoSaving_antitone
+#print axioms ProximityGap.Frontier.DiBenedettoNearSidon.diBenedettoSaving_le_ceiling
+#print axioms ProximityGap.Frontier.DiBenedettoNearSidon.energy_method_below_prize
 #print axioms ProximityGap.Frontier.DiBenedettoNearSidon.charSum_le_of_nearSidon
