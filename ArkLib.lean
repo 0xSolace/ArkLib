@@ -935,6 +935,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BesselDeviationLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.C1SecondMomentBGKGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.C4PoissonAdmissibilityWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusScalarPartition
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarRatioImage
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyLowerBound
