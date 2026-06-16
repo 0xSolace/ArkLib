@@ -64,6 +64,7 @@ open ArkLib.ProximityGap.GaussPeriodMomentBound
 open ArkLib.ProximityGap.REnergyTwoExact
 open ArkLib.ProximityGap.EnergyEqualitySidonModNeg
 open ArkLib.ProximityGap.SubgroupGaussSumMoment
+open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 
 namespace ArkLib.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo
 
@@ -122,8 +123,31 @@ theorem gaussianEnergyBound_two_thinness_essential {F : Type*} [Field F] [Fintyp
   rw [hdf] at hb
   linarith
 
+/-- **The UNCONDITIONAL `r = 2` per-frequency 4th-power bound for `μ_n`.** Chaining the in-tree
+consumer `eta_pow_le_of_energyBound` (which turns any `GaussianEnergyBound G r` into a single-term
+`2r`-th moment bound) through the unconditional `gaussianEnergyBound_muN_two`: every Gauss period of
+the thin subgroup `μ_n` satisfies `‖η_b‖⁴ ≤ q·3·n²` for EVERY nonzero frequency `b`
+(`q = |F| = card (ZMod p)`, `n = |μ_n|`). Equivalently `‖η_b‖ ≤ (3q)^{1/4}·√n`: the unconditional
+`r = 2` completion ceiling on the per-frequency Gauss sum, with NO char-`p` energy hypothesis (the
+`E_2` value is exact in tree). This is the `r = 2` instance of the moment-method incomplete-sum
+bound; the prize wants the DEEP-`r` optimized version `≈ √(2 n ln q)`, NOT reachable at `r = 2`. -/
+theorem eta_quartic_le_muN_two (hn2 : n = 2 ^ m) (hm : 1 ≤ m) (hp : 2 ^ n < p)
+    {ω : ZMod p} (hω : IsPrimitiveRoot ω n)
+    {ψ : AddChar (ZMod p) ℂ} (hψ : ψ.IsPrimitive) (b : ZMod p) :
+    ‖eta ψ (muN p n) b‖ ^ 4
+      ≤ (Fintype.card (ZMod p) : ℝ) * 3 * ((muN p n).card : ℝ) ^ 2 := by
+  have hbound := eta_pow_le_of_energyBound hψ (gaussianEnergyBound_muN_two hn2 hm hp hω hψ) b
+  -- eta_pow_le_of_energyBound gives ‖η‖^(2*2) ≤ q · doubleFactorial(3) · |μ_n|²
+  have hdf : (Nat.doubleFactorial (2 * 2 - 1) : ℝ) = 3 := by norm_num [Nat.doubleFactorial]
+  rw [hdf] at hbound
+  -- 2*2 = 4 and reassociate q · 3 · |μ_n|²
+  have h24 : (2 * 2 : ℕ) = 4 := by norm_num
+  rw [h24] at hbound
+  linarith [hbound]
+
 end ArkLib.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo.gaussianEnergyBound_muN_two
 #print axioms ArkLib.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo.gaussianEnergyBound_two_thinness_essential
+#print axioms ArkLib.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo.eta_quartic_le_muN_two
