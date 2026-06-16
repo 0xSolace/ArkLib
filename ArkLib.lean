@@ -1313,6 +1313,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondMomentExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SecondMomentGapQuantified
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseCoeffZeros
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpecS3_RingHomNaturality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectrumClosedFormWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpurEvenValuationTwoSquares
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
