@@ -1076,6 +1076,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A47_DyadicPeriodicit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A48_GeneralRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A49_DyadicRigidityEngine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A50_SpectrumGeneratingFunction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpectrumGFAlternatingSum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
