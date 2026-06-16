@@ -1040,6 +1040,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeChebotarev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurSuccessiveMinimaCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StepanovStructuredVacuous
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StepanovWeilQVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StructuredUncertaintySharpFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgroup

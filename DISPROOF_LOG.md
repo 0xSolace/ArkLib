@@ -3418,3 +3418,49 @@ Frontier/DilationDoublingMassNoCompose.lean —
   • plusMass_inv_eq : plusMass ψ G ζ⁻¹ = plusMass ψ G ζ (no second halving via the other neighbor).
 NOT a refutation of CORE; a precise NO-GO on the iterated-halving deep-descent route + the exact
 mechanism. CORE M(μ_n) ≤ C√(n log(p/n)) UNCHANGED/OPEN. -- dblcompose lane, co-author wakesync.
+
+================================================================================
+REFUTATION-WITH-MECHANISM (lane bivstep, 2026-06-16): the SECOND Stepanov stall
+on mu_n -- the Stepanov-Weil sqrt(q) FIELD bound is VACUOUS in the prize regime,
+and Johnson sqrt(kn) sits strictly BELOW both Stepanov outputs.
+================================================================================
+OBJECT. StepanovStructuredVacuous formalized the FIRST Stepanov stall (classical Stepanov on the
+SEPARABLE X^n-1 pins multiplicity to M=1 => trivial degree bound s* <= n-1, mu_n_roots_simple /
+stepanov_collapses_to_degree). Its docstring records the SECOND stall AS PROSE ONLY: the
+Stepanov-Weil / Kelley-Owen field-root bound is ~ sqrt(q), "exponentially vacuous because
+p ~ n*2^128 >> n^2". This lane makes that an axiom-clean THEOREM and pins the exact three-way
+arithmetic separation in the prize regime.
+
+PROBE (ONE sweep, exact integer arithmetic, scripts/probes/probe_stepanov_weil_qvacuity.py;
+n=2^a a=3..8 (n=8..256) x beta in {3,4,5} (prize beta in [4,5], beta=3 = boundary q=n^3); worst
+interior rate k=n/4; NEVER n=q-1): 0/54 fails. In every prize instance:
+  1. q >= n^2 (beta>=3 certainly) => sqrt(q) >= n => Weil FIELD bound EXCEEDS trivial deg=n => VACUOUS.
+  2. k < n => sqrt(kn) < n => Johnson strictly below the trivial bound.
+  3. k*n < q => sqrt(kn) < sqrt(q) => Johnson strictly below the Weil bound.
+
+MECHANISM. The sqrt(q) field bound (Kelley-Owen 2015 arXiv:1510.01758 trinomial-root; Bi-Cheng-Rojas
+/ Kelley 2016 arXiv:1602.00208 t-nomial) counts F_q-POINTS; it is in sqrt(q), NOT in the subgroup
+size n. In the prize regime q ~ n^beta (beta>=4) we have sqrt(q) ~ n^{beta/2} >= n^2 >> n, so the
+field bound is exponentially worse than the trivial separable-relation degree bound n-1 (the FIRST
+stall's output). The Johnson radius sqrt(kn) ~ n^{(1+rho)/2} (rho=k/n<1) is strictly below BOTH
+n and sqrt(q). So the Johnson saving is NOT a Stepanov phenomenon in EITHER form: classical Stepanov
+gives only the trivial n (no sqrt-saving, multiplicity pinned by separability), and Stepanov-Weil
+gives a vacuous sqrt(q). The sqrt(kn) Johnson saving is a sparsity / uncertainty-principle
+phenomenon (Tao / Donoho-Stark / Meshulam), as the in-tree verdict already names.
+
+CONSTRAINT LEMMA. The vacuity is thinness-localized: sqrt(q) >= n iff q >= n^2 iff beta >= 2; for
+the THICK regime q ~ n^{2.3..3.2} the field bound only starts to bite near beta=2, but in the THIN
+prize regime (beta>=4) it is exponentially vacuous. The Weil/field-cardinality route to s* cannot
+reach Johnson, let alone the prize floor sqrt(n log(q/n)); any real beyond-Johnson saving must come
+from the subgroup-intrinsic sparsity/uncertainty input, not from counting field points.
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, in-graph lake-locked exit 0 /
+1969 jobs): Frontier/StepanovWeilQVacuous.lean --
+  • weil_field_bound_vacuous : n^2 <= q => n <= sqrt q (the Weil bound exceeds the trivial deg bound).
+  • johnson_below_trivial : k < n => sqrt(kn) < n (Johnson below classical Stepanov output).
+  • johnson_below_weil : k*n < q => sqrt(kn) < sqrt(q) (Johnson below Weil output).
+  • stepanov_outputs_strictly_above_johnson : the packaged three-way separation
+    sqrt(kn) < n <= sqrt(q) AND sqrt(kn) < sqrt(q) in the prize regime.
+NOT a refutation of CORE; a precise NO-GO mapping the SECOND Stepanov stall (the field-bound
+vacuity), companion to the in-tree FIRST stall (separability/M=1 collapse). CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- bivstep lane, co-author wakesync.
