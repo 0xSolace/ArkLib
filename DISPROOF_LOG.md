@@ -3703,3 +3703,29 @@ climb-to-capacity reading is exactly what 3c2d4fdf1 retracted; the proxy LOCKS t
 above, the prize floor >=Johnson is the SEPARATE harder BCHKS/BGK object); ASYMPTOTIC GUARD
 cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 -- flpproxytower, co-author wakesync.
+
+
+## O193 -- the TOTAL char-0 subset-sum spectrum mass of mu_n is 3^(m-1)(m+3) (extends spectrumCount)
+EXTENDS the just-landed _SubsetSumSpectrumClosedForm.spectrumCount (per-depth char-0 subset-sum
+cardinality N_r of the 2-power subgroup mu_n, m=n/2; lalalune 06:07Z) from the per-depth count to
+the TOTAL over all depths r=0..2m: T(m) := sum_{r=0}^{2m} N_r = 3^(m-1)*(m+3). MECHANISM is a
+depth-multiplicity reindex (NOT a moment/energy method): a net-vector class with k nonzeros
+(contributing C(m,k)2^k) is reachable at depth r iff k==r(2) and k<=r<=2m-k, i.e. at exactly
+(m-k+1) depths; swapping summation order gives T(m)=sum_k (m-k+1)C(m,k)2^k, closed via the two
+binomial GF sums sum_k C(m,k)2^k=3^m and sum_k k C(m,k)2^k=2m 3^(m-1) into (m+1)3^m-2m 3^(m-1)=
+3^(m-1)(m+3). PROBE scripts/probes/probe_spectrum_total_mass.py: all three forms (direct double
+sum, k-form, closed form) + both GF identities agree EXACTLY over n=2..80 (VERDICT PASS); pure
+char-0 count, never validated at n=q-1. LANDED Frontier/_SubsetSumSpectrumTotalMass.lean (push
+faabd2c86; single-file lake-env-lean exit 0 + in-graph lake-locked 3298 jobs exit 0; axiom-clean,
+strict subset of {propext, Classical.choice, Quot.sound}, no sorry/axiom/native_decide on all 7
+printed): sum_choose_two_pow, sum_k_choose_two_pow (the GF sums, fully general), spectrumTotal_eq_
+kForm (the swap; sum_comm + card bijection r->(r-k)/2 onto range(m-k+1)), spectrumTotalKForm_closed,
+spectrumTotal_closed (HEADLINE), spectrumTotal_values (T(1..4)=4,15,54,189), spectrumTotal_n16
+(=24057). An EXTEND-PROVEN structural census brick (rule 4): the total spectrum mass in closed form,
+building directly on the freshly-landed spectrumCount. Does NOT close CORE: the prize binds the
+PER-DEPTH growth N_{rho n+1} at the binding depth, not the total mass, and the char-0<->F_p bridge
+holds only in the dilute N_r << p regime (the binding depth is collision-saturated = the BGK/BCHKS
+wall). NO capacity / beyond-Johnson / sub-linear / growth-law claim; ASYMPTOTIC GUARD cliff-at-n/2
+untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. 2-power-specific (spectrumCount fails
+at non-2-power n). Author 0xSolace/Sol, co-author wakesync.
+-- spectotal.
