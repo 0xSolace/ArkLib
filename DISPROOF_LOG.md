@@ -4538,3 +4538,33 @@ the budget. The genuine open prize content (realized worst-case incidence at the
 UNTOUCHED. NON-MOMENT infrastructure, EXTEND-proven on the proven in-tree ledger, NOT a re-mapped
 dead face. NO moment/census/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law
 claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O228 (lane foldsupply): the KKH26 bad-scalar supply STRICTLY DECAYS along an s-step fold --
+the quantitative completion of the fold-transport trichotomy (#357 R2 / #444 §11 BGK-independent
+fold-transport lever). KKH26FoldTransport.lean proves the WORD-level fold trichotomy and, in the
+m-step case, the census-set INVARIANCE (kkh26_inner_group_fold_invariant); for the s-step it
+asserts ONLY IN PROSE that "the construction-class supply drops 2^r*C(s/2,r) -> 2^{r/2}*C(s/4,r/2)
+per s-step". GREP-CONFIRMED MISSING: no theorem states the s-step supply DECAY. PROBE-FIRST
+(scripts/probes/probe_fold_supply_decay.py + probe_reven.py, field-universal counting over PROPER
+thin prize-regime params s=2^mu, r even, 2r<s): 0 strict-decay violations / 4083 instances; the
+direct binomial inequality C(s/4,r/2) <= C(s/2,r) holds with 0/4083 violations in the r-even
+regime (matching kkh26_fold_s_step_r_even's 2|r hypothesis); the decay factor is dominated by the
+binomial ratio, far exceeding the monomial 2^{r/2} halving floor. SHIPPED
+ArkLib/Data/CodingTheory/ProximityGap/KKH26FoldSupplyDecay.lean (2 thms + 2 decide sanity examples;
+single-file lake-env-lean exit 0 + in-graph lake-locked 1236 jobs exit 0; axiom-clean {propext,
+Classical.choice, Quot.sound}):
+- choose_le_choose_two_mul: C(a,k) <= C(2a,2k) for all a,k (a single diagonal (k,k) term of
+  Vandermonde Nat.add_choose_eq, C(a,k)^2 <= C(2a,2k), then C(a,k) <= C(a,k)^2). Reusable binomial
+  doubling brick.
+- kkh26_fold_supply_strict_decay (HEADLINE): for 4|s, 2<=r, 2|r, 2r<s:
+  2^{r/2}*C(s/4,r/2) < 2^r*C(s/2,r). The bad family is NOT an s-step fold fixed point (sharp
+  contrast to the m-step supply INVARIANCE). EXTEND-proven via the doubling bound
+  (2*(s/4)=s/2 from 4|s, 2*(r/2)=r from 2|r) + strict 2^{r/2}<2^r.
+HONEST SCOPE (rule 3,6): bounds the supply of THIS ONE construction class (the KKH26 monomial
+stack) along the fold; field-universal, NOT thinness-essential, does NOT bound M(mu_n). It is the
+quantitative completion of the fold-transport trichotomy, NOT a CORE lever. The open prize question
+(how the WORST-CASE incidence behaves along the tower) is UNTOUCHED. NON-MOMENT, BGK-independent
+fold-transport face, EXTEND-proven on the proven in-tree word-level halving theorem
+(kkh26_fold_s_step_r_even), NOT a re-mapped dead face. NO moment/census/orbit/pencil re-derivation,
+NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n
+log(p/n)) UNCHANGED/OPEN.
