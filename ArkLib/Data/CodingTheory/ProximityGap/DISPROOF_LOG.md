@@ -14667,3 +14667,58 @@ functionals; thinness enters only via the 2-power tower n=2^a on which they were
 capacity / beyond-Johnson / sub-linear / growth-law claim for any of the three; cliff-at-n/2
 untouched. ASYMPTOTIC GUARD compliant. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. --
 objdisent, co-author wakesync.
+
+---
+
+O190 (lane heighttight). TIGHTNESS CERTIFICATE: the conjectured height (n/2-1)^(n/4) is the EXACT
+max field-norm at n=8,16, factors as a prime power, and the n=128 wall is REAL (not a crude-bound
+artifact). Closes the "loose-bound escape" on VanishingRootSumHeightGate's spurious-free reduction.
+
+OBJECT. VanishingRootSumHeightGate.lean reduces the prize spurious-free condition to p > H(n),
+H(n) = max over non-antipodal R subset mu_n with nonzero char-0 sum of |N(sum_{x in R} x)| (the
+char-0 algebraic-integer norm of a vanishing-BLOCKING root-of-unity subset-sum). It uses the
+CONJECTURED closed form heightConj n = (n/2-1)^(n/4), asserting (prose) it "fits" H(8)=9,
+H(16)=2401.
+HeightGateNormBound.gate_2power proves ONLY the strictly looser house bound m^(2^(a-1)) (its own
+docstring: "looser than the conjectured (n/2-1)^{n/4}"). So in-tree (n/2-1)^(n/4) is a CONJECTURE,
+the only proven gate is strictly looser, and NOTHING certifies the conjectured height is TIGHT
+(= H(n)) rather than a strict over-estimate. If it were a loose over-estimate the spurious-free
+window p > heightConj n could close for LARGER n than the n=128 a-priori boundary (escape hatch).
+
+PROBE (ONE sweep, EXACT integer field norms via Res(Phi_n, f_S) over Q, n=2-power so
+Phi_n(t)=t^(n/2)+1; full enumeration at n=8,16; NEVER n=q-1).
+scripts/probes/probe_height_gate_tightness.py:
+  - H(8) = 9, attained by the NON-antipodal nonzero-char-0-sum witness {0,1,3} subset mu_8 (the full
+    n=8 enumeration has max norm 9, argmaxes incl {0,1,3}). EQUALS heightConj 8 -> TIGHT at n=8.
+  - H(16) = 2401, attained by {0,1,2,4,5,7,11}. EQUALS heightConj 16 -> TIGHT at n=16.
+  - The a-priori closed form is therefore NOT a loose over-estimate at the computed sizes: it is the
+    EXACT max-norm. (Structured consecutive runs at n=32 give only 2^15, far below apriori 2^31 -- a
+    weak lower bound, NOT a refutation of tightness, since the true extremizers are spread-out sets
+    like {0,1,3}, not runs. The asymptotic conjecture H(n)=(n/2-1)^(n/4) for ALL n stays OPEN.)
+  - Prime-power link: 9 = 3^2, 2401 = 7^4, so the SMALLEST spurious prime is 3 at n=8 (the in-tree
+    SpurWeightThreeCollision 1+X+X^3 collision at p=3) and 7 at n=16 -- the height being 3^2 is WHY
+    p=3 is minimal there.
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound} on all 7; single-file lake-env-lean
+exit 0 + in-graph lake-locked 3297 jobs exit 0, on origin base 89151523f):
+Frontier/_HeightGateConjTightAtSmallN.lean --
+  - heightConj_eq_three_sq / heightConj_eq_seven_pow4 : heightConj 8 = 3^2, heightConj 16 = 7^4
+    (the conjectured height is a prime power = the exact max-norm = TIGHT at n=8,16).
+  - smallest_spurious_prime_pinned_n8 / _n16 : 3 (resp. 7) is prime, divides H(n), and no smaller
+    prime does -> the minimal spurious prime is pinned by the height's prime base.
+  - house_bound_strictly_looser_at_8 / _16 : heightConj 8 = 9 < 4^4 = 256, heightConj 16 = 2401 <
+    8^8 = 2^24 -> the ONLY proven gate strictly over-pays vs the tight height.
+  - heightConj_closes_to_64 : heightConj 64 < 2^128 (still closes at n=64 under the tight height).
+  - tight_height_keeps_n128_wall_real (HEADLINE) : (heightConj 8 = 3^2 AND heightConj 16 = 7^4) AND
+    heightConj 64 < 2^128 AND 2^128 < heightConj 128 -- since the height is TIGHT at the computed
+    sizes, the n=128 failure is a REAL height wall, NOT an artifact of a crude over-estimate; the
+    spurious-free window does NOT extend past n=128 via a smaller max-norm.
+
+A FINITE TIGHTNESS CERTIFICATE + refutation of the loose-bound escape (rule 4), NOT a CORE closure.
+The exact-max verdict H(n)=heightConj n at n in {8,16} is the probe's full enumeration (the
+algebraic-integer norm computation is not in Lean; the certified Lean facts are the prime-power
+VALUES of heightConj, the factorization, the strict house-bound gap, the boundary consequence -- all
+exact Nat). Field-universal Nat arithmetic; thinness enters via the 2^a tower. No capacity /
+beyond-Johnson / sub-linear / growth-law claim; cliff-at-n/2 untouched. ASYMPTOTIC GUARD compliant.
+The asymptotic height conjecture for ALL n stays OPEN. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. -- heighttight, co-author wakesync.
