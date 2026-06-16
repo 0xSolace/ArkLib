@@ -39,3 +39,5 @@ This corrects a mistaken worry (the "→½ refutes floor" line) and lands on the
 the far-line incidence δ* increases toward the floor `1−ρ`. The campaign's identification of far-line incidence
 with δ* is therefore *not* contradicted asymptotically — the small-n formula was just transient. The remaining
 task is the exact Θ(1/log n) correction, a pure combinatorial decay-law question. NOT a closure.
+
+2026-06-16 guard: the per-rung r=3,4,5 "PROVEN" bricks prove ONLY 2·formula ≤ K (polynomial inequality); formula=true-#bad is [COMPUTED] at n∈{16,32,64,128}, NOT Lean-proven ∀n. Parity descent stops at r=5; O176 refutes any closed-form family. δ* remains an INTERVAL, not a value — this is a reduction to one open conjecture, not a proof.

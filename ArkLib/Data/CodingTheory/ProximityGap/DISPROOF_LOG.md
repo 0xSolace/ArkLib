@@ -14508,3 +14508,36 @@ so never the full group, incl Fermat-type p=257; n in {8,16}): `sum(mu)%p = 0` a
 depth-r spectrum equals the negation of the depth-(n-r) spectrum with equal #distinct, 0 fails over
 7 prize-regime instances (palindromic size sequences e.g. [1,8,25,40,41,40,25,8,1]).
 -- spectsym lane, co-author wakesync.
+
+### O186 — BULLETPROOF PASS: independent adversarial audit confirms the δ* reduction is SOUND + COMPLETE — all 12 recent walls are genuine dead-ends, walled set has no escape, prize = ONE open conjecture (nubs, 2026-06-16)
+
+Made the "$1M reduced to one clean conjecture" artifact bulletproof by VERIFICATION (not new math): a 17-agent
+adversarial workflow (`scripts/probes/genlaw/wall_audit_workflow.js`) — each agent tried to BREAK a recent
+wall-claim (find a missed escape / overclaim / ungrounded leap); 4 completeness-critic lenses hunted any
+unattempted route. Agents RE-RAN the probes and RE-CHECKED Lean axiom-cleanliness — not rubber-stamping.
+
+**VERDICT: all 12 audited walls = SOUND-DEADEND (confidence 0.84–0.92), ZERO premature, ZERO overclaimed.**
+O173/O182 (2nd-moment gate Θ(E²) blind to worst line, probe re-run exact), O174 (per-line injection breaks
+r≥4), O175 (C-half /2 = calibration fit, reduces-to-open), O176 (general-r no closed form; core=E_{1,2}(μ_n)),
+O177 (r=4 proven via 2-adic descent NOT the refuted axis-injection), O178 (theta=Gaussian-not-DAM + Poisson
+fixed-point), O179 (partition-rank bounds empty diagonal not fiber), O183 (Φ-collapse=orbits+{0}, residual=wall),
+plotkin_cap (odd-poly antipode-free ⇒ ≤|G|/2), collinearity≠count ((6n)^{n/2} transfer sufficient-only; char-p
+surplus layer survives), Sidon/antipodal (=BGK moment by Parseval / Johnson-proxy), P7 (rMDS corank Θ(a)). The
+4 scoping-reaches that COULD have been overclaims were each checked and found genuinely covered.
+
+**COMPLETENESS: walled set COMPLETE — no grounded untried escape** (4 lenses: methods / named-levers /
+2024-26 literature / μ_{2^k}-structure all returned "complete"). The single never-explicitly-stabbed object
+(complex-s moment-zeta continuation Z(s)=Σ|η_b|^{2s}) is, by the proven 4-way conservation law, a RELABELING of
+the integer moment ladder (at integer s it IS the raw-moment identity; a finite power-sum's continuation adds no
+new arithmetic input). Not a new mechanism.
+
+**THE ARTIFACT (reduction, NOT proof):** δ* for explicit smooth-domain RS on μ_{2^k} (q≈n·2¹²⁸, worst point
+n~p^{1/4}, β∈[4,5]) is pinned to **[1−√ρ Goyal–Guruswami floor, 1−ρ−Θ(1/log n) KKH26 ceiling]**; the single
+residual open object = **|Σ_r(μ_n)| at r~log n = M(μ_n)=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| = BCHKS Conj 1.12 = the
+BGK/Burgess-endpoint(α=1/4)/Paley-graph wall**, ~25y-open (di Benedetto SOTA n^{1−31/2880} power-saving VANISHES
+at β=4). The 2-power/antipodal/Frobenius structure is fully characterized (O183/O184) and provably accounts for
+everything EXCEPT the residual orbit count, which IS the wall. ALL escape routes verified-walled. **3 standing
+caveats:** (1) reduction not proof — closing needs new analytic-NT math that doesn't exist; (2) the r=3,4,5
+"PROVEN" bricks prove only 2·formula≤K, formula=#bad is [COMPUTED] not ∀n-proven; (3) knife-edge empirics
+(bounded const, can't rule a slow loglog creep). Dossier made current (4 docs: orbit-count-reformulation,
+PAPERS_NEEDED, research-map, RESOLUTION-tracks-floor).

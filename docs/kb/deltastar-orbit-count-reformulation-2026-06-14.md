@@ -29,3 +29,9 @@ already a theorem above Johnson; the open residual is the small-gap window band)
 cyclotomic factors of a sparse polynomial** (the RungSparseDivisor / vanishing-sums-of-roots-of-unity
 lane). This is the non-BGK, non-character-sum route; whether N stays poly at constant rate (vs the
 beyond-Johnson list explosion) is the live question — testing n=8→12→… for the scaling.
+
+## UPDATE 2026-06-16 — residual orbit count RESOLVED = the wall (O183 image-Φ collapse; O184 n=64 cross-verify)
+The "live question" is closed: O183 proves image(Φ) = ⟨g^{e−f}⟩-orbits ∪ {0} with #bad = 1 + (orbit-count)·n/gcd(n,e−f),
+and the residual orbit count IS |Σ_r(μ_s)| = BCHKS Conj 1.12 = the BGK wall — NOT poly-bounded by the group action.
+The naive off-wall 2^r·C(n/2,r) axis-injection is REFUTED (bad γ not roots of unity; antipode = one internal Z/2 ⇒ factor 2; Frobenius moves 0 sets at r≥4).
+Cross-verified bit-exact at n=32 (3249=1+203·16) and n=64 (66209=1+2069·32). The Mann-sparse-divisor lane reduces-to-wall; it does NOT advance the prize.

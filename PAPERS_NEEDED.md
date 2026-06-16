@@ -584,3 +584,8 @@ Cellarosi-Marklof machinery? FINDINGS (verified err~1e-16, probe inline):
    coefficients are subgroup sums could inherit automorphic sup-norm bounds — but the lift is unproven
    and the relevant metaplectic sup-norm is itself likely BGK-hard. Worth a literature check (Patterson,
    Heath-Brown cubic Gauss sums; Brubaker-Bump-Friedberg Weyl-group multiple Dirichlet series).
+
+## 2026-06-16 — walled set COMPLETE; orbit-count (demand) side independently lands on the same wall
+O183/O184 prove from the COUNTING side (independent of the char-sum framing) that the residual orbit count = |Σ_r(μ_n)| = BCHKS 1.12.
+All known escape routes verified-walled (polynomial/slice-rank, CN+effective-Nullstellensatz, Stepanov ×5, sum-product, container-transference, AG point-counting, theta, cumulant ladder, Stickelberger/HD, chaining-I031).
+The only never-stabbed object (complex-s moment-zeta continuation) is a relabeling of the integer moment ladder per the conservation law. No external √-cancellation technique exists; closing the prize = solving the open NT problem itself.

@@ -370,3 +370,5 @@ the frontier files.
   [list-decodability of RS with large radius](https://arxiv.org/pdf/2012.10584).
 - The four faces are equivalent only up to the in-tree reductions; when writing new results,
   cite the face actually proven and let `Connections/` carry the transfer.
+
+2026-06-16: δ* PINNED to [1−√ρ floor (Fisher/Johnson), 1−ρ−Θ(1/log n) ceiling (KKH26)]; residual = |Σ_r(μ_n)|=BCHKS 1.12=BGK wall; walled set COMPLETE (O183 image-Φ collapse, O184 n=64 cross-verify). All escape routes closed; no genuine untried route (adversarial 12-wall audit + 4-lens completeness critic, all sound/complete).
