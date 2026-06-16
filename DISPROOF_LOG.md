@@ -4607,3 +4607,28 @@ additive-multiplicative combinatorics (thickness/regime never enters, no field-a
 consumed), EXTEND-proven on the proven in-tree subsetSumSpectrum object, NOT a re-mapped dead face.
 NO moment/census/orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim,
 cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O230 (lane spectralcentral): the subset-sum SPECTRUM is NEGATION-CLOSED at the
+self-complementary CENTRAL DEPTH r = n/2 -- the across-depth palindrome collapses to a
+within-depth involution. DeepBandSpectrumComplementSymmetry proved the ACROSS-depth identity
+subsetSumSpectrum mu (|mu|-r) = -(subsetSumSpectrum mu r) (spectrum_compl_eq_neg_image, under
+sum_mu = 0). At r = |mu|/2 (2r=|mu|, |mu| even -- n a 2-power) the two sides land on a SINGLE
+depth, turning the palindrome into a WITHIN-depth NEGATION invariance the across-depth statement
+does NOT give at a fixed depth. GREP-CONFIRMED MISSING: no theorem stated the central-depth
+negation closure. PROBE (scripts/probes/probe_spectrum_central_neg_invariant.py; PROPER thin mu_n,
+n=2^a, p >> n^3, p == 1 mod n, NEVER n=q-1): central-depth spectrum(n/2) negation-closed 0/9 fails
+(n=16 p=4129 |spectrum 8|=2577 negation-invariant). SHIPPED
+ArkLib/Data/CodingTheory/ProximityGap/DeepBandSpectrumCentralNegInvariant.lean (2 thms; single-file
+lake-env-lean exit 0 + in-graph lake-locked exit 0; axiom-clean {propext, Classical.choice,
+Quot.sound}):
+- spectrum_central_neg_invariant (HEADLINE): 2r=|mu|, sum_mu=0 => (spectrum r).image (-.) =
+  spectrum r. Specializes spectrum_compl_eq_neg_image at |mu|-r=r.
+- spectrum_central_neg_mem: v in spectrum (n/2) => -v in spectrum (n/2) (membership form).
+HONEST SCOPE (rule 3,6): a structural CONSTRAINT (central-depth spectrum is its own negation; with
+the O229 dilation rigidity, invariant under <mu_n, -1>; nonzero part splits into +/- pairs so its
+cardinality parity is pinned), NOT a computation of |spectrum (n/2)| (the prize-critical open
+quantity = BCHKS 1.12 stays OPEN). Field-universal finite combinatorics, EXTEND-proven on the proven
+in-tree spectrum_compl_eq_neg_image, NOT a re-mapped dead face. The "cliff-at-n/2" here is a DEPTH
+index, NOT an incidence-decay claim -- the asymptotic-guard cliff is UNTOUCHED. NO moment/census/
+orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim. CORE M(mu_n) <=
+C sqrt(n log(p/n)) UNCHANGED/OPEN.
