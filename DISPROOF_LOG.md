@@ -4433,3 +4433,24 @@ thinness-essentiality. HONEST SCOPE: DELIMITS where the open content lives; does
 thin-regime instance (the prize window) stays fully OPEN; only the thick complement is discharged.
 No delta*/capacity/beyond-Johnson claim; cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. EXTEND-proven off O219 (which extends O218); a confinement brick, not a dead-face remap.
+
+## O221 (lane complsharp, NEGATIVE map): the completion-sum CANCELLATION is NOT a separately-
+capturable lever -- it EQUALS the open BGK content. Closes a tempting sub-lane off the O218 face.
+After O218 sharpened the completion TRIANGLE bound (|sum_j G_j| <= (t-1)sqrt q, capping |eta| at
+sqrt q), the natural next question: does the completion SUM sum_{j=0}^{t-1} G_j (G_j=gaussSum(chi^{dj},
+psi_b), |G_j|=sqrt q) exhibit a STRUCTURALLY-CAPTURABLE cancellation far below the triangle bound,
+giving a NEW non-moment mechanism? PROBE scripts/probes/probe_completion_gausssum_cancellation.py
+(15 instances, PROPER thin mu_n, p==1 mod n, incl Fermat F4 p=65537 beta=4, NEVER n=q-1): measured
+|eta_worst|/sqrt(q) and |eta_worst|/sqrt(n). VERDICT: |eta_worst|/sqrt(q) -> 0 as beta grows
+(0.054 at beta=4, p=65537/n=16) => the completion sum DOES exhibit near-FULL cancellation
+(|sum G_j| = t|eta| ~ t sqrt(n) << (t-1) sqrt q). BUT |eta_worst|/sqrt(n) is NOT a bounded constant:
+it GROWS slowly with n (1.9 @ n=4 -> ~5.5 @ n=64) -- i.e. it carries exactly the conjectured
+sqrt(log) factor. CONSTRAINT LEMMA: the realised completion-sum cancellation |sum G_j|/((t-1)sqrt q)
+-> 0, but the residual scale |eta_worst| ~ sqrt(n)*sqrt(log)-ish IS the prize target M(n) <=
+C sqrt(n log(p/n)) ITSELF. So the cancellation is REAL but is NOT a separate lever -- capturing its
+MECHANISM (why the t Gauss-sum phases align to leave only sqrt(n log) instead of sqrt q) IS the open
+BGK wall, not a shortcut to it. This precisely maps the completion-sum-cancellation sub-lane as DEAD
+(no free mechanism), saving future workers from chasing it. Consistent with sec-4 meta-theorem (the
+triangle/L1 route is phase-blind; the cancellation lives in phase alignment = the genuinely open
+content). No theorem shipped (negative map); no delta*/capacity claim; cliff-at-n/2 untouched. CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
