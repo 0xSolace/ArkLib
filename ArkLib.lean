@@ -1226,6 +1226,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deepGeomSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA7_NecessityTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionComplete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoshMGFSaddle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclicPowerFiber
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DStarOneIsPDependentBindingIsNot
