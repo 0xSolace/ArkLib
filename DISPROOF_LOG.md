@@ -4660,3 +4660,128 @@ HONEST SCOPE (rule 3,6): strengthens O229 by removing a hypothesis; constrains t
 thinness-essential. The "n/2"-free statement does not touch the asymptotic-guard cliff. NO moment/
 census/orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim. CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O237 (lane symcard): the F1 floor multiplier `chooseCH s r` IS the complete-homogeneous
+## monomial-multiset count `|Sym (Fin s) r|` (structural identity, now a THEOREM) -- AND the
+## distinct-h-VALUE reading of the open spectrum bound is FALSE at small r (constraint lemma).
+#
+# CONTEXT. `_BchksF1_CompleteHomogeneousFloor.lean` DEFINES the floor multiplier
+# `chooseCH s r = C(s+r-1, r)` and asserts in PROSE it is "the number of degree-r monomials in s
+# variables = #multisets of size r from s elements = dim of the degree-r complete-homogeneous space"
+# -- but proves it ONLY as a bare `Nat.choose`, never connected to the combinatorial object. This
+# lane discharges that assertion (FRONTIER-MOVEMENT, NON-MOMENT, char-free) and pins, with a clean
+# probe, the precise reason the floor needs a `poly(n)` factor.
+#
+# THE BRICK (landed, in `_BchksF1_ChooseCHSymCard.lean`, axiom-clean, 5 thms):
+#  - chooseCHsc_eq_card_sym:  chooseCH s r = Fintype.card (Sym (Fin s) r)  (Mathlib stars-and-bars
+#    Sym.card_sym_eq_choose + Fintype.card_fin). The multiplier IS the degree-r monomial-multiset
+#    count -- the floor file's prose assertion, now a theorem.
+#  - chooseCHsc_eq_multichoose:  chooseCH s r = Nat.multichoose s r  (the named combinatorial object).
+#  - card_le_chooseCHsc_of_inj / finset_card_le_chooseCHsc_of_injOn:  the IMAGE-CARD reduction --
+#    bad-scalars injecting into Sym (Fin s) r have card <= chooseCH s r (Fintype.card_le_of_injective).
+#    The poly=1 leading-order floor with a GENUINE combinatorial witness, not a free <=.
+#
+# THE CONSTRAINT LEMMA (refutation, probe_chooseCH_sym_card.py / probe_chooseCH_threshold.py;
+# PROPER thin mu_n = nth roots of unity in F_p, p>>n^3 where structured, n=4,8,16,32, NEVER n=q-1):
+#  the DISTINCT-h-VALUE reading of CompleteHomogeneousSpectrumBound -- #{distinct h_r(R) :
+#  R in binom(mu_n, k+1)} <= chooseCH n r -- is FALSE with poly=1 in a sharp low-r triangle:
+#  VIOLATED exactly when r is small relative to k (n=16: k=3 viol at r<=3, k=2 viol at r<=2, all k
+#  viol at r=1; n=32: viol at r<=2). It only holds for r large enough. The pure cardinality identity
+#  chooseCH == #monomial-multisets is CLEAN (0 fails / 130). So the open spectrum bound CANNOT be the
+#  distinct-VALUE count over (k+1)-subsets (refuted at the binding small-r fold); it is a
+#  monomial-DIRECTION count (= chooseCH n r tautologically via Sym.card), with the genuine open
+#  content being the forced-gamma INJECTION direction->bad, and the empirical poly(n)=n excess living
+#  exactly where that injection FAILS (the small-r value-collision region).
+#  This INDEPENDENTLY CORROBORATES Shaw's live F1 fix (0a34f6012 "poly=1 FALSE, poly=n verified") and
+#  supplies its MECHANISM: poly=1 fails because the value-spectrum exceeds the dimension at small r.
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure. A pure Fintype.card/Sym cardinality identity +
+# image-card reduction + a value-count refutation -- field-universal (no thinness), so by rule 3
+# CANNOT prove CORE. Does NOT prove the open CompleteHomogeneousSpectrumBound (which needs poly=n).
+# NO moment/census/orbit/pencil/spectrum re-derivation. A Sym-cardinality object, NOT a delta*/
+# incidence object -- asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson/growth-law
+# claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O238 (lane f6cross): the F6 explicit-lower-bound CROSSING FOLD `M_cross` is a `Nat.findGreatest`
+## (hard upper edge), NOT the prose "least depth" -- because the complete-homogeneous dominator
+## `chooseCH s r` is MONOTONE INCREASING in `r` (F6's own `chooseCH_mono`).
+#
+# CONTEXT. `_BchksF6_ExplicitDeltaStarLower` assembles `delta* >= 1 - rho - (M_cross-1)/n` and its
+# PROSE defines `M_cross` := "the LEAST depth `r` at which the char-free worst bad count
+# `poly * chooseCH(s,r)` drops within the soundness budget `eps*|F|`", where
+# `chooseCH s r = C(s+r-1, r)`. F6's own theorem `chooseCH_mono` proves `chooseCH s r` is MONOTONE
+# INCREASING in `r`. An increasing dominator within a budget is a DOWN-SET in `r` (initial segment):
+# once it leaves the budget it never returns.
+#
+# THE CONSTRAINT (probe `probe_f6_crossing_monotonicity.py`, s=2..32 x 4 budgets, 0 fails / 16):
+#  (1) the LEAST `r` in budget is DEGENERATE -- it is `0` (since `chooseCH s 0 = 1 <= budget` for any
+#      `poly <= budget`). So the prose "least depth crossing" is the empty-multiset rung, NOT the
+#      binding depth `m*`.
+#  (2) the CORRECT crossing fold is the GREATEST `r` in budget (`Nat.findGreatest`), with a HARD upper
+#      edge (`budget < poly*chooseCH s r => budget < poly*chooseCH s r'` for all `r' >= r`). This
+#      matches the in-tree DECREASING over-det edge cascade (`DecouplingDecayCrossingDepth.crossingDepth
+#      = m-1`, LINEAR = the cliff-at-n/2), which is the genuine binder.
+#  (3) F6's `mStar_le_cross` is SOUND but over an ABSTRACT cascade `D` whose nonvacuity witness
+#      `modelD = [200,200,200,0,..]` is DECREASING-to-budget (a least-`r` `Nat.find` binder, `m*=3`,
+#      is meaningful there). The PROSE identification `D := poly*chooseCH` carries the OPPOSITE
+#      monotonicity, so the "least-`r` crossing of `poly*chooseCH`" (= 0) is NOT the object
+#      `mStar_le_cross` caps. The two `Nat.find` objects DIFFER.
+#
+# THE BRICK (landed, `_BchksF6_CrossingFoldMonotonicity.lean`, axiom-clean, 8 thms):
+#  - chooseCH_mono_le (s>=1): full-range monotonicity (lift of F6's one-step `chooseCH_mono`).
+#  - budget_predicate_downward_closed: the budget predicate is downward-closed in depth.
+#  - least_in_budget_is_zero (HEADLINE): `poly <= budget -> Nat.find (least r in budget) = 0`.
+#  - budget_fails_above_edge: the hard upper edge (monotone failure above the edge).
+#  - findGreatest_is_crossing_fold / findGreatest_crossing_in_budget: the correct fold is a
+#    `Nat.findGreatest` (every in-budget depth `<=` the fold; the fold itself is in budget).
+#  - modelD_decreasing_to_budget + crossing_fold_mismatch: F6's `modelD` is OPPOSITE-monotone; at the
+#    F6 scale (s=8,poly=1,budget=120) least-r of the increasing `chooseCH` = 0 while findGreatest = 3.
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure, NOT a refutation of F6's theorems (they hold over
+# abstract `D`). Pure Nat monotonicity + `Nat.findGreatest` arithmetic -- field-universal (no thinness),
+# so by rule 3 CANNOT prove CORE. Corrects the F6 reduction's crossing-fold SEMANTICS (`M_cross` =
+# findGreatest hard-edge, not least) + records the prose/object monotonicity mismatch. NON-MOMENT,
+# EXTEND-proven on F6's `chooseCH`/`chooseCH_mono`. The increasing `chooseCH` is a per-subset
+# DIRECTION-count (Sym-cardinality), NOT a delta*/incidence object -- asymptotic-guard cliff-at-n/2
+# UNTOUCHED, no capacity/beyond-Johnson claim (we CONFIRM the binding crossing is a hard upper edge,
+# consistent with the cliff guard). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## O239 (lane f3sumset): the F3 Sumset-Extremality floor's SOUNDNESS conjunct is a DOWN-SET in the
+## fold (monotone-failing, because `|Sigma_r|` is INCREASING), so at the DEEP binding fold it COUPLES
+## `|F|` to the deep-fold sumset size: `|F| >= poly*|Sigma_M|/eps*` (super-poly-in-depth field lower bound).
+#
+# CONTEXT. `_BchksF3_RetargetedReduction` re-targets the prize onto the open floor
+# `SumsetExtremality bad sumset poly soundness := bad <= poly*sumset AND poly*sumset <= soundness`,
+# where `sumset = |Sigma_r(mu_s)| = |H^{(+r)}|` and `soundness = eps*|F|` (`|F|` LARGE). F3 PROVES
+# (`subsetSumBudget_existential_unsat`) that `|Sigma_r|` is MONOTONE INCREASING in the fold
+# (`|Sigma_r(mu_16)| = 129,704,2945,10128,29953,78592,185617` for r=2..8). This lane discharges the
+# structural consequence for the floor's SECOND conjunct.
+#
+# THE CONSTRAINT (probe `probe_f3_sumset_monotone_floor.py`, n=s=8 + n=s=16, 0 fails / 6):
+#  Because `|Sigma_r|` is increasing, the soundness conjunct `poly*|Sigma_r| <= soundness` is a
+#  DOWN-SET in the fold r (holds only at SHALLOW folds). But the binding fold m* is DEEP (F3's
+#  `mStar_ge_three_*`: m* >= 3, grows). So at the deep binding fold M the soundness conjunct
+#  `poly*|Sigma_M| <= eps*|F|` FORCES `|F| >= poly*|Sigma_M|/eps*` -- and `|Sigma_M|` is super-poly
+#  in M (ratios 5.46->4.18->3.44->2.96->2.62->2.36, log|Sigma|/r decreasing but |Sigma| growing
+#  super-poly). The floor's "|F| large" is NOT free: it is a super-poly-in-depth lower bound on the
+#  field size, the precise non-vacuity cost of the re-targeted floor. (Same increasing-dominator
+#  down-set structure as the F6 crossing-fold constraint O238 -- here on the SUMSET, not chooseCH.)
+#
+# THE BRICK (landed, `_BchksF3_SumsetFloorFieldCoupling.lean`, axiom-clean, 6 thms):
+#  - soundness_conjunct_downward_closed: smaller sumset still in budget (down-set in the sumset).
+#  - soundness_conjunct_fails_above: the hard upper edge (once out at a sumset, out for all larger).
+#  - sumsetExtremality_forces_field_coupling: the floor's 2nd conjunct = `poly*sumset <= eps*|F|`.
+#  - field_card_lower_bound_of_sumsetExtremality (HEADLINE): eps>=1 => `poly*sumset/eps <= |F|` --
+#    the field-size lower bound. At the deep fold (super-poly sumset) = a super-poly-in-depth |F| bound.
+#  - deep_fold_field_lower_bound: F3's exact `|Sigma_8(mu_16)|=185617`, poly=eps=1 => `|F| >= 185617`
+#    (4 orders of magnitude above the OLD refuted budget 16).
+#  - deep_fold_sumset_dominates: `|Sigma_3|=704 < |Sigma_8|=185617` -- the coupling is a DEEP-fold
+#    constraint (the field lower bound grows along the fold).
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure, NOT a refutation of F3's theorems (they hold over
+# abstract `sumset`/`soundness`). Pure Nat/Nat-division monotonicity -- field-universal (no thinness),
+# so by rule 3 cannot prove CORE. Pins the `|F|`-coupling cost of the F3 floor's soundness conjunct.
+# Does NOT re-derive F3's `|Sigma_r| > budget` refutation (already a theorem). The increasing
+# `|Sigma_r|` is an additive-combinatorics SUMSET-SIZE object, NOT a delta*/incidence object --
+# asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson claim. NON-MOMENT, EXTEND-proven
+# on F3's `SumsetExtremality`. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.

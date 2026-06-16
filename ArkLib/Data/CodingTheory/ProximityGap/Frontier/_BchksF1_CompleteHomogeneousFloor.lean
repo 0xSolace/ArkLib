@@ -68,22 +68,37 @@ theorem subsetSum_le_chooseCH (s r : ℕ) : Nat.choose s r ≤ chooseCH s r := b
 
 /-! ## The F1 floor, reduced to the ONE open distinct-value count -/
 
-/-- **The complete-homogeneous spectrum bound (the genuine char-free OPEN CORE).** The number of
-distinct degree-`r` complete-homogeneous values `h_r(R)` over the `(k+1)`-subsets `R ⊆ μ_s` is at
-most `poly · chooseCH s r` (the ABF26 §4 sumset-extremality content; the prize's char-free core).
-⚠️ **The `poly` factor is ESSENTIAL [VERIFIED, probe_completehomog_spectrum.py]:** `poly = 1` is
-FALSE — the spectrum EXCEEDS the dimension at small `r` (`#distinct h_2(μ_16)=1848 > C(17,2)=136`).
-But `poly = n` SUFFICES in all measured cases (`#distinct h_r ≤ n·C(s+r−1,r)`, s=8,16, r≤6; min poly
-`≤14≤n`). So the floor carries a linear `poly(n)=n` factor — a SUB-LEADING `log n/log|F|` correction
-to δ*, leading order still pinned by `C(s+r−1,r)`. -/
+/-- **The complete-homogeneous spectrum bound — a conditional REDUCTION target, with the `poly`
+factor left as a free binder.** The number of distinct degree-`r` complete-homogeneous values
+`h_r(R)` over the `(k+1)`-subsets `R ⊆ μ_s` is at most `poly · chooseCH s r` (the ABF26 §4
+sumset-extremality content). This is a `Prop` parameterized by `poly`; the theorem below uses it
+purely as a hypothesis (`le_trans`), so it is HONEST as a conditional regardless of what `poly` is.
+
+⚠️ **`poly = 1` is FALSE** (`#distinct h_2(μ_16)=1848 > C(17,2)=136`,
+`probe_completehomog_spectrum.py`). ⚠️⚠️ **`poly(n) = n` is ALSO FALSE at the prize scale
+[REFUTED, `probe_spectrum_polyN_REFUTED_s32.py`].** The earlier "poly=n SUFFICES" claim was tested
+ONLY at `s = 8, 16`; extending to the next power of two `s = 32` (the prize is `s = 2^μ`) the bound
+FAILS at small `r`: exact full-enumeration gives `poly_min = 389, 3444` at `s = 24, 28` (`r = 2`,
+super-linear `≈16n, 123n`), and a SAMPLE (which only lower-bounds the true count) already exceeds
+`n·C(s+r−1,r)` at `s = 32` (`r = 2`: ceil `16896` < seen; `r = 3`: ceil `191488` < seen). At fixed
+rate the witness size `k+1 = ρs` GROWS, so the trivial ceiling `C(s,k+1)` is EXPONENTIAL, and at
+small `r` there is too little symmetric-function collision to bring it under the polynomial
+`n·C(s+r−1,r)`. The bound DOES hold at LARGE `r` (`s = 24, 28`: `r ≥ 4` OK) — it is a small-`r`
+phenomenon. **The honest open question is whether the δ*-binding fold `r = M_cross` lies in the
+holds-regime (large `r`) or the fails-regime (small `r`); the clean "poly(n)=n char-free core"
+framing is REFUTED.** The genuinely PROVABLE bound is the rotation/trivial one
+`#distinct ≤ C(s,k+1)/gcd(s,r)` (exponential — see `_SpecS1_RotationEquivariance`). -/
 def CompleteHomogeneousSpectrumBound (spectrum poly s r : ℕ) : Prop :=
   spectrum ≤ poly * chooseCH s r
 
-/-- **F1 — the char-free floor, REDUCED to the spectrum bound (verified `poly(n)=n` factor).** GIVEN
-(a) `hbad : bad ≤ spectrum` (SchurLagrangeBridge forced-γ = `−h_{a−k}/h_{b−k}`: distinct γ ≤ distinct
-`h`-values), and (b) the open `CompleteHomogeneousSpectrumBound spectrum poly s r`, the bad count
-obeys `bad ≤ poly · chooseCH s r` with the SPECIFIC multiplier `chooseCH = C(s+r−1,r)`. The ONE open
-input is (b), holding with `poly = n` (so `bad ≤ n·C(s+r−1,r)`). -/
+/-- **F1 — the char-free floor, REDUCED to the (free-`poly`) spectrum bound.** GIVEN (a)
+`hbad : bad ≤ spectrum` (SchurLagrangeBridge forced-γ = `−h_{a−k}/h_{b−k}`: distinct γ ≤ distinct
+`h`-values), and (b) `CompleteHomogeneousSpectrumBound spectrum poly s r`, the bad count obeys
+`bad ≤ poly · chooseCH s r` with the SPECIFIC multiplier `chooseCH = C(s+r−1,r)`. This is a pure
+`le_trans` — HONEST as a conditional for ANY `poly`. ⚠️ It does NOT assert `poly = n`: that is
+REFUTED at `s = 32` (see `CompleteHomogeneousSpectrumBound` docstring + `probe_spectrum_polyN_REFUTED_s32.py`).
+The quantitative content of (b) — what `poly` actually is at the binding fold, hence whether this
+yields a poly(n) δ* correction — is OPEN, not discharged. -/
 theorem bad_le_chooseCH_of_spectrum (bad spectrum poly s r : ℕ)
     (hbad : bad ≤ spectrum)
     (hspec : CompleteHomogeneousSpectrumBound spectrum poly s r) :
