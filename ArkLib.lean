@@ -1963,6 +1963,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrimitiveFactorCovering
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEnergyHeadline
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEquivalence
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeRadiusCompletionCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormFromPairing

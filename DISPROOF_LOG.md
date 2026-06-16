@@ -4387,3 +4387,28 @@ It removes the file's own named open continuation + gives the engine an explicit
 NO moment/census/orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim,
 cliff-at-n/2 UNTOUCHED. EXTEND-proven on the proven analytic-NT engine, not a re-mapped dead face.
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../StepanovWeilSqrtExplicit.lean.
+
+## O219 (lane prizeceil): an UNCONDITIONAL sqrt(q) ceiling on the canonical prize constant Lambda^2
+LANE: wire the O218 completion bound into the PrizeStructuralConstant normal form. The canonical
+prize object Lambda^2 = prizeRadiusSq = max_{b!=0} ||eta_b||^2 had a PROVEN Parseval floor
+(prizeRadiusSq_parseval_floor: Lambda^2 >= (q n - n^2)/(q-1) ~ n) but its ceiling half carried NO
+unconditional companion -- nothing bounded Lambda^2 from above without the OPEN near-Ramanujan
+hypothesis (DepthLogSubGaussian). FOUND (grep-confirmed missing): no unconditional upper bound on
+prizeRadiusSq existed. LIFTED the per-frequency completion bound (CompletionSharpMargin.
+norm_eta_torsion_sharp_le, O218) through the worstCaseIncompleteSumBound_iff_prizeRadiusSq_le
+equivalence. SHIPPED ArkLib/.../PrizeRadiusCompletionCeiling.lean (2 thms, axiom-clean {propext,
+Classical.choice, Quot.sound}, in-graph lake build 3318 jobs exit 0):
+  - prizeRadiusSq_torsion_le: Lambda^2(psi, torsion F d) <= (sqrt(q) - (sqrt(q)-1)/t)^2, t=(q-1)/d
+    -- the sharp completion ceiling, strictly below q. First unconditional ceiling on the prize
+    object (no Weil, no open hypothesis).
+  - prizeRadiusSq_torsion_lt_card: Lambda^2(psi, torsion F d) < q STRICT -- the worst frequency
+    never attains the trivial sqrt(q) scale.
+Together with the proven floor these PIN the canonical constant unconditionally to [~n, q) on the
+torsion subgroup, BOTH ends now proven; and make explicit that DepthLogSubGaussian's open content
+is exactly the REDUCTION of this sqrt(q) ceiling down to the sqrt(n log q) floor scale. HONEST
+SCOPE (rule 3+6): this is the classical sqrt(q) ceiling lifted to the sup' object; NOT thinness-
+essential by itself (the sqrt(q) ceiling holds for any torsion subgroup); the thin-essential
+mechanism (why completion CANNOT improve it to the prize scale) is the SEPARATE proven
+completion_margin_le_of_thin (O218). Does NOT prove CORE; no delta*/capacity/beyond-Johnson claim;
+cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. CONNECTIVE brick
+(EXTEND-proven off two proven theorems), not a re-mapped dead face.
