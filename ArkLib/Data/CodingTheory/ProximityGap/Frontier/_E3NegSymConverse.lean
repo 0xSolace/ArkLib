@@ -64,7 +64,6 @@ theorem multiset_sum_eq_zero_of_count_antipodal {M : Multiset F} (h2 : (2 : F) �
   · intro a _
     exact neg_neg a
 
-variable [Fintype F]
 
 /-- **Count-balanced tuple ⟹ zero-sum.** If `c : Fin m → F` (field, `(2:F) ≠ 0`) never hits
 `0` and its value fibers are antipodally balanced, then `∑ i, c i = 0`. Lifts
