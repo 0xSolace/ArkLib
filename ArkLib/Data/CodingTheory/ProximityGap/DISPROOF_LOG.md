@@ -14725,6 +14725,12 @@ UNCHANGED/OPEN. -- heighttight, co-author wakesync.
 
 ### O191 — THE PLATEAU DICHOTOMY: 3 conflated objects DISENTANGLED (w / w_LL / m*, pairwise-distinct at every tower level), and the decisive m* is SUB-LINEAR (extending the favorable lean to n=64/128) but ~Θ(log²n) not clean-additive — PROXY face, m*(64+) recursion-extrapolated (nubs, demand seat, 2026-06-16)
 
+> **[CORRECTED 2026-06-16 → see O192]** The "sub-linear / LEANS-ADDITIVE / favorable lean extends to
+> n=64/128" verdict is **WITHDRAWN**: m\*(32) is disputed ∈ {4,5} (audit §D), the additive recursion
+> `m*(2n)=m*(n)+w(2n)` is contradicted by the in-tree flat step m\*(8)=m\*(16)=3, and m\*(64)=8 /
+> m\*(128)=12 are unsupported. The deep-band #bad data (89/1441/22657/356865, all ≤ K/2) and the
+> object-disentangling stand. Off-by-one: the δ\* identity is `δ*=1−ρ−m*/n`.
+
 Filled the named n=64/128 data gap on the ONE open prize dichotomy (lalalune's 8-angle assault:
 is |P| additive ⟹ prize HOLDS or multiplicative ⟹ FAILS). DATA + disentangling — NOT a proof of
 the dichotomy, NOT the real BGK wall.
@@ -14759,3 +14765,52 @@ the dichotomy, NOT the real BGK wall.
 n=64/128 and the 3 objects are cleanly separated — genuine progress on understanding the dichotomy
 — but it is NOT decided (m\* extrapolated past n=32; log² vs slow-poly inseparable; proxy ≠ real
 wall). Artifacts: scripts/probes/genlaw/o191_plateau/.
+
+### O192 — CASCADE-RECURSION ATTACK = FOUNDATION-IS-SCRATCH-TAUTOLOGY + REDUCES-TO-WALL; and a SELF-CORRECTION retracting O191's "sub-linear / favorable" lean (nubs, demand seat, 2026-06-16)
+
+Attacked the one open prize dichotomy from the recursion side — try to PROVE `m*(2n)=m*(n)+w(2n)`
+(would make the proxy m\* exactly computable up the tower and decide the additive-vs-multiplicative
+horn). Workflow on Opus 4.8, find→verify, adversarially checked. **Verdict: the recursion cannot be
+proven AND the attempt exposed an error in my own O191. Two honest negatives, no brick.**
+
+* **1. FOUNDATION-IS-SCRATCH-TAUTOLOGY.** There is NO genuine in-tree definition of `D*_n(m)` / `m*`.
+  The only object is a generic `mStar (D:ℕ→ℕ→ℕ) budget n hex := Nat.find hex` with `D` an
+  UNINSTANTIATED abstract parameter; every concrete m\* value lives in PROSE TABLES passed as
+  hypotheses, not computed by any Lean term. The two `_Close27_*` "decision" bricks that purport to
+  settle the horn are TAUTOLOGIES deciding OPPOSITE prose horns — independently confirmed by
+  lalalune's own same-day audit (`docs/kb/deltastar-444-audit-corrections-2026-06-16.md` §E: "every
+  theorem is a trivial tautology (omega, decide, rfl); the decision is prose-only on both sides").
+  So there is no foundation to recurse on.
+* **2. REDUCES-TO-WALL.** The recursion's plateau-insertion term `|P|` (the count of new bad scalars
+  created when the tower doubles) IS the open subset-sum / orbit count = BCHKS Conjecture 1.12 = the
+  BGK thin-subgroup sup-norm wall — which `_CoreReductionComplete` / `_CoreA7` prove TIGHT
+  (necessary+sufficient) for the prize. So `m*(2n)−m*(n)` cannot be pinned to `w(2n)` (or anything
+  closed) without resolving the wall. The recursion is not a shortcut around the wall; it CONTAINS it.
+* **3. SELF-CORRECTION of O191 [required by the honesty mandate].** Checking O191's m\* data against
+  in-tree exact data + the same-day audit (§A, §D) shows O191's favorable framing is NOT supported:
+  - **m\*(32) is DISPUTED ∈ {4,5}** (audit §D: GPU `rho4` worst-dir cascade `[4096,89,89,9]` →
+    m\*=5/δ\*≈0.594 vs mod-p probe → m\*=4/δ\*=0.625; n=32 NOT computable to settle — `C(32,s)` times
+    out ~77 min). O191 asserted m\*(32)=5 as EXACT ("EXACT n≤32") and "matching your cited values" —
+    overstated; m\*=4 is equally valid.
+  - **The additive recursion `m*(2n)=m*(n)+w(2n)` is CONTRADICTED where exact data exists.** The
+    audit's solid sequence is m\*(8)=3, m\*(16)=3 — a FLAT 8→16 step — but the recursion predicts
+    `+w(16)=+1`. So the "equality-verified at the one clean step 16→32" rested on a disputed point
+    while the adjacent CHECKABLE step REFUTES the recursion. ⟹ m\*(64)=8, m\*(128)=12 are UNSUPPORTED.
+  - **off-by-one** (audit §A): the δ\* identity is `δ*=1−ρ−m*/n` (not `(m*−1)/n`); flag any δ\*
+    numeric derived with the wrong form.
+  - **VERDICT CHANGE:** O191's "LEANS-ADDITIVE (weak) / sub-linear / favorable lean extends to
+    n=64/128 against the prize-FAILS horn" is **WITHDRAWN**. It is a 2-solid-point + 1-disputed-point
+    inference; "3,3,4" (flat-ish) is equally consistent with the solid data (audit §D). The dichotomy
+    is NOT favorably leaned; it stays UNDECIDED on this proxy face, and the proxy face ≠ the BGK wall
+    regardless.
+* **What STANDS from O191** (unaffected by the m\* error): the deep-band #bad data
+  89/1441/22657/356865 (n=16/32/64/128, all ≤ K/2 via the O183 orbit law / the verified O181 r=5
+  brick) — a solid demand-side count independent of m\*; and the n≤16 object triples (w / w_LL / m\*)
+  as distinct functions (conceptual, not a transportable growth law).
+* **Genuine artifact this cycle:** `close43_lite_verify.lean` (the badCount E6 object) — a real
+  non-tautological in-tree object, verified axiom-clean `[propext, Classical.choice, Quot.sound]`;
+  but per KB §D it is `cf`, not `D*`/m\*, so it does NOT touch the prize.
+
+**Net:** the proxy-face m\* program cannot be made exact past n=32 even in principle (recursion
+reduces-to-wall; no Lean foundation; n=32 not computable), and O191's favorable signal is retracted.
+The prize remains the open BGK wall — UNCHANGED. Posted the correction on #444 (re comment 4715974397).
