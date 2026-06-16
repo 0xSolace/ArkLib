@@ -18,12 +18,11 @@ in the lower window.
 Self-contained: a triangle-inequality argument. No MDS machinery is needed — the distance is
 taken as a hypothesis, which any code satisfies for distinct codewords with `d := d_min`. -/
 
-open Classical
-
 namespace ListDecodable
 
 variable {ι : Type*} [Fintype ι] {F : Type*}
 
+open Classical in
 /-- If two centres are more than `2r` apart in Hamming distance, their radius-`r` Hamming balls
 are disjoint. (Triangle inequality — the unique-decoding region.) -/
 theorem hammingBall_disjoint_of_two_mul_lt_dist
@@ -39,6 +38,7 @@ theorem hammingBall_disjoint_of_two_mul_lt_dist
       _ = 2 * r := (two_mul r).symm
   omega
 
+open Classical in
 /-- Below the unique-decoding radius, no received word `y` is `r`-close to two codewords that
 are more than `2r` apart: the radius-`r` ball intersection (the second-moment cross term over
 codeword pairs) is empty. -/
