@@ -5,7 +5,6 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3StrataCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BalancedCountConcrete
-import Mathlib.Tactic
 
 set_option autoImplicit false
 
