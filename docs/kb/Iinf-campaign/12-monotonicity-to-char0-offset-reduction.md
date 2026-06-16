@@ -60,6 +60,29 @@ finite, q-independent, character-sum-free statement. THAT is the prize, in a for
 Tools: /tmp/n32ex.c (2-prime CRT exact engine), /tmp/dstar.c (validated far-line engine, reproduces
 issue pins). Related: [[arklib-407-multiplier-decay]], 11-deltastar-offset-law-and-monotonicity-localization.md.
 
+## ⚠️ RETRACTION (2026-06-16, later) — the "offset 5 / Fermat pollution" claim below was MY BUG
+The 2-prime CRT engine had a **hash-set sentinel bug**: empty slots were marked `0`, but `key=0` (when the
+bad scalar `γ=0` mod both primes) is a VALID key, so every `γ=0` config collided with "empty" and was
+over-counted instead of deduped. This inflated the n=16 count from the true `16` to a spurious `120`.
+After fixing the sentinel (`~0`) AND fixing a wrong-generator slip (I had passed a primitive 16th-root to
+an n=8 run), the engine is **validated against an independent Python brute force** (n=8: `40, 9, 0` exact
+match) and **reproduces the issue's exact pins**: n=8 offset 3 (`δ*=3/8`), n=16 offset 3 (`δ*=9/16`). **The
+issue's pins were CORRECT; my "correction" was a bug. Retracted in full.** Everything in the section below
+marked with offset 5 / "Fermat-polluted" is WRONG. Lesson: always cross-check a claim that contradicts a
+carefully-pinned value against an independent implementation.
+
+## CORRECTED picture (validated) — char-0 offset is 3 at n=8,16; the O(1) question is live again
+True char-0 far-line offset (validated, bug-free, matches issue + Python brute): **offset 3 at n=8 and
+n=16**. So `δ*_char0 = (1−ρ) − 3/n` at these sizes. The window-edge offset is `≈ 0.18·n/log₂n` (0.43, 0.72,
+1.15 for n=8,16,32). At small n, `offset 3 > window-edge offset`, so `δ*_char0 < window edge`. BUT if the
+char-0 offset stays **O(1)** (=3) while the window-edge offset grows `Θ(n/log n)→∞`, then for `n > ~70`,
+`offset 3 < window-edge offset` ⇒ `δ*_char0 > window edge` ⇒ **floor holds** (via proven monotonicity, on a
+char-0 cyclotomic bound — no BGK). **So the breakthrough is viable iff the char-0 offset is O(1).** The
+decisive test is the trend at n=32, recomputed with the FIXED engine (pending). If offset stays ≈3, this is
+a genuine closure path; if it grows like `Θ(n/log n)`, it tracks the window edge (open, = the issue's verdict).
+
+---
+## (SUPERSEDED — contains the sentinel-bug results; kept for the record, do not trust the numbers)
 ## UPDATE (2026-06-16) — EXACT char-0 (2-prime CRT) REFUTES the lead, and CORRECTS the issue's pin
 Built a faithfulness-aware exact engine: the single-prime values were char-p (the collision threshold is
 `(2w)^{φ(n)} ≈ 2^{30}` at n=16, far above small primes). Deduping bad scalars by `(γ mod 𝔭₁, γ mod 𝔭₂)`
