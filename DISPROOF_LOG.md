@@ -4127,3 +4127,31 @@ weld's black-box CensusDomination hypothesis from the in-tree per-band incidence
 sufficiency direction, a genuine missing link, not a re-mapped dead face / moment / orbit /
 resonance / pencil re-derivation. Touches NEITHER delta* climb NOR the cliff-at-n/2 incidence
 object. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O207 (lane ratioperm): residual-RATIO is PERMUTATION-INVARIANT in the tuple => the open
+## distinct-gamma (delta*-governing) count factors through (k+1)-SUBSETS: #ratioImage <= C(n,k+1),
+## a (k+1)!-fold tightening of the in-tree ratioImage_card_le_tuples. Push, axiom-clean.
+PinnedScalarRatioImage reduced the open delta*-governing distinct-gamma count to the residual-ratio
+image (#pinnedScalars <= #ratioImage) with the CRUDE a-priori ceiling #ratioImage <= #{injective
+(k+1)-tuples} = n(n-1)...(n-k) (ratioImage_card_le_tuples). MECHANISM (pure linear algebra, NOT
+orbit-law/Schur, the live cluster): residual = det(borderedMatrix), and permuting the tuple permutes
+the matrix ROWS, scaling det by Perm.sign sigma (a +-1 unit) via Matrix.det_permute. So residual is
+permutation-EQUIVARIANT (residual_comp_perm: residual (t o sigma) = sign sigma * residual t); the
+SAME sign appears in numerator R0 and denominator R1 of the ratio gamma = -R0/R1 and CANCELS =>
+residualRatio_comp_perm: residualRatio (t o sigma) = residualRatio t (the headline). Hence the ratio
+map factors through the underlying (k+1)-element SET: #ratioImage <= C(n,k+1)
+(ratioImage_card_le_choose), and #pinnedScalars <= C(n,k+1) (pinnedScalars_card_le_choose) -- a
+(k+1)!-fold improvement over the in-tree pinnedScalars_card_le_tuples. PROBE
+(/tmp/probe_ratio_perm_invariant.py, ONE sweep, PROPER thin 2-power mu_n, p == 1 mod n, prize regime
+p >> n^3 beta=4..5, OFF-code planted stacks, n=8,16,32, k=1,2,3, ALL perms of each subset, NEVER
+n=q-1): perm-invariance holds 100% of runs; #ratio values <= C(n,k+1) every run, TIGHT at k=1 (n=8:
+exactly 28 = C(8,2)), a real reduction vs falling factorial (n=8,k=3: 70=C(8,4) vs 1680 ordered,
+24x fewer). 7 theorems axiom-clean {propext, Classical.choice, Quot.sound} (single-file lake-env
++ in-graph lake-locked); no sorry/axiom/native_decide. HONESTY (rules 3,6 + ASYMPTOTIC GUARD): NOT a
+CORE closure, NOT thinness-essential -- field-universal combinatorics (determinant sign-cancellation
+holds over every field, any k, independent of thickness). It TIGHTENS the a-priori distinct-gamma
+ceiling from the ordered-tuple count to the subset count; it does NOT bound the ratio image below
+C(n,k+1), and C(n,k+1) ~ n^{k+1} is still far above the sqrt(n) prize target (the cyclotomic content
+that would collapse the image to O(sqrt n) values stays OPEN). Bound is a binomial in n, not delta*
+/incidence object; cliff-at-n/2 UNTOUCHED. NOT a moment/orbit/census/resonance/pencil re-derivation
+or a re-mapped dead face. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.

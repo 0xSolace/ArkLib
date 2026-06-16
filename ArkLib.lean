@@ -1038,6 +1038,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeFloorFromCrossStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharZero
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioImagePermInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RawMGFSaddleVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RealizerL2NotSup
