@@ -367,6 +367,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.AveragingReachNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.B1CountLawUnconditional
 import ArkLib.Data.CodingTheory.ProximityGap.B1IncidenceBridge
 import ArkLib.Data.CodingTheory.ProximityGap.B1IncidenceInjectionBridge
+import ArkLib.Data.CodingTheory.ProximityGap.B1IncidencePivotSharp
 import ArkLib.Data.CodingTheory.ProximityGap.B1TopDirectionCountLaw
 import ArkLib.Data.CodingTheory.ProximityGap.B5DeepBandSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.BCIKS20
