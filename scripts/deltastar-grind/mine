@@ -24,6 +24,7 @@ ${b}δ*-mine${x} — one command to mine the RS proximity prize (hunt a disproof
 
   ${b}mine${x}                 just mine: calibrate, then sweep the tower hunting a disproof
   ${b}mine N${x}               mine one size (e.g. ${b}mine 32${x})
+  ${b}mine --live${x}          live dashboard — watch it grind, rows fill in, disproof-hunt status
   ${b}mine --max M${x}         sweep n = 8,16,32… up to M (default 32 on CPU, 44 on GPU)
   ${b}mine --shard i/N${x}     your slice of a distributed pool
   ${b}mine --help${x}
@@ -73,10 +74,47 @@ mine_one() {
   else printf '%s\n' "${g}defect/n=$defect (leans HOLDS)${x}"; fi
 }
 
+# ── live dashboard (--live): animated spinner per size, rows fill in, disproof-hunt status ──
+SPIN='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+spinner() {  # $1=pid  $2=label
+  local i=0
+  while kill -0 "$1" 2>/dev/null; do printf "\r   ${c}%s${x} %s" "${SPIN:i++%10:1}" "$2"; sleep 0.08; done
+  printf '\r\033[K'
+}
+live_sweep() {  # $1=bin ; rest=sizes
+  local bin=$1; shift
+  printf '%s\n' "${b}${m}  ⛏  δ*-MINE — live disproof hunt${x}"
+  printf '   %s\n' "${d}$(printf '─%.0s' $(seq 1 58))${x}"
+  printf '   ${b}%-4s %-26s %-8s %-4s %s${x}\n' "n" "cascade  (s:maxI)" "δ*" "m*" "status"
+  printf '   %s\n' "${d}$(printf '─%.0s' $(seq 1 58))${x}"
+  local ws="" tmp; tmp=$(mktemp)
+  local n
+  for n in "$@"; do
+    local k=$(( n/4 ))
+    "$bin" "$n" "$k" >"$tmp" 2>/dev/null & local pid=$!
+    spinner "$pid" "grinding n=$n (k=$k) — hunting a super-budget hit…"
+    wait "$pid" 2>/dev/null || true
+    local casc dstar mstar w status
+    casc=$(grep -E '^\s+s=' "$tmp" | sed -E 's/^\s+s=([0-9]+).*maxI=([0-9]+).*/\1:\2/' | tr '\n' ' ')
+    dstar=$(grep -oE 'delta\*=[0-9.]+' "$tmp" | head -1 | cut -d= -f2)
+    mstar=$(grep -oE 's\*-k=[0-9]+' "$tmp" | head -1 | cut -d= -f2)
+    w=$(grep -cE 'maxI=89 ' "$tmp" 2>/dev/null || echo 0)
+    if [ -n "$dstar" ]; then status="${g}✓ binds${x}"; else status="${r}${b}‼ DISPROOF — verify+report #444${x}"; fi
+    printf '   %-4s %-26s %-8s %-4s %b\n' "$n" "${casc%% }" "${dstar:-—}" "${mstar:-—}" "$status"
+    ws="$ws $w"
+  done
+  rm -f "$tmp"
+  echo
+  printf '   ${d}plateau widths w(n):${x}%s   ${d}(0,1,2,… ; ×2 jump = disproof signal)${x}\n' "$ws"
+  printf '   ${g}🔍 hunt complete: no disproof at these sizes — conjecture stands here.${x}\n'
+  printf '   ${y}honest: proxy face (p≈n⁴); a real win = a disproof at reachable n, or the (uncomputable) proof.${x}\n'
+}
+
 # ── parse args ──
-MAX=""; ONE=""; SHARD=""
+MAX=""; ONE=""; SHARD=""; LIVE=""
 while [ $# -gt 0 ]; do case "$1" in
   -h|--help|help) usage; exit 0 ;;
+  --live) LIVE=1; shift ;;
   --max) MAX="$2"; shift 2 ;;
   --shard) SHARD="$2"; shift 2 ;;
   [0-9]*) ONE="$1"; shift ;;
@@ -89,6 +127,13 @@ NAME=$([ "$BIN" = "$CUDABIN" ] && echo "GPU" || echo "CPU")
 printf '%s\n' "${d}engine: $NAME${x}"
 calibrate "$BIN"
 echo
+
+if [ -n "$LIVE" ]; then
+  # fast CPU-reachable sweep so the spinner is visible and nothing hangs (n=32+ is GPU territory)
+  sizes=(8 12 16 20 24 28); [ -n "$ONE" ] && sizes=("$ONE")
+  live_sweep "$BIN" "${sizes[@]}"
+  exit 0
+fi
 
 if [ -n "$SHARD" ]; then
   i=${SHARD%/*}; N=${SHARD#*/}; n=${ONE:-32}; k=$(( n/4 ))
