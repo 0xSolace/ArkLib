@@ -56,4 +56,16 @@ theorem not_closeCodewords_two_of_two_mul_lt_dist
       _ = 2 * r := (two_mul r).symm
   omega
 
+open Classical in
+/-- Below half the minimum distance, decoding is unique: at most one codeword is `r`-close to
+any received word `y`. (The classical unique-decoding guarantee — the `ℓ = 1` list-size case.)
+`hmin` says every two distinct codewords are more than `2r` apart, i.e. `2r < d_min`. -/
+theorem closeCodewords_subsingleton_of_two_mul_lt_minDist
+    {C : Code ι F} {y : ι → F} {r : ℕ}
+    (hmin : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → 2 * r < hammingDist c c') :
+    (closeCodewords C y r).Subsingleton := by
+  intro c hc c' hc'
+  by_contra hne
+  exact not_closeCodewords_two_of_two_mul_lt_dist hc hc' (hmin c hc.1 c' hc'.1 hne)
+
 end ListDecodable
