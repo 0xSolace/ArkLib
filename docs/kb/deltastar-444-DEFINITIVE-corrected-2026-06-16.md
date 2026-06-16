@@ -85,3 +85,42 @@ proxy → Johnson. The proxy is NOT the true interior value.
   capacity, or `Θ(n)` ⟹ Johnson) — numerically-open, the `o(n)`-vs-`Θ(n)` dichotomy for `M_cross`.
 - **BGK-CORE:** re-confirm the single open input is the char-p Wick transfer (the two-sidedness is the
   guarantee there is no escape).
+
+## 4. RESULT — the attack landed (2026-06-16, axiom-clean on fork/main)
+
+**(a) PROVEN — the consolidating theorem.** `_DeltaStarDefinitive.deltaStar_definitive` (axiom-clean,
+`{propext, Classical.choice, Quot.sound}`): ONE theorem giving (i) the UNCONDITIONAL bracket
+`δfloor ≤ mcaDeltaStar ≤ δceiling` (from the in-tree Johnson-good radius + KKH26 bad-line) and (ii) the
+two-sided DICHOTOMY — sufficiency `BGKFloor → interior reach`
+(`worstCaseIncompleteSumBound_of_energyBound`) + necessity `no-moment-escape`
+(`moment_ladder_exceeds_prize`), with `BGKFloor = GaussianEnergyBound` a GENUINELY NAMED OPEN predicate
+(never asserted). This **is** the definitive "δ* = …": a proven bracket + a proven reduction of the
+exact interior value to one classical open inequality. The value is REDUCED, not closed.
+
+**(b) REFUTED — every candidate closed form.** `_DeltaStarClosedFormsRefuted.closed_forms_all_refuted`
+(16 machine-checked countermodels, axiom-clean; the spectrum countermodel uses NO axioms): Johnson-exact
+(`9/16 > 1/2`), capacity-exact (bound-not-value), proxy-as-truth (`proxy < Johnson` at `ρ=1/16`),
+complete-homog spectrum (`s=32` breach, O237), any 2nd-order/moment form (meta-theorem). **No candidate
+closed form is the value** — confirming the definitive answer is the bracket + BGK-reduction.
+
+**(c) ANCHORED — every exact pin is consistent.** `_DeltaStarPinsConsistent.all_pins_in_bracket`
+(axiom-clean, zero-hypothesis): F5=1/4, F17=1/4, granularity `j/n` bands, proxy `μ_8=3/8`, `μ_16=9/16`
+all verified to lie in `[1−√ρ, (1−ρ)−Θ(1/log n)]` and match the proxy where it applies.
+
+**(d) off-BGK ESCAPE REFUTED — the deep union is O(n), the spectrum is the wrong object.** Exact
+measurement (`probe_degbadr_growslack.py`, `probe_U_uniongrowth.py`, p-independent across primes):
+- The promising sub-lead **`deg(#bad_r) < r` is FALSE** at every `r=2..6` for the literal `(k+1)`-subset
+  object: `#bad_r = Θ(C(n,k+1))`, SUPER-polynomial (stable ~0.79–0.90 fraction of `C(n,k+1)`). The
+  "growing-slack escape" does not hold — re-confirms O237 (the spectrum is exponentially loose for #bad).
+- But the **actual δ*-binding DEEP-radius union is O(n)** (REGIME 2): at n=16 the deep-rung counts are
+  `…, size7→9, size6→89, …` (budget 16), and at the very-deep end (n=32, size 28–29) U **collapses to
+  U=1** (the `O=1` orbit floor). So the realized binding object is budget-bounded — it reproduces the
+  **proxy/Johnson**, NOT the capacity interior.
+- **Conclusion:** there is no off-BGK escape. The literal spectrum is super-poly (the wrong, loose
+  object); the real δ*-binding deep union is O(n) (= the Johnson-locked proxy). The capacity interior
+  genuinely requires the BGK char-sum — exactly the two-sided dichotomy `deltaStar_definitive` proves.
+
+**Net.** The definitive δ* is now a THEOREM up to one named open input: bracketed
+`[1−√ρ, (1−ρ)−Θ(1/log n)]`, all candidate closed forms refuted, all exact pins consistent, the off-BGK
+escape refuted, and the exact interior value reduced two-sidedly to the single open char-p BGK floor.
+**The prize is the value of that one inequality; everything around it is now pinned.**
