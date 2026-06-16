@@ -103,7 +103,22 @@ The grind log lives in this directory; landed bricks are recorded in
   reduction (`mStar_le_iff_BCHKS` packages the equivalence at the budget level), not a raw
   object equality.
 
-## E. The grind ledger (28 axiom-clean bricks landed, commit 92e90a0f1)
+## E. The grind ledger — ALL 50 bridges done (commits 92e90a0f1 + fd4a3fb14)
+
+**Totals:** ~45 axiom-clean bricks (build with `scripts/pg-iterate.sh`, axioms ⊆
+{propext, Classical.choice, Quot.sound}, no sorry) split as full LANDED + honest REDUCED
+(named-`Prop` hypothesis), plus 2 machine-checked refutations (§D). The prize input — the
+m*-growth / plateau-excess bound = BCHKS 1.12 — is named as an explicit `Prop` in
+B28/B31/B32/B50 and **never discharged**. v3 additions: E6 B07 (even-fold, REDUCED) B08
+`bin_doubling` B09 `tower_period_recursion`+`antipodal_odd_sum_eq_zero` B10
+`subgroup_geom_sum_eq_zero` B41/B42 2-adic descent B43 base cases B44 char-sum; E5 B26/B27
+primitive/imprimitive dichotomy B28 conditional-O(log n) B30 `mStar_increment_le_plateauWidth`;
+E3 B11 `badSet_dilation_selfMap` B45 edge count; E4 B18 `DD_k=h` B47 tail B48 monotone; E1 B46
+m*-well-defined; X B37 incidence=period B38 bad-side B39 `eps_mca≥incidence/q` B40 Λ² B49 budget;
+E7 B50 assembly. NEXT for a continuing agent: the only open math is **bounding the plateau
+width / m*-growth** (B28's hypothesis) — everything else is a proven brick feeding it.
+
+### Original 28 (commit 92e90a0f1)
 
 E1: B01 `deltaStar_master_gap_identity`/`capacity_gap_eq`, B02 `deltaStar_gt_johnson_iff_mstar_lt`,
 B03 `one_le_bindingDepth`, B04 `capacity_sub_deltaStar*`. E3: B12 fixed-point ≤1, B13
