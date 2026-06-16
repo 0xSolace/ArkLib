@@ -14541,3 +14541,45 @@ caveats:** (1) reduction not proof — closing needs new analytic-NT math that d
 "PROVEN" bricks prove only 2·formula≤K, formula=#bad is [COMPUTED] not ∀n-proven; (3) knife-edge empirics
 (bounded const, can't rule a slow loglog creep). Dossier made current (4 docs: orbit-count-reformulation,
 PAPERS_NEEDED, research-map, RESOLUTION-tracks-floor).
+
+---
+
+## O187 (bezdepth): A6deep's tractability certificate holds at EVERY binding depth, not just depth 2 (the prose "C(n,k+2) only grows in k" is FALSE; honest range is the unimodal [2, n-2])
+
+CLAIM EXAMINED. _CoreA6deep_MinorTractability proves the determinantal O(n) bound
+D*(m) <= 2*span = 2n on the depth-(>=2) binding count, off the BCHKS subset-sum object, and
+its tractability certificate (this O(n) bound beats the trivial per-witness count C(n, k+2))
+was discharged ONLY at the smallest over-determination order k=0 (bezout_beats_choose_two:
+2n < C(n,2) for n>=6). The docstring then ASSERTED IN PROSE "C(n,k+2) only grows in k", so
+the separation 2n < C(n,k+2) holds at every binding depth. That general-k claim was never a
+theorem.
+
+REFUTATION-OF-THE-PROSE + HONEST RANGE. The prose "only grows in k" is FALSE: C(n,j) is
+UNIMODAL in j (rises to j=n/2, then FALLS by symmetry C(n,j)=C(n,n-j)), so past the middle it
+shrinks. PROBE (scripts/probes/probe_bezout_all_depths.py, exact integer arithmetic, n=8..64
++ dense band n=6..39): 2n < C(n,j) holds for ALL 2 <= j <= n-2, failing ONLY at the four
+extreme tails j in {0,1,n-1,n} where C(n,j) in {1,n} (all <= 2n). Minimal n = 6 (matches
+bezout_beats_choose_two's threshold exactly). Over-determination form: 2n < C(n,k+2) for all
+0 <= k <= n-4 at n in {16,32,64}, 0 fails.
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, single-file lake-env-lean
+exit 0 + in-graph lake-locked exit 0 / 3315 jobs, on origin base 7c84ac56e):
+Frontier/_CoreA6deep_BezoutBeatsAllDepths.lean --
+  - choose_le_choose_of_le_half : a <= b <= n/2 => C(n,a) <= C(n,b) (left-half monotonicity,
+    Nat.le_induction over Nat.choose_le_succ_of_lt_half_left; the unimodal-envelope engine).
+  - choose_two_le_choose_of_mem : 2 <= j <= n-2 => C(n,2) <= C(n,j) (envelope at the depth-2
+    floor; split 2j vs n, reflect the upper half via Nat.choose_symm).
+  - bezout_beats_choose_gen (HEADLINE) : n>=6, 2<=j<=n-2 => 2n < C(n,j). The j=2 corner
+    recovers bezout_beats_choose_two.
+  - bezout_span_beats_choose_at_overdet : n>=6, 0<=k<=n-4 => 2n < C(n,k+2) (over-determination
+    form; the A6deep 2*span bound beats the trivial (k+2)-subset count at every binding depth).
+  - Dstar_two_mul_span_lt_trivial_count : end-to-end, chained with A6deep's
+    forcedGammaImage_card_le_two_mul_span (span=n): |forcedGammaImage| <= 2n < C(n,k+2).
+
+NOT a CORE closure; an EXTEND-PROVEN tractability certificate closing A6deep's prose-only
+general-k claim. Does NOT bound the direction-uniform binding count nor discharge the
+PerDirectionParam 1-PARAM input (= the open plateau / BCHKS budget). Field-universal Nat
+arithmetic (unimodal binomial envelope); thinness enters only via which over-determination
+orders k the prize cascade visits. ASYMPTOTIC GUARD cliff-at-n/2 untouched. No capacity /
+beyond-Johnson / sub-linear / growth-law claim. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. -- bezdepth, co-author wakesync.
