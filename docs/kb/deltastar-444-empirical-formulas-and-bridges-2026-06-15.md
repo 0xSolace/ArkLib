@@ -160,7 +160,44 @@ NOT touch the prize.
   computable surface for m* — its tractability (Lang-Weil on the degree-2 determinantal variety) is
   the freshest non-BCHKS lever, under attack in A6deep.
 
-**Two live non-BCHKS leverage points** (the only candidate escapes from the wall): (i) the
-A6 Plücker-minor count — is the determinantal point-count more tractable than the subset-sum? (ii)
-the A3 weakest-sufficient gap — does the prize need *strictly less* than full BCHKS 1.12? Both are
-honest open questions, neither yet a closure, both worth a continuing agent's effort.
+## G. The COMPLETE TIGHT REDUCTION + final verdict (commits fadd986d0, ef3e127bd)
+
+**THE HEADLINE (axiom-clean, the answer to "is the bound complete and correct"):**
+`_CoreReductionComplete.prize_reduces_to_BCHKS` and `_CoreA7.prize_iff_BCHKS_at_scale` prove the
+**complete, TIGHT, two-directional** reduction
+> `mStar D budget n ≤ M  ⟺  BCHKSWindowHolds Σ smap rmap budget n M`
+under explicit honest hypotheses (binding-exists; the cascade=subset-sum identification
+`D n j = Σ (smap n) (rmap n j)`; monotonicity = B48; edge value = B24/CoreA1). Plus
+`_CoreA7.BCHKS_necessary`, `prize_iff_BCHKS_at_scale`. **So BCHKS 1.12 is both SUFFICIENT and
+NECESSARY: the prize is EXACTLY BCHKS 1.12, and the wall is provably unavoidable in-tree.** This is
+the proof that the current bound is *complete and correct* — nothing in-tree gets around it.
+
+**A4 — the cleaner-stated reduction:** prize ⟸ `BinderPrimitive` (the worst direction is primitive,
+plateau-width ≤ 1, at every tower level), `plateau_prize_of_BinderPrimitive`,
+`BinderPrimitive_iff_plateauWidth_le_one`. ⚠️ **`mStar_polylog_unconditional` is an OVERCLAIMED
+NAME** — its body is trivial induction *conditional* on the per-level step hypothesis `hstep`; it is
+NOT an unconditional polylog proof. Cite it only as the conditional reduction it is.
+
+**A6deep — the freshest genuinely-non-BCHKS lever:** `Dstar_le_two_mul_span` bounds the depth-2
+binding count `D*(2) ≤ 2·span` via the **degree-2 (Bézout) determinantal minor polynomial**, and
+`bezout_beats_choose_two` proves `2n < C(n,2)` ∀ n≥6 — so this determinantal bound **genuinely beats
+the trivial per-witness count** IF the single-parameter minor factorization (`hfac`/`hΔ`/`hne`) holds
+for the worst direction. Whether that factorization holds for multi-window m≥3 is the open
+structural question; the determinantal point-count has Lang-Weil theory, a different surface from
+BCHKS subset-sum. **This is the one lever a continuing agent should push.**
+
+**⚠️ The "escape" theorems are VACUOUS (honest correction):**
+`_CoreA7.weakestSuff_strictly_below_BCHKS` and `_CoreA3deep.escapeConfig_nonempty` /
+`weakestSuff_not_imp_BCHKSCount` instantiate `D ≡ 0`, `budget ≡ 0` — a degenerate toy model proving
+the *abstract predicates* `WeakestSuff` and `BCHKS` are different *formulas*, NOT a real escape on
+the actual (nonzero) cascade. They do NOT exhibit a way past the wall. Do not cite them as escapes.
+
+**FINAL VERDICT.** The #444 bridge program is a **complete, honest, axiom-clean reduction of the
+prize to BCHKS Conjecture 1.12**, proven TIGHT (necessary + sufficient). The wall is real and
+unavoidable in-tree; numerics cannot settle it (`m*(64)` needs `C(64,17)~10^14`, list-decode
+regime). The single remaining in-tree lever that is NOT obviously BCHKS-equivalent is the **A6
+determinantal/Bézout minor count** (`_CoreA6deep`) — its tractability via Lang-Weil on the degree-2
+determinantal variety is the open question most worth pursuing. Everything else (the structural E6
+recursion, the orbit decay, the backward-proof) provably reduces to, or is, BCHKS 1.12. The prize
+is now *exactly one named combinatorial conjecture* — proving BCHKS 1.12 (or the A6 determinantal
+bound) is the whole remaining task, and it is external mathematics.
