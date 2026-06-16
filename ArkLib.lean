@@ -1220,6 +1220,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ImprimitiveRatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsoSparsityMasonStothers
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsolatedCountKelley
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._KelleyOwenDilationPencil
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MasterGapOffByOneCorrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MetaTheoremSecondOrderFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderAntitone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentLadderExceedsPrize

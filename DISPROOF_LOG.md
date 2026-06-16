@@ -3592,3 +3592,26 @@ plateau-rate dichotomy = BCHKS Conj 1.12 = the BGK/Paley wall stays OPEN. Field-
 order arithmetic; thinness enters only via WHICH m* the tower binds. NO capacity / beyond-
 Johnson / sub-linear / growth-law claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- ceildecimp, co-author wakesync.
+
+## The master gap identity capacity-delta* = (m*-1)/n in _BridgeB01/_BridgeB04 is OFF BY ONE; the audited-correct identity is capacity-delta* = m*/n (mastergapfix)
+lalalune's 2026-06-16 audit (docs/kb/deltastar-444-audit-corrections-2026-06-16.md, S.A.1) caught a
+convention off-by-one in the landed master-gap bricks. _BridgeB01.deltaStar_master_gap_identity and
+_BridgeB04.deltaStarFormula take the binding radius as delta* = 1 - (s*-1)/n (the orbcount script-
+display convention) and correctly derive capacity-delta* = (m*-1)/n -- honest conditionals, but on a
+hypothesis that encodes the off-by-one. The INCIDENCE-CORRECT radius (delta-close iff agreement
+>= (1-delta)*n) is delta* = 1 - s*/n; with THAT radius the forced identity is capacity-delta* = m*/n.
+PROBE (scripts/probes/probe_master_gap_offbyone.py, exact Q over the audit's own VERIFIED rows): the
+corrected gap m*/n REPRODUCES the audit's exact delta* (3/8 at n=8 BELOW Johnson, 9/16 at n=16 ABOVE);
+the old (m*-1)/n is exactly 1/n too small; the old radius over-states delta* by exactly 1/n. The
+corrected delta* CROSSES Johnson 1/2 between n=8 and n=16 (the structural fact the laundered 0.5/0.625
+hid). LANDED Frontier/_MasterGapOffByOneCorrected.lean (single-file lake-env-lean axiom-clean
+{propext, Classical.choice, Quot.sound} on all 5 printed, no sorry; in-graph lake-locked 819 jobs exit
+0): master_gap_identity_corrected (delta* = 1 - rho - m*/n from the correct radius),
+capacity_gap_eq_corrected (capacity-delta* = m*/n), old_radius_off_by_one_n (the two radii differ by
+1/n), old_gap_under_by_one_n (old gap 1/n smaller), corrected_crosses_johnson (3/8 < 1/2 < 9/16), plus
+the exact n=8,16 pins. Discharges audit ACTION G.1. A CONSTRAINT/CORRECTION brick (rule 4), NOT a CORE
+closure: supplies the audited-correct identity + certifies the off-by-one. Field-universal Q algebra;
+thinness enters only via which (s*, m*) bind. NO capacity / beyond-Johnson / sub-linear / growth-law
+claim (the delta* values 3/8, 9/16 + the Johnson crossing are exactly the audit's); ASYMPTOTIC GUARD
+cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- mastergapfix, co-author
+wakesync.
