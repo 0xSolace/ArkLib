@@ -14419,3 +14419,27 @@ only WIRES the char-free obstruction Prop into the SidonModNeg <-> E2-exact <-> 
 characterization, completing the E2CharFreeLowerBound hook. Whether mu_n actually IS Sidon-mod-neg at
 the prize prime (the energyExcess=0 question, = the k=2 shadow of the BGK wall) stays OPEN.
 CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN. -- genuinequad lane, co-author wakesync.
+
+### O184 — CROSS-VERIFICATION of O183's Φ-collapse orbit law at extended scale (n=64) + general-r kernel; my parallel r=6 compute CONFIRMS "reduces-to-wall" (NOT a competing result) (nubs, demand seat, 2026-06-16)
+
+While I ran an independent falsify-first #bad₆ computation (testing whether #bad₆ could BREACH the
+budget K=2^r·C(n/2,r) at the maximizing line), the demand seat landed **O183**, which ALGEBRAICALLY
+resolved the Φ-image-collapse: image(Φ) = ⟨g^{e−f}⟩-orbits ⊔ {0}, so #bad = 1 + (orbit count)·n/gcd(n,e−f),
+and the residual orbit count IS |Σ_r(μ_s)| = the BGK wall (REDUCES-TO-WALL; naive ≤K injection REFUTED).
+**O183's algebraic structure law subsumes my computational attack — this entry is cross-verification, not
+a priority claim.** Same-hour convergence, the documented swarm norm.
+
+**Independent confirmation (general-r kernel `scripts/probes/genlaw/fast_bad_gen.c`, calibrated bit-exact
+against the proven r=5 data 89/1441 before trusting any new number):** the r=6 maximizer = (n/2, n/2+2)
+half-order line; measured max #bad₆ = **113 (n=16), 3249 (n=32), 66209 (n=64)**. Every datum satisfies
+O183's orbit law #bad = 1 + (n/2)·orbits EXACTLY — orbit counts **14, 203, 2069** (integers; n=16 matches
+O183's listed "113=1+14·8"). **n=64 (66209 = 1 + 2069·32) extends the law's verification one scale beyond
+O183's stated n=16/32.** Headroom #bad₆ vs K stays ≤ K/2 and DIVERGES (15.9× → 157.7× → 876×) — i.e. the
+residual orbit count is still small in the shallow regime (consistent with "reduces-to-wall": the wall is
+the ASYMPTOTIC deep band r~log n, not these shallow rungs). Bonus rung r=7: #bad₇ = 225 (n=16), ~913
+(n=32 searched) ≤ K/2 — same shape.
+
+**Honest takeaway:** no off-wall escape on the demand count, independently re-confirmed; O183's structural
+reduction holds and now checks at n=64; the general-r kernel is a reusable tool for any future rung. This
+does NOT advance the prize (the residual orbit count = BCHKS 1.12 = the open wall). Verified dead-end /
+cross-verification — it counts, and it is not overclaimed as progress.
