@@ -980,6 +980,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenWitnessReverseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ExplainableAmalgamation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FisherLevelLocked
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FloorAsymptoticRadius
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountSigmaUniform
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountTransversal
