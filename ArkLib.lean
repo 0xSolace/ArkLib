@@ -1112,6 +1112,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1_ChooseCHSymCard
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1_CompleteHomogeneousFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1b_ChooseCHMultisetGrounding
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1c_ChooseCHStrictDominance
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF3_RetargetedReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF3_SumsetFloorFieldCoupling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF6_CrossingFoldMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF6_ExplicitDeltaStarLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate

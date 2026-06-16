@@ -4745,3 +4745,43 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # DIRECTION-count (Sym-cardinality), NOT a delta*/incidence object -- asymptotic-guard cliff-at-n/2
 # UNTOUCHED, no capacity/beyond-Johnson claim (we CONFIRM the binding crossing is a hard upper edge,
 # consistent with the cliff guard). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## O239 (lane f3sumset): the F3 Sumset-Extremality floor's SOUNDNESS conjunct is a DOWN-SET in the
+## fold (monotone-failing, because `|Sigma_r|` is INCREASING), so at the DEEP binding fold it COUPLES
+## `|F|` to the deep-fold sumset size: `|F| >= poly*|Sigma_M|/eps*` (super-poly-in-depth field lower bound).
+#
+# CONTEXT. `_BchksF3_RetargetedReduction` re-targets the prize onto the open floor
+# `SumsetExtremality bad sumset poly soundness := bad <= poly*sumset AND poly*sumset <= soundness`,
+# where `sumset = |Sigma_r(mu_s)| = |H^{(+r)}|` and `soundness = eps*|F|` (`|F|` LARGE). F3 PROVES
+# (`subsetSumBudget_existential_unsat`) that `|Sigma_r|` is MONOTONE INCREASING in the fold
+# (`|Sigma_r(mu_16)| = 129,704,2945,10128,29953,78592,185617` for r=2..8). This lane discharges the
+# structural consequence for the floor's SECOND conjunct.
+#
+# THE CONSTRAINT (probe `probe_f3_sumset_monotone_floor.py`, n=s=8 + n=s=16, 0 fails / 6):
+#  Because `|Sigma_r|` is increasing, the soundness conjunct `poly*|Sigma_r| <= soundness` is a
+#  DOWN-SET in the fold r (holds only at SHALLOW folds). But the binding fold m* is DEEP (F3's
+#  `mStar_ge_three_*`: m* >= 3, grows). So at the deep binding fold M the soundness conjunct
+#  `poly*|Sigma_M| <= eps*|F|` FORCES `|F| >= poly*|Sigma_M|/eps*` -- and `|Sigma_M|` is super-poly
+#  in M (ratios 5.46->4.18->3.44->2.96->2.62->2.36, log|Sigma|/r decreasing but |Sigma| growing
+#  super-poly). The floor's "|F| large" is NOT free: it is a super-poly-in-depth lower bound on the
+#  field size, the precise non-vacuity cost of the re-targeted floor. (Same increasing-dominator
+#  down-set structure as the F6 crossing-fold constraint O238 -- here on the SUMSET, not chooseCH.)
+#
+# THE BRICK (landed, `_BchksF3_SumsetFloorFieldCoupling.lean`, axiom-clean, 6 thms):
+#  - soundness_conjunct_downward_closed: smaller sumset still in budget (down-set in the sumset).
+#  - soundness_conjunct_fails_above: the hard upper edge (once out at a sumset, out for all larger).
+#  - sumsetExtremality_forces_field_coupling: the floor's 2nd conjunct = `poly*sumset <= eps*|F|`.
+#  - field_card_lower_bound_of_sumsetExtremality (HEADLINE): eps>=1 => `poly*sumset/eps <= |F|` --
+#    the field-size lower bound. At the deep fold (super-poly sumset) = a super-poly-in-depth |F| bound.
+#  - deep_fold_field_lower_bound: F3's exact `|Sigma_8(mu_16)|=185617`, poly=eps=1 => `|F| >= 185617`
+#    (4 orders of magnitude above the OLD refuted budget 16).
+#  - deep_fold_sumset_dominates: `|Sigma_3|=704 < |Sigma_8|=185617` -- the coupling is a DEEP-fold
+#    constraint (the field lower bound grows along the fold).
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure, NOT a refutation of F3's theorems (they hold over
+# abstract `sumset`/`soundness`). Pure Nat/Nat-division monotonicity -- field-universal (no thinness),
+# so by rule 3 cannot prove CORE. Pins the `|F|`-coupling cost of the F3 floor's soundness conjunct.
+# Does NOT re-derive F3's `|Sigma_r| > budget` refutation (already a theorem). The increasing
+# `|Sigma_r|` is an additive-combinatorics SUMSET-SIZE object, NOT a delta*/incidence object --
+# asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson claim. NON-MOMENT, EXTEND-proven
+# on F3's `SumsetExtremality`. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
