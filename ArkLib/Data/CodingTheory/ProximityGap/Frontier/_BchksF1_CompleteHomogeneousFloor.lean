@@ -70,10 +70,8 @@ theorem subsetSum_le_chooseCH (s r : ℕ) : Nat.choose s r ≤ chooseCH s r := b
 
 /-- **The complete-homogeneous spectrum bound (the genuine char-free OPEN CORE).** The number of
 distinct degree-`r` complete-homogeneous values `h_r(R)` over the `(k+1)`-subsets `R ⊆ μ_s` is at
-most `chooseCH s r = C(s+r−1, r)`. Modeled abstractly: `spectrum` is the distinct-value count (a
-`Finset.card`), and the claim is `spectrum ≤ chooseCH s r`. THIS is the ABF26 §4 sumset-extremality
-content — NOT discharged here; it is the prize's char-free core. -/
-/-- ⚠️ **The `poly` factor is ESSENTIAL [VERIFIED, probe_completehomog_spectrum.py]:** `poly = 1` is
+most `poly · chooseCH s r` (the ABF26 §4 sumset-extremality content; the prize's char-free core).
+⚠️ **The `poly` factor is ESSENTIAL [VERIFIED, probe_completehomog_spectrum.py]:** `poly = 1` is
 FALSE — the spectrum EXCEEDS the dimension at small `r` (`#distinct h_2(μ_16)=1848 > C(17,2)=136`).
 But `poly = n` SUFFICES in all measured cases (`#distinct h_r ≤ n·C(s+r−1,r)`, s=8,16, r≤6; min poly
 `≤14≤n`). So the floor carries a linear `poly(n)=n` factor — a SUB-LEADING `log n/log|F|` correction
