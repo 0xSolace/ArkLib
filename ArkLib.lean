@@ -1113,6 +1113,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3NegSymConverse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3Shape21Scratch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3StrataCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3SubsetCount
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E6OddGradeVanish
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyFreqBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
