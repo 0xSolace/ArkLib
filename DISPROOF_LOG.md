@@ -4048,3 +4048,27 @@ The MATCHING UPPER cap (mult to a SINGLE agreement-set binomial) was grep-confir
   in-graph lake build (3092 jobs) exit 0; #print axioms ⊆ {propext, Classical.choice, Quot.sound} on
   all 3 (subset_agreement_powersetCard, card_le_agreement_choose, card_bracket), no sorry/axiom/
   native_decide. CORE M(μ_n) ≤ C√(n log(p/n)) OPEN.
+
+## O204 -- char-p r=3 DC-Wick rung fused with the explicit wraparound spur: kappa6_charp = 40n + S
+and the EXACT (P2-Slack) gate kappa6 <= 45n^2 <=> S <= 45n^2-40n; PROBE: gate holds at prize scale (sol, 2026-06-16)
+RESULT (FUSION + prize-scale-essential constraint, NOT a CORE closure). The char-0 r=3 rung
+(Kappa6R3DCWickRung: kappa6=40n<=45n^2 from char-0 E3=15n^3-45n^2+40n) and the abstract spur slack
+route (_wf6P2_charp_lamleung_slack: E_r^Fp = E_r^Z + Spur_r, open residual S <= ceiling-Z) existed
+SEPARATELY. This brick FUSES them at r=3 on the cumulant the rung consumes: with E3^Fp =
+(15n^3-45n^2+40n)+S, kappa6_charp_eq gives kappa6 = 40n+S, and kappa6_charp_le_iff_spur_le gives the
+EXACT gate kappa6<=45n^2 <=> S<=45n^2-40n (= ceiling-Z, the r=3 (P2-Slack); spur_slack_eq_ceiling_
+sub_charZero). kappa6_charp_le_of_spur_zero recovers the proven char-0 rung when S=0.
+PROBE (exact int E3^Fp = sum_s T3(s)T3(-s) over PROPER mu_n in F_p, n=4..32, NEVER n=q-1): at the
+PRIZE SCALE p>=n^4 the spur VANISHES, S=Spur_3(p)=0 EXACTLY at 9 instances (n=4 p=257,509,1021;
+n=8 p=4073,11593,32801; n=16 p=65537,262193,1048609; Fermat+non-Fermat, beta=4,4.5,5) -> the gate
+holds with full margin + char-0 h3 is EXACT there. At SMALL p the gate FAILS: S>45n^2-40n by up to
+12.97x (S=141120>10880 at n=16 p=97), last violating prime p~n^2.3 (p=41 n=8, p=641 n=16), last
+prime with any S>0 is <n^4 (p=13,313,41521 for n=4,8,16) -- all BELOW prize scale.
+MECHANISM/CONSTRAINT: a count-unbalanced zero-sum 6-tuple needs its integer-lift root sum to be a
+NONZERO multiple of p; the house of a nonzero 6-term 2^a-th-root sum is bounded, so such p sit below
+a polynomial threshold. The slack route is NOT prime-uniform: FAILS at small p, holds at prize scale
+where S=0. The r=3 rung is PRIZE-SCALE-ESSENTIAL (the char-p analogue of thinness-essentiality);
+any prime-uniform / thickness-monotone version is FALSE. Axiom-clean {propext, Classical.choice,
+Quot.sound} on all 5 (single-file lake-env-lean + in-graph 3297 jobs); no sorry/axiom/native_decide.
+Does NOT prove S<=45n^2-40n for general p (open char-p count) and touches NO r>3 rung. CORE
+M(mu_n) <= C sqrt(n log(p/n)) OPEN.

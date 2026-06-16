@@ -1007,6 +1007,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2NearAffine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2OwnedTriples
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Universal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.KKH26ConcreteCeilingN8
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Kappa6R3CharPSpurGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Kappa6R3DCWickRung
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LaneB_Q2_SparsityExclusive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LargeSieveParsevalCollapse
