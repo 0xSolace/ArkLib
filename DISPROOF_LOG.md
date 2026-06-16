@@ -3464,3 +3464,50 @@ FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, in-graph lake-l
 NOT a refutation of CORE; a precise NO-GO mapping the SECOND Stepanov stall (the field-bound
 vacuity), companion to the in-tree FIRST stall (separability/M=1 collapse). CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- bivstep lane, co-author wakesync.
+
+================================================================================
+REFUTATION-WITH-MECHANISM (lane plotkinsep, 2026-06-16): the far-line incidence
+threshold is a PLOTKIN PROXY -> 1/2, strictly BELOW Johnson for rho < 1/4, hence
+it is NOT the MCA delta* (the prize object, >= Johnson). Clean structural
+separation isolating the BGK/Paley-hard residual. master-open-thread #5.
+================================================================================
+OBJECT. Two distinct thresholds are conflated in the #357/#389/#407 attack:
+  (1) far-line incidence threshold (COMPUTABLE proxy), in-tree budget B = q*eps* =
+      (n*2^128)*2^-128 = n (B1IncidenceBridge.WorstCaseFarIncidenceBounded at B=n).
+      Validated exact (Rust engine, matches canonical probe delta*(mu_16,k=4)=9/16):
+        farLineProxy n rho = 1/2 + (1/(2 rho) - 1)/n.
+  (2) the true MCA delta* (PRIZE target), >= Johnson = 1 - sqrt rho (list-decodable).
+
+PROBE (ONE sweep, exact rational arithmetic, scripts/probes/probe_plotkin_farline_johnson.py
++ Newton bracket /tmp/johnson_tight.py; n=2^a a=3..11 (n=8..2048), rho in
+{1/8,1/6,1/5,3/16,1/4,1/3}; PROPER thin mu_n power-of-two; NEVER n=q-1):
+  - tends-to-1/2: |farLineProxy - 1/2| = (1/(2 rho) - 1)/n -> 0, 54/54 pass.
+  - Johnson-crossing (rho<1/4, Johnson>1/2 via tight Newton sqrt bracket): the proxy
+    drops STRICTLY below Johnson by n=32 for EVERY rho<1/4 tested
+    (rho=1/8: below n>=32; rho=1/6,1/5,3/16: below n>=32).
+
+MECHANISM. The far-line proxy threshold's excess over 1/2 is the explicit O(1/n) term
+(1/(2 rho) - 1)/n (the Plotkin-ceiling approach), so the proxy -> 1/2. For rho < 1/4 the
+Johnson radius 1 - sqrt rho exceeds 1/2 (square: rho<1/4 => sqrt rho<1/2). Hence past an
+explicit n-threshold the computable proxy is strictly below Johnson, and since MCA delta*
+>= Johnson (list-decodability), the proxy is strictly below MCA delta*. The two objects
+diverge: the (easy, -> 1/2) far-line incidence is NOT the (hard, >= Johnson) MCA threshold.
+
+CONSTRAINT LEMMA. The BGK/Paley half-power difficulty lives ENTIRELY in the gap between
+the far-line proxy (-> 1/2, computable, p-independent) and the true MCA delta* (>= Johnson).
+Any "decoupled / p-independent" claim about the far-line incidence is a claim about the
+PROXY, not the prize delta*. The prize-hard residual is exactly the asymmetric far-line
+words whose MCA contribution exceeds the symmetric Plotkin ceiling 1/2 (master-list #5:
+"isolate the hard residual to genuinely asymmetric far-line words").
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, in-graph lake-locked
+exit 0 / 3298 jobs): Frontier/FarLineProxyBelowJohnson.lean --
+  - farLineProxy_sub_half : farLineProxy n rho - 1/2 = (1/(2 rho) - 1)/n (exact O(1/n) gap).
+  - farLineProxy_gt_half : 0<rho<1/2, 0<n => 1/2 < farLineProxy (approach from above).
+  - farLineProxy_lt_half_add : n > (1/(2 rho)-1)/eps => farLineProxy < 1/2 + eps (quant. Plotkin).
+  - half_lt_johnson_of_lt_quarter : 0<rho<1/4 => 1/2 < 1 - sqrt rho (Johnson exceeds 1/2).
+  - farLineProxy_lt_johnson : prize regime + explicit n-threshold => farLineProxy < 1 - sqrt rho.
+  - farLineProxy_lt_mca : + (Johnson <= mcaDeltaStar) => farLineProxy < mcaDeltaStar (separation).
+NOT a refutation of CORE; a precise structural SEPARATION refuting the over-identification
+"far-line incidence = delta*" in the prize regime, isolating the prize-hard residual.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- plotkinsep lane, co-author wakesync.
