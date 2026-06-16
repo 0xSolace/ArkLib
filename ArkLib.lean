@@ -2239,6 +2239,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.StepanovUnconditionalEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovVanisherExistence
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilEngine
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSqrtCorollary
+import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSqrtExplicit
 import ArkLib.Data.CodingTheory.ProximityGap.StepanovWeilSubstrate
 import ArkLib.Data.CodingTheory.ProximityGap.StripEdgeDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.StripSupExactness

@@ -4354,3 +4354,36 @@ incidence object; no capacity/beyond-Johnson/growth-law claim; cliff-at-n/2 UNTO
 VANISHES (no climb). CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New:
 ArkLib/.../CompletionSharpMargin.lean (3 thms, axiom-clean {propext, Classical.choice, Quot.sound},
 in-graph lake build 3314 jobs exit 0).
+
+## O218 (lane weilsqrt): the EXPLICIT sqrt(q) Weil count -- instantiate the proven Stepanov-Weil
+## engine at M = floor(sqrt q), discharging the divided threshold to a closed form |V| <= (d+2)*floor(sqrt q).
+## EXTENDS StepanovWeilSqrtCorollary (removes its OWN named open continuation). THINNESS-BLIND.
+LANE: extend the proven Stepanov/Weil engine. StepanovWeilSqrtCorollary.weil_stepanov_card_le_one
+discharged ell=1 and divided the engine by the Hasse multiplicity M, landing |V| <= D0/M with
+D0 = ((q-1)/2)*d + (q-1), but its doc-comment NAMED the remaining elementary continuation: "the
+sqrt(q) value still requires plugging the explicit M". GREP-CONFIRMED: no in-tree theorem instantiates
+M = sqrt q on this corollary. SHIPPED ArkLib/.../StepanovWeilSqrtExplicit.lean (2 thms, axiom-clean
+{propext, Classical.choice, Quot.sound}, single-file lake-env-lean exit 0 + in-graph lake-locked
+8345 jobs exit 0):
+  (1) divided_le_sqrt (arithmetic core): D0/floor(sqrt q) <= (d+2)*floor(sqrt q). Proof: M:=Nat.sqrt q
+      gives M^2 <= q < (M+1)^2, hence q <= M^2+2M; then a subtraction-free chain
+      2*D0 <= (q-1)(d+2) <= 2M^2(d+2) (the last step is q-1 <= 2M^2 <= 2M^2 from 2M <= M^2+1 <=>
+      (M-1)^2 >= 0, TIGHT at M=1/q=3 where both sides = 3); divide by M via Nat.div_le_of_le_mul.
+  (2) weil_stepanov_card_le_sqrt (HEADLINE): for g squarefree, deg g = d > 0, q=|F| odd, 2A+d<q,
+      and the M=floor(sqrt q) construction-dim condition |V|*floor(sqrt q) < 2(A+1), the root/Hasse
+      set |V| <= (deg g + 2)*floor(sqrt q) -- the classical O_d(sqrt q) Weil count in explicit closed
+      form (leading (d+2)*floor(sqrt q) <= (d+2)*sqrt q = the (d/2)sqrt q asymptotic in a clean integer
+      envelope valid at EVERY finite q).
+PROBE: scripts/probes/probe_weil_sqrt_instantiate.py + probe_weil_sqrt_arith.py/_arith3.py -- over
+ALL odd q in [3, 3e5], d in [1,50): D0 // isqrt(q) <= (d+2)*isqrt(q) holds (no fails); the core
+D0 <= (d+2)*M^2 holds with min slack 0 (tight) at q=3,d=1; the abstract (a//2)*d+a <= (d+2)*M^2 at
+a=q-1<=M^2+2M-1 holds for all M>=1 (tight at M=1,a=2,d=1). ONE sweep, ONE commit.
+HONEST SCOPE (rules 1,3,6): a SPECIALIZATION of the proven weil_stepanov_card_le_one at M:=Nat.sqrt q,
+NOT a CORE closure. The sqrt(q) Weil bound it now states explicitly is the TRIVIAL COMPLETION CEILING
+for the thin subgroup mu_n (M(mu_n) <= sqrt q), the UPPER end of the proven bracket [sqrt n, sqrt q];
+the prize sqrt(n log(q/n)) lives STRICTLY BELOW it and is NOT reached by Weil/Stepanov on the full
+character -- THINNESS-BLIND BY CONSTRUCTION, therefore explicitly NOT a thinness-essential CORE lever.
+It removes the file's own named open continuation + gives the engine an explicit O_d(sqrt q) head.
+NO moment/census/orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim,
+cliff-at-n/2 UNTOUCHED. EXTEND-proven on the proven analytic-NT engine, not a re-mapped dead face.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../StepanovWeilSqrtExplicit.lean.
