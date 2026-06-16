@@ -4219,3 +4219,39 @@ binding depth -- leaning WALL structurally, not by 3-point coincidence. HONEST S
 above at binding depth r<=m ONLY; does NOT bound D/Sigma_r/m* at the BUDGET scale ~n, does NOT close
 BCHKS 1.12, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C
 sqrt(n log(p/n)) UNCHANGED/OPEN. New: Frontier/_DedupSurvivalCeiling.lean (10 thms axiom-clean).
+
+## O213 (lane stepfiber): the GV rep-count fibre is a POLYNOMIAL ROOT COUNT of an explicit
+## shifted-power polynomial -- r(c) <= (shiftedPowPoly n c).natDegree = n, the Stepanov-consumable
+## bridge the three in-tree fibre forms only ASSERTED in prose (NON-MOMENT structural CORE lever).
+LANE: the Stepanov/descent non-moment lever (StepanovAuxFramework's honestly-recorded OPEN KERNEL:
+"an auxiliary polynomial ... constructed from the relations x^n=1 and (c-x)^n=1, whose degree is
+bounded independently of r(c)"). The three proven fibre reformulations -- repCount_eq_fiber_card
+(RepCountFiber), repCount_eq_curve (RepCountCurve), repCount_eq_shiftedPower (RepCountShiftedPower)
+-- ALL read r(c) = #{w in mu_n : (1+w)^n = c^n} and ALL flag, IN PROSE ONLY, the polynomial reading
+"the common-root count of X^n-1 and (1+X)^n - c^n, exactly what a resultant/Stepanov auxiliary acts
+on". GREP-CONFIRMED MISSING: no theorem connects the fibre cardinality to a polynomial root/degree
+count. THE structurally-missing bridge.
+SHIPPED Frontier-adjacent ArkLib/.../RepCountFiberPolyBound.lean (5 thms, axiom-clean {propext,
+Classical.choice, Quot.sound}, single-file lake-env-lean + in-graph lake-locked 3299 jobs exit 0):
+  (1) shiftedPowPoly n c := (X + C 1)^n - C (c^n) -- the EXPLICIT structurally-fixed polynomial.
+  (2) shiftedPowPoly_natDegree (hn:1<=n): deg = n EXACTLY (monic (X+1)^n head dominates the constant
+      C(c^n), via natDegree_sub_eq_left_of_natDegree_lt). shiftedPowPoly_ne_zero from it.
+  (3) isRoot_shiftedPowPoly_of_fiber: (1+w)^n = c^n => P_c.IsRoot w (def-unfold + eval).
+  (4) repCount_le_shiftedPow_roots (HEADLINE BRIDGE): r(c) <= (P_c.roots.toFinset).card -- the
+      proven fibre (repCount_eq_fiber_card) injects into the root SET of P_c (Finset.card_le_card
+      + mem_roots).
+  (5) repCount_le_natDegree / repCount_le_n: r(c) <= P_c.natDegree = n, realized as a POLYNOMIAL
+      ROOT COUNT (toFinset_card_le + card_roots'), the shape card_le_natDegree_of_vanishing
+      consumes -- NOT the trivial |mu_n| cardinality bound.
+PROBE: scripts/probes/probe_shifted_gcd.py (+ probe_struct_common_root.py) -- over thin 2-power mu_n
+at p in {257,193,641,769,12289} (p>>n^3), n in {8,16,32}, multiple c: r(c) = #fibre = deg gcd(X^n-1,
+(1+X)^n-c^n) = #roots(gcd) EXACTLY in 100% of runs (the prose identity confirmed numerically); this
+file proves the upper-bound direction (needs no separability) into the explicit shifted-power poly.
+HONEST SCOPE: an EXACT structural injection handing r(c) to the polynomial-root machinery through an
+explicit degree-n polynomial whose degree is independent of r(c) -- the open work is now PURELY the
+auxiliary-multiplicity (Wronskian) input on a FIXED polynomial, not a reformulation. The bound r(c)
+<= n is field-universal (NOT yet thinness-essential -- the thin-subgroup cancellation that would
+drop this to O(sqrt n) via a high-multiplicity Stepanov auxiliary stays OPEN). NO moment/census/
+orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
+UNTOUCHED.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../RepCountFiberPolyBound.lean.
