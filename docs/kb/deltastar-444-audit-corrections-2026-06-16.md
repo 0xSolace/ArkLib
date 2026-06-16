@@ -147,6 +147,29 @@ prize⟺BCHKS-1.12**; the **exact energy ladder** `E_2=3n²−3n`, `E_3=15n³−
 `E_4=105n⁴−630n³+1435n²−1155n`, `E_5=945n⁵−…` (char-0 faithful; E_3+ empirically fit, used as
 hypotheses); and the **two non-BCHKS levers** (determinantal/Bézout, dedup-strictness).
 
+## F2. RESOLUTION LEDGER — every laundered/phantom/larp/bug item, attacked (2026-06-16)
+
+What each flagged item was *replaced with* (real proof / refutation / honest documentation):
+
+| Item | Verdict | Resolution (committed) |
+|---|---|---|
+| "δ* climbs to capacity, m*~log n" | **ARTIFACT, RETRACTED** | full-direction `orbcount`: far-line δ*=1/2+1/n (Johnson-lock), m*=n/4−1 LINEAR. §A0. Fixed issue+dossiers+website. |
+| Master gap `(m*−1)/n` (B01/B04) | **BUG, FIXED** | corrected to `capacity−δ*=m*/n`; `_BridgeB01`, `_BridgeB04`, `_BridgeB02` rebuilt axiom-clean; orbcount column relabeled. |
+| "D*(1) exact p-independent" | **LAUNDERED, refuted** | D*(1) p-DEPENDENT (3936@65537 vs 3984@1048609); m≥2 identical. Probe `probe_dstar_pdependence_cliff.py`. |
+| `Sweep_A41…A48` "char-0 rigidity, landed" | **PHANTOM (absent)** | confirmed absent; the antipodal-vanishing core IS real and is in `_Close07c`/`B05`/`B09` (the true bricks). |
+| `_DefectOnsetOvershoot` "energy sandwich, green build" | **PHANTOM → made REAL** | `_AttackDefectOnset_EnergySandwich`: exact bracket `2n²≤E≤3n²` (E=3n²−3n), axiom-clean (n=2 lower-side refuted note). |
+| `SubsetSumThreePowExact` "3^{n/2} exact" | **PHANTOM → made REAL** | `_AttackThreePow_SubsetSumExact`: `3^{n/2}` is an UPPER bound `|G⁺|≤3^N`, NOT exact; computes the exact `|Σ(μ_{2N})|` table. Axiom-clean. |
+| `_AntipodalPlotkinHalfCap` "δ*≥1/2 cap" | **LARP (retracted) → corrected** | theorems sound (odd-poly antipodal agreement ≤ half); docstring fixed to the Johnson-lock-proxy truth (NOT a cap isolating a residual). |
+| `_Close27_*` "decide opposite horns" | **VACUOUS (partly)** | `mStar_linear_drives_decision : ∃m, B<m−1 ∧ 1≤m` is a tautology; the "decision" is prose. `_ImprimitivePlateauExcess` has some real orbit-count content. Do not cite the "decision" as resolved. |
+| `LamLeungUnconditionalQ` "Wick bound PROVEN" | **OVERCLAIM** | the file proves the Lam–Leung STRUCTURAL foundation (`linearIndependent_pow_le`, antipodal root structure), **NOT** the full `E_r≤(2r−1)‼n^r` bound. That bound remains the open char-p input. |
+| `deltaStar_pin_mu6_dim4 = 59/64` "prize" | **OVERCLAIM (mis-framed)** | a real tiny-instance pin (n=6); NOT prize-regime (`landauSqEnvelope` toy bound). Do not cite as prize-relevant. |
+| "0/10 lenses refuted", "M4 C_prize~0.5", `E_r>Wick ∀r≥4` | **LIED/LAUNDERED** | documented §E (4/10 rate-cut; shallow prescreen; Fermat artifact `W_3=W_4=0` generically). |
+| A6 "Lang–Weil tractability" | **OVERREACH (softened)** | `V_r` 0-dim ⟹ Lang–Weil vacuous; the bound `D*(2)≤2·span` is a valid Bézout ROOT-count, not a point-count. Ledger caveat added. |
+
+**Net:** 2 phantoms turned into REAL axiom-clean bricks; 1 larp corrected; 3 bugs fixed (master-gap
+off-by-one in B01/B02/B04, orbcount label); the big "climb to capacity" artifact retracted across all
+surfaces; the rest documented precisely. No claim left standing that a recompute or read contradicts.
+
 ## G. ACTIONS
 1. **Fix the off-by-one** in E1 / B01 / B04 / the prize-regime dossier / any δ* numeric (`m*/n` form).
 2. **Re-label orbcount's δ\* column** to `1−s/n`.
