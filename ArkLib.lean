@@ -1305,6 +1305,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialNormTransport
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialWeylBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountGrowingSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountGrowthLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitSizeEqN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PIndependenceLangWeil
