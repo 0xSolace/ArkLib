@@ -821,6 +821,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentSharp
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumComplementSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumUpper
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSubJohnsonSharpRate
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSubsetSumSpectrum

@@ -14473,3 +14473,38 @@ sub-linear claim; cliff-at-n/2 untouched). PROBE `scripts/probes/probe_imprimiti
 mu_n=2^mu orbit model, n=4..256, primitive+imprimitive shifts, never n=q-1): exact partition + card
 additivity + `primitive <=> Odd empty`, 47/47. CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN.
 -- imprimdecomp lane, co-author wakesync.
+
+
+---
+
+## O186 (spectsym lane): the deep-band subset-sum spectrum is COMPLEMENT-SYMMETRIC (palindrome in r)
+
+A structural CONSTRAINT (not a closure) on the named open obstruction in
+`DeepBandSubsetSumSpectrum.lean`: the EXACT spectrum cardinality
+`|{ sum_{z in S} z : S in powersetCard r mu_n }|`. That file pins each deep-band bad scalar at
+depth `k+1` to the subset sum `gamma_S = -sum_{z in S} z` (`witness_pin_eq_neg_sum`) and names the
+exact spectrum cardinality as the remaining growth-law obstruction. The `#444` growth-law
+thread-pull records the empirical symmetry `#bad_r = #bad_{n-r}` (disentanglement object (3),
+"subset <-> complement, sum of all roots = 0") as VERIFIED but never a theorem.
+
+LANDED `Frontier`-class file `DeepBandSpectrumComplementSymmetry.lean` (in-graph lake-locked build
+exit 0 / 8313 jobs, axioms in {propext, Classical.choice, Quot.sound} on ALL 4, no sorry):
+- `subsetSum_compl` : `sum_{z in mu\S} z = -(sum_{z in S} z)` when `sum_{z in mu} z = 0`
+  (the negation-closed subgroup `mu_n`, `n` even, satisfies this).
+- `powersetCard_compl_bij` : `S |-> mu\S` bijects size-r subsets onto size-(|mu|-r) subsets.
+- `spectrum_compl_eq_neg_image` : the depth-r spectrum is the NEGATION of the depth-(|mu|-r) one.
+- `card_subsetSumSpectrum_eq_compl` (HEADLINE) : `|spectrum r| = |spectrum (|mu|-r)|`.
+- `spectrum_zero_card_one` : the palindrome endpoints have cardinality 1 (non-vacuity).
+
+HONEST SCOPE: this is a SYMMETRY of the spectrum cardinality (a palindrome in r), NOT a bound on
+it. It does NOT compute `|spectrum r|` (the exact count = the prize-critical open quantity / BCHKS
+1.12 = the wall). Char-free, field-universal finite combinatorics over ANY finite ground set whose
+elements sum to zero; thinness enters only via WHICH r is the binding deep band. ASYMPTOTIC GUARD
+compliant: no capacity/beyond-Johnson/sub-linear/growth-law claim; cliff-at-n/2 untouched. CORE
+`M(mu_n) <= C*sqrt(n log(p/n))` UNCHANGED/OPEN.
+
+PROBE `scripts/probes/probe_spectrum_complement.py` (PROPER thin mu_n=2^a subgroup of F_p^*, n<p-1
+so never the full group, incl Fermat-type p=257; n in {8,16}): `sum(mu)%p = 0` always, and the
+depth-r spectrum equals the negation of the depth-(n-r) spectrum with equal #distinct, 0 fails over
+7 prize-regime instances (palindromic size sequences e.g. [1,8,25,40,41,40,25,8,1]).
+-- spectsym lane, co-author wakesync.
