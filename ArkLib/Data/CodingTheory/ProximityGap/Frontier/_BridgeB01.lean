@@ -53,28 +53,33 @@ Issue #444.
 
 namespace ProximityGap.BridgeB01
 
-/-- **E1 — the master gap identity (ℚ algebra brick).**
+/-- **E1 — the master gap identity (ℚ algebra brick). CORRECTED 2026-06-16 (off-by-one fix).**
 
 Given the rate definition `ρ = k/n`, the binding-depth definition `m* = s − k`, and the binding
-radius `δ* = 1 − (s−1)/n` (the budget-crossing granularity radius, anchor P1), the master gap
-identity `δ* = 1 − ρ − (m*−1)/n` is forced. -/
+radius `δ* = 1 − s/n` (the incidence-correct convention: `I(δ)=#{γ : word δ-close to RS[k]}`,
+δ-close ⟺ agreement `≥ (1−δ)n`, so `δ = 1 − s/n` with `s` = agreement count), the master gap
+identity `δ* = 1 − ρ − m*/n` is forced.
+
+⚠️ The earlier form (`hδ : δ* = 1 − (s−1)/n` ⟹ `δ* = 1 − ρ − (m*−1)/n`) was OFF BY ONE — it matched
+orbcount's mislabeled column, not the probe-validated exact pins `δ*(μ_8)=3/8`, `δ*(μ_16)=9/16`,
+for which `capacity − δ* = m*/n` (n=16, m*=3 ⟹ 12/16 − 9/16 = 3/16 = m*/n ✓, not 2/16). -/
 theorem deltaStar_master_gap_identity
     (n k s deltaStar rho mstar : ℚ) (hn : n ≠ 0)
     (hρ  : rho = k / n)
     (hms : mstar = s - k)
-    (hδ  : deltaStar = 1 - (s - 1) / n) :
-    deltaStar = 1 - rho - (mstar - 1) / n := by
+    (hδ  : deltaStar = 1 - s / n) :
+    deltaStar = 1 - rho - mstar / n := by
   subst hρ hms hδ
   field_simp
   ring
 
-/-- **E1 restated as the capacity gap.** `capacity − δ* = (m*−1)/n`, where `capacity = 1 − ρ`. -/
+/-- **E1 restated as the capacity gap (CORRECTED).** `capacity − δ* = m*/n`, `capacity = 1 − ρ`. -/
 theorem capacity_gap_eq
     (n k s deltaStar rho mstar : ℚ) (hn : n ≠ 0)
     (hρ  : rho = k / n)
     (hms : mstar = s - k)
-    (hδ  : deltaStar = 1 - (s - 1) / n) :
-    (1 - rho) - deltaStar = (mstar - 1) / n := by
+    (hδ  : deltaStar = 1 - s / n) :
+    (1 - rho) - deltaStar = mstar / n := by
   have h := deltaStar_master_gap_identity n k s deltaStar rho mstar hn hρ hms hδ
   rw [h]; ring
 

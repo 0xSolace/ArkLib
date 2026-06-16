@@ -60,19 +60,23 @@ incidence-correct form. orbcount's `1−(s−1)/n` column label is an off-by-one
   (exact, probe-validated, p-indep over-det) [VERIFIED].
 - First exact explosion-band value `ε_mca(C84, 1/4) = 7/17` (`FarCosetExplosion.lean`).
 
-## IV. THE ASYMPTOTIC δ* CURVE (the cascade + master gap identity)
+## IV. THE far-line δ* PROXY — Johnson-LOCKED (CORRECTED; the "climb to capacity" was an artifact)
 
-- **Master gap identity** (corrected, see audit §A.1): **`δ* = 1 − ρ − m*/n`**, i.e.
-  **`capacity − δ* = m*/n`**. `m*` = binding over-determination depth. (The `(m*−1)/n` form in
-  `_BridgeB01/B04` is off-by-one — those bricks prove the ℚ-algebra on a wrong-convention hypothesis.)
-- **The reproduced cascade** (ρ=¼, exact char-0, `scripts/rust-pg orbcount`): the worst-direction
-  over-det incidence `D*(m)` (m=s−k; **D*(1) is p-DEPENDENT** — the edge; m≥2 is p-independent):
-  - `n=8 (k=2)`:  `[40, 9, 5, 1, 1]`  → m*=3, **δ* = 3/8 = 0.375 (BELOW Johnson)**
-  - `n=16 (k=4)`: `[~3936(p-dep), 89, 9, 9, 9, 8, 1, 1, 1]` → m*=3, **δ* = 9/16 = 0.5625 (above Johnson)**
-  - `n=32 (k=8)`: `[…, 4096, 89, 89, 9, …]` → **m* ∈ {4,5} DISPUTED**, δ* ∈ {0.625, 0.594}
-    (n=32 not computable to settle — see audit §D; cascade has a doubled-89 plateau).
-  - So the curve **crosses Johnson between n=8 and n=16**, then climbs toward capacity. The
-    sub-linear `m*~log n` reading rests on 2 solid points + 1 disputed (n=32) — report honestly.
+⚠️ **CORRECTED (audit §A0):** the over-det far-line δ* is a **Johnson-locked PROXY**, NOT a climb to
+capacity. The earlier "cascade → capacity, m*~log n" was an engine direction-cap (`b<s`) artifact.
+
+- **Master gap identity** (audit §A.1): `δ* = 1 − ρ − m*/n`, i.e. `capacity − δ* = m*/n` (the
+  `(m*−1)/n` form was off-by-one; `_BridgeB01/B04` now corrected). This identity is exact.
+- **The Johnson-lock law** [VERIFIED, full-direction `orbcount`]: **`δ*_farline = 1/2 + 1/n → 1/2`**
+  (Johnson from above), **`m* = n/4 − 1` (LINEAR)**:
+  - `n=16`: s*=7, **δ* = 9/16 = 1/2+1/16**, m*=3=n/4−1
+  - `n=20`: s*=9, **δ* = 11/20 = 1/2+1/20**, m*=4=n/4−1
+  - `n=24`: s*=11, **δ* = 13/24 = 1/2+1/24**, m*=5=n/4−1
+  - `n=8`: s*=5, δ* = 3/8 (small-n anomaly — plateau exceeds budget; below the 1/2+1/n line).
+- **The far-line is a PROXY** (`ε_mca ≥ farline/q`, so `δ*_MCA ≤ δ*_farline → 1/2`): it does NOT reach
+  the beyond-Johnson window interior. The true worst-case MCA floor (`δ*_MCA ≥ Johnson`, the prize)
+  is the SEPARATE, harder BCHKS/BGK object. **There is no in-tree evidence δ*_MCA climbs to capacity.**
+- **D*(1) is p-DEPENDENT** (the m=1 edge); only the over-det `m≥2` count is p-independent.
 - **Leading value** `D*(1) ≈ n³` (n=16: 3936≈16³); geometric decay ≈ `n/2..n/4` per depth.
 - **Orbit closed form** (E3, `OrbitCountCrossingLaw`): `D = z + S·O`, `S = n/gcd(b−a,n)`, crossing
   `D ≤ n ⟺ O ≤ gcd(b−a,n)`. At the binding the worst direction is **primitive** (d=1) and the bad

@@ -80,7 +80,7 @@ fn main(){
     let rho=k as f64/n as f64;
     let john=1.0-rho.sqrt();
     println!("# n={} k={} rho={:.4} p={} budget(=n)={} Johnson={:.4} n/4={}",n,k,rho,p,budget,john,n/4);
-    println!("#  s   m |      D    binder   d    S |  z     O | D=z+S*O | O<=d | GOOD(D<=n) | delta*=1-(s-1)/n");
+    println!("#  s   m |      D    binder   d    S |  z     O | D=z+S*O | O<=d | GOOD(D<=n) | delta*=1-s/n  (CORRECTED off-by-one)");
 
     // directions: monomial pencil (a,b), b in [k,n) (far), a in [0,n) a!=b, a!=exponents.
     // We sweep ALL (a,b) and report the worst (max D) per s.

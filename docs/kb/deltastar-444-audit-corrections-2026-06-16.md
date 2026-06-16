@@ -9,7 +9,33 @@ Items marked **[VERIFIED]** I recomputed; **[FLAGGED]** are reviewer-flagged and
 
 ---
 
-## A. CORRECTED EXACT δ* VALUES — an off-by-one convention bug [VERIFIED]
+## A0. ⚠️⚠️ THE BIG ONE — the "δ* climbs toward capacity / m*~log n" cascade is an ARTIFACT [VERIFIED, self-correction]
+
+**This corrects an error I myself propagated into the issue body + dossiers on the first pass.** The
+review's own re-verification (comment 4708039073) caught it; I then confirmed it by full-direction
+computation.
+
+The over-determined far-line δ* is a **Johnson-LOCKED PROXY**, not a climb to capacity:
+- **`δ* = 1/2 + 1/n → 1/2` (= Johnson from above)** and **`m* = n/4 − 1` (LINEAR in n)**.
+- **[VERIFIED]** full-direction `orbcount` (no `b<s` cap): n=16 → s*=7, δ*=9/16=1/2+1/16, m*=3=n/4−1;
+  n=20 → s*=9, δ*=11/20=1/2+1/20, m*=4; n=24 → s*=11, δ*=13/24=1/2+1/24, m*=5. The pattern is exact.
+- **The "n=32 δ*≈0.594, m*=5, sub-linear, climbing toward capacity" reading was an ARTIFACT** of an
+  engine **direction-cap `b < s`** (it searched too few far directions). With full b-range the cascade
+  is the proxy above. The correct n=32 value is δ*=17/32≈0.531 (=1/2+1/32), m*=n/4−1=7, NOT 0.594/5.
+- This **matches the older memory** `issue407-farline-incidence-is-plotkin-proxy` (which I should have
+  trusted): the far-line incidence is a **Plotkin/Johnson proxy → 1/2**, it is NOT the beyond-Johnson
+  window-interior MCA floor. `δ*_MCA ≤ δ*_farline → 1/2`; the *true* floor is the separate, harder
+  BCHKS/BGK object (`δ*_MCA ≥ Johnson`, the open direction). The two are DIFFERENT objects.
+
+**Consequence for the record:** the master gap identity `capacity − δ* = m*/n` (§A.1) is still
+correct as an *identity*, but for the far-line proxy `m* = n/4 − 1` is **LINEAR**, so
+`capacity − δ* = 1/4 − 1/n → 1/4`, i.e. the proxy sits a constant `Θ(1)` below capacity and `→ 1/2 =
+Johnson`. There is **no in-tree evidence that the worst-case MCA δ* climbs toward capacity**; the
+"asymptotic curve toward capacity" claim is RETRACTED. What IS established: exact proxy values, the
+Johnson-lock law, p-independence of the over-det count, and the reduction prize⟺BCHKS-1.12 (which
+concerns the true floor, unaffected).
+
+## A. EXACT δ* VALUES + the off-by-one convention bug [VERIFIED]
 
 Two conventions were in play and got conflated:
 - **Incidence-correct** (the governing law `I(δ)=#{γ : word is δ-close to RS[k]}`, δ-close ⟺

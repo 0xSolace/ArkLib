@@ -43,38 +43,37 @@ namespace ProximityGap.BridgeB04
 def capacity (ρ : ℚ) : ℚ := 1 - ρ
 
 /-- The empirical **closed form** of `δ*` from binding depth `m` over block length `n`
-(E1): `1 − ρ − (m−1)/n`. -/
-def deltaStarFormula (ρ : ℚ) (m n : ℚ) : ℚ := 1 - ρ - (m - 1) / n
+(E1, CORRECTED 2026-06-16 off-by-one): `1 − ρ − m/n`.
+⚠️ Was `1 − ρ − (m−1)/n` (off by one — matched orbcount's mislabeled column, not the
+probe-validated pins `δ*(μ_8)=3/8`, `δ*(μ_16)=9/16`; `capacity − δ* = m*/n`, not `(m*−1)/n`). -/
+def deltaStarFormula (ρ : ℚ) (m n : ℚ) : ℚ := 1 - ρ - m / n
 
-/-- **E1, gap form (exact rational identity).** `capacity − δ* = (m*−1)/n`. This is the
-unconditional ring/field rearrangement of the closed form. -/
+/-- **E1, gap form (exact rational identity, CORRECTED).** `capacity − δ* = m*/n`. -/
 theorem capacity_sub_deltaStar (ρ m n : ℚ) :
-    capacity ρ - deltaStarFormula ρ m n = (m - 1) / n := by
+    capacity ρ - deltaStarFormula ρ m n = m / n := by
   unfold capacity deltaStarFormula
   ring
 
-/-- **E1, solved form.** `δ* = 1 − ρ − (m*−1)/n` is recovered from the gap identity. -/
+/-- **E1, solved form (CORRECTED).** `δ* = 1 − ρ − m*/n`. -/
 theorem deltaStarFormula_eq (ρ m n : ℚ) :
-    deltaStarFormula ρ m n = 1 - ρ - (m - 1) / n := rfl
+    deltaStarFormula ρ m n = 1 - ρ - m / n := rfl
 
-/-- **E1, capacity-minus-gap form.** `δ* = capacity − (m*−1)/n`. -/
+/-- **E1, capacity-minus-gap form (CORRECTED).** `δ* = capacity − m*/n`. -/
 theorem deltaStarFormula_eq_capacity_sub (ρ m n : ℚ) :
-    deltaStarFormula ρ m n = capacity ρ - (m - 1) / n := by
+    deltaStarFormula ρ m n = capacity ρ - m / n := by
   unfold capacity deltaStarFormula
   ring
 
-/-- **E1, cleared-denominator form (honest `n ≠ 0`).** Multiplying through by `n`:
-`(capacity − δ*) · n = m* − 1`, the integer-arithmetic content of the gap. -/
+/-- **E1, cleared-denominator form (honest `n ≠ 0`, CORRECTED).** `(capacity − δ*) · n = m*`. -/
 theorem capacity_sub_deltaStar_mul (ρ m n : ℚ) (hn : n ≠ 0) :
-    (capacity ρ - deltaStarFormula ρ m n) * n = m - 1 := by
+    (capacity ρ - deltaStarFormula ρ m n) * n = m := by
   rw [capacity_sub_deltaStar]
   field_simp
 
-/-- **E1, depth-solved form (honest `n ≠ 0`).** The binding depth read back from the gap:
-`m* = 1 + (capacity − δ*) · n`. -/
+/-- **E1, depth-solved form (honest `n ≠ 0`, CORRECTED).** `m* = (capacity − δ*) · n`. -/
 theorem bindingDepth_eq (ρ m n : ℚ) (hn : n ≠ 0) :
-    m = 1 + (capacity ρ - deltaStarFormula ρ m n) * n := by
-  rw [capacity_sub_deltaStar_mul ρ m n hn]; ring
+    m = (capacity ρ - deltaStarFormula ρ m n) * n := by
+  rw [capacity_sub_deltaStar_mul ρ m n hn]
 
 /-- **The residual (named, not proved here).** The genuine content of E1 that this rational
 brick does NOT supply: that the OPERATIONAL `δ*` (the `sSup`-threshold) equals the closed form
@@ -89,7 +88,7 @@ the operational δ* exactly modulo `OperationalDeltaStarEqFormula`. -/
 theorem capacity_sub_operationalDeltaStar
     (operationalDeltaStar ρ m n : ℚ)
     (h : OperationalDeltaStarEqFormula operationalDeltaStar ρ m n) :
-    capacity ρ - operationalDeltaStar = (m - 1) / n := by
+    capacity ρ - operationalDeltaStar = m / n := by
   rw [h]; exact capacity_sub_deltaStar ρ m n
 
 end ProximityGap.BridgeB04

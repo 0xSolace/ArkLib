@@ -165,25 +165,31 @@ export function Results() {
           </p>
         </Theorem>
         <p>
-          The exact worst-direction thresholds, with the incidence-correct
-          convention <M>{String.raw`\delta=1-s/n`}</M> and budget{" "}
-          <M>{String.raw`B=n`}</M>, are{" "}
-          <M>{String.raw`\delta^*(\mu_8)=3/8`}</M> (below Johnson{" "}
-          <M>{String.raw`1/2`}</M>) and{" "}
-          <M>{String.raw`\delta^*(\mu_{16})=9/16`}</M> (above Johnson), giving
-          the master gap{" "}
-          <M>{String.raw`\,\text{capacity}-\delta^* = m^*/n\,`}</M> with binding
-          over-determination depth <M>{String.raw`m^*=s^*-k`}</M>. The curve
-          crosses Johnson between <M>{String.raw`n=8`}</M> and{" "}
-          <M>{String.raw`n=16`}</M>; the next point{" "}
-          <M>{String.raw`n=32`}</M> is not exactly computable and is reported as
-          a range. A separate analytic line improves the published
+          The exact over-determined far-line threshold, with the
+          incidence-correct convention <M>{String.raw`\delta=1-s/n`}</M> and
+          budget <M>{String.raw`B=n`}</M>, obeys a{" "}
+          <strong>Johnson-lock law</strong>:{" "}
+          <M>{String.raw`\delta^*=\tfrac12+1/n\to\tfrac12`}</M> with binding
+          depth <M>{String.raw`m^*=n/4-1`}</M> (linear), verified by
+          full-direction search at{" "}
+          <M>{String.raw`\delta^*(\mu_{16})=9/16`}</M>,{" "}
+          <M>{String.raw`\delta^*(\mu_{20})=11/20`}</M>,{" "}
+          <M>{String.raw`\delta^*(\mu_{24})=13/24`}</M>. This satisfies the
+          master gap identity{" "}
+          <M>{String.raw`\,\text{capacity}-\delta^* = m^*/n\,`}</M>. Because the
+          far-line incidence is a proxy (<M>{String.raw`\varepsilon_{mca}\ge`}</M>
+          far-line<M>{String.raw`/q`}</M>), this threshold is an{" "}
+          <em>upper bound</em> on the true MCA threshold and tends to Johnson; it
+          does <em>not</em> reach the beyond-Johnson window interior, which is the
+          separate hard object. A prior reading of these data as a
+          climb toward capacity was an artifact of a direction-capped search and
+          is retracted. Separately, an analytic line improves the published
           subgroup-character-sum exponent (di Benedetto) from{" "}
           <M>{String.raw`0.9892`}</M> to <M>{String.raw`0.9583`}</M> at the prize
           edge <M>{String.raw`\beta=4`}</M> (computational, verified{" "}
           <M>{String.raw`n\le64`}</M>, conditional on{" "}
-          <M>{String.raw`T_3(\mu_n)=O(n^3)`}</M>); this is a measure of
-          closeness, not a solution.
+          <M>{String.raw`T_3(\mu_n)=O(n^3)`}</M>); a measure of closeness, not a
+          solution.
         </p>
       </SubSection>
     </Section>
