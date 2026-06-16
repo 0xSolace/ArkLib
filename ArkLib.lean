@@ -1246,6 +1246,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._QuadraticGaussFraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._REnergyThreeScratch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinRealizabilityCodim
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinResidueDegree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSparseRealizability

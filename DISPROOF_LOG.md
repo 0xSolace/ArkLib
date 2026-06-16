@@ -3930,3 +3930,30 @@ beyond-Johnson-delta* / sub-linear-M / closure claim; the cliff-at-n/2 (the delt
 NOT s*) is UNTOUCHED -- ASYMPTOTIC GUARD compliant. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. Author Sol, co-author wakesync.
 -- 5n8.
+
+## O200 -- resonance moment r=2 rung: phaseSum convolution collapse + T_2 >= (m-1)^2 (conj-symm unit phases)
+EXTEND-PROVEN NON-MOMENT-LADDER brick on the Gauss-phase resonance lever (GaussPhaseResonance #407
++ the r=1 base case _ResonanceMomentBaseCase). The base file pins phaseSum u 1 c + T_1 = m-1 (the
+trivial Parseval rung); this is the NEXT rung r=2, the first genuinely non-diagonal phase-sum (a
+restricted convolution of the unit phases). grep-confirmed-MISSING: no in-tree phaseSum_two / r=2
+value. PROBE scripts/probes/probe_phasesum_two.py + probe_phasesum_two_c0.py (ONE sweep, random unit
+phases, m=3..15, NEVER n=q-1): the convolution form phaseSum u 2 c = sum_{a!=0,c-a!=0} u(a)u(c-a)
+PASSES at all m; for conjugate-symmetric unit phases (u(-a)=conj(u(a))) phaseSum u 2 0 = m-1 EXACT
+(REAL) at m=3,5,7,9,11,15; VERDICT PASS. FORMALIZED Frontier/_ResonanceMomentRTwo.lean (single-file
+lake-env-lean exit 0 + in-graph lake-locked 8314 jobs exit 0; axiom-clean subset of {propext,
+Classical.choice, Quot.sound}, no sorry/axiom/native_decide on all 3 printed):
+mem_phaseSum_two_filter (the r=2 filter membership: X0!=0, X1!=0, X0+X1=c), phaseSum_two (HEADLINE:
+the off-diagonal convolution collapse, via Finset.sum_nbij' reindexing by the first coordinate),
+phaseSum_two_zero_of_conjSymm (phaseSum u 2 0 = m-1 for conjugate-symmetric unit phases, via
+Complex.mul_conj +
+normSq_eq_norm_sq + card_erase), resonanceMoment_two_ge_of_conjSymm (HEADLINE: T_2 >= (m-1)^2, via
+Finset.single_le_sum at c=0). Builds DIRECTLY on GaussPhaseResonance.phaseSum/resonanceMoment (does
+NOT re-declare them). Does NOT close CORE: r=2 is the SECOND rung, FAR below binding depth r ~ log m
+where the ResonanceConjecture is the recognized open Gauss-period/BGK content. The lower bound
+(m-1)^2 <= (2 m log m)^2 is CONSISTENT with the conjecture, not a proof of it; it is a genuine r=2
+floor above the trivial T_2 >= 0 (the squared diagonal mass), NOT an upper bound and NOT a
+concentration result. NOT a moment/census/orbit/spectrum object (different lever: the sqrt-p-free
+Gauss-phase resonance moment). NO capacity / beyond-Johnson / sub-linear / closure claim; ASYMPTOTIC
+GUARD cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. Author Sol,
+co-author wakesync.
+-- resr2.
