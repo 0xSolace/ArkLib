@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.CharPMomentRecursion
 
 /-!
 # Energy-Ratio Monotonicity: a closed recursive reduction of the prize moment input (#444)
@@ -75,6 +76,27 @@ theorem doubleFactorial_step (k : ℕ) (hk : 1 ≤ k) :
   push_cast
   rw [h2]
 
+/-- **The deep half of ERM is UNCONDITIONAL (the dichotomy).** For every order `r` with
+`|G| ≤ 2r+1`, the ERM inequality at `r` holds with no hypothesis at all — it follows from the in-tree
+*weak* recursion `E_{r+1} ≤ |G|²·E_r` (`rEnergy_succ_le`), since `|G|² ≤ (2r+1)·|G|` when `|G| ≤ 2r+1`.
+Hence **`EnergyRatioMonotone` is automatically true for all deep `r ≥ (|G|−1)/2`**, and its only open
+content is the SHALLOW regime `r < (|G|−1)/2`. Sharp localization: the prize moment depth `r ≈ ln q`
+is `≪ |G|/2 = n/2` (for the prize `n = 2^30`, `ln q ≈ 110 ≪ 2^29`), so the prize lives squarely in the
+open shallow part — this theorem proves the (large) complementary deep part for free. -/
+theorem energyRatioMonotone_at_deep (G : Finset F) (r : ℕ) (hdeep : G.card ≤ 2 * r + 1) :
+    (rEnergy G (r + 1) : ℝ) ≤ (2 * (r : ℝ) + 1) * (G.card : ℝ) * (rEnergy G r : ℝ) := by
+  have hnat : rEnergy G (r + 1) ≤ G.card ^ 2 * rEnergy G r :=
+    ArkLib.ProximityGap.CharPMomentRecursion.rEnergy_succ_le G r
+  have hcast : (rEnergy G (r + 1) : ℝ) ≤ (G.card : ℝ) ^ 2 * (rEnergy G r : ℝ) := by exact_mod_cast hnat
+  have hcard : (G.card : ℝ) ^ 2 ≤ (2 * (r : ℝ) + 1) * (G.card : ℝ) := by
+    have h1 : (G.card : ℝ) ≤ 2 * (r : ℝ) + 1 := by exact_mod_cast hdeep
+    have h2 : (0 : ℝ) ≤ (G.card : ℝ) := by positivity
+    nlinarith [h2]
+  calc (rEnergy G (r + 1) : ℝ)
+      ≤ (G.card : ℝ) ^ 2 * (rEnergy G r : ℝ) := hcast
+    _ ≤ (2 * (r : ℝ) + 1) * (G.card : ℝ) * (rEnergy G r : ℝ) :=
+        mul_le_mul_of_nonneg_right hcard (by positivity)
+
 /-- **ERM ⟹ the Gaussian energy bound at every order.** Given the trivial base `GaussianEnergyBound G 1`
 (`E_1 = |G|`, Parseval) and ERM, the bound `E_r(G) ≤ (2r-1)‼·|G|^r` holds for ALL `r ≥ 1` — by induction
 on `r`, stepping with `doubleFactorial_step`. This is the whole open-core family collapsed to ERM. -/
@@ -116,5 +138,6 @@ end ProximityGap.Frontier.EnergyRatioMonotone
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.EnergyRatioMonotone.doubleFactorial_step
+#print axioms ProximityGap.Frontier.EnergyRatioMonotone.energyRatioMonotone_at_deep
 #print axioms ProximityGap.Frontier.EnergyRatioMonotone.gaussianEnergyBound_of_ERM
 #print axioms ProximityGap.Frontier.EnergyRatioMonotone.worstCaseIncompleteSumBound_of_ERM
