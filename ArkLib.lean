@@ -1140,6 +1140,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeE6Folding
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CLTDecorrelatedCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroEnergyClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroMGFBesselBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroWickEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantFour
