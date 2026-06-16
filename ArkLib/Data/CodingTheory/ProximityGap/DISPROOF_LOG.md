@@ -15063,3 +15063,26 @@ r(r-1) <= C(r,2)*M + (n-1) extracts a sqrt root bound only while pairwise overla
 3 thms axiom-clean {propext, Classical.choice, Quot.sound}; single-file exit 0 + in-graph 8314 exit 0;
 codex-reviewed clean. Probe: scripts/probes/probe_pencil_pairwise_sqrt.py (0 viol / 70446).
 Honest: field-universal arithmetic extractions, NOT a CORE closure; cliff-at-n/2 untouched. CORE OPEN.
+
+### O233 — I015 (multivariate digit-recursion Stepanov) COLLAPSES — the LAST un-collapsed Stepanov direction is closed (nubs, 2026-06-16)
+
+Took a genuine swing at the one Stepanov lever the alien-ideas doc flagged as "not yet collapsed"
+(I015): lift x∈μ_{2^k} to its dyadic-digit vector v(x)=(x,x²,x⁴,…,x^{2^{k-1}}) and hope a MULTIVARIATE
+auxiliary's multiplicity (from the x↦x² digit recursion) beats the univariate multiplicity-1 cap that
+killed I001/I006/I008. **Verdict: COLLAPSES, exact mod-p (probe_i015_digit_recursion_stepanov.py,
+intrinsic test in the coordinate ring F_p[t], n=8/16/32, p≡1 mod n).**
+
+**Smoking gun:** the order-m common-vanishing constraint rank **SATURATES at exactly n** (8→8, 16→16,
+32→32) at EVERY polynomial degree (rank 32/1287 at n=32, deg≤8). The digit-lift image is a RATIONAL
+CURVE ≅ the affine line (the first coordinate recovers t=x; X_{j+1}=X_j² identically), so its
+coordinate ring restricted to μ_n is the n-dimensional univariate function space — the extra digit
+coordinates add zero independent structure. AND μ_n⊂F_p (n|p−1) so Frobenius x↦x^p is the identity on
+μ_n (probe-confirmed): no Frobenius multiplicity for ANY auxiliary. Hence any aux vanishing to order
+m>1 at all n points is forced to be a multiple of (t^n−1)^m (degree ≥ n·m), giving the TRIVIAL
+Stepanov bound n ≤ deg/m = n. No degree saving, ever.
+
+**Where it lands:** verified dead-end (counts). The Stepanov scoreboard is now complete — I001/I006/
+I008 + I015 all dead, all for the same root cause made precise here: μ_n is a single separable orbit
+inside the prime field, so neither geometric (rational-curve) nor arithmetic (Frobenius) multiplicity
+exists. NOT progress toward the prize — it's a clean closure of one family, sharpening "what's truly
+left" to the genuinely-analytic worst-case sup-norm M(μ_n) (BGK wall), untouched. No fabrication.
