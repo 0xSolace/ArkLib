@@ -4188,3 +4188,34 @@ direction count, the thinness lives in the unresolved direction-uniformity). NOT
 5), NOT a census/orbit/resonance/pencil/spur re-derivation, NOT a re-mapped dead face. NO capacity /
 beyond-Johnson / sub-linear / growth-law claim; cliff-at-n/2 (the delta*/incidence) UNTOUCHED.
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O211 (lane survivalceiling): the A3 dedup-slack has a SURVIVAL CEILING that fractionally
+## vanishes. Lever 2 of the issue body's "TWO non-BCHKS levers" (dedup-strictness at log depth):
+## _CoreA3_BackwardProof reduces the prize ESCAPE to whether D <= Sigma_r is strict (escape) or
+## vanishing (wall) at binding depth r ~ log n; _DedupSlackStrictButVanishing answered "strict but
+## fractionally vanishing" only via three hand-decided anchors (n in {8,16,32,64}), NO structural
+## law. This supplies the structural mechanism. Push <base>..<new>, axiom-clean.
+RESULT: EXTEND-PROVEN, NON-MOMENT, p-independent. Over the thin dyadic mu_{2m} with the in-tree
+spectrum N_r = specCount m r = sum_{k=r(2), k<=min(r,2m-r)} C(m,k)2^k, at binding depth r<=m
+(r=log2 n <= n/2 = m at prize scale):
+  (1) specCount_ge_top: SURVIVAL LOWER BOUND N_r >= C(m,r)2^r (the top weight class k=r survives;
+      single_le_sum over the filtered range, min(r,2m-r)=r).
+  (2) dedupSlack_le_survivalCeiling: SLACK CEILING slack = C(2m,r)-N_r <= C(2m,r)-C(m,r)2^r =:
+      survivalCeiling, by Nat.sub_le_sub_left from (1) ALONE -- Nat truncation, no upper bound on
+      N_r needed.
+  (3) survivalLead_mul_fallProd_eq: the EXACT cross-product identity C(m,r)2^r * prod_{i<r}(2m-i)
+      = C(2m,r) * prod_{i<r}(2m-2i), i.e. lead/sigma = prod(2m-2i)/(2m-i), each factor 1-i/(2m-i)
+      -> 1, so the ceiling fraction 1 - lead/C(2m,r) -> 0. Proven by cancelling a common r! via
+      descFactorial_eq_prod_range on both lead (=evenProd/r!) and sigma (=fallProd/r!).
+  (4) evenProd_le_fallProd + survivalLead_le_sigma + survivalCeiling_lt_sigma: the ceiling is a
+      PROPER fraction of the multiset count (non-vacuous), per-factor 2m-2i <= 2m-i (gap exactly i).
+  (5) anchors n=16 (ceiling 700 >= prior exact slack 587), n=32 (ceiling 61600 >= 57088); ceiling
+      fraction strictly decreases f_ceil(16)>f_ceil(32) by exact Nat cross-mult.
+PROBE: scripts/probes/probe_dedup_survival_ceiling_vanishing.py -- survival N_r/C(n,r) at r=log2 n
+sweeps 0.714 (n=8) -> 0.99990 (n=2^21), slack-fraction strictly decreasing for all n>=16 tested,
+the leading model lead=C(m,r)2^r with N/lead -> 1 and lead/C -> 1 (squeeze lead<=N_r<=C). VERDICT:
+the dedup is STRICT but its slack lives UNDER a fractionally-vanishing exact-product ceiling at the
+binding depth -- leaning WALL structurally, not by 3-point coincidence. HONEST SCOPE: bounds slack
+above at binding depth r<=m ONLY; does NOT bound D/Sigma_r/m* at the BUDGET scale ~n, does NOT close
+BCHKS 1.12, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C
+sqrt(n log(p/n)) UNCHANGED/OPEN. New: Frontier/_DedupSurvivalCeiling.lean (10 thms axiom-clean).
