@@ -3729,3 +3729,32 @@ wall). NO capacity / beyond-Johnson / sub-linear / growth-law claim; ASYMPTOTIC 
 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. 2-power-specific (spectrumCount fails
 at non-2-power n). Author 0xSolace/Sol, co-author wakesync.
 -- spectotal.
+
+
+## O194 -- the PEAK of the char-0 subset-sum spectrum of mu_n is (3^m+1)/2, attained UNIQUELY at the center depth r=m=n/2 (the distinct-gamma growth-law center value, extends spectrumCount)
+EXTENDS the in-tree _SubsetSumSpectrumClosedForm.spectrumCount (per-depth char-0 subset-sum
+cardinality N_r of the 2-power subgroup mu_n, m=n/2) by pinning its PEAK in closed form and
+certifying STRICT UNIMODALITY with the unique max at the center r=m. This is the #444 sec VIII-C
+distinct-gamma growth-law object: the maximal width of the deep-band distinct subset-sum (= bad-
+scalar) census. RESULT: spectrumCount m m = (3^m + 1)/2, equivalently 2*N_m = 3^m + 1.
+MECHANISM is a PARITY SPLIT of the binomial GF (NOT a moment/energy method, NOT the O193 total-mass
+reindex): at r=m the range bound is min(m,2m-m)=m so N_m = sum_{k<=m, k==m(2)} C(m,k)2^k is the
+SAME-PARITY-AS-m half of the binomial expansion. Adding the two evaluations (1+2)^m=3^m (all k) and
+(1-2)^m=(-1)^m (alternating) gives 2*(parity-m sum) = 3^m + (-1)^m*(-1)^m = 3^m + 1 in BOTH parities
+of m. PROBE scripts/probes/probe_spectrum_growth.py (ONE sweep, thin tower m=4..12, never n=q-1):
+2*N_m=3^m+1 EXACT; N_r strictly increasing on 0..m; UNIQUE center peak; palindrome r<->2m-r; VERDICT
+PASS. FORMALIZED Frontier/_SubsetSumSpectrumPeak.lean (single-file lake-env-lean exit 0, axiom-clean
+strict subset of {propext, Classical.choice, Quot.sound}, no sorry/axiom/native_decide on all 7
+printed): sum_choose_two_pow_full ((2+1)^m GF), sum_choose_neg_two_pow ((-2+1)^m alternating GF),
+spectrumCount_peak_two_mul (HEADLINE, 2*N_m=3^m+1 via the parity-weighted sum filter split),
+spectrumCount_peak (N_m=(3^m+1)/2 division form), spectrumCount_peak_values (41,122,365,1094,3281 at
+m=4..8), spectrumCount_strict_increase_tower (N_r strictly up on 0..m for m=4..8 = strict
+unimodality on the rising half), spectrumCount_peak_strict_max_tower (r=m is the strict argmax of
+the spectrum r=0..2m at m=4,8). An EXTEND-PROVEN structural census brick (rule 4): the PEAK of the
+distinct-gamma spectrum in closed form, building on the freshly-landed spectrumCount + palindrome.
+Does NOT close CORE: the prize binds the PER-DEPTH growth N_{rho n+1} at the BINDING depth
+(collision-saturated = the BGK/BCHKS wall, where char-0<->F_p fails), NOT the center value.
+NO capacity / beyond-Johnson / sub-linear / closure claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. 2-power-specific (spectrumCount fails at non-2-
+power n). Author Sol, co-author wakesync.
+-- spectgrowth.
