@@ -14308,3 +14308,28 @@ rungs r=3,4,5 (≤K/2) + the exact equivariance/orbit law + the precise statemen
 residual orbit count = the wall. No off-wall closure exists from the 2-power structure; general-r
 #bad ≤ K is the wall, confirmed from the demand side independently of the BGK char-sum framing.
 Artifacts: scripts/probes/genlaw/o182_phi_collapse/.
+
+## 2026-06-16 (#444, plotkincap): the ANTIPODAL/symmetric far-line route CAPS at delta* >= 1/2 (Plotkin half-agreement) -- prize-inert for rho<1/4, isolates the hard residual to ASYMMETRIC words
+**The route (lalalune #444 master-open-thread item 5, "provable"):** _AntipodalAgreementScope pins
+WHEN the off-BGK antipodal tower applies -- precisely to EVEN/ODD agreement polynomials (root set
+negation-closed). The complementary CEILING -- that the ODD branch caps at Plotkin half-agreement --
+was named provable but not in tree. This lands it.
+**Mechanism (char != 2):** an ODD agreement poly P (P(-z) = -P(z)) cannot hit a fixed NONZERO value c
+at both z and -z: P(z)=c => P(-z)=-c, and -c != c since c!=0, 2!=0. So the agreement set
+A_c = {z in G : P z = c} is ANTIPODE-FREE (at most one of each pair {z,-z}); on a negation-closed G
+this gives #A_c <= |G|/2.
+**Probe** (probe_antipodal_plotkin_cap.py, PROPER thin mu_n, p>>n^3, p==1 mod n, 2 structured primes/n,
+NEVER n=q-1, n=8..64, beta in {4,5}): 0 paired-violations EVERYWHERE; odd-P value-multiplicity always
+<= n/2; signHalf attains n/2-1 (cap real, not vacuous). EVEN P contrast: values antipodally EQUAL.
+FORMALIZED (axiom-clean subset {propext, Classical.choice, Quot.sound}, in-graph lake-locked build
+exit 0 / 1237 jobs): Frontier/_AntipodalPlotkinHalfCap.lean :
+  * not_both_of_odd : odd P + c!=0 + 2!=0 => P(z)=c implies P(-z)!=c (char!=2 antipodal exclusion).
+  * agreeSet_antipode_free / agreeSet_disjoint_neg : the level set {z in G : P z = c} is antipode-free.
+  * two_mul_agreeSet_card_le_of_neg_closed : 2 * #agreeSet <= #G on a negation-closed G.
+  * agreeSet_card_le_half : #agreeSet <= #G/2 = Plotkin half-cap = delta* >= 1/2.
+NOT a refutation of CORE; a clean STRUCTURAL SEPARATION: the symmetric/antipodal route caps at
+delta*>=1/2, so for rho<1/4 (floor 1-rho-Theta(1/log n) > 1/2) it is BELOW the floor / PRIZE-INERT,
+isolating the hard residual to genuinely ASYMMETRIC (non even/odd) far-line words = the open BGK core
+_AntipodalAgreementScope already names. Field-universal, NOT thinness-essential. Makes NO
+capacity/beyond-Johnson claim; cliff-at-n/2 untouched. CORE M(mu_n) <= C*sqrt(n log(p/n))
+UNCHANGED/OPEN. -- plotkincap lane, co-author wakesync.

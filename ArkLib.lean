@@ -1068,6 +1068,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AmplificationGainOne
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalAgreementScope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalPlotkinHalfCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
