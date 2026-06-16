@@ -1145,6 +1145,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevStructuralInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevValuationModP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevVandermondeCrux
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CirculantTraceEnergy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Close27DecisionInputRegimeRestricted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoherenceIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CollisionExcessPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
@@ -1206,6 +1207,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PaleyCayleyEigenvalue
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodAutocovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PlateauObjectDisentangle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._QuadraticGaussFraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._REnergyThreeScratch

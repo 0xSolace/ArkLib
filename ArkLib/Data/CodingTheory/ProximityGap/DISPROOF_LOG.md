@@ -14583,3 +14583,47 @@ arithmetic (unimodal binomial envelope); thinness enters only via which over-det
 orders k the prize cascade visits. ASYMPTOTIC GUARD cliff-at-n/2 untouched. No capacity /
 beyond-Johnson / sub-linear / growth-law claim. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. -- bezdepth, co-author wakesync.
+
+---
+
+## The prize-FAILS "decision" input is FALSIFIED on the prize 2-power tower (pow2dip)
+
+CONTEXT. lalalune's 04:57Z consolidation ("the one open question, attacked from 8 angles")
+flagged that BOTH landed _Close27 "decision" bricks are tautological: _Close27_PlateauWidthDecision
+(prize-FAILS, multiplicative) and _Close27_ImprimitivePlateauExcess (prize-HOLDS, additive) each
+discharge their horn entirely in prose, conditional on an unproven dynamical input, and neither
+proves its horn. That meta-observation was never itself a theorem in-tree.
+
+FINDING (probe scripts/probes/probe_pow2_dip_decision_input.py, exact, over the tree's OWN
+authoritative worst-direction data CrossingDepthLinearTracking.cStarFull from the exhaustive GPU
+cascade rho4.out; NEVER n=q-1). The single load-bearing input of _Close27_PlateauWidthDecision
+(mStar_linear_drives_decision) takes the linear law m*(n)=c*(n)=n/4-1 as GIVEN. On the PRIZE regime
+(the thin 2-power subgroup mu_n, n=2^a) that input is FALSE at the binding tower point n=32:
+c*(32)=5 != 7 = 32/4-1. The 2-adic dip (n/4-1)-c*(n) is 0 at n=16 but 2 at n=32 (it GROWS along the
+tower). The linear law is EXACT only on the mid-range {16,20,24,28}, which is OFF the 2-power tower
+(20,24,28 are not powers of two).
+
+CONSTRAINT LEMMA. The _Close27_PlateauWidthDecision prize-FAILS reading is regime-restricted to the
+off-tower mid-range and is NOT established on the prize 2-power tower: at the tower point n=32 where
+the decision must apply, its own linear input is contradicted by the tree's measured c*. Together
+with the prize-HOLDS horn being conditional on _Close27_ImprimitivePlateauExcess's unproven O=1
+persistence (hOconst), NEITHER horn is established on the prize tower; the dichotomy is genuinely
+open. This pins the precise reason the FAILS side is not closed: its input is finitely false on the
+regime it must govern.
+
+FORMALIZED (axiom-clean {propext, Quot.sound} subseteq {propext, Classical.choice, Quot.sound},
+single-file lake-env-lean exit 0 + in-graph lake-locked 3298 jobs exit 0):
+Frontier/_Close27DecisionInputRegimeRestricted.lean --
+  - decision_input_false_at_32 : cStarFull 32 != 32/4 - 1 (the input is false at the tower point).
+  - exists_tower_level_input_fails : exists n in towerLevels, cStarFull n != n/4 - 1.
+  - dip_grows_on_tower : dip 16 = 0 and dip 32 = 2 and dip 16 < dip 32.
+  - cStar_lt_linear_at_32 : cStarFull 32 < 32/4 - 1.
+  - input_valid_on_midrange : forall n in {16,20,24,28}, cStarFull n = n/4 - 1 (valid regime).
+  - midrange_offtower : 20,24,28 in midRange but not in towerLevels (valid regime is off-tower).
+  - fails_horn_not_established_on_tower : the consolidated constraint.
+NOT a CORE closure; a FINITE refutation-with-mechanism of one named input at one exact datum (n=32).
+Makes NO capacity / beyond-Johnson / sub-linear claim (c*/n -> 0 NOT asserted; cliff-at-n/2
+untouched). Pure Nat arithmetic over the in-tree cStarFull; thinness enters only via the 2-power
+tower being the prize regime. EXTENDS CrossingDepthLinearTracking (consumes its
+pow2_values_are_dip_below_line dip lemma). CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+-- pow2dip, co-author wakesync.
