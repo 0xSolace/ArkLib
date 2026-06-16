@@ -1000,6 +1000,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3RouteBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3StrataCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EnergyLogConvexRatioMonotone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EnergyRatioSupNormLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EpsMCAPackingFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePin
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EquivariancePinN12
