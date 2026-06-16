@@ -14722,3 +14722,40 @@ exact Nat). Field-universal Nat arithmetic; thinness enters via the 2^a tower. N
 beyond-Johnson / sub-linear / growth-law claim; cliff-at-n/2 untouched. ASYMPTOTIC GUARD compliant.
 The asymptotic height conjecture for ALL n stays OPEN. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. -- heighttight, co-author wakesync.
+
+### O191 — THE PLATEAU DICHOTOMY: 3 conflated objects DISENTANGLED (w / w_LL / m*, pairwise-distinct at every tower level), and the decisive m* is SUB-LINEAR (extending the favorable lean to n=64/128) but ~Θ(log²n) not clean-additive — PROXY face, m*(64+) recursion-extrapolated (nubs, demand seat, 2026-06-16)
+
+Filled the named n=64/128 data gap on the ONE open prize dichotomy (lalalune's 8-angle assault:
+is |P| additive ⟹ prize HOLDS or multiplicative ⟹ FAILS). DATA + disentangling — NOT a proof of
+the dichotomy, NOT the real BGK wall.
+
+* **Disentangling [the progress lalalune named "itself progress"].** The "+1 vs ×2" framing
+  conflates THREE genuinely distinct functions of the same worst-direction cascade (rate ρ=1/4,
+  worst imprimitive dir (5n/8, n/4), orbit size S=n/gcd=8 constant up the tower):
+  (i) **w** = cascade run-length = v₂(gcd(b−a,n)) — ADDITIVE +1 (1,2,3,4 at n=16/32/64/128);
+  (ii) **w_LL** = Lam–Leung invariant-class count = v₂(n)−1 — ADDITIVE +1 (3,4,5,6);
+  (iii) **m\*** = binding-depth threshold = min{m : D*_n(m) ≤ budget} — the DECISIVE object.
+  CALIBRATION PASSES: the n=32 triple (w,w_LL,m\*) = **(2,4,5)** = lalalune's cited "different
+  answers 2/4/5." Pairwise-distinct at EVERY level (n=64→(3,5,8), n=128→(4,6,12)) — not an accident.
+* **The decisive fit [EXACT n≤32 + recursion-extrapolated n=64/128].** m\* = 3, 5, 8, 12.
+  EXACT refutations from n=32 alone: multiplicative (m\*(32)=2·3=6) REFUTED (real 5); linear
+  (n/4−1=7) REFUTED (real 5 — the 2-adic dip). m\*/n = 0.1875→0.156→0.125→0.094 **strictly → 0
+  ⟹ SUB-LINEAR**, extending the favorable lean AGAINST the prize-FAILS horn; dip (n/4−1)−m\* =
+  0,2,7,19 grows ~quadratically. BUT m\*/log₂n = 0.75→1.0→1.33→1.71 GROWS ⟹ **m\* ~ Θ(log²n)**,
+  super-O(log n) — NOT the clean additive-O(log n) prize either.
+* **Verdict: LEANS-ADDITIVE (weak).** On this proxy face, m\* is sub-linear ⟹ prize NOT refuted,
+  but ~log²n ⟹ not the clean prize; n≤128 still cannot separate log²n from a slow polynomial
+  (lalalune's caveat holds). Two of three objects (w, w_LL) ARE clean additive; the decisive m\* is
+  sub-linear-but-super-log. A growth law for one does NOT transport to another (refutes cross-object
+  transport).
+* **Honest limits (carried).** m\*(64)=8, m\*(128)=12 are RECURSION-extrapolated (m\*(2n)=m\*(n)+w(2n),
+  EQUALITY-verified at only ONE clean step 16→32; rho4 cascade brute-intractable at n≥64,
+  C(64,24)~10¹⁸). The exact-solid parts: the n=16/32 triples, and the deep-band #bad data
+  89/1441/22657/356865 (n=16/32/64/128, all ≤ K/2 — matches the verified O181 r=5 brick via the
+  O183 orbit law). This is the over-determined Johnson/Plotkin PROXY face; the real p-dependent
+  BGK sup-norm wall is UNTOUCHED and OPEN.
+
+**Where it lands:** the dichotomy's proxy-face evidence now extends favorably (sub-linear) to
+n=64/128 and the 3 objects are cleanly separated — genuine progress on understanding the dichotomy
+— but it is NOT decided (m\* extrapolated past n=32; log² vs slow-poly inseparable; proxy ≠ real
+wall). Artifacts: scripts/probes/genlaw/o191_plateau/.
