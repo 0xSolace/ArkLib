@@ -984,6 +984,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingDecayCrossingDep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeepBandOrbitCountDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarRungGranularity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DiBenedettoBetaValidityWindow
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoCompose
