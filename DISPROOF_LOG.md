@@ -4701,3 +4701,47 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # NO moment/census/orbit/pencil/spectrum re-derivation. A Sym-cardinality object, NOT a delta*/
 # incidence object -- asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson/growth-law
 # claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O238 (lane f6cross): the F6 explicit-lower-bound CROSSING FOLD `M_cross` is a `Nat.findGreatest`
+## (hard upper edge), NOT the prose "least depth" -- because the complete-homogeneous dominator
+## `chooseCH s r` is MONOTONE INCREASING in `r` (F6's own `chooseCH_mono`).
+#
+# CONTEXT. `_BchksF6_ExplicitDeltaStarLower` assembles `delta* >= 1 - rho - (M_cross-1)/n` and its
+# PROSE defines `M_cross` := "the LEAST depth `r` at which the char-free worst bad count
+# `poly * chooseCH(s,r)` drops within the soundness budget `eps*|F|`", where
+# `chooseCH s r = C(s+r-1, r)`. F6's own theorem `chooseCH_mono` proves `chooseCH s r` is MONOTONE
+# INCREASING in `r`. An increasing dominator within a budget is a DOWN-SET in `r` (initial segment):
+# once it leaves the budget it never returns.
+#
+# THE CONSTRAINT (probe `probe_f6_crossing_monotonicity.py`, s=2..32 x 4 budgets, 0 fails / 16):
+#  (1) the LEAST `r` in budget is DEGENERATE -- it is `0` (since `chooseCH s 0 = 1 <= budget` for any
+#      `poly <= budget`). So the prose "least depth crossing" is the empty-multiset rung, NOT the
+#      binding depth `m*`.
+#  (2) the CORRECT crossing fold is the GREATEST `r` in budget (`Nat.findGreatest`), with a HARD upper
+#      edge (`budget < poly*chooseCH s r => budget < poly*chooseCH s r'` for all `r' >= r`). This
+#      matches the in-tree DECREASING over-det edge cascade (`DecouplingDecayCrossingDepth.crossingDepth
+#      = m-1`, LINEAR = the cliff-at-n/2), which is the genuine binder.
+#  (3) F6's `mStar_le_cross` is SOUND but over an ABSTRACT cascade `D` whose nonvacuity witness
+#      `modelD = [200,200,200,0,..]` is DECREASING-to-budget (a least-`r` `Nat.find` binder, `m*=3`,
+#      is meaningful there). The PROSE identification `D := poly*chooseCH` carries the OPPOSITE
+#      monotonicity, so the "least-`r` crossing of `poly*chooseCH`" (= 0) is NOT the object
+#      `mStar_le_cross` caps. The two `Nat.find` objects DIFFER.
+#
+# THE BRICK (landed, `_BchksF6_CrossingFoldMonotonicity.lean`, axiom-clean, 8 thms):
+#  - chooseCH_mono_le (s>=1): full-range monotonicity (lift of F6's one-step `chooseCH_mono`).
+#  - budget_predicate_downward_closed: the budget predicate is downward-closed in depth.
+#  - least_in_budget_is_zero (HEADLINE): `poly <= budget -> Nat.find (least r in budget) = 0`.
+#  - budget_fails_above_edge: the hard upper edge (monotone failure above the edge).
+#  - findGreatest_is_crossing_fold / findGreatest_crossing_in_budget: the correct fold is a
+#    `Nat.findGreatest` (every in-budget depth `<=` the fold; the fold itself is in budget).
+#  - modelD_decreasing_to_budget + crossing_fold_mismatch: F6's `modelD` is OPPOSITE-monotone; at the
+#    F6 scale (s=8,poly=1,budget=120) least-r of the increasing `chooseCH` = 0 while findGreatest = 3.
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure, NOT a refutation of F6's theorems (they hold over
+# abstract `D`). Pure Nat monotonicity + `Nat.findGreatest` arithmetic -- field-universal (no thinness),
+# so by rule 3 CANNOT prove CORE. Corrects the F6 reduction's crossing-fold SEMANTICS (`M_cross` =
+# findGreatest hard-edge, not least) + records the prose/object monotonicity mismatch. NON-MOMENT,
+# EXTEND-proven on F6's `chooseCH`/`chooseCH_mono`. The increasing `chooseCH` is a per-subset
+# DIRECTION-count (Sym-cardinality), NOT a delta*/incidence object -- asymptotic-guard cliff-at-n/2
+# UNTOUCHED, no capacity/beyond-Johnson claim (we CONFIRM the binding crossing is a hard upper edge,
+# consistent with the cliff guard). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
