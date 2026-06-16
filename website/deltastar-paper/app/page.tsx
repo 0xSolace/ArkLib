@@ -1,4 +1,5 @@
 import { Header } from "@/components/sections/Header";
+import { Contribute } from "@/components/sections/Contribute";
 import { Abstract } from "@/components/sections/Abstract";
 import { Contributors } from "@/components/sections/Contributors";
 import { Problem } from "@/components/sections/Problem";
@@ -11,6 +12,7 @@ import { Timeline } from "@/components/sections/Timeline";
 import { References } from "@/components/sections/References";
 
 const toc = [
+  { href: "#contribute", label: "Contribute" },
   { href: "#abstract", label: "Abstract" },
   { href: "#problem", label: "1 \u2002The threshold and the window" },
   { href: "#method", label: "2 \u2002Methodology" },
@@ -41,6 +43,7 @@ export default function Page() {
       </nav>
 
       <Header />
+      <Contribute />
       <Abstract />
       <Problem />
       <Method />
