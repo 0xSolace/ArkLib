@@ -4568,3 +4568,42 @@ fold-transport face, EXTEND-proven on the proven in-tree word-level halving theo
 (kkh26_fold_s_step_r_even), NOT a re-mapped dead face. NO moment/census/orbit/pencil re-derivation,
 NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n
 log(p/n)) UNCHANGED/OPEN.
+
+## O229 (lane spectrumdvd): the deep-band subset-sum SPECTRUM is MULTIPLICATIVELY RIGID --
+invariant under scaling by the subgroup, a union of mu_n-orbits, hence (free action) |mu_n| | card.
+DeepBandSpectrumComplementSymmetry pinned the PALINDROME |spectrum r| = |spectrum (n-r)| on the
+open prize obstruction |spectrum r| = |{ sum_{z in S} z : S in powersetCard r mu }| (= BCHKS 1.12)
+but recorded NO further structure. GREP-CONFIRMED MISSING: no theorem states the subset-sum
+spectrum's invariance under the multiplicative-subgroup dilation action (the existing dilation
+files DilationRealSignCocycle / ActionOrbitGeneralF / CosetPowerSumConcentration touch the
+bad-scalar / power-sum side, NOT the subsetSumSpectrum object of SpectrumComplementSymmetry).
+PROBE-FIRST (scripts/probes/probe_spectrum_dilation_divisibility.py, PROPER thin mu_n n=2^a,
+p >> n^3, p == 1 mod n, 3 primes/n, NEVER n=q-1; depths r in {1..5, n-3, n-2, n-1}):
+0/78 invariance fails; spectrum\{0} is a disjoint union of mu_n-orbits, every orbit size divides n,
+the action is FREE in every tested instance (all orbit sizes = n), so n | |spectrum r \ {0}| in all
+78 instances (e.g. n=8 r=2 |spec\0|=24=3*8; the NON-Sidon n=32 p=32993 r=2 still gives 416=13*32).
+SHIPPED ArkLib/Data/CodingTheory/ProximityGap/DeepBandSpectrumDilationInvariant.lean (5 thms;
+single-file lake-env-lean exit 0 + in-graph lake-locked 8314 jobs exit 0; axiom-clean {propext,
+Classical.choice, Quot.sound}):
+- subsetSum_smul: sum_{z in g*S} z = g * sum_{z in S} z (scaling a subset sum).
+- image_inv_self: (g^-1 * .) '' mu = mu given (g * .) '' mu = mu (inverse dilation symmetry).
+- smul_powersetCard: S |-> g*S maps powersetCard r mu bijectively to itself when g*mu = mu.
+- spectrum_smul_invariant (HEADLINE): g != 0, g*mu = mu => (g * .) '' (subsetSumSpectrum mu r)
+  = subsetSumSpectrum mu r. The spectrum is a union of <g>-orbits; ranging g over mu makes the
+  spectrum a union of mu-orbits under dilation.
+- smul_self_of_mulClosed: g*mu = mu for g in mu when mu is multiplicatively closed (g unit,
+  closed under * and inverses) -- the MulClosed1-data hypotheses, supplying the dilation symmetry.
+- card_dvd_of_uniform_orbit_partition: a Finset fibred by a rep map with every fibre of size m
+  has m | card (the free-action divisibility: free mu-orbits all have size |mu|, so |mu| | card).
+HONEST SCOPE (rule 3,6): a structural CONSTRAINT on the named obstruction (the spectrum's nonzero
+part is a union of mu-orbits, hence -- in the free case observed -- its cardinality is a multiple
+of |mu|), NOT a bound on it: does NOT compute |spectrum r| (the prize-critical open quantity =
+BCHKS 1.12 stays OPEN). The FREENESS of the action is an honest HYPOTHESIS of
+card_dvd_of_uniform_orbit_partition (probe-supported, NOT proven here -- it needs the
+field-arithmetic non-degeneracy that no nonzero spectrum value is mu-fixed). Together with the
+complement palindrome (O-prior) the spectrum cardinality is constrained both reflectively
+(r <-> n-r) and multiplicatively (|mu| | card). NON-MOMENT, char-free / field-universal
+additive-multiplicative combinatorics (thickness/regime never enters, no field-arithmetic input
+consumed), EXTEND-proven on the proven in-tree subsetSumSpectrum object, NOT a re-mapped dead face.
+NO moment/census/orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim,
+cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
