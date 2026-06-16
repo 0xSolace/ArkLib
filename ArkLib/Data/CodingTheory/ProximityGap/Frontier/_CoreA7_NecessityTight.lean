@@ -345,44 +345,39 @@ theorem not_MStarOLog_of_not_BCHKS
   intro hOLog
   exact hnot ((mStarOLog_iff_BCHKS1_12 D budget Sigma smap rmap P hbind hident).1 hOLog)
 
-/-! ## Part 6 — THE DECISIVE VERDICT: necessity-via-equality is BORROWED; the HONEST relation
-    `D ≤ Σ` makes `WeakestSuff ⟹ BCHKS` a genuine ESCAPE_CANDIDATE (a real gap object)
+/-! ## Part 6 — The honest relation is one-way `D ≤ Σ`; the reverse reduces to an OPEN
+    (NOT escaped) dedup-strictness question. ⚠️ The toy "escape" theorem below is VACUOUS.
 
-The necessity results of Parts 1–4 (`mStar_gt_of_BCHKS_fails`, `BCHKS_necessary`,
-`mStarOLog_iff_BCHKS1_12`) all rest on the **equality** identification
-`hident : ∀ m, D n m = Σ (smap n) (rmap n m)`. But that equality is **machine-REFUTED**:
-`BridgeB33.objectIdentity_false` proves `D` and `Σ` move in *opposite* directions — the binding
-cascade is *decreasing* `D*(m) = [40, 9, 5, 1, 1]` (`n=8, k=2`) while the distinct subset-sum
-count `|Σ_r|` is *increasing* `[3, 5, 10, 13, 21]`. So `hident` is FALSE pointwise, and the
-"necessity" of Parts 1–4 is **borrowed** from a hypothesis the project has refuted: it is the
-*sufficiency* direction read backwards under an equality that does not hold.
+**A genuine structural observation:** the necessity results of Parts 1–4
+(`mStar_gt_of_BCHKS_fails`, `BCHKS_necessary`, `mStarOLog_iff_BCHKS1_12`) all rest on the
+**equality** identification `hident : ∀ m, D n m = Σ (smap n) (rmap n m)`. That equality is
+machine-REFUTED *pointwise* (`BridgeB33.objectIdentity_false`: the binding cascade is *decreasing*
+`D*(m)=[40,9,5,1,1]` at `n=8,k=2`, while `|Σ_r|` is *increasing* `[3,5,10,13,21]`). The relation
+that IS true (A3's `hdom`) is the ONE-WAY domination
+  `D n m ≤ Σ (smap n) (rmap n m)`     (dedup can only shrink: each forced `γ_R` is a subset-sum
+                                       ratio, so #distinct-γ ≤ #distinct-subset-sums).
+Under `hdom` alone, `BCHKS ⟹ WeakestSuff` (A3 `BCHKS_imp_weakestSuff`), but the reverse
+`WeakestSuff ⟹ BCHKS` needs `Σ ≤ D`, which is false pointwise. So the necessity packaged in
+Parts 1–4 is *conditional* on the refuted `hident` — honest only because `hident` is carried as an
+explicit Prop, never asserted.
 
-The **honest** structural relation (A3's `hdom`, the only one that is actually true) is the
-ONE-WAY domination
+**⚠️ HONEST CORRECTION — this is NOT an escape (see KB §G).** The theorem
+`weakestSuff_strictly_below_BCHKS` below is a valid theorem of a **DEGENERATE TOY MODEL**
+(`D ≡ 0`, `budget ≡ 0`): it proves only that the abstract predicates `WeakestSuffWindow` and
+`BCHKS1_12` are *different formulas*, which is trivially true (they test different functions). It
+does **NOT** exhibit a real escape on the actual nonzero cascade `[40,9,5,1,1]`, and it tests `Σ`
+against the small budget `≈ n` whereas the genuine BCHKS open input is the THRESHOLD form against
+the FIELD budget `q·ε* ≫ n` — at which `_CoreA3deep.threshold_form_absorbs_escape` shows the
+apparent gap evaporates. So the "escape" is a renaming/units artifact, not a way past the wall.
 
-  `D n m ≤ Σ (smap n) (rmap n m)`     (dedup can only shrink: every forced bad scalar `γ_R` is a
-                                       subset-sum ratio, so #distinct-γ ≤ #distinct-subset-sums).
-
-Under `hdom` alone, `BCHKS ⟹ WeakestSuff` holds (A3 `BCHKS_imp_weakestSuff`) but the **reverse**
-`WeakestSuff ⟹ BCHKS` does NOT — it would need the refuted `Σ ≤ D`. This part **resolves the
-decisive question** by proving the reverse is a genuine escape:
-
-* `weakestSuff_strictly_below_BCHKS` — a CONCRETE countermodel satisfying the true `hdom : D ≤ Σ`
-  in which `WeakestSuff` HOLDS but `BCHKS1_12` FAILS. So `WeakestSuff` is **strictly weaker** than
-  BCHKS: closing the prize via `WeakestSuff` need NOT close BCHKS. This is the ESCAPE_CANDIDATE.
-* `no_structural_proof_of_reverse` — the META-NO-GO: there is NO proof of
-  `(∀ D Σ …, hdom → WeakestSuff → BCHKS1_12)`; any such proof is refuted by the countermodel.
-  So the reverse implication cannot be obtained from the structural relation; it requires NEW
-  input (the dedup-closes-at-log-depth growth law), which is exactly the open frontier.
-* `reverse_iff_dedup_trivial` — the EXACT gap object: `WeakestSuff ⟹ BCHKS` holds iff the dedup
-  slack `Σ − D` is `0` at the matched log-depth fold (`Σ ≤ D` there). This names the precise
-  missing combinatorial input, and `BridgeB33.objectIdentity_false` refutes it *off* threshold.
-
-**The verdict is therefore ESCAPE_CANDIDATE, not "the wall is unavoidable".** The reduction
-`prize ⟹ BCHKS` is tight ONLY under the refuted equality `hident`; under the honest one-way
-relation it is strictly one-directional, and `WeakestSuff` (the p-INDEPENDENT distinct-γ
-union-count budget test at log depth) sits *strictly below* BCHKS in the implication order — a
-genuine candidate escape worth pursuing, with the gap localized to the dedup growth law. -/
+**The genuine, UNSETTLED residual** is whether the dedup `D ≤ Σ_r` is *strict at logarithmic
+depth* `m ≈ log n` (`reverse_iff_dedup_trivial` names the exact gap: the reverse holds iff the
+dedup slack vanishes at the matched fold). Strict ⟹ the prize would need strictly less than BCHKS;
+equal ⟹ the wall. This is a p-INDEPENDENT growth-law question, off the analytic MGF wall — but it
+is **OPEN, not resolved in either direction**, and in-tree cross-checks (the distinct-γ
+generating-function support GROWS; the field-budget threshold absorbs the toy gap) lean toward
+"reduces to the wall." Do NOT cite Part 6 as having found an escape; cite it as localizing the
+open core to the dedup-strictness-at-log-depth question. -/
 
 /-- **`WeakestSuff` in window form** (the A3 distinct-γ budget test, phrased so it matches BCHKS's
 `∃ m ≤ c log n` window — this is the comparison A3/B31 actually make). There is a constant `c` so
@@ -412,20 +407,20 @@ theorem weakestSuffWindow_of_BCHKS_of_dom
   obtain ⟨m, hmle, hbud⟩ := hc n hn
   exact ⟨m, hmle, le_trans (hdom n m) hbud⟩
 
-/-- **THE ESCAPE_CANDIDATE — `WeakestSuffWindow` is STRICTLY weaker than BCHKS 1.12.**
+/-- **Abstract-predicate separation (⚠️ VACUOUS as an escape — see Part 6 correction & KB §G).**
 
-A CONCRETE countermodel that satisfies the TRUE structural relation `hdom : D ≤ Σ` (the only
-relation actually known to hold), in which `WeakestSuffWindow` HOLDS but `BCHKS1_12` FAILS:
+This proves only that `WeakestSuffWindow` and `BCHKS1_12` are *different formulas*, via a DEGENERATE
+TOY MODEL — it does NOT exhibit a real escape on the actual cascade:
 
-* `D n m := 0`  — the distinct-γ union count is fully deduplicated (within budget at every fold).
-* `Sigma s r := r + 1`  — the subset-sum count grows without bound (never within the budget `0`).
-* `budget n := 0`, `smap := id`, `rmap n m := m`, regime `P := fun _ => True`.
+* `D n m := 0`  — NOT a configuration of the real cascade (which is `[40,9,5,1,1]≠0`); makes
+  `WeakestSuffWindow` hold *vacuously*.
+* `Sigma s r := r + 1`, `budget n := 0`, `smap := id`, `rmap n m := m`, `P := fun _ => True`.
 
-Then `hdom` holds (`0 ≤ r+1`), `WeakestSuffWindow` holds (`D = 0 ≤ 0`), but `BCHKS1_12` FAILS:
-for any `c`, at `n = 1` the only fold `m ≤ c·log₂ 1 = 0` is `m = 0`, giving `Σ 1 0 = 1 > 0`. So
-no constant makes the BCHKS window hold. Hence **`WeakestSuffWindow ⇏ BCHKS1_12`**: closing the
-prize through the distinct-γ union count need NOT close BCHKS — the reduction is one-way. This is
-the decisive *escape candidate*: the gap is the dedup slack `Σ − D`, which this model maximizes. -/
+Then `hdom` holds (`0 ≤ r+1`), `WeakestSuffWindow` holds vacuously (`D = 0 ≤ 0`), but `BCHKS1_12`
+fails (`Σ 1 0 = 1 > 0`). This is a true theorem, but the witness is degenerate and tests `Σ` against
+the small budget `≈ n` rather than the genuine FIELD budget `q·ε* ≫ n` (where
+`_CoreA3deep.threshold_form_absorbs_escape` shows the gap evaporates). So it is NOT a way past the
+wall — the real residual is the OPEN dedup-strictness-at-log-depth question (Part 6). -/
 theorem weakestSuff_strictly_below_BCHKS :
     let D : ℕ → ℕ → ℕ := fun _ _ => 0
     let Sigma : ℕ → ℕ → ℕ := fun _ r => r + 1
@@ -457,9 +452,10 @@ There is NO valid implication `∀ D Σ smap rmap budget, hdom → WeakestSuffWi
 the countermodel of `weakestSuff_strictly_below_BCHKS` refutes any such universally-quantified
 proof. So the reverse direction `WeakestSuff ⟹ BCHKS` **cannot** be obtained from the honest
 one-way domination alone — it genuinely requires NEW input beyond `D ≤ Σ` (namely the reverse
-`Σ ≤ D` at log depth, the dedup-triviality growth law). This is the precise sense in which the
-reduction is NOT tight under the honest relation: the wall is *avoidable in principle* via the
-weaker `WeakestSuff`, and proving otherwise needs a theorem the project does not have. -/
+`Σ ≤ D` at log depth, the dedup-triviality growth law). ⚠️ This does NOT mean the wall is avoidable:
+it means the reverse direction is not a *purely structural* consequence and reduces to the OPEN
+dedup-strictness-at-log-depth growth law (Part 6; in-tree evidence leans toward the wall). It names
+where the open input lives; it does not provide an escape. -/
 theorem no_structural_proof_of_reverse :
     ¬ ∀ (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
         (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (P : ℕ → Prop),
@@ -495,10 +491,11 @@ theorem reverse_of_dedup_trivial
 * `(←)` `WeakestSuffWindow` implies BCHKS 1.12 *only* under the reverse `hrev : Σ ≤ D`
   (the open dedup-triviality), and the countermodel shows `hdom` alone is NOT enough.
 
-So `WeakestSuffWindow ≤ BCHKS 1.12` strictly (under the honest relation), with equality precisely
-when the dedup vanishes at log depth. The reduction `prize ⟹ BCHKS` is therefore TIGHT only under
-the B33-refuted equality `hident`; under the true relation it is one-way and `WeakestSuff` is a
-genuine escape candidate. -/
+So `WeakestSuffWindow ≤ BCHKS 1.12` (one-way, under the honest relation), with equality precisely
+when the dedup vanishes at log depth. The reduction `prize ⟹ BCHKS` is TIGHT under the equality
+`hident`; under the true one-way relation, whether `WeakestSuff` is *strictly* below BCHKS (vs
+equal) is the OPEN dedup-strictness-at-log-depth question — NOT an established escape (the toy
+separation is vacuous, and the field-budget threshold absorbs it; in-tree evidence leans wall). -/
 theorem weakestSuffWindow_le_BCHKS_honest
     (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
     (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (P : ℕ → Prop)
