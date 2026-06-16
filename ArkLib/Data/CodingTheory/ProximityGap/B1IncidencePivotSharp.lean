@@ -142,6 +142,35 @@ theorem worstCaseFarIncidenceBounded_alphabet
   obtain ⟨i₀, Cv, hCv, hpiv, hcover⟩ := hgate u₀ u₁ hfar
   exact farIncidence_le_card_alphabet C δ u₀ u₁ i₀ hpiv Cv hCv hcover
 
+/-- **THE CONSTRAINT (the lever's reach, contrapositive).**  If the worst-case far-line
+incidence STRICTLY EXCEEDS the available pivot-value count `(Cv.image (· i₀)).card`, then
+**no common pivot at `i₀` with cover `Cv` exists** for that stack.  This delineates exactly
+where the common-pivot discharge can and cannot reach: it is INAPPLICABLE precisely at the
+worst-case incidence binder.
+
+Concretely, `B1IncidenceBridge.lean`'s own `probe_farline_incidence_exact` enumeration
+(p-independent) records the worst-case far-incidence binders `9, 13, 89` at `n = 8, 12, 16`,
+which EXCEED the readout value-count `n` (`8, 12, 16`) — and those binders occur at
+agreement-set size past Johnson and direction `b = k` (not the top `b = n-1`).  So whenever
+the pivot values are confined to a set of size `≤ n` (e.g. the top-direction readout, whose
+values lie in `μ_n`), this constraint shows the common pivot **provably fails at the binder**:
+the injection `γ ↦ pivot value` cannot be onto more than `n` values, but the binder needs
+`9 > 8`, `13 > 12`, `89 > 16` distinct bad `γ`.  The common-pivot discharge therefore covers
+only the sub-binder (sub-Johnson) face; the prize `δ*` binder lives strictly outside it. -/
+theorem no_commonPivot_of_incidence_gt_pivotValueCount
+    (C : Set (ι → A)) (δ : ℝ≥0) (u₀ u₁ : ι → A) (i₀ : ι)
+    (Cv : Finset (ι → A)) (hCv : ∀ c ∈ Cv, c ∈ C)
+    (hcover : CommonPivotCoordinate (F := F) C δ u₀ u₁ i₀ →
+      ∀ γ : F, (∃ S : Finset ι, (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+          ∃ w ∈ C, ∀ i ∈ S, w i = u₀ i + γ • u₁ i) →
+        ∃ S : Finset ι, i₀ ∈ S ∧ (S.card : ℝ≥0) ≥ (1 - δ) * Fintype.card ι ∧
+          ∃ w ∈ Cv, ∀ i ∈ S, w i = u₀ i + γ • u₁ i)
+    (hgt : (Cv.image (fun c => c i₀)).card < farIncidence (F := F) C δ u₀ u₁) :
+    ¬ CommonPivotCoordinate (F := F) C δ u₀ u₁ i₀ := by
+  intro hpiv
+  have hle := farIncidence_le_pivotValueCount C δ u₀ u₁ i₀ hpiv Cv hCv (hcover hpiv)
+  exact absurd (lt_of_lt_of_le hgt hle) (lt_irrefl _)
+
 end ProximityGap.IncidenceInjection
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound only) -/
@@ -153,3 +182,5 @@ set_option linter.style.longLine false in
 #print axioms ProximityGap.IncidenceInjection.farIncidence_le_card_alphabet
 set_option linter.style.longLine false in
 #print axioms ProximityGap.IncidenceInjection.worstCaseFarIncidenceBounded_alphabet
+set_option linter.style.longLine false in
+#print axioms ProximityGap.IncidenceInjection.no_commonPivot_of_incidence_gt_pivotValueCount
