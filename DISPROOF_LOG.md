@@ -4072,3 +4072,25 @@ any prime-uniform / thickness-monotone version is FALSE. Axiom-clean {propext, C
 Quot.sound} on all 5 (single-file lake-env-lean + in-graph 3297 jobs); no sorry/axiom/native_decide.
 Does NOT prove S<=45n^2-40n for general p (open char-p count) and touches NO r>3 rung. CORE
 M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## O205 -- di Benedetto edge-saving SENSITIVITY: per-unit t3-decrease buys 1/36, per-unit t2-decrease
+buys 1/144, EXACT for all (t2,t3); t3-step = 4x t2-step (the t3-dominance lever-selection) (sol, 2026-06-16)
+RESULT (EXTEND-proven NON-MOMENT structural brick, NOT a CORE closure). _DiBenedettoNearSidon
+Improvement.lean pins diBenedettoSaving(t2,t3)=(10-2t3-t2/2)/72, its baseline (31/2880), near-Sidon
+value (1/24), antitone monotonicity, the 1/24 CEILING, and the conditional charSum bound -- but the
+file docstring asserts the LEVER-SELECTION rationale ("t3 is the dominant input, sensitivity -2/72,
+four times t2's -1/144") ONLY IN PROSE. grep-confirmed: no 1/36 / 1/144 sensitivity statement
+anywhere in ProximityGap. This brick formalizes that quantitative core (the WHY-attack-E3-not-E2 of
+the whole near-Sidon improvement): diBenedettoSaving_t3_step (sav t2 t3 - sav t2 (t3+1) = 1/36),
+diBenedettoSaving_t2_step (sav t2 t3 - sav (t2+1) t3 = 1/144), both for ALL (t2,t3) (the saving is
+affine, so finite differences = exact slopes); diBenedettoSaving_t3_dominates_t2 (the t3-step = 4x
+the t2-step, the exact 4x dominance) + the strict version + the two absolute slopes (-1/36, -1/144).
+PROBE (exact Fraction, all (t2,t3) in {2,49/20,5,3}x{3,4,7/2,9/2}, NEVER nq-1): per-unit t3-decrease
+= 1/36 EXACT, per-unit t2-decrease = 1/144 EXACT, ratio = 4 EXACT, baseline 31/2880 + near-Sidon
+1/24 anchors match. VERDICT PASS. Axiom-clean {propext, Classical.choice, Quot.sound} on all 6
+(single-file lake-env-lean + in-graph) -- pure affine ring/linarith over R; no sorry/axiom/native_
+decide. HONESTY: field-universal exponent bookkeeping, NOT thinness-essential, NOT a moment/census/
+orbit/pencil/resonance object. It identifies the best lever WITHIN the energy method, which the
+parent file ALREADY proved is capped at saving <= 1/24 < 1/2 (12x short of the prize cancellation
+exponent) -- so this does NOT push the frontier past the energy ceiling. Touches NEITHER delta* NOR
+the cliff-at-n/2 incidence object. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
