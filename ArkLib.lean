@@ -1187,6 +1187,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HankelPronyCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._I031OrbitQuotient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealLatticeMinkowskiCorrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IdealSVPGirthVerdict
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ImprimitiveBadSetDecomp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ImprimitiveRatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsoSparsityMasonStothers
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IsolatedCountKelley

@@ -14443,3 +14443,33 @@ the ASYMPTOTIC deep band r~log n, not these shallow rungs). Bonus rung r=7: #bad
 reduction holds and now checks at n=64; the general-r kernel is a reusable tool for any future rung. This
 does NOT advance the prize (the residual orbit count = BCHKS 1.12 = the open wall). Verified dead-end /
 cross-verification — it counts, and it is not overclaimed as progress.
+
+
+### O185 STRUCTURAL companion to Close26: the imprimitive bad-set decomposition (the plateau excess IS the odd-residue rung) (imprimdecomp lane, 2026-06-16)
+
+`_Close26_PrimitiveCleanRecursion` discharges B26's exact-cover at a PRIMITIVE direction (`gcd(b-a,n)=1`):
+there the level-2n bad set `B'` is all-even, `B' = dbl '' B` exactly, `|B'|=|B|` (clean recursion, NO
+plateau). At an IMPRIMITIVE direction B27 (`imprimitive_orbit_dvd_half`) shows the orbits are mu_2-invariant
+(`S | n/2`): an EXTRA invariant rung appears on the ODD residues, `hP_even` fails, the clean cover does not
+apply. `_ImprimitiveBadSetDecomp.lean` supplies the missing structural companion (axiom-clean
+{propext, Classical.choice, Quot.sound} on all 11, no sorry, in-graph lake-locked 8316 jobs exit 0):
+
+- `evenPart`/`oddPart` = the even/odd-residue parts of an ARBITRARY level-2n bad set (no primitivity needed);
+- disjoint + cover + `card_eq_evenPart_add_oddPart` : `|B'| = |evenPart| + |oddPart|` (exact partition);
+- `evenPart_eq_image_dbl_half` : the even part = `dbl '' (half '' evenPart)` (Close26's cover on the even half);
+- `half_injOn_evenPart` + `evenPart_card_eq` : halving is injective on the even part => `|evenPart| = |B_even|`;
+- `card_eq_halfImage_add_oddPart` (HEADLINE) : `|B'| = |B_even| + |oddPart|`, B_even = `half '' (B' cap evens)`;
+- `oddPart_eq_empty_of_all_even` + `card_eq_halfImage_of_all_even` : the PRIMITIVE case (Close26's `hP_even`)
+  collapses the odd rung to empty => `|B'| = |B_even|`, RECOVERING `primitive_clean_recursion`.
+
+NET (structural decoupling, NOT a closure): the dyadic-cascade plateau EXCESS is EXACTLY `|oddPart|`, the
+imprimitive antipodal rung, cleanly separated from the even part (which obeys Close26's clean halving).
+
+HONEST SCOPE: does NOT bound `|oddPart|`. Whether it is `+1/level` (prize-holds) or `x2/level` (prize-fails)
+plateau-width is the open quantitative E5/E7 input (BCHKS 1.12) = the wall, named in B27's honest scope +
+B28/B31, NOT discharged here. Field-universal Fin/Finset index arithmetic; thinness enters only via WHICH
+directions are imprimitive at the 2-power level. ASYMPTOTIC GUARD compliant (no capacity/beyond-Johnson/
+sub-linear claim; cliff-at-n/2 untouched). PROBE `scripts/probes/probe_imprimitive_decomp.py` (PROPER thin
+mu_n=2^mu orbit model, n=4..256, primitive+imprimitive shifts, never n=q-1): exact partition + card
+additivity + `primitive <=> Odd empty`, 47/47. CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN.
+-- imprimdecomp lane, co-author wakesync.
