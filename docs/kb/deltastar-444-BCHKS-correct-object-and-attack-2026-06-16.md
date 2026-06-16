@@ -75,6 +75,21 @@ good-prime (reduces to effective PNT) + char-p anomaly exponent-0 (the deep-r en
 the genuine open residual).** The leading order is char-free and ATTACKABLE; the wall is only the
 sub-leading exact-constant correction.
 
+## D2. PROGRESS — explicit δ* LOWER BOUND LANDED (modulo 3 named residuals) [2026-06-16]
+
+Floor proof on the CORRECT object, axiom-clean on fork/main:
+- **F3 `prize_reduces_to_SumsetExtremality`** — corrected master reduction (window interior from ONE
+  open hyp `SumsetExtremality`, not the false `|Σ_r|≤budget`); fires at verified δ*(μ_16)=9/16.
+- **F6 `explicit_deltaStar_lower_bound`** — `δ* ≥ 1 − ρ − M_cross/n` (M_cross = complete-homogeneous
+  crossing fold), from THREE named residuals; char-free pieces discharged; non-vacuity at 9/16.
+- **F4 `badPrimeSet_card_le`** — Linnik good-prime residual (combinatorial half).
+
+REMAINING residuals (the genuine open content): **F1 char-free Sumset-Extremality
+`#bad ≤ poly·C(s+r−1,r)`** (the BULK = the prize's char-free core), good-prime Linnik (analytic
+half), and **F5 char-p anomaly exponent-0** (deep-r W_r=0; onset grows faster than n⁴). The explicit
+lower bound is PROVEN modulo these; pinning the EXACT bound = discharging F1 + the two analytic
+residuals.
+
 ## D. ACTIONS
 1. Mark the in-tree `BCHKS1_12` Prop as MIS-STATED (subset-sum on the wrong side); the real floor is
    Sumset-Extremality `#bad ≤ poly·|H^{(+r)}|`. The `prize_reduces_to_BCHKS` reduction is vacuous on
