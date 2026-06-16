@@ -3857,3 +3857,36 @@ char-agnostic, p-independent, NOT thinness-essential. NO capacity / beyond-Johns
 closure claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. Author Sol, co-author wakesync.
 -- orbsize.
+
+## O198 -- resonance moment base case r=1: T_1 = m-1 (sqrt-p-free Salem-Zygmund L2-mass), and the
+ResonanceConjecture holds UNCONDITIONALLY at depth r=1 for m>=2 (EXTEND-proven on
+GaussPhaseResonance, NON-moment, grep-confirmed-MISSING, frontier-movement)
+
+GaussPhaseResonance (#407) names the sqrt-p-free free variable of the prize: the phase-sum
+phaseSum u r c (over r-tuples of nonzero residues summing to c, of prod u(X i)) and the deep
+resonance moment T r = resonanceMoment u r = sum_c |phaseSum u r c|^2. It proves only T r >= 0 + a
+vanishing-iff criterion, and states the open ResonanceConjecture T r <= (2 m log m)^r at binding
+depth r ~ log m. It pins NO value of T r. grep-confirmed-MISSING: no in-tree phaseSum_one / T_1
+value / r=1 discharge. This brick supplies the EXACT base case r=1. MECHANISM (NOT a moment/energy
+move; the r=1 filter collapses to a singleton): the filter {X : Fin 1 -> ZMod m | forall i, X i !=
+0 and sum X = c} is the singleton {fun _ => c} for c != 0 and empty for c = 0, so phaseSum u 1 c =
+(if c = 0 then 0 else u c), hence T_1 = sum_{c != 0} |u c|^2; for a unit-phase vector u (|u l| = 1,
+the Gauss-sum unit phases u_l = tau(chi^l)/sqrt p) this is EXACTLY m-1. This is the sqrt-p-free core
+of the Salem-Zygmund / Parseval L2-mass sum_j |tau(chi^j)|^2 / m^2 = (m-1) p / m^2 (the verified
+avg |eta_b|^2 ~ n second-moment fact, p divided out). At r=1 the conjecture m-1 <= 2 m log m holds
+unconditionally for m >= 2 (2 m log m >= 2 m log 2 >= 1.386 m >= m >= m-1). PROBE
+scripts/probes/probe_resonance_moment_r1.py (ONE sweep, random unit phases, m=3..255, never n=q-1):
+phaseSum u 1 c = u(c) for c!=0 / 0 for c=0, and T_1 = m-1 EXACT; VERDICT PASS. FORMALIZED
+Frontier/_ResonanceMomentBaseCase.lean (single-file lake-env-lean exit 0 + in-graph lake-locked
+8314 jobs exit 0; axiom-clean subset of {propext, Classical.choice, Quot.sound}, no
+sorry/axiom/native_decide on all 4 printed): mem_phaseSum_one_filter (the r=1 filter membership =
+singleton criterion), phaseSum_one (HEADLINE: phaseSum u 1 c = if c=0 then 0 else u c),
+resonanceMoment_one (T_1 = sum_{c!=0} |u c|^2), resonanceMoment_one_of_unit (T_1 = m-1 for unit
+phases), resonanceConjecture_one_of_unit (the conjecture holds at r=1 for m>=2). Builds DIRECTLY on
+GaussPhaseResonance.phaseSum/resonanceMoment/ResonanceConjecture (does NOT re-declare them). Does
+NOT close CORE: this is the TRIVIAL Parseval rung r=1, FAR below the binding depth r ~ log m where
+the conjecture is the recognized open Gauss-period/BGK content. NOT a census/orbit/spectrum object
+(different lever: the sqrt-p-free Gauss-phase resonance moment). NO capacity / beyond-Johnson /
+sub-linear / closure claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n
+log(p/n)) UNCHANGED/OPEN. Author Sol, co-author wakesync.
+-- resr1.

@@ -1245,6 +1245,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PlateauWidthImprimitivity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._QuadraticGaussFraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._REnergyThreeScratch
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinRealizabilityCodim
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinResidueDegree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSparseRealizability
@@ -1259,6 +1260,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseCoeffZeros
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectrumClosedFormWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StructuredFloorRateQuarter
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubgroupConvolutionIdempotent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumPeak
