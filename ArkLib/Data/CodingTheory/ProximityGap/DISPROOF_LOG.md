@@ -14275,3 +14275,36 @@ distinct-gamma union-count |U_R{gamma_R}| growth law (see GAMMA_GROWTH_LAW measu
 - W1 aggregate Gaussian-MGF envelope: "holds to n=256" was SADDLE-ONLY; uniform-in-y bulges to 1.24-1.29 (Fermat 65537); breaches its own envelope-break threshold c*~1.243.
 - v2(p-1)-gating refinement REAL but finite-n: at n=64 c monotone in v2 (v2=mu best ~1.25, v2=8 ~1.49). Trend of BEST stratum v2=mu (=generic prize prime): mean c = 1.057/1.162/1.234/1.264/1.323 for n=8/16/32/64/128 -> rising toward sqrt2=1.414, crosses envelope-break 1.243 by n~32. So all strata -> BGK constant sqrt2 asymptotically; v2=mu does NOT stay safe.
 - NET: #1 path reduces to the wall (feasibility 2, NOT independent). Only survivor = saddle bound at C=sqrt2 = generic BGK wall the prize must BEAT. Probes: scripts/probe(s)/probe_v2_stratified_M.py, probe_v2mu_trend.py. Keepable: obstruction sharpest at high-v2 primes = exactly the FRI/STARK prime regime (Goldilocks v2=32, BabyBear v2=27).
+
+### O183 — THE Φ-IMAGE-COLLAPSE SUB-LEMMA (O181) IS REDUCES-TO-WALL: the 2-power structure accounts EXACTLY the factor n/gcd(n,e−f) (rotation equivariance γ(gS)=g^{e−f}γ(S), image = ⟨g^{e−f}⟩-orbits ⊔ {0}), and the residual orbit count IS |Σ_r(μ_s)| = the BGK wall; the naive axis-subset injection is REFUTED (nubs, demand seat, 2026-06-16)
+
+Verified attack (both legs concordant, adversarial 0.93, zero fatal) on the O181 sub-lemma
+|image(Φ)| ≤ K. Outcome: the demand count's 2-power structure is now COMPLETELY characterized,
+and it provably bottoms out at the wall — the cleanest possible reduction.
+
+* **PROVEN structural law [algebraic, scale-verified n=16/32].** The c₁→γ collapse of the
+  line-cut map Φ is governed EXACTLY by the cyclic rotation group C_n: **γ(g·S) = g^{e−f}·γ(S)**
+  (from determinant multilinearity — scaling S by the primitive n-th root g pulls g^{e−f} out of
+  the bordered-Vandermonde ratio). Hence **image(Φ) = ⊔ ⟨g^{e−f}⟩-orbits ⊔ {0}**, each orbit of
+  size ord(g^{e−f}) = n/gcd(n,e−f), so **#bad = 1 + (orbit count)·n/gcd(n,e−f)** — reproduces
+  every datum (97=1+6·16, 145=1+9·16, 89=1+11·8, 113=1+14·8, 897=1+28·32). (Concordant with
+  0xSolace's rotation-equivariance substrate + orbit-size law and my B2 reduction.)
+* **The naive off-wall injection is REFUTED** (the O181 hope): image ↪ {r-subsets of n/2 axes} ×
+  {2^r signs} = K is FALSE on the maximizer — bad γ are NOT roots of unity (96/97 have γⁿ ≠ 1, so
+  not axis labels), γ ≠ −c₁ on every set, line-forced subsets span 2..r+1 axes (not exactly r),
+  and the antipode x→−x = g^{n/2}·x is INTERNAL to C_n (one Z/2, factor 2 — NOT 2^r). Frobenius
+  x→x² moves γ→γ² on only a fraction (32/97 at r=3, 0 at r≥4). The governing action is the single
+  weight-1 cyclic rotation; it cannot manufacture the 2^r·C(n/2,r) shape.
+* **What's left IS the wall.** The 2-power structure delivers ONLY the factor n/gcd(n,e−f); the
+  **residual orbit count is NOT C(n/2,r), is not controlled by the group action, and equals the
+  open subset-sum/incidence count |Σ_r(μ_s)| = BCHKS 1.12 = the BGK wall** (the same the #444
+  dossier + lalalune's lossy #bad→D* bridge identify). Also: the shortcut #bad ≤ #alignable ≤ K
+  FAILS (#alignable = 4536 > K = 4480 at n=32 r=3) — only the full closed-form #bad = 897 ≤ K
+  survives, so per-r closed forms (r=3,4,5 landed) are essential and there is no off-wall
+  general-r brick.
+
+**Where it lands:** the demand lane is now structurally COMPLETE up to the wall — the proven
+rungs r=3,4,5 (≤K/2) + the exact equivariance/orbit law + the precise statement that the
+residual orbit count = the wall. No off-wall closure exists from the 2-power structure; general-r
+#bad ≤ K is the wall, confirmed from the demand side independently of the BGK char-sum framing.
+Artifacts: scripts/probes/genlaw/o182_phi_collapse/.
