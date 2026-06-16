@@ -675,6 +675,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTail
 import ArkLib.Data.CodingTheory.ProximityGap.CharPMomentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.CharPWickAutocorrPin
 import ArkLib.Data.CodingTheory.ProximityGap.CharPWickConditionalPin
+import ArkLib.Data.CodingTheory.ProximityGap.CharSumBudgetVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.CharSumDeltaStarBridge
 import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseCore
 import ArkLib.Data.CodingTheory.ProximityGap.ChordConverseWrapper

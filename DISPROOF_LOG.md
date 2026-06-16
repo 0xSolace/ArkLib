@@ -4486,3 +4486,32 @@ recognized-open prize question, UNTOUCHED. NON-MOMENT (orbit-count/incidence-geo
 EXTEND-proven on two proven in-tree theorems, NOT a re-mapped dead face. NO moment/census/
 geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O223 (lane budgetvac): the char-sum -> incidence budget is VACUOUS at the prize budget -- the
+naive |G|+q*B route forces B=0, so M(n) <= C sqrt(n log m) cannot discharge the prize floor through
+it. EXTEND-proven on CharSumDeltaStarBridge; turns the in-tree PROSE correction into a theorem.
+CharSumDeltaStarBridge.le_mcaDeltaStar_of_charSumBound packages the only M->epsMCA route through the
+naive ceiling budget charSumIncidenceBudget G B = ceil(|G| + q*B) (q=|F|). Its docstring +
+PrizeConditionalPinCapstone's honest correction state IN PROSE that at the prize budget q*eps*=|G|
+this is VACUOUS (forces q*B<=0 => B=0). GREP-CONFIRMED MISSING: never a THEOREM (only a consistency
+witness B=|G| + prose). SHIPPED ArkLib/Data/CodingTheory/ProximityGap/CharSumBudgetVacuity.lean
+(4 thms; single-file lake-env-lean exit 0 + in-graph lake-locked 3513 jobs exit 0; axiom-clean
+{propext, Classical.choice, Quot.sound}):
+- charSumBudget_ge_card: |G| <= ceil(|G|+q*B) for B>=0 (budget carries the full domain term).
+- charSumBudget_forces_B_zero (VACUITY CORE): ceil(|G|+q*B) <= |G| (= floor(q*eps*) at q*eps*=|G|),
+  q>=1, B>=0 => B=0. The |G| term forces q*B<=0.
+- charSumBudget_prize_excludes_positive: contrapositive -- B>0 => |G| < ceil(|G|+q*B), so any
+  STRICTLY positive char-sum/power-saving bound (di Benedetto B<=n^{1-31/2880}) overshoots the
+  prize budget and cannot discharge le_mcaDeltaStar_of_charSumBound there.
+- charSum_route_vacuous_at_prize: the trivial witness B=|G| (charSumBound_satisfiable_trivial, the
+  only unconditionally-available char-sum bound) is, for |G|>=1, STRICTLY positive, hence excluded
+  -- the route cannot certify the floor at q*eps*=|G|.
+NO PROBE NEEDED (pure ceiling arithmetic): ceil(|G|+q*B)>=|G|+q*B>=|G|, budget<=|G| pins q*B<=0.
+HONEST SCOPE (rule 3,6): does NOT prove or refute CORE. The precise REACH delimiter of the
+char-sum->incidence discharge route: localizes WHY the BGK/Paley sup-norm M(n) <= C sqrt(n log m)
+cannot, THROUGH THIS ROUTE, close the floor hfloor of PrizeConditionalPinCapstone (the route's
+budget overshoots by the index factor sqrt(m)). The genuinely finer realized-incidence object
+(epsMCA at the edge) is UNTOUCHED and remains the open prize core. NON-MOMENT structural cardinality
+delimiter, EXTEND-proven on the proven in-tree budget bridge, NOT a re-mapped dead face. NO moment/
+census/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
+UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
