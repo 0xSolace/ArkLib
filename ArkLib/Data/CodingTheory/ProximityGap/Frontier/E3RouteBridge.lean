@@ -49,10 +49,27 @@ theorem e3_routes_agree (G : Finset F) (h2 : (2 : F) ≠ 0) (h0 : (0 : F) ∉ G)
 
 private instance : Fact (Nat.Prime 5) := ⟨by norm_num⟩
 
-/-- The hypotheses are satisfiable: on `μ₂ = {1,-1} = {1,4} ⊂ ZMod 5` (`m = 1`) the bridge gives
+private instance : Fact (Nat.Prime 13) := ⟨by norm_num⟩
+
+/-- **Golden path** — `μ₂ = {1,-1} = {1,4} ⊂ ZMod 5` (`m = 1`): the bridge fires,
 `negSymCount {1,4} 6 = balancedCount 6 1`. A standing witness that `e3_routes_agree` is not vacuous. -/
 example : (negSymCount ({1, 4} : Finset (ZMod 5)) 6 : ℤ) = balancedCount 6 1 :=
   e3_routes_agree {1, 4} (by decide) (by decide) (by decide) (by decide)
+
+/-- **Edge — a 4-element set** `{1,2,3,4} = {±1,±2} ⊂ ZMod 5` (`m = 2`, `|G| = 4`):
+`negSymCount {1,2,3,4} 6 = balancedCount 6 2` (both `400`). -/
+example : (negSymCount ({1, 2, 3, 4} : Finset (ZMod 5)) 6 : ℤ) = balancedCount 6 2 :=
+  e3_routes_agree {1, 2, 3, 4} (by decide) (by decide) (by decide) (by decide)
+
+/-- **Edge — a different field** `{1,-1} = {1,12} ⊂ ZMod 13` (`m = 1`): the bridge is not
+tied to one field. -/
+example : (negSymCount ({1, 12} : Finset (ZMod 13)) 6 : ℤ) = balancedCount 6 1 :=
+  e3_routes_agree {1, 12} (by decide) (by decide) (by decide) (by decide)
+
+/-- **Adversarial guard** — the `|G| = 2m` hypothesis is load-bearing: numerically
+`negSymCount {1,4} 6 = 20 ≠ 400 = balancedCount 6 2`, so the bridge must NOT apply at `m = 2` to a
+2-element set. Indeed its hypothesis `|{1,4}| = 2*2` is decidably FALSE, so the misuse is refused. -/
+example : ¬ (({1, 4} : Finset (ZMod 5)).card = 2 * 2) := by decide
 
 end ArkLib.ProximityGap.Frontier.E3RouteBridge
 
