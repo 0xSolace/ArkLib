@@ -363,8 +363,183 @@ theorem valued_image_two (x y : F)
           obtain ⟨i, hi⟩ := Finset.card_pos.mp hpos; rw [Finset.mem_filter] at hi
           exact ⟨i, Finset.mem_univ i, by rw [hi.2]; exact h'.symm⟩
 
+/-- Among balanced tuples valued in `{x,-x,y,-y}`, those with **no `x`-pair** (`#x = 0`) are the
+ones valued in `{y,-y}` with `y` in 3 positions — `C(6,3) = 20` (the `x ↔ y` mirror of
+`valued_image_two`, charted by `#x=0` instead of `image={y,-y}`). -/
+theorem valued_noX_count (x y : F)
+    (hx : x ≠ -x) (hy : y ≠ -y) (hxy : x ≠ y) (hxy' : x ≠ -y) (hmxy : -x ≠ y) (hmxy' : -x ≠ -y) :
+    ((Finset.univ.filter (fun c : Fin 6 → F =>
+        (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+        ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+        ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card)).filter
+      (fun c => (Finset.univ.filter (fun i => c i = x)).card = 0)).card = 20 := by
+  classical
+  rw [show (20 : ℕ) = Nat.choose (Fintype.card (Fin 6)) 3 by decide,
+      ← twoValue_count (ι := Fin 6) 3 y hy]
+  congr 1
+  ext c
+  simp only [Finset.mem_filter, Fintype.mem_piFinset, Finset.mem_univ, true_and]
+  have twoSum : (∀ i, c i ∈ ({y, -y} : Finset F)) →
+      (Finset.univ.filter (fun i => c i = y)).card + (Finset.univ.filter (fun i => c i = -y)).card = 6 := by
+    intro hval
+    have hdisj : Disjoint (Finset.univ.filter (fun i => c i = y)) (Finset.univ.filter (fun i => c i = -y)) := by
+      rw [Finset.disjoint_left]; intro i hi hi'
+      rw [Finset.mem_filter] at hi hi'; exact hy (hi.2 ▸ hi'.2)
+    have hcov : (Finset.univ.filter (fun i => c i = y)) ∪ (Finset.univ.filter (fun i => c i = -y)) = Finset.univ := by
+      ext i; simp only [Finset.mem_union, Finset.mem_filter, Finset.mem_univ, true_and, iff_true]
+      rcases Finset.mem_insert.mp (hval i) with h | h
+      · exact Or.inl h
+      · exact Or.inr (Finset.mem_singleton.mp h)
+    have hu := Finset.card_union_of_disjoint hdisj
+    rw [hcov, Finset.card_univ, Fintype.card_fin] at hu; omega
+  constructor
+  · rintro ⟨⟨hval4, hbx, hby⟩, hx0⟩
+    have hnx0 : (Finset.univ.filter (fun i => c i = -x)).card = 0 := by omega
+    have hval2 : ∀ i, c i ∈ ({y, -y} : Finset F) := by
+      intro i
+      rcases hval4 i with h | h | h | h
+      · exact absurd (Finset.card_pos.mpr ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ i, h⟩⟩) (by rw [hx0]; exact lt_irrefl 0)
+      · exact absurd (Finset.card_pos.mpr ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ i, h⟩⟩) (by rw [hnx0]; exact lt_irrefl 0)
+      · exact Finset.mem_insert.mpr (Or.inl h)
+      · exact Finset.mem_insert.mpr (Or.inr (Finset.mem_singleton.mpr h))
+    exact ⟨hval2, by have := twoSum hval2; omega⟩
+  · rintro ⟨hval2, hyk⟩
+    have hsum := twoSum hval2
+    have hx0 : (Finset.univ.filter (fun i => c i = x)).card = 0 := by
+      rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]; intro i _ hi
+      rcases Finset.mem_insert.mp (hval2 i) with h | h
+      · exact hxy (hi ▸ h)
+      · exact hxy' (hi ▸ Finset.mem_singleton.mp h)
+    have hnx0 : (Finset.univ.filter (fun i => c i = -x)).card = 0 := by
+      rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]; intro i _ hi
+      rcases Finset.mem_insert.mp (hval2 i) with h | h
+      · exact hmxy (hi ▸ h)
+      · exact hmxy' (hi ▸ Finset.mem_singleton.mp h)
+    refine ⟨⟨fun i => ?_, ?_, ?_⟩, hx0⟩
+    · rcases Finset.mem_insert.mp (hval2 i) with h | h
+      · exact Or.inr (Or.inr (Or.inl h))
+      · exact Or.inr (Or.inr (Or.inr (Finset.mem_singleton.mp h)))
+    · rw [hx0, hnx0]
+    · omega
+
+/-- **shape-(2,1) = 360.** Among the `400` balanced 6-tuples valued in `{x,-x,y,-y}`
+(`balanced_valued_count`), those with image exactly `{x,-x,y,-y}` are the complement of the two
+sub-image classes `#x=0` (image `{y,-y}`) and `#y=0` (image `{x,-x}`), each of size `20`
+(`valued_noX_count`); so `360 = 400 - 20 - 20`. -/
+theorem shape21 (x y : F)
+    (hx : x ≠ -x) (hy : y ≠ -y) (hxy : x ≠ y) (hxy' : x ≠ -y) (hmxy : -x ≠ y) (hmxy' : -x ≠ -y) :
+    ((Finset.univ.filter (fun c : Fin 6 → F =>
+        (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+        ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+        ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card)).filter
+      (fun c => Finset.image c Finset.univ = {x, -x, y, -y})).card = 360 := by
+  classical
+  set A := Finset.univ.filter (fun c : Fin 6 → F =>
+      (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+      ∧ (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card
+      ∧ (Finset.univ.filter (fun i => c i = y)).card = (Finset.univ.filter (fun i => c i = -y)).card)
+    with hAdef
+  have hAcard : A.card = 400 := balanced_valued_count x y hx hy hxy hxy' hmxy hmxy'
+  have hx20 : (A.filter (fun c => (Finset.univ.filter (fun i => c i = x)).card = 0)).card = 20 :=
+    valued_noX_count x y hx hy hxy hxy' hmxy hmxy'
+  -- y-mirror, with the `A`-predicate reordering absorbed
+  have hy20 : (A.filter (fun c => (Finset.univ.filter (fun i => c i = y)).card = 0)).card = 20 := by
+    have hmir := valued_noX_count y x hy hx (Ne.symm hxy) (Ne.symm hmxy) (Ne.symm hxy') (Ne.symm hmxy')
+    rw [← hmir]
+    congr 1
+    ext c
+    rw [hAdef]
+    simp only [Finset.mem_filter, Finset.mem_univ, true_and]
+    have hreorder : (∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y)
+                  ↔ (∀ i, c i = y ∨ c i = -y ∨ c i = x ∨ c i = -x) := by
+      constructor <;> intro hh i <;> [skip; skip] <;>
+        · rcases hh i with h | h | h | h <;> tauto
+    rw [hreorder, and_comm (a := (Finset.univ.filter (fun i => c i = x)).card = (Finset.univ.filter (fun i => c i = -x)).card)]
+  -- the two sub-image classes are disjoint (no tuple has both #x=0 and #y=0)
+  have hdisjxy : Disjoint (A.filter (fun c => (Finset.univ.filter (fun i => c i = x)).card = 0))
+      (A.filter (fun c => (Finset.univ.filter (fun i => c i = y)).card = 0)) := by
+    rw [Finset.disjoint_left]
+    intro c hcx hcy
+    rw [Finset.mem_filter, hAdef, Finset.mem_filter] at hcx hcy
+    obtain ⟨⟨_, hval4, hbx, hby⟩, hx0⟩ := hcx
+    obtain ⟨_, hy0⟩ := hcy
+    have hnx0 : (Finset.univ.filter (fun i => c i = -x)).card = 0 := by omega
+    have hny0 : (Finset.univ.filter (fun i => c i = -y)).card = 0 := by omega
+    -- position 0 must take some value, but every fiber is empty — contradiction
+    rcases hval4 0 with h | h | h | h
+    · exact Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr ⟨Finset.mem_univ 0, h⟩) hx0
+    · exact Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr ⟨Finset.mem_univ 0, h⟩) hnx0
+    · exact Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr ⟨Finset.mem_univ 0, h⟩) hy0
+    · exact Finset.card_ne_zero_of_mem (Finset.mem_filter.mpr ⟨Finset.mem_univ 0, h⟩) hny0
+  -- ⊇ direction of the image: a balanced tuple with #x>0 and #y>0 has image exactly {x,-x,y,-y}
+  have img4 : ∀ c, c ∈ A → 0 < (Finset.univ.filter (fun i => c i = x)).card →
+      0 < (Finset.univ.filter (fun i => c i = y)).card →
+      Finset.image c Finset.univ = ({x, -x, y, -y} : Finset F) := by
+    intro c hcA hxpos hypos
+    rw [hAdef, Finset.mem_filter] at hcA
+    obtain ⟨_, hval4, hbx, hby⟩ := hcA
+    have pick : ∀ z : F, 0 < (Finset.univ.filter (fun i => c i = z)).card → ∃ i, c i = z := by
+      intro z hz; obtain ⟨i, hi⟩ := Finset.card_pos.mp hz; exact ⟨i, (Finset.mem_filter.mp hi).2⟩
+    apply Finset.Subset.antisymm
+    · intro w hw; rw [Finset.mem_image] at hw; obtain ⟨i, _, hi⟩ := hw
+      rcases hval4 i with h | h | h | h <;> simp [hi ▸ h]
+    · intro w hw
+      rw [Finset.mem_image]
+      rcases Finset.mem_insert.mp hw with h | h
+      · obtain ⟨i, hi⟩ := pick x hxpos; exact ⟨i, Finset.mem_univ i, by rw [hi, h]⟩
+      rcases Finset.mem_insert.mp h with h | h
+      · obtain ⟨i, hi⟩ := pick (-x) (by omega); exact ⟨i, Finset.mem_univ i, by rw [hi, h]⟩
+      rcases Finset.mem_insert.mp h with h | h
+      · obtain ⟨i, hi⟩ := pick y hypos; exact ⟨i, Finset.mem_univ i, by rw [hi, h]⟩
+      · obtain ⟨i, hi⟩ := pick (-y) (by omega); exact ⟨i, Finset.mem_univ i, by rw [hi, Finset.mem_singleton.mp h]⟩
+  -- the non-4set tuples in A are exactly the two sub-image classes
+  have hcompl : A.filter (fun c => ¬ Finset.image c Finset.univ = ({x, -x, y, -y} : Finset F))
+      = (A.filter (fun c => (Finset.univ.filter (fun i => c i = x)).card = 0))
+        ∪ (A.filter (fun c => (Finset.univ.filter (fun i => c i = y)).card = 0)) := by
+    apply Finset.ext
+    intro c
+    constructor
+    · intro hmem
+      have hcA : c ∈ A := Finset.mem_of_mem_filter c hmem
+      have himg : ¬ Finset.image c Finset.univ = ({x, -x, y, -y} : Finset F) := (Finset.mem_filter.mp hmem).2
+      rw [Finset.mem_union]
+      by_contra hcon
+      push_neg at hcon
+      have hxpos : 0 < (Finset.univ.filter (fun i => c i = x)).card :=
+        Nat.pos_of_ne_zero (fun h => hcon.1 (Finset.mem_filter.mpr ⟨hcA, h⟩))
+      have hypos : 0 < (Finset.univ.filter (fun i => c i = y)).card :=
+        Nat.pos_of_ne_zero (fun h => hcon.2 (Finset.mem_filter.mpr ⟨hcA, h⟩))
+      exact himg (img4 c hcA hxpos hypos)
+    · intro hmem
+      rw [Finset.mem_union] at hmem
+      rcases hmem with hm | hm
+      · have hcA : c ∈ A := Finset.mem_of_mem_filter c hm
+        have hx0 := (Finset.mem_filter.mp hm).2
+        refine Finset.mem_filter.mpr ⟨hcA, fun himg => ?_⟩
+        have hxin : x ∈ Finset.image c Finset.univ := by rw [himg]; simp
+        rw [Finset.mem_image] at hxin; obtain ⟨i, _, hi⟩ := hxin
+        exact absurd (Finset.card_pos.mpr ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ i, hi⟩⟩) (by rw [hx0]; exact lt_irrefl 0)
+      · have hcA : c ∈ A := Finset.mem_of_mem_filter c hm
+        have hy0 := (Finset.mem_filter.mp hm).2
+        refine Finset.mem_filter.mpr ⟨hcA, fun himg => ?_⟩
+        have hyin : y ∈ Finset.image c Finset.univ := by rw [himg]; simp
+        rw [Finset.mem_image] at hyin; obtain ⟨i, _, hi⟩ := hyin
+        exact absurd (Finset.card_pos.mpr ⟨i, Finset.mem_filter.mpr ⟨Finset.mem_univ i, hi⟩⟩) (by rw [hy0]; exact lt_irrefl 0)
+  -- card arithmetic: |img=4set| = |A| - |¬img=4set| = 400 - 40 = 360
+  have hsplit := Finset.filter_card_add_filter_neg_card_eq_card
+    (s := A) (p := fun c => Finset.image c Finset.univ = ({x, -x, y, -y} : Finset F))
+  rw [hcompl, Finset.card_union_of_disjoint hdisjxy, hx20, hy20, hAcard] at hsplit
+  omega
+
 end E3Shape21Scratch
 
 #print axioms E3Shape21Scratch.fiber_card
 
 #print axioms E3Shape21Scratch.balanced_valued_count
+
+#print axioms E3Shape21Scratch.valued_image_two
+
+#print axioms E3Shape21Scratch.valued_noX_count
+
+#print axioms E3Shape21Scratch.shape21
+
