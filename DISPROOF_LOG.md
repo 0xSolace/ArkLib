@@ -4632,3 +4632,31 @@ in-tree spectrum_compl_eq_neg_image, NOT a re-mapped dead face. The "cliff-at-n/
 index, NOT an incidence-decay claim -- the asymptotic-guard cliff is UNTOUCHED. NO moment/census/
 orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim. CORE M(mu_n) <=
 C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+---
+
+## O231 — `|mu|`-divisibility of the nonzero subset-sum spectrum, freeness DISCHARGED (lane specfree)
+
+`DeepBandSpectrumFreeDivisibility.lean` (push pending). EXTEND-proven on O229's
+`spectrum_smul_invariant`, REMOVING O229's freeness HYPOTHESIS. O229
+(`card_dvd_of_uniform_orbit_partition`) proved `|mu| | |spectrum r \ {0}|` only UNDER a freeness
+hypothesis (`hfiber`: every nonzero spectrum value's orbit/fibre has size `= |mu|`), and its own
+docstring recorded the freeness as "the (provable but field-arithmetic-dependent) freeness is a
+hypothesis, not baked in". O231 discharges it: the dilation action of a finite multiplicative
+subgroup on `F \ {0}` is FREE for a one-line field reason (`g*v=v, v!=0 => g=1`, `mul_right_cancel0`
+= the existing `I031DilationOrbitReduction.dilation_free`). Three thms, axiom-clean {propext,
+Classical.choice, Quot.sound}:
+- `orbit_card_eq`: `|mu.image (.*v)| = |mu|` for `v != 0` (the field-arithmetic discharge).
+- `card_dvd_of_free_smul_action`: ABSTRACT engine — a finite set `T` of nonzero elements, stable
+  under a finite mult-closed inverse-closed subgroup `H` (`1 in H`, `0 not in H`), has `|H| | |T|`,
+  by strong induction peeling one full orbit (size `|H|`) at a time.
+- `card_dvd_spectrum_sdiff_zero_free` (HEADLINE): for mult-closed inverse-closed `mu`,
+  `|mu| | |subsetSumSpectrum mu r \ {0}|` UNCONDITIONALLY.
+PROBE `scripts/probes/probe_spectrum_freeness_discharge.py` (PROPER thin `mu_n=2^a`, `p >> n^3`,
+`p == 1 mod n`, NEVER `n=q-1`): pointwise freeness `g*v=v => g=1` for nonzero spectrum `v` 0 fails /
+57 instances; every nonzero-spectrum orbit size exactly `n`; `n | |spectrum r \ {0}|` 0 fails.
+HONEST SCOPE (rule 3,6): strengthens O229 by removing a hypothesis; constrains the open obstruction
+`|spectrum r|` (BCHKS 1.12) mod `|mu|` WITHOUT computing it (OPEN). NON-MOMENT, char-free, NOT
+thinness-essential. The "n/2"-free statement does not touch the asymptotic-guard cliff. NO moment/
+census/orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim. CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
