@@ -3553,3 +3553,42 @@ exit 0 + in-graph lake-locked exit 0): Frontier/OrbitCountDoublingInvariant.lean
 NOT a CORE closure; a constraint lemma localizing the plateau to the N->D* gap. Field-
 universal arithmetic; thinness enters only via the tower n=2^a. ASYMPTOTIC GUARD cliff-at-n/2
 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- imprimrung, co-author wakesync.
+
+## The proven entropy CEILING is decision-IMPOTENT for the plateau dichotomy: it is the WRONG inequality direction (ceildecimp)
+
+CLAIM REFUTED. That the proven entropy ceiling (prizeDeltaStar_ceiling: delta* <=
+prizeDeltaStar, unconditional) could DECIDE the additive-vs-multiplicative plateau dichotomy
+(is m* = O(log n), prize HOLDS, or m* linear, prize FAILS?). lalalune's 8-angle consolidation
+(#444, 2026-06-16 04:57Z) flagged this as finding #2, adversarially verified but NEVER a
+theorem: "entropy-ceiling | provably CANNOT decide -- ceiling bounds m* from below; deciding
+needs an upper bound (logically independent). Confirmed clean negative."
+
+MECHANISM. The ceiling bounds delta* from ABOVE. A deeper binding plateau (larger m*) means a
+smaller radius delta*, so an upper bound on delta* is exactly a FLOOR a <= m* (direction:
+BELOW). Deciding the ADDITIVE horn needs an UPPER bound m* <= g (a CEILING on m*, direction:
+ABOVE). A floor and a ceiling on the same quantity are LOGICALLY INDEPENDENT: from a <= m*
+alone one derives neither m* <= g nor g < m*. The predicate (a <= .) is realised by witnesses
+on BOTH sides of every threshold g >= a (a itself is <= g; g+1 is > g), so it implies neither.
+
+PROBE (one sweep, exact, the tree's own cStarFull from rho4.out, thin mu_n=2^a, NEVER n=q-1):
+scripts/probes/probe_entropy_ceiling_decision_impotence.py. Tower {8,16,32}: each measured m*
+clears the unconditional floor a=1 yet a strictly larger value clears it too (0 fails). The
+abstract straddle (a <= vlo <= g < vhi for vlo=a, vhi=g+1) holds for every (a,g) with a <= g
+(0 fails). The floor cannot separate the horns.
+
+FORMALIZED (axiom-clean, in fact depends on NO AXIOMS AT ALL -- strict subset of {propext,
+Classical.choice, Quot.sound}; single-file lake-env-lean exit 0 + in-graph lake-locked 112
+jobs exit 0): Frontier/_EntropyCeilingDecisionImpotence.lean --
+  - floor_not_imp_ceiling : exists v, a <= v and not v <= g (floor does not give additive horn).
+  - floor_not_imp_strict_gt : exists v, a <= v and not g < v (floor does not give mult horn).
+  - floor_straddles : for a <= g, two witnesses straddle g, both clearing the floor.
+  - ceiling_floor_cannot_decide (HEADLINE) : BOTH implications fail; the ceiling-side floor
+    decides NEITHER horn.
+  - floor_predicate_independent_of_ceiling : the general logical form (floor predicate
+    independent of any ceiling predicate).
+  - tower_instance_n32 : non-vacuity at n=32 (m*=5, floor 1, additive threshold 10=2 log2 32).
+NOT a CORE closure; a constraint lemma forbidding the ceiling-route to the dichotomy. The
+plateau-rate dichotomy = BCHKS Conj 1.12 = the BGK/Paley wall stays OPEN. Field-universal Nat
+order arithmetic; thinness enters only via WHICH m* the tower binds. NO capacity / beyond-
+Johnson / sub-linear / growth-law claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- ceildecimp, co-author wakesync.
