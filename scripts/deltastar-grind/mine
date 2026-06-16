@@ -68,7 +68,8 @@ mine_one() {
     return 0
   fi
   printf '  n=%-3s  cascade[%s] δ*=%s  w=%s  ' "$n" "${casc%% }" "$dstar" "$w"
-  if awk "BEGIN{exit !($defect >= 0.30)}" 2>/dev/null; then printf '%s\n' "${y}defect/n=$defect (leans FAILS — watch ×2)${x}"
+  if [ "$n" -lt 16 ]; then printf '%s\n' "${d}(calibration size — too small to lean)${x}"
+  elif awk "BEGIN{exit !($defect >= 0.30)}" 2>/dev/null; then printf '%s\n' "${y}defect/n=$defect (leans FAILS — watch ×2)${x}"
   else printf '%s\n' "${g}defect/n=$defect (leans HOLDS)${x}"; fi
 }
 
