@@ -14142,3 +14142,41 @@ the searched families (coset/e2=0/Frobenius/cluster/line all covered). But the l
 supply) is now concretely shown to NOT be an interior list, and the only list growth is the known
 capacity-edge ceiling. At accessible scales the evidence is FOR the floor. I no longer dismiss the disproof
 on framing — I report a thorough falsify-first hunt that came up empty, with the precise reason.
+
+### O181 — THE r=5 RUNG PROVEN (axiom-clean Lean, #bad₅ ≤ K AND ≤ K/2 all n=2^k) — demand frontier now r=3,4,5; and the per-fiber-incidence forward lead is REDUCES-TO-OPEN with a sharper THREE-LAYER obstruction + the named Φ-image-collapse sub-lemma (nubs, demand seat, 2026-06-16)
+
+Cycle: new-math fan-out C1 (per-fiber incidence) / C2 (r=5 via orbit-reduction); r=5 brick
+re-verified by me independently (EXIT 0, axiom-clean; the workflow's own verify leg died on a
+transient rate-limit, so this is my independent check — doubly required given a prior r=4 file
+once carried sorryAx).
+
+* **r=5 RUNG PROVEN [Lean axiom-clean, DeepBandR5Bound.lean].** On the maximizing line — the
+  **d = n/2 half-order resonance** (n/2+1, n−1), NOT the full-order line (corrects the cycle's
+  initial brief) — `#bad₅(g) = (4g⁴ + 3g³ − 10g² + 12)/12` (g = n/4) `= 1 + (n/2)·full_orb`,
+  `full_orb = (4g³+3g²−10g)/24` (= 11, 90, 708, 5576 at n=16/32/64/128). `deepBandBadCount5_le_budget`
+  (#bad₅ ≤ K) AND `deepBandBadCount5_two_mul_le_budget` (#bad₅ ≤ **K/2**), both g ≥ 3 (whole prize
+  domain), Lean-machine-checked (re-verified [propext,Classical.choice,Quot.sound], 0 sorryAx).
+  **KEY structural gain:** #bad₅ is DEGREE 4 in g while K is DEGREE 5, so #bad/K → 0
+  (K/#bad = 20, 97, 284, 684 — diverging) — an EXTRA degree of headroom vs r=4 (where both were
+  deg 4). Exactness #bad=formula is [COMPUTED] (divided-difference orbit kernel, n=16/32/64/128);
+  the ≤K, ≤K/2 BOUNDS are [PROVEN] — same standard as r=3/r=4. **Demand frontier: r=3, r=4, r=5
+  all proven ≤ K/2.**
+* **C1 per-fiber incidence forward lead — REDUCES-TO-OPEN [sharper obstruction].** The named lead
+  (extract a per-fiber N₂(c₁,c₂) bound from Mansfield–Mudgal to prove general-r #bad ≤ K) does
+  NOT close, and the obstruction is now THREE layers (not two): J_s = Σ r_s² (energy — M–M bounds
+  it) → #fibers = |supp r_s| (support — M–M does NOT bound; CS points the wrong way) → #bad =
+  |image of the line-cut Möbius map Φ| (M–M does NOT bound). NEW empirical fact: the bad scalar
+  γ is **NOT** −c₁ (differs on 224/236 line-forced subsets at n=16,r=3 — the prior "#bad = e₁-
+  projection" was FALSE on the maximizer); γ = Φ(c₁,c₂) is single-valued per fiber but **collapses
+  c₁** (one γ ← up to 81 distinct c₁), and M–M is blind to the collapse. The precise unproven
+  new sub-lemma: **|image(Φ)| ≤ 2^r·C(2^{k−1}, r)** (a support-image-cardinality statement, needing
+  the antipodal/Frobenius 2-power structure M–M's general theorem omits) — a direction+functional
+  mismatch UPSTREAM of any F_q-transfer issue.
+
+**Where it lands:** demand-side proven frontier r=3/4/5 (all ≤ K/2, axiom-clean), with the r=5
+degree-gap giving growing headroom. General-r (r ≥ 6) stays the analytic core, now sharpened to
+the Φ-image-collapse cardinality bound over μ_{2^k} (the count-lane facet of the BGK wall;
+consistent with the #444 dossier — shallow rungs provable, deep r ~ log n = the wall). Dossiers:
+scripts/probes/genlaw/o181_r5/. Coordinated to the orbit lane (#444 comment) — my proven counts
+are the shallow anchors for the D*(m) = orbit-size × #clique-orbits reformulation (0xSolace
+orbit-size = n, lalalune D*).

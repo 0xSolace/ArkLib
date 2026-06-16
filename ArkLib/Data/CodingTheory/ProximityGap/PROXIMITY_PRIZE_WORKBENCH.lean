@@ -40,6 +40,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 -- §D THE DEMAND-SIDE LANE (#389) — the CensusDomination #bad-scalar count, r=3 closed (O172):
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR3Bound
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR4Bound
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandR5Bound
 import ArkLib.Data.CodingTheory.ProximityGap.FactorizationRigidity
 
 /-!
@@ -619,6 +620,18 @@ open ArkLib.ProximityGap.DeepBandR4 in
 example (g : ℕ) (hg : 3 ≤ g) :
     2 * deepBandBadCount4 g ≤ deepBandBudget4 g :=
   deepBandBadCount4_two_mul_le_budget g hg
+
+/-! §D.3  THE r = 5 RUNG — PROVEN axiom-clean (`DeepBandR5Bound`, O181). #bad₅(g) =
+      (4g⁴ + 3g³ − 10g² + 12)/12 (g=n/4) = 1 + (n/2)·full_orb, full_orb=(4g³+3g²−10g)/24.
+      `deepBandBadCount5_le_budget` (≤K) AND `deepBandBadCount5_two_mul_le_budget` (≤K/2),
+      both g≥3 (whole prize domain), Lean-proven. KEY: #bad₅ is DEGREE 4 in g while K is
+      DEGREE 5 ⟹ #bad/K → 0 (K/#bad = 20,97,284,684 diverging) — an extra degree of headroom
+      vs r=4. Maximizer = the d=n/2 half-order resonance line (n/2+1, n−1). Exactness COMPUTED
+      (n=16/32/64/128 via the divided-difference orbit kernel); ≤K, ≤K/2 PROVEN. -/
+open ArkLib.ProximityGap.DeepBandR5 in
+example (g : ℕ) (hg : 3 ≤ g) :
+    2 * deepBandBadCount5 g ≤ deepBandBudget5 g :=
+  deepBandBadCount5_two_mul_le_budget g hg
 
 /-! ════════════════════════════════════════════════════════════════════════════
     ║              ▼▼▼   DEMAND-SIDE GENERAL-r CONJECTURE HERE   ▼▼▼             ║
