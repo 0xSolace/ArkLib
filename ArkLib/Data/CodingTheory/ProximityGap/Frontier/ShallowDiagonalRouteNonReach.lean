@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.EtaShallowTailUncond
+import ArkLib.Data.CodingTheory.ProximityGap.MomentWickBridge
 
 /-!
 # The unconditional diagonal shallow-tail route has ZERO sub-`n` savings (#444)
@@ -91,9 +92,46 @@ theorem shallow_ceiling_gt_card {n q : ℕ} (hn : 0 < n) (hqn : n ≤ q)
   have hpow_lt : (n : ℝ) ^ (2 * (r + 1)) < R ^ (2 * (r + 1)) := by rw [hRpow]; exact hgap
   exact lt_of_pow_lt_pow_left₀ (2 * (r + 1)) hRnonneg hpow_lt
 
+/-! ## Where the open BGK input first bites: the diagonal-vs-BGK energy crossover is at `r = 2`
+
+The shallow route above uses the diagonal energy `E_r ≤ n^{2r-1}`; the BGK/Gaussian route
+(`_AR_MomentOptimizedSupNorm`, which *does* reach the prize shape `√(2e·n·ln q)`) uses
+`E_r ≤ (2r-1)‼·nʳ = doubleFactOdd r · nʳ`. The diagonal bound is strictly *weaker* (larger) than
+the BGK bound exactly when `n^{2r-1} > doubleFactOdd r · nʳ`, i.e. `n^{r-1} > doubleFactOdd r`.
+
+Probe (`probe_diag_bgk_crossover.py`, `n=2^2..2^30`): the crossover order is `r₀ = 2` for **every**
+`n ≥ 4` — at `r = 1` the two bounds are *equal* (`n¹ = doubleFactOdd 1 · n¹ = n`), and at `r = 2`
+the diagonal already strictly exceeds BGK (`n³ > 3n²` ⟺ `n > 3`). So there is **no** order `r ≥ 2`
+at which the unconditional diagonal bound matches BGK: the open BGK input bites *immediately*, from
+`r = 2` on. This pins precisely where the shallow route's deficiency (the headline `inf_r R = n`)
+originates — there is no nontrivial unconditional rung where it could have helped. -/
+
+open ArkLib.ProximityGap.MomentWickBridge in
+/-- **At `r = 1`, the diagonal and BGK energy ceilings coincide.** `doubleFactOdd 1 · n¹ = n =
+n^{2·1-1}`. (`E_1 ≤ n` either way — the Parseval rung, where the unconditional route loses nothing.) -/
+theorem diag_eq_bgk_at_one (n : ℕ) :
+    doubleFactOdd 1 * n ^ 1 = n ^ (2 * 1 - 1) := by
+  simp [doubleFactOdd_one]
+
+open ArkLib.ProximityGap.MomentWickBridge in
+/-- **At `r = 2`, the diagonal ceiling STRICTLY exceeds the BGK ceiling, for every `n > 3`.**
+`doubleFactOdd 2 · n² = 3n² < n³ = n^{2·2-1}` ⟺ `3 < n`. So already at the first non-Parseval rung
+the unconditional diagonal bound is strictly looser than BGK — the open BGK input bites from `r = 2`. -/
+theorem diag_gt_bgk_at_two {n : ℕ} (hn : 3 < n) :
+    doubleFactOdd 2 * n ^ 2 < n ^ (2 * 2 - 1) := by
+  have hdf : doubleFactOdd 2 = 3 := by decide
+  rw [hdf]
+  have h1 : n ^ (2 * 2 - 1) = n ^ 2 * n := by ring
+  rw [h1]
+  have hpos : 0 < n ^ 2 := pow_pos (by omega) 2
+  calc 3 * n ^ 2 = n ^ 2 * 3 := by ring
+    _ < n ^ 2 * n := Nat.mul_lt_mul_of_pos_left hn hpos
+
 end ArkLib.ProximityGap.ShallowDiagonalRouteNonReach
 
 /-! ## Axiom audit — must be `[propext, Classical.choice, Quot.sound]` only. -/
 #print axioms ArkLib.ProximityGap.ShallowDiagonalRouteNonReach.shallow_pow_gt_card_pow
 #print axioms ArkLib.ProximityGap.ShallowDiagonalRouteNonReach.shallow_pow_gt_card_pow_real
 #print axioms ArkLib.ProximityGap.ShallowDiagonalRouteNonReach.shallow_ceiling_gt_card
+#print axioms ArkLib.ProximityGap.ShallowDiagonalRouteNonReach.diag_eq_bgk_at_one
+#print axioms ArkLib.ProximityGap.ShallowDiagonalRouteNonReach.diag_gt_bgk_at_two
