@@ -14959,3 +14959,46 @@ small instances with 0 violations but did NOT exhibit a witness forcing injectiv
 tested sizes -- so injectivity is stated as a sufficient PROOF hypothesis, NOT claimed empirically
 tight. Same scope caveats as O226: does NOT prove DerandomizationCore; NO capacity/growth-law claim;
 cliff-at-n/2 untouched. CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN.
+
+## O227 (lane maxfiber): the SHARP max-fiber energy ceiling E_r(G) <= R_r·|G|^r — strictly tightens the trivial |G|^{2r-1}, isolating the open content to the depth-r max fiber R_r (2026-06-16)
+
+**Lane.** EXTEND of the proven r=2 worst-period bound (`WorstPeriodSidon.worst_period_sidon_le`,
+E_2 <= 3|G|^2 under rep<=2) and a strict sharpening of the in-tree TRIVIAL max-fiber ceiling
+`REnergyMaxFiberBound.rEnergy_le_card_pow` (E_r <= |G|^{2r-1}). The trivial bound deflates the
+r-fold additive energy via the *uniform* per-fiber bound N_r(t) <= |G|^{r-1}; the convolution
+identity E_r = sum_t N_r(t)^2 factors more sharply through the *actual* max fiber
+R_r = max_t N_r(t):  E_r = sum_t N_r(t)^2 <= (max_t N_r(t))·sum_t N_r(t) = R_r·|G|^r.
+
+NON-MOMENT-CLOSURE structural brick: it does NOT attempt the (issue-§6 known-non-proving at
+structured primes) moment closure; it is the field-universal convolution inequality that REPLACES
+the trivial uniform fiber bound by the sharp R_r factor, isolating the worst-period's entire open
+dependence to the single quantity R_r = the depth-r representation count (the dyadic-Sidon-to-
+depth-r input that `GeneralMomentPeriodBound`'s NOTE explicitly names as the consumer slot).
+
+**Probe (probe_depthr_energy_ceiling.py, PROPER thin mu_n, p>>n^3, p==1 mod n, NEVER n=q-1).**
+The sharp bound E_r <= R_r·|G|^r holds at EVERY tested (n,r) in {4,8,16}x{1..5} (0 violations),
+and the gain over the trivial |G|^{r-1} grows with r:
+  n=8: r=4 -> R_r=168 vs |G|^{r-1}=512 (3.0x tighter); r=5 -> R_r=640 vs 4096 (6.4x tighter).
+  n=4: r=5 -> R_r=100 vs 256 (2.56x). n=16: r=3 -> R_r=45 vs 256 (5.7x).
+So the sharp factor is a genuine improvement, not a re-statement.
+
+**Landed (REnergyMaxFiberSharp.lean, 3 thms, axiom-clean {propext, Classical.choice, Quot.sound};
+single-file lake-env-lean exit 0 + in-graph lake-locked exit 0).**
+- `rEnergy_le_maxFiber_mul` (HEADLINE, consumer form): (forall t, N_r(t) <= B) => E_r(G) <= B·|G|^r.
+  Sharp convolution deflation; B is any uniform fiber cap.
+- `rEnergy_le_card_pow_via_maxFiber`: instantiating B = |G|^{r-1} (`card_fiber_le`) recovers the
+  trivial `rEnergy_le_card_pow` (E_r <= |G|^{2r-1}) EXACTLY — confirms strict generalization.
+- `period_pow_le_maxFiber`: composed with `GeneralMomentPeriodBound.period_pow_le_moment`
+  (‖η_b‖^{2r} <= q·E_r), under a uniform depth-r fiber cap B: ‖η_b‖^{2r} <= q·B·|G|^r. Isolates
+  the worst period's open dependence to the single max-fiber quantity B = R_r.
+
+**Honest scope (rule 3, rule 6).** NOT a CORE closure, NOT thinness-essential: a field-universal
+unconditional inequality (sum a_i^2 <= max·sum a_i). It does NOT supply a bound on R_r itself —
+THAT (a depth-r Sidon bound on the max fiber at depth r ~ log m) is the genuine open deep-moment
+quantity, and the moment route is known (§6) non-proving at structured primes. What it adds: the
+SHARP R_r factor replacing the trivial |G|^{r-1}, the exact in-tree statement of where the energy's
+open content lives. NO census/orbit/pencil/completion/derandomization re-derivation. NO capacity/
+beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. EXTEND-proven on proven in-tree theorems
+(`period_pow_le_moment`, `card_fiber_le`), NOT a re-mapped dead face.
+CORE M(mu_n) <= C·sqrt(n·log(p/n)) UNCHANGED/OPEN.
+Probe: scripts/probes/probe_depthr_energy_ceiling.py.
