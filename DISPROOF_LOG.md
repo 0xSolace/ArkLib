@@ -4020,3 +4020,31 @@ thinness-essential (pure Finset disjoint-union counting). NOT a moment/census/sp
 closure claim; ASYMPTOTIC GUARD cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n))
 UNCHANGED/OPEN. Author Sol, co-author wakesync.
 -- sunflower.
+
+### O203 — CENSUS MULTIPLICITY UPPER CAP: mult(γ) ≤ C(|A_γ|, a), the exact upper companion to mult_ge_choose_of_aligned_superset (sol, 2026-06-16)
+
+CensusScalarPartition.mult_ge_choose_of_aligned_superset gave only the LOWER bound on the per-scalar
+census multiplicity mult(γ) := #(alignedSetsForScalar dom k a u₀ u₁ γ): a deep aligned set of size
+|A_γ| owns all its a-subsets through one non-degenerate tuple, so C(|A_γ|-(k+1), a-(k+1)) ≤ mult(γ).
+The MATCHING UPPER cap (mult to a SINGLE agreement-set binomial) was grep-confirmed MISSING.
+
+* **mult(γ) ≤ C(|A_γ|, a)** (`alignedSetsForScalar_card_le_agreement_choose`), axiom-clean. Under the
+  common-explainer hyp (the deg-<k codeword c matches the γ-pencil on every member of the γ-fibre,
+  i.e. c explains the maximal aligned set A_γ = agreementSet dom u₀ u₁ γ c), every member is an
+  a-subset of A_γ via aligned_subset_agreementSet_of_agree, so alignedSetsForScalar γ ⊆
+  (A_γ).powersetCard a, and card_le_card + card_powersetCard give the binomial cap.
+* **Bracket** (`alignedSetsForScalar_card_bracket`): with the in-tree lower bound this pins mult(γ) in
+  [C(|A_γ|-(k+1), a-(k+1)), C(|A_γ|, a)] exactly.
+* **Why it matters**: this is the per-scalar incidence cap the CensusDomination obligation consumes.
+  #alignableSets = Σ_γ mult(γ); a distinct-γ cap #pinned ≤ P PLUS a max-agreement-size cap |A_γ| ≤ s₀
+  give #alignableSets ≤ P·C(s₀,a) = K, the K that CensusDominationWeld welds to δ*. Only the LOWER
+  half was in tree; this supplies the structural UPPER half.
+* **Honesty**: field-universal census combinatorics, NOT thinness-essential, NOT moment/orbit/spectrum/
+  resonance/pencil, NOT a CORE closure or refutation. The open content (does |A_γ| stay small, the
+  distinct-γ cap) is UNTOUCHED. NO capacity/beyond-Johnson/sub-linear claim; cliff-at-n/2 untouched.
+  Probe scripts/probes/probe_mult_le_agreement_binom.py (thin μ_n, μ=3..7, p≫n³, never n=q-1): bracket
+  holds all rows, tight at the generic deep agreement set; anchors C(5,3)=10, C(6,4)=15 match
+  AgreementSetMaximal. Frontier/_MultUpperAgreementBinom.lean, single-file lake env lean exit 0 +
+  in-graph lake build (3092 jobs) exit 0; #print axioms ⊆ {propext, Classical.choice, Quot.sound} on
+  all 3 (subset_agreement_powersetCard, card_le_agreement_choose, card_bracket), no sorry/axiom/
+  native_decide. CORE M(μ_n) ≤ C√(n log(p/n)) OPEN.
