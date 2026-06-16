@@ -856,6 +856,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeployedRegimeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.DepthLogConfinedToThin
 import ArkLib.Data.CodingTheory.ProximityGap.DepthTwoEngine
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
+import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationMultiPuncture
 import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma
 import ArkLib.Data.CodingTheory.ProximityGap.DeviationSupSplit
 import ArkLib.Data.CodingTheory.ProximityGap.DivisorListBound

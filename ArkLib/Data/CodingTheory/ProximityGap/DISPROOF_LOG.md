@@ -14902,3 +14902,46 @@ case-split over all multiplicity patterns up to `Wmax(6)` + the char-0→char-p 
 re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. NOT a re-mapped dead
 face — an EXTEND-proven generalization that also CORRECTS an in-tree over-claim to a theorem.
 CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN. Probe: scripts/probes/probe_repthree_threshold.py.
+
+## O226 (lane derand): the MULTI-POINT (S-block) puncture pigeonhole — the iterated derandomization
+transfer, EXTEND-proven on `listDecodableAbs_punctureCode_pigeonhole` (the proved single-point bound).
+
+`DerandomizationFrontier.lean` (Round 14, Angle E) localized the derandomization core to the gap
+between "some size-`n` evaluation set works" and "the explicit smooth-subgroup domain works", and
+proved the SINGLE-coordinate puncture pigeonhole `listDecodableAbs_punctureCode_pigeonhole`:
+`ListDecodableAbs C (t+1) L ⟹ ListDecodableAbs (punctureCode x C) t (|F|·L)`, flagging (via
+`naive_margin_fails_concrete` / `pigeonhole_tight_concrete`) that the `|F|` factor per deleted
+coordinate is unavoidable. But the derandomization-relevant comparison deletes a WHOLE BLOCK of
+`k = |S|` coordinates at once, and the single-point lemma was NEVER iterated to that block form.
+GREP-CONFIRMED MISSING (no `punctureSet`/multi-delete anywhere in the cone).
+
+**PROBE (scripts/probes/probe_iterated_puncture.py + _tight.py, ONE sweep, explicit small codes +
+random F∈{2,3}, n∈{4,5,6}, k∈{1,2,3}):** the iterated bound `|F|^k·L(t+k)` HELD with ZERO violations
+over 400 random codes + the rep-code witness. TIGHTNESS confirmed: the weaker `|F|^{k-1}` bound FAILS
+in 63/400 cases ⟹ the FULL `|F|^k` factor per block is genuinely load-bearing (the single-point
+tightness witness iterates). So the transfer DEGRADES the list geometrically in the block size —
+precisely why naive derandomization-by-puncturing does not by itself close the prize.
+
+**Landed (DerandomizationMultiPuncture.lean, 6 thms, axiom-clean {propext, Classical.choice,
+Quot.sound}; single-file lake-env-lean exit 0 + in-graph lake-locked 3300 jobs exit 0):**
+- `punctureSetWord` / `punctureSetCode` / `extendSetWord`: multi-point puncture via restriction to
+  the complement subtype `{i // i ∉ S}` (the honest `|S|`-coordinate deletion).
+- `agreement_punctureSetWord_le` + `agreement_le_punctureSetWord_add_card` +
+  `agreement_punctureSetWord_add_card_le`: the two block agreement transfer bounds (restriction never
+  increases agreement; deleting `S` loses at most `S.card`; sharp lower transfer when agreeing on `S`).
+- `listDecodableAbs_punctureSetCode`: SAME-threshold survival under an `S`-block (multi-point part (i)).
+- `listDecodableAbs_punctureSetCode_pigeonhole` (HEADLINE): `ListDecodableAbs C (t + S.card) L ⟹
+  ListDecodableAbs (punctureSetCode S C) t (|F|^{S.card}·L)`. The exact `k`-fold iterate of the
+  single-point bound, proved by a SINGLE block pigeonhole over the deleted-coordinate assignments
+  `S → F` (`Fintype.card (S→F) = |F|^{S.card}`).
+- `punctureSetCode_empty_pigeonhole`: `S = ∅` sanity (`|F|^0·L = L` at the same threshold).
+
+**Honest scope (rule 3,6).** A strict EXTEND of the proved single-point pigeonhole: a structural
+transfer law on the derandomization face, elementary fiberwise counting, FIELD-UNIVERSAL (no
+thinness). Does NOT prove `DerandomizationCore` (whether a good size-`n` set forces the smooth-
+subgroup domains good) — that remains the stated-but-unasserted open research content of
+`DerandomizationFrontier`. The `|F|^{S.card}` blow-up is the mechanism by which puncturing alone is
+non-proving. NON-MOMENT (coding-theoretic / pigeonhole), NOT a re-mapped dead face. NO moment/census/
+orbit/pencil/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
+UNTOUCHED. CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN.
+Probe: scripts/probes/probe_iterated_puncture.py, probe_iterated_puncture_tight.py.
