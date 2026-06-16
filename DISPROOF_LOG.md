@@ -4155,3 +4155,36 @@ C(n,k+1), and C(n,k+1) ~ n^{k+1} is still far above the sqrt(n) prize target (th
 that would collapse the image to O(sqrt n) values stays OPEN). Bound is a binomial in n, not delta*
 /incidence object; cliff-at-n/2 UNTOUCHED. NOT a moment/orbit/census/resonance/pencil re-derivation
 or a re-mapped dead face. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O208 (lane geommintsharp): A6deep minor-degree budget SHARPENED for complete-homogeneous
+## (geometric) readout rows: g_a*g_{b-1} - g_{a-1}*g_b = X^a*g_{b-a-1}, deg = b-1 < D, HALVING
+## the generic 2D Bezout budget and landing |forcedGammaImage| BELOW the prize budget n for a
+## fixed monomial direction. Push 0ce1addbd..<new>, axiom-clean.
+RESULT: EXTEND-PROVEN, NON-MOMENT, on the brief's named determinantal/Bezout lever (non-saturated
+tonight). _CoreA6deep_MinorTractability.minorPoly_natDegree_le gives the GENERIC Bezout budget
+deg(pa*pbm - pam*pb) <= 2D -- a factor 2 ABOVE the prize budget n (the open MinorImageLeBudget Prop
+asks |forcedGammaImage| <= n; A6deep delivers only <= 2n per direction). But the readout rows are
+generic: in the divided-difference dlog substrate they are complete-homogeneous (geometric) Gauss-
+period sums g_c = 1+X+...+X^c, the offset row being the CONSECUTIVE g_{c-1}. For these the minor
+collapses to ONE monomial-times-geometric term:
+  geomMinor_eq : g_a*g_{b-1} - g_{a-1}*g_b = X^a*g_{b-a-1}  (1<=a<b),
+hence geomMinor_natDegree : deg = b-1 = D-1, and geomMinor_natDegree_lt : deg < b=D. SHARP, < D,
+strictly below A6deep's 2D. At D=span=n the per-direction minor-locus root count (hence
+|forcedGammaImage|) is < n = the prize budget q*eps* ~ n, discharging MinorImageLeBudget FOR the
+complete-homogeneous readout structure (a fixed monomial direction). PROOF ENGINE: both sides times
+(X-1)^2 agree by the closed form g_c*(X-1)=X^{c+1}-1 (geom_sum_mul) + ring; cancel (X-1)^2 != 0 in
+the integral domain F[X]. PROBE (exact, sympy): identity verified 1<=a<b<=11 (both a<b and the
+antisymmetric b<a form -u^b*g_{a-b-1}); generic rows give deg 2D (no cancellation), geometric rows
+give deg b-1 at cascade scales b in {8,16,32,64} (deg 7,15,31,63 -- all < D). Theorems
+(axiom-clean {propext, Classical.choice, Quot.sound}, single-file + in-graph 3315 jobs): geomPoly,
+geomPoly_mul_X_sub_one, geomPoly_natDegree, geomMinor_eq (HEADLINE), geomMinor_natDegree,
+geomMinor_natDegree_lt, geomMinor_natDegree_le_pred_span, geomMinor_ne_zero (non-vacuity).
+HONESTY (rules 1,3,4,5,6 + ASYMPTOTIC GUARD): NOT a CORE closure -- discharges the budget clause
+for the structured complete-homog readouts and STILL inherits A6deep's OPEN residual, the direction-
+uniformity at the binding depth (PerDirectionParam direction-select / BCHKS 1.12 budget input),
+UNTOUCHED here. NOT thinness-essential as a CORE method (field-universal F[X] algebra; thinness
+only via the dlog structure that makes the readouts geometric -- it is a tractability cert of a per-
+direction count, the thinness lives in the unresolved direction-uniformity). NOT a moment/Wick (rule
+5), NOT a census/orbit/resonance/pencil/spur re-derivation, NOT a re-mapped dead face. NO capacity /
+beyond-Johnson / sub-linear / growth-law claim; cliff-at-n/2 (the delta*/incidence) UNTOUCHED.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
