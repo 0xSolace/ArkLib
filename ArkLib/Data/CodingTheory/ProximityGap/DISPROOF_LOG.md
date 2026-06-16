@@ -14333,3 +14333,52 @@ isolating the hard residual to genuinely ASYMMETRIC (non even/odd) far-line word
 _AntipodalAgreementScope already names. Field-universal, NOT thinness-essential. Makes NO
 capacity/beyond-Johnson claim; cliff-at-n/2 untouched. CORE M(mu_n) <= C*sqrt(n log(p/n))
 UNCHANGED/OPEN. -- plotkincap lane, co-author wakesync.
+
+---
+
+## CENSUS CAP NECESSITY FLOOR (censusnec lane, #444) -- the equivalence-to-CORE has a
+## forced-from-below necessity half: the census cap K cannot be smaller than the alignment
+## supply C(|A|-(k+1), a-(k+1)).
+
+CONTEXT. CensusDominationWeld.lean proves only the FORWARD direction of the $1M obligation
+in census normal form: CensusDomination dom k a0 K => delta* = 1 - r/2^mu
+(kkh26_deltaStar_pin_of_censusDomination). The REVERSE direction (whether CensusDomination
+is NECESSARY for the prize, i.e. the equivalence to CORE) is asserted in prose but never a
+theorem. The count/census worktrees probe the cap's empirical SIZE; nobody had a forced
+LOWER bound on K. This is the exact analogue of SupplyForcingLowerBound.supply_ge_towerZeroSum
+(which forces the ExplainableCoreSupply residual from below) but for the DISTINCT alignableSets
+object the weld actually uses.
+
+CONSTRAINT LEMMA. Alignment is subset-monotone (UniversalAlignmentLaw.Aligned.mono). So one
+gamma-aligned set A of size |A| >= a (a >= k+1) containing a non-degenerate injective
+(k+1)-tuple t forces EVERY a-point set S with image(t) <= S <= A into alignableSets (S is
+gamma-aligned by mono and contains the same non-degenerate tuple). The map T |-> T union image(t)
+injects (A \ image t).powersetCard (a-(k+1)) into alignableSets, giving
+  C(|A|-(k+1), a-(k+1)) <= #alignableSets,
+hence CensusDomination dom k a0 K (with the per-stack cap at band a) FORCES
+  K >= C(|A|-(k+1), a-(k+1)).
+At the prize band a ~ (1-delta) n with |A| = n the floor is C(n-(k+1), a-(k+1)), which GROWS
+in n. So the census cap is NOT a free small constant: it is bounded below by the alignment
+supply, and the equivalence to CORE can hold only if that supply is itself poly(n)-controlled.
+This is the missing necessity half stated unconditionally; it is the companion of the in-tree
+alignableSets_card_le_choose (the UPPER ceiling #alignableSets <= C(n,a)) and complements the
+forward weld.
+
+PROBE (ONE sweep, exact, PROPER thin mu_n = 2-power roots of unity, p >> n^3, p == 1 mod n,
+two structured primes per n, NEVER n=q-1) -- scripts/probes/probe_census_necessity.py,
+n=8..64, beta in {4,5}, k=2: a full deg<=(k-1) combined word makes A = mu_n (size n) entirely
+gamma-aligned (alignedFull True every row) while a spike x^k makes every (k+1)-tuple
+non-degenerate (ndTuples = C(n,3) > 0), so the binomial floor C(n-3, a-3) (= 10, 715,
+4292145, 202802465047245 for n=8,16,32,64 at a = 3n/4) is ATTAINED, not vacuous slack.
+
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, in-graph lake-locked
+exit 0 / 3068 jobs): Frontier/CensusCapForcedBelow.lean --
+  - choose_card_le_alignableSets : one large aligned A with a non-degenerate tuple =>
+    C(|A|-(k+1), a-(k+1)) <= #alignableSets (the supply-floor injection).
+  - censusDomination_cap_ge_choose : + the per-stack census cap <= K => K >= the binomial
+    (the necessity constraint on the cap).
+NOT a refutation of CORE; the missing NECESSITY half of the census equivalence as an
+unconditional theorem. Field-universal combinatorics; thinness enters only via WHICH band
+binds and whether the supply floor is poly-controlled (the open upper question = the prize).
+Makes NO capacity/beyond-Johnson/growth-law claim; cliff-at-n/2 untouched. CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- censusnec lane, co-author wakesync.
