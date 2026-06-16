@@ -3789,3 +3789,39 @@ where char-0<->F_p fails), not the char-0 rise. NO capacity / beyond-Johnson / s
 claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 2-power-specific (spectrumCount fails at non-2-power n). Author Sol, co-author wakesync.
 -- risingstep.
+
+## O196 -- GROWTH LAW of the deep-band distinct-gamma ORBIT count at the shallow rungs r=3,4: it is STRICTLY super-linear in n (oc3 = C(g,2) ~ n^2/32; oc4 = 2(g/2)^2(g/2-1)+1 ~ n^3/512), QUANTIFYING the obstruction to the ThreadD O<=1 union-count floor (extends DeepBandOrbitCountDescent)
+STATUS: EXTEND-PROVEN structural growth-law brick (rule 4), axiom-clean, LANDED. NOT a CORE closure.
+Shaw's 03:33 exhaust-#444 commit (e3c7c4c97) funneled ALL remaining structural threads to ONE open
+object: the distinct-gamma ORBIT count being <= 1 at the binding rung (ThreadD
+_ThreadD_UnionCountFloor reduces the prize floor hfloor PROVABLY to UnionCountBadStacks _ _ n, i.e.
+to orbit-collapse O -> 1 at binding = DstarPlateauLeBudget = the BGK/BCHKS wall). The in-tree
+DeepBandOrbitCountDescent pins the shallow-rung orbit counts oc3 (r=3) and oc4 (r=4) via the 2-adic
+self-similar descent but ONLY certifies the rungs n=16..128 by decide (no general-g growth law) and
+never compares them to the O<=1 floor. This brick supplies the general-g growth law + the resulting
+strict super-linearity, making the ThreadD obstruction QUANTITATIVE. RESULTS (g = n/4, the 2-power
+prize tower, NEVER n=q-1): oc3 g = g*(g-1)/2 = C(g,2) (quadratic, ~ n^2/32); oc4 (2h) = 2h^2(h-1)+1
+(cubic, ~ n^3/512); BOTH strictly super-linear (oc3 g > g for g>=4; oc4 (2h) > 2h for h>=2); and the
+gap oc4 - 1 = 2h^2(h-1) to the O<=1 floor is STRICTLY INCREASING in h (blows up). So the union-count
+floor (ThreadD, needing O<=1) is FALSE at the shallow rungs by a strictly GROWING margin; the O -> 1
+collapse can only happen AT the deep binding rung r ~ log n (the open growth law = the wall). The
+brick LOWER-BOUNDS the gap the descent must cross between the shallow rung and binding; it does NOT
+cross it. PROBE scripts/probes/probe_orbit_count_growth_law.py (ONE sweep, exact int, prize tower
+n=16..512, never n=q-1): oc3=g(g-1)/2, oc4=2(g/2)^2(g/2-1)+1, oc3>g, oc4>g, the descent
+oc4(2h)=2(2h)oc3(h)+1 (in-tree cross-check), and the gap oc4-1 strictly increasing; VERDICT PASS.
+FORMALIZED Frontier/_OrbitCountGrowthLaw.lean (single-file lake-env-lean exit 0 + in-graph
+lake-locked 8316 jobs exit 0; axiom-clean subset of {propext, Classical.choice, Quot.sound}, no
+sorry/axiom/native_decide on all 6 printed): orbitCount3_closed (oc3 g = g(g-1)/2 via
+Nat.choose_two_right), orbitCount4_closed (oc4 (2h) = 2h^2(h-1)+1 via the descent def),
+orbitCount3_gt_self (oc3 g > g for g>=4, consecutive-product evenness + nlinarith),
+orbitCount4_gt_self (oc4 (2h) > 2h for h>=2), orbitCount4_gap_strict_mono (the gap oc4-1 strictly
+increasing for h>=2), orbit_count_growth_obstructs_union_floor (HEADLINE: the four facts conjoined).
+Builds on the in-tree DeepBandOrbitCountDescent (orbitCount3 = C(g,2), orbitCount4 = bad3(g/2));
+DISTINCT from that file's decide-rungs (this is the general-g growth law + super-linearity, the
+quantitative ThreadD obstruction it never stated). Does NOT close CORE: it bounds the SHALLOW rungs
+r=3,4, not the deep binding rung r ~ log n (= |Sigma_r(mu_s)| = BCHKS 1.12 = the BGK wall;
+the descent itself stops past r=4 where the maximizing line flips to full-order). Char-sum-free,
+char-agnostic, NOT thinness-essential. NO capacity / beyond-Johnson / sub-linear / closure claim;
+ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+Author Sol, co-author wakesync.
+-- orbcountgrowth.
