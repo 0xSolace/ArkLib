@@ -1238,6 +1238,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountGrowthLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitSizeEqN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PIndependenceLangWeil
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PaleyCayleyEigenvalue
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PencilSunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodAutocovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality

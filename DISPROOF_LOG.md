@@ -3986,3 +3986,37 @@ capacity / beyond-Johnson / sub-linear / closure claim; ASYMPTOTIC GUARD cliff-a
 CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. Author Sol, co-author wakesync.
 -- dilhom.
+
+## O202 -- the SUNFLOWER (common-M-core) dilation-pencil count: r*(r-M)+M <= |G| and (r-M)^2 < |G|
+EXTEND-PROVEN NON-MOMENT structural brick on the pencil/incidence-geometry lever (LEVER K), the
+clean GRADED generalization of _KelleyOwenDilationPencil.pencil_card_core (the M=1 trinomial face,
+r*(r-1)+1 <= |G|). Both _KelleyOwenDilationPencil and PencilAutocorrRootBound state the general-t
+degradation ONLY in prose (the pencil is k-dimensional, members share up to ~k roots, the
+double-count then gives only r^2 ~ k*N = JOHNSON, never sub-Johnson); it was grep-confirmed NEVER
+formalized. This brick formalizes the exactly-generalizing SUNFLOWER rung: r blocks each size r
+sharing a COMMON core T (|T|=M, p in T), pairwise meeting in exactly T, force r*(r-M)+M <= |G|,
+which RECOVERS pencil_card_core at M=1 (r*(r-1)+1 <= |G|) and yields sqrt extraction (r-M)^2 < |G|,
+i.e. r <= M + sqrt(|G|) (Johnson radius + core-offset M; M=1 gives Kelley-Owen 1+sqrt|G|, the prize
+core M ~ n/2 pushes the offset to the Johnson scale, matching autocorr_ge_coset_core's M(S) >= n/2).
+PROBE (scripts/probes/probe_sunflower_pencil.py, exact, genuine sunflowers r,M over n=8..64, NEVER
+n=q-1): every common-M-core family satisfies r*(r-M)+M <= n and (r-M)^2 < n, recovering the M=1
+numbers; AND scripts/probes/probe_graded_pencil_core.py sweeps the pairwise-<=M case (no common T,
+min feasible union over random admissible families) confirming the graded root bound r(r-1)+1 <= M*n
+and Johnson (r-1)^2 < M*n hold there too. FORMALIZED Frontier/_PencilSunflowerCore.lean (single-file
+lake-env-lean exit 0 + in-graph build exit 0; axiom-clean subset of {propext, Classical.choice,
+Quot.sound}, no sorry/axiom/native_decide on both printed): pencil_sunflower_core (HEADLINE:
+r*(r-M)+M <= |univ| via T-punctured-block pairwise disjointness, card_sdiff_of_subset + card_biUnion
++ card_union_of_disjoint, the same mechanism as pencil_card_core with {p} replaced by the core T),
+pencil_sunflower_sqrt_bound ((r-M)^2 < N from r*(r-M)+M <= N, 1 <= M the nonempty-core condition).
+Builds DIRECTLY on _KelleyOwenDilationPencil (does NOT re-declare pencil_card_core). HONEST SCOPE:
+the sunflower hypothesis (a SINGLE common core T for all pairs) is STRICTLY STRONGER than the
+prize-relevant pairwise-<=M bound (the form pencil_overlap_le_of_autocorr delivers, with possibly
+different per-pair intersections); so this is the clean sunflower RUNG of the degradation, NOT the
+general-position Fisher bound (r^2 ~ M*N by Cauchy-Schwarz, no common T, the harder separate brick).
+Does NOT close CORE: it is a graded combinatorial count that CAPS the dilation-pencil route at
+Johnson + core-offset, NOT a sub-Johnson separation. p-independent, char-agnostic, NOT
+thinness-essential (pure Finset disjoint-union counting). NOT a moment/census/spectrum/orbit object
+(different lever: the pencil/incidence sunflower count). NO capacity / beyond-Johnson / sub-linear /
+closure claim; ASYMPTOTIC GUARD cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. Author Sol, co-author wakesync.
+-- sunflower.
