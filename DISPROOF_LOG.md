@@ -4454,3 +4454,35 @@ BGK wall, not a shortcut to it. This precisely maps the completion-sum-cancellat
 triangle/L1 route is phase-blind; the cancellation lives in phase alignment = the genuinely open
 content). No theorem shipped (negative map); no delta*/capacity claim; cliff-at-n/2 untouched. CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+## O222 (lane orbitnec): the orbit-count NECESSITY delimiter for the conditional delta* pin --
+the honest mirror of OpenCoreConditionalPin, EXTEND-proven on the so-far-UNUSED `->` direction of
+OrbitCountCrossingLaw.crossing_law. OpenCoreConditionalPin isolates the entire open prize content
+into ONE Prop WorstCaseIncidenceBounded C delta B (I(delta) <= B) and proves the FORWARD pin
+(open core => delta <= delta*), routing it through the orbit-count crossing law via
+worstCaseIncidence_pin_of_orbitCount -- which consumes ONLY the `<-` direction (N <= d => |B| <= n)
+of the proven biconditional crossing_law (|B| <= n <=> N <= d, d = gcd(b-a,n), S = n/d, |B| = N*S).
+GREP-CONFIRMED MISSING: the `->`/overflow direction (N > d => |B| > n => open core FALSE) was NEVER
+lifted to the open-core / pin layer; no NECESSITY delimiter on the orbit-count discharge existed.
+SHIPPED ArkLib/Data/CodingTheory/ProximityGap/OrbitCountPinNecessity.lean (4 thms + 2 sanity
+examples; single-file lake-env-lean exit 0 + in-graph lake-locked 8351 jobs exit 0; axiom-clean
+{propext, Classical.choice, Quot.sound}):
+- incidence_gt_budget_of_orbitCount_gt: |B|=N*S, S*d=n, N>d => n<|B| (the overflow form of
+  crossing_law; depends on axioms [propext] only).
+- not_worstCaseIncidenceBounded_of_orbitCount_gt: SOME stack with N_u>d =>
+  WorstCaseIncidenceBounded C delta n is FALSE (the prize-budget open core fails there, so the
+  pin is not certified through this lever at radius delta).
+- pin_not_certified_of_orbitCount_gt: assembled reach -- an overflowing stack => the orbit-count
+  lever does NOT discharge worstCaseIncidence_pin_budget at that radius.
+- coprime_pin_requires_single_orbit (SHARPEST): primitive pencil gcd(b-a,n)=1 (orbit size S=n) =>
+  the budget-n open core holds at a stack IFF its bad-alpha set is a SINGLE orbit (N<=1); N>=2
+  distinct orbits provably block the pin. Lifts OrbitCountConsumerBridge.coprime_crossing_law
+  (I<=n <=> N<=1) to a NECESSARY condition on the pin's open core.
+NO PROBE NEEDED (pure cardinality, like O215): N>d => N*S>d*S=n via Nat.mul_le_mul_right; the
+math is the unused half of an in-tree biconditional, not an empirical claim. HONEST SCOPE
+(rule 3,6): does NOT prove or refute CORE. Pins EXACTLY when the orbit-count lever certifies the
+open core (N<=d, forward pin) vs PROVABLY FAILS to (N>d, here). Whether the worst-case orbit count
+stays <=d at the prize window radius -- whether the open core itself holds -- is the
+recognized-open prize question, UNTOUCHED. NON-MOMENT (orbit-count/incidence-geometry face),
+EXTEND-proven on two proven in-tree theorems, NOT a re-mapped dead face. NO moment/census/
+geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
+UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
