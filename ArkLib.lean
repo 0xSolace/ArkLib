@@ -1187,6 +1187,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DepthGradedConductor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoNearSidonImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DividedDifferenceDilation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope

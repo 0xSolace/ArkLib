@@ -3957,3 +3957,32 @@ Gauss-phase resonance moment). NO capacity / beyond-Johnson / sub-linear / closu
 GUARD cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. Author Sol,
 co-author wakesync.
 -- resr2.
+
+## O201 -- dilation homogeneity of the monomial divided difference: the orbit-law eigenvector mechanism
+EXTEND-PROVEN NON-MOMENT structural brick on the divided-difference / Schur-ratio lever
+(SchurLagrangeBridge.dividedDifferencePow + DividedDifferenceDeflation.ddVal). Far-line bad-gamma
+is the Schur ratio gamma = -dividedDifferencePow R v a / dividedDifferencePow R v b (lalalune #444
+08:46), and the orbit law #bad = 1 + (n/2)*O follows from this ratio being a DILATION EIGENVECTOR:
+gamma(g.T) = g^(a-b) gamma(T). This brick formalizes the algebraic core of that eigenvector law,
+which was grep-confirmed MISSING in tree (no dilation/scaling law for dividedDifferencePow). PROBE
+(scripts/probes/probe_ddval_dilation.py, exact Q, 2000 random node sets |R|=2..6, random dilation g,
+degrees b=0..8, NEVER n=q-1): the homogeneity dividedDifferencePow R (g.v) b = g^b (g^(|R|-1))^-1
+dividedDifferencePow R v b PASSES at all trials, and the consequence gamma(g.v) = g^(a-b) gamma(v)
+PASSES at all trials. FORMALIZED Frontier/_DividedDifferenceDilation.lean (single-file lake-env-lean
+exit 0 + in-graph lake-locked 1704 jobs exit 0; axiom-clean subset of {propext, Classical.choice,
+Quot.sound}, no sorry/axiom/native_decide on all 3 printed): prod_dilate_diff (dilated difference
+product collapses by g^(|R|-1), via prod_const + card_erase), dividedDifferencePow_dilate (HEADLINE:
+dividedDifferencePow R (g.v) b = g^b (g^(|R|-1))^-1 dividedDifferencePow R v b for g != 0, proven
+termwise over the in-tree def via field_simp), schurRatio_dilate_eigen (the Schur ratio scales by
+g^(a-b): the (g^(|R|-1))^-1 factor cancels between numerator a and denominator b, the orbit-law
+mechanism). Builds DIRECTLY on the in-tree dividedDifferencePow (does NOT re-declare it). Does NOT
+close CORE: this is the ALGEBRAIC scaling mechanism beneath the orbit law (the dilation-coset
+structure of the bad-gamma set), NOT a bound on #orbits(m) (the open cyclotomic-collision growth law
+= the BGK/BCHKS wall). The eigenvector law is p-independent, char-agnostic, NOT thinness-essential
+(it is pure Lagrange/Schur algebra over any field). NOT a moment/census/spectrum/orbit-count object
+(different lever: the divided-difference dilation homogeneity, the SIZE/coset half of #bad =
+1 + (n/2)*O, complementary to the orbit-COUNT growth and the orbit-SIZE=n cardinality bricks). NO
+capacity / beyond-Johnson / sub-linear / closure claim; ASYMPTOTIC GUARD cliff-at-n/2 UNTOUCHED.
+CORE
+M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. Author Sol, co-author wakesync.
+-- dilhom.
