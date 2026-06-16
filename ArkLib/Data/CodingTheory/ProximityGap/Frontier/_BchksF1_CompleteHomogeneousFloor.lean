@@ -73,22 +73,24 @@ distinct degree-`r` complete-homogeneous values `h_r(R)` over the `(k+1)`-subset
 most `chooseCH s r = C(s+r−1, r)`. Modeled abstractly: `spectrum` is the distinct-value count (a
 `Finset.card`), and the claim is `spectrum ≤ chooseCH s r`. THIS is the ABF26 §4 sumset-extremality
 content — NOT discharged here; it is the prize's char-free core. -/
-def CompleteHomogeneousSpectrumBound (spectrum s r : ℕ) : Prop :=
-  spectrum ≤ chooseCH s r
+/-- ⚠️ **The `poly` factor is ESSENTIAL [VERIFIED, probe_completehomog_spectrum.py]:** `poly = 1` is
+FALSE — the spectrum EXCEEDS the dimension at small `r` (`#distinct h_2(μ_16)=1848 > C(17,2)=136`).
+But `poly = n` SUFFICES in all measured cases (`#distinct h_r ≤ n·C(s+r−1,r)`, s=8,16, r≤6; min poly
+`≤14≤n`). So the floor carries a linear `poly(n)=n` factor — a SUB-LEADING `log n/log|F|` correction
+to δ*, leading order still pinned by `C(s+r−1,r)`. -/
+def CompleteHomogeneousSpectrumBound (spectrum poly s r : ℕ) : Prop :=
+  spectrum ≤ poly * chooseCH s r
 
-/-- **F1 — the char-free floor, REDUCED to the spectrum bound.** GIVEN (a) the bad-count is bounded
-by the complete-homogeneous spectrum (`hbad : bad ≤ spectrum`, the SchurLagrangeBridge forced-γ =
-`−h_{a−k}/h_{b−k}` structure: distinct γ ≤ distinct `h`-values), and (b) the open spectrum bound
-`CompleteHomogeneousSpectrumBound spectrum s r`, the bad-scalar count obeys the char-free
-Sumset-Extremality ceiling `bad ≤ poly · chooseCH s r` with `poly = 1` (the SPECIFIC quantitative
-multiplier `chooseCH = C(s+r−1,r)`, fixing the F3/F6 placeholder). The ONE genuine open input is the
-spectrum bound (b). -/
-theorem bad_le_chooseCH_of_spectrum (bad spectrum s r : ℕ)
+/-- **F1 — the char-free floor, REDUCED to the spectrum bound (verified `poly(n)=n` factor).** GIVEN
+(a) `hbad : bad ≤ spectrum` (SchurLagrangeBridge forced-γ = `−h_{a−k}/h_{b−k}`: distinct γ ≤ distinct
+`h`-values), and (b) the open `CompleteHomogeneousSpectrumBound spectrum poly s r`, the bad count
+obeys `bad ≤ poly · chooseCH s r` with the SPECIFIC multiplier `chooseCH = C(s+r−1,r)`. The ONE open
+input is (b), holding with `poly = n` (so `bad ≤ n·C(s+r−1,r)`). -/
+theorem bad_le_chooseCH_of_spectrum (bad spectrum poly s r : ℕ)
     (hbad : bad ≤ spectrum)
-    (hspec : CompleteHomogeneousSpectrumBound spectrum s r) :
-    bad ≤ 1 * chooseCH s r := by
-  rw [one_mul]
-  exact le_trans hbad hspec
+    (hspec : CompleteHomogeneousSpectrumBound spectrum poly s r) :
+    bad ≤ poly * chooseCH s r :=
+  le_trans hbad hspec
 
 /-- **Sanity (the multiplier is the SPECIFIC complete-homogeneous count, not a free binder).** At
 `s = 8, r = 3` the ceiling is `chooseCH 8 3 = C(10,3) = 120`, strictly above the subset-sum
