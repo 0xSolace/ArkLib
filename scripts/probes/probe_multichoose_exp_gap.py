@@ -69,7 +69,21 @@ def main():
 
     print("\n=== CLEANEST PROVABLE: at r=s, C(2s-1,s) >= 2^{s-1} (Lean: central binom >= 2^n family) ===")
     print("    AND the strict exponent gap is exhibited; r=s is in-regime (deep band).")
-    sys.exit(0 if allok else 1)
+
+    print("\n=== (d) DEEP-BAND extension: multichoose s r monotone in r (s>=1) + >= 2^{s-1} for r>=s ===")
+    band_ok = True
+    for s in [8, 16]:
+        vals = [multichoose(s, r) for r in range(0, 2 * s + 1)]
+        mono = all(vals[i] <= vals[i + 1] for i in range(len(vals) - 1))
+        band = all(multichoose(s, r) >= 2 ** (s - 1) for r in range(s, 2 * s + 1))
+        band_ok &= (mono and band)
+        print(f"  s={s}: multichoose monotone-up over r=0..2s = {mono}; "
+              f"multichoose s r >= 2^(s-1) for all r in [s,2s] = {band}")
+    # show the s=0 degeneracy that forces the s>=1 hypothesis
+    print(f"  (degeneracy check) multichoose 0 0 = {multichoose(0,0)} > multichoose 0 1 = "
+          f"{multichoose(0,1)}  -> monotonicity needs s>=1, as formalized")
+    print(f"  DEEP-BAND (s>=1): monotone + 2^(s-1) floor across [s,2s] : {band_ok}")
+    sys.exit(0 if (allok and band_ok) else 1)
 
 if __name__ == "__main__":
     main()

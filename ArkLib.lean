@@ -1606,6 +1606,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZaman
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26ThornerZamanConstructor
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26TightCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26WitnessSpread
+import ArkLib.Data.CodingTheory.ProximityGap.KambireDeepBandFloor
 import ArkLib.Data.CodingTheory.ProximityGap.KambireExponentialGap
 import ArkLib.Data.CodingTheory.ProximityGap.KambireNotExtremal
 import ArkLib.Data.CodingTheory.ProximityGap.KambireSumsetR2
