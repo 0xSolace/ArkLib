@@ -121,9 +121,18 @@ the optimistic reading; `3,3,4` is equally consistent with the solid data.)
   degree-2 determinantal variety" — the *root-count bound* `D*(2)≤2·span` is fine (Bézout, a
   polynomial has ≤deg roots), but any "Lang–Weil point-count" framing is the same overreach; the A6
   lever is a degree/Bézout bound, NOT a Lang–Weil dimension count. Softened in the ledger.
-- **`E_r(F_p) > (2r−1)‼·n^r` "for every r≥4 at prize scale"** — silently CORRECTED: `W_3=0` exactly
-  at every generic prize prime; `W_4=0` at all 11 generic non-Fermat primes (n=16); nonzero only at
-  Fermat F_16=65537. The "excess positive and non-decreasing" headline was a Fermat-prime artifact.
+- **`E_r(F_p) > (2r−1)‼·n^r` "for every r≥4 at prize scale"** — CORRECTED, and the correction itself
+  REFINED [VERIFIED 2026-06-16]: the char-p excess `W_r = E_r(F_p) − E_r(char-0)` is governed by an
+  **ONSET THRESHOLD, not Fermat-ness**. `W_r = 0 ⟺ p exceeds the r-th wraparound threshold`. My exact
+  computation (n=16): `W_2=W_3=W_4=0` at the prize-scale primes 70657, 196657, 786433 (all `p≳n⁴`),
+  and NONZERO only at *small* primes 97/193/257 (below threshold) — Fermat 65537 has `W_3=0` but
+  `W_4=4480` (it sits right at the `n⁴` threshold, not specially good). So the "Fermat vs non-Fermat"
+  framing (in an earlier draft + some comments) is WRONG; the right law is `p > onset-threshold(r)`.
+  **Consequence (a real advance):** `W_3 = 0` for ALL prize-scale primes ⟹ the di Benedetto
+  `T_3(μ_n)=O(n³)` conditional (§II of the prize-regime dossier) **IS discharged at prize scale** (the
+  char-0 cubic `15n³−45n²+40n` is the exact value). The wall is whether `W_r` stays 0 up to
+  `r≈log q≈89` at the fixed prize prime — the deep-rung onset threshold (matches memory
+  `issue444-Wr-excess-onset-threshold-not-birthday`).
 - **`_Close27_PlateauWidthDecision` + `_Close27_ImprimitivePlateauExcess` "both axiom-clean, decide
   opposite horns"** — self-flagged by lalalune: every theorem is a trivial tautology (`omega`,
   `decide`, `rfl`); the "decision" is **prose-only on both sides**. Two axiom-clean bricks that

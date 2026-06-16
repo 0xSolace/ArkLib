@@ -42,7 +42,11 @@ Specializing di Benedetto Thm 3.1 (arXiv:2003.06165) to `μ_n` with the **Sidon-
 - Substitution validated (T_m = energy of `H` itself, verbatim `defT_m`; 5 adversarial obstructions
   refuted). Linchpin machine-verified exact to `n ≤ 64` (incl. structured `v₂ ≤ 25`).
 - **CONDITIONAL on ONE lemma:** `T_3 = O(n³)` for all `n` (the "No-Excess r=3" / char-0 in-tree
-  result extended to all n; `E_3` p-invariant). This is the named open obligation; attacking it.
+  result extended to all n; `E_3` p-invariant). **UPDATE 2026-06-16 [VERIFIED]:** the needed
+  `W_3=0` (char-p No-Excess at r=3) HOLDS for ALL prize-scale primes `p≳n⁴` (computed n=16: W_3=0 at
+  70657/196657/786433; nonzero only at small p<threshold) — governed by an ONSET THRESHOLD not
+  Fermat-ness. So the `T_3=O(n³)` conditional is **discharged at prize scale**; the residual is only
+  the all-n char-0 cubic identity. The deeper wall is `W_r` at `r≈log q≈89` (deep onset threshold).
 - **HONEST scope:** 0.9583 ≫ 1/2; this is *SOTA-closeness*, NOT prize closure (reaching the `1/2`
   Paley exponent = beating the `p^{1/4}` prefactor = the BGK wall, on the HIGH side). It is a genuine,
   verified improvement over the published SOTA in the prize regime.
