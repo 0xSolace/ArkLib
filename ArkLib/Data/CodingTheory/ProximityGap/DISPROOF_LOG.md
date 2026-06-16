@@ -14867,3 +14867,38 @@ law, VERIFYING closure (nonzero bad set genuinely closed under mult by h^{aa−b
   direction there is a d=1 (adjacent-exponent) direction with a non-clean orbit structure; not the
   canonical binding direction (#bad already ≤ budget there). n≥32 uncomputed (explosion-rung CPU-cap).
   New tool: `scripts/rust-pg/src/bin/orbitdecomp.rs`; artifacts scripts/probes/genlaw/o194_orbit_collapse/. Posted to #444.
+
+## O225 (repthree lane): the char-p WEIGHTED-SPARSE prime lift — the general mirror of prime_le_of_genuineSixTerm that governs the TRUE (over-stated-12-bound-CORRECTED) RepThree threshold (2026-06-16)
+
+**Lane:** the §0 depth-3 (six-term) Sidon bootstrap face. EXTEND-proven, NON-MOMENT structural.
+
+**The gap.** `WeightedSparseResultant.weightedSparse_resultant_sq_le` proved the COMPLEX resultant
+bound `|Res(Φ_n, f)|² ≤ (2W)^{φ(n)}` for the weighted sparse poly `f = ∑ mᵢ X^{eᵢ}`, `W = ∑ mᵢ²`.
+Its char-`p` PRIME LIFT — the general mirror of `SixTermResultantImproved.prime_le_of_genuineSixTerm`
+(which is only the `W=6` ±1-six-term special case) — was grep-confirmed MISSING.
+
+**The honesty save (rule 6).** The doc-comment of `prime_le_of_genuineSixTerm` claims
+"`p > 12^{n/4}` ⟹ `RepThree(μ_n)`". That is OVER-STATED (already flagged in WeightedSparseResultant):
+a weight-`[5,1]` degenerate zero-sum `5·ζ⁰ + ζ⁵ ≡ 0` (`W=26`) is a GENUINE RepThree-failure ABOVE the
+12-bound. PROBE CONFIRMS: `RepThree(μ_8)` FAILS at `p=313 > 144 = 12^{8/4}` via `(1,1,1,1,1,308)`
+(`ζ⁵=308=−5`). The 12-bound governs ONLY the distinct/simple-sign six-term; the TRUE threshold is the
+WEIGHTED `(2·Wmax(6))^{n/4} = 52^{n/4}` (`Wmax(6)=26`). For `n=8` that is `52²=2704`; PROBE confirms
+RepThree(μ_8) holds at EVERY tested `p == 1 (mod 8)` above 2704, with the only sub-2704 failure being
+the `[5,1]` worst-weight `p=313`.
+
+**Landed (WeightedSparseCharPLift.lean, 3 thms, axiom-clean {propext, Classical.choice, Quot.sound};
+single-file lake-env-lean exit 0 + in-graph lake-locked 3324 jobs exit 0):**
+- `eval_weightedSparse_castMap`: `(weightedSparse m e).map(Int.cast).eval ζ = ∑ mᵢ·ζ^{eᵢ}` (field side).
+- `prime_le_of_genuineWeightedSparse` (HEADLINE): a genuine (distinct-power, char-0-nonvanishing)
+  weighted relation `∑ mᵢ·ω^{eᵢ}=0` over `F_p` forces `p² ≤ (2W)^{φ(n)}`. The general char-`p` lift;
+  `prime_le_of_genuineSixTerm` is its `W=6` instance.
+- `sixSign_weight_eq_six`: `∑ (±1)² = 6` for the six-term sign vector — confirms the simple six-term is
+  the minimal-weight `W=6` instance the weighted lift strictly generalizes.
+
+**Honest scope.** Produces the THRESHOLD LEVER (genuine weighted relation ⟹ prime bound); it does NOT
+by itself assemble the full `RepThree(μ_n)` discharge (that additionally needs the coincidence
+case-split over all multiplicity patterns up to `Wmax(6)` + the char-0→char-p transfer lemmas, mirroring
+`fourTerm_ne_zero_primitiveRoots_of_fp` at order 6). NO moment/census/orbit/pencil/geometric-minor
+re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. NOT a re-mapped dead
+face — an EXTEND-proven generalization that also CORRECTS an in-tree over-claim to a theorem.
+CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN. Probe: scripts/probes/probe_repthree_threshold.py.

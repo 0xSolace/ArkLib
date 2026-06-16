@@ -2431,6 +2431,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowLaw
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowMatrix
 import ArkLib.Data.CodingTheory.ProximityGap.WBPencilWindowRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedPrimePowerPacket
+import ArkLib.Data.CodingTheory.ProximityGap.WeightedSparseCharPLift
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedSparseResultant
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WeilRegimeClosure
