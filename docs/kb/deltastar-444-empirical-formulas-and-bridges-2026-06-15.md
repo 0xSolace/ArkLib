@@ -132,3 +132,35 @@ B05/B06 antipodal odd-vanishing core, _Bridge05. E7: B31 `mStarOLog_iff_BCHKS1_1
 `monomial_dir_maximizes`, B35 `odd_graded_moment_eq_zero`, B36 `dividedDifference_eq_zero_iff_rs_member`.
 The single remaining OPEN input across all of E5/E7 is the **plateau-excess / m*-growth bound**
 (= BCHKS 1.12), named as an explicit `Prop` hypothesis in B28/B31/B32/B50, never discharged.
+
+## F. Structural closures (commit e93c546dd) + core assault (commit 355f21f7a)
+
+**Structural (`_Close*`):** E6 odd-grade vanishing **GENUINELY CLOSED** (`_Close07c.cf_odd_eq_zero`,
+`oddGradeVanishesStrong_holds` — verified faithful: `fhat`/`cf` match the probe byte-for-byte,
+non-vacuous, m=1 countermodel). E6 even-fold recursion **base instance CLOSED** by kernel `decide`
+(`_Close43.recursion_step_16_8_target`: `badCount 16 4 2 = badCount 8 2 1 = 40`), general case
+**REDUCED** to one named `FoldImageHyp` (carrier-symmetry forcing; fold-map injectivity proven,
+`_Close07a.foldVal_injective`). E5 primitive clean-recursion + one-sided lift **REDUCED** to set-
+membership hyps (`_Close26`, `_Close25`). Recall §D: `cf ≠ D`, so E6 closure is structural and does
+NOT touch the prize.
+
+**Core assault on m*-growth (`_CoreA*`, the prize direction):**
+- **A1** `coreA1_mStar_ge_three`, `deltaStar_le_capacity_sub_two_over_n` — provable UPPER bound on
+  δ* (the easy side, prize-consistent with P5).
+- **A2** `orbit_bound_iff_BCHKS_budget` — the orbit-count `O` decay; honest **REDUCES_TO_BCHKS**.
+- **A3** (axiom-FREE) `weakestSuff_iff_mStarOLog`, `weakestSuff_le_BCHKS`, but
+  `weakestSuff_imp_BCHKS_needs_reverse` — **backward-proof: weakest-sufficient is IMPLIED by BCHKS,
+  reverse OPEN** ⟹ weakest-suff might be *strictly weaker* than BCHKS = a possible **escape** (not
+  yet closed; A7/A3deep resolve).
+- **A5** `binding_is_monomial_controlled`, `monomial_dir_maximizes_overdet` — binding reduces to the
+  **monomial cascade** (tightens the reduction to the p-independent orbit object).
+- **A6** `Dstar_le_minorImage_card`, `plueckerMinor_ne_subsetSum` — a **NOVEL invariant**: D*(m)
+  bounded by a **Plücker/determinantal minor-image count**, machine-certified DIFFERENT from BCHKS
+  subset-sum (the 2×2 minor is `−xy`, a *product*, not an additive spectrum). A genuinely new
+  computable surface for m* — its tractability (Lang-Weil on the degree-2 determinantal variety) is
+  the freshest non-BCHKS lever, under attack in A6deep.
+
+**Two live non-BCHKS leverage points** (the only candidate escapes from the wall): (i) the
+A6 Plücker-minor count — is the determinantal point-count more tractable than the subset-sum? (ii)
+the A3 weakest-sufficient gap — does the prize need *strictly less* than full BCHKS 1.12? Both are
+honest open questions, neither yet a closure, both worth a continuing agent's effort.
