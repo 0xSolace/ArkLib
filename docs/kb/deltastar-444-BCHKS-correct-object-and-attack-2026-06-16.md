@@ -155,12 +155,29 @@ PROXY → 1/2 (`issue407-farline-incidence-is-plotkin-proxy`) — so even it doe
 **the δ* lower bound (above Johnson) is NOT proven; it reduces to the BGK/Paley wall, blocked on
 literature**, exactly as the pre-F1 canonical dossier had it.
 
-**Survivors of the F1-F6 session** (axiom-clean, correct h_r algebra, kept as substrate — must NOT be
-re-laundered as "pins δ*"): rotation-equivariance `h_r(ζR)=ζ^r·h_r(R)` (`_SpecS1`, fork/main
-`7354afb27`), the multiset-count identity `Σ c_m = C(k+r,r)` (`_SpecS2`), Galois/Frobenius
-equivariance `σ(h_b(R))=h_b(σR)` via the hypothesis-free `dividedDifferencePow_map` (`_SpecS3`, lost
-to a concurrent-reset clobber; the naturality lemma is worth re-deriving as substrate). **F1
-corrected:** `bad_le_chooseCH_of_spectrum` stays axiom-clean as a CONDITIONAL (free `poly`, pure
+**Restored substrate + frontier bricks (all axiom-clean, REAL `lake build` verified, kept as substrate
+/ frontier-isolation — must NOT be re-laundered as "pins δ*"):**
+- `_SpecS1` — rotation-equivariance `h_r(ζR)=ζ^r·h_r(R)` (`7354afb27`).
+- `_SpecS2` — multiset-count identity `Σ c_m = C(k+r,r)` + coeffVec reduction (`26666266f`).
+- `_SpecS3` — **CROWN JEWEL** `dividedDifferencePow_map`: hypothesis-FREE naturality of the divided
+  difference (hence `schurH=h_r`) under ANY ring hom `σ:F→+*K` (char-agnostic, total via `σ(0⁻¹)=0⁻¹`)
+  + `schurH_galois`/`schurH_galois_pow` (`σ(h_r(R))=h_r(σR)`). ROUTE-INDEPENDENT — the tool for
+  reduction-mod-`p` collision analysis (`26666266f`).
+- `_SpecS6` — HONEST vacuous-regime record: `leading_exponent_pinned` holds only ABOVE the crossing
+  (= the vacuous large-`r` regime), flags `poly=n` REFUTED at `s=32` below `M_cross` (`26666266f`).
+- `_SpecF7` — **good-prime collision count** (combinatorial half of Linnik, on the REAL frontier):
+  (A) `schurH_reduce`/`gamma_reduce` (h_r values reduce compatibly mod `p`, from S3's naturality);
+  (B) collision ⟹ `p|Norm(Δ)`, bad-prime set FINITE (`card ≤ log₂N`); (C) named-open
+  `EffectiveGoodPrimeExists` (= effective Linnik/Lagarias-Odlyzko/Thorner-Zaman PNT-in-AP) + 3
+  machine-checked falsifiability witnesses (`ea81a1dbc`). Corroborated by
+  `probe_hr_collision_badprimes.py` (good primes exist `<n^4`; ratio `first_good/n^4` CLIMBS = the
+  good/bad-prime BGK boundary).
+- `_SpecF8` — the CORRECT open core after the spectrum refutation: distinct-γ UNION chain
+  `#bad ≤ U ≤ n` (conditional on named `FarLineBudget`) + Galois/rotation orbit structure of `U`;
+  isolates the SINGLE open obligation `DistinctGammaUnionGrowthLaw` (p-independent, off-BGK; with a
+  machine-checked falsifiability witness) (`26666266f`).
+
+**F1 corrected:** `bad_le_chooseCH_of_spectrum` stays axiom-clean as a CONDITIONAL (free `poly`, pure
 `le_trans`); only the laundered `poly=n` docstring was fixed (`b68235230`).
 
 ## D. ACTIONS
