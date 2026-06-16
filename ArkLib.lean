@@ -1110,6 +1110,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadScalarCertificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1_CompleteHomogeneousFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1b_ChooseCHMultisetGrounding
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1c_ChooseCHStrictDominance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BetaGatedRatioGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BindingRadiusAffineFiber
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Bridge05_AntipodalOddVanishing
