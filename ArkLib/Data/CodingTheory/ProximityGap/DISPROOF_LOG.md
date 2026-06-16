@@ -15002,3 +15002,49 @@ beyond-Johnson/growth-law claim, cliff-at-n/2 UNTOUCHED. EXTEND-proven on proven
 (`period_pow_le_moment`, `card_fiber_le`), NOT a re-mapped dead face.
 CORE M(mu_n) <= C·sqrt(n·log(p/n)) UNCHANGED/OPEN.
 Probe: scripts/probes/probe_depthr_energy_ceiling.py.
+
+---
+
+## O232 — LEVER K general-pairwise (Bonferroni) dilation-pencil count (NO common core)
+
+**The gap.** `_PencilSunflowerCore.pencil_sunflower_core` proves the SUNFLOWER rung of the
+dilation-pencil degradation (`r·(r−M)+M ≤ |G|` when all pairs meet in a SINGLE common core T of
+size M). Its honest scope note explicitly DEFERS the harder target:
+  "The general pairwise-≤M core (r² ≲ M·N by a Cauchy–Schwarz/Fisher double-count, with NO common
+   T) is the harder honest target and stays a SEPARATE brick."
+This is exactly the hypothesis `PencilAutocorrelation.pencil_overlap_le_of_autocorr` delivers from a
+bounded multiplicative autocorrelation: every distinct pencil pair overlaps in ≤ M, but the
+intersections can DIFFER per pair (no common T). Grep-confirmed: no general-pairwise pencil count
+existed (only the M=1 disjoint extreme `pencil_card_core` and the sunflower common-core rung).
+
+**Probe (ONE sweep, scripts/probes/probe_pencil_pairwise_bonferroni.py; PROPER thin mu_n,
+p>>n^3 where structured, NEVER n=q-1; root sets incl. full subgroup + (coset n/2)∪{straggler}).**
+- The second Bonferroni LOWER bound |union C_i| >= sum|C_i| − sum_{i<j}|C_i ∩ C_j|: 0 violations
+  / 55 instances.
+- The headline r(r−1) − C(r,2)·Mpair <= n−1 (punctured pairwise overlap Mpair): 0 violations / 55,
+  including the prize worst case S=(coset size n/2)∪{straggler}, where Mpair ≍ n/2 makes the bound
+  VACUOUS = Johnson, never sub-Johnson (the correct degradation, matching the sunflower note and
+  `autocorr_ge_coset_core`'s M(S) >= n/2 obstruction).
+
+**Landed (PencilPairwiseBonferroni.lean, 3 headline thms + 2 helpers, axiom-clean
+{propext, Classical.choice, Quot.sound}; single-file lake-env-lean exit 0 + in-graph lake-locked
+exit 0).**
+- `filter_lt_offDiag_card` (helper): strict-pair count = C(|s|,2) (offDiag split into </> halves
+  equinumerous by Prod.swap). Reusable.
+- `mult_sub_choose_two_le_one` (helper): the pointwise Bonferroni inequality d − C(d,2) <= 1 ∀d.
+- `biUnion_card_ge_sub_pairwise` (HEART): for ANY family C : Fin r → Finset G,
+  sum|C_i| <= sum_{i<j}|C_i ∩ C_j| + |union C_i| (second Bonferroni, fiberwise multiplicity proof).
+- `pencil_pairwise_bonferroni` (HEADLINE): r blocks size r, common point p, punctured pairwise
+  overlap <= M => r·(r−1) <= C(r,2)·M + (|univ|−1). NO sunflower hypothesis.
+- `pencil_pairwise_bonferroni_disjoint`: M=0 collapse recovers r·(r−1)+1 <= |univ| (= pencil_card_core
+  numbers, the Stepanov √N count).
+
+**Honest scope (rule 1,3,6).** NOT a CORE closure, NOT thinness-essential: a field-universal
+double-count valid for ANY set family — so by rule 3 it CANNOT prove CORE (false in the thick
+window). It is the general-pairwise rung the sunflower brick explicitly deferred, and it confirms
+HONESTLY that the pairwise-bounded-overlap route collapses to Johnson at the prize core size M ≍ n/2.
+NO moment/census/orbit/completion/derandomization/spectrum re-derivation. NO capacity/beyond-Johnson/
+growth-law claim; a set-family counting object, not a δ*/incidence object — cliff-at-n/2 UNTOUCHED.
+EXTEND-proven on the proven in-tree `pencil_overlap_le_of_autocorr` hypothesis shape + standard
+Finset counting, NOT a re-mapped dead face. CORE M(mu_n) <= C·sqrt(n·log(p/n)) UNCHANGED/OPEN.
+Probe: scripts/probes/probe_pencil_pairwise_bonferroni.py.
