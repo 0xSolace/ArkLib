@@ -1059,6 +1059,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarRatioImage
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeConditionalPinCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeFloorFromCrossStep
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PseudocyclicDefectSum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharZero
