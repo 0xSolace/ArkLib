@@ -3890,3 +3890,43 @@ the conjecture is the recognized open Gauss-period/BGK content. NOT a census/orb
 sub-linear / closure claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n
 log(p/n)) UNCHANGED/OPEN. Author Sol, co-author wakesync.
 -- resr1.
+
+## O199 -- the STRUCTURED single-line sparse-zero floor at rate rho=1/4 is 5n/8 for ALL mu>=3:
+s*(2^mu, n/4) >= n/2 + 2^{mu-3} = 5*2^{mu-3} = 5n/8 (super-Johnson, since sqrt(kn)=n/2 at rho=1/4);
+the general-mu lift of FloorAsymptoticRadius's n=8,16 decide certificates (EXTEND-proven on
+StructuredUncertaintySharpFloor, NON-moment, grep-confirmed-MISSING, frontier-movement)
+
+StructuredUncertaintySharpFloor (#407) proves the PER-SPIKE structured floor
+card_witnessVal_zero_ge: s*(2^mu, k) >= n/2 + 2^e for EVERY spike exponent e<=mu-1, via the witness
+f(x) = (x^{n/2}+1)*(x^{2^e} - (zeta^{j0})^{2^e}) (j0 even, j0 < 2^{mu-e}); the binomial half-coset
+(n/2 zeros) plus 2^e disjoint poly-roots. It pins the per-e bound and (sStar_ge_half_add_pow_two)
+the lower bound, and FloorAsymptoticRadius brute-confirms s*=5n/8 ONLY at n=8,16 by decide. It does
+NOT state the rate-rho=1/4 OPTIMAL-spike closed form for general mu. grep-confirmed-MISSING: no
+in-tree theorem closes the optimal-spike floor to 5n/8 for all mu, nor proves it super-Johnson at
+every tower level. This brick supplies it. MECHANISM (NOT a moment move; pure spike-optimization +
+Nat closed form): at rho=1/4, k=n/4=2^{mu-2}, the largest power-of-two spike <= k-1=2^{mu-2}-1 is
+2^{mu-3} (e=mu-3, valid for mu>=3, fits e<=mu-1, even residue j0=0 < 2^{mu-e}=8); specialize
+card_witnessVal_zero_ge at (e=mu-3, j0=0) and close the Nat identity 2^{mu-1}+2^{mu-3}=5*2^{mu-3}=
+5*2^mu/8. PROBE scripts/probes/probe_5n8_general.py (ONE sweep, exact int, mu=3..21, thin 2-power
+mu_n, rho=1/4 fixed, never n=q-1): optimizer e*=mu-3, floor = n/2+2^{mu-3} = 5n/8 EXACT, and
+5n/8 > sqrt(kn)=n/2 strictly; VERDICT PASS at all 19 levels. FORMALIZED
+Frontier/_StructuredFloorRateQuarter.lean (single-file lake-env-lean exit 0 + in-graph lake-locked
+1497 jobs exit 0; axiom-clean subset of {propext, Classical.choice, Quot.sound}, no
+sorry/axiom/native_decide on all 5 printed): half_add_quarter_spike_eq
+(2^{mu-1}+2^{mu-3}=5*2^{mu-3}), five_quarter_spike_eq_5n8 (=5*2^mu/8),
+structuredFloor_rate_quarter_ge (HEADLINE: the 5*2^{mu-3}
+floor on the witness zero-count), structuredFloor_rate_quarter_ge_5n8 (the 5n/8 closed form),
+structuredFloor_rate_quarter_super_johnson (n/2 < 5*2^{mu-3}, super-Johnson for all mu>=3). Builds
+DIRECTLY on card_witnessVal_zero_ge (does NOT re-declare it). Does NOT close CORE: this is a LOWER
+bound on the SINGLE-LINE root count s* (max agreement of ONE far line with ONE codeword), which
+UncertaintyTwoPowerExtremal.SingleLineNotList already records is the WRONG object for the prize --
+the single n/2-agreement line does NOT lift to a large LIST (contributes only O(1) codewords); the
+prize delta* is the LIST radius. So 5n/8 is a super-Johnson floor on a single-line object the
+program brackets AWAY from CORE. Thinness-essential (rule 3): the witness binomial + spike both
+factor through 2-power-order elements (Tao forbids it over prime-order groups), a refutation of a
+would-be Johnson UPPER bound on s*, not a thinness-monotone CORE method. NOT a moment/census/orbit
+object (different lever: the structured uncertainty single-line root count). NO capacity /
+beyond-Johnson-delta* / sub-linear-M / closure claim; the cliff-at-n/2 (the delta*/incidence object,
+NOT s*) is UNTOUCHED -- ASYMPTOTIC GUARD compliant. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. Author Sol, co-author wakesync.
+-- 5n8.
