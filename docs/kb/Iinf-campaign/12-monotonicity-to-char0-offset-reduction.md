@@ -59,3 +59,32 @@ finite, q-independent, character-sum-free statement. THAT is the prize, in a for
 
 Tools: /tmp/n32ex.c (2-prime CRT exact engine), /tmp/dstar.c (validated far-line engine, reproduces
 issue pins). Related: [[arklib-407-multiplier-decay]], 11-deltastar-offset-law-and-monotonicity-localization.md.
+
+## UPDATE (2026-06-16) — EXACT char-0 (2-prime CRT) REFUTES the lead, and CORRECTS the issue's pin
+Built a faithfulness-aware exact engine: the single-prime values were char-p (the collision threshold is
+`(2w)^{φ(n)} ≈ 2^{30}` at n=16, far above small primes). Deduping bad scalars by `(γ mod 𝔭₁, γ mod 𝔭₂)`
+with `𝔭₁𝔭₂ ~ 2^{72} > threshold` gives the TRUE char-0 count. Result (n=16, **validated across two
+independent prime pairs `~2^18` and `~2^20`, identical**):
+
+| w | offset | char-0 (CRT, exact) | char-p p=65537 (Fermat) |
+|---|---|---|---|
+| 6 | 2 | 200 | 89 |
+| 7 | 3 | **120** | **16 ← polluted** |
+| 8 | 4 (=window-edge offset) | **120** | 16 |
+| 9 | 5 | 16 = budget | — |
+
+**So the true char-0 offset at n=16 is 5, not 3.** The issue's "exact `δ*(16)=9/16`" (offset 3) used the
+Fermat prime `65537`, which collapsed 120 distinct char-0 bad scalars to 16 — a `7.5×` pollution. The true
+char-0 `δ*(16) = 7/16` (offset 5). (This is consistent — `δ*` may sit below Johnson; the unconditional
+lower bound is *half*-Johnson `(1−√ρ)/2 = 0.25`, and `7/16 = 0.4375 > 0.25`. The Fermat value `9/16` was an
+over-estimate from under-counting.)
+
+**This REFUTES the closure lead.** The char-0 far-line incidence at the window-edge offset (`n/log₂n = 4`
+for n=16, w=8) is **120 ≫ budget 16**. So `δ*_char0 < window edge`, the offset is `5 > 4`, and the
+monotonicity bound `δ*_prize ≥ δ*_char0` lands *below* the window edge — it does NOT give the floor. The
+prize genuinely needs the char-p deletions (= BGK) to climb from `δ*_char0` to the window edge. **This
+independently re-derives the issue's "reduces to BGK" verdict** — now with the precise correction that the
+char-0 incidence at the window edge is super-budget (`120` vs `16` at n=16), and a validated fix to the
+δ*(16) pin. (n=8 char-0 offset is 2 but degenerate — `I` jumps 56→0, a small-n "ran out of configs"
+effect. n=32 exact CRT still running; expected to confirm offset `> 6.4`.) Honest: lead refuted; the
+Fermat-pollution correction to δ*(16) and the validated CRT methodology are the genuine residue.
