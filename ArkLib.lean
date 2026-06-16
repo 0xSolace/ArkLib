@@ -1103,6 +1103,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwistedLineCollisionParsev
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwoDAnnihilatorLineParseval
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyCapacitySidePrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerBounds
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerDonohoStarkBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerExtremal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerJohnsonRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerSparseFloor
