@@ -852,6 +852,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17Maximal
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarSecondPinF17Widened
 import ArkLib.Data.CodingTheory.ProximityGap.DeltaStarTableSmoothInstances
 import ArkLib.Data.CodingTheory.ProximityGap.DeployedRegimeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.DepthLogConfinedToThin
 import ArkLib.Data.CodingTheory.ProximityGap.DepthTwoEngine
 import ArkLib.Data.CodingTheory.ProximityGap.DerandomizationFrontier
 import ArkLib.Data.CodingTheory.ProximityGap.DescentKernelLemma

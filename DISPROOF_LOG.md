@@ -4412,3 +4412,24 @@ mechanism (why completion CANNOT improve it to the prize scale) is the SEPARATE 
 completion_margin_le_of_thin (O218). Does NOT prove CORE; no delta*/capacity/beyond-Johnson claim;
 cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. CONNECTIVE brick
 (EXTEND-proven off two proven theorems), not a re-mapped dead face.
+
+## O220 (lane depthconfine): the open prize predicate DepthLogSubGaussian is CONFINED to the thin
+regime q > 2 d log q -- the thick complement is discharged UNCONDITIONALLY by the O219 ceiling.
+LANE: delimit WHERE the 25-yr-open prize content lives. DepthLogSubGaussian ψ G := prizeRadiusSq
+ψ G <= 2|G| log q is the single open prize predicate (the sqrt(log q) ceiling above the proven
+sqrt(n) floor); its ONLY in-tree producer was depthLogSubGaussian_of_nearRamanujan (conditional on
+the OPEN near-Ramanujan). FOUND (grep-confirmed missing): NO unconditional producer in the thick
+regime where the trivial sqrt(q) bound already beats sqrt(2n log q). SHIPPED ArkLib/.../
+DepthLogConfinedToThin.lean (2 thms, axiom-clean {propext, Classical.choice, Quot.sound}, in-graph
+lake build 3319 jobs exit 0):
+  - depthLogSubGaussian_torsion_of_card_le: q <= 2 d log q => DepthLogSubGaussian ψ (torsion F d)
+    UNCONDITIONALLY (via O219 prizeRadiusSq_torsion_lt_card: Lambda^2 < q <= 2 d log q + card_torsion).
+  - not_thick_of_depthLogSubGaussian_torsion_fails: if the predicate FAILS at torsion F d then
+    2 d log q < q (the subgroup is necessarily THIN). So ALL open prize content lives in the thin
+    regime q > 2 d log q, i.e. d < q/(2 log q) -- exactly the prize window q = d^beta, beta large.
+RULE-3 RELEVANCE: this is the in-tree CONFINEMENT of the open prize content to thin subgroups -- the
+predicate is only a real obstruction where the subgroup is thin, structurally consistent with
+thinness-essentiality. HONEST SCOPE: DELIMITS where the open content lives; does NOT prove CORE. The
+thin-regime instance (the prize window) stays fully OPEN; only the thick complement is discharged.
+No delta*/capacity/beyond-Johnson claim; cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. EXTEND-proven off O219 (which extends O218); a confinement brick, not a dead-face remap.
