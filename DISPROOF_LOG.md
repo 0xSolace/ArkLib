@@ -3825,3 +3825,35 @@ char-agnostic, NOT thinness-essential. NO capacity / beyond-Johnson / sub-linear
 ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 Author Sol, co-author wakesync.
 -- orbcountgrowth.
+
+## O197 -- the translation orbit of an ODD-card carrier E over ZMod(2^a) has cardinality EXACTLY 2^a = n (the proven orbit-SIZE factor in #bad = n*#orbits + 1; extends CliqueOrbitFreeness.prize_regime_fixed_eq_zero)
+STATUS: EXTEND-PROVEN structural cardinality brick (rule 4), axiom-clean, LANDED. NOT a CORE
+closure. CliqueOrbitFreeness.prize_regime_fixed_eq_zero proves the STABILIZER half of lalalune's
+orbit-count reformulation D*(m) = (orbit size = n)*#orbits(m): for an ODD-card exponent set E in
+ZMod(2^a) the translation E -> E+j fixes E only for j=0 (trivial stabilizer). That file asserts in
+PROSE "hence the orbit has size exactly n = 2^a" but never proves the CARDINALITY conclusion, the
+literal orbit-size factor n in the in-tree #bad = n*#orbits + 1 (DeepBandOrbitCountDescent) and in
+ThreadD's union-count floor. grep-confirmed-MISSING: no in-tree theorem states the orbit cardinality
+= 2^a (only the trivial-stabilizer j=0). This brick supplies it; it is the COMPANION orbit-SIZE half
+to O196's orbit-COUNT growth law (the two factors of D = (orbit size)*#orbits). MECHANISM (NOT a
+moment method, pure cyclic Finset counting): model the rotation action by translate j E := E.image
+(.+j); injectivity of j -> translate j E for odd-card E (translate i E = translate j E => translate
+(i-j) E = E => i-j in stabilizer => i-j=0 by prize_regime_fixed_eq_zero), so the orbit = univ.image
+(translate . E) has card = card univ = 2^a (Finset.card_image_of_injective + ZMod.card). PROBE
+scripts/probes/probe_orbit_card_eq_n.py (ONE sweep, exact, a=2..6, never n=q-1): ALL odd-card E
+subset ZMod(2^a) have orbit size EXACTLY n; even-card E can have a SMALLER orbit (e.g. {0,n/2} has
+orbit n/2, nontrivial stabilizer); VERDICT PASS. FORMALIZED Frontier/_OrbitSizeEqN.lean (single-file
+lake-env-lean exit 0 + in-graph lake-locked olean exit 0; axiom-clean subset of {propext,
+Classical.choice, Quot.sound}, no sorry/axiom/native_decide on all 5 printed): translate_eq_self_iff
+(translate j E = E <-> forall x in E, x+j in E, reconciling the file's stabilizer predicate via
+injectivity of (.+j)), translate_injective_of_odd_card (the orbit map is injective for odd-card E),
+orbit_card_eq_two_pow (HEADLINE: orbit card = 2^a), orbit_card_eq_card_addGroup (= Nat.card (ZMod
+(2^a)), the orbit-stabilizer conclusion with trivial stabilizer explicit), orbit_n16_singleton (a=4
+anchor: orbit of {0} has size 16). Builds on CliqueOrbitFreeness; sharpens the orbit-SIZE half
+(trivial stabilizer -> the cardinality = n). Does NOT close CORE: it is the PROVEN multiplicative
+factor n, NOT a bound on #orbits(m) (the open cyclotomic-collision growth law = the BGK/BCHKS wall,
+the object O196 shows is super-linear). Pure cyclic-group Finset counting: character-sum-free,
+char-agnostic, p-independent, NOT thinness-essential. NO capacity / beyond-Johnson / sub-linear /
+closure claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n))
+UNCHANGED/OPEN. Author Sol, co-author wakesync.
+-- orbsize.

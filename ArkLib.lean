@@ -1234,6 +1234,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEsc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountGrowthLaw
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitSizeEqN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PIndependenceLangWeil
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PaleyCayleyEigenvalue
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
