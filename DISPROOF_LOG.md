@@ -3646,3 +3646,31 @@ thinness enters via the 2-power tower n=2^a. NO capacity / beyond-Johnson / sub-
 claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 -- dedupstrict, co-author wakesync.
 
+
+## O191 -- the leading rung D*(1) is p-DEPENDENT; the binding over-det count is NOT (audit ACTION G.3)
+Discharges ACTION G.3 of lalalune's 2026-06-16 audit (deltastar-444-audit-corrections-2026-06-16.md
+section B): the orbcount leading-rung value D*(1) was laundered as a single fixed p-independent datum
+D*(1)=3936 across four bridge files (_BridgeB46, _BridgeB33, _CoreA1_LowerBound, _BridgeB23) and many
+#444 comments. The audit caught that the m=1 / under-determined edge (s-k<=1) is genuinely
+p-DEPENDENT; only the over-det m>=2 regime is p-independent. PROBE: INDEPENDENTLY re-ran the in-tree
+enumerator orbcount 16 4 (scripts/rust-pg) at the two audit primes (this session, 2026-06-16) +
+scripts/probes/probe_dstar1_p_dependence_split.py locks the verdict (NEVER n=q-1, thin 2-power mu_n):
+D*(1)=3936 at p=65537 (=16^4+1 Fermat) but D*(1)=3984 at p=1048609 (=16^5+33) -- they DIFFER by 48,
+so the laundered "D*(1)=3936 p-independent" is FALSE. Meanwhile D*(2)=89 and D*(3)=9 are IDENTICAL
+across both primes, and the binding radius is IDENTICAL across both primes: at BOTH primes D*(1),D*(2)
+exceed budget(=n=16) and D*(3)=9<=16 is the first rung at/below budget, so m*=3 and the over-det
+far-line delta*=1-(s*-1)/n=5/8 are p-INDEPENDENT. The p-dependence of D*(1) is invisible to m* (both
+3936 and 3984 exceed budget 16). VERDICT: p-independence is a property of the BINDING over-det count,
+NOT the leading rung -- the precise corrected statement the audit requires. LANDED
+Frontier/_DStarOneIsPDependentBindingIsNot.lean (single-file lake-env-lean exit 0 + in-graph
+lake-locked 778 jobs exit 0; ALL theorems depend on NO axioms at all, strict subset of {propext,
+Classical.choice, Quot.sound}, no sorry): dStar1_at_65537/at_1048609, dStar1_p_dependent (HEADLINE
+refutation), dStar1_gap (=48), dStar2_p_independent, dStar3_p_independent, binding_at_65537/at_1048609,
+binding_radius_p_independent, dstar_p_independence_is_binding_not_leading (HEADLINE: leading rung
+p-dependent + binding over-det count p-independent + binding radius m*=3 p-independent). A
+CONSTRAINT/refutation-with-mechanism + correction brick (rule 4), NOT a CORE closure: refutes a value
+laundered identically across 4 bridge files and certifies p-independence at the audit's required
+granularity. Field-universal exact Nat over the orbcount rows; thinness enters via the 2-power mu_n on
+which D*(m) was measured. NO capacity / beyond-Johnson / sub-linear / growth-law claim; ASYMPTOTIC
+GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+-- dstar1pdep, co-author wakesync.

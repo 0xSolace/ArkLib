@@ -1177,6 +1177,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionComplete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoshMGFSaddle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CyclotomicLatticeWrapOnset
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DStarOneIsPDependentBindingIsNot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DeFinettiPeriodCovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecayLawPIndep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DecouplingTowerNoSaving
