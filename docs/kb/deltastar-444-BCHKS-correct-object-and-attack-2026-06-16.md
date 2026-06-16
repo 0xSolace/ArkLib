@@ -112,6 +112,57 @@ The spectrum bound is the genuine open prize core (the char-free worst-direction
 the in-tree BGK analytic wall but the p-independent complete-homogeneous distinct-value count — a
 concrete, attackable combinatorial conjecture.
 
+> ⚠️ **D3 IS SUPERSEDED — read §D4 below.** The "single clean combinatorial open core, verified with
+> `poly(n)=n`" claim is REFUTED at the prize scale and is, more deeply, the WRONG (exponentially loose)
+> object. The F1-F6 chain is conditional scaffolding, not a δ* proof.
+
+## D4. ⚠️ CORRECTION — the "poly(n)=n spectrum bound" is REFUTED at s=32; the bound is FOLD-DEPENDENT [2026-06-16]
+
+The D3 framing ("the single open core is the clean combinatorial bound `#distinct h_r ≤ C(s+r−1,r)`,
+verified with `poly(n)=n`") **was an over-claim** and is now corrected. `poly=n` was tested ONLY at
+`s = 8, 16`. Two probes settle it (`probe_spectrum_polyN_REFUTED_s32.py`,
+`probe_spectrum_provable_forms.py`):
+
+- **`poly(n)=n` is FALSE at the prize scale `s = 32`** (next power of two; the prize is `s = 2^μ`).
+  Even a SAMPLE (which only lower-bounds the true count) exceeds `n·C(s+r−1,r)` at small `r`:
+  `r = 2` ceil `16896` < seen; `r = 3` ceil `191488` < seen. Exact full-enumeration at `s = 24, 28`
+  needs `poly_min = 389, 3444` at `r = 2` — super-linear (`≈16n, 123n`, GROWING).
+
+- **The bound is FOLD-DEPENDENT (three regimes), at fixed rate `ρ=1/4`, witness `k+1 = s/4+1`:**
+  | fold `r` | `C(s+r−1,r)` vs trivial `C(s,k+1)` | bound `#distinct ≤ n·C(s+r−1,r)` |
+  |---|---|---|
+  | **small** (`r=2,3`) | ceiling `<` trivial → informative | **FALSE** for `s≥24` (`poly≫n`) |
+  | **medium** (`r=4,5` at `s=24`) | ceiling `<` trivial → informative | **HOLDS** (`poly=5,3 ≤ n`) |
+  | **large** (`r≥6`) | ceiling `≥` trivial → **vacuous** | trivially true (restates `C(s,k+1)`) |
+  Cause: at fixed rate `k+1 = ρs` GROWS, so the trivial ceiling `C(s,k+1)` is EXPONENTIAL; small `r`
+  has too little symmetric-function collision to drop it under the polynomial `n·C(s+r−1,r)`.
+
+### D4.1 — the DEEPER problem: the complete-homogeneous spectrum is EXPONENTIALLY LOOSE for #bad
+
+Beyond the `poly=n` refutation, there is a structural reason the F1 floor cannot pin δ*. The
+**actual** bad-scalar count at the binding radius is `#bad ≈ budget ≈ n` (POLY) — the exact content
+of the far-line audit (`δ*(RS[μ_16,ρ¼]) = 9/16` is precisely where the far-line incidence count
+`= n`; p-independent, exact; memory `issue407-farline-incidence-exact-audit`). But the
+complete-homogeneous spectrum `#distinct h_r(R)` is EXPONENTIAL (`≤ C(s,k+1)` with `k+1 = ρs`) at
+essentially every fold. So `#bad ≤ #distinct h_r ≤ poly·C(s+r−1,r)` is true but **loose by an
+exponential factor** (`n` vs `2^{Θ(s)}`): it discards the agreement + over-determination constraints
+that collapse the realized bad set from exponentially-many `R` down to `~n` valid scalars. Proving the
+spectrum bound — even where it holds — would bound `#bad` by an exponential, NOT by `n`, so it does
+**not** pin the δ* lower bound. **The complete-homogeneous spectrum is the wrong (vacuously loose)
+object.** The governing object stays `|⋃_R {γ_R}| ≤ n` (distinct-γ union count; p-independent,
+off-BGK; memory `issue444-distinctgamma-vs-wall-resolved`), and the far-line δ* is a Johnson-LOCKED
+PROXY → 1/2 (`issue407-farline-incidence-is-plotkin-proxy`) — so even it does not exceed Johnson. Net:
+**the δ* lower bound (above Johnson) is NOT proven; it reduces to the BGK/Paley wall, blocked on
+literature**, exactly as the pre-F1 canonical dossier had it.
+
+**Survivors of the F1-F6 session** (axiom-clean, correct h_r algebra, kept as substrate — must NOT be
+re-laundered as "pins δ*"): rotation-equivariance `h_r(ζR)=ζ^r·h_r(R)` (`_SpecS1`, fork/main
+`7354afb27`), the multiset-count identity `Σ c_m = C(k+r,r)` (`_SpecS2`), Galois/Frobenius
+equivariance `σ(h_b(R))=h_b(σR)` via the hypothesis-free `dividedDifferencePow_map` (`_SpecS3`, lost
+to a concurrent-reset clobber; the naturality lemma is worth re-deriving as substrate). **F1
+corrected:** `bad_le_chooseCH_of_spectrum` stays axiom-clean as a CONDITIONAL (free `poly`, pure
+`le_trans`); only the laundered `poly=n` docstring was fixed (`b68235230`).
+
 ## D. ACTIONS
 1. Mark the in-tree `BCHKS1_12` Prop as MIS-STATED (subset-sum on the wrong side); the real floor is
    Sumset-Extremality `#bad ≤ poly·|H^{(+r)}|`. The `prize_reduces_to_BCHKS` reduction is vacuous on
