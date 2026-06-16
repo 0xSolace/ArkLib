@@ -14627,3 +14627,43 @@ untouched). Pure Nat arithmetic over the in-tree cStarFull; thinness enters only
 tower being the prize regime. EXTENDS CrossingDepthLinearTracking (consumes its
 pow2_values_are_dip_below_line dip lemma). CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 -- pow2dip, co-author wakesync.
+
+## O189 (objdisent): the three "plateau" objects are pairwise-DISTINCT functions, so growth-law transport between them is unsound (the 8-angle "conflict" is OBJECT CONFUSION, not a contradiction)
+
+CONTEXT. lalalune's 04:57Z consolidation (finding #3) flagged that the "+1 vs x2" plateau dichotomy
+CONFLATES >=3 objects: the cascade run-length w, the binding-depth threshold m*, and the Lam-Leung
+invariant-class count w_LL give DIFFERENT answers (2 / 5 / 4 at n=32). "The angles 'conflict'
+largely because they measure different things. Disentangling them is itself progress." Recorded as
+VERIFIED but never a theorem. Distinct from the pow2dip entry above: pow2dip refutes the m* LINEAR
+INPUT on the tower (m*(32)=5!=7); THIS entry refutes the OBJECT SWITCH (w_LL=4 != w=2 != m*=5) that
+lets any one angle's growth law masquerade as another's. The Lam-Leung object switch w_LL=4 vs w=2
+is NOT covered by pow2dip.
+
+PROBE scripts/probes/probe_plateau_object_disentangle.py (exact integers; the recorded char-0 GPU
+cascade rho4.out + orbit data from _Close27_PlateauWidthDecision's authoritative table; p == 1 mod
+n, p >> n^4, NEVER n=q-1). Re-locks the three recorded values at the single common decisive input
+n=32: w(32)=2, m*(32)=5, w_LL(32)=4 -- PAIRWISE DISTINCT (0 collisions). Small-n consistency gate
+passes (w(8)=0 primitive base, w + m* both monotone nondecreasing, matching the in-tree monotonicity
+bricks).
+
+CONSTRAINT LEMMA (refutation-with-mechanism). FORMALIZED (axiom-clean, NO axioms at all -- a strict
+subset of {propext, Classical.choice, Quot.sound}: every theorem closes by decide/rfl/structural;
+single-file lake-env-lean exit 0 + in-graph lake-locked 116 jobs exit 0, on origin base a5db69be6):
+Frontier/_PlateauObjectDisentangle.lean --
+  - pointwise_ne_of_func_eq / func_ne_of_pointwise_ne : f x0 != g x0 => f != g as functions.
+  - growth_law_not_transportable (GENERAL) : for ANY growth-law predicate P, a single point of
+    disagreement f n0 != g n0 yields f != g, the exact obstruction to a free P f -> P g transport.
+  - plateau_objects_pairwise_distinct : w != m*, w != w_LL, m* != w_LL (witnessed at n=32).
+  - multiplicative_transport_unsound : w_LL != w AND m* != w, so the pull "Lam-Leung MULTIPLICATIVE
+    => cascade run-length w multiplicative => prize FAILS" is an OBJECT SWITCH; a growth law for
+    w_LL
+    (or for m*) does NOT transport to w.
+  - transport_obstruction : the explicit obstruction at n=32 for any predicate P.
+
+This is a CONSTRAINT on every future plateau argument (forbids the object-switch that produced the
+apparent 8-angle "conflict"); it does NOT decide the ADDITIVE-vs-MULTIPLICATIVE dichotomy FOR w (=
+the |P| rate = BCHKS Conj 1.12 = the BGK/Paley half-power wall, OPEN). Field-universal exact-integer
+functionals; thinness enters only via the 2-power tower n=2^a on which they were measured. No
+capacity / beyond-Johnson / sub-linear / growth-law claim for any of the three; cliff-at-n/2
+untouched. ASYMPTOTIC GUARD compliant. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. --
+objdisent, co-author wakesync.
