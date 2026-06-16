@@ -3674,3 +3674,32 @@ granularity. Field-universal exact Nat over the orbcount rows; thinness enters v
 which D*(m) was measured. NO capacity / beyond-Johnson / sub-linear / growth-law claim; ASYMPTOTIC
 GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 -- dstar1pdep, co-author wakesync.
+
+
+## O192 -- the corrected n=32 far-line proxy is 17/32 / m*=7 (audit G.5, post-RETRACTION 3c2d4fdf1)
+The audit (deltastar-444-audit-corrections-2026-06-16.md) originally FLAGGED n=32 as disputed
+between m*=4/0.625 and m*=5/19/32(=0.594). lalalune's RETRACTION commit 3c2d4fdf1 (sec A0, "THE
+BIG ONE") killed BOTH: the m*=5/0.594 reading was an engine DIRECTION-CAP (b<s) ARTIFACT (the GPU
+pg searched too few far directions). With the FULL b-range, the over-det far-line delta* is a
+JOHNSON-LOCKED PLOTKIN PROXY: farLineProxy(n,rho)=1/2+(1/(2 rho)-1)/n, at rho=1/4 it is 1/2+1/n,
+with m*=n/4-1 (LINEAR, not sub-linear). VERIFIED full-direction at n=16 (9/16,m*3), n=20
+(11/20,m*4), n=24 (13/24,m*5). So the corrected n=32 value is delta*=17/32(~0.531), m*=n/4-1=7,
+NOT 0.594/m*5, NOT 0.625/m*4. PROBE:
+scripts/probes/probe_farline_proxy_exact_tower_n32_corrected.py confirms the in-tree
+FarLineProxyBelowJohnson.farLineProxy formula reproduces the VERIFIED anchors n=16,20,24 and pins
+n=32 at 17/32/m*7, and that the retracted artifact 19/32 is OFF the proxy by exactly 1/16 (m* off
+by 2 rungs). LANDED Frontier/_FarLineProxyTowerN32Corrected.lean (single-file lake-env-lean exit
+0; axiom-clean, strict subset of {propext, Classical.choice, Quot.sound}, no sorry;
+mStar_n32_is_seven depends on NO axioms at all): proxy_quarter (farLineProxy n (1/4)=1/2+1/n),
+proxy_n16/n20/n24 (the VERIFIED anchors), proxy_n32_corrected (=17/32, HEADLINE),
+artifact_off_proxy (!=19/32), artifact_gap (19/32-proxy=1/16), mStar_linear (m*=n/4-1 on the
+tower), mStar_n32_is_seven (=7, !=5), proxy_n32_above_half (>1/2=Johnson),
+g5_resolved_proxy_tower_corrected (HEADLINE). EXTENDS the in-tree farLineProxy def (commit
+bce3f1a79) by pinning its exact tower values + the corrected n=32 point. A CONSTRAINT/correction
+brick (rule 4) resolving the flagged G.5 datum in the form the retraction left it; NOT a CORE
+closure. Field-universal exact R/Nat over the proxy formula; thinness enters via the 2-power mu_n
+on which the proxy was measured. NO capacity / beyond-Johnson / climb-to-capacity claim (the
+climb-to-capacity reading is exactly what 3c2d4fdf1 retracted; the proxy LOCKS to 1/2=Johnson from
+above, the prize floor >=Johnson is the SEPARATE harder BCHKS/BGK object); ASYMPTOTIC GUARD
+cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+-- flpproxytower, co-author wakesync.

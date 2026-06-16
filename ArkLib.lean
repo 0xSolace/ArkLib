@@ -1208,6 +1208,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyFreqBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyRatioMonotoneReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EntropyCeilingDecisionImpotence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FarLineProxyTowerN32Corrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FourierSparseZeros
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodFirstMoment
