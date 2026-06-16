@@ -29,20 +29,30 @@ So **ERM ⟹ `GaussianEnergyBound G r` for ALL `r`**, hence (by the in-tree cons
 the optimizing depth. `gaussianEnergyBound_of_ERM` and `worstCaseIncompleteSumBound_of_ERM` below are the
 axiom-clean reduction.
 
-**Status of ERM (HONESTY).** ERM is a *conjecture*, stated here as a named `Prop` — it is NOT proven in
-this file. Its strength is that of the open core (it is equivalent to the deep-order Gaussian energy
-bound), so this is a *reformulation*, not an escape from the hard mathematics. What it BUYS is a clean,
-closed, induction-friendly target: a single recursive inequality on point counts, with
-- **base case `r=1` PROVEN** (`E_2 = 3n²−3n ≤ 3n·n`, and `E_1 = n` exactly), and
-- **strong exact-computation support**: the ratio `E_r / [(2r-1)‼·n^r]` was measured (exact full-`b`
-  Gauss-period sums) to be `≤ 1` and *monotone decreasing in `r`* — i.e. ERM holds — for the dyadic
-  prize subgroup at `β=4` (`p=n⁴`) for `n = 16, 32, 64, 128`, through and **past** the optimal moment
-  depth `r ≈ ln p` (e.g. n=128: ratio `0.99` at `r=2` falling to `0.00` by `r=28 > ln p = 19.4`;
-  `max|η_b|²/(2n ln p) = 0.61`, decreasing in `n`). No heavy tail, no crossover.
+**Status of ERM (HONESTY — REFUTED as a global claim).** ERM `∀ r ≥ 1` is **FALSE**, by exact
+arbitrary-precision computation (NOT the earlier float64 numerics, which were a catastrophic-cancellation
+artifact). At `n = 32`, `p = 1048609` (prize geometry `p = n⁴`, and confirmed at a generic prime
+`p = 1051649`), the energy ratio `R_r = E_r / [(2r-1)‼·n^r]` is **non-monotone** — it dips to `0.711` at
+`r = 6` then **rebounds through 1** (`R_9 = 1.27`, `R_10 = 1.85`). ERM first fails at the `r = 6→7` step
+(`E_7/(n·E_6) = 13.60 > 13`), inside the shallow window `r < (n-1)/2 = 15.5`. Two consequences:
+- The base case `r = 1` is still PROVEN (`E_2 = 3n²−3n ≤ 3n·n`), and `r = 2` holds (slack `1−1/n`), but
+  **past `r ≈ n/4` the per-step ratio `E_{r+1}/(n·E_r)` exceeds `2r+1`** (it → `max_c‖η_c‖²/n`).
+- The companion `GaussianEnergyBound` (`E_r ≤ (2r-1)‼·n^r`) is itself **not uniform in `r`** at finite `n`:
+  it holds only for `r ≲ n/4` and rebounds above `1` for larger `r` (e.g. fails at `n=32`, `r ≥ 9`).
 
-This *corrects* the prior "moment route is dead" reading (which rested on a normalization that divided by
-the Gaussian `r!·n^r` instead of the correct Lam–Leung `(2r-1)‼·n^r`): with the right ceiling, the moment
-route is alive, and ERM is its cleanest closed form. Issue #444.
+**What this file still proves (valid, axiom-clean — these are IMPLICATIONS, they never assert ERM is true):**
+`gaussianEnergyBound_of_ERM`, `worstCaseIncompleteSumBound_of_ERM` (ERM ⇒ the prize bound), the
+`doubleFactorial_step` recursion, and `energyRatioMonotone_at_deep` (ERM is automatic for the deep band
+`|G| ≤ 2r+1`, i.e. `r ≥ (n-1)/2` — but that band is exactly where it is vacuous for the prize).
+
+**Why no escape (sharp).** ERM-at-`r` ⟺ `R(r) := E_{r+1}/(n·E_r) ≤ 2r+1`, and `R(r)` is monotone increasing
+in `r` with limit `max_c‖η_c‖²/n`. So ERM-at-`r` *presupposes* `max‖η‖² ≤ (2r+1)·n` = the BGK/Paley
+sup-norm bound. **Prize-scale nuance (a clarification, not a rescue):** the `n=32` failure sits at `r ≈ n/4`;
+for the prize `n = 2³⁰` the optimal depth `r ≈ ln q ≈ 110 ≪ n/4 = 2²⁸`, so the counterexample does *not*
+reach the prize-relevant range — but ERM restricted to `r ≪ n/4` is then exactly the sup-norm wall. ERM-as-
+a-route is therefore DEAD globally and equals the wall when restricted. Kept as the honest negative record;
+the implication lemmas remain because they are mathematically correct and document the (failed) strategy.
+Issue #444.
 -/
 
 open ArkLib.ProximityGap.GaussPeriodMomentBound
@@ -56,8 +66,8 @@ variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 /-- **Energy-Ratio Monotonicity (ERM).** The `(r+1)`-st additive energy is at most `(2r+1)·|G|` times
 the `r`-th, for every `r ≥ 1`. The single closed recursive input that — with the trivial base
 `E_1 = |G|` — implies the Gaussian energy bound at every order (and hence the prize per-frequency bound).
-A named conjecture; base case proven, exact-computation–verified for the dyadic prize subgroup
-`n ≤ 128` past depth `r ≈ ln q`. -/
+**REFUTED as a global claim** (exact bigint: fails at `n=32`, `r=6`, inside `r<(n-1)/2`); see the module
+docstring. Kept only as the hypothesis of the (valid) implication lemmas below — it is NOT true `∀ r`. -/
 def EnergyRatioMonotone (G : Finset F) : Prop :=
   ∀ k : ℕ, 1 ≤ k → (rEnergy G (k + 1) : ℝ) ≤ (2 * (k : ℝ) + 1) * (G.card : ℝ) * (rEnergy G k : ℝ)
 
