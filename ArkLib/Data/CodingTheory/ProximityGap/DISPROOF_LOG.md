@@ -14108,3 +14108,37 @@ graph avoids. So Avenue E's spectral-graph framing is a faithful RE-STATEMENT of
 a numerically bounded constant, but supplies no new proof technique (NBT/random-graph closes nothing).
 
 **Probe committed:** `scripts/probes/probe_near_ramanujan_face_scaling.py`.
+
+### O180 — DISPROOF HUNT (falsify-first, took shaw's "we can disprove it" seriously): NO super-budget interior word at accessible scales — the floor HOLDS at n≤32, with the supply≠list mechanism pinned (nubs, 2026-06-16)
+
+Directly tested the disproof hypothesis (∃ word with list > budget≈n at a window-INTERIOR radius ⟹
+δ*=Johnson) rather than deferring to the rule-3 framing. 3 independent search methods (codeword-aware
+hill-climb reproducing the O163 cluster + structured-construction lists + growth/thinness analysis),
+thin NON-Fermat primes (n=8 q=4129, n=16 q=65617/65633, n=32 q=1048609; β≈4; avoided the Fermat #400
+trap), validated 4 ways incl. the in-tree **C19 ground truth 19=3+16 reproduced bit-exactly** and an
+independent monomial cross-check (monomials → 0/O(1) at the interior, confirmed from this seat).
+`scripts/probes/incidence/disproof/`.
+
+**VERDICT: FLOOR-HOLDS at the searched scales — no disproof found.**
+- At a FIXED window-interior radius (a/n bounded strictly in (ρ, √ρ), e.g. mid-window a/n≈0.625 at
+  ρ=1/2): max-list is **O(1) and NON-INCREASING** (n=8→5/7, n=16→3, n=32→0-1; growth exponent c≤0,
+  vs the c>1 a disproof needs). 30k-word stress test at n=16: interior list never exceeds 4 — not a
+  search artifact.
+- The ONLY super-budget growth is at the near-capacity shoulder **a=k+1**, whose relative radius a/n
+  → capacity (½ at ρ=½) as n→∞ — NOT a fixed interior radius. This is the documented
+  UniversalBoundaryBound = C(n,k) leakage / the KKH26 ceiling, **on the capacity side**, not an interior
+  disproof. (a=k+1 list: n=8→7, n=16→273=¾·C(n,k)/C(a,k) ceiling, n=32→≫.)
+- **THE MECHANISM (key insight): SUPPLY ≠ LIST.** The e2=0 over-determined census #bad~n²/4 (the leading
+  floor-defeating candidate) does NOT translate into a super-budget LIST — the forced cores do not host
+  DISTINCT codewords against a single word (randomized-complement realizations host one codeword + chance
+  agreements). So the n²/4 "supply wall" is real as a fiber count but is NOT an interior list ⟹ not a
+  disproof. This is *why* the rule-3 dismissal was right, made concrete.
+- **THICKNESS-INVARIANT:** the entire max-list profile is the same at thick (β≈2) and thin (β≈4) — even
+  the capacity-edge growth is not thin-specific.
+
+**HONEST SCOPE (the part I owe after deferring earlier):** this is a MEASURED negative result at n≤32, NOT
+a proof. shaw's disproof could still be real via large-n behavior invisible here, or a construction outside
+the searched families (coset/e2=0/Frobenius/cluster/line all covered). But the leading candidate (n²/4
+supply) is now concretely shown to NOT be an interior list, and the only list growth is the known
+capacity-edge ceiling. At accessible scales the evidence is FOR the floor. I no longer dismiss the disproof
+on framing — I report a thorough falsify-first hunt that came up empty, with the precise reason.
