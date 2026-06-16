@@ -4255,3 +4255,41 @@ drop this to O(sqrt n) via a high-multiplicity Stepanov auxiliary stays OPEN). N
 orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
 UNTOUCHED.
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../RepCountFiberPolyBound.lean.
+
+## O216 -- the char-0 Lam-Leung SLACK is EXACT and strictly positive (wf-P2 headroom PRODUCER)
+LANE: the wf-P2 char-p Lam-Leung slack route (_wf6P2_charp_lamleung_slack.lean). That file reduces
+the prize moment ceiling (S-M1) to ONE open residual (P2-Slack): Spur_r(p) <= (2r-1)!! n^r -
+A_r^Z(mu_n) =: Slack_r (spurious mod-p coincidences fit in the char-0 slack), but carries Slack_r>=0
+on FAITH -- NO in-tree theorem PRODUCES the headroom Slack_r>0 the residual needs to be non-vacuous.
+FOUND (grep-confirmed missing): the char-0 zero-sum count A_r^Z = E_r(mu_n) has PROVEN closed forms
+in tree (CharZeroEnergyThree.B4_closed -> E_2=3n^2-3n; B6_eq_E3 -> E_3=15n^3-45n^2+40n). The
+double-factorial ceiling is (2r-1)!! n^r (3 n^2 at r=2, 15 n^3 at r=3). The leading n^r terms CANCEL
+EXACTLY (the Lam-Leung ceiling is the leading asymptotic of the energy); the slack is the
+SUB-LEADING term:
+  Slack_2 = 3 n^2 - (3 n^2 - 3 n)             = 3 n            (strictly > 0, n >= 1)
+  Slack_3 = 15 n^3 - (15 n^3 - 45 n^2 + 40 n) = 45 n^2 - 40 n  (strictly > 0, n >= 1)
+PROBE scripts/probes/probe_lamleung_slack_lower.py (ONE sweep): (A) the exact slack identities vs
+directly-enumerated char-0 E_r for n=4..128 -- PASS (Slack_2=3n, Slack_3=45n^2-40n exact, both >0).
+(B) char-p energy A_r (zero-sum mod p of 2r-tuples) in the PRIZE regime (p>>n^3, p==1 mod n, 3
+structured primes each, PROPER thin mu_n, NEVER n=q-1): Spur_r = A_r - E_r^Z = 0 through the
+faithfulness edge (n=4/8, r=2/3) => 0 <= Spur <= Slack HOLDS, (P2-Slack) residual non-vacuous.
+SHIPPED Frontier/_CharZeroLamLeungSlackLower.lean (7 theorems, single-file lake-env-lean exit 0 +
+in-graph lake-locked 3298 jobs exit 0, ALL 7 axiom-clean {propext, Classical.choice, Quot.sound}, no
+sorry/axiom/native_decide):
+  - slack_two_eq / slack_three_eq: the EXACT slack identities on the BalancedCount carrier
+    (3*(2m)^2 - B 4 m = 6m; 15*(2m)^3 - B 6 m = 45*(2m)^2 - 40*(2m)).
+  - slack_two_pos / slack_three_pos: B 4 m < 3*(2m)^2 and B 6 m < 15*(2m)^3 for m>=1 -- the char-0
+    energy is STRICTLY below the Lam-Leung ceiling (slack genuine, not vacuous).
+  - slack_two_pos_value / slack_three_pos_value: same on the closed-form VALUES (for consumers
+    holding the value not the carrier).
+  - P2Slack_residual_implies_energy_le: the CONSUMER (P2-Slack) => (S-M1) -- if Spur>=0 and
+    Spur<=ceiling-A_r^Z then A_r<=ceiling. The load-bearing implication, now resting on an exhibited
+    strictly-positive slack rather than an unquantified Slack>=0 hypothesis.
+HONEST SCOPE: PRODUCES the exact char-0 slack (the headroom the open (P2-Slack) residual lives
+in) at r in {2,3}; does NOT bound the spurious char-p term Spur_r(p) (the genuinely-open arithmetic
+on the prize prime stays OPEN). NOTE the slack is sub-leading (Slack_r ~ c_r n^{r-1} vs energy ~
+(2r-1)!! n^r), so Slack_r/ceiling_r ~ 1/n -> 0: the residual is real but TIGHTENING in n (consistent
+with the probe's Spur/Slack <= 0.11). Char-0/field-universal in derivation; NO capacity/
+beyond-Johnson/growth-law claim; delta* and cliff-at-n/2 UNTOUCHED. CORE M(mu_n)<=C sqrt(n log(p/n))
+UNCHANGED/OPEN. NON-MOMENT-re-mapping: this is EXTEND-proven off the proven exact energies, a NEW
+producer for an explicitly-named open residual, not a re-confirmation of a known wall.
