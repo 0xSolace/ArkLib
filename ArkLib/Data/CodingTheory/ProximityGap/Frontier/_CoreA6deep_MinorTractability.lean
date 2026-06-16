@@ -428,8 +428,8 @@ example : (minorPoly (X : ℚ[X]) X X X).natDegree ≤ 2 * 1 :=
 example : minorPoly (X : ℚ[X]) 1 1 X ≠ 0 :=
   minorPoly_ne_zero_of_nonRoot (u₀ := 3) (by rw [minorPoly_eval]; norm_num)
 
-/-- **Sanity (tractability gap).**  At `n = 16` the A6deep bound `32` is far below the depth-2 trivial
-count `C(16,2) = 120`. -/
+/-- **Sanity (tractability gap).**  At `n = 16` the A6deep bound `32` is far below the depth-2
+trivial count `C(16,2) = 120`. -/
 example : 2 * 16 < Nat.choose 16 2 := by decide
 
 end ArkLib.ProximityGap.CoreA6deep
