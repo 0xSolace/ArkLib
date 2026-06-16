@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# δ*-mine — ONE command to mine the Reed–Solomon proximity prize.
+#
+# Like `solana-keygen grind`, but it hunts a DISPROOF of the proximity-gap conjecture
+# (one counterexample = you win the $1M by disproving). Auto-builds + self-calibrates,
+# then grinds. CPU by default (good to n≈28); uses GPU automatically if nvcc is present.
+#
+#   mine                 # just mine — calibrate, then sweep the tower hunting a disproof
+#   mine 32              # mine one size n=32
+#   mine --max 44        # sweep up to n=44 (the brute-force frontier)
+#   mine --shard 3/16    # your slice of a distributed pool (machine 3 of 16)
+#   mine --help
+#
+# HONEST: a disproof (super-budget hit) WINS. A proof cannot be ground out (it needs new
+# math — the 25-yr BGK wall). And this is the proxy face (p≈n⁴); brute force dies at n≈44.
+set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RUSTBIN="$HERE/../rust-pg/target/release/pg"
+CUDABIN="$HERE/../cuda-pg/pg"
+b=$'\033[1m'; d=$'\033[2m'; g=$'\033[32m'; r=$'\033[31m'; c=$'\033[36m'; y=$'\033[33m'; m=$'\033[35m'; x=$'\033[0m'
+
+usage() { cat <<EOF
+${b}δ*-mine${x} — one command to mine the RS proximity prize (hunt a disproof)
+
+  ${b}mine${x}                 just mine: calibrate, then sweep the tower hunting a disproof
+  ${b}mine N${x}               mine one size (e.g. ${b}mine 32${x})
+  ${b}mine --max M${x}         sweep n = 8,16,32… up to M (default 32 on CPU, 44 on GPU)
+  ${b}mine --shard i/N${x}     your slice of a distributed pool
+  ${b}mine --help${x}
+
+${d}WIN = a disproof (one super-budget hit, flagged loudly). A proof can't be ground out.
+Proxy face (p≈n⁴); brute wall at n≈44. CPU auto; GPU used if nvcc present.${x}
+EOF
+}
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+# build + pick engine (GPU if available, else CPU); echoes binary path
+setup() {
+  if have nvcc && { [ -x "$CUDABIN" ] || ( cd "$HERE/../cuda-pg" && make >/dev/null 2>&1 ); }; then echo "$CUDABIN"; return; fi
+  [ -x "$RUSTBIN" ] || { have cargo || { echo "${r}need cargo or nvcc to build the engine${x}" >&2; exit 1; }; ( cd "$HERE/../rust-pg" && cargo build --release >/dev/null 2>&1 ); }
+  echo "$RUSTBIN"
+}
+
+# self-calibrate against the ground-truth oracle; exits if the engine is wrong
+calibrate() {
+  local bin=$1
+  local o8 o16; o8=$("$bin" 8 2 2>/dev/null); o16=$("$bin" 16 4 2>/dev/null)
+  if grep -q "s\*=5" <<<"$o8" && grep -qE "s=6 .*maxI=89" <<<"$o16" && grep -q "s\*=7" <<<"$o16"; then
+    printf '%s\n' "${g}✓ calibrated${x} ${d}(engine reproduces the known answers n=8→s*=5, n=16→maxI=89)${x}"
+  else printf '%s\n' "${r}✗ calibration FAILED — engine is buggy, not mining.${x}"; exit 1; fi
+}
+
+# mine one size: grind the cascade, flag a disproof, print the honest lean. sets global LAST_W.
+LAST_W=""
+mine_one() {
+  local bin=$1 n=$2 k=$(( $2 / 4 )) out; LAST_W="?"
+  out=$("$bin" "$n" "$k" 2>/dev/null) || { printf '  %s\n' "${y}n=$n did not finish (compute wall — try GPU or smaller n)${x}"; return 1; }
+  local sstar dstar defect casc w
+  sstar=$(grep -oE 's\*=[0-9]+' <<<"$out" | head -1 | cut -d= -f2)
+  dstar=$(grep -oE 'delta\*=[0-9.]+' <<<"$out" | head -1 | cut -d= -f2)
+  defect=$(grep -oE 'defect\(s\*-k\)/n=[0-9.]+' <<<"$out" | head -1 | cut -d= -f2)
+  casc=$(grep -E '^\s+s=' <<<"$out" | sed -E 's/^\s+s=([0-9]+).*maxI=([0-9]+).*/\1:\2/' | tr '\n' ' ')
+  w=$(grep -cE 'maxI=89 ' <<<"$out" || true); LAST_W=$w   # plateau width = #(89 value), ρ=1/4 tower
+  # DISPROOF check: cascade never bound under budget?  (s* missing = it broke through capacity)
+  if [ -z "$sstar" ]; then
+    printf '  %s n=%-3s %s\n' "${r}${b}‼ DISPROOF CANDIDATE${x}" "$n" "${r}cascade never bound under budget — VERIFY + report to #444 NOW${x}"
+    return 0
+  fi
+  printf '  n=%-3s  cascade[%s] δ*=%s  w=%s  ' "$n" "${casc%% }" "$dstar" "$w"
+  if awk "BEGIN{exit !($defect >= 0.30)}" 2>/dev/null; then printf '%s\n' "${y}defect/n=$defect (leans FAILS — watch ×2)${x}"
+  else printf '%s\n' "${g}defect/n=$defect (leans HOLDS)${x}"; fi
+}
+
+# ── parse args ──
+MAX=""; ONE=""; SHARD=""
+while [ $# -gt 0 ]; do case "$1" in
+  -h|--help|help) usage; exit 0 ;;
+  --max) MAX="$2"; shift 2 ;;
+  --shard) SHARD="$2"; shift 2 ;;
+  [0-9]*) ONE="$1"; shift ;;
+  *) echo "${r}unknown arg: $1${x}"; usage; exit 1 ;;
+esac; done
+
+printf '%s\n' "${b}${m}⛏  δ*-mine${x} — hunting a disproof of the proximity-gap conjecture"
+BIN=$(setup)
+NAME=$([ "$BIN" = "$CUDABIN" ] && echo "GPU" || echo "CPU")
+printf '%s\n' "${d}engine: $NAME${x}"
+calibrate "$BIN"
+echo
+
+if [ -n "$SHARD" ]; then
+  i=${SHARD%/*}; N=${SHARD#*/}; n=${ONE:-32}; k=$(( n/4 ))
+  span=$(( (n + N - 1) / N )); a0=$(( i*span )); a1=$(( a0+span ))
+  printf '%s\n' "${b}pool share $i/$N${x} — n=$n directions a∈[$a0,$a1). Emitting SHARD lines for the coordinator:"
+  for (( a=a0; a<a1 && a<n; a++ )); do for (( bb=k; bb<n; bb++ )); do [ "$a" = "$bb" ] && continue
+    "$RUSTBIN" "$n" "$k" "$a" "$bb" 2>/dev/null | grep -E '^\s+s=' | sed -E "s/^\s+s=([0-9]+).*[^a-zA-Z]I=([0-9]+).*/SHARD $n $k $a $bb \1 \2/" || true
+  done; done
+  exit 0
+fi
+
+if [ -n "$ONE" ]; then
+  mine_one "$BIN" "$ONE"
+  exit 0
+fi
+
+# default: sweep the tower, hunting a disproof, tracking the w(n) growth law
+[ -z "$MAX" ] && { [ "$NAME" = GPU ] && MAX=44 || MAX=16; }
+printf '%s\n' "${b}sweeping the 2-power tower (hunting a disproof; tracking w(n))${x}  ${d}max n=$MAX${x}"
+ws=""
+n=8
+while [ "$n" -le "$MAX" ]; do
+  mine_one "$BIN" "$n"; ws="$ws $LAST_W"; n=$(( n*2 ))
+done
+echo
+printf '%s\n' "${b}plateau widths w(n):${x}${ws}  ${d}(recorded full tower: 0,1,2,? — w(64)=3 additive→HOLDS, 4 ×2→FAILS)${x}"
+printf '%s\n' "${g}no disproof found at these sizes${x} ${d}— the conjecture still stands here; push to larger n (GPU) to keep hunting.${x}"
+printf '%s\n' "${y}honest: proxy face (p≈n⁴); a real win needs a disproof at reachable n, or the (uncomputable) proof.${x}"
