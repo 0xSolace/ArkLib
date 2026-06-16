@@ -1179,6 +1179,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deep_BezoutBeatsAll
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deep_MinorTractability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deepGeomMinorBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deepGeomMinorSharp
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA6deepGeomSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreA7_NecessityTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionComplete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoshMGFSaddle
