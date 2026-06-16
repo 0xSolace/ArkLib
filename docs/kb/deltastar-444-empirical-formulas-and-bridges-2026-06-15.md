@@ -186,11 +186,23 @@ for the worst direction. Whether that factorization holds for multi-window m≥3
 structural question; the determinantal point-count has Lang-Weil theory, a different surface from
 BCHKS subset-sum. **This is the one lever a continuing agent should push.**
 
-**⚠️ The "escape" theorems are VACUOUS (honest correction):**
+**⚠️ The "escape" theorems are VACUOUS, but they point at a GENUINE open question (precise form):**
 `_CoreA7.weakestSuff_strictly_below_BCHKS` and `_CoreA3deep.escapeConfig_nonempty` /
 `weakestSuff_not_imp_BCHKSCount` instantiate `D ≡ 0`, `budget ≡ 0` — a degenerate toy model proving
-the *abstract predicates* `WeakestSuff` and `BCHKS` are different *formulas*, NOT a real escape on
-the actual (nonzero) cascade. They do NOT exhibit a way past the wall. Do not cite them as escapes.
+the *abstract predicates* differ as *formulas*; they do NOT exhibit a real escape and must not be
+cited as one. **BUT** the underlying question is real and p-independent: `_CoreA3` proves
+`BCHKS ⟹ WeakestSuff` UNCONDITIONALLY via the **dedup domination `D n m ≤ Σ_r(μ_{smap n})`** (each
+forced ratio `γ_R = −h_{a−k}(R)/h_{b−k}(R)` is a subset-sum ratio, so the distinct-γ *union* count is
+≤ the subset-sum count — deduplication only shrinks). The converse `Σ ≤ D` is **false pointwise**
+(B33: `D` decreasing `[40,9,5,…]` vs `Σ_r` increasing `[3,5,10,…]`). So `WeakestSuff ≤ BCHKS`
+(`weakestSuff_le_BCHKS`), and **whether it is STRICTLY weaker (a real escape — prize needs less than
+BCHKS) or equal (the wall) reduces to whether the dedup `D ≤ Σ_r` is STRICT at logarithmic depth**
+`m ≈ log n`. This is a p-INDEPENDENT growth-law question, decisively OFF the analytic single-saddle
+MGF wall the older char-sum backward-proof hit. (In-tree cross-checks lean "reduces to wall": the
+generating-function support of the distinct-γ count GROWS, refuting a naive "+1 single-term"
+strictness mechanism — but the dedup-strictness question itself is NOT settled and is the precise,
+honest residual.) Together with the A6 determinantal lever, this is one of two p-independent forms of
+the open core worth a continuing agent's effort.
 
 **FINAL VERDICT.** The #444 bridge program is a **complete, honest, axiom-clean reduction of the
 prize to BCHKS Conjecture 1.12**, proven TIGHT (necessary + sufficient). The wall is real and
