@@ -14382,3 +14382,40 @@ unconditional theorem. Field-universal combinatorics; thinness enters only via W
 binds and whether the supply floor is poly-controlled (the open upper question = the prize).
 Makes NO capacity/beyond-Johnson/growth-law claim; cliff-at-n/2 untouched. CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- censusnec lane, co-author wakesync.
+
+---
+
+## genuinequad lane (2026-06-16): the GENUINE-QUADRUPLE obstruction IS Sidon-modulo-negation (k=2 / nu face)
+
+E2CharFreeLowerBound proved the char-free LOWER bound E2(mu_n) >= 2n^2-n and NAMED the obstruction
+to the matching UPPER bound E2 <= 3n^2-3n as the Prop E2CharFree.GenuineQuadruple (a normalized extra
+relation 1+B=C+D with {1,B} != {C,D}); its docstring asserts in prose the upper bound is "equivalent
+to the NON-existence of a genuine quadruple" but left that connection as a HOOK, never a theorem.
+SidonEnergyIff / AdditiveEnergyCharacterization separately closed E2=3n^2-3n <-> SidonModNeg. The
+missing bridge between the two obstruction objects (char-free GenuineQuadruple Prop vs structural
+SidonModNeg hypothesis) is this brick.
+SUBTLETY (probe-precise, prose glossed it): SidonModNeg PERMITS the zero-sum coincidence branch, so
+GenuineQuadruple as stated is NOT the exact complement. The genuine quadruples with 1+B=0 (B=-1) are
+present on every negation-closed mu_n regardless of Sidon-ness. The EXACT complement is the
+NONZERO-sum genuine quadruple GenuineQuadrupleNZ.
+**Probe** (probe_genuinequad_sidonmodneg.py, PROPER thin mu_n, n=2^a, p>>n^3, p==1 mod n, 3 primes/n,
+NEVER n=q-1, n=4..32): 0/12 fails. SidonModNeg G exactly when #(nonzero-sum genuine quadruples) = 0
+(witness: n=32, p=32993 is NOT SidonModNeg and has 24 nonzero-sum genuine quadruples). The zero-sum
+genuine quadruples (B=-1) number 2n-2 regardless, confirming the nonzero-sum restriction is essential.
+FORMALIZED (axiom-clean {propext, Classical.choice, Quot.sound}, single-file lake-env-lean exit 0,
+no sorry): ProximityGap/GenuineQuadrupleSidonModNeg.lean :
+  * pair_eq_iff_ordered : unordered {1,B}={C,D} iff ordered ((1=C and B=D) or (1=D and B=C)).
+  * not_genuineQuadrupleNZ_of_sidonModNeg : 1 in G + SidonModNeg G => no nonzero-sum genuine quad.
+  * not_sidonModNeg_of_genuineQuadrupleNZ : contrapositive (nonzero-sum genuine quad => not SidonModNeg).
+  * additiveEnergy_ne_of_genuineQuadrupleNZ : composed with additiveEnergy_eq_iff_sidonModNeg, a
+    nonzero-sum genuine quad => E(G) != 3|G|^2-3|G| (positive energy excess).
+HONEST SCOPE: the full iff (not GenuineQuadrupleNZ => SidonModNeg) is NOT free for a general set
+(SidonModNeg is forall-over-all-left-elements a in G; GenuineQuadrupleNZ normalizes only to 1); for
+multiplicatively-closed mu_n the two coincide (divide any coincidence by a in mu_n), and the probe
+confirms the resulting iff 0/12, but that multiplicative normalization is NOT formalized here (it
+needs the subgroup-closure hypotheses). The universal content is the two complete directions above.
+NOT a CORE closure, NOT thinness-essential: char-free / field-universal additive combinatorics; it
+only WIRES the char-free obstruction Prop into the SidonModNeg <-> E2-exact <-> repCount<=2
+characterization, completing the E2CharFreeLowerBound hook. Whether mu_n actually IS Sidon-mod-neg at
+the prize prime (the energyExcess=0 question, = the k=2 shadow of the BGK wall) stays OPEN.
+CORE M(mu_n) <= C*sqrt(n log(p/n)) UNCHANGED/OPEN. -- genuinequad lane, co-author wakesync.

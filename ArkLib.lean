@@ -1340,6 +1340,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GeneralizedPaleyRamanujan
 import ArkLib.Data.CodingTheory.ProximityGap.GeneratorMCA
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarPin
 import ArkLib.Data.CodingTheory.ProximityGap.GenericFarSeparation
+import ArkLib.Data.CodingTheory.ProximityGap.GenuineQuadrupleSidonModNeg
 import ArkLib.Data.CodingTheory.ProximityGap.GrandChallenges
 import ArkLib.Data.CodingTheory.ProximityGap.GranularityLadderRS
 import ArkLib.Data.CodingTheory.ProximityGap.GridSupplyRefutation
