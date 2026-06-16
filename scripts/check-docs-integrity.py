@@ -66,7 +66,9 @@ def resolve_link(source_file: Path, raw_target: str) -> Path | None:
 def check_markdown_links() -> list[str]:
     errors: list[str] = []
     for doc_file in tracked_markdown_files():
-        text = doc_file.read_text()
+        text = doc_file.read_text(encoding="utf-8")
+        text = re.sub(r"```.*?```", "", text, flags=re.DOTALL)
+        text = re.sub(r"`[^`]*`", "", text)
         for raw_target in MARKDOWN_LINK_RE.findall(text):
             resolved = resolve_link(doc_file, raw_target)
             if resolved is None:

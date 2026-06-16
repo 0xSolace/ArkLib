@@ -19,8 +19,8 @@ n=32 by sampling).
    all PROPER 2-power subgroups (q≠n+1). Verified exactly n≤24 (ρ∈{1/8,1/4,1/2}; best test n=24 ρ=1/4
    NONZERO binding a*=10, char-p=char-0=12 for all primes q≫n³), sampled to n=32 (full window, heavy=0).
    The only systematic violator is q=n+1 (full group), prize-excluded.
-2. **Mechanism (why char-uniform).** The bad scalar at scale k+1 is γ_R=−[R](x^b)/[R](x^a); a char-p
-   agreement needs the divided difference D(R,i)=[R](x^a)[R∪i](x^b)−[R](x^b)[R∪i](x^a) — NONZERO in
+2. **Mechanism (why char-uniform).** The bad scalar at scale k+1 is `γ_R=−[R](x^b)/[R](x^a)`; a char-p
+   agreement needs the divided difference `D(R,i)=[R](x^a)[R∪i](x^b)−[R](x^b)[R∪i](x^a)` — NONZERO in
    char-0 — to vanish mod a prime above q. Cleared of denominators, D(R,i)∈Z[ζ_n] has q-INDEPENDENT
    height, so char-p≠char-0 only for the sporadic finite primes dividing fixed cyclotomic norms.
    This is the SAME height/rigidity as the PROVEN Q1 bad-prime bound (p≤(2k)^{2k/r},
