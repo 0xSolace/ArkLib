@@ -68,4 +68,14 @@ theorem closeCodewords_subsingleton_of_two_mul_lt_minDist
   by_contra hne
   exact not_closeCodewords_two_of_two_mul_lt_dist hc hc' (hmin c hc.1 c' hc'.1 hne)
 
+open Classical in
+/-- Quantitative unique decoding: below half the minimum distance the `r`-close-codeword list
+has size at most one. (`ℓ = 1` in the list-decoding framework.) -/
+theorem closeCodewords_ncard_le_one_of_two_mul_lt_minDist
+    {C : Code ι F} {y : ι → F} {r : ℕ}
+    (hmin : ∀ c ∈ C, ∀ c' ∈ C, c ≠ c' → 2 * r < hammingDist c c') :
+    (closeCodewords C y r).ncard ≤ 1 := by
+  rcases (closeCodewords_subsingleton_of_two_mul_lt_minDist hmin).eq_empty_or_singleton with
+    h | ⟨a, h⟩ <;> rw [h] <;> simp
+
 end ListDecodable
