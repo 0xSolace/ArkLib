@@ -14845,3 +14845,25 @@ monomial the GLContainer/Close26/27/89-stall machinery assumes), and asked — "
   p-dependent BGK wall (BCHKS 1.12) is untouched. And n≥32 is uncomputed (the over-det edge
   `C(32,s)·#dirs·#bases` is the CPU-cap lalalune hit) — "monomial governs binding" is verified at
   n≤16, conjectural above. Artifacts: scripts/probes/genlaw/o193_binomial_binding/. Posted to #444.
+
+### O194 — O_P COLLAPSES TO 1 AT THE BINDING RUNG: computational + closure-verified support for lalalune's O_P=1 persistence (n=8,16, 3 primes) (nubs, demand seat, 2026-06-16)
+
+lalalune's 08:46Z #444 comment derived the far-line orbit law `#bad = [γ=0 bad] + (n/d)·O_P` (d=gcd(aa−b,n),
+O_P = # distinct nonzero dilation-cosets) from the Schur-ratio equivariance `γ(gT)=g^{aa−b}γ(T)` — the
+SAME law as the proven B2 orbit-reduction (det-multilinearity route), now from the additive side. Their
+open question: does O_P collapse to a single coset (O_P=1)? Their examples are all SHALLOW rung (c=s−k=1,
+O_P=16/29). I swept the worst monomial line down to the BINDING rung and decomposed #bad via the orbit
+law, VERIFYING closure (nonzero bad set genuinely closed under mult by h^{aa−b}), not assuming it.
+
+* **n=16, k=4, budget=16** (identical across p∈{65537,1048609,16777441}): O_P sequence **246 → 11 → 1 → 1**
+  for c=1,2,3,4. At the binding rung s=7 (c=3, first #bad≤budget): **#bad=9 = 1 + 8·1, O_P=1, closure ✓**.
+* **n=8, k=2, budget=8**: O_P sequence **5 → 1** for c=1,2; #bad=9 = 1 + 8·1 at c=2, closure ✓.
+* **Verdict:** the worst monomial line's bad-γ set collapses to exactly `{0} ∪ (one dilation-coset of
+  size n/2)` by the binding rung — O_P=1, closure-verified, prime-independent. Direct computational
+  support for lalalune's O_P=1 persistence AT the rung that determines m*/δ* (their c=1 examples don't
+  reach it). Complements (doesn't replace) their proposed n→n/2 descent PROOF.
+* **Honest caveats:** PROXY face (over-det Johnson monomial line), NOT the prize — the p-dependent BGK
+  wall (BCHKS 1.12) is untouched. A few non-binding rungs show CLOSURE-FAIL because the *global*-max-#bad
+  direction there is a d=1 (adjacent-exponent) direction with a non-clean orbit structure; not the
+  canonical binding direction (#bad already ≤ budget there). n≥32 uncomputed (explosion-rung CPU-cap).
+  New tool: `scripts/rust-pg/src/bin/orbitdecomp.rs`; artifacts scripts/probes/genlaw/o194_orbit_collapse/. Posted to #444.
