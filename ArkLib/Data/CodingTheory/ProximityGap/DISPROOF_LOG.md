@@ -14180,3 +14180,21 @@ consistent with the #444 dossier — shallow rungs provable, deep r ~ log n = th
 scripts/probes/genlaw/o181_r5/. Coordinated to the orbit lane (#444 comment) — my proven counts
 are the shallow anchors for the D*(m) = orbit-size × #clique-orbits reformulation (0xSolace
 orbit-size = n, lalalune D*).
+
+### O182 — the second-moment pair-sum gate insufficiency (O173) holds at ALL FOUR prize rates {1/2, 1/4, 1/8, 1/16}, not just the two originally checked (nubs, demand/list-decoding seat, 2026-06-16)
+
+Completes O173's rate-coverage. O173 showed the MDS pair-sum gate Σ_d A_d·I_∩(d) = Θ(E[N]²)
+(NOT o(E²)) — the second moment is concentrated through the upper window and crosses 1 only AT
+capacity, hence exponentially blind to the KKH26 worst line — but verified it only at ρ∈{1/4,1/2}.
+The prize regime spans ρ∈{1/2,1/4,1/8,1/16}, so I extended the exact computation
+(scripts/probes/probe_pairsum_gate.py, genuine q=n·2¹²⁸) to the two missing rates:
+
+* **ρ=1/8** (n=32,k=4 and n=64,k=8): pair_term stays ≪1 through the ENTIRE window and crosses 1
+  only at capacity (n=32: δ_c≈0.906 vs capacity 0.875).
+* **ρ=1/16** (n=32,k=2 and n=64,k=4): identical — pair_term ≪1 through the window, crosses 1 at
+  capacity (n=32: δ_c≈0.969 vs capacity 0.938).
+
+**Verdict UNCHANGED and now whole-regime:** the second-moment / averaged-analytic route to the
+upper-window δ* is insufficient at EVERY prize rate — the wall is worst-case extremality (BCHKS25
+1.12 / the structured KKH26 line), not any moment bound. No new closure; this closes O173's
+rate-coverage gap so the result holds across the full prize rate set.

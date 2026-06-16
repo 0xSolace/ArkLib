@@ -188,6 +188,12 @@ def main():
         (64, 16, 64 * (1 << 128) + 1, "n·2^128"),
         # ρ=1/2 cross-check
         (32, 16, 32 * (1 << 128) + 1, "n·2^128"),
+        # ρ=1/8 (prize rate) — completes the gate across the full prize rate set
+        (32, 4, 32 * (1 << 128) + 1, "n·2^128"),
+        (64, 8, 64 * (1 << 128) + 1, "n·2^128"),
+        # ρ=1/16 (prize rate)
+        (32, 2, 32 * (1 << 128) + 1, "n·2^128"),
+        (64, 4, 64 * (1 << 128) + 1, "n·2^128"),
     ]
     results = []
     for (n, k, q, ql) in configs:
