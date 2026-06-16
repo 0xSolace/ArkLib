@@ -34,7 +34,11 @@ the exact `k`-fold iterate of the single-point bound (threshold drops by `S.card
 * `agreement_punctureSetWord_le` — restriction never increases agreement;
 * `agreement_le_punctureSetWord_add_card` — deleting `S` loses at most `S.card` agreement;
 * `listDecodableAbs_punctureSetCode` — SAME-threshold survival (the `S`-block of part (i));
-* `punctureSetCode_empty` / `card_eq` sanity — `S = ∅` recovers the identity (`|F|^0 = 1`).
+* `listDecodableAbs_of_punctureSetCode` — the transfer-BACK direction (the derandomization-relevant
+  one): an injective `S`-block puncture of a good complement-domain code certifies the FULL code at
+  threshold `t + S.card` with the SAME list `L` (NO `|F|` blow-up — the deleted block is paid only in
+  the threshold).  The `S`-block iterate of `listDecodableAbs_of_punctureCode`;
+* `punctureSetCode_empty_pigeonhole` — `S = ∅` sanity recovers the identity (`|F|^0 = 1`).
 
 ## Honest scope (what this is and is NOT)
 This is a strict **EXTEND** of the proved single-point pigeonhole: a structural transfer law on
@@ -253,6 +257,39 @@ theorem listDecodableAbs_punctureSetCode_pigeonhole [Fintype F] (S : Finset ι)
           rw [Finset.sum_const, Finset.card_univ, smul_eq_mul]
     _ = Fintype.card F ^ S.card * L := by
           rw [Fintype.card_fun, Fintype.card_coe]
+
+/-! ## (iii) The transfer-BACK direction: a good complement-domain certifies the full domain. -/
+
+/-- **The `S`-block transfer-back — the derandomization-relevant direction.**  If the `S`-block
+puncture is injective on `C` (true for an RS code whenever the surviving domain still has at least
+`k` points, so distinct codewords stay distinct after deletion) and the punctured code on the
+complement domain `{i // i ∉ S}` is list-decodable at threshold `t` with list `L`, then the FULL
+code is list-decodable at threshold `t + S.card` with the SAME list `L` (NO `|F|` blow-up).  This is
+the `S`-block iterate of `listDecodableAbs_of_punctureCode`: a good (smaller, possibly explicit)
+complement domain pulls back to the original domain, paying the deleted block ONLY in the agreement
+threshold, not the list size. -/
+theorem listDecodableAbs_of_punctureSetCode (S : Finset ι) {C : Finset (ι → F)} {t L : ℕ}
+    (hinj : ∀ a ∈ C, ∀ b ∈ C, punctureSetWord S a = punctureSetWord S b → a = b)
+    (h : ListDecodableAbs (punctureSetCode S C) t L) :
+    ListDecodableAbs C (t + S.card) L := by
+  intro w
+  have hb : (C.filter fun c => t + S.card ≤ agreement w c).card ≤
+      ((punctureSetCode S C).filter fun c' =>
+        t ≤ agreement (punctureSetWord S w) c').card := by
+    refine Finset.card_le_card_of_injOn (punctureSetWord S) ?_ ?_
+    · intro c hc
+      rw [Finset.mem_coe] at hc
+      rcases Finset.mem_filter.1 hc with ⟨hcC, ht⟩
+      rw [Finset.mem_coe]
+      refine Finset.mem_filter.2 ⟨Finset.mem_image_of_mem _ hcC, ?_⟩
+      -- agreement w c ≤ punctured agreement + S.card, so t + S.card ≤ agreement w c forces
+      -- t ≤ punctured agreement.
+      have hstep := agreement_le_punctureSetWord_add_card S w c
+      omega
+    · intro a ha b hb' hab
+      exact hinj a (Finset.mem_filter.1 (Finset.mem_coe.1 ha)).1
+        b (Finset.mem_filter.1 (Finset.mem_coe.1 hb')).1 hab
+  exact hb.trans (h _)
 
 /-! ## Sanity: the empty block recovers the identity (no deletion). -/
 

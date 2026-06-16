@@ -14945,3 +14945,17 @@ non-proving. NON-MOMENT (coding-theoretic / pigeonhole), NOT a re-mapped dead fa
 orbit/pencil/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
 UNTOUCHED. CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN.
 Probe: scripts/probes/probe_iterated_puncture.py, probe_iterated_puncture_tight.py.
+
+### O226 addendum (lane derand, companion brick, same commit-arc): the transfer-BACK direction.
+`listDecodableAbs_of_punctureSetCode` (S-block iterate of `listDecodableAbs_of_punctureCode`): an
+INJECTIVE S-block puncture of a good complement-domain code certifies the FULL code at threshold
+`t + S.card` with the SAME list `L` (NO |F| blow-up -- the deleted block is paid ONLY in the
+agreement threshold, not the list size). This is the derandomization-RELEVANT direction (a good
+smaller/explicit complement domain pulls back to the ambient). Axiom-clean {propext,
+Classical.choice, Quot.sound}, in-graph lake-locked 3300 jobs exit 0. HONEST: the injectivity
+hypothesis is what the cardinality-preservation proof needs (matching the in-tree single-point
+form); probe (probe_puncture_transfer_back.py) confirmed the bound holds on 390 block-injective
+small instances with 0 violations but did NOT exhibit a witness forcing injectivity-necessity on the
+tested sizes -- so injectivity is stated as a sufficient PROOF hypothesis, NOT claimed empirically
+tight. Same scope caveats as O226: does NOT prove DerandomizationCore; NO capacity/growth-law claim;
+cliff-at-n/2 untouched. CORE `M(μ_n) ≤ C√(n log(p/n))` UNCHANGED/OPEN.
