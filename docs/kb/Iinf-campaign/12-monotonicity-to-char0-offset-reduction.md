@@ -88,3 +88,16 @@ char-0 incidence at the window edge is super-budget (`120` vs `16` at n=16), and
 δ*(16) pin. (n=8 char-0 offset is 2 but degenerate — `I` jumps 56→0, a small-n "ran out of configs"
 effect. n=32 exact CRT still running; expected to confirm offset `> 6.4`.) Honest: lead refuted; the
 Fermat-pollution correction to δ*(16) and the validated CRT methodology are the genuine residue.
+
+### Sharper conclusion (corrected window-edge offset)
+I over-stated the window-edge offset as `n/log₂n` (=4 at n=16). The actual edge `δ_we = 1−ρ−H(ρ)/(β·log₂n)`
+gives window-edge offset `≈ 0.18·n/log₂n ≈ 0.7` at n=16. So:
+- char-0 far-line offset `≈ 1.25·n/log₂n` (n=16: 5); window-edge offset `≈ 0.18·n/log₂n` (n=16: 0.7).
+- **Both are `Θ(n/log n)`, but char-0's constant is `~7×` larger.** So `δ*_char0 = 1−ρ−1.25/log n` sits
+  `Θ(1/log n)` *below* the window edge `1−ρ−0.18/log n`.
+- The monotonicity gives `δ*_prize ≥ δ*_char0`, which is `Θ(1/log n)` below the target. The char-p
+  deletions must supply exactly that `Θ(1/log n)` climb — and that IS the BGK improvement over the char-0
+  baseline. So the prize decomposes cleanly: **char-0 (proven cyclotomic) gets to `1−ρ−Θ(1/log n)` with a
+  `7×`-too-large constant; BGK provides the constant-tightening final `Θ(1/log n)`.** The open part is
+  precisely the constant, and it is the char-p / BGK piece — exactly the campaign's standing verdict, now
+  with the char-0 baseline constant measured (`~1.25` for ρ=1/4) and the δ*(16) pin corrected.
