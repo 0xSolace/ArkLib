@@ -15048,3 +15048,18 @@ growth-law claim; a set-family counting object, not a δ*/incidence object — c
 EXTEND-proven on the proven in-tree `pencil_overlap_le_of_autocorr` hypothesis shape + standard
 Finset counting, NOT a re-mapped dead face. CORE M(mu_n) <= C·sqrt(n·log(p/n)) UNCHANGED/OPEN.
 Probe: scripts/probes/probe_pencil_pairwise_bonferroni.py.
+
+### O232-addendum — the pencil-pairwise sqrt extractions + the M>=2 Johnson-collapse threshold
+
+Companion to O232 (same file PencilPairwiseBonferroni.lean). The headline
+r(r-1) <= C(r,2)*M + (n-1) extracts a sqrt root bound only while pairwise overlap M <= 1:
+- sqrt_extract_disjoint: M=0, r(r-1) <= n-1 => (r-1)^2 < n (Stepanov/Kelley-Owen sqrt(N)).
+- sqrt_extract_autocorr_one: M=1 => (r-1)^2 < 2n (autocorr-route sqrt, still Johnson scale).
+- headline_vacuous_of_two_le (HEADLINE): for M >= 2, r(r-1) <= C(r,2)*M holds UNCONDITIONALLY
+  (C(r,2)*2 = r(r-1), r(r-1) even via Nat.even_mul_pred_self), so the pencil headline carries NO
+  info about r -- the EXACT machine-checked threshold where the dilation-pencil double-count
+  collapses to Johnson once two distinct blocks share >= 2 punctured roots. Formalizes the prose
+  Johnson-collapse of _KelleyOwenDilationPencil / _PencilSunflowerCore + the M(S) >= n/2 obstruction.
+3 thms axiom-clean {propext, Classical.choice, Quot.sound}; single-file exit 0 + in-graph 8314 exit 0;
+codex-reviewed clean. Probe: scripts/probes/probe_pencil_pairwise_sqrt.py (0 viol / 70446).
+Honest: field-universal arithmetic extractions, NOT a CORE closure; cliff-at-n/2 untouched. CORE OPEN.

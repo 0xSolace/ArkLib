@@ -336,9 +336,70 @@ theorem pencil_pairwise_bonferroni_disjoint (univ : Finset G)
   simp only [Nat.mul_zero] at this
   omega
 
+/-! ## The `√` extractions and the `M ≥ 2` Johnson-collapse threshold
+
+The headline `r·(r−1) ≤ C(r,2)·M + (n−1)` extracts a `√`-type root bound only while the pairwise
+overlap `M ≤ 1`; at `M ≥ 2` the `C(r,2)·M` term alone already dominates `r·(r−1)`, so the bound is
+VACUOUS — the exact point at which the dilation-pencil double-count stops bounding the root count.
+This machine-checks the prose Johnson-collapse threshold of `_KelleyOwenDilationPencil` /
+`_PencilSunflowerCore`. -/
+
+/-- **Disjoint (`M = 0`) `√N` extraction.** `r·(r−1) ≤ n−1 ⟹ (r−1)² < n`, i.e. `r < 1 + √n`
+(Stepanov / Kelley–Owen `√N`). -/
+theorem sqrt_extract_disjoint {r n : ℕ} (h : r * (r - 1) ≤ n - 1) (hn : 1 ≤ n) :
+    (r - 1) * (r - 1) < n := by
+  rcases Nat.eq_zero_or_pos r with hr0 | hrpos
+  · subst hr0; simpa using hn
+  · have : (r - 1) * (r - 1) ≤ r * (r - 1) := by
+      apply Nat.mul_le_mul_right; omega
+    omega
+
+/-- **Autocorrelation-route (`M = 1`) `√(2N)` extraction.** With pairwise overlap `M = 1`,
+`r·(r−1) ≤ C(r,2) + (n−1) = r·(r−1)/2 + (n−1)`, so `r·(r−1) ≤ 2·(n−1)`, giving `(r−1)² < 2·n`,
+i.e. `r < 1 + √(2n)`. The genuine Kelley-3.2 root count when the multiplicative autocorrelation is
+exactly `1` — still `√N` scale (Johnson), the honest ceiling of the pairwise route. -/
+theorem sqrt_extract_autocorr_one {r n : ℕ} (h : r * (r - 1) ≤ r.choose 2 * 1 + (n - 1))
+    (hn : 1 ≤ n) :
+    (r - 1) * (r - 1) < 2 * n := by
+  rw [Nat.choose_two_right, mul_one] at h
+  -- r*(r-1)/2 ≤ r*(r-1) so from h: r*(r-1) ≤ r*(r-1)/2 + (n-1) ⟹ r*(r-1) ≤ 2*(n-1).
+  have hhalf : r * (r - 1) / 2 ≤ r * (r - 1) := Nat.div_le_self _ _
+  have hkey : r * (r - 1) ≤ 2 * (n - 1) := by
+    -- 2*(r*(r-1)) ≤ 2*(r*(r-1)/2) + 2*(n-1) ≤ r*(r-1) + 2*(n-1)
+    have hdouble : 2 * (r * (r - 1) / 2) ≤ r * (r - 1) := by
+      have := Nat.div_mul_le_self (r * (r - 1)) 2
+      omega
+    omega
+  rcases Nat.eq_zero_or_pos r with hr0 | hrpos
+  · subst hr0; simpa using (by omega : (0:ℕ) < 2 * n)
+  · have hsq : (r - 1) * (r - 1) ≤ r * (r - 1) := by
+      apply Nat.mul_le_mul_right; omega
+    omega
+
+/-- **The `M ≥ 2` Johnson-collapse threshold (machine-checked).** For `M ≥ 2` the headline term
+`C(r,2)·M` already dominates `r·(r−1)` (since `C(r,2)·2 = r·(r−1)`), so `r·(r−1) ≤ C(r,2)·M` holds
+UNCONDITIONALLY — the pencil headline `r·(r−1) ≤ C(r,2)·M + (n−1)` carries NO information about `r`
+once two distinct pencil blocks can share `≥ 2` punctured roots. This is the exact point where the
+dilation-pencil double-count collapses to Johnson (it cannot beat `√N`), formalizing the prose
+degradation of `_KelleyOwenDilationPencil` and the prize obstruction `M(S) ≥ n/2`. -/
+theorem headline_vacuous_of_two_le (r M : ℕ) (hM : 2 ≤ M) :
+    r * (r - 1) ≤ r.choose 2 * M := by
+  rw [Nat.choose_two_right]
+  -- r*(r-1)/2 * M ≥ r*(r-1)/2 * 2 = r*(r-1) (the half is exact since r*(r-1) is even).
+  have heven : 2 ∣ r * (r - 1) := Nat.even_mul_pred_self r |>.two_dvd
+  obtain ⟨t, ht⟩ := heven
+  rw [ht]
+  -- 2*t/2 = t, goal: 2*t ≤ t*M, with M ≥ 2.
+  rw [Nat.mul_div_cancel_left t (by norm_num)]
+  calc 2 * t = t * 2 := by ring
+    _ ≤ t * M := by apply Nat.mul_le_mul_left; omega
+
 end ProximityGap.Frontier.PencilPairwiseBonferroni
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.biUnion_card_ge_sub_pairwise
+#print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.sqrt_extract_disjoint
+#print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.sqrt_extract_autocorr_one
+#print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.headline_vacuous_of_two_le
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.pencil_pairwise_bonferroni
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.pencil_pairwise_bonferroni_disjoint
