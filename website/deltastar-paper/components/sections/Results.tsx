@@ -138,6 +138,54 @@ export function Results() {
           normalization is everything; this is the subject of the next section.
         </p>
       </SubSection>
+
+      <SubSection num="3.4" title="The complete reduction and the corrected curve">
+        <p>
+          The <M>{String.raw`p`}</M>-independence above turns the prize into a
+          combinatorial object, off the classical analytic
+          (Bourgain&ndash;Glibichuk&ndash;Konyagin) wall. We can now state the
+          single open core as one named conjecture, and report the exact
+          worst-direction thresholds that the over-determined binding produces.
+        </p>
+        <Theorem
+          kind="Theorem"
+          name="Complete tight reduction"
+          file="Frontier/_CoreReductionComplete.lean, _CoreA7_NecessityTight.lean"
+          decl="prize_reduces_to_BCHKS, prize_iff_BCHKS_at_scale"
+          conditional="axiom-clean (propext, Classical.choice, Quot.sound)"
+        >
+          <p className="m-0">
+            The window-interior conclusion{" "}
+            <M>{String.raw`1-\sqrt\rho < \delta^* < 1-\rho`}</M> follows from{" "}
+            <em>exactly one</em> named hypothesis, a quantitative subset-sum
+            count (<M>{String.raw`|\Sigma_r(\mu_s)|\le q\varepsilon^*`}</M> at{" "}
+            <M>{String.raw`r\approx\log m`}</M>, the BCHKS 1.12 conjecture), and
+            the converse holds: the count is <em>necessary and sufficient</em>.
+            The prize is exactly this one combinatorial conjecture.
+          </p>
+        </Theorem>
+        <p>
+          The exact worst-direction thresholds, with the incidence-correct
+          convention <M>{String.raw`\delta=1-s/n`}</M> and budget{" "}
+          <M>{String.raw`B=n`}</M>, are{" "}
+          <M>{String.raw`\delta^*(\mu_8)=3/8`}</M> (below Johnson{" "}
+          <M>{String.raw`1/2`}</M>) and{" "}
+          <M>{String.raw`\delta^*(\mu_{16})=9/16`}</M> (above Johnson), giving
+          the master gap{" "}
+          <M>{String.raw`\,\text{capacity}-\delta^* = m^*/n\,`}</M> with binding
+          over-determination depth <M>{String.raw`m^*=s^*-k`}</M>. The curve
+          crosses Johnson between <M>{String.raw`n=8`}</M> and{" "}
+          <M>{String.raw`n=16`}</M>; the next point{" "}
+          <M>{String.raw`n=32`}</M> is not exactly computable and is reported as
+          a range. A separate analytic line improves the published
+          subgroup-character-sum exponent (di Benedetto) from{" "}
+          <M>{String.raw`0.9892`}</M> to <M>{String.raw`0.9583`}</M> at the prize
+          edge <M>{String.raw`\beta=4`}</M> (computational, verified{" "}
+          <M>{String.raw`n\le64`}</M>, conditional on{" "}
+          <M>{String.raw`T_3(\mu_n)=O(n^3)`}</M>); this is a measure of
+          closeness, not a solution.
+        </p>
+      </SubSection>
     </Section>
   );
 }
