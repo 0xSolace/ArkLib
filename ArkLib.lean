@@ -1066,6 +1066,15 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.StructuredUncertaintySharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SubsetProductSpectrumSubgroup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SuperDiagonalEnergyLowerClosed
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A41_DescentAZForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A42_ReunificationBijection
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A44_DyadicVanishingSum
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A45_CosetRigidity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A46_MultiScaleRigidity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A47_DyadicPeriodicity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A48_GeneralRigidity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A49_DyadicRigidityEngine
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A50_SpectrumGeneratingFunction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
@@ -1090,6 +1099,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalAgreementScope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalPlotkinHalfCap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackDefectOnset_EnergySandwich
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackThreePow_SubsetSumExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
