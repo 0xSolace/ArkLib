@@ -824,6 +824,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEps
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentEpsSharp
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSecondMomentSharp
+import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumCentralEvenCard
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumCentralNegInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumComplementSymmetry
 import ArkLib.Data.CodingTheory.ProximityGap.DeepBandSpectrumDilationInvariant
