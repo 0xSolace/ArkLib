@@ -4094,3 +4094,36 @@ orbit/pencil/resonance object. It identifies the best lever WITHIN the energy me
 parent file ALREADY proved is capped at saving <= 1/24 < 1/2 (12x short of the prize cancellation
 exponent) -- so this does NOT push the frontier past the energy ceiling. Touches NEITHER delta* NOR
 the cliff-at-n/2 incidence object. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+
+## O206 — CensusDomination SUFFICIENCY: the two census sub-obligations IMPLY the $1M Prop (the weld's hypothesis discharged)
+LANE censussuff. The CensusDominationWeld pins the deployed delta* = 1 - r/2^mu CONDITIONAL on the
+named Prop CensusDomination dom k a0 K (every stack <= K alignable a-sets at every band a >= a0),
+and AlignableLePinnedMaxMult.alignableSets_card_le_budget proved the PER-BAND incidence cap
+#alignableSets <= K from a distinct-gamma cap P, a per-scalar mult cap M, and P*M <= K. But the two
+were NEVER connected: every site (CensusDominationWeld x2, FieldSizeThresholdReduction) CONSUMES
+CensusDomination as a black-box hyp -- grep-confirmed NO theorem PRODUCES it from the per-band
+sub-bounds. The brief flags exactly this (the count/census equivalence "asserted but NEVER proven")
+as a real brick. New file Frontier/CensusDominationSufficiency.lean supplies the sufficiency
+reduction: (1) censusDomination_iff_alignableSets -- the inlined CensusDomination filter IS the
+alignableSets census object (Lean rfl-certified DEFINITIONAL equality, stronger than any numeric
+probe); (2) censusDomination_of_caps (HEADLINE) -- a band-UNIFORM distinct-gamma cap P + a
+band-uniform per-scalar mult cap M + P*M <= K yield CensusDomination dom k a0 K, via
+alignableSets_card_le_budget under the band quantifier; (3) censusDomination_of_caps_exact -- the
+K = P*M specialization. So the $1M Prop the weld consumes is now IMPLIED (not just consumed) by the
+two in-tree census sub-obligations the cluster built (distinct-gamma bound + per-scalar mult bound),
+closing the assembly. PROBE scripts/probes/probe_census_sufficiency_uniform.py (planted off-codeword
+words on PROPER thin mu_n, n=8,16, beta=4,5, p >> n^3, p == 1 mod n, NEVER n=q-1): a single
+band-uniform (P, M) DOMINATES #alignableSets at EVERY band a in [a0, n] at once (n=16: one P=1,
+M=5005 caps bands a=4..7 with #alignableSets = 455,1365,3003,5005 = clean agreement-binomials), so
+censusDomination_of_caps's hypotheses are SATISFIABLE / NON-VACUOUS at the prize regime, AND the
+per-band #alignableSets <= #pinned*maxMult engine holds at every band. VERDICT PASS. Axiom-clean
+{propext, Classical.choice, Quot.sound} on all 3 (single-file lake-env-lean exit 0 + in-graph
+lake-locked 8370 jobs exit 0); no sorry/axiom/native_decide. HONESTY (rules 3,6): NOT a CORE
+closure, NOT thinness-essential -- pure LOGICAL assembly (forall-intro over bands + the proven
+per-band product cap), field-universal and thickness-independent. Does NOT supply P (distinct-gamma
+cap at prize band) NOR M (per-scalar mult cap at prize band); BOTH stay open. It DISCHARGES the
+weld's black-box CensusDomination hypothesis from the in-tree per-band incidence cap -- the
+sufficiency direction, a genuine missing link, not a re-mapped dead face / moment / orbit /
+resonance / pencil re-derivation. Touches NEITHER delta* climb NOR the cliff-at-n/2 incidence
+object. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
