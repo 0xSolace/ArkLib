@@ -3758,3 +3758,34 @@ NO capacity / beyond-Johnson / sub-linear / closure claim; ASYMPTOTIC GUARD clif
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. 2-power-specific (spectrumCount fails at non-2-
 power n). Author Sol, co-author wakesync.
 -- spectgrowth.
+
+## O195 -- rising-half SECOND-DIFFERENCE recurrence of the char-0 subset-sum spectrum: N_r - N_{r-2} = C(m,r)*2^r on 2<=r<=m (each two-step rise is EXACTLY the leading antipodal term; extends spectrumCount)
+STATUS: EXTEND-PROVEN structural census brick (rule 4), axiom-clean, LANDED. NOT a CORE closure.
+For the 2-power subgroup mu_n (n=2^mu, m=n/2) the depth-r char-0 subset-sum spectrum cardinality
+N_r = spectrumCount m r (the deep-band bad-scalar count #bad_r, via in-tree
+_SubsetSumSpectrumClosedForm + DeepBandSubsetSumSpectrum.witness_pin) obeys, on the RISING HALF
+2<=r<=m, the exact two-step recurrence N_r - N_{r-2} = C(m,r)*2^r. MECHANISM (NOT a moment method):
+spectrumCount filters k in {0..min(r,2m-r)} on the parity class k==r(2). On the rising half
+min(r,2m-r)=r and min(r-2,2m-(r-2))=r-2, and the parity classes coincide (r, r-2 same mod 2), so the
+two sums run over the SAME parity class but range(r+1) vs range(r-1). The only index added going
+r-2 -> r that survives the parity filter is k=r itself (k=r-1 is the WRONG parity), term C(m,r)*2^r
+= the leading antipodal cross-polytope term. So each two-step rise of the deep-band census is
+EXACTLY the top antipodal term, no lower-order mixing; it exposes N_r = sum_j C(m,r-2j)2^{r-2j}
+(the parity-class partial sum) and pins the dominant part C(m,r)2^r. PROBE
+scripts/probes/probe_spectrum_rising_step.py (ONE sweep, exact big-int, thin tower m=8,16,32,64,
+never n=q-1): N_r-N_{r-2}=C(m,r)2^r for every 2<=r<=m AND N_r=sum_j C(m,r-2j)2^{r-2j}; VERDICT PASS.
+FORMALIZED Frontier/_SubsetSumSpectrumRisingStep.lean (single-file lake-env-lean exit 0 + in-graph
+lake-locked 3298 jobs exit 0; axiom-clean subset of {propext, Classical.choice, Quot.sound}, no
+sorry/axiom/native_decide on all 3 printed): min_eq_left_rising (min r (2m-r)=r on r<=m),
+parity_sub_two ((r-2)%2=r%2 for 2<=r), spectrumCount_rising (rising-half unfold over range(r+1)),
+spectrumCount_rising_step (HEADLINE: N_r = N_{r-2} + C(m,r)2^r via a range-split range(r+1) =
+range(r-1) cup Ioc(r-2) r, filter_union, the Ioc-filtered-by-parity collapses to singleton {r}),
+spectrumCount_rising_anchors + spectrumCount_rising_n8_r2 (N_2=113=N_0+C(8,2)*4=1+112). Builds on
+the freshly-landed spectrumCount; DISTINCT from O193 (total 3^(m-1)(m+3)) and O194 (peak
+(3^m+1)/2): this is the per-2-step INCREMENT law, not the total or center value. Does NOT close
+CORE: the prize binds the PER-DEPTH growth N_{rho n+1} at the BINDING depth (collision-saturated =
+the BGK/BCHKS wall,
+where char-0<->F_p fails), not the char-0 rise. NO capacity / beyond-Johnson / sub-linear / closure
+claim; ASYMPTOTIC GUARD cliff-at-n/2 untouched. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+2-power-specific (spectrumCount fails at non-2-power n). Author Sol, co-author wakesync.
+-- risingstep.
