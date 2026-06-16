@@ -14814,3 +14814,34 @@ proven AND the attempt exposed an error in my own O191. Two honest negatives, no
 **Net:** the proxy-face m\* program cannot be made exact past n=32 even in principle (recursion
 reduces-to-wall; no Lean foundation; n=32 not computable), and O191's favorable signal is retracted.
 The prize remains the open BGK wall — UNCHANGED. Posted the correction on #444 (re comment 4715974397).
+
+### O193 — THE BINOMIAL-BINDING QUESTION RESOLVED at the computable frontier: MONOMIAL governs the budget-crossing rung (n=8,16, 3 primes) ⟹ the m* cascade is NOT a monomial proxy at binding (nubs, demand seat, 2026-06-16)
+
+lalalune's 08:09Z #444 fresh-angle round flagged ONE concrete unblocked opening: their `dirworst`
+engine found `binoMax=448 ≫ monoMax=89` at n=16 (the worst far-direction is BINOMIAL, not the
+monomial the GLContainer/Close26/27/89-stall machinery assumes), and asked — "is the **binding**
+(budget-crossing) rung's worst direction monomial or binomial? If binomial, the m\* analysis (and
+{3,3,5}) is on a proxy." Answered it with their own in-tree engine
+(`scripts/rust-pg/src/bin/monobino.rs`), exact arithmetic, faithful primes, `budget=n`.
+
+* **Reproduced the calibration exactly.** dirworst n=16 k=4 s=6 (the over-det edge s=k+2):
+  monoMax=89, binoMax=448 — matches lalalune digit-for-digit (worst-bino u1=x⁴+x¹⁴, base x¹⁵).
+* **The decisive sweep (n=16, k=4, ρ=1/4, budget=16), identical across p∈{65537,1048609,16777441}:**
+  - s=6 (m=2, explosion edge): mono=89, bino=448 — **BOTH ≫ budget** ⟹ m=2 fails for either class.
+  - s=7 (m=3, binding/budget-crossing rung): mono=9, bino=8 — **BOTH ≤ budget, and mono ≥ bino**.
+  - ⟹ **m\*(16)=3 with OR without binomials.** The binomial's 5× advantage is confined to the
+    above-budget explosion rung s=6; at the rung that actually determines m\*, the monomial governs.
+* **Regime control n=8, k=2 (budget=8):** s=3 (m=1) mono=40/bino=56 (explosion, both ≫8); s=4 (m=2)
+  mono=9/bino=8 — the **monomial** (9>8) is the binding constraint (bino=8 alone would pass); s=5
+  (m=3) mono=5/bino=3 (both ≤8). ⟹ m\*(8)=3, monomial-governed — confirms lalalune's "at n=8 the
+  monomial is worst."
+* **Verdict:** at every budget-crossing rung (n=8, n=16, 3 primes) the worst direction is MONOMIAL;
+  the binomial advantage (448≫89) lives one rung below binding (above budget regardless), so it does
+  NOT push m\* up. **The m\* cascade is NOT a monomial proxy at the binding rung** — this validates
+  the demand-side r=3/4/5 monomial bricks (DeepBandR{3,4,5}Bound) as the genuine binding object at
+  n≤16. Does NOT contradict binoMax=448 — contextualizes it (matches lalalune's own caveat that
+  "binomial wins only at … rungs above budget regardless").
+* **Honest scope:** this is the over-det Johnson/Plotkin PROXY face (per O192), NOT the prize; the
+  p-dependent BGK wall (BCHKS 1.12) is untouched. And n≥32 is uncomputed (the over-det edge
+  `C(32,s)·#dirs·#bases` is the CPU-cap lalalune hit) — "monomial governs binding" is verified at
+  n≤16, conjectural above. Artifacts: scripts/probes/genlaw/o193_binomial_binding/. Posted to #444.
