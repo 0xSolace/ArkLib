@@ -90,6 +90,28 @@ half), and **F5 char-p anomaly exponent-0** (deep-r W_r=0; onset grows faster th
 lower bound is PROVEN modulo these; pinning the EXACT bound = discharging F1 + the two analytic
 residuals.
 
+## D3. F1 LANDED — single open core isolated [2026-06-16, the honest frontier]
+
+The floor proof is now FULLY SCAFFOLDED, axiom-clean, on the CORRECT object:
+- **F1 `_BchksF1`** — the char-free floor QUANTITATIVELY encoded: multiplier `chooseCH s r =
+  C(s+r−1,r)` (the SPECIFIC complete-homogeneous count, fixing the placeholder), `subsetSum_le_chooseCH`
+  (`C(s,r) ≤ chooseCH` = Kambiré-not-tight), `bad_le_chooseCH_of_spectrum` (floor `bad ≤ chooseCH`
+  REDUCED to the spectrum bound).
+- **F3** reduction skeleton · **F4** Linnik (combinatorial half) · **F5** anomaly exp-0 (Wick-sandwich)
+  · **F6** explicit lower bound `δ* ≥ 1−ρ−M_cross/n`.
+
+**THE SINGLE GENUINE OPEN INPUT (the prize's char-free core):**
+> `CompleteHomogeneousSpectrumBound`: `#{distinct h_r(R) : R ∈ binom(μ_s, k+1)} ≤ C(s+r−1, r)`
+> — the distinct complete-homogeneous spectrum count of the subgroup is bounded by the
+> complete-homogeneous dimension, at the binding fold `r = M_cross`.
+
+Everything else in the floor proof is discharged (char-free arithmetic) or reduced to a precisely
+named analytic residual (Linnik good-prime, deep-r Wick sandwich `E_r(F_p)≤Wick_r`). **Pinning the
+EXACT δ* lower bound = proving this ONE combinatorial spectrum bound + the two analytic residuals.**
+The spectrum bound is the genuine open prize core (the char-free worst-direction count); it is NOT
+the in-tree BGK analytic wall but the p-independent complete-homogeneous distinct-value count — a
+concrete, attackable combinatorial conjecture.
+
 ## D. ACTIONS
 1. Mark the in-tree `BCHKS1_12` Prop as MIS-STATED (subset-sum on the wrong side); the real floor is
    Sumset-Extremality `#bad ≤ poly·|H^{(+r)}|`. The `prize_reduces_to_BCHKS` reduction is vacuous on
