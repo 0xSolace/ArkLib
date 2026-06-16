@@ -531,6 +531,68 @@ theorem shape21 (x y : F)
   rw [hcompl, Finset.card_union_of_disjoint hdisjxy, hx20, hy20, hAcard] at hsplit
   omega
 
+/-- **Size-4 image contribution = 360** (the `image_count_two`/`image_count_six` analogue, in the
+`piFinset G` form the strata partition consumes). For a neg-closed 4-set `{x,-x,y,-y} ⊆ G`, the
+balanced 6-tuples of `G` with image exactly `{x,-x,y,-y}` number `360` (`shape21`); the `∀z`-balance
+collapses to `#x=#(-x) ∧ #y=#(-y)` on tuples valued in the 4-set. -/
+theorem image_count_four (G : Finset F) (x y : F)
+    (hx : x ≠ -x) (hy : y ≠ -y) (hxy : x ≠ y) (hxy' : x ≠ -y) (hmxy : -x ≠ y) (hmxy' : -x ≠ -y)
+    (hxG : x ∈ G) (hnxG : -x ∈ G) (hyG : y ∈ G) (hnyG : -y ∈ G) :
+    ((Fintype.piFinset (fun _ : Fin 6 => G)).filter
+      (fun c => (∀ z : F, (Finset.univ.filter (fun i => c i = z)).card
+                       = (Finset.univ.filter (fun i => c i = -z)).card)
+              ∧ Finset.image c Finset.univ = {x, -x, y, -y})).card = 360 := by
+  classical
+  rw [← shape21 x y hx hy hxy hxy' hmxy hmxy']
+  congr 1
+  ext c
+  simp only [Finset.mem_filter, Fintype.mem_piFinset, Finset.mem_univ, true_and]
+  constructor
+  · rintro ⟨_, hbal, himg⟩
+    have hval4 : ∀ i, c i = x ∨ c i = -x ∨ c i = y ∨ c i = -y := by
+      intro i
+      have : c i ∈ ({x, -x, y, -y} : Finset F) := himg ▸ Finset.mem_image_of_mem c (Finset.mem_univ i)
+      rcases Finset.mem_insert.mp this with h | h
+      · exact Or.inl h
+      rcases Finset.mem_insert.mp h with h | h
+      · exact Or.inr (Or.inl h)
+      rcases Finset.mem_insert.mp h with h | h
+      · exact Or.inr (Or.inr (Or.inl h))
+      · exact Or.inr (Or.inr (Or.inr (Finset.mem_singleton.mp h)))
+    exact ⟨⟨hval4, hbal x, hbal y⟩, himg⟩
+  · rintro ⟨⟨hval4, hbx, hby⟩, himg⟩
+    have hvalG : ∀ i, c i ∈ G := by
+      intro i; rcases hval4 i with h | h | h | h
+      · exact h ▸ hxG
+      · exact h ▸ hnxG
+      · exact h ▸ hyG
+      · exact h ▸ hnyG
+    refine ⟨hvalG, ?_, himg⟩
+    -- ∀z balance from #x,#y balance + valued in 4-set
+    have hempty : ∀ w : F, w ≠ x → w ≠ -x → w ≠ y → w ≠ -y →
+        (Finset.univ.filter (fun i => c i = w)).card = 0 := by
+      intro w h1 h2 h3 h4
+      rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff]; intro i _ hci
+      rcases hval4 i with h | h | h | h
+      · exact h1 (hci ▸ h)
+      · exact h2 (hci ▸ h)
+      · exact h3 (hci ▸ h)
+      · exact h4 (hci ▸ h)
+    intro z
+    by_cases hzx : z = x
+    · subst hzx; exact hbx
+    by_cases hznx : z = -x
+    · subst hznx; rw [neg_neg]; exact hbx.symm
+    by_cases hzy : z = y
+    · subst hzy; exact hby
+    by_cases hzny : z = -y
+    · subst hzny; rw [neg_neg]; exact hby.symm
+    · rw [hempty z hzx hznx hzy hzny,
+          hempty (-z) (fun h => hznx (by rw [← neg_neg z, h]))
+            (fun h => hzx (by rw [← neg_neg z, h, neg_neg]))
+            (fun h => hzny (by rw [← neg_neg z, h]))
+            (fun h => hzy (by rw [← neg_neg z, h, neg_neg]))]
+
 end E3Shape21Scratch
 
 #print axioms E3Shape21Scratch.fiber_card
@@ -543,3 +605,5 @@ end E3Shape21Scratch
 
 #print axioms E3Shape21Scratch.shape21
 
+
+#print axioms E3Shape21Scratch.image_count_four
