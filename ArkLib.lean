@@ -691,6 +691,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.CollisionLemma
 import ArkLib.Data.CodingTheory.ProximityGap.CollisionRigidityThreeSwap
 import ArkLib.Data.CodingTheory.ProximityGap.CommonCenterJohnsonRefutation
 import ArkLib.Data.CodingTheory.ProximityGap.ComplementQuadric
+import ArkLib.Data.CodingTheory.ProximityGap.CompletionSharpMargin
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstance
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu10
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu10F101

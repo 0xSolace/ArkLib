@@ -4326,3 +4326,31 @@ Stepanov auxiliary on the FIXED P_c stays OPEN (StepanovAuxFramework's named ker
 census/orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-
 n/2 UNTOUCHED. NOT a re-mapped dead face; an EXTEND-proven sharpening of the Stepanov/descent lever.
 CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../RepCountFiberGcdSharp.lean.
+
+## O218 (lane complsharp): the classical Gauss-sum COMPLETION anchor is NON-PROVING for CORE on
+thin subgroups -- SHARPENED to its sub-sqrt(q) form + the thin-regime MARGIN-COLLAPSE mechanism.
+LANE: the cold completion-anchor face (SubgroupGaussSumWorstCase.lean). The in-tree headline
+`norm_eta_torsion_le` reports only |eta_psi(G,b)| <= sqrt(q); its OWN proven intermediate
+`mul_norm_eta_torsion_le` (axiom-clean) carries STRICTLY MORE: t*|eta| <= (t-1)sqrt(q)+1, t=(q-1)/d.
+EXTENDED (no new probe-math, only the arithmetic the parent discarded):
+  - norm_eta_torsion_sharp_le: |eta| <= sqrt(q) - (sqrt(q)-1)/t  (sharp sub-sqrt(q) bound; completion
+    already beats the anchor by margin (sqrt(q)-1)/t).
+  - norm_eta_torsion_lt: |eta| < sqrt(q) STRICT (margin genuinely positive; anchor never attained).
+  - completion_margin_le_of_thin (THE MECHANISM): margin (sqrt(q)-1)/t <= sqrt(q)*(d/(q-1)). As a
+    FRACTION of sqrt(q) the margin is <= d/(q-1) ~ n/q. In the prize regime q=n^beta (beta~4-5),
+    d=n thin: d/(q-1) -> 0, so the sharp completion bound STAYS ~ sqrt(q), beaten only by an o(1)
+    fraction => CANNOT reach the prize bound sqrt(n log(p/n)) <<< sqrt(q).
+PROBE scripts/probes/probe_completion_sharp_margin.py (ONE sweep, 17 instances, p==1 mod n, n a
+2-power thin, incl Fermat F4 p=65537 beta=4, NEVER n=q-1): (A) |eta|max <= sqrt(q)-(sqrt(q)-1)/t at
+EVERY instance PASS. (B) margin/sqrt(q) collapses: 0.00024 at beta=4 (p=65537,n=16) -- the sharp
+completion bound is sqrt(q) beaten by 0.024%. CONSTRAINT LEMMA: any method whose magnitude bound
+factors through the t-fold Gauss-sum completion triangle inequality is capped at sqrt(q)(1-o(1)) on
+thin subgroups; the prize gap sqrt(q)/sqrt(n log(p/n)) ~ q^{1/2}/n^{1/2} lives ENTIRELY in the
+cancellation among the t completion terms that the triangle inequality discards. WHY this is a
+result not a wall-remap: it is the FIRST in-tree statement quantifying the non-provingness of the
+classical completion route, with an exact thin-regime decay law, EXTEND-proven off a proven
+intermediate. ASYMPTOTIC GUARD: a sup-norm magnitude bound (the CORE object), NOT a delta*/
+incidence object; no capacity/beyond-Johnson/growth-law claim; cliff-at-n/2 UNTOUCHED; margin
+VANISHES (no climb). CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New:
+ArkLib/.../CompletionSharpMargin.lean (3 thms, axiom-clean {propext, Classical.choice, Quot.sound},
+in-graph lake build 3314 jobs exit 0).
