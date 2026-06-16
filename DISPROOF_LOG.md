@@ -4293,3 +4293,36 @@ with the probe's Spur/Slack <= 0.11). Char-0/field-universal in derivation; NO c
 beyond-Johnson/growth-law claim; delta* and cliff-at-n/2 UNTOUCHED. CORE M(mu_n)<=C sqrt(n log(p/n))
 UNCHANGED/OPEN. NON-MOMENT-re-mapping: this is EXTEND-proven off the proven exact energies, a NEW
 producer for an explicitly-named open residual, not a re-confirmation of a known wall.
+
+## O214 (lane fibergcd): the O213 fibre rep-count is bounded by the GCD DEGREE, not just the
+## degree-n shifted-power poly -- r(c) <= deg gcd(X^n-1, (X+1)^n - C(c^n)), the genuinely SHARP
+## Stepanov target (EXTENDS O213; NON-MOMENT structural CORE lever).
+LANE: extend the O213 shifted-power fibre brick. O213 proved r(c) <= (shiftedPowPoly n c).natDegree
+= n, but that degree-n bound is WILDLY loose in the thin prize regime: a fibre element w is a root
+of shiftedPowPoly n c AND of X^n-1 (it lies in mu_n), so it is a COMMON root, hence a root of
+gcd(X^n-1, shiftedPowPoly n c). GREP-CONFIRMED MISSING: shiftedPowPoly was referenced ONLY in
+O213's file; NO gcd theorem on it. Distinct from SubgroupRepCountGcdExact (which works the DIFFERENT
+polynomial reprPoly = (C c - X)^n - 1 over the c-z form, namespace SubgroupRepresentationRoots).
+SHIPPED ArkLib/.../RepCountFiberGcdSharp.lean (4 thms, axiom-clean {propext, Classical.choice,
+Quot.sound}, single-file lake-env-lean + in-graph lake-locked 3301 jobs exit 0):
+  (1) dvd_fiberGcd_of_fiber: a fibre element zeta (zeta^n=1, (1+zeta)^n=c^n) has
+      (X - C zeta) | gcd(X^n-1, shiftedPowPoly n c) -- root of BOTH (isRoot_shiftedPowPoly_of_fiber
+      from O213 + the mu_n membership), hence dvd_gcd of the two (X - C zeta)-divisibilities.
+  (2) repCount_le_fiberGcd_roots: r(c) <= (gcd(X^n-1, P_c)).roots.toFinset.card -- the proven O213
+      fibre (repCount_eq_fiber_card) injects into the gcd root SET (card_le_card + mem_roots).
+  (3) repCount_le_fiberGcd_natDegree (HEADLINE): r(c) <= deg gcd(X^n-1, (X+1)^n - C(c^n)) -- the
+      SHARP Stepanov target (toFinset_card_le + card_roots'), strictly improving O213's r(c) <= n.
+  (4) fiberGcd_natDegree_le: deg gcd(X^n-1, P_c) <= n (gcd | P_c, natDegree_le_of_dvd) -- so the gcd
+      bound is NEVER weaker than O213's repCount_le_n, and (per probe) strictly sharper.
+PROBE: scripts/probes/probe_fiber_gcd_sharp.py + probe_fiber_gcd_maxr.py -- over thin 2-power mu_n,
+p >> n^3, p == 1 mod n (p in {7681,8161,12289,40961} at n=8,16; spot-checked 104417,270337 at n=32):
+FULL F_p* sweep (EVERY c) confirms r(c) = deg gcd(X^n-1, (1+X)^n-c^n) AND deg gcd < n for ALL c
+(match=True, all-sharp=True), with MAX r(c) = 2 even at worst (vs the degree-n bound) -- the
+gcd is the sharp target and O213's degree-n bound is far from tight. ONE sweep, ONE commit.
+HONEST SCOPE: the SHARP upper-bound direction (needs no separability/splitting) for the O213
+shifted-power fibre form. The gcd degree (<= n, field-universal) is still NOT yet thinness-essential
+-- the thin-subgroup cancellation that drops the gcd degree to O(sqrt n) via a high-multiplicity
+Stepanov auxiliary on the FIXED P_c stays OPEN (StepanovAuxFramework's named kernel). NO moment/
+census/orbit/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-
+n/2 UNTOUCHED. NOT a re-mapped dead face; an EXTEND-proven sharpening of the Stepanov/descent lever.
+CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. New: ArkLib/.../RepCountFiberGcdSharp.lean.
