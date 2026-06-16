@@ -35,6 +35,10 @@ the prize Fermat prime `p = 65537, n = 16, β = 4` and `p = 12289, n = 64`): bot
 `m·η_b = S_b` (worst err `3.7e-8`) and the transport `|η_b| = |S_b|/m` (worst err `9.0e-12`) hold
 exactly; a bound `B` on `|S_b|` divides cleanly to `B/m` on `|η_b|`.
 
+The sup-norm form `max'_norm_sum_torsion_eq` lands the transport on the LITERAL prize quantity
+`M(n) = max_{b≠0} |η_b|`: `max_b ‖Σ_{y∈μ_n} F_b y‖ = (max_b ‖Σ_x F_b(x^m)‖) / m`, so the prize
+sup-norm IS the complete-monomial-sum sup-norm over `m`, no slack.
+
 **Honest scope.** This is a structural NORM-transport over `ℂ`, NON-MOMENT, field-universal (it works
 for any `M = ℂ`-valued `F`). It is **NOT** a CORE closure: it proves nothing about the *size* of either
 side — it only transports a HYPOTHETICAL monomial bound `B` to the period, dividing by `m`. The open
@@ -90,6 +94,43 @@ theorem norm_monomial_gt_of_torsion_gt (m n : ℕ) (F : G → ℂ) (hmn : m * n 
           exact mul_lt_mul_of_pos_right hL hmr
     _ = ‖∑ x, F (x ^ m)‖ := by field_simp
 
+/-- **Sup-norm `(TRANSPORT)`: the prize `max`-period IS the monomial-sum `max` divided by `m`.**
+For a finite nonempty set `s` of frequencies and a family `F : ι → G → ℂ`,
+`max_{b∈s} ‖Σ_{y∈μ_n} F b y‖ = (max_{b∈s} ‖Σ_x F b (x^m)‖) / m`. This is the literal shape of the
+prize quantity `M(n) = max_{b≠0} |η_b|`: it equals the complete-monomial-sum sup-norm over `m`, with
+no slack. So a uniform-in-`b` bound on the degree-`m` monomial sum transports, divided by `m`, to a
+bound on the full prize `M(n)`. -/
+theorem max'_norm_sum_torsion_eq {ι : Type*} (m n : ℕ) (F : ι → G → ℂ)
+    (hmn : m * n = Nat.card G) (hm : 0 < m) (s : Finset ι) (hs : s.Nonempty) :
+    (s.image (fun b => ‖∑ y ∈ (univ.filter (fun y : G => y ^ n = 1)), F b y‖)).max'
+        (hs.image _)
+      = (s.image (fun b => ‖∑ x, F b (x ^ m)‖)).max' (hs.image _) / m := by
+  have hmr : (0 : ℝ) < m := by exact_mod_cast hm
+  -- div-by-m is monotone on ℝ (m > 0), so it commutes with the finset max'.
+  have hmono : Monotone (fun t : ℝ => t / m) := fun a b hab =>
+    div_le_div_of_nonneg_right hab hmr.le
+  -- antisymmetry, each direction by the elementwise exact transport `norm_sum_torsion_eq`.
+  apply le_antisymm
+  · -- period-max ≤ monomial-max/m: every period-norm = (its monomial-norm)/m ≤ (max monomial-norm)/m.
+    apply Finset.max'_le
+    intro v hv
+    obtain ⟨b, hb, rfl⟩ := Finset.mem_image.mp hv
+    rw [norm_sum_torsion_eq m n (F b) hmn hm]
+    exact hmono (Finset.le_max' (s.image (fun b => ‖∑ x, F b (x ^ m)‖)) _
+      (Finset.mem_image.mpr ⟨b, hb, rfl⟩))
+  · -- monomial-max/m ≤ period-max: clear the /m, then bound the monomial-max elementwise.
+    rw [div_le_iff₀ hmr]
+    apply Finset.max'_le
+    intro v hv
+    obtain ⟨b, hb, rfl⟩ := Finset.mem_image.mp hv
+    have hper : ‖∑ x, F b (x ^ m)‖
+        = ‖∑ y ∈ (univ.filter (fun y : G => y ^ n = 1)), F b y‖ * m := by
+      rw [norm_sum_torsion_eq m n (F b) hmn hm, div_mul_cancel₀ _ hmr.ne']
+    rw [hper]
+    exact mul_le_mul_of_nonneg_right
+      (Finset.le_max' (s.image (fun b => ‖∑ y ∈ (univ.filter (fun y : G => y ^ n = 1)), F b y‖)) _
+        (Finset.mem_image.mpr ⟨b, hb, rfl⟩)) hmr.le
+
 end ProximityGap.Frontier.MonomialNormTransport
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -97,3 +138,4 @@ end ProximityGap.Frontier.MonomialNormTransport
 #print axioms ProximityGap.Frontier.MonomialNormTransport.norm_sum_torsion_eq
 #print axioms ProximityGap.Frontier.MonomialNormTransport.norm_sum_torsion_le_of_monomial_le
 #print axioms ProximityGap.Frontier.MonomialNormTransport.norm_monomial_gt_of_torsion_gt
+#print axioms ProximityGap.Frontier.MonomialNormTransport.max'_norm_sum_torsion_eq
