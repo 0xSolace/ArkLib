@@ -9,39 +9,71 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
-# The antipodal far-line route caps at delta* >= 1/2 (Plotkin half-agreement) (#444 / #407)
+# Per-value antipode-freeness of odd agreement polynomials (half-cap on a single value) (#444 / #407)
+
+> **DOCSTRING CORRECTED 2026-06-16 (audit `deltastar-444-audit-corrections-2026-06-16.md` §A0/§C/§IX).**
+> The original headline -- "the antipodal/odd far-line route **caps at delta* >= 1/2**, lies strictly
+> below the prize floor, and **isolates** the hard residual to asymmetric far-line words" -- was
+> **RETRACTED**. That reading conflated two different objects. What is *actually true and proven below*
+> is the strictly weaker, sound combinatorial fact stated next; the downstream "delta* cap / residual
+> isolation" inference does NOT follow and is removed. The theorems themselves are correct and
+> axiom-clean (they were never the bug -- only the docstring's interpretation was). See "What this does
+> NOT prove" below.
+
+## What IS proven (the sound fact: a single-value half-cap)
 
 `_AntipodalAgreementScope` proved *when* the off-BGK antipodal tower applies: precisely to **even or
-odd** agreement polynomials (whose root set is negation-closed). This file proves the complementary
-*ceiling*: the **odd** branch of that route caps at the **Plotkin half-agreement** delta* >= 1/2, so
-on the prize side (rate `rho < 1/4`, where the floor is `1 - rho - Theta(1/log n) > 1/2`) the
-antipodal route lies strictly BELOW the floor and is **prize-inert**. This is lalalune's #444
-master-open-thread item 5 ("antipodal route caps at delta* = 1/2 (Plotkin ceiling) -- provable;
-isolate the residual to *asymmetric* far-line words"), an axiom-clean structural separation.
+odd** agreement polynomials (whose root set is negation-closed). This file proves a **per-value
+antipode-freeness ceiling** for the **odd** branch: for a fixed *nonzero* value `c`, the set of points
+of a negation-closed `G` where an odd `P` equals `c` has cardinality `<= |G|/2`.
 
-## Mechanism (char != 2)
+### Mechanism (char != 2)
 
 An **odd** agreement polynomial `P` (`P(-X) = -P`, equivalently `P.eval (-z) = - P.eval z`) cannot
 hit a fixed nonzero value `c` at both `z` and `-z`: if `P z = c` then `P (-z) = -c`, and `-c != c`
-because `c != 0` and `2 != 0`. So the agreement set `A_c = {z in G : P z = c}` is **antipode-free**:
-it contains at most one of each antipodal pair `{z, -z}`. On a negation-closed set `G` carrying the
-fixed-point-free involution `z |-> -z`, an antipode-free subset has cardinality `<= G.card / 2`.
-Hence `#A_c <= |G|/2` and the far-line agreement with any single nonzero codeword value is at most
-half the subgroup -- the Plotkin half-cap, giving `delta* >= 1/2`.
+because `c != 0` and `2 != 0`. So the **single-value** agreement set `A_c = {z in G : P z = c}` is
+**antipode-free**: it contains at most one of each antipodal pair `{z, -z}`. On a negation-closed `G`
+carrying the fixed-point-free involution `z |-> -z`, an antipode-free subset has cardinality
+`<= G.card / 2`. Hence `#A_c <= |G|/2`. (This is a Plotkin-type *single-value* half-cap; `agreeSet`,
+`agreeSet_card_le_half`.)
 
 Probe `scripts/probes/probe_antipodal_plotkin_cap.py` (PROPER thin mu_n, p >> n^3, p == 1 mod n, two
-structured primes per n, never n = q-1, n = 8..64): **0 paired-violations**, value-multiplicity
-always `<= n/2`. The `rho = 1/4` worst word `x^a + x^b` (a, b both odd) is odd
-(`AntipodalAgreementScope.twoMonomial_odd_of_both_odd`) -- in scope, so the cap applies to it.
+structured primes per n, never n = q-1, n = 8..64): **0 paired-violations**, single-value
+multiplicity always `<= n/2` (columns: `odd_maxAgree(c!=0) = 2` and `signHalf <= n/2`). This matches
+`agreeSet_card_le_half` exactly. The `rho = 1/4` worst word `x^a + x^b` (a, b both odd) is odd
+(`AntipodalAgreementScope.twoMonomial_odd_of_both_odd`), so the single-value cap applies to it.
+
+## What this does NOT prove (the retracted over-claim, with the CORRECT values)
+
+The original docstring leapt from "`#A_c <= |G|/2` per single value `c`" to "the antipodal far-line
+**route** caps at `delta* >= 1/2` and isolates the hard residual to asymmetric words." **Neither
+follows**, for two distinct reasons, both established in the audit:
+
+1. **`#A_c <= |G|/2` is a cap on a SINGLE codeword value, not the far-line `delta*`.** The far-line
+   `delta*` is the *binding incidence* taken over all far directions / all attainable values, governed
+   by the distinct-gamma union count -- a different object. Its exact value (audit §A0, full-direction
+   `orbcount`; in-tree pin `DeltaStarSecondPin...`/`FarCosetExplosion`; probe
+   `probe_plotkin_farline_johnson.py`, exact rational, n=8..2048) is the **Johnson-locked PROXY**
+   > `delta*_farline = 1/2 + (1/(2 rho) - 1)/n`, and at `rho = 1/4` this is **`1/2 + 1/n -> 1/2`**:
+   `n=16 -> 9/16`, `n=32 -> 17/32`, `n=64 -> 33/64`, ... -> `1/2` from ABOVE (with a small-`n`
+   anomaly `n=8 -> 3/8 < 1/2`). So the far-line route does NOT sit at a fixed `>= 1/2` cap below the
+   floor; it is a *proxy that tends to `1/2`* (`delta*_MCA <= delta*_farline -> 1/2`).
+
+2. **The proxy does NOT isolate a residual.** Because `delta*_farline -> 1/2` for *all* branches
+   (`m* = n/4 - 1` is LINEAR, `capacity - delta* = m*/n -> 1/4`), the even/asymmetric branches give the
+   SAME `-> 1/2` proxy; capping the odd single-value multiplicity isolates nothing. The true
+   beyond-Johnson worst-case MCA floor (`delta*_MCA >= Johnson`, the prize) is the **separate, harder
+   BCHKS/BGK object** that the far-line proxy never reaches. There is no in-tree evidence that the
+   worst-case MCA `delta*` climbs to capacity, and none that the odd half-cap brackets the open core.
 
 ## Honest scope
 
-Char-free finite combinatorics over a field of char != 2; **field-universal**, NOT
-thinness-essential (the half-cap is the antipodal-symmetry Plotkin ceiling, regime-independent). It
-follows that the antipodal route caps at Plotkin and does NOT close the
-prize: it CAPS the symmetric/antipodal route and thereby **isolates** the hard residual to the
-genuinely *asymmetric* (non even/odd) far-line words, which `_AntipodalAgreementScope` already pins
-as the open BGK core. CORE `M(mu_n) <= C sqrt(n log(p/n))` stays OPEN. Axiom-clean. (#407, #444.)
+Char-free finite combinatorics over a field of char != 2; **field-universal**. The proven content is
+exactly the per-value half-cap `agreeSet_card_le_half` (and its building blocks) -- a correct,
+axiom-clean structural fact about odd polynomials. It is NOT a `delta*` cap, NOT a Plotkin ceiling on
+the route, and does NOT isolate the prize residual. The prize core `M(mu_n) <= C sqrt(n log(p/n))`
+(equivalently BCHKS 1.12, equivalently `delta*_MCA` in the window interior) stays **OPEN** and is
+untouched by this file. (#407, #444.)
 -/
 
 open Polynomial
@@ -128,10 +160,12 @@ theorem two_mul_agreeSet_card_le {P : F[X]} (hodd : IsOddOn P) {G : Finset F} {c
     _ = (A ∪ A.image (fun z => -z)).card := by rw [hunion]
     _ ≤ (G ∪ G.image (fun z => -z)).card := Finset.card_le_card hsub
 
-/-- **Plotkin half-cap on a negation-closed `G`.** If `G` is closed under negation
+/-- **Single-value half-cap on a negation-closed `G`.** If `G` is closed under negation
 (`g ∈ G ⟹ -g ∈ G`), then `G.image Neg.neg ⊆ G`, so `G ∪ G.image Neg = G`, and the cap reads
-`2 * #agreeSet <= #G`: the agreement with any single nonzero value is at most half the subgroup.
-This is **delta* >= 1/2** (Plotkin) for the odd/antipodal far-line route. -/
+`2 * #agreeSet <= #G`: the agreement of an odd `P` with any **single** nonzero value `c` is at most
+half the subgroup. (Per-value antipode-freeness; NOT a `delta*` cap -- see file header §"What this
+does NOT prove": the far-line `delta*` is the Johnson-locked proxy `1/2 + 1/n -> 1/2`, a different
+object.) -/
 theorem two_mul_agreeSet_card_le_of_neg_closed {P : F[X]} (hodd : IsOddOn P) {G : Finset F} {c : F}
     (hc : c ≠ 0) (htwo : (2 : F) ≠ 0) (hG : ∀ g ∈ G, -g ∈ G) :
     2 * (agreeSet P G c).card ≤ G.card := by
@@ -144,11 +178,13 @@ theorem two_mul_agreeSet_card_le_of_neg_closed {P : F[X]} (hodd : IsOddOn P) {G 
   have := two_mul_agreeSet_card_le hodd hc htwo (P := P) (G := G) (c := c)
   rwa [hunion] at this
 
-/-- **The clean Plotkin ceiling.** On a negation-closed `G`, an odd far-line agreement polynomial
-agrees with any single nonzero codeword value on at most `#G / 2` points -- the symmetric/antipodal
-route is capped at half-agreement `delta* >= 1/2`. For prize rate `rho < 1/4` the floor
-`1 - rho - Theta(1/log n) > 1/2`, so this route is **below the floor / prize-inert**, isolating the
-hard residual to genuinely asymmetric far-line words. -/
+/-- **The clean single-value half-cap.** On a negation-closed `G`, an odd polynomial `P` agrees with
+any single nonzero value `c` on at most `#G / 2` points. This is the sound combinatorial content of
+the file. ⚠️ It is NOT a `delta*` cap and does NOT isolate a prize residual: the far-line `delta*` is
+the Johnson-locked proxy `delta*_farline = 1/2 + (1/(2ρ)-1)/n -> 1/2` (at ρ=1/4: `1/2 + 1/n`,
+n=16→9/16, n=32→17/32, ...), a distinct object that tends to `1/2` for ALL branches; the true MCA
+floor (`delta*_MCA >= Johnson`, the prize) is the separate, harder BCHKS/BGK object. See the file
+header §"What this does NOT prove". -/
 theorem agreeSet_card_le_half {P : F[X]} (hodd : IsOddOn P) {G : Finset F} {c : F}
     (hc : c ≠ 0) (htwo : (2 : F) ≠ 0) (hG : ∀ g ∈ G, -g ∈ G) :
     (agreeSet P G c).card ≤ G.card / 2 := by
