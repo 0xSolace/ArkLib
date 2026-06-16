@@ -157,7 +157,7 @@ NOT touch the prize.
 - **A6** `Dstar_le_minorImage_card`, `plueckerMinor_ne_subsetSum` — a **NOVEL invariant**: D*(m)
   bounded by a **Plücker/determinantal minor-image count**, machine-certified DIFFERENT from BCHKS
   subset-sum (the 2×2 minor is `−xy`, a *product*, not an additive spectrum). A genuinely new
-  computable surface for m* — its tractability (Lang-Weil on the degree-2 determinantal variety) is
+  computable surface for m* — its tractability (Lang-Weil on the degree-2 determinantal variety) is (⚠️ CAVEAT, audit 2026-06-16: the A6 bound `D*(2)≤2·span` is a BÉZOUT/degree ROOT-count — valid; but any *Lang–Weil point-count* framing is an OVERREACH because the relevant `V_r` is 0-DIMENSIONAL, making Lang–Weil VACUOUS. The lever is real as a root-count, not as a variety point-count.)
   the freshest non-BCHKS lever, under attack in A6deep.
 
 ## G. The COMPLETE TIGHT REDUCTION + final verdict (commits fadd986d0, ef3e127bd)
