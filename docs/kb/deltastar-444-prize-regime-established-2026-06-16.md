@@ -137,6 +137,10 @@ levers** (§VI) plus these are where a continuing agent should spend effort.
   open Prop behind the moment route (`SL-M4`, `S-M1'`). **Use the DC-SUBTRACTED `A_r = E_r − n^{2r}/q`**
   (the raw `E_r ≤ Wick` is FALSE at the prize — DC term dominates; only `A_r ≤ Wick` is non-vacuous).
 - **Exact `E_{r+1}` closed forms for r≥5** (the open "producer" brick; E_2..E_5 done — see §IV-data).
+  **DONE (2026-06-16):** E_2..E_6 in-tree (`_CharZeroEnergyClosedForm.lean`); **E_7 LANDED** axiom-clean
+  (`_AvL2_E7ClosedForm`): `E_7(μ_n)=135135n⁷−2837835n⁶+26801775n⁵−141891750n⁴+433726293n³−708996288n²+471556800n`
+  (leading (2·7−1)‼=135135, 2nd coeff −C(7,2)·135135, SOS deficit cert; cross-validated by independent
+  exact values E_7(4)=11778624, E_7(8)=16993726464). E_8+ is the next producer rung.
 - **`GaussianStepLaw` `E_{r+1} ≤ (2r+1)·n·E_r`** local per-step reduction (front-runner enabler).
 - **Effective-Chebotarev count of `Spur_r(p)` at depth `r~log q`** (the bad-prime wraparound count;
   Lagarias–Odlyzko / `p≡1 mod 8` density-1/4 surviving class).
