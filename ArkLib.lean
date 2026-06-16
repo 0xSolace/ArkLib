@@ -1801,6 +1801,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.MCAStructuralSeparation
 import ArkLib.Data.CodingTheory.ProximityGap.MCASubdomainLift
 import ArkLib.Data.CodingTheory.ProximityGap.MCASyndromeFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.MCASyndromeSup
+import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdBudgetMono
 import ArkLib.Data.CodingTheory.ProximityGap.MCAThresholdLedger
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUDR2Bound
 import ArkLib.Data.CodingTheory.ProximityGap.MCAUDRBound

@@ -4515,3 +4515,26 @@ budget overshoots by the index factor sqrt(m)). The genuinely finer realized-inc
 delimiter, EXTEND-proven on the proven in-tree budget bridge, NOT a re-mapped dead face. NO moment/
 census/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law claim, cliff-at-n/2
 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O224 (lane budgetmono): the MCA threshold delta* is MONOTONE in the error budget eps* -- a more
+generous budget never lowers delta*. The load-bearing order-theory companion the ledger lacked along
+the BUDGET axis (it only had RADIUS-axis good/bad brackets). EXTEND-proven on MCAThresholdLedger.
+MCAThresholdLedger brackets delta*(C,eps*)=sSup(mcaGoodRadii C eps*) along the RADIUS axis delta
+(mca_good_set_downward_closed, le_mcaDeltaStar_of_good, mcaDeltaStar_le_of_bad) but NEVER recorded
+monotonicity in eps*. GREP-CONFIRMED MISSING. SHIPPED
+ArkLib/Data/CodingTheory/ProximityGap/MCAThresholdBudgetMono.lean (3 thms; single-file
+lake-env-lean exit 0 + in-graph lake-locked 3059 jobs exit 0; axiom-clean {propext,
+Classical.choice, Quot.sound}):
+- mcaGoodRadii_mono: eps*0 <= eps*1 => mcaGoodRadii C eps*0 subset mcaGoodRadii C eps*1 (a radius
+  good at a tighter budget is good at a looser one).
+- mcaDeltaStar_mono: eps*0 <= eps*1 => delta*(C,eps*0) <= delta*(C,eps*1). sSup-monotone over the
+  budget-monotone good set (empty tighter set handled via csSup_empty = bot).
+- mcaDeltaStar_le_of_budget_pin: a good radius proven at a tighter budget eps*0 <= eps*1 is also <=
+  delta* at the looser eps*1 -- the lower pin survives budget relaxation.
+NO PROBE NEEDED (pure order theory on the ledger's sSup object). HONEST SCOPE (rule 3,6): pure
+infrastructure brick, NOT a CORE touch and NOT thinness-specific (holds for every code + budget
+pair). Does not bound eps_mca or delta* at any concrete radius; only records how delta* moves with
+the budget. The genuine open prize content (realized worst-case incidence at the prize budget) is
+UNTOUCHED. NON-MOMENT infrastructure, EXTEND-proven on the proven in-tree ledger, NOT a re-mapped
+dead face. NO moment/census/geometric-minor re-derivation, NO capacity/beyond-Johnson/growth-law
+claim, cliff-at-n/2 UNTOUCHED. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
