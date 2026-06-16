@@ -4660,3 +4660,44 @@ HONEST SCOPE (rule 3,6): strengthens O229 by removing a hypothesis; constrains t
 thinness-essential. The "n/2"-free statement does not touch the asymptotic-guard cliff. NO moment/
 census/orbit-count/pencil re-derivation, NO capacity/beyond-Johnson/growth-law claim. CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
+
+## O237 (lane symcard): the F1 floor multiplier `chooseCH s r` IS the complete-homogeneous
+## monomial-multiset count `|Sym (Fin s) r|` (structural identity, now a THEOREM) -- AND the
+## distinct-h-VALUE reading of the open spectrum bound is FALSE at small r (constraint lemma).
+#
+# CONTEXT. `_BchksF1_CompleteHomogeneousFloor.lean` DEFINES the floor multiplier
+# `chooseCH s r = C(s+r-1, r)` and asserts in PROSE it is "the number of degree-r monomials in s
+# variables = #multisets of size r from s elements = dim of the degree-r complete-homogeneous space"
+# -- but proves it ONLY as a bare `Nat.choose`, never connected to the combinatorial object. This
+# lane discharges that assertion (FRONTIER-MOVEMENT, NON-MOMENT, char-free) and pins, with a clean
+# probe, the precise reason the floor needs a `poly(n)` factor.
+#
+# THE BRICK (landed, in `_BchksF1_ChooseCHSymCard.lean`, axiom-clean, 5 thms):
+#  - chooseCHsc_eq_card_sym:  chooseCH s r = Fintype.card (Sym (Fin s) r)  (Mathlib stars-and-bars
+#    Sym.card_sym_eq_choose + Fintype.card_fin). The multiplier IS the degree-r monomial-multiset
+#    count -- the floor file's prose assertion, now a theorem.
+#  - chooseCHsc_eq_multichoose:  chooseCH s r = Nat.multichoose s r  (the named combinatorial object).
+#  - card_le_chooseCHsc_of_inj / finset_card_le_chooseCHsc_of_injOn:  the IMAGE-CARD reduction --
+#    bad-scalars injecting into Sym (Fin s) r have card <= chooseCH s r (Fintype.card_le_of_injective).
+#    The poly=1 leading-order floor with a GENUINE combinatorial witness, not a free <=.
+#
+# THE CONSTRAINT LEMMA (refutation, probe_chooseCH_sym_card.py / probe_chooseCH_threshold.py;
+# PROPER thin mu_n = nth roots of unity in F_p, p>>n^3 where structured, n=4,8,16,32, NEVER n=q-1):
+#  the DISTINCT-h-VALUE reading of CompleteHomogeneousSpectrumBound -- #{distinct h_r(R) :
+#  R in binom(mu_n, k+1)} <= chooseCH n r -- is FALSE with poly=1 in a sharp low-r triangle:
+#  VIOLATED exactly when r is small relative to k (n=16: k=3 viol at r<=3, k=2 viol at r<=2, all k
+#  viol at r=1; n=32: viol at r<=2). It only holds for r large enough. The pure cardinality identity
+#  chooseCH == #monomial-multisets is CLEAN (0 fails / 130). So the open spectrum bound CANNOT be the
+#  distinct-VALUE count over (k+1)-subsets (refuted at the binding small-r fold); it is a
+#  monomial-DIRECTION count (= chooseCH n r tautologically via Sym.card), with the genuine open
+#  content being the forced-gamma INJECTION direction->bad, and the empirical poly(n)=n excess living
+#  exactly where that injection FAILS (the small-r value-collision region).
+#  This INDEPENDENTLY CORROBORATES Shaw's live F1 fix (0a34f6012 "poly=1 FALSE, poly=n verified") and
+#  supplies its MECHANISM: poly=1 fails because the value-spectrum exceeds the dimension at small r.
+#
+# HONEST SCOPE (rules 1,3,6): NOT a CORE closure. A pure Fintype.card/Sym cardinality identity +
+# image-card reduction + a value-count refutation -- field-universal (no thinness), so by rule 3
+# CANNOT prove CORE. Does NOT prove the open CompleteHomogeneousSpectrumBound (which needs poly=n).
+# NO moment/census/orbit/pencil/spectrum re-derivation. A Sym-cardinality object, NOT a delta*/
+# incidence object -- asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson/growth-law
+# claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
