@@ -15699,3 +15699,35 @@ meta-theorem at the MGF level. NOT a refutation of CORE (the floor remains plaus
 a real handle. No new Lean produced (diagnostic; would only re-encode the existing `CoshMGFSaddleFloorShape`
 `log q` gap). Probes committed: probe_c8_softC_verdict.py, probe_c8_softC_saddle_scaling.py,
 probe_c8_permoment_iff_mgf.py, probe_c8_chernoff_vs_softC.py.
+
+---
+
+## wf-S7 (#444): "char-p Mann analogue bounds minimal spurious weight away from the depth band" — FALSE
+
+**Claim tested (the S7 mission hypothesis).** Char-0 Mann/Lam-Leung classifies vanishing ±1 sums
+of `2^μ`-th roots: only antipodal pairs (weight 2, vanish over ℤ). Hope: the char-p "spurious"
+relations (signed configs `σ_T` with `p | N(σ_T) ≠ 0`, the EXTRA mod-p relations) also have
+BOUNDED minimal weight `w_min(n,p) ≫ 2r_band ~ 2 ln q`, so no short spurious config exists at the
+energy depths that matter ⟹ count bounded ⟹ K bounded ⟹ prize.
+
+**Refutation (exact, reproducible — `probe_wfS7_galois_spread_law.py`,
+`probe_wfS7_perprime_minweight.py`).** The maxOdd ceiling at FIXED weight GROWS with n:
+`maxOdd(n,w=4)`: `log_n = 1.65 (n=16), 2.59 (n=32), 4.33 (n=64)`. It crosses `n^4` at `n=64`. So a
+WEIGHT-4 config's cyclotomic norm can carry a genuine prize prime `p ~ n^4`. CONCRETE WITNESS
+(`n=64`): the genuine prize prime **p = 17318209 ≡ 1 (mod 64), p = n^4.008** divides
+`N_{ℚ(ζ₆₄)/ℚ}(ζ^8 + ζ^{13} − ζ^{14} − ζ^{20})` — weight 4, well INSIDE the prize depth band
+`2r ~ 2·4·ln 64 ≈ 33`. So short spurious relations DO reach prize primes for `n ≥ 64`; the Mann
+analogue does NOT push minimal spurious weight above the depth band. The "bounded weight" hope is
+FALSE. (Also subsumes the prior `_wfS7_spur_minweight` finding that the `w ≥ p^{2/n}` floor is
+vacuous at the prize — here we exhibit the actual short witness it fails to forbid.)
+
+**The information gained (NOT a dead end — a sharpening).** The breakage is GALOIS-EQUIVARIANT.
+For that p at n=64, the 1024 weight-4 spurious configs form EXACTLY 32 Galois orbits, EACH of size
+`φ(64)=32`: `#spurious(n,w,p) = (#base orbits)·φ(n)`, every orbit FULL. PROVEN axiom-clean
+(`Frontier/_wfS7_galois_spread.lean`, `galois_card_dvd_of_free`): under the free Galois action the
+spurious count is a MULTIPLE of `φ(n)` — `0` (Mann floor holds: no orbit) or `≥ φ(n)`, never a
+small nonzero number. So K bounded ⟺ #base-orbits controlled — the SAME spread object that S2/S4/S6
+isolate. The char-p Mann route does NOT close the wall but RE-EXPRESSES it as an orbit count.
+
+**Tier:** TRANSFER-FALSE (witness p=17318209, n=64) + the spread-reduction is an OBSTRUCTION
+reformulation. Probes: `probe_wfS7_galois_spread_law.py`, `probe_wfS7_perprime_minweight.py`.
