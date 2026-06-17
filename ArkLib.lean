@@ -2353,6 +2353,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdTight
 import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodPowerCount
 import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodZeroSumBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SignedWalkMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SignedZeroSumCountEven
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SinglePencilQIndependence
 import ArkLib.Data.CodingTheory.ProximityGap.SixTermResultantImproved
@@ -2638,6 +2639,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WraparoundThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianNonVanishing
 import ArkLib.Data.CodingTheory.ProximityGap.WronskianStepanovBridge
+import ArkLib.Data.CodingTheory.ProximityGap.ZeroSumCountNegationParity
 import ArkLib.Data.CodingTheory.ProximityGap._E2SquaringRecursion
 import ArkLib.Data.CodingTheory.ProximityLeaves
 import ArkLib.Data.CodingTheory.ProximityLeaves2
