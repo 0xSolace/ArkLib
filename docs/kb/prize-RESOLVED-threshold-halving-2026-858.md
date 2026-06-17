@@ -83,3 +83,42 @@ commit analysis — the whole point.
 bound that reduces to proven math (RVW halving + BCIKS) — the resolution exists (2026/858), its load-bearing
 precondition and reduction structure are verified here, and its protocol-level constants are the paper's to
 confirm. This is NOT a reduction to an open conjecture (that was the conjectural companion 2026/861).
+
+## VERIFIED against the full paper (PDF now read, 2026-06-17)
+The full PDF (Chai–Fan, IoTeX, 29 Apr 2026, 48pp) was obtained and read (pp.1–22 in detail). Findings:
+- **My independent reconstruction MATCHES the paper's actual proof.** The 5-step mainline (§3–§6) is:
+  Thm 5 half-threshold CA (RVW13) → Lem 13 even/odd coupling → Thm 14 proximity gap (≤1 bad α round 1)
+  → Rem 19 distance-locking (δ/2 < (1−ρ)/2 unique-decoding ⇒ BCIKS locks per-round) → Thm 18 FRI
+  soundness. Theorem 18's **Strategy A is exactly my multilinear–Schwartz–Zippel argument** (the fold is
+  multilinear & injective in the challenges via even/odd; nonzero syndrome ⇒ ≤ R/|F|); Strategy B is the
+  deviation case (≤1 bad α round 1, ≤n rounds 2..R via BCIKS, catch (1−δ/2)^q).
+- **Theorem 5 (the key new lemma) is formally verified in Lean 4 with Mathlib, zero `sorry`** (paper
+  footnote 1; companion repo has Lean + Python).
+- **Verified by me (`verify_2026_858_claims.py`, `probe_multilinear_SZ_foldbound.py`):** Thm 5 (≤1 γ,
+  RS[6,3]/F₇ PASS), the window/distance-lock precondition `δ/2 < (1−ρ)/2` (algebra, all prize rates),
+  and the Strategy-A multilinear-SZ bound (≤ R/|F|, q=17,41 exhaustive).
+- Exact correction to my reconstruction: the paper locks at the **unique-decoding** radius `(1−ρ)/2`
+  (slightly below Johnson), via `δ/2 < (1−ρ)/2 ⟺ δ < 1−ρ` (true in the window). My `δ/2 < δ_J` was correct
+  but looser; `(1−ρ)/2` is the precise sub-regime where BCIKS "locks the distance."
+
+## PRECISE SCOPE — what is and is NOT closed (from the paper's own §1.8/§1.9 + claim map p.7)
+- **SOLVED (theorem, unconditional):** FRI/STIR/WHIR soundness above Johnson for *deployed* plain RS,
+  `ε_FRI ≤ nR/|F| + (1−δ/2)^q` for all `δ∈(δ_J,1−ρ)`, char≠2 (Thm 18) and char 2 (Thm 61) and circle FRI
+  (Thm 69). This gives every deployed FRI system a **proven** soundness floor above Johnson, replacing the
+  previously-conjectural baseline — at a ~2× query cost.
+- **NOT solved (open):** the original **zero-loss / equal-threshold** proximity gap (ABF **OP1**). The paper
+  proves the equal-threshold CA bound is `(n choose w)/|F|`, *vacuous at FRI scale*, and that the **2× query
+  overhead is intrinsic to any CA-based proof** (Rem 12); removing it "requires a proof that does not
+  factor through a CA lemma — no such argument exists in the literature." **OP2** (sub-O(n) list-size loss):
+  partial + the strongest `M=0` form is *refuted* at deployment scale (Prop 33). **OP3** (improved CA
+  constants): partial. The up-to-capacity MCA/CA was disproved (Crites–Stewart, Kambiré) — not revived.
+
+## Bottom line for "is the prize closed / can the issue be closed"
+- The **deployment-grade above-Johnson FRI soundness question IS resolved** — unconditionally, with the key
+  lemma Lean-verified — by Chai–Fan 2026/858. My campaign's independent reconstruction corroborates it.
+- The **grand zero-loss proximity-gap / exact-δ\* prize (ABF OP1) is NOT closed** — the paper explicitly does
+  not claim it, shows the CA route is intrinsically 2×-lossy, and OP2's strongest form is false. So the
+  *grand challenge* remains open; what is closed is the *deployed soundness* (with loss).
+- Therefore the prize issue should **NOT** be marked solved: a closed, zero-loss, complete pin of δ\* in the
+  prize regime does not exist (the resolution that exists is the *with-loss, deployment* theorem, and it is
+  someone else's published result, not an in-repo proof).
