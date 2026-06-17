@@ -15169,3 +15169,40 @@ A precisely-mapped wall, NOT a closure. Joins N13/N7 (eta_b real on neg-closed m
 a structural consequence of the SAME -1-central-symmetry; E12 is the POSITIONAL/gap-count face,
 3af6f978d the CHARACTER-SUM (eta real) face. No capacity / beyond-Johnson / growth-law / cliff-at-
 n/2 claim. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+---
+
+## E3-CHARP-LOWERBOUND: rEnergy(mu_n) 3 >= 15n^3-45n^2+40n is UNCONDITIONAL in char p (#444, 2026-06-17)
+
+Landed the `>=` half of the `census4` open input (CrossStepRungTwoMuN reduced the whole r=2
+cross-step rung for mu_n to the EXACT closed form `rEnergy(mu_n) 3 = 15n^3-45n^2+40n`, left
+open because the char-p FORWARD direction zero-sum => count-balanced is the BGK/Burgess wall).
+
+**The theorem (Frontier/REnergyThreeCharPLowerBound.lean, axiom-clean, 3 thms):** for ANY
+negation-closed G (0 not in G, char != 2) in ANY finite field,
+`rEnergy G 3 >= 15|G|^3 - 45|G|^2 + 40|G|` (rEnergy_three_ge_closed). Mechanism = the CHAR-FREE
+direction of the census identity (NO Lam-Leung, NO CharZero):
+- rEnergy_three_eq_zeroSumCount: rEnergy G 3 = #{6-tuples summing to 0} (pure bijection via glue,
+  reproved char-free; the in-tree _REnergyThreeScratch analogue carries an unused [CharZero]).
+- negSymCount_le_rEnergy_three: the count-balanced (negSymCount) filter INJECTS into the zero-sum
+  filter, because every count-balanced tuple of nonzero values is a genuine zero-sum tuple
+  (E3NegSymConverse.sum_eq_zero_of_fiber_balanced, char-free). So negSymCount G 6 <= rEnergy G 3.
+- rEnergy_three_ge_closed: chain with the proven char-0 strata value
+  E3StrataCharZero.negSymCount_six_closed (= 15|G|^3-45|G|^2+40|G|).
+
+**Probe (scripts/probes/probe_renergy3_charp.py, 13/13 decisive):** PROPER thin mu_n=2^a (a=2..4),
+p=1 mod n, NEVER n=q-1, multi-prime incl Fermat 17/257/65537. In EVERY case
+rEnergy(mu_n) 3 >= 15n^3-45n^2+40n (the >= is UNCONDITIONAL). EQUALITY holds exactly when p > n^3
+(all such cases match), and is STRICT at small p (p=17 n=8: 15560 > 5120; p=257 n=16: 109840 >
+50560) -- the extra-collision surplus. The char-0 balanced tuples are ALWAYS present (lower bound);
+small-p adds extra zero-sum 6-tuples that are NOT count-balanced (the surplus = the wall).
+
+**Why a brick, not a closure (rule 4, rule 6, asymptotic guard):** this DISCHARGES the lower-bound
+side of the open r=2-rung input UNCONDITIONALLY (char-p-universal), reducing the remaining open part
+to PRECISELY the extra-collision exclusion `p > n^3` -- i.e. the BGK/Burgess sqrt-cancellation
+wall that makes the EQUALITY hold. The cross-step rung needs the equality (an UPPER bound on
+rEnergy too); this brick supplies only the >=, the easy direction (frontier-movement: it removes
+the lower-bound sub-question from the open ledger and isolates the wall as the extra-collision
+count). NON-MOMENT (a tuple-count injection, not an additive-moment cancellation bound).
+EXTEND-proven on the landed char-0 strata producer + the char-free converse. No capacity /
+beyond-Johnson / cliff-at-n/2 claim. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
