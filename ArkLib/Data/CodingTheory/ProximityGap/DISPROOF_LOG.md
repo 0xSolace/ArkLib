@@ -16669,3 +16669,42 @@ TRUE — piece (a) survives), `second_moment_count` (the count the route deliver
 `alignment_not_injective` + `level_set_not_singleton` + `T14_reduces_to_F0` (premises (i)(ii) FALSE
 under coset-invariance). Probe: `scripts/probes/rust/probe_wfT14_kraft_mdl.rs`. **No prize gain.
 CORE stays OPEN at the BGK char-p wall.** — wf-T14
+
+---
+
+## [T09] Quantitative Bilu equidistribution + non-arch local-mass coupling — REDUCES-TO-WALL (F0; sec. F1/F3)
+
+**Candidate (architect G2-4).** The normalized period `u_b = θ_b/√n` has `φ(n)` archimedean Galois
+conjugates; propose a QUANTITATIVE Bilu/Petsche/Favre–Rivera-Letelier equidistribution of the
+conjugate cloud carrying the non-arch local masses: `W_2(emp, adelic-equilibrium) ≤
+(h(u_b)+Σ_v localmass_v)^{1/2}/φ^c`, with `House(u_b) ≤ R_eq + W_2-err` and the *content* that the
+adelic-equilibrium support radius `R_eq = √(log(p/n))` "provided the local masses pin the scale".
+Conditional `M(n) ≤ C√(n log(p/n))`.
+
+**Verdict: REDUCES-TO-WALL (F0).** The House `= max over conjugates = M(n)/√n` is the wall. A `W_p`
+bound (any finite p) on the empirical conjugate measure does NOT bound the House (sup of support)
+from above — the sup is `W_p`-discontinuous. Reduction map (machine-checked, axiom-clean
+`Frontier/_wfTT09_adelic_equidist_house_nogo.lean`): moving ONE atom (mass 1/φ) from bulk radius
+`R₀` out to `R` raises House by `R−R₀` (`house_jump_eq`) but contributes only `(R−R₀)·φ^{-1/2}` to
+`W₂` (`W2_contribution_vanishes`). Hence `house_unbounded_under_Wp_rate`: for ANY fixed rate ε>0
+and ANY target House H there is a config meeting the rate (`(R−R₀)φ^{-1/2} ≤ ε`) with House ≥ H —
+a `W₂`-rate places NO finite ceiling on the House. The `√log` excess is the rare-event tail F0 says
+2nd-order/bulk statistics cannot see.
+
+**Circularity (F0/F1) + blindness (F3).** `R_eq = House − W₂-err` (`R_eq_assertion_is_circular`), so
+asserting `R_eq = √(log(p/n))` IS the prize conclusion, not an input. The proposed input `h(u_b) =
+(1/φ)Σ_v log⁺|·|_v` is an energy/moment aggregate, conjugate to the wall (F1,
+`mahler_height_is_energy_aggregate`). Non-arch local masses are archimedean-blind, cannot fix an
+archimedean support radius (F3; in-tree `_DilationZeroEntropyNoGo`, `HeightGateBindingDepthVacuity`
+— binding-depth norms dwarf p at prize scale, gate vacuous).
+
+**Numerics (`scripts/probes/rust/probe_wfT09_adelic_equidist_house.rs`, β=4, p≡1 mod n):**
+`House/√n` = 3.46/4.06/4.02 (super-Johnson, grows) while bulk spread `W2_bulk` stays O(1)
+(0.36/1.04/0.73, flat) and the count of conjugates above the bulk radius is O(1) (0/1/3) — tail
+mass O(1)/φ ≪ W₂-floor 1/√φ. The House lives below the W₂ resolution. Confirms F0.
+
+**Novelty/absence.** Named theorems (Bilu, Petsche quantitative, Favre–Rivera-Letelier adelic,
+Kowalski Wasserstein-equidistribution, Sombra N-torus) exist; the SYNTHESIS applied to the period's
+conjugate cloud with local-mass coupling is not in the literature as a House bound (it can't be —
+W_p doesn't control the sup). In-tree the angle is already covered by `_AttackT1_BiluLinialTwistNoGo`,
+`_wf5E1_WassersteinUnionNoGo`, `_wf5M1_HeightCountRoute`. No prize gain. CORE stays OPEN.
