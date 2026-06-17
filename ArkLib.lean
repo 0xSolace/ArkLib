@@ -1108,6 +1108,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzFisher
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilPairwiseBonferroni
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PerPairingExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PeriodOrbitQuotientReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedBandReaching
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarMultDivision
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarRatioImage
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
