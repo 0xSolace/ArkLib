@@ -1544,6 +1544,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPhaseResonance
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyThreeRepThree
+import ArkLib.Data.CodingTheory.ProximityGap.GcdTrivialOffSumset
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
