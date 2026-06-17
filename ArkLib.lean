@@ -2417,6 +2417,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumRawMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkov
+import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMarkovWick
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSixthMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSpectralSpread
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumSupportAvgCeiling
