@@ -133,4 +133,43 @@ theorem etaSign_not_monoidHom_of_witness {F : Type*} [Field F] [Fintype F] [Deci
     ¬ ∃ φ : F →* ℤ, ∀ b, φ b = etaSign ψ G b :=
   not_monoidHom_of_witness (etaSign ψ G) hw
 
+/-- The **relative-dilation factor** of a sign `s` at a dilation `ζ`: `r_ζ(b) = s(ζ·b)·s(b)`. This
+is the `DilationRealSignCocycle` cocycle value (same-sign vs opposite-sign of the two children),
+viewed as a function of `b`. The sign cocycle is a **coboundary** iff `r_ζ` is constant. -/
+def relDilationSign {M : Type*} [Monoid M] (s : Sign M) (ζ : M) (b : M) : ℤ := s (ζ * b) * s b
+
+/-- **Coboundary characterization (the precise iff for the `DilationRealSignCocycle` residual).**
+For a `±1`-valued sign `s` (`s_x² = 1` everywhere), the relative-dilation factor `r_ζ` is the
+CONSTANT `c` iff `s` telescopes through `ζ` by that constant: `s(ζ·x) = c·s(x)` for all `x`. The
+right side is exactly the "coboundary / character-telescopable" structure a descent argument needs;
+the left side is the measurable cocycle value. So the cocycle telescopes iff `r_ζ` is constant. -/
+theorem relDilationSign_const_iff_coboundary {M : Type*} [Monoid M] (s : Sign M) (ζ : M) (c : ℤ)
+    (hs : ∀ x, s x * s x = 1) :
+    (∀ x, relDilationSign s ζ x = c) ↔ (∀ x, s (ζ * x) = c * s x) := by
+  constructor
+  · intro h x
+    -- s(ζx) = s(ζx)·(s x·s x) = (s(ζx)·s x)·s x = r_ζ(x)·s x = c·s x
+    have hx := hs x
+    calc s (ζ * x) = s (ζ * x) * (s x * s x) := by rw [hx, mul_one]
+      _ = relDilationSign s ζ x * s x := by unfold relDilationSign; ring
+      _ = c * s x := by rw [h x]
+  · intro h x
+    -- r_ζ(x) = s(ζx)·s x = (c·s x)·s x = c·(s x·s x) = c
+    have hx := hs x
+    unfold relDilationSign
+    rw [h x, mul_assoc, hx, mul_one]
+
+/-- **The cocycle is NOT a coboundary at a non-constancy witness (rule-4, the precise wall).**
+If the relative-dilation factor `r_ζ` takes two different values (`r_ζ(b) ≠ r_ζ(b')`) then for NO
+constant `c` does `s` telescope through `ζ` by `c`. So a single measured non-constancy of the sign
+cocycle (which the probe exhibits, H4) rules out EVERY character/coboundary descent on the tower. -/
+theorem not_coboundary_of_relDilation_witness {M : Type*} [Monoid M] (s : Sign M) (ζ : M)
+    (hs : ∀ x, s x * s x = 1) {b b' : M}
+    (hne : relDilationSign s ζ b ≠ relDilationSign s ζ b') :
+    ¬ ∃ c : ℤ, ∀ x, s (ζ * x) = c * s x := by
+  rintro ⟨c, hc⟩
+  have hconst : ∀ x, relDilationSign s ζ x = c :=
+    (relDilationSign_const_iff_coboundary s ζ c hs).mpr hc
+  exact hne ((hconst b).trans (hconst b').symm)
+
 end ProximityGap.Frontier.EtaSignNonMultiplicative
