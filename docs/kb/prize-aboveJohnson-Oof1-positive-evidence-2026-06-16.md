@@ -66,6 +66,25 @@ syndrome}` — exactly computable. For dyadic RS`[8,4]` (ρ=½, Johnson 2.34 pos
 - The FRI bad-count `4 ≤` list size `7` — both O(1) at the edge — ties the **MCA** and **list-decoding**
   grand challenges to the same object.
 
+## N-scaling (honest correction): the UNRESTRICTED worst-case grows with N
+A decisive follow-up tested whether the bad-count is `N`-independent (it must be, for `O(1)/|F|`). Sampling
+genuine distance-`wmin` leaders at the minimal above-Johnson weight, exact folded distance, matched radius:
+
+| N | worst-case above-Johnson bad-count |
+|---|---|
+| 8 (exhaustive) | 4 |
+| 16 (~5000 genuine leaders sampled) | **≥7** |
+
+The N=8 sampling cross-check reproduced 4 (validates the method). The **unrestricted** worst-case bad-count
+**grows with N** (4→7 as N doubles) — i.e. `O(n)/|F|`, the BCHKS `a=O(n/η⁵)` regime, **not** `O(1)/|F|`.
+This **corrects** the earlier reading: the constant `4` was *q*-independence at fixed N, **not**
+*N*-independence. Moreover the N=16 worst witness `(1,5,7,9,15)` is **5 scattered positions, not a 3-orbit
+structure** — so 2026/861's `O(1)/|F|` headline must rely on the **action-orbit / 3-position restriction
+(Conjecture 7.1)**, which the unrestricted worst-case does NOT impose. Net: the prize `O(1)` is *not* a
+property of the unrestricted above-Johnson worst case; it is exactly the content of restricting to the
+action-orbit-dominant (3-position) witnesses — which is why Conj 7.1 is the crux, and why its exact
+statement (gated PDF) is required to test the right object. Probe: `probe_soundness_Nscaling.py`.
+
 ## Honest open gap + next
 - The above-Johnson `O(1)` region at N=8 **may be a finite-size effect**; the asymptotic δ* (whether
   `L(N, δN)` stays bounded for fixed `δ∈(Johnson, capacity)` as `N→∞`) is the hard, decisive question and
