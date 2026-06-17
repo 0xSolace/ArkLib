@@ -1101,6 +1101,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A48_GeneralRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A49_DyadicRigidityEngine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Sweep_A50_SpectrumGeneratingFunction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Template
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThreeGapPositionalRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ThornerZamanS128
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.TwistedLineCollisionParseval
