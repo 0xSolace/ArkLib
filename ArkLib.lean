@@ -1083,6 +1083,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingDeflationBandAntitone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingFloorTwoPowLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzAutocorr
