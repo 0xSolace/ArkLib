@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.I031SubGaussianMaxBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031OrbitCountPartition
 
 set_option linter.style.longLine false
 set_option linter.unusedSectionVars false
@@ -48,6 +49,9 @@ prize-target form. Two facts do all the work:
   √(2·C₀·n·log q)`: the prize-target bound sits BELOW the trivial `log q` bound, with the gap
   governed by the removed `log n` (`log_sub_log_div_eq_log`). Non-vacuous improvement, not a
   relabelling.
+- `i031_M_le_logTarget` (M-LEVEL CAPSTONE) -- lifts the per-`b` bound to the literal prize object
+  `M(μ_n) = (nonzeroFreqs F).sup' _ (‖η_·‖)` via `Finset.sup'_le`: `M(μ_n) ≤ √(2·(C₀·n)·log(q/n))`,
+  conditional on the SAME open tail Prop. The full I031 deliverable at the M-level + prize-target.
 
 ## Honest scope
 
@@ -138,6 +142,31 @@ theorem i031_logTarget_le_trivial {C₀ n q : ℝ}
   have hlogn : 0 ≤ Real.log n := Real.log_nonneg hn1
   nlinarith [hC, hgap, hlogn]
 
+/-! ## 3. The M-level capstone: the actual `M(μ_n) = sup' ‖η_·‖` at the prize target -/
+
+open ArkLib.ProximityGap.I031DilationOrbitReduction
+
+/-- **The I031 union bound on the literal `M(μ_n)`, at the prize-target scale.** The prize object
+is `M(μ_n) = max_{b≠0} ‖η_b‖ = (nonzeroFreqs F).sup' _ (‖η_·‖)`. The per-`b` bound
+`i031_norm_eta_le_logTarget` holds for EVERY `b`, so `Finset.sup'_le` lifts it to the sup itself:
+
+> `M(μ_n) = (nonzeroFreqs F).sup' hne (‖η_·‖) ≤ √(2·(C₀·n)·log(q/n))`,
+
+conditional on the SAME named-open per-period sub-Gaussian tail (the BGK/Lamzouri wall). This is
+the full I031 deliverable at the M-level and the prize-target scale: the dilation-quotient collapse
+lands the maximum period magnitude at `√(n·log(q/n))` (up to the conditional constant), NOT the
+trivial `√(n·log q)`. The residual is the tail Prop = the wall; NO CORE closure is claimed. -/
+theorem i031_M_le_logTarget {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (ψ : AddChar F ℂ) (G : Finset F) {C₀ n q : ℝ}
+    (hC : 0 < C₀ * n) (hn : 0 < n) (hq : 1 < q) (hindex : n ≤ q - 1)
+    (h : SubGaussianTailBound (periodMagnitudes ψ G) (C₀ * n) ((q - 1) / n))
+    (hne : (nonzeroFreqs F).Nonempty) :
+    (nonzeroFreqs F).sup' hne (fun b => ‖eta ψ G b‖)
+      ≤ Real.sqrt (2 * (C₀ * n) * Real.log (q / n)) := by
+  apply Finset.sup'_le
+  intro b _
+  exact i031_norm_eta_le_logTarget ψ G hC hn hq hindex h b
+
 end ArkLib.ProximityGap.I031LogTargetForm
 
 /-! ## Axiom audit -/
@@ -145,3 +174,4 @@ end ArkLib.ProximityGap.I031LogTargetForm
 #print axioms ArkLib.ProximityGap.I031LogTargetForm.log_sub_log_div_eq_log
 #print axioms ArkLib.ProximityGap.I031LogTargetForm.i031_norm_eta_le_logTarget
 #print axioms ArkLib.ProximityGap.I031LogTargetForm.i031_logTarget_le_trivial
+#print axioms ArkLib.ProximityGap.I031LogTargetForm.i031_M_le_logTarget
