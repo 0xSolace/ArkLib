@@ -44,7 +44,14 @@ claim that the action-orbit (multi-round) structure removes the `n` factor of th
    genuine `O(1)/|F|` pin and a finite-size effect — needs a worst-case search at N=16/32 that pure-Python
    sampling cannot deliver (compiled/GPU enumerator or an analytic worst-case construction required).
 2. Canonical BCIKS reconstruction, not 2026/861's exact commit-phase / action-orbit definition (gated PDF).
-3. The matched radius uses `⌊·⌋`; the exact constants may depend on this normalization.
+3. **The exact constants are convention-dependent (integrity note).** The model uses matched radius `⌊·⌋`
+   AND floors the degree bound at `kdeg = max(1, k/2^L)` — so deep fold levels become *repetition codes*
+   rather than the true `RS[size, k/2^L]` (which becomes the *zero* code once `k/2^L < 1`, where the real
+   FRI stops and the verifier checks the final constant against the claimed value). The binding rounds
+   (radius < covering radius) and hence the exact values `c(½)=1, c(¼)=6` depend on these choices. What is
+   **robust** across the runs is the *shape*: bad-count `= c · q^{nr−1}`, i.e. soundness `= c/|F|` with a
+   numerator constant in the field — the `O(1)/|F|` behavior. The exact `c(ρ)` requires 2026/861's precise
+   commit-phase/degree-stop and acceptance definition (gated PDF).
 4. **It is a computation, not a proof.** A proof would derive `c(ρ)` (closed form) and the N-independence
    from the fold algebra + cyclic (action-orbit) symmetry — that derivation is the remaining open content
    (= Conj 7.1's dominance, now on a concrete computable target).
