@@ -16079,3 +16079,45 @@ no fixed multiplier K closes the gap since M/sqrt(n) grows while E/sqrt(n) flat)
 VERDICT: OBSTRUCTION. Free probability is not a milder residual; its bulk reproduces the BGK growth
 (non-vanishing higher free cumulants) and its support edge under-estimates the true wall. Completeness
 result: the last untried distributional model also reduces to / under-shoots the 25-year BGK wall.
+### SHIPPED: airtight axiom-clean conditional `prizeFloor_window_of_BGK_and_incidence` + the TWO-input correction ("prize ⟸ one BGK inequality" is FALSE) (#444, nubs, 2026-06-17)
+
+A "ship-all" multi-agent pass (map in-tree prize-chain APIs / draft+compile a Lean conditional / 2 BGK
+moonshots). Landed an axiom-clean Lean capstone AND an honest correction to the loose "prize is one BGK
+inequality away" framing.
+
+**CORRECTION (verified by tracing the in-tree bridges):** the prize δ* FLOOR does NOT close from the
+BGK sup-bound alone. `WorstCaseIncompleteSumBound ψ G M` (max_{b≠0}‖η_b‖² ≤ M) feeds ONLY the additive-
+energy lane (`addEnergy_le_of_worstCase`) — a moment quantity on the wrong side; the only in-tree
+sup→far-line-incidence route (`IncidenceDeviationCharSum.lineIncidence_le_mean_add`) pays the NAIVE
+triangle factor q·B (one B per annihilating frequency, NO inter-frequency cancellation), giving I ≤
+|G|+q·B, which at the prize budget q·ε*≈n≈|G| forces B≈0 — VACUOUS for any nonzero sup-bound (even the
+proven di Benedetto n^{1−31/2880} overshoots). So the prize floor needs TWO genuinely-separate open
+inputs: (1) the BGK sup-bound (necessary context), and (2) the OPERATIVE one — the above-Johnson far-
+line incidence `WorstCaseIncidenceBounded C δ B` (per-frequency √q·B cancellation over the annihilator
+hyperplane = BCHKS Conj 1.12), strictly stronger than (1) and NOT delivered by the energy lane. Conflating
+them is the forbidden overstatement (in-tree refutation wf_9db879bc agrees). The `=` no-escape /
+trichotomy "every route → BGK" is empirical (honestly self-labeled), not a proven meta-theorem.
+
+**SHIPPED (axiom-clean, built 8360 jobs, no errors, no sorryAx):**
+`Frontier/_PrizeFloorOfBGK.lean` — `prizeFloor_window_of_BGK_and_incidence`: for the explicit smooth-
+domain code `evalCode g n ((r−2)m)`, carrying BOTH open inputs NAMED (never discharged) — (1) `hBGK`
+sup-bound, (2) `hIncidence` above-Johnson incidence at window radius δwin — the threshold is pinned in
+the prize window:
+    δwin ≤ mcaDeltaStar (evalCode …) ε*  ≤  (1−ρ) − 1/(C·L).
+Floor from (1)+(2) via the proven `OpenCoreConditionalPin.worstCaseIncidence_pin`; CEILING from the
+PROVEN `KKH26AsymptoticCeiling.kkh26_mcaDeltaStar_le_capacity_sub_log` (unconditional). With δwin →
+1−ρ−Θ(1/log n) the two sides sandwich the prize value. axiom audit on all 3 theorems
+(`prizeFloor_of_BGK_and_incidence`, `_budget`, `_window_…`): [propext, Classical.choice, Quot.sound],
+0 sorryAx. This is the honest "the prize is exactly BCHKS Conj 1.12 (+ the BGK sup-bound) away," Lean-
+certified, no hidden gaps, no fabricated δ*.
+
+**MOONSHOTS — both REDUCE (no new bound):** (A) dyadic Lam-Leung energy transfer: confirmed the
+pre-existing partial brick |S| ∣ zeroSumCount(S,r) (char-p-universal) but no new geometric multiplicity
+bound; reduces to the deep-r energy = BGK. (B) effective Gauss-sum equidistribution (Katz/Deligne/
+Weil-II): no new bound — the genuine obstruction is exact: Weil-II over the moment sheaf M^{*r} (tame
+Kummer, Swan=0, rank ~ n^{2r-1}) loses √rank = n^{r−1/2}; effectivity needs n ≳ √p, which the thin
+β=4 prize regime (n < p^{1/4}) violates BY CONSTRUCTION. That is precisely why the 25-yr wall stands.
+
+VERDICT: NOT a closure (BGK sup-bound + BCHKS Conj 1.12 stay open — the believed-true conjecture). A
+verified conditional-reduction capstone + a precise correction of the open-input count (TWO, not one;
+the operative one is BCHKS Conj 1.12 not the bare sup-bound). File: Frontier/_PrizeFloorOfBGK.lean. CORE OPEN.
