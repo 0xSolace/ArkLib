@@ -128,7 +128,7 @@ all values `e`* and equals the kernel size — which, by the standard cyclic-gro
 `gcd(j,n)`), is exactly `gcd(b−a, n) = d`.  Hence the uncancellable cliff is `≤ d`, the *spectral*
 form of the crossing-law budget `O ≤ d` (P3), with no analytic input.
 
-This brick proves the coset-cardinality identity `card(cliff e) = card(kernel)` (the field-/
+This brick proves the coset-cardinality identity `card(cliff e) = card(kernel)` (the field- and
 group-theoretic structure); the kernel `= gcd(j,n)` identification is the cited standard cyclic
 count, and the primitive specialization `= 1` is proven sharply in `primitive_cliff_subsingleton`. -/
 theorem cliff_card_eq_kernel {n : ℕ} [NeZero n] (j e : ZMod n)
