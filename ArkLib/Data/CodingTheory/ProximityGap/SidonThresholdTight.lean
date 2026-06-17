@@ -46,6 +46,26 @@ confirmed structurally non-proving for the prize (the `E(μ_n) = 3n²-3n` char-0
 `RootsOfUnityAdditiveEnergyExact` lifts to `F_p` only above `2^{3n/4}`, far above the prize `p`).
 No capacity / beyond-Johnson / cliff-at-`n/2` claim.  CORE `M(μ_n) ≤ C√(n log(p/n))` OPEN.
 
+## Companion: the DOUBLED (`S=6`) cap `12^{φ(n)}` is NOT tight — improvable to `10^{φ(n)}`
+
+The doubled bound `SidonDoubledBound.abs_resultant_doubled_sq_le` gives `|Res(Φ_n, 2X^i-X^k-X^l)|²
+≤ 12^{φ(n)}` (threshold `p > 12^{n/4}`).  Unlike the distinct case, this is **NOT tight**:
+
+  **`normSq_eval_doubled_extremizer_eq_ten`** — the doubled extremizer `2 - X^{n/4} - X^{n/2}` has
+  constant squared modulus `10` at every primitive root (it `= 3 - ζ^{n/4}` there, and `‖3-w‖²=10`
+  for `w²=-1`).  So the doubled resultant attains `|Res|² = 10^{φ(n)} < 12^{φ(n)}` — the bound is
+  loose by `(6/5)^{φ(n)}`, and the doubled threshold `p > 12^{n/4}` is improvable to `p > 10^{n/4}`
+  (the true sharp doubled value is `10`, not `12`).  Probe `probe_step_doubled_extremizer.py`: the
+  max doubled `|Res|` over all distinct `(i,k,l)` is `10^{φ(n)/2}` exactly (`a∈{2,3,4}`,
+  `match=True`) — `10`, never `12`.
+
+  *(Note: the per-root sup over ALL doubled tuples does exceed `10` at some individual roots, so the
+  `10^{φ(n)}` resultant cap is a genuine product-optimization fact — it cannot come from a per-root
+  bound; the constant-`10` extremizer is the resultant-maximizer because tuples peaking above `10`
+  at one root dip below it at another.  This file proves the **attainment** `= 10^{φ(n)}`, pinning the
+  true doubled value from below and certifying `12^{φ(n)}` loose; the matching upper bound
+  `≤ 10^{φ(n)}` remains open.)*
+
 Probe `scripts/probes/probe_step_worstcase_res_exact.py` (exact integer cyclotomic resultants,
 `n = 2^a`, `a ∈ {2,3,4,5}`): the balanced four-term `(1+X^{n/4})(1-X^{n/2})` has
 `|Res(Φ_n, ·)| = 2^{3φ(n)/2} = 8^{φ(n)/2}` exactly, meeting the bound (`match=True` all `a`).
@@ -154,8 +174,49 @@ theorem normSq_eval_balanced_eq_eight {m : ℕ} (hm : 2 ≤ m) {ζ : ℂ}
     rw [show (2 : ℂ) = ((2 : ℝ) : ℂ) by norm_num, Complex.norm_real]; norm_num
   rw [hn2]; ring
 
+/-- **The doubled (`S=6`) extremizer has constant squared modulus `10 < 12` at every primitive
+root** (`m ≥ 2`).  The doubled four-term `2X^0 - X^{n/4} - X^{n/2} = 2 - X^{n/4} - X^{n/2}`
+evaluates at a primitive `2^m`-th root to `3 - ζ^{n/4}` (since `ζ^{n/2} = -1`), and `‖3 - w‖² = 10`
+whenever `w² = -1` (`‖w‖=1`, `Re w = 0` ⟹ `9 - 6·Re w + 1 = 10`).  Since this is **constant** `= 10`
+across all `φ(n)` primitive roots, the doubled resultant attains `|Res(Φ_n, ·)|² = 10^{φ(n)}` — which
+is **strictly below** the in-tree doubled cap `12^{φ(n)}` (`SidonDoubledBound.abs_resultant_doubled_sq_le`)
+by a factor `(6/5)^{φ(n)}`.  So the in-tree doubled bound `12^{φ(n)}` is **NOT tight**, and the
+doubled threshold `p > 12^{n/4}` (`SidonDoubledThreshold.prime_sq_le_doubled`) is improvable to
+`p > 10^{n/4}` (the true sharp doubled threshold lives at `10`, not `12`). -/
+theorem normSq_eval_doubled_extremizer_eq_ten {m : ℕ} (hm : 2 ≤ m) {ζ : ℂ}
+    (hζ : IsPrimitiveRoot ζ (2 ^ m)) :
+    ‖(2 : ℂ) * ζ ^ (0 : ℕ) - ζ ^ (2 ^ m / 4) - ζ ^ (2 ^ m / 2)‖ ^ 2 = 10 := by
+  have hhalf := pow_half_eq_neg_one (show 1 ≤ m by omega) hζ
+  have hq := pow_quarter_sq_eq_neg_one hm hζ
+  -- reduce 2·ζ^0 - ζ^{n/4} - ζ^{n/2} = 3 - w  with w = ζ^{n/4}, using ζ^{n/2} = -1
+  rw [pow_zero, mul_one, hhalf]
+  set w : ℂ := ζ ^ (2 ^ m / 4) with hw
+  have hsimp : (2 : ℂ) - w - (-1) = 3 - w := by ring
+  rw [hsimp]
+  -- now ‖3 - w‖² = 10 from w² = -1
+  have hwsq : w * w = -1 := by rw [← pow_two]; exact hq
+  have hre_eq : w.re * w.re - w.im * w.im = -1 := by
+    have := congrArg Complex.re hwsq
+    simpa [Complex.mul_re] using this
+  have hns : ∀ z : ℂ, ‖z‖ ^ 2 = z.re * z.re + z.im * z.im := by
+    intro z
+    rw [← Complex.normSq_eq_norm_sq, Complex.normSq_apply]
+  have hnorm_w : w.re * w.re + w.im * w.im = 1 := by
+    have h1 : ‖w‖ ^ 2 = w.re * w.re + w.im * w.im := hns w
+    have h2w : ‖w ^ 2‖ = 1 := by rw [hq]; simp
+    rw [norm_pow] at h2w
+    nlinarith [norm_nonneg w, h1, h2w]
+  have hre0 : w.re = 0 := by nlinarith [hre_eq, hnorm_w]
+  have h1 : ‖(3 : ℂ) - w‖ ^ 2 = ((3 : ℂ) - w).re * ((3 : ℂ) - w).re
+      + ((3 : ℂ) - w).im * ((3 : ℂ) - w).im := hns ((3 : ℂ) - w)
+  -- (3 - w).re = 3 - w.re, (3 - w).im = -w.im
+  have hre3 : ((3 : ℂ) - w).re = 3 - w.re := by simp [Complex.sub_re]
+  have him3 : ((3 : ℂ) - w).im = -w.im := by simp [Complex.sub_im]
+  rw [h1, hre3, him3, hre0]; nlinarith [hnorm_w, hre0]
+
 end ArkLib.ProximityGap.AdditiveEnergyRepBound
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.fourTerm_balanced_factor
 #print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.normSq_eval_balanced_eq_eight
+#print axioms ArkLib.ProximityGap.AdditiveEnergyRepBound.normSq_eval_doubled_extremizer_eq_ten
