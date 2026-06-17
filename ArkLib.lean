@@ -1059,6 +1059,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MultUpperAgreementBinom
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromDCSaddle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromSaddle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NegSymCountDiagonalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NonprincipalWickIsDCWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NvIReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
