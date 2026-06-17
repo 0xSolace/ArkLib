@@ -72,3 +72,10 @@ base = sp.expand(3*n*E[1] - E[2])  # 3n^2 - (3n^2-3n) = 3n
 print(f"  3 n E_1 - E_2 = {base}   (>=0 for n>=0, strict for n>=1) -> R(1)<=1 PROVEN char-0")
 
 print(f"\nVERDICT: char-0 step-law holds all landed rungs r=1..7 with positive slack: {all_ok}")
+
+
+# === HONESTY EDGE (brick 2, r=6,7 on _AvL2 E_7,E_8) ===
+# Step-law char-0 holds on the 2-power grid n=2^a for ALL landed r, but is NOT uniform in general
+# integer n at r=7: S_7(n) is NEGATIVE at the off-regime n=3 (slack septic has a real root ~3.786),
+# so E_8 <= 15 n E_7 FAILS at n=3. Holds at n=2 and for all n>=4. mu_n has n=2^a so the prize regime
+# n>=16 is inside the valid band; step_law_seven is scoped n>=4, step_law_six holds n>=2.

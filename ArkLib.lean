@@ -961,6 +961,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyThreeExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroHLLPairing
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroSlackLeadingCoeff
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroStepLawSlack
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroStepLawSlackHigh
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ClassInjectiveCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueDecayPigeonholeVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueOrbitFreeness

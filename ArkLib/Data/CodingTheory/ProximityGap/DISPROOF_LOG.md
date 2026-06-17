@@ -15324,3 +15324,33 @@ VERDICT: `WeilIndex-MultiplierWeightedFixedPoint` is FALSE (it does not even rea
 claimed exact reduction does not exist). NOT a prize closure; one of the 25 exploration conjectures
 disposed of. The exact δ* value remains the single open char-p BGK input. Probe:
 scripts/probes/probe_444_refute_weilindex_fiber.py (exact spectra; no Lean — a numerical disproof).
+
+### FREQ-SIDE REFUTED ×2 — the restriction/decoupling conjectures claim the log/constant away; both FALSE (#444 25-novel doc, nubs, 2026-06-17)
+
+Two frequency-side conjectures from the 25-novel doc (verdicts PENDING) bet that the MULTIPLICATIVE
+frequency field f(b̄)=η_b/√n — whose spectrum is the index-m μ_n-annihilator subgroup with unimodular
+Gauss-sum weights — escapes the BGK √log loss by the subgroup/curvature structure:
+* `FourierDimFreqField-RestrictionGap` [nov 9/notBGK 9]: "subgroup support ⟹ EXACT, no √-loss ⟹ L^∞
+  pinned algebraically by the n unimodular coefficients" (i.e. M(μ_n)=O(√n), NO log factor).
+* `FreqDecoupling-CosetCurvatureModuli` [nov 9/notBGK 8]: "ℓ²-decoupling forces the sup to
+  √(n·#blocks)=√(n log m) with EXACT constant 1 (not C)".
+
+REFUTED (exact spectra of M(μ_n)=max_{b≠0}|η_b|, prize regime, `probe_444_refute_freqside_restriction.py`,
+m=(p−1)/n):
+    n   β     p         m       M       M/√n   M/√(n log m)
+    8  4.00  4129       516     7.558   2.672  1.069
+   16  3.00  4129       258    11.140   2.785  1.182
+   16  4.00  65537      4096   13.838   3.459  1.199
+   16  5.00  1048609    65538  14.512   3.628  1.089
+   32  4.00  1048609    32769  22.983   4.063  1.260
+* (A) FALSE — M/√n = 2.67…4.06 and GROWS with m (n=16: β3→2.79 vs β5→3.63). The √log factor is
+  present; M is NOT O(√n). The "no √-loss" subgroup-restriction claim fails (μ_n is a *subgroup*, but
+  the equality case of Mockenhaupt–Tao on Z/m does not remove the dual log).
+* (B) FALSE — M/√(n log m) = 1.07…1.26, consistently >1 and NOT pinned (drifts 0.19). The constant is a
+  genuine C>1 (the open BGK constant; cf. swarm C≈1.31–1.51 at other params), never the claimed exact 1.
+
+VERDICT: both `FourierDimFreqField-RestrictionGap` and `FreqDecoupling-CosetCurvatureModuli` are FALSE
+— they do not escape the wall; they ARE the wall (M ~ C·√(n log m), C>1 the open BGK constant), with a
+false claim that the multiplicative-subgroup/curvature structure pins it. notBGK=9/8 disproved. NOT a
+prize closure; δ* remains the single open char-p BGK input. Probe:
+scripts/probes/probe_444_refute_freqside_restriction.py (exact spectra; no Lean — numerical disproof).
