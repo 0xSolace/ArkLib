@@ -35,6 +35,8 @@ direction onto a `deg < n` polynomial **without changing the count**, and it gen
 - `munRoot_sparse_iff_reduce` : the `μ_n`-root predicates of the two coincide on the nonzero domain.
 - `sparse_munRoot_card_le_reduce_gcd` : the headline `μ_n`-incidence bound applied to the
   **reduced** polynomial -- `#{x∈S : x≠0 ∧ (sparsePoly).IsRoot x} ≤ deg gcd(X^n-1, reduce)`.
+- `sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one` : the exact empty-stratum corollary -- if the
+  reduced direction is coprime to `X^n - 1`, then the sparse direction has **no** nonzero `μ_n` roots.
 - `sparsePolyReduce_natDegree_lt` : the reduced direction has degree `< n` when `0 < n`
   (the explicit `< n` cap the abstract gcd lacked), so the incidence is `< n`.
 
@@ -140,6 +142,21 @@ theorem sparse_munRoot_card_lt_n {n : ℕ} (hn : 0 < n) (S : Finset F) (t : Fins
         Polynomial.natDegree_le_of_dvd (gcd_dvd_right _ _) hg
     _ < n := sparsePolyReduce_natDegree_lt hn t c e
 
+/-- **Exact empty sparse stratum under reduced coprimality.** If the mod-`n` reduced sparse
+direction is coprime to `X^n - 1`, then the original high-exponent sparse direction has no nonzero
+roots on `S ⊆ μ_n`. This is the exact zero-incidence consuming form of the C71 sparse-strata gcd
+bound: exponent reduction first collapses the direction to degree `< n`, then `gcd = 1` leaves zero
+common roots. -/
+theorem sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one {n : ℕ} (S : Finset F) (t : Finset ι)
+    (c : ι → F) (e : ι → ℕ) (hg : sparsePolyReduce n t c e ≠ 0) (hSn : ∀ x ∈ S, x ^ n = 1)
+    (hcop : gcd (X ^ n - 1 : F[X]) (sparsePolyReduce n t c e) = 1) :
+    (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card = 0 := by
+  apply Nat.eq_zero_of_le_zero
+  calc (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card
+      ≤ (gcd (X ^ n - 1 : F[X]) (sparsePolyReduce n t c e)).natDegree :=
+        sparse_munRoot_card_le_reduce_gcd S t c e hg hSn
+    _ = 0 := by simp [hcop]
+
 end ArkLib.ProximityGap.C71SparseStrataReduce
 
 /-! ## Axiom audit -/
@@ -148,3 +165,4 @@ end ArkLib.ProximityGap.C71SparseStrataReduce
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce_natDegree_lt
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_le_reduce_gcd
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_lt_n
+#print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one
