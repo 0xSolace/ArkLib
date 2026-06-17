@@ -957,6 +957,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AlignableLePinnedMaxMult
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AlignedAmalgamation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AntipodalSigmaUnique
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ArchimedeanPhaseRealDFT
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ArisingDescentVacuityNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.B1XkIncidenceForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BGKMultiplicativeInput
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BadScalarsEqPinned

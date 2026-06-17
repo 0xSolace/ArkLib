@@ -15449,3 +15449,27 @@ a hard refutation of the energy-transfer route — but it removes the empirical 
 "flat" framing: the n→2^30 / r→89 limit of the peak constant is exactly the open BGK input, and the
 measurable trend is rising, not flat. Probes: scripts/probes/probe_444_keff_creep_n128.py,
 probe_444_keff_rprofile_crosscheck.py (exact char-sums; no Lean).
+
+## ARISING-DESCENT VACUITY (#444, sol, 2026-06-17): the fold-transport/descent lever is VACUOUS on the primitive (odd-difference) half of directions — CONSTRAINT LEMMA for the descent route
+LANE: the smooth-domain agreement/orbit descent (Q1ArisingFamilyDescent: agreement_deploy_eq_d_mul_base,
+orbitSize_descent) reduces a deployment pencil z^a + alpha z^b on mu_n to a primitive base on mu_{n/d}
+ONLY when d = gcd(a,b,n) > 1. The three Chai-Fan §4 arising rate-1/2 families all have common factor
+d = k > 1, so the descent controls them from a small base panel. NATURAL HOPE: extend the descent to
+control ALL directions => reduce CORE to a base-scale computation. REFUTED as VACUOUS on the hard half.
+PROBE (probe_descent_vacuity_primitive.py, exact Nat, n=2^m m=2..8): (1) d=1 descent is the IDENTITY
+(orbitSize n a b = orbitSize (n/1)(a/1)(b/1), trivially). (2) For n=2^m, gcd(b-a,n)=1 <=> (b-a) ODD;
+the odd-difference (primitive) directions are EXACTLY half (-> 1/2 asymptotically: n=256 gives 128/255).
+(3) Every primitive direction carries the FULL orbit group: orbitSize n a b = n/gcd(b-a,n) = n (the
+maximal mu_n-action, the MOST bad-challenge orbits, the hard soundness case). FORMALIZED axiom-clean in
+Frontier/ArisingDescentVacuityNoGo.lean (4 thms, [propext, Classical.choice, Quot.sound], in-graph build
+8315 jobs EXIT 0): orbitSize_descent_one (d=1 vacuous), primitive_diff_iff_odd (gcd(d,2^m)=1 <=> d odd),
+primitive_dir_orbitSize_eq_n (primitive => orbitSize = n), arising_descent_vacuous_on_odd (packaged
+no-go: odd diff => full orbit AND descent is identity). MECHANISM: the descent reduction factor IS the
+exponent gcd; on a coprime/primitive direction it is 1, so the substitution z->z^1 is trivial. CONSEQUENCE
+for the route: the fold-transport/descent lever cannot reduce the primitive (odd-difference) half — which
+carries the full orbit structure (the hard case) — so any descent-only proof of soundness misses exactly
+the directions where the beyond-Johnson content lives. The descent is a structural identity on the
+imprimitive (arising-family) directions ONLY; the per-direction BGK wall on the primitive half is untouched.
+EXTENDS Q1ArisingFamilyDescent.orbitSize_descent (the proven reduction) by pinning its inapplicability.
+NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit.
+CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
