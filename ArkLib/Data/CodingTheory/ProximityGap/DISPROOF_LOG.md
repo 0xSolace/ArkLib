@@ -17267,3 +17267,41 @@ Probe: `scripts/probes/rust/probe_wfH1_restriction_supgap.rs` (exact int, reprod
 **Verdict: VACUOUS-AT-PRIZE for the sup; nontrivial content REDUCES-TO-FENCE F1/F12. No prize
 gain. The floor stays OPEN, blocked on the BGK/Paley archimedean conjugate-spread a spatial-average
 restriction estimate over a curvature-free frequency set cannot supply.** Survivor: NONE.
+
+## Lane I2 (#444): exponent pairs / van der Corput A-B / Bombieri-Iwaniec — REDUCES-TO-FENCE F1 (+F2/F9 aspect-ratio, F0 conservation)
+
+**Claim attacked.** Parameterize `eta_b = Sum_{x in mu_n} e_p(bx) = Sum_{j=0}^{n-1} e(f_b(j)/p)`,
+`f_b(j) = (b*g^{((p-1)/n)j}) mod p` — a van der Corput sum of length `N=n`, height `T=p=n^4`. Does the
+exponent-pair / van der Corput second-derivative test / Bombieri-Iwaniec method (Graham-Kolesnik; Huxley;
+Bombieri-Iwaniec zetaV) give a sub-Johnson bound on the *individual* sup `M(n)`?
+
+**Why it dies — three independent exact-integer kills (`probe_wfH_i2_exponent_pair.py`, exact Fraction/F_p):**
+1. **(T1) NO CURVATURE.** B-process / exponent-pair derivative tests need a smooth real phase with one-signed
+   curvature `f >= lambda > 0` and monomial growth `f^{(r+1)} ~ T x^{-s-r}`. The discrete 2nd difference of
+   `f_b(j)/p` is **perfectly sign-balanced** (+8/-8, +16/-16, +32/-32 at n=16/32/64), mean |.|~0.16-0.31 =
+   **O(1)-equidistributed, NOT monomial 1/n^2~4e-3..2e-4**; `f`-prime has monotonicity violations at exactly
+   HALF the points. The multiplicative phase is a pseudorandom permutation of F_p — B-process structurally void.
+2. **(T2) BEST EXPONENT-PAIR DOES NOT CROSS.** n-exponent `e(k,l)=k(beta-1)+l`; at beta=4 with the genuine hull
+   constraint `l >= 1-k` (lower-left frontier = chord (0,1)-(1/2,1/2)), `e >= 2k+1 >= 1`. Best pairs:
+   vdC(1/2,1/2)->n^2(=Weil); Bourgain(13/84,55/84)->n^1.12; trivial(0,1)->n. ALL >= n^1 >> Johnson n^0.5.
+3. **(T3) A-PROCESS = ADDITIVE ENERGY (F1).** Weyl differencing inner sum `Sum_j e_p(b(h^t-1)h^j)` runs over the
+   difference set `b(h^t-1)*mu_n`, verified EXACTLY to be a DILATE of mu_n (subgroup coset-sum) for all shifts t.
+   One differencing step returns the SAME family = a 2nd moment / shift-correlation = additive energy = fence F1.
+   (Bombieri-Iwaniec is intrinsically an L^2-mean-square method, not a pointwise sup — double mismatch.)
+4. **ASPECT-RATIO VACUITY.** Exponent-pair theory non-trivial only for `T^{1/2} << N` (Graham-Kolesnik). Here
+   `N=n < sqrt(T)=n^2` at beta=4: strictly below the lower edge of the regime — same sqrt(p)=n^2 0-dim mu_n
+   mismatch that voids Weil (F2/F9), the structural origin of the Burgess barrier.
+
+**Literature.** Graham-Kolesnik *Van der Corput Method of Exponential Sums*; Huxley *Area, Lattice Points and
+Exponential Sums*; finite-field vdC analogue arXiv:2312.02525 (targets ADDITIVE POLYNOMIAL phases, reduces to
+2nd-moment shift-correlations — confirms F1); toward optimal exponent pairs arXiv:2306.05599; LP over exponent
+pairs arXiv:1402.1993. All require smooth-phase curvature / aspect sqrt(T)<<N — neither holds for the dyadic
+Gauss period. Matches prior C11 (Burgess/Korobov depth-r) NO-GAIN and the Bourgain-arsenal survey.
+
+**Lean (axiom-clean, real lake build OK, [propext,Classical.choice,Quot.sound], 0 sorryAx):**
+`Frontier/_wfHi2_ExponentPairNoCrossing.lean` — `vdC_n_exponent_ge_one`, `vdC_n_exponent_strict_above_johnson`,
+`aspect_ratio_below_regime`, `vdC_output_above_prize_floor`. Probe `scripts/probes/probe_wfH_i2_exponent_pair.py`.
+
+**Verdict: REDUCES-TO-FENCE F1 (A-process = additive energy), with F2/F9 (aspect-ratio vacuity) and F0
+conservation. VACUOUS-AT-PRIZE by curvature + aspect. No new handle on the sup. Floor OPEN = the BGK/Paley
+wall.** Survivor: NONE.
