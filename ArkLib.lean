@@ -2361,6 +2361,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdTight
 import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodPowerCount
+import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodPowerEvenFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodZeroSumBridge
 import ArkLib.Data.CodingTheory.ProximityGap.SignedWalkMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SignedZeroSumCountEven
