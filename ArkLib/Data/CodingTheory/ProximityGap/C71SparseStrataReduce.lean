@@ -35,8 +35,10 @@ direction onto a `deg < n` polynomial **without changing the count**, and it gen
 - `munRoot_sparse_iff_reduce` : the `μ_n`-root predicates of the two coincide on the nonzero domain.
 - `sparse_munRoot_card_le_reduce_gcd` : the headline `μ_n`-incidence bound applied to the
   **reduced** polynomial -- `#{x∈S : x≠0 ∧ (sparsePoly).IsRoot x} ≤ deg gcd(X^n-1, reduce)`.
-- `sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one` : the exact empty-stratum corollary -- if the
-  reduced direction is coprime to `X^n - 1`, then the sparse direction has **no** nonzero `μ_n` roots.
+- `sparse_munRoot_card_le_reduce_natDegree` : the same incidence is bounded directly by
+  `natDegree (sparsePolyReduce n t c e)`, the form consumed by finite-soundness estimates.
+- `sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one` : exact empty-stratum corollary. If the
+  reduced direction is coprime to `X^n - 1`, the sparse direction has no nonzero `μ_n` roots.
 - `sparsePolyReduce_natDegree_lt` : the reduced direction has degree `< n` when `0 < n`
   (the explicit `< n` cap the abstract gcd lacked), so the incidence is `< n`.
 
@@ -61,6 +63,7 @@ open Finset Polynomial
 
 set_option linter.unusedSectionVars false
 set_option linter.unusedDecidableInType false
+set_option linter.style.longLine false
 
 namespace ArkLib.ProximityGap.C71SparseStrataReduce
 
@@ -128,18 +131,29 @@ theorem sparse_munRoot_card_le_reduce_gcd {n : ℕ} (S : Finset F) (t : Finset �
   rw [hfilter]
   exact ArkLib.ProximityGap.C71SparseStrataIncidence.munRoot_card_le_gcd_natDegree S hg hSn
 
-/-- **The punchline usable cap: the sparse-strata `μ_n`-incidence is `< n`.** Composing the headline
-gcd bound with `deg gcd(X^n-1, reduce) ≤ deg reduce < n` (the gcd divides the nonzero reduced
-polynomial, whose degree is `< n` by `sparsePolyReduce_natDegree_lt`). This is the explicit,
-closed `< n` count the abstract `deg gcd` did not expose -- the form a soundness bridge consumes. -/
-theorem sparse_munRoot_card_lt_n {n : ℕ} (hn : 0 < n) (S : Finset F) (t : Finset ι) (c : ι → F)
+/-- **Direct reduced-degree incidence cap.** The sparse-strata `μ_n`-incidence is bounded by the
+degree of the mod-`n` reduced direction itself. This packages the gcd-count theorem with the
+elementary `gcd ∣ reduce` degree bound, removing the abstract gcd from the statement that downstream
+Conjecture-7.1 soundness estimates consume. Requires the reduced polynomial be nonzero. -/
+theorem sparse_munRoot_card_le_reduce_natDegree {n : ℕ} (S : Finset F) (t : Finset ι) (c : ι → F)
     (e : ι → ℕ) (hg : sparsePolyReduce n t c e ≠ 0) (hSn : ∀ x ∈ S, x ^ n = 1) :
-    (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card < n := by
+    (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card
+      ≤ (sparsePolyReduce n t c e).natDegree := by
   calc (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card
       ≤ (gcd (X ^ n - 1 : F[X]) (sparsePolyReduce n t c e)).natDegree :=
         sparse_munRoot_card_le_reduce_gcd S t c e hg hSn
     _ ≤ (sparsePolyReduce n t c e).natDegree :=
         Polynomial.natDegree_le_of_dvd (gcd_dvd_right _ _) hg
+
+/-- **The punchline usable cap: the sparse-strata `μ_n`-incidence is `< n`.** Composing the named
+reduced-degree cap with `sparsePolyReduce_natDegree_lt`. This is the explicit, closed `< n` count
+the abstract `deg gcd` did not expose -- the form a soundness bridge consumes. -/
+theorem sparse_munRoot_card_lt_n {n : ℕ} (hn : 0 < n) (S : Finset F) (t : Finset ι) (c : ι → F)
+    (e : ι → ℕ) (hg : sparsePolyReduce n t c e ≠ 0) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card < n := by
+  calc (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card
+      ≤ (sparsePolyReduce n t c e).natDegree :=
+        sparse_munRoot_card_le_reduce_natDegree S t c e hg hSn
     _ < n := sparsePolyReduce_natDegree_lt hn t c e
 
 /-- **Exact empty sparse stratum under reduced coprimality.** If the mod-`n` reduced sparse
@@ -164,5 +178,6 @@ end ArkLib.ProximityGap.C71SparseStrataReduce
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.munRoot_sparse_iff_reduce
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce_natDegree_lt
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_le_reduce_gcd
+#print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_le_reduce_natDegree
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_lt_n
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_eq_zero_of_reduce_gcd_eq_one
