@@ -16412,3 +16412,38 @@ exactly which "ineffectivity" is real and which is fabricated:
 prior determinability verdict with the ineffective-bound != ineffective-value separation and the
 widening-spread L2 datum. Probe committed; no Lean brick (the content is metamathematical + numerical, and
 the in-tree `mcaDeltaStar` finite-sSup structure already certifies L1). CORE remains the BGK wall.
+
+---
+
+## [N3] REFUTED candidate impossibility: "no moment/energy proof can prove the floor" (#407, 2026-06-17)
+
+**Candidate (speculative meta-theorem, negative direction):** combine `_MomentLadderExceedsPrize`
+(moment NECESSITY: any single-moment route gives `(q·E_r)^{1/2r} >= n`) with the "deep moments
+inflate" fact to claim a THEOREM that NO moment/energy proof can establish `M <= C*sqrt(n log q)`.
+
+**Verdict: REFUTED.** No such impossibility theorem exists. The deep-moment inflation is ENTIRELY
+the DC (b=0, principal-character) term, and the DC-subtracted (reduced) energy route escapes it.
+
+**Rigorous content (Lean, axiom-clean `[propext, Classical.choice, Quot.sound]`, 0 sorryAx — file
+`Frontier/_N3MomentNotDeadDCEscape.lean`, probe `scripts/probes/probe_n3_dc_escape.py`):**
+- The TRUE impossibilities are narrow and already in-tree: (i) the FULL-energy bound `E_r<=Wick`
+  is provably FALSE at deep r (`DCEnergyEssential.not_gaussianEnergyBound_of_card_pow_gt`: DC forces
+  `E_r>=n^{2r}/q`, exceeds Wick; crossover `r*=6` at `n=2^30`); (ii) no SINGLE-depth moment method
+  beats `sqrt(S)` (`MetaTheoremSecondOrderFloor.momentDepth_method_floor`, spike obstruction).
+- They do NOT combine into "no moment proof works", because `dc_subtraction_removes_inflation`
+  proves the forced inflation `E_r >= n^{2r}/q` cancels EXACTLY: the reduced energy
+  `~E_r = E_r - n^{2r}/q` carries only the content-free floor `~E_r >= 0`.
+- `reduced_moment_bound_below_card` / `moment_energy_method_not_provably_dead`: at the prize depth
+  `r >= ln q`, IF the reduced hypothesis `DCEnergyBound G r` (= `A_r<=Wick` = BGK, measured-true at
+  every prize prime) holds, then `||eta_b||^2 <= 2e*|G|*r < |G|^2` whenever `2e*r < |G|` (always at
+  the prize: `|G|=2^30`, `r~110`, `2e*r~598`). So a moment/energy proof on the REDUCED energy
+  provably reaches BELOW the trivial bound `n` — the route is ALIVE.
+- Numerics (probe): `M^2 <= 2e*n*r ≈ 6.4e11`, vs `n^2 ≈ 1.15e18`; `M^2/n^2 ≈ 5.6e-7`;
+  `M <= 24.5*sqrt(n)` = the prize-floor shape.
+
+**Net:** the negative angle does NOT yield an impossibility. The residual is genuinely the BGK/Paley
+char-p energy transfer `A_r <= Wick`, NOT a moment-method dead end. This SHARPENS (does not close)
+the picture: the moment method is the CORRECT route, blocked only on its open BGK input.
+
+**Status:** refuted (candidate impossibility is false); the DC-escape separation is the rigorous
+machine-checked content. CORE remains the BGK wall.
