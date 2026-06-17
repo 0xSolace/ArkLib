@@ -122,3 +122,28 @@ The full PDF (Chai–Fan, IoTeX, 29 Apr 2026, 48pp) was obtained and read (pp.1�
 - Therefore the prize issue should **NOT** be marked solved: a closed, zero-loss, complete pin of δ\* in the
   prize regime does not exist (the resolution that exists is the *with-loss, deployment* theorem, and it is
   someone else's published result, not an in-repo proof).
+
+## §10 of the paper CONFIRMS the open frontier = this campaign's character-sum route (authoritative)
+Reading §7–§10 settles the scope definitively, from the paper's own words:
+- **§10 "Beyond the CA framework":** every published FRI soundness proof factors through a CA lemma; the
+  zero-loss / sub-2× route requires a NON-CA proof, with candidates named as *"a direct algebraic analysis
+  of the fold map on multiplicative subgroups, or character-sum techniques exploiting that L=⟨ω⟩ is a
+  cyclic group; cross-correlation distributions from the Helleseth–Golomb–Gong tradition and Weil-type
+  bounds on incomplete character sums."* — **this is exactly the machinery of our campaign** (BGK/Paley
+  √-cancellation, Gauss-period/metaplectic, the 71-theorem character-sum sweep). The authors' own
+  action-orbit companion (2026/861) has only a TOY two-round result at (n₀,k₀)=(32,8) + an open "one-orbit
+  conjecture" (= the 3-position dominance I independently rediscovered). *"Whether FRI admits a non-CA
+  soundness proof with overhead <2× at deployment scale is a key remaining question."*
+- **§7/§8 structural track (OP2 list-size):** the FRI-relevant worst-case list size `M_true` at codimension
+  `c=Θ(n)` is conjectured `O(1)` (Conjecture 41, Open-Set Rank Lemma, `M_true ≤ ⌊(2D−1)/c⌋`), empirically
+  verified to n=40 but UNPROVEN; small-`p` counterexamples exist (triangle c=2 n=8 p=113; tetrahedron c=3
+  n=12 p=61); the natural higher-moment Markov route is "structurally blocked." Our campaign's list-size
+  transition findings probe exactly this object.
+
+**Definitive bottom line.** The paper itself certifies: (a) deployment above-Johnson soundness = SOLVED
+(lossy, 2×, this paper, key lemma Lean-verified); (b) the grand **zero-loss δ\* pin (OP1)** and the
+worst-case **list-size (OP2)** are **OPEN**, and the route to them is precisely the character-sum /
+cross-correlation / cyclic-orbit mathematics this campaign has been mapping (and which reduces to the open
+BGK/Paley √-cancellation wall + the open one-orbit/3-position dominance). So the grand prize is **not
+closed**, by the authoritative source's own statement — and our campaign's body of work is exactly the
+open frontier's toolkit, corroborated independently.
