@@ -1041,6 +1041,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LargeSieveParsevalCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LineBallSingleCodewordEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ListAtBinomialExtremalTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LiuZhouSplitRecursion
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LogRatioTowerBoundedIncrement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MultUpperAgreementBinom
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NAShaoFloorBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.NearRamanujanFromDCSaddle
