@@ -17305,3 +17305,66 @@ Gauss period. Matches prior C11 (Burgess/Korobov depth-r) NO-GAIN and the Bourga
 **Verdict: REDUCES-TO-FENCE F1 (A-process = additive energy), with F2/F9 (aspect-ratio vacuity) and F0
 conservation. VACUOUS-AT-PRIZE by curvature + aspect. No new handle on the sup. Floor OPEN = the BGK/Paley
 wall.** Survivor: NONE.
+
+---
+
+## H3 — subconvexity / special-L-value route: REDUCES-TO-FENCE F2/F0 (2026-06-17)
+
+**Lane H3 question.** Is `M(n)=max_b|eta_b|` a special value / moment of an L-function whose
+SUBCONVEXITY bound (Burgess / Conrey-Iwaniec / Michel-Venkatesh / Petrow-Young Weyl) supplies the
+prize `sqrt(log)` saving over Johnson? **Answer: NO — it reduces to the wall.** The prize object is
+EXACTLY a `sqrt(q)`-weighted sum of ROOT NUMBERS of the Dirichlet L-functions whose characters are
+trivial on `mu_n`, and subconvexity bounds the L-VALUE SIZE while the entire prize content sits in
+the modulus-1 root-number PHASE, which `|L|`-bounds never touch.
+
+**The exact L-function dictionary (probe-verified to <1e-13, exact over Q(zeta)).** The characters
+trivial on `mu_n` form a group `X_m` of order `m=(p-1)/n=q/n`. Fourier inversion of the coset
+indicator gives, EXACTLY:
+  `eta_b = (1/m) sum_{chi in X_m} conj(chi)(b) tau(chi)`,  `|tau(chi)| = sqrt(q)` EXACT.
+Writing `tau(chi)=sqrt(q)*eps(chi)`, `|eps(chi)|=1` (root number = `tau/sqrt q`, the functional-eqn
+sign):  `eta_b = (sqrt q / m) * sum_{chi in X_m} conj(chi)(b) eps(chi)`.
+
+**Why subconvexity is the wrong tool (structural no-go).**
+1. **Modulus is pinned, content is the phase.** `|tau(chi)|=sqrt(q)` EXACT (`gaussSum_mul_gaussSum_eq_card`)
+   — the FLAT spectrum. Subconvexity improves `|L(1/2,chi)|` (the analytic SIZE); after dividing out
+   the modulus this is ZERO information. The cancellation `eta_b` needs is among the m unit-modulus
+   PHASES `conj(chi)(b) eps(chi)`. Worst-`b` phase coherence = the BGK/Paley wall (fence F0).
+2. **Modulus-only bound = vacuous completion.** Triangle on the root-number sum gives
+   `|eta_b| <= (sqrt q/m)*m = sqrt q` = the Weil/Polya completion bound, VACUOUS at `n<sqrt q` (F2).
+   Probe: worst-`b` phase sum `|sum conj(chi)(b) eps(chi)|` lives in `[sqrt m, m]`; `sqrt m` = full
+   sqrt-cancellation -> `|eta|~sqrt n` (Johnson/RMS); the prize wants `sqrt-cancel up to sqrt(log m)`.
+3. **Family-conductor MISMATCH (dual of `n<sqrt q`).** Garcia-Young "Asymptotic second moment of
+   Dirichlet L-functions along a thin coset" (Forum Math Sigma 13 (2025) e83) is the ONLY published
+   machinery for exactly this family; it needs the thin family size `d in [q^{1/3}, q^{1/2}]`. Our
+   family `X_m` has size `m=q/n=q^{3/4}` at beta=4 (probe-confirmed), ABOVE `q^{1/2}` — too thick,
+   the mirror image of `n<sqrt q`.
+4. **Closest "sum of root numbers" result shows BIAS, not cancellation.** Dunn-Radziwill "Bias in
+   cubic Gauss sums: Patterson's conjecture" (arXiv:2109.07463): root numbers summed over a family
+   grow like `X^{5/6}` (Kummer-Patterson bias), NOT `sqrt`-cancellation; it is an AVERAGE over
+   conductor (not a fixed-`p` sup) and conditional on GRH. Even the average analog fails to give clean
+   square-root cancellation, let alone the worst-`b` sup.
+5. **Subsumes the prior amplification no-go.** `_AmplificationGainOne.lean` already killed
+   Iwaniec-Sarnak QUE amplification on the flat eta-spectrum (gain identically 1). H3 is the dual
+   (L-value-size) version: the same flatness `|tau|=sqrt q` that makes the amplifier vacuous makes
+   subconvexity vacuous — both can only certify the RMS/Parseval `sqrt n`, never the `L^infty` excess.
+
+**Literature (cited, applicability verdict at prize regime).**
+- Petrow-Young, "The Weyl bound for Dirichlet L-functions of cube-free conductor" (Annals 192 (2020)
+  arXiv:1811.02452): `L(1/2+it,chi) << (q(1+|t|))^{1/6+eps}`. Bounds `|L|`-SIZE only. As a short
+  character-sum saving its Burgess-type range is `N>q^{1/4}` (Burgess) improved to `~q^{1/6}` (Weyl)
+  for the MOMENT; our subgroup has size `n=q^{1/4}` AT the Burgess endpoint, where the in-tree
+  Burgess exponent-infimum = 1 at beta=4 (vanishes). VACUOUS for the worst-`b` sup.
+- Garcia-Young (2025), thin-coset second moment: family too thick (`m=q^{3/4}>q^{1/2}`). Inapplicable.
+- Dunn-Radziwill (arXiv:2109.07463), root-number sums: BIAS not cancellation; average not sup; GRH.
+- Michel-Venkatesh "The subconvexity problem for GL2" (PMIHES 111 (2010)): all subconvexity is an
+  `|L|`-SIZE statement; none controls the root-number phase or a fixed-modulus sup over a thick family.
+
+**Lean (axiom-clean, real `lake build` OK, [propext,Classical.choice,Quot.sound], 0 sorryAx):**
+`Frontier/_wfH3_subconvexity_rootnumber_ceiling.lean` — `rootNumberSum_modulus_ceiling` (modulus-only
+triangle ceiling = completion value), `modulus_ceiling_attained` (coherent phase saturates it, so no
+modulus-only bound beats it), `subconvexity_route_caps_at_completion`. Probe (exact):
+`scripts/probes/probe_wfH3_rootnumber_ceiling.py`.
+
+**Verdict: REDUCES-TO-FENCE F2 (completion/Weil vacuity, `n<sqrt q`) + F0 (the residual phase
+cancellation is the worst-`b` rare-event BGK/Paley wall, invisible to L-value-size bounds). Also
+VACUOUS-AT-PRIZE via the thin-coset family-conductor mismatch.** Survivor: NONE.
