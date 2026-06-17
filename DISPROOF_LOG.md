@@ -2,6 +2,39 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## the POINTWISE-AUTOCORRELATION self-consistency ceiling is TRIVIAL (linear n) — the triangle inequality discards exactly the difference-set cancellation that IS the wall (2026-06-17)
+
+Lens: the just-landed pointwise identity `‖η_b‖² = Σ_{ζ∈μ_n} η_{b(ζ-1)}` (EtaPointwiseAutocorr.lean,
+`eta_normSq_eq_sum_groupShift`, axiom-clean, d2983e9e4). It re-expresses the single-frequency worst
+period² on the difference-set spectrum `b·(μ_n−1)`. NATURAL next move (tested here, rule 2 probe-first):
+close CORE by bounding the shift sum with the triangle inequality. With `M = max_b|η_b|`, the ζ=1 term
+is `η_0 = n` and each of the `n−1` nontrivial shift periods is `≤ M`, giving the SELF-CONSISTENCY
+quadratic `M² ≤ n + (n−1)·M`, hence the ceiling `M ≤ ((n−1)+√((n−1)²+4n))/2`.
+
+PROBE (`scripts/probes/probe_eta_autocorr_selfconsist.py`, EXACT over ℂ, PROPER thin μ_n only,
+m=(p−1)/n ≥ 2, NEVER n=q−1, incl Fermat 257/65537):
+| n  | p     | M_actual | √n   | M/√n  | selfconsist_ceil | ceil/√n |
+|----|-------|----------|------|-------|------------------|---------|
+| 8  | 257   | 6.10     | 2.83 | 2.16  | 8.000            | 2.83    |
+| 16 | 257   | 9.23     | 4.00 | 2.31  | 16.000           | 4.00    |
+| 32 | 641   | 15.09    | 5.66 | 2.67  | 32.000           | 5.66    |
+| 16 | 65537 | 13.84    | 4.00 | 3.46  | 16.000           | 4.00    |
+| 32 | 65537 | 25.21    | 5.66 | 4.46  | 32.000           | 5.66    |
+
+VERDICT (WALL / constraint lemma): the self-consistency ceiling is EXACTLY `n` to leading order
+(the quadratic root `((n−1)+√((n−1)²+4n))/2 → n`), i.e. LINEAR in n — it recovers only the trivial
+`|η_b| ≤ n` and is √n times weaker than the actual `M ≈ 2-4·√n`. MECHANISM: the triangle inequality
+assumes all `n−1` nontrivial difference-set shifts `η_{b(ζ-1)}` ALIGN at modulus M (zero cancellation
+among them), which is exactly the worst possible case. It is therefore thickness-INVARIANT (no use of
+μ_n's thinness beyond the group reindex) and discards 100% of the cancellation. CONSEQUENCE (localizes
+the wall, does NOT close it): the open content of the pointwise identity is ENTIRELY the
+**cancellation among the n−1 nontrivial shift periods** `Σ_{ζ≠1} η_{b(ζ-1)}` — exactly the BGK/Paley
+sup-norm wall, now pinned to the difference-set shift spectrum. Any CORE proof routing through the
+pointwise identity MUST bound the shift sum WITH its cancellation (not term-by-term). CORE OPEN. The
+identity is real and useful (it is the correct difference-set fixed-point form); the term-by-term
+closure is the dead lane. Probe Python-only (axiom-clean trivially); the identity it tests is the
+Lean-proven `eta_normSq_eq_sum_groupShift`.
+
 ## eta-COSET-LOCALIZATION is THINNESS-ESSENTIAL (rule-3 PASS) -- the FIRST structural reduction in the map that passes the thin gate; corroborates in-tree EtaCosetSplit / coset reduction (2026-06-15)
 
 Lens: the bulk-correlation localization opened by the ILO entry (852e0fa27: thin mu_n sup-norm is LARGE,
