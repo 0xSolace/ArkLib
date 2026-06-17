@@ -1,5 +1,47 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — ANGLE A12 "L^q Croot-Sisask almost-periodicity (GROWING q) -> sup control of M" OBSTRUCTION (probe_wfA12_lp_croot_sisask.rs, _wfA12_lp_croot_sisask_threshold.lean)
+
+ANGLE (manifesto A12, Croot-Sisask/Kelley-Meka-PFR of the bad locus): the prior A7 refutation tested
+ONLY the L^2 reading of Croot-Sisask (empty L^2 almost-period set). A12 attacks the FRESH seam: the
+*strong* L^q form of CS for GROWING q -- the form Sanders' Bogolyubov-Ruzsa and the Kelley-Meka 3AP
+argument actually use -- since as q->inf the L^q norm -> sup, this is the only CS form that could
+reach the rare-event peak M (the prize gap) that the L^2 form is structurally blind to.
+
+NEW QUANTITY (closed form, prize-faithful): the CS L^q guarantee |T|/p >= exp(-C q eps^{-2} ln(1/alpha))
+yields >=1 almost-period iff q <= ln p / ln(1/alpha). At the prize regime p=n^beta, alpha=n/p=n^{1-beta},
+so ln(1/alpha)=(beta-1)ln n, ln p=beta ln n, giving the THRESHOLD (favorable eps=C=1)
+    q* = beta/(beta-1).
+At beta=4 this is q* = 4/3 < 2: CS is vacuous ALREADY BELOW L^2, never reaching the q->inf sup regime.
+
+PROBE (prize-faithful: p PRIME, p=1 mod n, mu_n PROPER, beta=4, NEVER n=p-1), n in {16,32,64}:
+  - p = 100049 / 1048609 / 16777601 (beta = 4.15 / 4.00 / 4.00), alpha = 2^{-12.6/-15/-18}.
+  - qmax_guarantee = ln p / ln(1/alpha) = 1.32, 1.33, 1.33 (FLAT, prime-independent) -- matches q*=beta/(beta-1).
+  - CS guarantee log-count ln|T| at q=2,4,8,16,32,64 = (-6, -23, -58, -128, -268, -548) at n=16, down to
+    (-8, -33, -83, -183, -383, -782) at n=64 -- the guaranteed almost-period count is EXPONENTIALLY < 1
+    at every q >= 2. The MEASURED L^q almost-period set is empty (|T_0.5|/p = 0 at every q >= 2; the few
+    high-q survivors are sampling artifacts).
+  - ||f||_q/M climbs (0.125 -> 0.771 at n=64, q=2..64): you WOULD need q->inf to see the peak, but the CS
+    guarantee dies at q ~ 1.33, so the regime that sees M is exactly the regime where CS is empty.
+  - BAD-LOCUS coset count (PFR/KM "<=n cosets past Johnson" target): #cosets |f|>=M/2 = 278,120,8 for
+    n=16,32,64 (SHRINKS in n, hits <=n only at n=64) and #cosets |f|>=0.9M = 0 EVERY n. So the near-peak
+    locus is a THIN, isolated, dilation-fixed set -- the peak is achieved on few cosets, which is the WRONG
+    direction for the prize (rigid isolation, not smallness of M).
+
+VERDICT = OBSTRUCTION (axiom-clean). A12 is STRICTLY STRONGER than A7: A7 ruled out one norm (L^2);
+A12 rules out the ENTIRE L^q family at once via the closed-form threshold q*=beta/(beta-1), and pins the
+exact crossover: q* >= 2 <=> beta <= 2 (cs_beta_for_L2), i.e. CS reaches L^2 only when the field is
+SUB-PRIZE dense (p <= n^2), NEVER at beta=4. The q->inf sup regime that would force M down is unreachable
+for every beta > 1. WHY (conservation law, refined): Croot-Sisask's almost-period count is governed by
+the density alpha through ln(1/alpha); at alpha = 2^{-128} (prize) the count budget exp(-q ln(1/alpha)) is
+exhausted before q reaches even 2, so NO L^q norm with q>=2 -- hence no approximation to the sup -- carries
+any CS guarantee. The post-2020 strong L^q upgrade does not change the verdict: it is vacuous one notch
+earlier than the L^2 form A7 killed.
+
+LEAN (axiom-clean [propext,Classical.choice,Quot.sound], real lake build):
+_wfA12_lp_croot_sisask_threshold.lean -- cs_threshold_eq (q*=beta/(beta-1)), cs_guarantee_empty
+(q>q* => guarantee < 1 period), cs_threshold_lt_two (q*=4/3<2 at beta=4), cs_beta_for_L2
+(q*>=2 <=> beta<=2), cs_sup_unreachable (every q>=2 empty at prize numbers). Probe: probe_wfA12_lp_croot_sisask.rs.
 
 IDEA [DSAR-BMT] (#444, route: Bernstein–Markov–Turán on η). `η_b = Σ_{x∈μ_n} e_p(bx)` is a SPARSE
 trig polynomial: as `P(z)=Σ_{x∈μ_n} z^x` it has exactly `n` nonzero Fourier coefficients (the indicator
