@@ -174,7 +174,73 @@ each re-enters the wall — which sharpens exactly what an escape would need.
 
 ## Adversarial refutation verdicts
 
-*(Filled from workflow `wzzcj1p22` — 25 × 3 lenses. Pending; see the next commit / the #444 comment.)*
+**RESULT: all 25 reduced to the BGK wall — `{REDUCES-TO-BGK: 25}`.** Triple-killed across the three lenses:
+- **reduce-to-BGK lens: 25/25 REDUCES-TO-BGK** (every conjecture's pinning device re-enters the char-p √-cancellation)
+- **reduce-to-Johnson lens: 22/25 REDUCES-TO-JOHNSON** (+1 BGK, +2 refuted) — most pin only the far-line Plotkin proxy
+- **countermodel lens: 25/25 REFUTED-FALSE** (each contradicts an in-tree axiom-clean fact, the meta-theorem, the p-independence smoking-gun, or is window-vacuous)
+
+This exactly reproduces the campaign prior (79+ conjectures → 0 survivors). **No survivor.**
+
+### Per-conjecture verdict table
+
+| conjecture | notBGK | reduce-BGK | reduce-Johnson | countermodel |
+|---|---|---|---|---|
+| `Maslov-Weil-index-mstar-congruence` | 10 | →BGK | →Johnson | FALSE |
+| `cat-map-QUE-rate-equidistribution-floor` | 9 | →BGK | →Johnson | FALSE |
+| `KloostermanSheaf-FreqMonodromyPin` | 9 | →BGK | →Johnson | FALSE |
+| `Stone-vonNeumann-derandomization-pin` | 9 | →BGK | →Johnson | FALSE |
+| `eichler-selberg-trace-identity-value` | 9 | →BGK | →Johnson | FALSE |
+| `krein-parameter-vanishing-design-threshold` | 9 | →BGK | →Johnson | FALSE |
+| `o-minimal-deltastar-tameness-finite-cell` | 9 | →BGK | →Johnson | FALSE |
+| `FourierDimFreqField-RestrictionGap` | 9 | →BGK | →Johnson | FALSE |
+| `Swan-break-valuation-deltastar` | 9 | →BGK | FALSE | FALSE |
+| `DMO-nullcone-orbit-degree-relation-module` | 9 | →BGK | →Johnson | FALSE |
+| `Weil-metaplectic-MCA-rigidity` | 9 | →BGK | →Johnson | FALSE |
+| `Fourier-SoS-degree-asymmetry-transition` | 9 | →BGK | →Johnson | FALSE |
+| `ZilberPink-PeriodTorusAnomalousIntersection` | 9 | →BGK | →Johnson | FALSE |
+| `cyclotomic-number-rank-pins-distinct-gamma-fus` | 9 | →BGK | →Johnson | FALSE |
+| `pseudocyclic-valency-multiplicity-defect-vecto` | 9 | →BGK | →Johnson | FALSE |
+| `OdometerSignLaw-BirkhoffAverage` | 9 | →BGK | →Johnson | FALSE |
+| `WeilIndex-MultiplierWeightedFixedPoint` | 9 | →BGK | FALSE | FALSE |
+| `DAM-IncompleteTheta-CuspAutomorphy-SquareLatti` | 9 | →BGK | →Johnson | FALSE |
+| `horocycle-escape-of-mass-winding-pins-deltasta` | 8 | →BGK | →Johnson | FALSE |
+| `Howe-dualpair-O1-Sp-branching-multiplicity-pin` | 7 | →BGK | →Johnson | FALSE |
+| `GaussSumSatoTate-FreqRestriction` | 8 | →BGK | →BGK | FALSE |
+| `Frame-number-2adic-integrality-pin` | 8 | →BGK | →Johnson | FALSE |
+| `Andre-Oort-special-points-pin-deltastar-CM-str` | 5 | →BGK | →Johnson | FALSE |
+| `Swan-conductor-jump-at-binding-radius` | 7 | →BGK | →Johnson | FALSE |
+| `FreqDecoupling-CosetCurvatureModuli` | 8 | →BGK | →Johnson | FALSE |
+
+### The recurring reduction pattern (why the wall is irreducible)
+
+Every novel framing follows the **same canonical collapse**: it dresses the binding-depth
+SELECTOR `m*` (with `δ* = 1−ρ−m*/n`) in a topological / spectral / arithmetic invariant —
+but the *integer value* of `m*` is set by **where the orbit-count / distinct-γ growth law
+`O(c)` collapses to ≤2**, and that growth law at depth `r≈ln q` **IS** the char-p additive
+energy `E_r(μ_n) ≤ (2r−1)‼·n^r` = the BGK/Paley wall. A torsion/topological invariant (Maslov
+`Z/8`, monodromy drop, Krein parameter) can at most select a *residue class* of `m*`; pinning
+the *unique integer* requires the budget crossing = the energy/wall. The sharpest kills:
+- **cat-map QUE**: the "quantized Hecke operator" on the coset lattice **is** the abelian
+  Paley/Cayley convolution operator (`_PaleyCayleyEigenvalue.cayley_eigenvalue_eq_eta`,
+  rfl-level), diagonalized by additive characters with eigenvalue exactly `η_b` — so its
+  spectral gap *is* `M(n)`, the wall verbatim.
+- **Kloosterman-sheaf monodromy**: identical to the already-built `MonodromyConductorScaffold` —
+  the conductor RELOCATES (does not remove) the wall.
+- **Maslov index / metaplectic / Stone–von Neumann**: the intertwiner is *forced to be* the
+  Gauss-period sup-norm; the wall re-enters at the metaplectic action, plus the `Z/8` class
+  cannot pin a `p`-independent integer (smoking-gun `D=89` across 4 primes).
+- **countermodel (all 25)**: each is window-vacuous or contradicts the proven p-independence /
+  the white-noise period covariance / the meta-theorem.
+
+### Honest conclusion
+
+**0 survivors of 25** — the most novel, most deliberately-orthogonal conjectures the campaign
+could generate (across 9 mechanism families, novelty-vetted, dead-lanes banned) *all* reduce to
+the BGK wall. This is not a failure of imagination but **strong positive evidence the wall is
+structurally irreducible**: the binding depth `m*` is a *magnitude* (the energy crossing), and no
+torsion / spectral-gap / equidistribution-rate / rigidity *dressing* can pin a magnitude without
+re-invoking the √-cancellation. The genuine open prize remains the single char-p BGK input;
+an escape, if one exists, must defeat this collapse pattern — it cannot merely relabel `m*`.
 
 ## Honest framing
 

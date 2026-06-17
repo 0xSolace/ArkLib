@@ -15422,48 +15422,30 @@ NOT a refutation of CORE and NOT a closure: the soft ceiling R_r≤1 survives EM
 probe_407_Ar_wick_depth_profile.py: R_r<1 with margin, but margin→0.99 at r=2 as n→256). δ* remains
 the single open char-p BGK input. Honest classification: reduces-to-bgk (via the DSAR wall).
 
----
+### S1 "K_eff flat in n" — NOT flat through n=128; peak CREEPS upward (caution on the energy-transfer optimism) (#444, nubs, 2026-06-17)
 
-IDEA [C2-weil-deligne-paramfamily] (#389/#444, route: relocate Weil to the b-PARAMETER family).
-Plain Weil on the `n`-DOMAIN `η_b = Σ_{x∈μ_n} e_p(bx)` is vacuous (`n<√q`, error `√p≫n` for β∈[4,5]).
-C2 PROPOSED: realize `b ↦ η_b`, `b∈𝔽_p^×` (≈`q` points ≫ √q), as the trace function `t(b)=η_b` of an
-`ℓ`-adic sheaf `F` on the `b`-line `𝔸¹/𝔽_p`; IF `F` is geom-irreducible with conductor `cond(F)=O(1)`
-uniformly in `n`, Deligne (Weil II)+Fouvry–Kowalski–Michel give `sup_b|η_b| ≤ cond(F)·√(L²-scale)`
-uniformly — the prize. Genuinely DISTINCT from the dead `n`-domain Weil (different object: a rank-`n`
-lisse sheaf on the parameter line, `m=(p-1)/n` distinct trace values; probe_i031_distinct_period_count
-confirms exactly `m` distinct periods).
+S1 (orchestrator) reported the nonprincipal energy slack K_eff(r)=(E_r'/[(2r−1)‼·n^r])^{1/r},
+E_r'=(1/p)Σ_{b∈⟨g^n⟩}η_b^{2r} (β=4), as "≈0.6, FLAT in n (0.62→0.65), structured-prime-robust", which
+via the proven char0_prize_moment_bound would give the prize with bounded C. INDEPENDENTLY CROSS-CHECKED
+(Python, exact S1 convention, `probe_444_keff_rprofile_crosscheck.py`) — the ≈0.6 value and
+structured-not-worse REPRODUCE. But extending to n=128 with a per-n prime band (4 good primes each,
+`probe_444_keff_creep_n128.py`) shows the peak is NOT flat:
 
-VERDICT: **REDUCES (to the same archimedean-argument-distribution open core as C11/C13) — via the
-RANK = CONDUCTOR obstruction.** The sheaf EXISTS and is correctly identified (the "obvious" rank-`n`
-realization `F = ⊕_{c∈μ_n} L_ψ(c·b)`, a sum of `n` Artin–Schreier sheaves; its trace is exactly `η_b`).
-But its conductor is provably `Θ(n)`, NOT `O(1)`:
+    n   peak K_eff mean   range            peak-r
+    32     0.608          [0.577,0.629]     12
+    64     0.625          [0.614,0.645]     14
+    128    0.675          [0.653,0.698]     18
 
-THE CRUX (machine-confirmed, closed-form). The second moment of the trace over the family equals the
-generic rank of any middle-extension realization (diagonal/orthogonality). Parseval forces it to `n`:
-  `Σ_{b∈𝔽_p}|η_b|² = Σ_{x,y∈μ_n} Σ_b e_p(b(x−y)) = p·#{x=y} = p·n`,
-so `avg_{b≠0}|η_b|² = (p·n−n²)/(p−1) → n` EXACTLY (probe: n=8→7.998, 64→63.9997, 128→127.9999).
-Hence ANY sheaf with trace `η_b` has generic rank `=n` ⟹ `cond(F) ≥ rank = n` ⟹ the Deligne/FKM
-bound `sup|t| ≤ cond(F)` is `≥ n` = the TRIVIAL `ℓ¹` ceiling (= triangle inequality on `n` unit terms).
-Relocation does NOT escape: the `b`-family inherits `rank = |μ_n| = n`. The `√n`-cancellation
-`sup ≈ √(rank·log) = √(n log p)` is the GENERAL POSITION of the `n` Artin–Schreier phases `L_ψ(c_i b)`
-as `b` varies — an equidistribution/archimedean statement on the parameter family (the OPEN CORE),
-NOT a Deligne output (Deligne gives `|L_ψ|=1` per summand and `cond=n` for the sum). C2 fails one rung
-EARLIER than C11/C13: its conductor is provably `n` so Deligne is trivial before equidistribution even
-enters. Does NOT push the exponent past 0.011, does NOT prove `R_r≤1`, does NOT reduce to NAMED proven
-math beyond the trivial `ℓ¹`.
+The bands SEPARATE — n=128's whole range [0.653,0.698] sits ABOVE n=64's [0.614,0.645] (no overlap) —
+so this is a genuine, prime-robust MONOTONE UPWARD CREEP (0.608→0.625→0.675), not noise, with the
+peak-r marching deeper (12→14→18 toward the prize r≈89). S1's own 0.62→0.65 (n=32→64) was already a
+rise read as "flat"; n=128 makes the creep unambiguous. Consistent with BGK log-growth and with the
+DSAR-margin shrink noted above (probe_407_Ar_wick_depth_profile: margin→0.99 as n→256) — same wall,
+energy-transfer side.
 
-PROBES (proper `μ_n`: `n=2^μ`, `p` PRIME, `n∣p−1`, `p≫n³`, `p−1≠n`):
-`scripts/probes/probe_c2_weil_paramfamily_conductor.py`, `scripts/probes/probe_c2_conductor_nscaling.py`.
-| n | p | Var_b η_b | M=sup|η_b| | M/√Var | M/√(n log(p/n)) |
-|---|---|-----------|------------|--------|-----------------|
-| 8 | 25601 | 7.998 | 7.79 | 2.75 | 0.97 |
-| 64 | 16777601 | 63.92 | 38.5 | 4.82 | 1.36 |
-| 128 | 268437889 | 127.5 | 53.7 | 4.75 | 1.24 |
-`M/√(n log(p/n))` bounded ≈1 (prize Ramanujan-up-to-√log HOLDS empirically) but C2 does not PROVE it:
-`c_eff = M/√Var = M/√n` tracks `√(log p)`, i.e. `sup ≈ √(rank·log)`, the conjectured general-position.
-
-LEAN BRICK (axiom-clean, verified by `#print axioms`: `[propext, Classical.choice, Quot.sound]`, 0 sorryAx,
-no native_decide; `lake env lean` EXIT=0): `Frontier/_C2WeilDeligneParamFamilyNoGo.lean` —
-`parseval_mass_le_rank` (`(p·n−n²) ≤ n·(p−1)`: the second moment never exceeds `n`, forcing rank `=n`),
-`deligne_paramfamily_bound_is_trivial` (conductor ≥ rank = `n` ⟹ certified bound ≥ `n` = trivial),
-`no_subrank_conductor` (no sub-rank conductor exists — the Parseval floor). Signed C2-weil-deligne-paramfamily.
+VERDICT: the "K_eff ≤ K_0 absolute / flat in n" extrapolation is NOT supported by data through n=128 —
+the peak slack creeps upward. This does NOT prove divergence (3 doublings; could plateau), so it is not
+a hard refutation of the energy-transfer route — but it removes the empirical basis for the optimistic
+"flat" framing: the n→2^30 / r→89 limit of the peak constant is exactly the open BGK input, and the
+measurable trend is rising, not flat. Probes: scripts/probes/probe_444_keff_creep_n128.py,
+probe_444_keff_rprofile_crosscheck.py (exact char-sums; no Lean).

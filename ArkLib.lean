@@ -709,7 +709,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu4
 import ArkLib.Data.CodingTheory.ProximityGap.ConcreteWeilInstanceMu8
 import ArkLib.Data.CodingTheory.ProximityGap.ConditionalSqrtCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueConstraintFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueDegeneracySupport
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueGradedFinrank
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueInfFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationReconstruct
@@ -969,6 +972,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroEnergyThreeExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroHLLPairing
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroSharpNewtonBase
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroSharpNewtonR2
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroSlackLeadingCoeff
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroStepLawSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroStepLawSlackHigh
@@ -1011,6 +1015,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoCompose
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E2RigidityCountTransfer
@@ -1720,6 +1725,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26FixedRResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldSupplyDecay
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldSupplyTower
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26GapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26LadderArithmetic
