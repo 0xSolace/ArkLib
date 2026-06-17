@@ -1523,6 +1523,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS10_analytic_rank_reencoding
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_subexp_tail_to_slack
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_layercake_moment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS1_transfer_slack_prize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_equidist_to_M
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_participation_floor
