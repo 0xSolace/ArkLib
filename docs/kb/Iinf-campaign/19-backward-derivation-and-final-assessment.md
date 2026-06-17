@@ -60,3 +60,14 @@ Lean); (c) verification/formalization of the GG25 folded solution IF the organiz
 
 Honest, final, multiply-confirmed: the prize is open, the wall is real and irreducible by current methods, and a
 genuine win requires inventing the missing equidistribution theorem — which I cannot fabricate. Related: docs 11-18.
+
+## RESULT 3 — Direct floor attack: the W_r induction is REFUTED (fresh, 2026-06-17)
+Attacked the floor (`W_r ≤ slack_r` for r≤log m, the sharpest open form) by INDUCTION on r from the proven
+base `W_2=W_3=0`. Computed W_r and slack_r deep at a fixed prime (n=8, p=193): once the excess turns on
+(r≥4 here), `W_r/slack_r` GROWS (0.0336→0.0508 at r=4,5) because the W-ratio `W_{r+1}/W_r=145` EXCEEDS the
+slack-ratio `slack_{r+1}/slack_r=96`. **So the recursion does NOT contract — induction on W_r fails: once
+`onset(r)` is crossed, the excess amplifies faster than the char-0 slack.** This freshly refutes the one
+remaining "elementary" route to the floor (self-improving recursion). Consistent with the open core: the
+floor holds iff `onset(r) > log m` at the fixed prize prime, and the in-tree onset law `onset(r)~0.54r`
+crosses β=4 at r≈6 < log m≈89 — so `W_r>0` at deep r, and once on, it grows. The floor is genuinely the
+char-p deep-moment / BGK wall, not closable by induction. Tool: /tmp/wr_recursion.py.
