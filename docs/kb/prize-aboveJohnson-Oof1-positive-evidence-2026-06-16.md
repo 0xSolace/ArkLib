@@ -47,8 +47,34 @@ Worst-case soundness over **genuine distance-3 leaders** (above-Johnson edge), R
   `δ*`. But it is the first positive, in-regime signal, and it identifies the shape (constant numerator,
   3-position witness) a general proof must produce.
 
-## Next
-- Larger faithful instances (`N=16,32`) to test whether the constant grows with `N` (the `a=O(n/η⁵)` vs
-  `O(1)` question) — needs a faster (compiled/GPU) coset enumerator.
-- The exact Conj 7.1 statement (gated PDF) to align the model and attempt the finite orbit-counting proof
-  against the in-tree ACL / coset-closure bricks (the action-orbit ↔ ACL connection).
+## Tie to the list-decoding grand challenge: δ* = the q-independent list-size transition
+The FRI bad-count is governed by the **list size** `L(N,e) = max over words of #{RS codewords within rel
+dist e}`. `L` is coset-invariant, so `L(N,e) = max over syndromes of #{weight-≤e vectors with that
+syndrome}` — exactly computable. For dyadic RS`[8,4]` (ρ=½, Johnson 2.34 pos):
+
+| radius `e` | 0 | 1 | 2 | **3** | 4 |
+|---|---|---|---|---|---|
+| max list `L` | 1 | 1 | 1 | **7** | 70 |
+| rel | 0 | .125 | .25 | **.375** | .5 |
+
+- The list is **uniquely decodable (L=1) up to the Johnson radius**, stays **O(1) (L=7) just above**
+  Johnson, and blows up to 70 only at capacity (rel 0.5). So δ* (the radius where the list stops being
+  O(1)) is **strictly above Johnson** for this dyadic family at N=8.
+- `L(3)=7` is **q-independent** (verified q=17,41,73,…) — a **combinatorial constant**, NOT a field /
+  character-sum quantity. This is exactly the prize's "does not reduce to hard open (number-theory) math"
+  requirement: δ* here is a *combinatorial* list-size transition.
+- The FRI bad-count `4 ≤` list size `7` — both O(1) at the edge — ties the **MCA** and **list-decoding**
+  grand challenges to the same object.
+
+## Honest open gap + next
+- The above-Johnson `O(1)` region at N=8 **may be a finite-size effect**; the asymptotic δ* (whether
+  `L(N, δN)` stays bounded for fixed `δ∈(Johnson, capacity)` as `N→∞`) is the hard, decisive question and
+  N=8 cannot settle it. This is NOT yet a general-N pin of δ*.
+- Two concrete routes:
+  1. **Computational:** `L(N,e)` at N=16,32 via the MDS **coset weight distribution** (closed-form,
+     avoids brute syndrome enumeration) or a compiled/GPU enumerator — detect the O(1)→growth transition.
+  2. **Analytic:** derive the closed formula for the worst-case MDS coset list size `L(N,e)` (count of
+     weight-≤e reps of the worst syndrome = 3-column dependencies among `H_N`'s columns `(1,x,x²,x³)`),
+     giving δ* as the `e/N` where it transitions — and attempt the finite orbit-counting proof against the
+     in-tree ACL / coset-closure bricks (action-orbit ↔ ACL).
+- Exact Conj 7.1 statement still needs the gated 2026/861 PDF to align the model precisely.
