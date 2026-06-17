@@ -1095,6 +1095,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OddExcessLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OptimizedSupFromNonprincipalWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OrbitCount5GeneralNormalForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OrbitCountDoublingInvariant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OrbitDegreeBelowFoldR5
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OrbitSizeR5HalfOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetIncidenceUnionCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
