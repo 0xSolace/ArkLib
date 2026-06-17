@@ -15473,3 +15473,34 @@ imprimitive (arising-family) directions ONLY; the per-direction BGK wall on the 
 EXTENDS Q1ArisingFamilyDescent.orbitSize_descent (the proven reduction) by pinning its inapplicability.
 NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit.
 CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## DEPLOYED CENSUS-WELD BUDGET INFEASIBLE AT THE DEEP CENTRAL BAND (#444, sol, 2026-06-17): the named CensusDomination Prop needs K >= centralBinom(m-1) = 2^Theta(m) there — CONSTRAINT LEMMA for the deployed count/census route
+LANE: the count/census equivalence-to-CORE face (brief's named uncontested lever). The census-domination
+weld (CensusDominationWeld.kkh26_deltaStar_pin_of_censusDomination) pins delta*=1-r/2^mu GRANTING (i) the
+named Prop CensusDomination dom k a0 K AND (ii) the deployed budget K/p <= eps* (its hK hyp). Two more
+landed bricks were never welded against (ii): the necessity floor CensusCapForcedBelow.censusDomination_
+cap_ge_choose (C(|A|-(k+1),a-(k+1)) <= K from ONE gamma-aligned A with a nondeg (k+1)-tuple) and the
+supply realizer KKH26AlignmentSupply.kkh26_fibreUnion_aligned_nondegenerate (a gamma-aligned A of size
+r*m at code dim k=(r-2)m+1 on the smooth n=s*m domain, for every r-subset T of the m-power subgroup).
+NATURAL HOPE: the deployed census normal form is a feasible poly-budget route to delta*. CONSTRAINED:
+welding the floor on the realizer at the CENTRAL band a=(r-1)m+1 gives |A|-(k+1)=2m-2, a-(k+1)=m-1, so
+the floor is EXACTLY the central binomial C(2m-2,m-1) = centralBinom(m-1) >= 4^{m-1}/(2(m-1)), EXPONENTIAL
+in the multiplicity m. PROBE (probe_census_cap_exceeds_budget.py, exact Nat, prize regime n=2^a thin,
+m=2^j|n, k=(r-2)m+1, p=q=n^beta beta=4,5, eps*q ~ n => K_max ~ n POLY, NEVER n=q-1): the threshold is
+SHARP -- feasible (floor<=K) at m=2 (floor=2) and m=4 at large n; INFEASIBLE (floor>K) in the high-
+multiplicity slice centralBinom(m-1)>K_max, biting at n=8/m=4 (20>8), n=16/m=8 (3432>16), n=32/m=16
+(1.5e8>32). Threshold m >= ~(1/2)log2 n -- the THIN/deep-multiplicity face. FORMALIZED axiom-clean in
+Frontier/CensusBudgetInfeasibleDeepBand.lean (2 thms, [propext, Classical.choice, Quot.sound], 0 sorryAx,
+in-graph build 8367 jobs EXIT 0): census_cap_ge_centralBinom (cap K at the central band => centralBinom(m-1)
+<= K) + not_censusDomination_of_budget_lt_centralBinom (K < centralBinom(m-1) => NOT CensusDomination at
+the central band, so the weld's two hypotheses are jointly UNSATISFIABLE there). MECHANISM: the necessity
+floor's binomial is maximized at the central band, where it equals the central binomial of the residual-
+window half-width m-1, which is exponential; the deployed budget is poly. CONSEQUENCE for the route: the
+DEPLOYED census normal form cannot be invoked at the deep central band in the thin slice -- it must live at
+the Johnson-scale agreement radius a ~ sqrt(kn) >> (r-1)m+1. This is the matching result for the DISTINCT
+alignableSets/CensusDomination object (the weld's actual object), carried to its deployed K-budget -- which
+the sibling ExplainableCoreSupply exponential floor (DeepBandSupplyExponential.not_explainableCoreSupply_
+exponential / Frontier/CountLaneNotSecondOrder, a DIFFERENT object) never does. EXTENDS the in-tree forward
+weld + necessity floor + supply realizer by composing them against the deployed budget. NOT a CORE / Conj-7.1
+closure, NOT a prize refutation (ASYMPTOTIC GUARD untouched: central binomial exp => WRONG radius, not prize
+impossible). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(q/n)) OPEN.
