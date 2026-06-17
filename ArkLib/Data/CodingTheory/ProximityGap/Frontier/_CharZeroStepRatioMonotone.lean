@@ -108,6 +108,19 @@ theorem charZero_stepRatio_monotone_r7 {n : ℝ} (hn : 8 ≤ n) :
     pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, pow_nonneg hd 15,
     pow_nonneg hd 16, mul_nonneg hd hd]
 
+/-- **The r = 7 gap is strict/non-vacuous:** in the same prize regime `n ≥ 8`, the landed
+non-strict rung actually has positive slack. This records that the `r = 7` char-0 step-ratio drop
+is genuine, not just equality transported from the Gaussian/Wick model. -/
+theorem charZero_stepRatio_monotone_r7_strict {n : ℝ} (hn : 8 ≤ n) :
+    15 * E7 n * E9 n < 17 * (E8 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 8 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E7, E8, E9]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
+    pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, pow_nonneg hd 15,
+    pow_nonneg hd 16, hpos]
+
 /-- **The char-0 step ratio `R(r)` is ANTITONE for r = 2,3,4,5,6,7** — proven from the exact energy closed
 forms. So the smooth-subgroup energy sequence is *sub-Gaussian* (less log-convex than the Gaussian/Wick
 sequence, which has `R ≡ 1`) at every accessible depth. This establishes the char-0 half of the
@@ -150,6 +163,7 @@ end ArkLib.ProximityGap.CharZeroStepRatioMonotone
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r5
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r6
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r7
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r7_strict
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r7
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r6
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r5
