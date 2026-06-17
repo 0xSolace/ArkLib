@@ -4913,3 +4913,22 @@ content. HONEST SCOPE: the robust <=(i-j) bound is formalized; the gcd-tight ref
 order) and the 3-term case + the full reduction of the strata-incidence to a soundness bound remain
 OPEN. NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE
 commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## REFUTATION (2026-06-17, reduce worker): the m-sparse mu_n-incidence is NOT bounded by the term
+count (NO "sparse => few mu_n-roots" law). CONSTRAINT LEMMA for the strata->soundness bridge.
+CANDIDATE (natural, tempting): after mod-n reduction the direction gbar has m' = #distinct nonzero-coef
+residue terms; HOPE deg gcd(X^n-1, gbar) <= m' - 1 (a sparsity-incidence cap, much sharper than the
+< n cap). REFUTED: probe_c71_reduced_sparsity_cap.py (EXACT GF(p)[X] gcds, thin mu_n=2^a a in {2,3,4},
+p==1 mod n incl p>n^3 + Fermat, NEVER n=q-1, wrap-around supports) -- 46/2152 VIOLATIONS, all of the
+shape m'=2 with d=2 > m'-1=1. MECHANISM: a reduced BINOMIAL X^d - c on mu_n already attains
+gcd(d,n) roots (the cyclic-kernel order, C71BinomialIncidenceGcd.binomial_incidence_card_le_gcd), and
+gcd(d,n) can be as large as n/2 (e.g. n=4, gbar = X^3 - X = X(X-1)(X+1): the two nonzero roots +-1 both
+lie in mu_4, so d=2 = gcd(2,4) > m'-1 = 1). So the mu_n-incidence is governed by the CYCLOTOMIC GCD
+WITH n, NOT by the number of terms: term-sparsity does NOT cap the incidence. CONSEQUENCE for the
+bridge: any strata->soundness reduction that hopes to use "the worst case is <=3-sparse => <=2
+incidences" is WRONG -- a 2-sparse direction can already have ~n/2 mu_n-incidences. The incidence cap
+that IS true is the gcd object (C71SparseStrataIncidence) refined to the reduced < n form
+(C71SparseStrataReduce.sparse_munRoot_card_lt_n, b50602644); the term count buys NOTHING beyond it.
+This is why Conj-7.1's <=3-sparse worst-case does NOT trivially give an O(1) incidence -- the residual
+is genuinely the gcd/agreement-sharing count, not a sparsity count. NOT a CORE closure; a constraint
+on the bridge route. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
