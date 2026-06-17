@@ -330,6 +330,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitFRI
 import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitGeneralF
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergySumsetSupport
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMathlibBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMulHomogeneous
@@ -586,6 +587,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceGcd
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseOrbitGap
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataReduce
+import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataWindow
 import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
@@ -2553,6 +2555,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.UDREdgeClosure
 import ArkLib.Data.CodingTheory.ProximityGap.UniqueDecodingListBound
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleAddQuadruple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonTriple
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuad
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuadWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
