@@ -584,6 +584,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceGcd
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseOrbitGap
+import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 import ArkLib.Data.CodingTheory.ProximityGap.CRTExponentGridSum
