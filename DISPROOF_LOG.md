@@ -4877,3 +4877,58 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # honestly scoped (the witness is a hypothesis, grounded by the probe, not faked). Thinness-essential
 # via neg-closure (-1 in mu_{2^a}, the realness this rests on). NON-MOMENT (pure sign/character algebra).
 # No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## C71-ROUTE-B: Conjecture 7.1 worst-case sparse adversary is MULTI-TERM, not monomial (sol, 2026-06-17)
+Post-pivot (231b0ec9c) the prize = above-Johnson O(1)/|F|, reduced by 2026/861 to Conj 7.1 (worst
+case <=3-sparse). EXACT full-alpha-sweep bad-set strength on thin mu_n (n=8, k=2, affine pencil
+{g0+alpha*f}, g0 = deg-(k+1) monomial not in RS, Johnson agreement thr=4/8, NEVER n=q-1) over three
+primes p in {17, 41, 521} spanning p<=n^3 and p>n^3: s1max (monomial directions) = 8 UNIFORMLY,
+s23max (genuine 2- and 3-term directions) = 9 UNIFORMLY. So the worst-case <=3-sparse adversary is
+STRICTLY multi-term (s23max > s1max), NOT a monomial. CONSTRAINT LEMMA (formalized axiom-clean in
+ProximityGap/C71SparseOrbitGap.lean, extending the proven ActionOrbitGeneralF pin): a direction with
+>=2 dilation-distinct support terms is NOT a dilation eigenvector (multiterm_not_orbit_eligible), so
+its bad set is NOT a union of gamma-orbits => the action-orbit per-line O(1)/|F| compression
+(eigenvector-gated, hence monomial-only) provably MISSES the worst case. Localization: even granting
+Conj 7.1, closing the prize via the in-tree action-orbit machinery requires a NON-orbit incidence
+bound on the multi-term strata; the orbit count alone is insufficient. (probe c71_sparse_orbit_gap;
+the earlier probe_c71_sparse_dominance.py v1 was VACUOUS -- measured "is direction low-degree" --
+quarantined and rebuilt.) CORE / Conj-7.1 multi-term incidence bound OPEN.
+
+## C71-RESIDUAL: binomial (2-term) strata mu_n-incidence = polynomial-method root-count, NOT orbit (sol, 2026-06-17)
+Follow-on to C71-ROUTE-B: the named-open residual was "a NON-orbit incidence bound on the multi-term
+strata". First concrete brick on the 2-term (binomial) strata. PROBE (probe_c71_multiterm_incidence_
+rootcap.py, EXACT, 8/8 over thin mu_n n=2^a a in {2,3,4}, p=1 mod n with p-1=k*n k>=2 NEVER n=q-1,
+multi-prime incl p>n^3 73/521/4129 and Fermat 257): for EVERY genuine 2-term direction f = X^i - c*X^j
+(c in mu_n, i != j), (1) #roots(f in mu_n) <= gcd(|i-j|, n) [tight at gcd in the majority], and
+(2) max root multiplicity of f at any nonzero point < 2 (the 2-sparse confluent-Vandermonde engine).
+MECHANISM: on the punctured domain x != 0, f(x)=0 iff x^(i-j) = c, so the nonzero roots inject into
+the (i-j)-th roots of c, of which there are <= i-j (Polynomial.card_nthRoots). FORMALIZED axiom-clean
+in ProximityGap/C71BinomialIncidence.lean (binomial_root_iff_pow_eq + binomial_incidence_card_le): the
+binomial direction's incidence #{nonzero x in S : x^i - c x^j = 0} <= i - j for any finite S, with
+S = mu_n the binomial mu_n-incidence bound. This is a NON-orbit (no dilation-eigenvector hypothesis),
+field- and thickness-universal, char-free polynomial-method count -- it COVERS the route-B multi-term
+worst case that the action-orbit O(1)/|F| pin provably MISSES. EXTENDS the polynomial-method toolset
+(Polynomial.card_nthRoots) + the C71SparseOrbitGap route-B localization; adds no character-sum/BGK
+content. HONEST SCOPE: the robust <=(i-j) bound is formalized; the gcd-tight refinement (cyclic-kernel
+order) and the 3-term case + the full reduction of the strata-incidence to a soundness bound remain
+OPEN. NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE
+commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## REFUTATION (2026-06-17, reduce worker): the m-sparse mu_n-incidence is NOT bounded by the term
+count (NO "sparse => few mu_n-roots" law). CONSTRAINT LEMMA for the strata->soundness bridge.
+CANDIDATE (natural, tempting): after mod-n reduction the direction gbar has m' = #distinct nonzero-coef
+residue terms; HOPE deg gcd(X^n-1, gbar) <= m' - 1 (a sparsity-incidence cap, much sharper than the
+< n cap). REFUTED: probe_c71_reduced_sparsity_cap.py (EXACT GF(p)[X] gcds, thin mu_n=2^a a in {2,3,4},
+p==1 mod n incl p>n^3 + Fermat, NEVER n=q-1, wrap-around supports) -- 46/2152 VIOLATIONS, all of the
+shape m'=2 with d=2 > m'-1=1. MECHANISM: a reduced BINOMIAL X^d - c on mu_n already attains
+gcd(d,n) roots (the cyclic-kernel order, C71BinomialIncidenceGcd.binomial_incidence_card_le_gcd), and
+gcd(d,n) can be as large as n/2 (e.g. n=4, gbar = X^3 - X = X(X-1)(X+1): the two nonzero roots +-1 both
+lie in mu_4, so d=2 = gcd(2,4) > m'-1 = 1). So the mu_n-incidence is governed by the CYCLOTOMIC GCD
+WITH n, NOT by the number of terms: term-sparsity does NOT cap the incidence. CONSEQUENCE for the
+bridge: any strata->soundness reduction that hopes to use "the worst case is <=3-sparse => <=2
+incidences" is WRONG -- a 2-sparse direction can already have ~n/2 mu_n-incidences. The incidence cap
+that IS true is the gcd object (C71SparseStrataIncidence) refined to the reduced < n form
+(C71SparseStrataReduce.sparse_munRoot_card_lt_n, b50602644); the term count buys NOTHING beyond it.
+This is why Conj-7.1's <=3-sparse worst-case does NOT trivially give an O(1) incidence -- the residual
+is genuinely the gcd/agreement-sharing count, not a sparsity count. NOT a CORE closure; a constraint
+on the bridge route. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
