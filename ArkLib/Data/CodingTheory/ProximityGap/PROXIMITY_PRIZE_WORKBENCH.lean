@@ -122,6 +122,19 @@ All claims below are exact-checked (verify-don't-believe):
   by the 6 known moment/algebraic levers (phase-blindness dichotomy). A winning closed `δ*`
   must still beat that core — whether stated in the `δ*`/`mcaConjecture` form (§1) or the
   above-Johnson/Conj-7.1 form. Pick the surface; the open math is one object.
+* **δ\*-side scaffold is now AIRTIGHT in Lean (so you only need the one inequality).**
+  `Frontier/_PrizeFloorOfBGK.prizeFloor_window_of_BGK_and_incidence` (axiom-clean) converts the
+  above-Johnson incidence bound `WorstCaseIncidenceBounded C δ B` (= BCHKS Conj 1.12, the per-frequency
+  `√q·B` cancellation over the annihilator hyperplane) into the δ\* prize WINDOW
+  `δ_win ≤ mcaDeltaStar (evalCode …) ε* ≤ (1−ρ)−1/(C·L)` — FLOOR via the proven
+  `OpenCoreConditionalPin.worstCaseIncidence_pin`, CEILING via the proven
+  `KKH26AsymptoticCeiling.kkh26_mcaDeltaStar_le_capacity_sub_log`. So: **prove the incidence Prop and
+  this lemma turns the crank to δ\* with zero further gaps.** ⚠ CAVEAT (don't waste effort): the bare
+  BGK sup-bound `max_{b≠0}‖η_b‖ ≤ M` alone is necessary-but-INSUFFICIENT — its only in-tree route to
+  incidence (`lineIncidence_le_mean_add`) pays the naive `q·B` (no inter-frequency cancellation),
+  vacuous at the prize budget. The OPERATIVE open input is the incidence/`√q·B` form (BCHKS 1.12),
+  strictly stronger than the sup-bound. ⇒ `YOUR CONJECTURE HERE` = `WorstCaseIncidenceBounded` at the
+  window radius (equivalently the `√q·B` hyperplane cancellation), NOT the bare sup-bound.
 
 ────────────────────────────────────────────────────────────────────────────────
 ## §2.  THE SUBSTRATE  (PROVEN, axiom-clean, ready to apply — build on these)
