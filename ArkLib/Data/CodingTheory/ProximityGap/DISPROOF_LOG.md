@@ -15518,3 +15518,27 @@ exponential / Frontier/CountLaneNotSecondOrder, a DIFFERENT object) never does. 
 weld + necessity floor + supply realizer by composing them against the deployed budget. NOT a CORE / Conj-7.1
 closure, NOT a prize refutation (ASYMPTOTIC GUARD untouched: central binomial exp => WRONG radius, not prize
 impossible). ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(q/n)) OPEN.
+
+### STRUCTURAL: the S1 K_eff plateau IS the BGK constant — energy/moment route is TIGHT (~9% loss) (#444, nubs, 2026-06-17)
+
+Unifying the energy form (S1's K_eff slack) with the sup form (the BGK constant C the swarm measures).
+Moment method: M^{2r} ≤ Σ_{b≠0}η_b^{2r} = n·Σ_{t∈T}η_t^{2r} = n·p·E_r' (E_r'=(1/p)Σ_T η^{2r}), so
+M ≤ min_r (n·p·E_r')^{1/2r}; with E_r'≈K^r·(2r−1)‼·n^r and the optimum at r≈ln q this gives the closed
+prediction C ≈ √(2K·β/(β−1)).  VERIFIED (`probe_444_keff_to_bgk_constant.py`, β=4):
+
+    n    M       Kpeak  C_direct=M/√(n ln(q/n))  C_moment=min_r(npE_r')^{1/2r}/√…  C_pred=√(2Kβ/(β-1))  mom/dir
+    32   22.98   0.612  1.260                    1.371                              1.278                1.088
+    64   35.03   0.614  1.240                    1.357                              1.279                1.095
+    128  55.06   0.653  1.276                    1.401                              1.320                1.099
+
+* C_direct ≈ 1.24–1.28 — the BGK constant (consistent with the swarm's directly-measured ≈1.31–1.45).
+* C_pred = √(2K·β/(β−1)) matches C_direct to ~3% → the K_eff plateau and the BGK constant are the SAME
+  quantity, with the closed map C = √(2·K_eff·β/(β−1)).
+* C_moment is only ~9% above C_direct (mom/dir≈1.09) → the energy/moment method is TIGHT, NOT lossy.
+
+CONSEQUENCE: this SHARPENS §R.2's "energy⟹sup, constant √2" — the √2 was the K=1 (Gaussian) value; the
+true constant uses the sub-Gaussian K_eff≈0.65, giving C≈1.3, with only ~9% moment loss. So the
+energy-transfer route is a FAITHFUL proxy for the BGK sup constant: bounded-K ⟹ bounded-C ⟹ prize, with
+small loss. It does NOT close anything — proving K (=C) bounded as n→2^30 is still the open BGK input —
+but it confirms S1's energy route is not a lossy detour: it is the BGK constant in disguise.
+Probe: scripts/probes/probe_444_keff_to_bgk_constant.py (exact char-sums; no Lean). CORE OPEN.
