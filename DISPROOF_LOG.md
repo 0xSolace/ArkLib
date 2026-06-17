@@ -5029,3 +5029,24 @@ p≫n³, proper, never n=q-1, incl Fermat 257): C_forced=(3q)^{1/4}/√(log(q/n)
 constant). Formalized axiom-clean in Frontier/SidonFrameConstantDivergence.lean (3 thms). NOT a CORE
 closure; a precisely-mapped wall on the additive-moment route. CORE M(μ_n) ≤ C·√(n·log(p/n)) with
 absolute C remains OPEN.
+
+## SURVIVAL-TAIL RATE IS NATURALLY cc≈0.6 WITH A≈1; RATE-DOWNSHIFT IS SUBSUMED (sol, 2026-06-17)
+Mapping the MGF residual's rate structure so it is not re-derived. The S11 layer-cake equivalence is now
+welded BOTH ways: survival ⟹ MGF (Frontier/_wfS11_survival_to_mgf.lean, layercake_double_count +
+mgf_le_survival_weighted) and MGF ⟹ moment envelope (_wfS11_layercake_moment.lean). The residual is the
+ABSOLUTE (n,p-uniform) survival/MGF constant. Two rate facts, located so nobody re-probes them:
+(1) On TRUE thin μ_n spectra (n=2^a, proper (p-1)/n≥2, p>n³, prize β≈4, never n=q-1; p∈{73,89,521,569,
+    4129,4177}+Fermat 257) the literal counting survival tail S(s)=#{b:t_b≥s}/P ≤ A·e^{−cc·s} holds with
+    A_surv≈1.000 for cc UP TO ≈0.6 (degrading past cc≈0.8 since the spectral max ~log(q/n)). So the
+    survival tail naturally lives at rate cc≈0.6, constant ≈1 — the residual is the ABSOLUTENESS of that
+    A in n,p, NOT its existence at fixed (n,p). Probe scripts/probes/probe_s11_survival_to_mgf.py.
+(2) The pointwise inequality exp(c·t)−1 ≤ (c/(cc−c))·(exp(cc·t)−1) holds for ALL cc>c>0, t≥0 (zero
+    violations over t∈[0,10], 2000 pts, multiple (c,cc); provable by f(0)=g(0)=0 + f′≤g′ since
+    cc/(cc−c)≥1). It would transfer a rate-cc MGF bound A_cc to a rate-c bound 1+(c/(cc−c))(A_cc−1).
+    BUT this is SUBSUMED by the in-tree MGFBound.of_rate_le (raising the exponent rate only increases the
+    MGF, so the lower rate c≤cc inherits the SAME constant A_cc trivially) — the refinement is only tighter
+    when A_cc≫1, and the measured A_cc≈1, so it carries no new capability. Probe
+    scripts/probes/probe_s11_geom_mgf_closure.py (geometric scalar ceiling K=1+c·A/(cc−c); ub≥direct, A≈1).
+NET: do NOT add a rate-downshift MGF brick — of_rate_le already does it. The single open input is the
+ABSOLUTE survival/MGF constant = BGK. NOT a CORE closure, no capacity/beyond-Johnson/cliff-at-n/2 claim.
+CORE M(μ_n) ≤ C·√(n·log(p/n)) with absolute C remains OPEN.
