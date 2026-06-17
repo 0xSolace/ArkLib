@@ -15297,3 +15297,30 @@ Johnson-vs-floor (monomial-vs-general-witness) separation, p-INDEPENDENT, not a 
 Lean: Frontier/_wfL1_OT2vsLC_Settled.lean (axiom-clean [propext,Classical.choice,Quot.sound];
 demand_deltaStar_n32: 17/32 = farLineProxy 32 (1/4); binding_is_overdetermined; wfLC_band_is_degenerate;
 L1_settlement). Probes: rust/wfL1_farline_singledir.rs, probe_wfL1_excess_prime_fast.py.
+
+### WEILINDEX-FIBER REFUTED — the exact metaplectic fiber identity is FALSE, off by ~25% (#444 25-novel doc, nubs, 2026-06-17)
+
+The 25-novel-conjectures doc (`docs/kb/deltastar-444-25-novel-conjectures-2026-06-17.md`, refutation
+PENDING) lists `WeilIndex-MultiplierWeightedFixedPoint` [novelty 9/notBGK 9] with a CLAIMED EXACT
+fiberwise rewriting, via the antipodal squaring fiber `sq: μ_n → μ_{n/2}`, `{x,−x} ↦ x²`:
+    η_b = γ_p(b) · √2 · η'_{φ(b)},   γ_p(b) ∈ μ_8 (Weil index),  η'_{b'} = Σ_{y∈μ_{n/2}} e_p(b'y).
+An exact identity must hold at every n. Necessary magnitude consequence (|γ_p|=1): every far b has a
+b' with |η_b| = √2·|η'_{b'}|.
+
+REFUTED (exact-arithmetic, prize-regime β=4, full spectra `probe_444_refute_weilindex_fiber.py`):
+* n=8,  p=4129:   max|η_b| = 7.5582  >  √2·max|η'| = 5.6501  — the worst frequency EXCEEDS the largest
+  possible √2·|η'|, so no fiber partner can exist (4128/4128 far b have none; worst rel gap 0.252).
+* n=16, p=65537:  max|η_b| = 13.8375 >  √2·max|η'| = 11.1090 (65264/65536 fail; worst rel gap 0.197).
+Gaps ≫ float64 noise — decisive, not a precision artifact.
+
+MECHANISM: the conjecture conflates the metaplectic/Weil transformation law (which governs QUADRATIC
+Gauss sums Σ e_p(ax²)) with the LINEAR incomplete sum η_b = Σ_{x∈μ_n} e_p(bx). There is no
+"completing the square": the antipodal pair e_p(bx)+e_p(−bx) = 2cos(2πbx/p) depends on x, not on
+y=x², so it does NOT factor through a single μ_{n/2}-period times an 8th-root automorphy factor.
+Corroborated by N13-CONSTRAINT (η_b is REAL on negation-closed μ_n): both η_b and η' are real, so the
+μ_8 multiplier collapses to a sign and the claim is exactly the magnitude identity refuted above.
+
+VERDICT: `WeilIndex-MultiplierWeightedFixedPoint` is FALSE (it does not even reach the BGK wall — its
+claimed exact reduction does not exist). NOT a prize closure; one of the 25 exploration conjectures
+disposed of. The exact δ* value remains the single open char-p BGK input. Probe:
+scripts/probes/probe_444_refute_weilindex_fiber.py (exact spectra; no Lean — a numerical disproof).
