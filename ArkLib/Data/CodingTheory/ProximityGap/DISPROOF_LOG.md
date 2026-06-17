@@ -15910,3 +15910,86 @@ effective-Chebotarev union content), `union_ub_le_configs_mul_max` + `bad_card_l
 `chebotarev_union_fails_at_deep_depth` (packaged: at prize params the bound is vacuous), and the
 contrast `good_exists_of_union_lt` (the bound DOES certify a good prime when #configs·M < W — the
 r ≤ 1 shallow regime, far below the r ≈ ln p the moment method needs).
+
+
+## 2026-06-17 — A10 "generic chaining / metric entropy with RS-structured (dilation-tower) index" OBSTRUCTION (probe_wfA10_*.rs)
+
+ANGLE (#444, manifesto route 54, never previously attacked on the TOWER index): the worst-u0 excess
+is the sup of a Gaussian-like process; Talagrand generic chaining bounds it by the metric ENTROPY of
+the index. Plain chaining over the DUAL FREQUENCY index `c∈ℤ/m` reproduces `√log` (= W4 / I031 /
+Salem–Zygmund: that metric is FLAT ⇒ chaining = union bound, already in-tree). A10 indexed the process
+instead by the DILATION TOWER `n=2^μ` (exploiting `μ_{2n}=μ_n⊍ζ·μ_n`), the one place the catalog said
+the barrier could DISSOLVE: IF the tower-coherent metric entropy were `o(log q)`, the `√log` would be
+absorbed and the floor `M≤C√n` would follow.
+
+MEASURED (exact Rust, prize-faithful: p PRIME, `n=2^μ`, `n∣p−1`, `β=log_n p∈{3,4,5}`, `m=(p−1)/n>1`,
+NEVER `n=p−1`; `probe_wfA10_tower_chaining_entropy.rs`, `_alignment_anatomy.rs`, `_alignment_rigidity.rs`):
+- THE INDEX-ENTROPY HOPE IS NUMERICALLY PLAUSIBLE: the near-maximizer count collapses to `O(1)` at
+  large n (`NMcount→2` at n=64,128 = maximizer + conjugate), so the TOWER index carries `O(1)`
+  covering per level, NOT `Θ(log m)`. (The A10 distinction from W4 is real on the index side.)
+- BUT THE PROCESS IS NOT SUB-GAUSSIAN — IT IS COHERENT. At the worst frequency `b*(2n)`, the two
+  doubling halves `A=η_b(μ_n)`, `B=η_b(ζμ_n)` are PERFECTLY phase-aligned: `cos∠(A,B)=1.000000` to
+  machine ε at EVERY level and every β∈{3,4,5}. Hence `M(2n)=‖A‖+‖B‖` exactly, and the normalized
+  energy `Y_μ=M(2^μ)²/2^μ` GROWS (`4.0→7.98→14.6→19.95→25.5`, ≈const octave increments ≈`log2·slope`),
+  i.e. `Y_μ~log(p/n)` (the wall), not the bounded `Y` of the floor.
+- ROOT CAUSE (independently verified, `verify_real`): `−1∈μ_{2^μ}` ⇒ every period `η_b` is REAL
+  (`max|Im η_b|=10⁻¹⁴` at n=64; the in-tree `EtaRealNegClosed` fact). A real process is 1-D: the
+  "angle" `cos∠(A,B)` is quantized to a SIGN `±1`, the half-args are `{0,π}` (each half real), and the
+  worst frequency deterministically selects the CONSTRUCTIVE `+1` branch. Random-b control: `cos∠` is
+  `±1` for all b (both halves real); only the maximizer pins `+1`. Generic chaining yields the `√n`
+  floor ONLY via the orthogonal-increment Pythagorean gain `‖A+B‖²≤‖A‖²+‖B‖²` (the Dudley/`γ₂`
+  mechanism), which a real coherent (`cos=+1`) increment VIOLATES — achievable `‖A+B‖²=(‖A‖+‖B‖)²`,
+  saturating to `2(‖A‖²+‖B‖²)` (the refuted √2-doubling) at `‖A‖=‖B‖` (measured `‖B‖/‖A‖→1`).
+
+VERDICT: OBSTRUCTION (distinct from W4). The bounded tower-index entropy (A10's hope, confirmed) is
+DECISION-IMPOTENT for the floor, because the process is 1-D REAL + COHERENT, not sub-Gaussian:
+chaining's gain mechanism (phase cancellation among many near-tied 2-D directions) is structurally
+ABSENT. The `√(n log(p/n))` core is untouched and OPEN. Manifesto route 54 — the one route flagged as
+possibly dissolving the barrier — does NOT dissolve it, for a precise machine-checked reason (process
+1-D real + coherent), separate from the prior frequency-index flatness (that was the index metric;
+this is the process values). NO capacity / beyond-Johnson / sub-linear claim.
+
+Lean guardrail (axiom-clean `{propext,Classical.choice,Quot.sound}`, real `lake build` OK 8313 jobs,
+`autoImplicit=false`, no sorryAx): `Frontier/_wfA10_tower_chaining_obstruction.lean` —
+`chaining_gain_iff_signs_disagree` (the Dudley Pythagorean gain `(a+b)²≤a²+b²` ⟺ `a·b≤0`, i.e. signs
+DISAGREE / genuine cancellation), `chaining_gain_fails_of_aligned` (`a·b>0` ⇒ gain FAILS),
+`aligned_real_grows` + `aligned_real_saturates_doubling` (aligned reals reinforce; `(a+a)²=2(a²+a²)`
+exact at `|a|=|b|`), `coherent_tower_energy_grows` + `normalized_energy_constant` (the coherent
+recursion `Q(μ+1)=2Q(μ)` telescopes to `2^μ·Q0`, `Y_μ` constant — no `o(log)` reduction),
+`chaining_void_on_real_coherent_process` (HEADLINE package), and the contrast
+`orthogonal_increment_would_give_floor` (a genuine 2-D `a·b=0` would give the floor `(a+b)²=a²+b²` —
+but realness forbids it at the maximizer). Probes: `scripts/probes/rust/probe_wfA10_*.rs`.
+
+## ★ P6 BESSEL-DEVIATION sub-baseline route REFUTED — D(t) <= 0 is FALSE for GENERIC primes (not just Fermat); char-p period MGF genuinely EXCEEDS the char-0 Bessel baseline (2026-06-17)
+
+Lens / proposed POSITIVE route: the char-0 period CGF is exactly (n/2)log I0(2t) (the Bessel/arcsine
+generating function of n/2 INDEPENDENT 2cos(uniform) angles; verified r=1..8, c_r LINEAR, file
+`_CharZeroMGFBesselBound.lean` proves I0(2y)^{n/2} <= exp(n y^2/2) AXIOM-CLEAN [propext, Classical.choice,
+Quot.sound], no sorryAx). The hoped positive form: the char-p deviation
+  D(t) = log E_{b!=0}[exp(t*eta_b)] - (n/2) log I0(2t)
+is <= 0 ("sub-baseline") for GENERIC prize primes, provable via subgroup EQUIDISTRIBUTION; that would
+give the SHARP floor M = max_b|eta_b| <= sqrt(2 n log m) (constant sqrt2). Prior memo framed this as
+"generic-true / Fermat-structured-false".
+
+PROBE (scripts/probes/probe_P6_bessel_deviation_generic_refutation.py — exact eta over proper mu_n=2^mu,
+n | p-1, p PRIME, never n=p-1, generic = p-1 NOT a pure power of 2 so NOT Fermat/2-power-structured):
+(1) D(t*) at the saddle t*=sqrt(2 log m / n): D>0 for 7/25 (n=32), 5/25 (n=64), 3/25 (n=128) GENERIC primes.
+(2) D_opt = sup_t D(t) (the TRUE MGF gap, ruling out a saddle artifact): D_opt>0 for 4/15 (n=32),
+    3/15 (n=64), 6/15 (n=128) GENERIC primes, magnitude up to +1.47. The D_opt>0 primes are EXACTLY the
+    ones with sharp-floor ratio R2 = M/sqrt(2 n log m) >= 1.0 (p=32993, 264769, 2110337 — genuine sqrt2
+    violators), so D_opt is detecting REAL constant-violation, not noise.
+(3) The relaxed C=2 floor (M <= 2 sqrt(n log m)) is ALSO not universal: at the 2-power-structured Fermat
+    F4 (n=64, p=65537) R1 = M/sqrt(n log m) = 2.07 > 2.
+
+VERDICT (REFUTED — negative closure of the P6 positive route, but NOT a prize disproof): D(t) <= 0 is
+FALSE for GENERIC primes, so NO subgroup-equidistribution theorem can establish it — the proposed cleanest
+positive form is dead. The char-p period MGF Psi_p(t) = E_b exp(t eta_b) genuinely EXCEEDS the char-0
+Bessel/arcsine baseline (n/2)log I0(2t) on a positive-density set of ordinary primes, NOT just at Fermat.
+This corrects the prior "generic-true / structured-false" picture: the Bessel sub-baseline is GENERICALLY
+false, structured-worse. CONSEQUENCE for the program: the floor is NOT a clean char-0 Bessel COMPARISON;
+the surviving statement is M <= C sqrt(n log m) with C bounded but >= ~1.5-2, worst-generic-C creeping up
+with sqrt(log m) (1.23@n16 -> 1.57@n256) = the BGK/Paley shape. Any correct floor must be a BGK-type
+cancellation bound, NOT a CGF-domination of char-p by char-0. The char-0 Bessel MGF is a clean PROVEN
+brick (upper baseline for the MAIN term) but does NOT dominate the char-p MGF; the open core is the char-p
+EXCESS Psi_p - Psi_0 > 0 = the m^{2r}-twist sqrt-cancellation = the 25-yr BGK wall. P6 reduces-to-BGK
+(refuted as a standalone equidistribution route). Python-only + axiom audit of existing Lean, no new Lean.
