@@ -15354,3 +15354,29 @@ VERDICT: both `FourierDimFreqField-RestrictionGap` and `FreqDecoupling-CosetCurv
 false claim that the multiplicative-subgroup/curvature structure pins it. notBGK=9/8 disproved. NOT a
 prize closure; δ* remains the single open char-p BGK input. Probe:
 scripts/probes/probe_444_refute_freqside_restriction.py (exact spectra; no Lean — numerical disproof).
+
+### GAUSSSUM-SATOTATE REDUCES TO BGK — premise exact, but equidistribution ≠ sup (#444 25-novel doc, nubs, 2026-06-17)
+
+`GaussSumSatoTate-FreqRestriction` [nov 9/notBGK 8] claims b↦η_b is a fixed unitary image of the n
+Gauss sums τ(χ) (χ trivial on μ_n), and that KATZ/DELIGNE EQUIDISTRIBUTION pins the sup. The premise
+is the standard Gauss-sum dual identity (subgroup-indicator Fourier inversion):
+    η_b = (n/(p−1)) · Σ_{χ∈H^⊥} χ̄(b)·g(χ),   H^⊥={χ_k : n|k}, |H^⊥|=m=(p−1)/n, |g(χ)|=√p (χ≠1).
+
+VERIFIED EXACT (numpy tabled-root, ALL b, `probe_444_refute_gausssum_satotate.py`):
+* n=8,  p=4129:  max_b |η_b − GaussSumDual| = 1.16e-14;  |g(χ)|=√p ✓
+* n=16, p=65537: max_b |η_b − GaussSumDual| = 4.63e-14;  |g(χ)|=√p ✓
+So the premise (η_b = fixed unitary image of n unimodular Gauss sums) is genuinely EXACT.
+
+BUT THE MECHANISM IS FALSE. Equidistribution controls the TYPICAL value (measured typical |η_b| ≈ √n:
+2.29 vs √8=2.83; 3.22 vs √16=4 — half-normal scale, var n ✓). The conjecture's leap "equidistribution
+pins the SUP" conflates the limiting MEASURE with the L^∞ extreme: the sup over the m cosets is the
+extreme-value max ~ √(2n log m) (measured SUP/√n = 2.67 (n=8) → 3.46 (n=16), GROWING with m; cf. the
+freqside entry above). Katz/Deligne gives the equidistribution measure, NOT a bound on the max over a
+growing family — that extreme IS the open BGK constant. So the "monomial-Kloosterman sheaf + monodromy"
+framing pins the typical η_b but leaves the prize sup exactly where BGK does.
+
+VERDICT: `GaussSumSatoTate-FreqRestriction` REDUCES TO BGK (equidistribution ≠ sup; premise exact,
+mechanism false). Same root cause disposes the sibling sup-pinning frequency-side conjectures
+(`KloostermanSheaf-FreqMonodromyPin` rests on the identical "monodromy pins the sup" leap — the sup is
+the EVT extreme, not an equidistribution/monodromy-drop output). NOT a prize closure; δ* remains the
+single open char-p BGK input. Probe: scripts/probes/probe_444_refute_gausssum_satotate.py.
