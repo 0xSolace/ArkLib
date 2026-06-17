@@ -16494,3 +16494,55 @@ scaling law). The diagonal does not escape — the family inherits the diagonal'
 
 **Status:** REDUCES-TO-WALL F10. The genuine `√n`-cancellation residual is the archimedean
 general-position of the `n` Artin–Schreier phases = the open BGK/Paley core, NOT a Deligne output.
+
+---
+
+## T08 (architect G2-3) — Arakelov self-intersection lower bound on the period section: REFUTED (sign reversed), reduces F3/F9/F11
+
+**Candidate:** view `θ_b = Σ_{x∈μ_n} e_p(bx)` (an algebraic integer) as a section of the trivial
+metrized line bundle on `Spec 𝓞_K`; package the product formula as the Arakelov self-pairing
+`deg-hat(div-hat θ_b)=0`; assert the "sharp Arakelov inequality"
+`House(θ_b)² ≤ n·exp(−2·content_b/φ(n))·(1+spread)` with non-archimedean intersection content
+`content_b = ord_P(θ_b)·log p + (2-adic ord) ≥ 0`. Claims a DEEP period (large `content_b`) forces a
+SMALL House, hence `M(n) ≤ √(n·log(p/n))`.
+
+**Refutation (the sign is reversed — same as T06, now from the Arakelov self-pairing itself).**
+`deg-hat` of a *principal* arithmetic divisor `= 0` IS the product formula `Σ_w N_w log|wθ|=0`. For an
+algebraic integer all non-arch `|θ|_v ≤ 1`, so `content·φ := −Σ_{v non-arch} N_v log|θ|_v ≥ 0` and the
+product formula gives `Σ_{w arch} log|wθ| = content·φ = log|N_{K/ℚ}(θ)| ≥ 0`. The archimedean log-mass
+EQUALS the non-arch content — the columns move TOGETHER. With `House ≥ geom-mean` (`max ≥ mean`):
+`log House ≥ content`. `content` is a LOWER lever on the House, the OPPOSITE of the candidate's
+`exp(−content)` ceiling. The period section is principal, so its arithmetic degree is forced to 0 —
+no spare intersection budget to spend against the archimedean term. The Arakelov repackaging of T06
+changes nothing.
+
+**Exact β=4 prize-scale counterexamples on REAL Gaussian periods** (`probe_wfT08_arakelov_self_intersection.rs`,
+exhaustive over all `φ(p)/n` conjugates, `p=1 mod n`, `p≈n⁴`): in every case `content>0` (genuine
+non-unit, the candidate's hypothesis), yet the true House `M(n)≈5√n` vastly exceeds the candidate's
+ceiling `√n·e^{−content}` (which *shrinks* to ≈1.88 as content grows):
+
+| n | p | content | candidate ceiling √n·e^{−content} | true House M(n) |
+|---|---|---|---|---|
+| 8   | 4129       | 0.408 | 1.881 | 7.558 |
+| 16  | 65617      | 0.776 | 1.841 | 13.29 |
+| 32  | 1048609    | 1.102 | 1.880 | 22.98 |
+| 64  | 16777601   | 1.448 | 1.880 | 38.53 |
+| 128 | 268437889  | 1.793 | 1.884 | 55.06 |
+
+Violation factor ≈30 at n=128 and growing. The Arakelov truth `content≥0 ∧ House≥geom-mean` holds in
+all 6 cases.
+
+**Reduction map (machine-checked, axiom-clean)** `_wfTT08_arakelov_self_intersection.lean`:
+- `arakelov_selfpairing_arch_eq_content`: `A+C=0, C≤0 ⟹ A=−C≥0` (arch mass = non-arch content).
+- `arakelov_content_is_lower_lever`: `content ≤ logHouse` (the CORRECT coupling sign).
+- `candidate_antitone_vs_house_monotone`: candidate ceiling `√n·e^{−content}` is antitone in content
+  while the House lower bound `e^{content}` is monotone — they diverge.
+- `arakelov_candidate_violated`: candidate ceiling `<2 <7<` true House at the n=8 row.
+- `content_lever_sign_certificate`: `(1/2)log8 − content < log7` (the n=8 log-House sign violation).
+
+**Reduction to fences:** F3 (`_ValuationClassBarrier`): `content·φ=log|N(θ_b)|` is a unit-invariant
+ideal datum, which the barrier proves cannot pin the archimedean profile; "the section carries the
+metric" dodge fails because a principal divisor's section is unit-determined and the product formula
+ties it to `log|N|` with the wrong sign. F9/F11 (`L2MahlerNormBound`, `BadPrimeNormBound`):
+`content·φ=log|N(θ_b)|` is the in-tree bad-prime norm object and `ord_P(θ_b)≥1 ⟺ p|N(θ_b)` is the BGK
+divisibility count `#{c:p|N(c)}`. **Status: REFUTED + REDUCES-TO-WALL F3/F9/F11. No prize gain.**
