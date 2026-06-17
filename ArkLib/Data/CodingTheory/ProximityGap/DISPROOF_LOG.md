@@ -16993,3 +16993,50 @@ are weakly amenable with `Λ_cb=1`; twisted crossed products of nuclear algebras
 are nuclear (Λ_cb=1) — the twist cannot raise it. NOVEL+ABSENT (no crossed-product/cb-norm object in
 tree; metaplectic appears only in Parseval/moment F1), but reduces. Axiom-clean
 [propext, Classical.choice, Quot.sound]. Confidence high.
+
+---
+
+## T22 (G5-2): determinantal repulsion → log-rigidity of the period exceedance COUNT — REFUTED (primary); surviving sup-deduction REDUCES-TO-WALL F1
+
+**File:** `Frontier/_wfT22_determinantal_count_rigidity.lean` · **Probe:** `scripts/probes/probe_wfT22_paley_degeneracy.py`
+
+**Candidate.** Model the normalized eigenvalue multiset `X_n = {η_b/√n : b∈F_p^*}` of
+`C = Cay(F_p,μ_n)` as a DETERMINANTAL point process (after "Gaussianization") with a
+Christoffel–Darboux kernel; claim the exceedance count `N(t)=#{b≠0:η_b>t√n}` has determinantal
+log-RIGIDITY `Var(N)≤c·log(p/n)` (the `−K(s,u)²` repulsion) + sub-Gaussian mean `E[N]≤m·e^{−t²/2}`,
+forcing `t_max≤√(2 log m)`, i.e. `M(n)≤√(2n log(p/n))`. New open statement: process is determinantal
+with log-rigidity. Architect-flagged risk: F1 (if CD kernel = moments).
+
+**Verdict: REFUTED.** The determinantal hypothesis is *provably false at the algebraic-spectrum
+level* — not "likely to fail." `η_b` depends only on the cyclotomic coset `b·μ_n`; the graph
+`Cay(F_p,μ_n)=Γ(k,p)` with `k=(p−1)/n` has spectrum = degree `n` plus the **`k=(p−1)/n` Gaussian
+periods `η_i`, each of multiplicity exactly `n`** (Podestá–Videla, arXiv 2604.06513, 2026;
+Liu–Zhou Thm 115). So `{η_b:b∈F_p^*}` (over the `p−1=kn` indices) takes only `k` DISTINCT values,
+each repeated `n` times. EXACT probe confirms: `p=73,n=8` → 9 distinct, all mult 8; `p=257,n=16` →
+16 distinct, all mult 16; `p=3457,n=27` → 128 distinct, all mult 27.
+
+* **Obstruction 1 (REFUTED, `exceedance_count_dvd_fiberSize` + `degenerate_not_simple`).** Since
+  every fiber has exactly `n` indices, `N(t)` is ALWAYS a multiple of `n` (= `n·#{cosets above t}`),
+  so it is *never 1*: the configuration is `n`-fold atomic = maximally NON-simple. A determinantal
+  point process with a Christoffel–Darboux *projection* kernel is a.s. SIMPLE (HKPV), its kernel
+  vanishing on the diagonal — that vanishing IS the repulsion. An `n`-fold-degenerate atom has
+  `ρ_2`-on-diagonal `~n²` (opposite sign to a DPP's 0). The DPP/log-rigidity hypothesis is false by
+  the spectrum structure, prize scale `n=2^30`.
+
+* **Obstruction 2 (REDUCES-TO-WALL F1, `variance_irrelevant_to_tMax`).** Strip the false DPP
+  scaffolding: the only half that bounds the prize sup is the MEAN `E[N(t)]≤m·e^{−t²/2}`. For the
+  *deterministic* family the only certificate of `E[N(t)]=#{b:η_b/√n>t}` is Markov on the `2r`-th
+  moment, `#{b:η_b/√n>t}≤(Σ(η_b/√n)^{2r})/t^{2r}=q·A_r/(n^r t^{2r})` — EXACTLY
+  `MomentCountSupBound.forall_le_of_sum_pow_lt` (`a_b=(η_b/√n)²`) = fence F1. The VARIANCE bound
+  `Var(N)≤c log m` is *inert* for an upper bound on `t_max`: a smaller variance does not lower the
+  largest `t` with `N(t)≥1`; only the mean (energy) does. Formalized: the sup-conclusion holds with
+  the rigidity variance `V` a *completely unused* free hypothesis. Also: T22 conflates the
+  "particle count" `m=p/n=k` (distinct periods) with `b∈F_p^*` (`p−1=kn` indices); the honest count
+  is `k`, whose trivial Poisson variance `≤k` already suffices for the (inert) sup step.
+
+NOVEL + ABSENT (grep: 0 `determinantal point`/`christoffel`/`darboux`/`szego`/`confluent hyperg`;
+the "deep-hole probability" matches are coding-distance, not point-process). Literature (WebSearch):
+DPP rigidity is RANDOM-matrix theory (GUE/Ginibre/Airy-Bessel-Gamma kernels, HKPV / Bufetov /
+Ghosh–Peres); arXiv 2604.06513 studies the Paley SPECTRUM algebraically, NOT as a DPP, and proves no
+hole/variance bound. Axiom-clean `[propext, Classical.choice, Quot.sound]` (no sorryAx);
+`autoImplicit=false` clean. Confidence high.
