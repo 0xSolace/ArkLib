@@ -12,6 +12,18 @@ the tree contains a concrete theorem of a negated residual instance.
 The named-residual convention is a modularity pattern, not an incompleteness marker:
 always check this census before treating a `*Residual` name as open proof debt.
 
+> **#444 campaign note (wf-L6, char-`0` ceiling discharge ladder).** The `(P2-Slack)` slack route
+> (`Frontier/_wf6P2_charp_lamleung_slack.lean`) consumes the char-`0` Lam–Leung ceiling
+> `(S-M1) : A_r ≤ (2r−1)‼·n^r` as a free hypothesis (`hZceiling`). That input is now **PROVEN
+> unconditionally** (axiom-clean) at `r ∈ {2,3}` (`Frontier/_wf9OT4_charzero_ceiling_discharge.lean`)
+> and at `r ∈ {7,8,9}` (`Frontier/_wfL6_charzero_ceiling_discharge_high.lean`), from the in-tree
+> exact `E_r` closed forms (`_AvL2_E{7,8,9}ClosedForm.lean`, `CharZeroEnergyThree`). So the slack
+> route's `(S-M1)` at these rungs rests on ONLY the open `(P2-Slack)` spurious-domination residual
+> `Spur_r(p) ≤ ceiling − E_r` — the char-`0` half is discharged, the strict slack
+> `(2r−1)‼·n^r − E_r > 0` is exhibited (non-vacuous). The remaining `(P2-Slack)` residual is the
+> **genuine BGK char-`p` wall** (the char-`p` transfer of the energy bound at depth `r ≈ ln q`,
+> refuted at the prize prime): GENUINELY OPEN.
+
 ## Summary
 
 - **Total strict residuals:** 91

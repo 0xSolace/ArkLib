@@ -1454,6 +1454,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G6_stepanov_roughprime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT1_ChaiFanQ1Cyclotomic
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT2_DemandSideFaithfulness
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT4_charzero_ceiling_discharge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL6_charzero_ceiling_discharge_high
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
