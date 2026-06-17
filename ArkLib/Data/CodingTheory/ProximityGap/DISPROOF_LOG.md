@@ -15087,37 +15087,25 @@ inside the prime field, so neither geometric (rational-curve) nor arithmetic (Fr
 exists. NOT progress toward the prize — it's a clean closure of one family, sharpening "what's truly
 left" to the genuinely-analytic worst-case sup-norm M(μ_n) (BGK wall), untouched. No fabrication.
 
+### G3 — classical-cyclotomy COEFFICIENT (period-polynomial root-bound) route is OBSTRUCTION, loose by √(m/log m) (#444, wf-G3, 2026-06-16)
 
-IDEA [LZSR] (#444, lever F10 / "Liu-Zhou subgroup-restriction dyadic-tower eigenvalue recursion",
-arXiv:1809.09829). The Cayley/Paley eigenvalue `η_b(G)=Σ_{x∈G}ψ(b·x)` is LINEAR in the connection set,
-so splitting `μ_n = μ_{n/2} ⊔ ζ·μ_{n/2}` (the index-2 sublattice) gives the eigenvalue recursion
-`M(μ_n) = max_{b≠0}|η_b(A)+η_b(B)| ≤ M(μ_{n/2}) + M(ζ·μ_{n/2}) = 2·M(μ_{n/2})`. PROPOSED (census §1.2):
-a multiscale/dyadic-tower handle distinct from the dead cross-cell descent (recurse `λ₂(μ_{2^a})` down
-the tower to a base case and accumulate a `√(log m)` saving).
+Took the lane-G3 angle: bound M(n)=maxᵢ|ηᵢ| of the dyadic periods via a CLASSICAL ROOT BOUND
+(Cauchy/Fujiwara/Lagrange) on the degree-m period polynomial Ψ(T)=∏(T−ηᵢ)∈ℤ[T], fed by the
+cyclotomic-number coefficients e_k(η). **Verdict: OBSTRUCTION (CHAR-0), loose by √(m/log m).**
 
-VERDICT: **REDUCES TO THE TRIVIAL `M ≤ n` SCALING (phase-aligned at the binding frequency).** The split
-identity `η_b(A∪B)=η_b(A)+η_b(B)` is EXACT (probe split error ≤ 1.8e-14) and the recursion
-`M(μ_n) ≤ 2 M(μ_{n/2})` is a genuine THEOREM (triangle inequality, 0 violations), but it is the
-magnitude-only recursion the N13 census flags as dropping the phase. Two faces:
-(i) **Thickness-blind.** The triangle inequality holds verbatim at the thick `β≈2.0` window where the prize
-is FALSE (probe: `p=257,n=16,β=2.0` behaves identically to `p=65537,n=16,β=4.0`). By rule 3 (any
-thickness-monotone method is wrong) it cannot prove the thinness-essential prize.
-(ii) **No saving at the binding frequency.** At the worst frequency `b*` for `μ_n` the two half-sums are
-PHASE-ALIGNED (`align = 1.0000`, 11/11 across `n=16,32,64`, `β=2.0..4.0`), so `|η_{b*}(A)+η_{b*}(B)| =
-|η_{b*}(A)|+|η_{b*}(B)|` exactly (no cancellation). The genuine subadditivity saving (gap 9-38%) lives only
-at NON-binding frequencies, where `M(A),M(B)` are realized at other `b`. Iterating from the base
-`M(μ_1)=1` therefore yields only `M(μ_{2^a}) ≤ 2^a = n`, the trivial bound, `√n` worse than the prize
-`C√(n log(p/n))`.
+**Smoking gun (exact integer arithmetic, probe_wf9G3_periodpoly_coeffs.py):**
+- Power sums p_k=Σηᵢ^k=N_k(0)−N_k(1) are integers via a Galois-constancy lemma (t↦ct, c∈𝔽_p*,
+  permutes cosets ⇒ N_k constant on 𝔽_p*); verified err=0 vs hi-precision periods.
+- **Exact 2nd-moment identity: p₂=Σηᵢ²=p−n** for EVERY dyadic n and EVERY prime (incl. rough).
+- Newton (p₁=−1) forces |e₂|=(p−n−1)/2=n(m−1)/2=Θ(nm).
+- **Fujiwara argmax=2 UNIFORMLY** (n≤128, m≤14): M(n)≤2|e₂|^{1/2}=√(2n(m−1))=Θ(√(nm)).
+- The bound/target ratio is EXACTLY √(2(m−1)/log m) (measured = predicted to 3 dp, m=11→2.888,
+  m=14→3.139). Diverges → the coefficient route cannot reach C√(n log m) for any absolute C.
 
-PROBE (`scripts/probes/probe_liuzhou_split_recursion.py`; proper `μ_n`, `n=2^a`, `p≫n³`, Fermat-type primes,
-never `n=q-1`): 11/11, split exact, subadditivity holds (0 violations), recursion always LOSSY (gap
-8.9–38.1%) BUT worst-`b` alignment `= 1.0000` in every case (the saving never touches the max). The phase
-law `θ_b = arg(η_{ζb}) − arg(η_b)` that would make the recursion CONTRACTIVE at `b*` (the N13 phase-aware
-transfer operator) is the open object this magnitude recursion cannot supply.
-
-LEAN BRICK (axiom-clean, `[propext, Classical.choice, Quot.sound]`, no sorry/native_decide):
-`Frontier/LiuZhouSplitRecursion.lean`: `eta_union_disjoint` (the EXACT split), `eta_norm_union_le`,
-`M_union_le` (the Liu-Zhou recursion `M(A∪B) ≤ M(A)+M(B)`), `M_union_le_two_mul` (the dyadic doubling),
-`M_union_ge_of_nonneg`/`M_nonneg` (monotone-up: run downward it never contracts below a half's `M`, so it
-cannot beat trivial scaling). Signed LZSR. (The honest content is the sub-additive skeleton; the escape is
-the phase law at the binding frequency = the BGK/N13 wall, untouched.)
+**Root cause:** the looseness lives entirely at k=2, and |e₂| is an EXACT char-0 quantity (blind
+to prime structure). Any root bound monotone in maxₖ|e_k|^{1/k} is ≥|e₂|^{1/2}=Θ(√(nm)); only the
+fine period sign-cancellation (= exactly BGK) lives below √(nm), invisible to coefficient
+magnitudes. Cyclotomy-side twin of B7. Joins the disc lever (CFT-fixed, vacuous) and the phase
+cocycle (#407 Attack-1, non-contractive): all three classical-cyclotomy levers collapse onto the
+open BGK sup-norm wall. Lean (axiom-clean): Frontier/_wf9G3_periodpoly_coeff_nogo.lean
+(coeff_route_loose, fujiwaraAtTwo_eq). NOT a closure; one more confirmation BGK is a real wall.
