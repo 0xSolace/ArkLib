@@ -1053,6 +1053,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericSuperDiagonalLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DilationOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DistinctPeriodCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031LogTargetForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031MFromConstantIndexConjecture
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031MFromPointwise
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031OrbitCountPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031SupTransversalCollapse
