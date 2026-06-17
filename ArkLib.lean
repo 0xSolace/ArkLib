@@ -895,6 +895,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiber
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordList
 import ArkLib.Data.CodingTheory.ProximityGap.EsymmFiberCodewordListExp
 import ArkLib.Data.CodingTheory.ProximityGap.EtaComplementFlip
+import ArkLib.Data.CodingTheory.ProximityGap.EtaAutocorrInvolutionPaired
 import ArkLib.Data.CodingTheory.ProximityGap.EtaCosetSplit
 import ArkLib.Data.CodingTheory.ProximityGap.EtaPointwiseAutocorr
 import ArkLib.Data.CodingTheory.ProximityGap.EtaQuarticUncond
