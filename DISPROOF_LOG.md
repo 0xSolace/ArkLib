@@ -4893,3 +4893,23 @@ Conj 7.1, closing the prize via the in-tree action-orbit machinery requires a NO
 bound on the multi-term strata; the orbit count alone is insufficient. (probe c71_sparse_orbit_gap;
 the earlier probe_c71_sparse_dominance.py v1 was VACUOUS -- measured "is direction low-degree" --
 quarantined and rebuilt.) CORE / Conj-7.1 multi-term incidence bound OPEN.
+
+## C71-RESIDUAL: binomial (2-term) strata mu_n-incidence = polynomial-method root-count, NOT orbit (sol, 2026-06-17)
+Follow-on to C71-ROUTE-B: the named-open residual was "a NON-orbit incidence bound on the multi-term
+strata". First concrete brick on the 2-term (binomial) strata. PROBE (probe_c71_multiterm_incidence_
+rootcap.py, EXACT, 8/8 over thin mu_n n=2^a a in {2,3,4}, p=1 mod n with p-1=k*n k>=2 NEVER n=q-1,
+multi-prime incl p>n^3 73/521/4129 and Fermat 257): for EVERY genuine 2-term direction f = X^i - c*X^j
+(c in mu_n, i != j), (1) #roots(f in mu_n) <= gcd(|i-j|, n) [tight at gcd in the majority], and
+(2) max root multiplicity of f at any nonzero point < 2 (the 2-sparse confluent-Vandermonde engine).
+MECHANISM: on the punctured domain x != 0, f(x)=0 iff x^(i-j) = c, so the nonzero roots inject into
+the (i-j)-th roots of c, of which there are <= i-j (Polynomial.card_nthRoots). FORMALIZED axiom-clean
+in ProximityGap/C71BinomialIncidence.lean (binomial_root_iff_pow_eq + binomial_incidence_card_le): the
+binomial direction's incidence #{nonzero x in S : x^i - c x^j = 0} <= i - j for any finite S, with
+S = mu_n the binomial mu_n-incidence bound. This is a NON-orbit (no dilation-eigenvector hypothesis),
+field- and thickness-universal, char-free polynomial-method count -- it COVERS the route-B multi-term
+worst case that the action-orbit O(1)/|F| pin provably MISSES. EXTENDS the polynomial-method toolset
+(Polynomial.card_nthRoots) + the C71SparseOrbitGap route-B localization; adds no character-sum/BGK
+content. HONEST SCOPE: the robust <=(i-j) bound is formalized; the gcd-tight refinement (cyclic-kernel
+order) and the 3-term case + the full reduction of the strata-incidence to a soundness bound remain
+OPEN. NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE
+commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
