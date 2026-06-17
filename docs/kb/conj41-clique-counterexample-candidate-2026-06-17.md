@@ -82,3 +82,13 @@ single-syndrome `M_true` matches the paper's anchor table 10/10, so the `M_true`
 (pinning δ*) is untouched and still open. What this corrects: OP2's worst-case list size is **not**
 `⌊(2D−1)/c⌋`; it is `≥ w+1` via cliques. The average/typical-case bound (what the authors' random search
 saw) is consistent with their data.
+
+## Final cross-validation: engine reproduces the paper's average-case; clique is the special worst case
+Random-syndrome search (the paper's verification method) with my engine: at n=20,c=5 (bound 3), 200 random
+lines give **max M_true = 0** (well within bound; consistent with the paper's `≤2` over ≥14000 configs —
+random lines in `F_p^D` almost never decode any support since the `c=5` conditions over-determine γ). The
+**constructive clique gives 6** (proven over ℚ). This confirms: (i) my engine faithfully matches the paper's
+average/random-case data, and (ii) the clique is a genuine **measure-zero worst-case** configuration that
+random search cannot reach — exactly why the authors' random-search verification missed it. Triangulated:
+anchor table 10/10 (single-syndrome) + average-case match (random line) + exact-ℚ proof (worst-case clique)
++ char-0 mechanism. The proven counterexample to Conj 41's worst-case form stands on all four legs.
