@@ -55,6 +55,8 @@ and `#S₀ = n` (since `0 ∉ μ_n`), giving the window total `= n`.
 * `windowSum_binomial_incidence_eq_card_of_subgroup` (HEADLINE) : when `S` is `(· ^ d)`-closed and
   `0 ∉ S` (the `μ_n` case), the dilation-window total incidence equals `#S` exactly — so the window
   average is `(#S)/(#W) = 1` when `W = S`. The amortized `O(1)` cap.
+* `exists_window_scalar_binomial_incidence_le_one` : the pigeonhole consequence — every nonempty
+  full dilation window contains a scalar whose binomial incidence is at most `1`.
 
 These EXTEND the `C71BinomialIncidence(Gcd)` per-direction counts with the **amortized** window
 identity; pure `Finset` fiber combinatorics, no character-sum / BGK content. NON-MOMENT,
@@ -139,9 +141,39 @@ theorem windowSum_binomial_incidence_eq_card_of_subgroup (S : Finset F)
   rintro rfl
   exact hzero hx
 
+/-- **There is a light scalar in every nonempty dilation window.** In the subgroup-window case,
+the exact total `Σ_c incidence(c) = #S` immediately implies that some scalar `c ∈ S` has binomial
+incidence at most `1`. This is the pigeonhole form of the window-average `= 1` law: the large
+`gcd(i-j, #S)` fibers are compensated by empty/light fibers, so a full dilation orbit always
+contains a scalar with `O(1)` incidence. -/
+theorem exists_window_scalar_binomial_incidence_le_one (S : Finset F)
+    {i j : ℕ} (hij : j ≤ i)
+    (hclosed : ∀ x ∈ S, x ^ (i - j) ∈ S) (hzero : (0 : F) ∉ S)
+    (hne : S.Nonempty) :
+    ∃ c ∈ S, (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card ≤ 1 := by
+  classical
+  by_contra hnone
+  push Not at hnone
+  have htwo : ∀ c ∈ S, 2 ≤
+      (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card := by
+    intro c hc
+    exact hnone c hc
+  have hsum_ge : S.card * 2 ≤
+      (∑ c ∈ S, (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card) := by
+    calc
+      S.card * 2 = ∑ c ∈ S, (2 : ℕ) := by simp
+      _ ≤ ∑ c ∈ S, (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card := by
+        exact Finset.sum_le_sum (fun c hc => htwo c hc)
+  have hsum_eq := windowSum_binomial_incidence_eq_card_of_subgroup S hij hclosed hzero
+  have hbad : S.card * 2 ≤ S.card := by
+    simpa [hsum_eq] using hsum_ge
+  have hpos : 0 < S.card := Finset.card_pos.mpr hne
+  omega
+
 end ArkLib.ProximityGap.C71BinomialWindowAverage
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_pow_fiber_eq_card
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card_of_subgroup
+#print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.exists_window_scalar_binomial_incidence_le_one
