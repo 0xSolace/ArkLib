@@ -2557,6 +2557,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleAddQuadruple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonTriple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuad
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuadWrapper
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
