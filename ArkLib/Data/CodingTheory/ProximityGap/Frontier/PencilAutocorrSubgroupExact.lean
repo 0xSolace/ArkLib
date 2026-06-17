@@ -164,4 +164,34 @@ theorem subgroup_autocorr_support {H : Finset G}
     exact Finset.card_ne_zero_of_mem ha
   · simp [hρ]
 
+/-- **The EXACT multiplicative energy of a subgroup is `|H|³`.** The multiplicative energy
+`E_×(H) = #{(a,b,c,d)∈H⁴ : a·b = c·d} = ∑_ρ |H ∩ ρ·H|²` is, by the exact all-or-nothing
+autocorrelation, carried by the `|H|` inside-shifts each contributing `|H|²`:
+
+  `∑_ρ (H ∩ dilate ρ H).card² = |H|·|H|² = |H|³`.
+
+This is the MAXIMAL multiplicative energy (`E_× = |H|³` is the largest possible for an `|H|`-set,
+since `∑_ρ a_ρ = |H|²` with each `a_ρ ≤ |H|` is maximized by concentrating on `|H|` full shifts).
+It CONTRASTS with the MINIMAL additive energy `E_+(μ_n) = Θ(|H|²)` (ABF26, `RootsOfUnityAdditiveEnergy`):
+the subgroup is simultaneously additively spread (min energy) and multiplicatively rigid (max energy) —
+the sum-product extremality at the heart of why μ_n is the hard thin-set, and a direct exact corollary
+of the all-or-nothing autocorrelation. -/
+theorem subgroup_multiplicativeEnergy_eq_card_cube [Fintype G] {H : Finset G}
+    (hmul : ∀ a ∈ H, ∀ b ∈ H, a * b ∈ H)
+    (hinv : ∀ a ∈ H, a⁻¹ ∈ H) :
+    ∑ ρ : G, ((H ∩ dilate ρ H).card) ^ 2 = H.card ^ 3 := by
+  -- each summand is (if ρ∈H then |H| else 0)^2 = if ρ∈H then |H|^2 else 0
+  have hpt : ∀ ρ : G, ((H ∩ dilate ρ H).card) ^ 2
+      = if ρ ∈ H then H.card ^ 2 else 0 := by
+    intro ρ
+    rw [subgroup_autocorr_exact hmul hinv ρ]
+    by_cases hρ : ρ ∈ H
+    · simp [hρ]
+    · simp [hρ]
+  rw [Finset.sum_congr rfl (fun ρ _ => hpt ρ)]
+  -- ∑_ρ (if ρ∈H then |H|^2 else 0) = (#{ρ : ρ∈H}) • |H|^2 = |H| • |H|^2 = |H|^3
+  rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.sum_const]
+  rw [smul_eq_mul]
+  ring
+
 end ProximityGap.Frontier.PencilAutocorrelation
