@@ -4833,3 +4833,47 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # capacity/beyond-Johnson claim; cliff-at-n/2 UNTOUCHED (this is a log-tower mean-drift object, not an
 # incidence/delta* object). NON-MOMENT (log-ratio of sup-norms, not additive energy), EXTEND-proven on
 # the landed Liu-Zhou M_union_le_two_mul. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+# =============================================================================================
+# [N13 SIGN-LAW] The absolute sign s_b = sgn(eta_b) carries NO character structure (the sign
+# cocycle is NOT a coboundary). FRONTIER-MOVEMENT, NON-MOMENT, EXTEND-proven on _EtaRealNegClosed.
+# Brick: _EtaSignNonMultiplicative.lean (axiom-clean {propext,Classical.choice,Quot.sound}, 5 thms).
+# Probes: probe_eta_sign_qr_structure.py, probe_eta_sign_witness.py.
+# =============================================================================================
+#
+# CONTEXT. _EtaRealNegClosed proved eta_b is REAL on the neg-closed mu_n (n even), so eta_b = s_b*||eta_b||
+# with a discrete SIGN s_b in {+1,-1}. DilationRealSignCocycle then reformulated the open CORE as a
+# real +/-1 sign cocycle: a frequency stays on the non-cancelling doubling trajectory iff its descent
+# signs are all "+", and the residual is the sign-cocycle large-deviation statement (no all-"+" descent
+# word survives). The natural hope to crack THAT is that b -> s_b is multiplicatively structured (a
+# quadratic character / Legendre symbol / homomorphism F_p^* / mu_n -> {+/-1}); then the relative
+# dilation sign s_{zeta b}/s_b would be a CONSTANT (the cocycle a coboundary), telescoped by characters.
+#
+# PROBE VERDICT (proper thin mu_n=2^a, p>>n^3, p=1 mod n, multiple primes incl Fermat-type, NEVER n=q-1):
+#  H1 s_b coset-constant on F_p^*/mu_n: TRUE (object well-defined).
+#  H2 s_b = Legendre(b|p): ~45 to 63% agreement = NOISE. NOT the quadratic character.
+#  H3 s_b multiplicative (s_{b1 b2}=s_{b1} s_{b2}): 36 to 69 failures / 120 pairs. MASSIVELY
+#     non-multiplicative. b -> s_b is NOT a homomorphism.
+#  H4 relative dilation sign s_{zeta b}/s_b constant in b: {-1,+1} (NOT constant) generically.
+#  EXPLICIT decidable witness (probe_eta_sign_witness.py): p=89, mu_4={1,34,55,88}, s_2=+1, s_4=s_{2*2}=-1
+#  => s_{2*2} != s_2*s_2. The sign fails multiplicativity at the smallest dilation b1=b2=2.
+#  (n=16,p=65537 Fermat prime had only 2/120 fails = a Fermat-prime artifact, NOT the general law.)
+#
+# THE WALL (rule 4, the formal obstruction). The sign is NOT a character, so the sign cocycle is NOT a
+# coboundary and NO character/homomorphism descent on s_b can isolate the worst frequency or exclude the
+# all-"+" descent word that DilationRealSignCocycle leaves open. Combined with the magnitude side
+# (wf-A1: children perfectly phase-aligned at b*, theta@b* = 0 exactly), neither the magnitude nor the
+# sign of the dilation recursion carries usable structure: the residual BGK/short-character-sum
+# cancellation must come from genuine large-deviation cancellation in a STRUCTURELESS sign word, not a
+# character coboundary.
+#
+# THE BRICK (axiom-clean, 5 thms): etaSign (the +/-1 multiplier), etaSign_eq, etaSign_sq;
+# not_monoidHom_of_witness (HEADLINE: a {+/-1} sign failing multiplicativity at one witness is NOT a
+# MonoidHom); no_constant_relative_sign (a non-constant relative-dilation factor => no constant c with
+# s(zeta x)=c s(x), the H4 obstruction); etaSign_not_monoidHom_of_witness (specialization to eta).
+#
+# HONEST SCOPE (rules 1,3,6 + asymptotic guard): NOT a CORE closure. The transcendental witness is a
+# PROBE input (cosine sums, not Lean-decidable); the Lean content is the abstract obstruction MECHANISM,
+# honestly scoped (the witness is a hypothesis, grounded by the probe, not faked). Thinness-essential
+# via neg-closure (-1 in mu_{2^a}, the realness this rests on). NON-MOMENT (pure sign/character algebra).
+# No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
