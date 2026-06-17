@@ -15864,3 +15864,49 @@ envelope `C(2r,r)·(n^4)^{r-1}` is ≥, and for r≥3 strictly >, the crude char
 n≥16, 2r≤n), `energy_bound_is_vacuous` (the spur bound forces the energy estimate ABOVE the char-0
 ceiling, killing the `K^r·n^r` shape the moment method needs). NOT a closure; a precise envelope-
 vacuity obstruction pinning the residual back onto the BGK/Paley monodromy cancellation.
+
+## A06 (#444): effective-Chebotarev / Lagarias-Odlyzko bad-prime count is UNION-BOUND-CAPPED, vacuous at depth r* = 2 ≪ ln p — OBSTRUCTION (date 2026-06-17)
+
+ANGLE: the S3 supply route. A prize prime `p ≈ n^β` (`p ≡ 1 mod n`, `n = 2^μ`) is BAD at depth `r`
+iff `p | N(σ_T)` for some antipodal-free signed config `T` of weight `≤ 2r`. Attempt the EFFECTIVE-
+CHEBOTAREV (Lagarias-Odlyzko, or Bach-Sorenson under GRH) count of bad primes over `ℚ(ζ_n)` to show
+the bad-prime DENSITY → 0 fast enough that the SPECIFIC prize prime is good w.h.p. at depth `r ≈ ln q`.
+
+THE OBSTRUCTION (precise, quantified). "`p` bad" is a UNION over `#configs = C(φ(n),2r)·2^{2r}`
+splitting conditions ("`p | N_T`"). The effective-Chebotarev / Lagarias-Odlyzko machine over such a
+union delivers ONLY the union bound `B(n,r) ≤ Σ_T ω_band(|N_T|) ≤ #configs · maxBandFactors`, with
+`maxBandFactors = ⌊φ(n)·c/(β log₂ n)⌋` (Mahler/norm-size cap). There is NO inclusion-exclusion saving
+— the `n^{Θ(ln n)}` norm-sets share factors uncontrollably. This union bound is vacuous (≥ window
+supply `W`) for all but the shallowest depth.
+
+EXACT prize-scale numbers (`probe_wfA06_prize_extrapolation.rs`, analytic in log₂; β=4):
+| n     | log₂ W (window) | union-UB crosses W at | deep depth r≈ln p | log₂(UB/W) at deep r |
+|-------|-----------------|-----------------------|-------------------|----------------------|
+| 2^10  | 35.9            | r* = 2                | 28                | +275                 |
+| 2^20  | 74.9            | r* = 2                | 55                | +1546                |
+| 2^30  | 114.3           | r* = 2                | 83                | +3898                |
+| 2^40  | 153.9           | r* = 2                | 111               | (>+3898)             |
+At n=2^30: `log₂ #configs = 115.4 > 114.3 = log₂ W` already at depth r=2, so the `#configs` factor
+ALONE exceeds the window. The union bound forces a good-count lower bound of exactly `W - UB = 0`:
+it cannot certify ANY prize-window prime good. The moment method needs `r ≈ ln p ≈ 83 ≫ r* = 2`.
+
+EXACT ENUMERATION ANCHOR (`probe_wfA06_chebotarev_density.rs`, exact negacyclic-det norms, β=4):
+the REAL bad density is tiny but the union-UB is already useless: n=32, w=8 → real 0.0025 (308/123721)
+vs union-UB 1.27 (>1); n=64, w=4 → real 2×10⁻⁶ (3/1665600) vs union-UB 0.0037 (1800× larger). So the
+true density IS small — but it is INACCESSIBLE to effective Chebotarev; accessing it = resolving per-
+prime norm structure = the BGK wall (faces 3↔4 of the open core). This matches the O49 note's flag
+that a poly-`p₀` transfer needs "the fiber equations' integer values to be smooth-number-free — a
+different, genuinely analytic question." A06 confirms that question is NOT reachable from the union
+side, and the gap between the union bound and the true density is exactly the wall.
+
+VERDICT: OBSTRUCTION (quantified). The only estimate the effective-Chebotarev / Lagarias-Odlyzko route
+delivers (the union bound) is, at prize scale, weaker than trivial for every depth `r ≥ 2`. NOT a
+closure; a machine-checked statement of WHY the supply-side density tool is structurally insufficient.
+
+Lean guardrail (axiom-clean `{propext,Classical.choice,Quot.sound}`, real `lake build` OK, no sorryAx):
+`Frontier/_wfA06_chebotarev_union_obstruction.lean` — `bad_card_le_union` (B ≤ Σ_T |bf T|, the entire
+effective-Chebotarev union content), `union_ub_le_configs_mul_max` + `bad_card_le_configs_mul_max`
+(union bound ≤ #configs·M), `union_ub_useless_of_configs_ge` (W ≤ UB ⟹ forced good-count = 0, vacuous),
+`chebotarev_union_fails_at_deep_depth` (packaged: at prize params the bound is vacuous), and the
+contrast `good_exists_of_union_lt` (the bound DOES certify a good prime when #configs·M < W — the
+r ≤ 1 shallow regime, far below the r ≈ ln p the moment method needs).
