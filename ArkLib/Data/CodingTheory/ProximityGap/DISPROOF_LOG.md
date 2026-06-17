@@ -15380,3 +15380,44 @@ mechanism false). Same root cause disposes the sibling sup-pinning frequency-sid
 (`KloostermanSheaf-FreqMonodromyPin` rests on the identical "monodromy pins the sup" leap — the sup is
 the EVT extreme, not an equidistribution/monodromy-drop output). NOT a prize closure; δ* remains the
 single open char-p BGK input. Probe: scripts/probes/probe_444_refute_gausssum_satotate.py.
+
+### C1-ANOMALY-WRAP-COUNT (height/divisor route) REDUCES TO DSAR FAITHFULNESS WALL (#444, 2026-06-17)
+
+ANGLE: bound the char-p anomaly A_r = E_r^{Fp,nonzero} − E_r^{char0,nonzero} directly. A_r counts the
+2r-tuples whose signed sum S = Σε_i ζ_n^{a_i} ∈ ℤ[ζ_n] is NONZERO but ≡0 mod the prime ideal 𝔭|p
+induced by ζ↦ω. S is a sum of 2r roots of unity ⇒ |σ(S)|≤2r ∀σ ⇒ |N(S)|≤(2r)^{φ(n)}; S∈𝔭, S≠0 ⇒
+p|N(S). Hence the EXACT structural identity:
+   T(n,r) := max{ largest prime factor of N(S) : signed 2r-tuple, S≠0 }  ⇒  A_r=0 for ALL p>T(n,r).
+
+VERIFIED EXACT — two INDEPENDENT methods agree to the unit (proper μ_n=2-power, n|p−1, p prime,
+never n=p−1):
+  (i) prime-scan (mod-p convolution E_r^{Fp} − char-0 lattice E_r^{char0}, scan ~4000 primes):
+      T_emp: n=8 r2=41, r3=313, r4=1201;  n=16 r2=337, r3=41521, r4=347057.
+  (ii) norm census (Bareiss det of mult-matrix in ℤ[ζ]/(x^{n/2}+1), NO prime scan): largest prime
+      factor of any N(S) = 41 (n8r2), 313 (n8r3), 337 (n16r2) — IDENTICAL to (i).
+  Probes: scripts/probes/probe_444_wrap_height_threshold.py, probe_444_wrap_norm_census.py.
+
+KEY FACTS:
+  * The naive height (2r)^{φ(n)} IS achieved by max|N(S)| (e.g. n8r2: max|N|=256=4^4=(2r)^φ exactly),
+    but max|N| is SMOOTH (power of 2); the threshold = its largest PRIME factor, far smaller.
+  * SCALING: log_n T(n,r) ≈ r (slope d/dr ∈ [0.65,1.25] over probed range): n16 gave 2.10, 3.84, 4.60
+    at r=2,3,4. So T(n,r) ~ n^{~r}.
+  * IN-BAND EXACT (p=n^4 prize prime): n=8 p=4129 A_r=0 through r=6 (p just below T(8,~5)); n=16
+    p=65537 (Fermat) A_4=4480>0, A_5=2923920>0 — wrap ALIVE at prize depth, GROWING with r (rel
+    A_r/E0: 0→0.001→0.0057).
+
+VERDICT — REDUCES TO THE DSAR/Wick-at-log-depth FAITHFULNESS WALL (same wall as
+arklib-444-char0-wick-faithfulness, reached from the divisor-count side):
+  * Perfect faithfulness (A_r=0) holds only for r ≲ β (since T~n^r < p=n^β ⟺ r<β). The window
+    R_faith ~ β is CONSTANT in n.
+  * The MGF/sup-norm consumer (DCWickMGFFromTermwise) needs ALL depths up to r* ~ log m =
+    (β−1)log₂ n, which GROWS without bound. They meet only for log₂ n=O(1) (tiny n); prize n=2^20–2^30
+    leaves a 20–30× depth gap.
+  * The r=2 prize rung (M⁴≤p·A_2) IS anomaly-free in-band (T(n,2)~n^{2.1}<n^4), but r=2 alone yields
+    only M≲p^{1/4}n^{1/2}, NOT the ½-up-to-√log target.
+  * The height angle controls ONLY the ONSET (A_r=0 for p>T), NOT the SIZE of A_r at deep r — so it
+    gives no SOFT-ceiling (A_r≤slack) bound where the consumer lives. NO push past the 0.011 effective
+    exponent; NO new asymptotic.
+NOT a refutation of CORE and NOT a closure: the soft ceiling R_r≤1 survives EMPIRICALLY (FFT baseline
+probe_407_Ar_wick_depth_profile.py: R_r<1 with margin, but margin→0.99 at r=2 as n→256). δ* remains
+the single open char-p BGK input. Honest classification: reduces-to-bgk (via the DSAR wall).
