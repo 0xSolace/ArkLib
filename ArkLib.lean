@@ -711,6 +711,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ConditionalSqrtCancellation
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueBeachhead
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueConstraintFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueDegeneracySupport
+import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueGradedFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueInfFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
