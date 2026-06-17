@@ -181,4 +181,23 @@ theorem slack_of_mgf {ι : Type*} (s : Finset ι) (t : ι → ℝ) {n c : ℝ}
     momentEnvelope_of_mgf s t hc ht hP hMGF
   exact slack_of_subexp_moment hn hc hc1 henv
 
+/-- **MGF ⟹ prize, the COMPLETE S11 concentration chain in one theorem (axiom-clean).** Composes the
+layer-cake brick (`momentEnvelope_of_mgf`) with the in-tree consumer `prize_sq_of_subexp` to land the
+prize square-root bound DIRECTLY from the one-variable MGF inequality `(1/P)·Σ_b exp(c·t_b) ≤ 1`:
+under the formal-period moment identity `M^{2r} ≤ Q·E_r` (`E_r = n^r·M_r`) and `r ≥ max(1, log Q)`,
+  `M² ≤ 2e·(1/c)·n·r`,
+the prize square-root shape with the EXPLICIT constant `√(2e/c)`. With the measured `c ≈ 0.59` this is
+`√(2e/0.59) ≈ 3.0`. This is the full S11 route `MGF ⟹ prize` with the layer-cake step CARRIED end to end
+(no `MomentEnvelope` hypothesis left assumed). -/
+theorem prize_sq_of_mgf {ι : Type*} (s : Finset ι) (t : ι → ℝ) {Mmax n Q c : ℝ} {r : ℕ}
+    (hMmax : 0 ≤ Mmax) (hn : 0 ≤ n) (hQ : 0 < Q) (hc : 0 < c) (hc1 : c ≤ 1)
+    (ht : ∀ b ∈ s, 0 ≤ t b) (hP : 0 < (s.card : ℝ))
+    (hr : 1 ≤ r) (hrQ : Real.log Q ≤ r)
+    (hMGF : MGFBound s t 1 c)
+    (hmoment : Mmax ^ (2 * r) ≤ Q * (n ^ r * ((∑ b ∈ s, (t b) ^ r) / (s.card : ℝ)))) :
+    Mmax ^ 2 ≤ 2 * Real.exp 1 * (1 / c) * n * (r : ℝ) := by
+  have henv : MomentEnvelope (fun r => (∑ b ∈ s, (t b) ^ r) / (s.card : ℝ)) 1 c :=
+    momentEnvelope_of_mgf s t hc ht hP hMGF
+  exact prize_sq_of_subexp hMmax hn hQ hc hc1 hr hrQ henv hmoment
+
 end ArkLib.ProximityGap.Frontier.WFS11
