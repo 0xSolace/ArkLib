@@ -28,6 +28,8 @@ thin prize-regime `μ_n` with `p ≡ 1 mod n`, `(p−1)/n ≥ 2`, never `n = q �
   is always nonempty, so the `gcd` branch fires).
 * `pow_eq_card_le_pow_one` — every fiber count is `≤` the count over `1`, so `c = 1` is the
   worst case: `#{x : x ^ d = c} ≤ #{x : x ^ d = 1}`.
+* `binomial_agree_card_eq_gcd_of_nonempty` — the arbitrary-target binomial fiber is *exactly*
+  `Nat.gcd (a − b) n` whenever it has one witness, isolating the nonzero branch of the dichotomy.
 * `binomial_self_agree_card_eq_gcd` — the WORST-CASE binomial incidence on a cyclic
   `H ≤ Fˣ` is *exactly* `Nat.gcd (a − b) (Fintype.card H)`, realised when `c₁ = c₂` (target
   `γ = 1`): `#{x ∈ H : c * x ^ a = c * x ^ b} = Nat.gcd (a − b) n`.
@@ -37,6 +39,8 @@ NON-MOMENT (pure cyclic-group / power-map coset combinatorics). EXTEND-proven (s
 (`propext, Classical.choice, Quot.sound`). NOT a CORE / Conj-7.1 closure — the strata-to-soundness
 bridge remains open; this only pins the per-direction worst-case incidence to the gcd value.
 -/
+
+set_option linter.unusedDecidableInType false
 
 namespace MultiplicativeRigidity
 
@@ -90,6 +94,27 @@ section Subgroup
 
 variable {F : Type*} [Field F] [DecidableEq F]
 
+/-- **Any nonempty binomial fiber has the full gcd size.** For a finite cyclic subgroup
+`H ≤ Fˣ`, the binomial equation `c₁ * x ^ a = c₂ * x ^ b` (`b < a`) has the usual `0`-or-`gcd`
+coset-rigidity dichotomy. This theorem isolates the nonzero branch in the exact form consumed by
+C71 strata arguments: once a single witness `x₀` exists, the whole fiber has cardinality exactly
+`Nat.gcd (a − b) (Fintype.card H)`. -/
+theorem binomial_agree_card_eq_gcd_of_nonempty
+    {H : Subgroup Fˣ} [Fintype H] [IsCyclic H] [DecidableEq H]
+    (c₁ c₂ : Fˣ) {a b : ℕ} (hba : b < a) {x₀ : H}
+    (hx₀ : c₁ * (x₀ : Fˣ) ^ a = c₂ * (x₀ : Fˣ) ^ b) :
+    (univ.filter fun x : H => c₁ * (x : Fˣ) ^ a = c₂ * (x : Fˣ) ^ b).card
+      = Nat.gcd (a - b) (Fintype.card H) := by
+  classical
+  rcases binomial_agree_card (H := H) c₁ c₂ hba with hzero | hgcd
+  · exfalso
+    have hxmem : x₀ ∈ (univ.filter fun x : H => c₁ * (x : Fˣ) ^ a = c₂ * (x : Fˣ) ^ b) := by
+      simp [hx₀]
+    rw [Finset.card_eq_zero] at hzero
+    rw [hzero] at hxmem
+    exact Finset.notMem_empty x₀ hxmem
+  · exact hgcd
+
 /-- **The worst-case binomial incidence is *exactly* `gcd (a − b) n`.** Taking `c₁ = c₂ = c`
 (target `γ = c · c⁻¹ = 1`, the worst case isolated by `pow_one_eq_card_eq_gcd`), the binomial
 `c * x ^ a = c * x ^ b` on a finite cyclic subgroup `H ≤ Fˣ` of order `n` is solved by *exactly*
@@ -100,31 +125,7 @@ theorem binomial_self_agree_card_eq_gcd
     (c : Fˣ) {a b : ℕ} (hba : b < a) :
     (univ.filter fun x : H => c * (x : Fˣ) ^ a = c * (x : Fˣ) ^ b).card
       = Nat.gcd (a - b) (Fintype.card H) := by
-  classical
-  -- Divide by the unit `x ^ b`: `c * x^a = c * x^b ↔ x^(a-b) = 1` (in `H`, via the inclusion).
-  have key : ∀ x : H,
-      (c * (x : Fˣ) ^ a = c * (x : Fˣ) ^ b) ↔ ((x : H) ^ (a - b) = (1 : H)) := by
-    intro x
-    -- Cancel `c` on the left, split `x^a = x^(a-b) * x^b`, cancel `x^b`, get `x^(a-b) = 1`.
-    have hsplit : (x : Fˣ) ^ a = (x : Fˣ) ^ (a - b) * (x : Fˣ) ^ b := by
-      rw [← pow_add, Nat.sub_add_cancel hba.le]
-    have hcast : ((x : H) ^ (a - b) = (1 : H)) ↔ (x : Fˣ) ^ (a - b) = 1 := by
-      constructor
-      · intro h
-        have hc : ((x ^ (a - b) : H) : Fˣ) = ((1 : H) : Fˣ) := by rw [h]
-        push_cast at hc; simpa using hc
-      · intro h
-        have : ((x ^ (a - b) : H) : Fˣ) = ((1 : H) : Fˣ) := by push_cast; simpa using h
-        exact Subtype.ext (by simpa using this)
-    rw [hcast]
-    rw [mul_right_inj (a := c), hsplit]
-    -- goal: `x^(a-b) * x^b = x^b ↔ x^(a-b) = 1`
-    exact mul_eq_right
-  have hfilter : (univ.filter fun x : H => c * (x : Fˣ) ^ a = c * (x : Fˣ) ^ b)
-      = (univ.filter fun x : H => (x : H) ^ (a - b) = (1 : H)) :=
-    Finset.filter_congr (fun x _ => key x)
-  rw [hfilter]
-  exact pow_one_eq_card_eq_gcd (a - b)
+  exact binomial_agree_card_eq_gcd_of_nonempty (H := H) c c hba (x₀ := 1) (by simp)
 
 end Subgroup
 
@@ -133,4 +134,5 @@ end MultiplicativeRigidity
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}):
 -- #print axioms MultiplicativeRigidity.pow_map_card_eq_gcd_of_nonempty
 -- #print axioms MultiplicativeRigidity.pow_one_eq_card_eq_gcd
--- #print axioms MultiplicativeRigidity.binomial_self_agree_card_eq_gcd
+#print axioms MultiplicativeRigidity.binomial_agree_card_eq_gcd_of_nonempty
+#print axioms MultiplicativeRigidity.binomial_self_agree_card_eq_gcd

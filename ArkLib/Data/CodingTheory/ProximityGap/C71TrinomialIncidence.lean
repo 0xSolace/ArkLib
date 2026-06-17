@@ -217,6 +217,21 @@ theorem trinGcd_natDegree_le {n : ℕ} (c1 c2 : F) {i j k : ℕ} (hjk : k ≤ j)
       ≤ (trinDirPoly c1 c2 i j k).natDegree := Polynomial.natDegree_le_of_dvd hdvd hgne
     _ ≤ i - k := trinDirPoly_natDegree_le c1 c2 hjk hji
 
+/-- **The caller-facing bare span cap for the 3-term strata.** The sharp gcd container above
+immediately implies the robust polynomial-method fallback bound: a genuine trinomial direction of
+span `i-k` has at most `i-k` nonzero incidences on any finite `S ⊆ μ_n`. This is the exact bound
+that survives after the cyclotomic-divisor analogs for trinomials fail: it is NON-orbit, char-free,
+and makes no sparsity-by-term-count claim. -/
+theorem trinomial_incidence_card_le_span {n : ℕ} (S : Finset F) (c1 c2 : F) {i j k : ℕ}
+    (hjk : k ≤ j) (hji : j < i) (hik : k < i)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card ≤ i - k := by
+  calc
+    (S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card
+        ≤ (gcd (X ^ n - 1 : F[X]) (trinDirPoly c1 c2 i j k)).natDegree :=
+          trinomial_incidence_card_le_gcd_natDegree S c1 c2 hjk hji hik hSn
+    _ ≤ i - k := trinGcd_natDegree_le c1 c2 hjk hji
+
 end ArkLib.ProximityGap.C71TrinomialIncidence
 
 /-! ## Axiom audit -/
@@ -224,3 +239,4 @@ end ArkLib.ProximityGap.C71TrinomialIncidence
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinDirPoly_ne_zero
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinGcd_natDegree_le
+#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span
