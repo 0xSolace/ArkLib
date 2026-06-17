@@ -85,6 +85,33 @@ property of the unrestricted above-Johnson worst case; it is exactly the content
 action-orbit-dominant (3-position) witnesses — which is why Conj 7.1 is the crux, and why its exact
 statement (gated PDF) is required to test the right object. Probe: `probe_soundness_Nscaling.py`.
 
+## Structural rediscovery: "3-position" = error folds to ≤3 positions; + a provable aligned-bound mechanism
+Re-examining the worst-case witnesses revealed the **meaning of Conj 7.1's "3-position sparse witness"**,
+rediscovered from this campaign's own data:
+- N=8 worst `(0,1,2)` → under the fold `i↦i mod 4` → `{0,1,2}` (3 positions in `D²`).
+- N=16 worst `(1,5,7,9,15)` → under `i↦i mod 8` → `{1,5,7}` (**3 positions** in `D²`; the support is two
+  antipodal pairs `{1,9},{7,15}` + one singleton `{5}` = **3 antipodal orbits**).
+
+So "3-position" = **the error collapses to 3 positions in the folded domain** (3 antipodal orbits), NOT
+Hamming weight 3. **Provable mechanism:** if `f`'s deviation from a codeword folds to `m` positions, then
+`f_λ` differs from the *aligned* (lifted) codeword only on those `m` positions, with values `e_e[t]+λ e_o[t]`;
+each vanishes at exactly one `λ`, so the **aligned-codeword bad-count is `≤ m`, independent of `N` and `q`**.
+
+## …but the single-fold total bad-count still grows with N (scope clarification)
+Measured worst-case (genuine leaders, folded-support bucketed):
+
+| N | worst single-fold bad-count | folded-support of worst |
+|---|---|---|
+| 8 (exhaustive) | 4 | m=2,3 |
+| 16 (sampled) | 6–7 | m=3,4,5 |
+
+The total exceeds the aligned bound (`4 > m`, `6 > m`) — **non-aligned codewords** contribute the rest, and
+that contribution **grows with N**. So the *single-fold* per-round bad-count is `O(n)`. **This does NOT
+contradict 2026/861's `O(1)/|F|`**, which is **commit-phase (multi-round)** soundness — a different
+quantity, where the `O(1)` comes from the action-orbit composition *across* the `log N` rounds, not from a
+single fold. My reconstruction tests the single-fold object; the commit-phase object (and Conj 7.1's exact
+dominance) needs the gated 2026/861 PDF and a multi-round model.
+
 ## Honest open gap + next
 - The above-Johnson `O(1)` region at N=8 **may be a finite-size effect**; the asymptotic δ* (whether
   `L(N, δN)` stays bounded for fixed `δ∈(Johnson, capacity)` as `N→∞`) is the hard, decisive question and
