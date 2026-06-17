@@ -917,6 +917,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FactorizationRigidity
 import ArkLib.Data.CodingTheory.ProximityGap.FamilyBadBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarCosetExplosion
 import ArkLib.Data.CodingTheory.ProximityGap.FarLineIncidenceEquivariance
+import ArkLib.Data.CodingTheory.ProximityGap.FarLineScalarDilation
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankBound
 import ArkLib.Data.CodingTheory.ProximityGap.FarPairRankSupply
 import ArkLib.Data.CodingTheory.ProximityGap.FarThresholdMaximality
