@@ -5147,3 +5147,67 @@ identity Σ_{b≠0}|η_b|²=n(p−n) (fixed L² mass ⇒ M/√n=O(√log m) boun
 the fixed mass onto fewer cosets = larger constant, cannot grow the order).
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+## [T01-T25 ANT fence-threading sweep] 24 invented "escape" theorems, 5 design clusters — 0 SURVIVORS, 5 REFUTED, 19 REDUCES-TO-WALL (2026-06-17, opus-4-8 synthesis lane)
+
+Lens: a fresh batch of 24 candidate ANT theorems (IDs T01-T05, TT06-TT10, T11-T16, T18-T25; T17 never
+generated) were INVENTED to thread the proven fence map F0-F11 around the prize object M(n)=max_{b≠0}|η_b|,
+η_b=Σ_{x∈μ_n}e_p(bx), prize regime n=2^30, p=n^4 (β=4), p≡1 mod n. Five design clusters, each engineered to
+make exactly one fence the only one with bite and to name the dodge explicitly:
+  G1 parameter-space / sheaf-in-a-family / Deligne (T01-T05),
+  G2 adelic / joint archimedean×non-archimedean / heights / equidistribution (TT06-TT10),
+  G3 information functionals OTHER than Rényi-2 (min-entropy, rate function, Rényi-α, Kolmogorov/MDL,
+     conditional entropy) (T11-T15),
+  G4 post-2020 additive combinatorics STRUCTURE/COVERING (Chang/Sanders/bilinear-Bogolyubov/PFR) (T16,T18-T20),
+  G5 dynamical / operator-algebraic / determinantal / motivic-higher (T21-T25).
+Each candidate has its own axiom-clean Lean file Frontier/_wfT{ID}_*.lean (#print axioms ⊆
+{propext,Classical.choice,Quot.sound}, no sorryAx) recording the reduction/refutation, plus (most) a Rust/Python
+probe at the genuine β=4 / p≡1 mod n / proper-μ_n regime (never n=q−1).
+
+RESULT (post adversarial re-verification): 0 SURVIVORS. The no-escape terminal is REINFORCED, not cracked.
+
+REFUTED (5) — internally false at prize scale, not merely reducible:
+ - TT06 coupled product-formula House: SIGN-REVERSED. For an algebraic integer θ_b the product formula gives
+   Σ_{arch}log|wθ_b| = log|N(θ_b)| ≥ 0, so a positive non-arch content D(b) is a LOWER bound logHouse≥D(b),
+   the OPPOSITE of the claimed "budget decrease." Counterexample θ=1+ζ_8: House=√(2+√2)≈1.848 > exp(2D)=√2≈1.414.
+ - TT08 Arakelov self-intersection: same sign-reversal; deĝ(div̂ θ)=0 ⇒ arch log-mass EQUALS non-arch content
+   (move together). β=4 counterexamples (n=8..128, exhaustive conjugates): true House~5√n vs candidate ceiling
+   √n·exp(−content)~1.88 (SHRINKS); violation factor ~30 at n=128, ~86000 extrapolated at n=2^30.
+ - TT10 Mahler/Lehmer^{1/k_b}: AM-GM REVERSED. Mahler(Ψ_b)^{1/k_b} is the GEOMETRIC MEAN of the k_b large
+   conjugates ≤ max = House (lower bound only). β=4 probe: House 7.30/13.84/22.98 vs geom-mean 2.62/3.27/4.24
+   (gap grows) at n=8/16/32.
+ - T22 determinantal count rigidity: spectrum of Cay(F_p,μ_n)=Γ(k,p) has k=(p−1)/n DISTINCT periods EACH of
+   multiplicity exactly n ⇒ N(t) is always a multiple of n, n-fold atomic = maximally NON-simple; a CD
+   PROJECTION-kernel DPP is a.s. SIMPLE. Determinantal/log-rigidity hypothesis is FALSE by algebraic spectrum
+   (Liu-Zhou Thm 115 / Podestá-Videla). Surviving sup-deduction half reduces to F1.
+ - T25 Rajchman a.c. density: ℓ²(F_p) is finite-dim ⇒ Koopman unitary is pure-point (atomic) ⇒ the bounded a.c.
+   density ρ_max DOES NOT EXIST. On H_η the coefficients μ̂_V(k)≡1 ⇒ δ_1, the MOST non-Rajchman measure. Only
+   well-posed surrogate (Wiener |μ̂|² mass) = Parseval energy Σ|η_b|^{2r} = F1.
+
+REDUCES-TO-WALL (19), fence distribution (primary fence):
+ - F0 conservation law (tail/rare-event invisible to 2nd-order domain arithmetic): T09, T14, T18, T23  (+ as the
+   meta-fence underneath T01,T02,T04,T11,T15,T24).
+ - F1 moment/energy/cumulant conjugacy (incl. Legendre/Cramér duals, Chang=Rudin=Khintchine, Fekete=disc=power-sums):
+   T04, T07, T12, T13, T16, T19, T24  (+ secondary on most others).
+ - F3 p-adic/valuation archimedean-blind (Dwork/Frobenius slope, Stickelberger, valuationClass_barrier): T03, TT07.
+ - F7 Rényi-2 = additive energy (sub-Gaussian level-set decay / Rényi-α flatness = deep-moment ladder): T11, T13.
+ - F10 FKM/sheaf conductor floor (cond ≥ rank = 2nd moment; Drinfeld diagonal collapse): T01, T02.
+ - F5 abelian Cayley gap (cyclic μ_n ⇒ H²(Z/n,T)=0 ⇒ Λ_cb^θ≡1; Frobenius on F_p is identity since p≡1 mod n):
+   T20, T21.
+Recurring kill mechanisms: (i) SIGN-REVERSAL of every height/capacity/Mahler/Arakelov "ceiling" into a LOWER
+bound via the product formula on algebraic-integer periods (TT06/TT08/TT10/TT07/T23 all share it); (ii)
+DIAGONAL/RANK COLLAPSE of every manufactured higher-dim family back onto the rank-n 2nd moment (T01/T02/T05/T22);
+(iii) LEGENDRE-DUAL recoordinatization of the tail (rate function ↔ EVT depth ↔ min-entropy ↔ moment ladder)
+all carrying the SAME open char-p energy transfer E_r≤(2r−1)‼·n^r at r~ln q = the BGK/Paley wall (T04/T11/T12/
+T13/T15/T24); (iv) p≡1 mod n forces the decomposition-group Frobenius to be the IDENTITY, killing every
+"p-sensitive Galois/Frobenius 2-power" lever (T20).
+
+WALL / VERDICT: REINFORCED no-escape terminal. Across these 24 + the prior 84+ invented escapes the running
+count is 0 survivors. The prize sup M(n) is, in every framing attempted, either (a) read off a rank-n / 2nd-moment
+object capped at Johnson √n (F0/F1/F10), (b) a p-blind valuation datum (F3), (c) a vacuous abelian/finite-group
+gap (F5), or (d) an internally sign-reversed / structurally false construction (the 5 REFUTED). The only honest
+residual everywhere is the char-p energy transfer at depth r~ln q (char-0 PROVEN, char-p OPEN) = the irreducible
+25-yr BGK/Paley conjugate-norm wall. Lean: 24 axiom-clean Frontier/_wfT*.lean files; ArkLib.lean umbrella
+regenerated to import all 24. No #334/#444 closure.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
