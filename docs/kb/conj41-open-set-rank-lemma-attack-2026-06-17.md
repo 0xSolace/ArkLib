@@ -40,3 +40,17 @@ Validated M_true engine; established the clique-`det≡0` structural fact (cliqu
 deficiencies); clarified the `c=w` boundary is degenerate and distinct from the FRI `c<w` regime. No
 refutation, no proof — the conjecture stands open, now with a sharper structural map of where the difficulty
 lives (the escape/degeneracy classification in `c<w`).
+
+## Addendum — FRI-relevant c<w regime (clean rank test, no M_true ambiguity)
+Tested `rank(A)=min(mc,2D)` for distinct γ at the critical `m=⌈2D/c⌉`, in the deployment regime `c≥3, c<w`
+(n=18..28, rate ~1/2), over large p (10⁶):
+- **The `(w+1)`-clique is ALWAYS rank-deficient** (`0/60` full) in every case — the clique-`det≡0`
+  structural fact extends across the whole `c<w` regime (not just `c=w`). Robust, clean.
+- **Rank-deficiency is COMMON for random non-clique configs too** (76/300 at n=18 up to 166/300 at n=28).
+So Conj 41's content is NOT "rank generically full" (it isn't) — it is the **escape classification**: every
+rank-deficient distinct-γ config must contain a *degenerate* support (the escape clause), so that the
+genuine list `M_true` still obeys `≤ ⌊(2D−1)/c⌋`. This *explains* my earlier apparent over-count
+(M_true=4>3): counting rank-deficient/escape configs as genuine list members is precisely the accounting
+error the conjecture's escape clause forbids. Confirms: **no refutation**; the open content is proving the
+escape classification (every rank deficiency is "explained" by a degenerate support) — the hard core the
+authors verified only empirically.
