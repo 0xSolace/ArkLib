@@ -138,6 +138,28 @@ theorem spurfree_of_all_units {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p :
   rintro ⟨k, hk, hdvd⟩
   exact hunit k hk hdvd
 
+/-- **Exact split-prime spur-free equivalence.** The global product norm is `p`-free iff every
+split residue is a `p`-unit. This is the caller-facing Boolean reduction used by S9: a spur witness
+exists globally exactly when at least one local split-prime residue annihilates, and the absence of
+all local annihilations is equivalent to char-0 transfer for that config. -/
+theorem spurfree_iff_all_units {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p : ℤ} (hp : Prime p) :
+    (¬ p ∣ (∏ k ∈ s, f k)) ↔ (∀ k ∈ s, ¬ p ∣ f k) := by
+  rw [dvd_prod_iff_exists_dvd s f hp]
+  constructor
+  · intro h k hk hdvd
+    exact h ⟨k, hk, hdvd⟩
+  · intro h
+    rintro ⟨k, hk, hdvd⟩
+    exact h k hk hdvd
+
+/-- **Contrapositive witness extractor.** If the product norm is spurious (`p ∣ ∏ f`) and a prime
+factorization split is available, then some split residue vanishes mod `p`. This is just the positive
+direction of the S9 Boolean, restated as an existential consumer for downstream reductions. -/
+theorem exists_local_vanish_of_spur {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p : ℤ} (hp : Prime p)
+    (hspur : p ∣ (∏ k ∈ s, f k)) :
+    ∃ k ∈ s, p ∣ f k :=
+  (dvd_prod_iff_exists_dvd s f hp).mp hspur
+
 /-- **The named transfer hypothesis (prize-regime, checked vs `p ≈ n^4`).** `AllResiduesUnit p s f`
 asserts that at the prize prime `p` no split residue annihilates — the MEASURED fact
 (`probe_wfS9`: `v_p = 0` for all bounded-weight configs at `p = n^4`, n = 16,32,64). It is the SAME
@@ -160,6 +182,13 @@ theorem transfer_of_all_residues_unit {ι : Type*} (s : Finset ι) (f : ι → �
     ¬ p ∣ (∏ k ∈ s, f k) :=
   spurfree_of_all_units s f hp h
 
+/-- **Named transfer equivalence.** The S9 measured condition `AllResiduesUnit` is not merely
+sufficient but exactly equivalent to product-level spur-freeness in the split-prime model. -/
+theorem transfer_iff_all_residues_unit {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p : ℤ}
+    (hp : Prime p) :
+    (¬ p ∣ (∏ k ∈ s, f k)) ↔ AllResiduesUnit p s f :=
+  spurfree_iff_all_units s f hp
+
 /-- **S9 squarefree-mass consumer.** Under `LocalValuationAtMostOne` the total `p`-adic valuation is
 bounded by the number of split primes `d`; the spurious mass is `p`-adically squarefree-bounded. -/
 theorem vp_bound_of_local_cap {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p : ℤ} (hp : Prime p)
@@ -168,3 +197,8 @@ theorem vp_bound_of_local_cap {ι : Type*} (s : Finset ι) (f : ι → ℤ) {p :
   vp_le_card s f hp h
 
 end ArkLib.ProximityGap.Frontier.WFS9
+
+/-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.Frontier.WFS9.spurfree_iff_all_units
+#print axioms ArkLib.ProximityGap.Frontier.WFS9.exists_local_vanish_of_spur
+#print axioms ArkLib.ProximityGap.Frontier.WFS9.transfer_iff_all_residues_unit
