@@ -4932,3 +4932,43 @@ that IS true is the gcd object (C71SparseStrataIncidence) refined to the reduced
 This is why Conj-7.1's <=3-sparse worst-case does NOT trivially give an O(1) incidence -- the residual
 is genuinely the gcd/agreement-sharing count, not a sparsity count. NOT a CORE closure; a constraint
 on the bridge route. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## SIGNED period-power sum = q*zeroSumCount: the located thinness-essential object now has its EXACT identity (sol, 2026-06-17)
+Follow-up to "SIGNED deep period-power cancellation IS thinness-essential" (2026-06-15), which located
+the prize's rule-3 lever in sum_{b!=0} eta_b^r (NOT the absolute moment sum_b|eta_b|^{2r}; |.| destroys
+the signed cancellation => every moment route is thickness-invariant) and stated "No Lean theorem (a
+quantitative signed-cancellation bound = the open core)". POSITIVE structural brick, NOT a refutation:
+formalized the EXACT algebraic identity the signed object satisfies (axiom-clean, 2 files):
+  signedPeriodPow_eq_zeroSumCount (1a4bfb2ed):  sum_psi (sum_{x in S} psi x)^r = q * #{t:Fin r->S : sum t=0}
+  nonzeroSignedPeriodPow_eq:                    sum_{psi!=0} eta_psi^r = q*W_r - |S|^r  (the prize form)
+  signedPeriodPow_eq_q_mul_zeroSumCount (f13fd524b): same in canonical NegationClosedWalk.zeroSumCount
+    vocabulary (the count is DEFINITIONALLY zeroSumCount S r) => plugs into the K1/energy ladder at
+    GENERAL incl ODD order r.
+MECHANISM (why the SIGNED sum carries the thin signal the moment |.| discards): for odd r the period-
+power sum is q*zeroSumCount of an ODD-length walk -- genuinely signed, NOT a sum of squares -- whereas
+every |.|/energy/moment packaging is 2r-fold and non-negative (so sign-blind). The general-r signed
+identity is the object neither the in-tree rEnergy_eq_zeroSumCount (2r<->energy bridge, _CharZeroWickEnergy)
+nor sum_b|eta|^{2r}=q*E_r (SubgroupGaussSumMoment) covers; both are checked-pre-existing and NOT duplicated.
+PROBE probe_signed_periodpow_count_identity.py: 18/18 EXACT (proper thin mu_n n in {4,8}, p==1 mod n,
+(p-1)/n>=2, NEVER n=q-1, r in {2,3,4}), both the full-character and nonzero-character forms.
+HONEST: NON-MOMENT, field-universal additive-character Fourier identity, EXTEND-proven. Makes the located
+thinness-essential object EXACT + reusable + canonically-phrased; it IS a zero-sum count. NOT a CORE bound
+-- bounding sum_{psi!=0} eta_psi^r quantitatively at r ~ log q (the deep SIGNED cancellation = q*W_r - n^r
+being small) is the open BGK wall. No capacity/beyond-Johnson/cliff-at-n/2 claim. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## REFUTATION (sol, 2026-06-17): the binomial's cyclotomic gcd(d,n) incidence cap does NOT extend to TRINOMIALS
+Surveyed (NOT committed as a redundant wall re-map; logged here so it is not re-discovered). The binomial
+2-term strata has the SHARP cyclotomic cap #roots in mu_n = gcd(|i-j|,n) (a divisor of n, the cyclic-kernel
+order; C71BinomialIncidenceGcd + binattain's sharpness bricks). NATURAL hope: a trinomial (3-term) analog
+inc <= gcd(i-j, j-k, n) or gcd(i-k, n). REFUTED: probe_trinomial_munroot_structure.py + _violation_mechanism.py
+(EXACT, thin mu_n n in {4,8,16}, p==1 mod n incl p>n^3 + Fermat 257, NEVER n=q-1):
+  (A) inc <= gcd(i-j,j-k,n): 44/396 VIOLATIONS. (B) inc <= gcd(i-k,n): 24/396 VIOLATIONS.
+  inc | n : FALSE in general (probe_trinomial_incdivn_mechanism.py: n=32 p=97 X^3-c1 X^2-c2 has inc=3, 3 ndvd 32).
+EXPLICIT WITNESS: n=8, p=17, X^2 - X - 2 (i,j,k)=(2,1,0) c1=1 c2=2 has inc=2 but gcd(i-j,j-k,n)=gcd(1,1,8)=1.
+MECHANISM: the binomial reduces to a SINGLE power x^(i-j)=c whose mu_n-solutions ARE a coset of mu_gcd(d,n)
+(cyclically structured => gcd-capped + divides n). A trinomial does NOT reduce to one power, so its mu_n-roots
+are NOT a subgroup coset and carry no cyclotomic-divisor structure. The ONLY proven cap is the bare polynomial
+degree i-k (in-tree trinGcd_natDegree_le, 0 violations confirmed). CONSEQUENCE for the bridge: the clean
+binomial gcd-tight incidence does NOT propagate to the >=3-sparse strata; their incidence is governed by the
+generic deg-gcd(X^n-1, .) <= span, NOT a cyclotomic divisor -- consistent with C71-RESIDUAL (gcd, not term-count,
+governs incidence). NOT a CORE closure; maps the binomial->trinomial extension wall. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
