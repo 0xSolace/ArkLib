@@ -15602,3 +15602,45 @@ slack `(2r−1)‼n^r`, and (d) the multivariate Weil error `√q` is vacuous on
 0.011 effective exponent; NO soft-ceiling `R_r≤1` proof. The soft ceiling survives EMPIRICALLY (it IS the
 open BGK / DSAR-faithfulness input; same wall reached from the auxiliary-degree side). NOT a refutation of
 CORE, NOT a closure. No Lean claim made (no real handle to formalize).
+
+## [C11-depth] (#444) — Burgess/Korobov/HBK DEPTH-r amplification for the char-p subgroup — NO-GAIN (2026-06-17)
+
+**Date:** 2026-06-17. **Probes:** `scripts/probes/probe_c11_burgess_depth.py`, `scripts/probes/probe_c11_hbk.py`.
+
+**Angle.** Beyond the additive-shift Burgess (C37, refuted) and the single-r moment barrier (D4): does the
+DEPTH-r AMPLIFIED Burgess / Korobov-Vinogradov / Heath-Brown-Konyagin **subgroup-specific** incomplete-
+character-sum machinery deliver either (a) an effective exponent past di Benedetto's ~0.011 toward 1/2, or
+(b) the SOFT ceiling `R_r := (sum_{b!=0}|eta_b|^{2r}/q)/((2r-1)!! n^r) <= 1` to depth `r ~ log m`, which is
+all the DC-Wick moment consumer (`GaussPeriodMomentBound.worstCaseIncompleteSumBound_of_energyBound`)
+actually needs?
+
+**Verdict: NO-GAIN (reduces-to-bgk on horn (a); structurally-disjoint on horn (b)).** Two machine-witnessed
+facts over proper mu_n (n=2^mu in {8,16,32}, p prime, n|p-1, p~n^4, never n=p-1):
+
+- **(a) Exponent stays >= 1 at the prize point (beta=4).** The amplified Burgess incomplete-sum exponent
+  `e(r,beta) = (1 - 1/r) + beta(r+1)/(4r^2)` minimized over ALL depths r: beta=2 -> 0.875 (r=2), beta=3 ->
+  0.979 (r=6), **beta=4 -> 1.000006 (r=399)**, beta=5 -> 1.0006. The `1/(4r^2)` Burgess defect is positive
+  for every finite r, so the depth-amplified sup-bound is TRIVIAL (>= n) exactly at the prize point and
+  never approaches the Wick/Ramanujan target 1/2. Re-confirms D4 ("prize point = hardest Burgess point")
+  with the full r-sweep. HBK/Konyagin large-subgroup form `t^{3/4}p^{1/8}` is even WORSE for thin t (exp_in_t
+  1.25 at beta=4, grows with beta) — its nontriviality threshold is t>p^{1/4}, the prize-EXCLUDED side. So
+  no proven sup-bound (Burgess, HBK, Korobov) is sub-Johnson on the thin prize subgroup.
+
+- **(b) Burgess is on the WRONG SIDE of the moment ladder — it CANNOT certify the soft ceiling R_r.** The
+  exact nonzero ratio R_r is `<= 1` and DECREASING in r (n=32: r=1->1.000, r=2->0.968, r=10->0.209), so the
+  soft ceiling holds EMPIRICALLY. But the moment consumer needs an *a-priori ENERGY upper bound*
+  `E_r <= (2r-1)!! n^r`; Burgess supplies a *SUP bound* `M(n)`. Feeding sup -> energy via
+  `sum_{b!=0}|eta_b|^{2r} <= (q-1) M(n)^{2r}` gives `R_r^{Burgess} = (q-1)M(n)^{2r}/(q(2r-1)!! n^r)`, measured
+  **HUGELY VACUOUS and growing in r** (n=16: 12 @ r=1, 207 @ r=8; n=32: 16 @ r=1, 2295 @ r=10) — because
+  M(n) sits at the trivial `~n^{1.0}`. The sup-bound input and the energy-bound input are DISJOINT: the only
+  sup->energy direction is the trivial CS mass floor `E_r >= n^{2r}/q` (the `_VinogradovDecouplingVacuous`
+  Reason-3 floor), which gives `sup >= n`, never below. So the depth-r Burgess machinery cannot supply the
+  `(2r-1)!!` Wick coefficient that the soft ceiling requires.
+
+**Mechanism class.** Same horn as C37/C36/D4 and the whole interval/short-sum family: nontriviality threshold
+`t > p^{1/4}` is exactly the prize-excluded boundary, exponent fixed at >=1 by the completion-to-Weil step.
+Additionally NEW: even granting a perfect single-sum Burgess bound, it lives on the sup side of the ladder
+while the consumer needs the energy side — Burgess cannot reach the `R_r<=1` soft ceiling because it never
+produces the `(2r-1)!!` Wick slack. The soft ceiling survives empirically (R_r<<1 to depth) but IS the open
+char-p Wick-transfer / Paley-graph input itself; reaching it from the Burgess side is circular. NOT a
+refutation of CORE, NOT a closure. No Lean claim made (no real handle to formalize). Probes committed.
