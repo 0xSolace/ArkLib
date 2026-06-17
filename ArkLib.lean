@@ -2350,6 +2350,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupClosed
 import ArkLib.Data.CodingTheory.ProximityGap.SidonSubgroupGVBound
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdImproved
 import ArkLib.Data.CodingTheory.ProximityGap.SidonThresholdTight
+import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodPowerCount
 import ArkLib.Data.CodingTheory.ProximityGap.SignedWalkMoment
 import ArkLib.Data.CodingTheory.ProximityGap.SingleClassWeight
 import ArkLib.Data.CodingTheory.ProximityGap.SinglePencilQIndependence
