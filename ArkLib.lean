@@ -1146,6 +1146,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackR6_RelationVarietyB
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackT1_BiluLinialTwistNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackThreePow_SubsetSumExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E7ClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E8ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
