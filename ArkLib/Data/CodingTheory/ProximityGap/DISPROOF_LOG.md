@@ -16358,3 +16358,57 @@ Kummer, Swan=0, rank ~ n^{2r-1}) loses √rank = n^{r−1/2}; effectivity needs 
 VERDICT: NOT a closure (BGK sup-bound + BCHKS Conj 1.12 stay open — the believed-true conjecture). A
 verified conditional-reduction capstone + a precise correction of the open-input count (TWO, not one;
 the operative one is BCHKS Conj 1.12 not the bare sup-bound). File: Frontier/_PrizeFloorOfBGK.lean. CORE OPEN.
+
+---
+
+## [N6-independence-undecidability] is delta* INEFFECTIVE / NON-COMPUTABLE / ZFC-INDEPENDENT? — verdict: NO (refuted as a fundamental obstruction); the only true ineffectivity is in the asymptotic LAW, not the VALUE (2026-06-17)
+
+**Angle (negative direction):** could the prize delta*_C be unanswerable in closed form because it is
+logically independent of ZFC/PA, non-computable, or fundamentally ineffective (a la BGK's ineffective o(1))?
+
+**Verdict: NO fundamental obstruction.** delta*_C is decidable / computable / not independent. A genuine
+3-layer dissection (`scripts/probes/probe_n6_ineffectivity_propagation.py`, exact F_p, reproducible) pins
+exactly which "ineffectivity" is real and which is fabricated:
+
+- **L1 (per-code, fixed C) — REFUTES non-computability & undecidability.** `epsMCA(C, delta)` depends on
+  `delta` only through `floor(delta*n)` (the integer weight of the syndrome ball), so the good-radius set
+  `{delta : epsMCA(C,delta) <= eps*}` is a finite union of grid intervals with breakpoints at `{j/n}`, and
+  `delta*_C = sSup(...)` lands on a single rational `j*/n` (or 1). For ANY fixed finite code C and ANY eps*,
+  a finite scan of the `n+1` grid rationals DETERMINES delta*_C. => delta*_C is a **decidable rational**,
+  Pi_1-arithmetic, ZFC-decidable, computable. There is NO undecidability and NO non-computability at the
+  per-code level. (Confirms in-tree `MCAThresholdLedger.mcaDeltaStar` is a finite-combinatorial sSup.)
+
+- **L2 (sharp asymptotic constant C(n,p)=M/sqrt(n log(p/n))) — the SHARP universal constant is ill-posed,
+  and STRENGTHENED: the spread is WIDENING, not merely nonzero.** Across 6 thin primes per n (p>50n^4):
+  spread/min = 0.047 (n=8), 0.104 (16), 0.105 (32), 0.169 (64) — INCREASING, not shrinking to 0. So the
+  *sharp* constant is a genuine FUNCTION of the prime's 2-adic/Galois arithmetic (Class A magnitude
+  sensitivity), NOT one number. The "single universal sharp constant" reading is ill-posed (per-prime law).
+  BUT C stays in a bounded O(1) band [0.84,1.08] sampled => the QUALITATIVE delta* (does it exceed Johnson,
+  value y/n) is well-defined per code.
+
+- **L3 (the BGK ineffectivity) — the LOAD-BEARING NEW DISTINCTION: ineffective BOUND != ineffective VALUE.**
+  The only PROVEN bound at the prize point n=p^0.19 is BGK `M <= n*p^{-nu(delta)}`, `nu(delta)>0` but the
+  2006 proof gives NO explicit nu (ineffective o(1)). This ineffectivity lives ENTIRELY in the
+  *general-upper-bound exponent / the proof*, NOT in any specific M(n): M(n)=max_{b!=0}|eta_b| is an EXACT
+  finite cosine-sum max, computed with zero reference to nu (n=8: 7.8703; n=16: 14.1175; n=32: 21.2147).
+  delta*_C = exact rational read off exact M(n). So the BGK ineffectivity does NOT propagate to delta* as a
+  QUANTITY; it only blocks a uniform-in-n CLOSED-FORM LAW with a known constant.
+
+**Synthesis (the maximal TRUE statement, no fabrication):**
+- "delta* can never be DETERMINED" (as a fundamental obstruction: undecidable / non-computable / independent)
+  is **FALSE**. delta*_C is a concrete computable rational; the asymptotic bound is Pi_2 arithmetic with no
+  independence mechanism (concrete polynomial character-sum cancellation, not a fast-growing/consistency
+  statement; Sense A of doc 25 = almost-certainly-false-and-would-be-fabrication-to-assert).
+- The ONLY true ineffectivity is: the prize wants a **closed-form `delta*(rho, eps*, n)`** (WORKBENCH L87/471),
+  and a closed form WITH AN EFFECTIVE CONSTANT is blocked precisely because the only proven thin-subgroup
+  bound (BGK) has an ineffective exponent. This is "ineffective LAW," not "ineffective VALUE/object."
+- Therefore the negative angle does **NOT** close the prize negatively. It cannot: there is no
+  non-computability/undecidability to harvest. The honest negative max is the barrier/equivalence theorem
+  (doc 25 Senses B+C): unreachable by every current method class, polynomially equivalent to the
+  20-60-yr-open Burgess/BGK horizontal sqrt-cancellation. That is hardness + a named open problem, NOT a
+  fundamental impossibility.
+
+**Status:** no-gain on negative CLOSURE (no impossibility exists to prove); recon-confirms + SHARPENS the
+prior determinability verdict with the ineffective-bound != ineffective-value separation and the
+widening-spread L2 datum. Probe committed; no Lean brick (the content is metamathematical + numerical, and
+the in-tree `mcaDeltaStar` finite-sSup structure already certifies L1). CORE remains the BGK wall.
