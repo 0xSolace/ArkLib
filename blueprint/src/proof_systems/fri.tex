@@ -127,6 +127,36 @@ per-phase soundness obligations.
     composition residuals.
 \end{remark}
 
+\begin{remark}[Discharging $\mathsf{roundError}_i$ above the Johnson bound via threshold
+  halving]\label{rem:fri_threshold_halving}
+    The per-round $\mathsf{roundError}_i$ of Definition~\ref{def:fri_error} is a
+    \emph{below-Johnson} proximity-gap budget: \cite{BCIKS20} (and the zero-loss refinement
+    \cite{BCHKS25}) bound it only for $\delta \le \delta_J = 1-\sqrt{\rho}$.  In the deployed
+    \emph{open zone} $\delta \in (\delta_J, 1-\rho)$ the up-to-capacity correlated-agreement
+    conjecture that earlier analyses relied on was disproved in late 2025, leaving every
+    above-Johnson FRI deployment without a proven per-round budget.
+
+    \cite{ChaiFan26} closes this gap unconditionally.  For $\mathrm{RS}[F,L,k]$ with $k=2^m$ and
+    $L$ admitting a fixed-point-free involution, for every $\delta \in (\delta_J, 1-\rho)$:
+    \[ \Pr[\text{FRI accepts a $\delta$-far word}] \;\le\; \frac{nR}{|F|} \;+\; \bigl(1-\tfrac{\delta}{2}\bigr)^{q}. \]
+    The mechanism is \emph{threshold halving} (Rothblum--Vadhan--Wigderson): the soundness is
+    analysed at the halved radius $\delta/2$.  The half-threshold correlated-agreement lemma
+    (at most one random combination is $\delta/2$-close to a linear code; formally verified in
+    Lean~4 in \cite{ChaiFan26}) places the analysis, after the first fold, strictly below the
+    \emph{unique-decoding} radius $(1-\rho)/2$ --- since $\delta/2 < (1-\rho)/2 \iff \delta < 1-\rho$
+    --- where \cite{BCIKS20} locks the distance round by round.  The commit term $\mathsf{roundError}_i$
+    is thereby discharged in the open zone (summing to $O(nR/|F|)$); the cost is a query-parameter
+    recalibration ($\sim 2\times$ more queries, the source of the $(1-\delta/2)^q$ query term).
+
+    \textbf{Scope (what this does \emph{not} give).}  This is a \emph{lossy} (half-threshold)
+    soundness theorem: it does not establish the zero-loss / equal-threshold proximity gap (ABF
+    Open Problem~1).  \cite{ChaiFan26} shows the equal-threshold correlated-agreement bound is
+    $\binom{n}{w}/|F|$, vacuous at FRI code lengths, and that the $\sim2\times$ overhead is intrinsic
+    to any proof factoring through a correlated-agreement lemma.  Thus the deployed above-Johnson
+    soundness budget is now proven, while a complete zero-loss pin of the proximity-gap threshold
+    in the prize regime remains open.
+\end{remark}
+
 \subsection{Batched FRI}\label{sec:batched_fri}
 
 Batched FRI reduces a batch of polynomial oracles to the base FRI protocol through a batching
