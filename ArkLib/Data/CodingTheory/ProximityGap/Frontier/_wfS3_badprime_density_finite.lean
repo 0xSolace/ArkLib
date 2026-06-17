@@ -43,12 +43,33 @@ fixed depth. The measured trajectory (`probe_wfS3_density_vs_depth.rs`, exact):
 
 So the dichotomy is **two-regime, separated by the onset depth `r₀(n)`** where MAXNORM crosses the
 band floor: below `r₀` the density is provably `0` (good-prime certificate); at and above `r₀` bad
-primes appear but the set stays a FIXED finite cardinality → density → 0 in a growing window. The
-S3 OBSTRUCTION (recorded, unchanged): the onset depth `r₀(n)` shrinks toward the prize depth
-`r ≈ ln q` as `n → 2^30`, AND the deep-depth bad count itself grows quasi-polynomially with the
-config count `n^{Θ(ln n)}`, so "finite at fixed depth" does NOT certify the SPECIFIC prize prime
-good at the prize depth. What this file PROVES is the unconditional structural skeleton:
-finiteness + the explicit count bound, on which any quantitative density estimate must rest.
+primes appear but the set stays a FIXED finite cardinality → density → 0 in a growing window.
+
+## EXACT growth law of `MAXNORM(n,w)` (NEW, S3 push — `probe_wfS3_mahler_slope.rs`, exact)
+
+The crossover weight is pinned by the exact growth law (CORRECTS the prior linear-`n` estimate to
+its exact constant). For `n = 2^μ`, antipodal-free config `A ∈ {−1,0,1}^{φ(n)}` of weight `w`, the
+norm `N = ∏_{ζ prim} A(ζ)` satisfies, by equidistribution of the `φ(n)` primitive roots:
+
+  **`log₂ MAXNORM(n,w) = φ(n) · c_w · (1 + o(1))`,  `c_w := log₂(extremal weight-w Mahler measure)`.**
+
+Exactly verified (exact integer det `|N|`, extremal family = window-with-one-sign-flip):
+`log₂|N|/φ(n) → {w=3: 0.694, w=4: 0.879, w=6: 0.976, w=8: 1.00}`, monotone ↑ in `w`, with the
+Landau/Mahler cap `c_w ≤ ½ log₂ w` and limit `c_w → 1` (`M → 2`) as `w → ∞`. (The all-ones window
+is NOT extremal — `M(1+x+…+x^{w−1}) = 1`, sublinear; the sign-flip is.)
+
+**Consequence (the SHARP obstruction).** The good-prime hypothesis `MAXNORM(n,2r) < p = n^β` is
+`φ(n)·c_{2r} < β·log₂ n`, i.e. `Θ(n) < Θ(log n)`: FALSE for `n` past `~2^7`. The certified depth
+`r*(n,β)` (largest `r` with the certificate firing) collapses to `0` at `n ≥ 2^20` — even depth
+`r = 1` is uncertifiable by norm-size at prize scale. So **NO specific prize prime is provably good
+via norm-size** at `n = 2^30`; the per-prime route is conclusively walled (OBSTRUCTION).
+
+What this file PROVES is the unconditional structural skeleton that SURVIVES: finiteness + the
+explicit count bound + the **good-representative EXISTENCE** theorem (`exists_good_in_window`): once
+the prize window outgrows the FIXED finite bad set, a good (spurious-mass-free) prize prime
+provably EXISTS in it (pure pigeonhole, no Chebotarev). This is the sharpest unconditional positive
+S3 result; it certifies a good prime EXISTS at any fixed depth, NOT that the specific prize prime is
+good at depth `r ≈ ln q` (the deep-depth bad count grows `n^{Θ(ln n)}`, the recorded deep wall).
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`); no `sorry`, no new axiom. Issue #444.
 -/
@@ -128,5 +149,53 @@ theorem density_zero_of_no_bad {norms : Finset ℤ} {windowPrimes : Finset ℕ}
   classical
   rw [Finset.filter_eq_empty_iff]
   exact h
+
+/-! ## The GOOD-REPRESENTATIVE EXISTENCE theorem (the surviving deliverable at prize scale)
+
+The companion `good_of_maxnorm_lt` certifies a SPECIFIC prime good only when `MAXNORM(n,2r) < p`.
+The S3 growth law (`probe_wfS3_mahler_slope.rs`, exact) pins
+  `log₂ MAXNORM(n,w) = φ(n)·c_w·(1+o(1))`, `c_w = log₂ (extremal weight-`w` Mahler measure)
+    `∈ (0, ½ log₂ w]`, `c_w → 1` (`M → 2`) as `w → ∞`,
+verified exactly: `log₂|N|/φ(n) → {w=3: .694, w=4: .879, w=6: .976, w=8: 1.00}`. Since the band
+floor `β·log₂ n` is `Θ(log n)` while `φ(n)·c_w = Θ(n)`, the crossover weight `w*(n,β) → 0`: at
+`n ≥ 2²⁰` even depth `r = 1` is uncertifiable by norm-size. So NO specific prize prime is provably
+good at prize scale — the per-prime route is walled (recorded OBSTRUCTION).
+
+What DOES survive, unconditionally: at any FIXED depth `r` the bad set is a FIXED finite cardinality
+`B(n,r) ≤ Σ_N ω(|N|)` (`card_badPrimeSet_le`), while the prize-window grows. So once the window
+exceeds the bad set, a GOOD prime EXISTS in it — pure pigeonhole, no Chebotarev needed. This is the
+sharpest unconditional positive S3 result: **a good band-representative provably EXISTS**. -/
+
+/-- **GOOD-REPRESENTATIVE EXISTENCE (pigeonhole form).** If the window of candidate primes is
+strictly larger than the (finite) bad-prime set, and every bad window prime is accounted for by
+that set (the containment `bad_mem_badPrimeSet` supplies for prime entries), then there EXISTS a
+prime in the window that is GOOD (`¬ Bad`), i.e. spurious-mass-free at this depth. Unconditional. -/
+theorem exists_good_in_window {norms : Finset ℤ} {windowPrimes : Finset ℕ}
+    (hsub : {p ∈ windowPrimes | Bad p norms} ⊆ badPrimeSet norms)
+    (hbig : (badPrimeSet norms).card < windowPrimes.card) :
+    ∃ p ∈ windowPrimes, ¬ Bad p norms := by
+  classical
+  by_contra hcon
+  push Not at hcon
+  -- if NO window prime is good, every window prime is bad, so the bad-filter = whole window
+  have hall : {p ∈ windowPrimes | Bad p norms} = windowPrimes := by
+    apply Finset.filter_true_of_mem
+    intro p hp; exact hcon p hp
+  have : windowPrimes.card ≤ (badPrimeSet norms).card := by
+    calc windowPrimes.card = {p ∈ windowPrimes | Bad p norms}.card := by rw [hall]
+      _ ≤ (badPrimeSet norms).card := Finset.card_le_card hsub
+  omega
+
+/-- **Quantitative good-count lower bound at prize scale.** The number of GOOD window primes is at
+least `W − B`, with `W = windowPrimes.card` (grows like `n^{β−1}/((n−1)ln n)`, the `TZPrimeSupply`
+PNT-in-AP input) and `B = (badPrimeSet norms).card` (FIXED at fixed depth). Hence for any fixed
+depth `r`, all but a vanishing fraction of prize-window primes are good — even though no SINGLE one
+is certifiable by the norm-size test. (Restatement of `good_window_count_lower` foregrounding the
+density-decay conclusion.) -/
+theorem good_count_ge_window_sub_bad {norms : Finset ℤ} {windowPrimes : Finset ℕ}
+    (hsub : {p ∈ windowPrimes | Bad p norms} ⊆ badPrimeSet norms) :
+    windowPrimes.card - (badPrimeSet norms).card ≤
+      {p ∈ windowPrimes | ¬ Bad p norms}.card :=
+  good_window_count_lower hsub
 
 end ArkLib.ProximityGap.Frontier.WFS3
