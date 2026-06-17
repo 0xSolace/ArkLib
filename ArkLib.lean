@@ -1518,6 +1518,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS1_transfer_slack_prize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS3_badprime_norm_certificate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS4_orbit_partition_law
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5_theta_count_wick
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5L3NoSpurPrizeTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS6_toric_config_betti
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
