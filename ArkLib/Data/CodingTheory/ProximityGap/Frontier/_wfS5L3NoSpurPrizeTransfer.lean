@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL3_char0_prize_moment
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5_theta_count_wick
 
 set_option linter.style.longLine false
 
@@ -112,9 +113,38 @@ theorem charpEnergy_le_wick_of_no_spur {k r : ℕ} (hk : 1 ≤ k) (G : Finset L)
     (Echarp r : ℝ) ≤ (Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r := by
   rw [hnospur]; exact WFL3.char0_energy_bound hk G hG
 
+/-! ## The below-girth BAND: no-spur is monotone, so the prize bound holds at ALL depths ≤ r -/
+
+open ArkLib.ProximityGap.wfS5ThetaCountWick in
+/-- **The cumulative spurious count is MONOTONE in the depth.** `cumTheta` is a sum of non-negative
+shell counts over `range (W+1)`, so a deeper cutoff dominates a shallower one. This is the structural
+fact (never stated) that makes the no-spur regime a genuine BAND rather than a single depth: if the
+spurious mass vanishes at depth `2r`, it vanishes at every depth below. -/
+theorem cumTheta_mono {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
+    (dom : Finset (Fin d → ℤ)) {W₁ W₂ : ℕ} (hW : W₁ ≤ W₂) :
+    cumTheta p g dom W₁ ≤ cumTheta p g dom W₂ := by
+  unfold cumTheta
+  apply Finset.sum_le_sum_of_subset
+  intro w hw
+  rw [Finset.mem_range] at hw ⊢
+  omega
+
+open ArkLib.ProximityGap.wfS5ThetaCountWick in
+/-- **Girth `> 2r` ⟹ no spurious mass at EVERY depth `s ≤ r`.** From `cumTheta (2r) = 0` and
+monotonicity, `cumTheta (2s) = 0` for all `s ≤ r`: the below-girth band is downward-closed. This is the
+exact hypothesis under which the no-spur prize transfer holds simultaneously across the whole depth
+range `1 ≤ s ≤ r` (not just at the single endpoint `r`). -/
+theorem cumTheta_zero_band {d : ℕ} (p : ℕ) (g : Fin d → ℤ)
+    (dom : Finset (Fin d → ℤ)) {r s : ℕ} (hsr : s ≤ r)
+    (h : cumTheta p g dom (2 * r) = 0) :
+    cumTheta p g dom (2 * s) = 0 :=
+  Nat.le_zero.mp (h ▸ cumTheta_mono p g dom (by omega))
+
 end ArkLib.ProximityGap.Frontier.WFS5L3NoSpur
 
 /-! ## Axiom audit — must be `[propext, Classical.choice, Quot.sound]` only. -/
 #print axioms ArkLib.ProximityGap.Frontier.WFS5L3NoSpur.prize_sq_of_no_spur
 #print axioms ArkLib.ProximityGap.Frontier.WFS5L3NoSpur.prize_of_no_spur
 #print axioms ArkLib.ProximityGap.Frontier.WFS5L3NoSpur.charpEnergy_le_wick_of_no_spur
+#print axioms ArkLib.ProximityGap.Frontier.WFS5L3NoSpur.cumTheta_mono
+#print axioms ArkLib.ProximityGap.Frontier.WFS5L3NoSpur.cumTheta_zero_band
