@@ -1290,6 +1290,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoherenceIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CollisionExcessPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41CliqueCapTwoPower
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41FerreroWashingtonMismatch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41IwasawaGrowthDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41IwasawaModule
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41TwoPowerThreshold
@@ -1441,6 +1442,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerResidualFloorMuTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyB1MomentBlind
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VinogradovDecouplingVacuous
