@@ -5100,3 +5100,50 @@ memo: the Fermat datum is a CONSTANT-CALIBRATION fact (√2→2), not a floor-di
 different O(1)-constant value at structured F. The two-sided wall (moment NECESSITY + ERM equivalence) already
 pins δ* two-sidedly to BGK; N2 cannot escape it from below. Python-only, exact (integer Parseval check + exact
 cosine b-sweep, multi-prime incl. Fermat + 2-adic-heavy + non-Fermat), no Lean changed ⇒ axiom-clean trivially.
+
+## [N8-structured-prime-density] floor-violator DENSITY among prize-shaped primes — NO-GAIN (m-resolved; sharp √2 grazed at vanishing margin, order-law/absorb-floor 0 violators) (2026-06-17, opus-4-8 subagent)
+
+Lens: N8 asks whether floor-VIOLATING structured/near-2-group primes have POSITIVE DENSITY among
+prize-shaped primes (p≡1 mod n, proper μ_n: n=2^μ, m=(p-1)/n>1). If a positive fraction violate the
+floor at every scale, the "∀ sufficiently large smooth F" reading of δ*=1−ρ−Θ(1/log n) is FALSE and
+δ* (so read) is unattainable. This SHARPENS the prior N2 (worst-case-only) entry with DENSITY + the
+m-scaling, and resolves the apparent tension between the structured anomaly (Fermat) and the asymptotics.
+
+Two floors measured separately over real prime samples (EXACT M=max_{b≠0}|η_b| over m coset reps,
+float err≪1): SHARP M≤√(2n ln m) [char-0 Wick constant √2]; ABSORB M≤2√(n ln p) [the survivor, C=2].
+
+PROBES (scripts/probes/, Python-only, no Lean ⇒ axiom-clean trivially):
+ - probe_n8_floor_violator_density.py — prize window, all p≡1 mod n; denA rises 0,0,.005,.035 (n=8..64)
+   BUT window collapsed (m-cap forced p→n^3.6), so the rise was suspected an m-collapse artifact.
+ - probe_n8_density_mcontrolled.py — coset-count m held in FIXED band [256,4096] across n, v2-split.
+   SHARP-floor density at comparable-m: gen 0,0,.012,.086,.100,.083; STRUCTURED (v2≥μ+3) 0,0,0,.163,
+   .116,.189 (n=8..256). So at FIXED small m the density is ~8–19%, structured higher — NOT an artifact;
+   BUT at fixed m, β=log_n p DROPS to ~2 (out of the β≈4 prize regime): the controlling variable is m.
+ - probe_n8_density_vs_m.py + probe_n8_largeM_extrapolation.py — sweep m across octaves 2^8..2^18 at
+   n=32,64, sup_p over each octave. DECISIVE TABLE (n=64): supR_sharp by log2 m =
+   1.27, 1.46(F4=65537,v2=16), 1.17, 0.97, 0.999, 0.957, 0.889 over log2 m=8,10,11,12,14,16,17;
+   (R_sharp−1)·ln m = 1.49, 3.22, 1.27, −0.23, −0.006, −0.47, −1.31. The worst-over-ALL-primes SHARP
+   ratio PEAKS ~1.46 at SMALL m (Fermat) and DECAYS below 1 for log2 m≳12, monotone in the high-m half
+   (trend −0.083 @n=64, −0.026 @n=32). The ABSORB ratio sup_p R_abs ≤ 0.8189 EVERYWHERE (all m, all n,
+   incl. every Fermat/2-adically-deep prime up to v2=20) ⇒ ZERO violators of the C=2 floor.
+
+EXACT RESULT: (1) ABSORB floor M≤2√(n ln p): 0 violations across the entire m-octave sweep
+(sup R_abs=0.8189, at F4 n=64 m=1024). (2) SHARP floor M≤√(2n ln m): positive-density grazing >1 ONLY
+at small m (≤2^11), worst 1.46 at Fermat F4; the overshoot margin SHRINKS like O(1/ln m) (EV-theory:
+max of m near-indep cosine cosets = √n·√(2 ln m)·(1+O(ln ln m/ln m))) and the worst case crosses BELOW 1
+by log2 m≈12. Prize m~2^90 ≫ 2^12 ⇒ extrapolated overshoot ≈0.
+
+WALL / VERDICT (NO-GAIN as a negative closure; rigorous): the ONLY persistent positive-density violation
+is of the SHARP √2 CONSTANT, by a VANISHING margin, confined to SMALL-m structured (high-v2) primes —
+i.e. exactly the already-known (N1/N2, ground-truth memo) constant-calibration fact √2→C, absorbed by C=2.
+There is NO positive-density violation of the ORDER LAW M=O(√(n log m)) at any m, and NO violation
+whatsoever of the surviving absorb-floor C=2. Hence floor-violator density does NOT obstruct the prize:
+the per-code δ*_C order law survives, structured primes only shift the O(1) constant. A rigorous negative
+closure cannot be harvested from violator density; it would require the per-code δ*_C UNPINNABLE in closed
+form in the asymptotic regime, which routes to the BGK/Paley char-p energy-transfer core, not to density.
+EXTRAPOLATION CAVEAT (honest): the m→2^90 conclusion is an extreme-value-theory-grounded EXTRAPOLATION
+from m≤2^18 (compute ceiling for exact M), not a proof; it is consistent with the proven Plancherel
+identity Σ_{b≠0}|η_b|²=n(p−n) (fixed L² mass ⇒ M/√n=O(√log m) bounded, structured primes concentrate
+the fixed mass onto fewer cosets = larger constant, cannot grow the order).
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
