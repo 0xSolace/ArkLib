@@ -95,6 +95,21 @@ theorem vdC_n_exponent_ge_one {k l : ℝ} (hk : 0 ≤ k) (hl : 1 - k ≤ l) :
   -- e = k*(4-1) + l = 3k + l ≥ 3k + (1 - k) = 2k + 1 ≥ 1.
   nlinarith [hk, hl]
 
+/-- **Uniform no-crossing for the whole prize/thick boundary `β ≥ 3`.** The β=4 theorem is not a
+numerological accident: under the genuine exponent-pair frontier constraint `l ≥ 1-k`, every aspect
+`β ≥ 3` still gives exponent at least `1`.  Thus no exponent-pair / van der Corput route can reach even
+the Johnson exponent throughout the prize band `β≈4-5`; the only cliff where this certificate stops is
+`β=2`, outside the thin-subgroup prize regime and already inside the known thick false-positive window. -/
+theorem vdC_n_exponent_ge_one_of_beta_ge_three {k l β : ℝ}
+    (hk : 0 ≤ k) (hβ : 3 ≤ β) (hl : 1 - k ≤ l) :
+    (1:ℝ) ≤ vdCExponent k l β := by
+  unfold vdCExponent
+  -- e = k*(β-1)+l ≥ k*2 + (1-k) = 1+k ≥ 1.
+  have hβm1 : 2 ≤ β - 1 := by linarith
+  have hmul : 2 * k ≤ (β - 1) * k := by
+    exact mul_le_mul_of_nonneg_right hβm1 hk
+  nlinarith [hk, hl, hmul]
+
 /-- **Strictly above Johnson (β = 4).** For any exponent pair, the `n`-exponent strictly exceeds the
 Johnson floor exponent `1/2`. (`vdCExponent ≥ 1 > 1/2`.) So no exponent pair reaches even Johnson, let
 alone the prize. -/
@@ -139,6 +154,7 @@ end ProximityGap.Frontier.WfHi2ExponentPairNoCrossing
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.WfHi2ExponentPairNoCrossing.vdC_n_exponent_ge_one
+#print axioms ProximityGap.Frontier.WfHi2ExponentPairNoCrossing.vdC_n_exponent_ge_one_of_beta_ge_three
 #print axioms ProximityGap.Frontier.WfHi2ExponentPairNoCrossing.vdC_n_exponent_strict_above_johnson
 #print axioms ProximityGap.Frontier.WfHi2ExponentPairNoCrossing.aspect_ratio_below_regime
 #print axioms ProximityGap.Frontier.WfHi2ExponentPairNoCrossing.vdC_output_above_prize_floor
