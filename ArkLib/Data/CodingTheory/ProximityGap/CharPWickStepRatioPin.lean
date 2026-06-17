@@ -25,6 +25,9 @@ This file proves the previously-unassembled relation between them, directly on t
 `rEnergy μ_n` (the abstract `WickStepRatio` bridge had never been instantiated on `rEnergy`):
 
 * `StepRatioBounded`              : the step-ratio hypothesis `cross_r ≤ 2r·n·E_r ∀ r ≥ 1`, as a `Prop`.
+* `EnergyStepBounded`             : the recurrence form `E_{r+1} ≤ (2r+1)nE_r`.
+* `stepRatioBounded_iff_energyStepBounded` : the two step-ratio forms are equivalent by `cross_eq`, so
+  the envelope-free recurrence and the cross-mass pin are the SAME open input, not two assumptions.
 * `rEnergy_le_wick_of_stepRatio`  : the step-ratio hypothesis ALONE drives the clean ladder
   `E_r ≤ Wick_r ∀ r ≥ 1` (base `E_1 = n = Wick_1`, then `E_{r+1} ≤ (2r+1)n·E_r ≤ (2r+1)n·Wick_r`).
 * `crossBounded_of_stepRatio`     : **THE DOMINATION.** the step-ratio hypothesis IMPLIES the in-tree
@@ -73,6 +76,47 @@ This measures the off-diagonal mass against the **actual energy** `E_r`, not the
 Stated, NOT proved — it is the open char-`p` deep-moment wall in its sharpest (envelope-free) form. -/
 def StepRatioBounded (G : Finset F) : Prop :=
   ∀ r : ℕ, 1 ≤ r → cross G r ≤ 2 * r * (G.card * rEnergy G r)
+
+/-- **The same step-ratio hypothesis in recurrence form.** This is the concrete `rEnergy` version of
+`E_{r+1} ≤ (2r+1)nE_r`, separated from `StepRatioBounded` so consumers can state whichever form is
+natural. The two forms are equivalent by the exact char-`p` decomposition `E_{r+1}=nE_r+cross_r`. -/
+def EnergyStepBounded (G : Finset F) : Prop :=
+  ∀ r : ℕ, 1 ≤ r → rEnergy G (r + 1) ≤ (2 * r + 1) * G.card * rEnergy G r
+
+/-- **Cross-mass step-ratio implies recurrence step-ratio.** This is the previously implicit algebraic
+conversion from `cross_r ≤ 2r·n·E_r` to `E_{r+1} ≤ (2r+1)nE_r`, using the exact recurrence. -/
+theorem energyStepBounded_of_stepRatio (G : Finset F) (hS : StepRatioBounded G) :
+    EnergyStepBounded G := by
+  intro r hr
+  have hcross : cross G r ≤ 2 * r * (G.card * rEnergy G r) := hS r hr
+  calc rEnergy G (r + 1)
+      = G.card * rEnergy G r + cross G r := cross_eq G r
+    _ ≤ G.card * rEnergy G r + 2 * r * (G.card * rEnergy G r) :=
+          Nat.add_le_add_left hcross _
+    _ = (2 * r + 1) * G.card * rEnergy G r := by ring
+
+/-- **Recurrence step-ratio implies cross-mass step-ratio.** Conversely, because the recurrence is an
+exact decomposition with the same diagonal term on both sides, `E_{r+1} ≤ (2r+1)nE_r` cancels to
+`cross_r ≤ 2r·n·E_r`. Thus `StepRatioBounded` and `EnergyStepBounded` are not two assumptions; they
+are the same char-`p` wall in two coordinates. -/
+theorem stepRatio_of_energyStepBounded (G : Finset F) (hE : EnergyStepBounded G) :
+    StepRatioBounded G := by
+  intro r hr
+  have hstep : rEnergy G (r + 1) ≤ (2 * r + 1) * G.card * rEnergy G r := hE r hr
+  rw [cross_eq G r] at hstep
+  have hrewrite :
+      (2 * r + 1) * G.card * rEnergy G r =
+        G.card * rEnergy G r + 2 * r * (G.card * rEnergy G r) := by ring
+  rw [hrewrite] at hstep
+  exact Nat.le_of_add_le_add_left hstep
+
+/-- **Equivalence of the two concrete step-ratio forms.** The cross-mass inequality and the energy
+recurrence inequality are definitionally different but mathematically identical once `cross_eq` is in
+place. This pins the exact open input used by the Wick bridge and avoids treating the envelope-free
+recurrence as a stronger or separate hypothesis. -/
+theorem stepRatioBounded_iff_energyStepBounded (G : Finset F) :
+    StepRatioBounded G ↔ EnergyStepBounded G :=
+  ⟨energyStepBounded_of_stepRatio G, stepRatio_of_energyStepBounded G⟩
 
 /-! ### The step-ratio hypothesis drives the Wick ladder -/
 
@@ -132,6 +176,9 @@ theorem eta_pow2r_le_wick_of_stepRatio {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitiv
     ‖eta ψ G b‖ ^ (2 * r) ≤ (Fintype.card F : ℝ) * ((2 * r - 1)‼ * (G.card : ℝ) ^ r) :=
   eta_pow2r_le_wick_of_crossBound hψ G (crossBounded_of_stepRatio G hS) r hr b
 
+#print axioms energyStepBounded_of_stepRatio
+#print axioms stepRatio_of_energyStepBounded
+#print axioms stepRatioBounded_iff_energyStepBounded
 #print axioms rEnergy_le_wick_of_stepRatio
 #print axioms crossBounded_of_stepRatio
 #print axioms eta_pow2r_le_wick_of_stepRatio
