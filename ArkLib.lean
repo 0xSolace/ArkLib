@@ -1544,6 +1544,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.GaussPeriodTower
 import ArkLib.Data.CodingTheory.ProximityGap.GaussPhaseResonance
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.GaussianEnergyThreeRepThree
+import ArkLib.Data.CodingTheory.ProximityGap.GcdTrivialOffSumset
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralEnergyBound
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralGapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.GeneralKMultiplicity
@@ -2558,6 +2559,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidon
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonTriple
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuad
 import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuadWrapper
+import ArkLib.Data.CodingTheory.ProximityGap.UnitCircleSidonQuint
+import ArkLib.Data.CodingTheory.ProximityGap.MultisetEsymmSidon
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalAlignmentThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.UniversalBelowUDR
