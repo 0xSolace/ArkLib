@@ -17368,3 +17368,63 @@ modulus-only bound beats it), `subconvexity_route_caps_at_completion`. Probe (ex
 **Verdict: REDUCES-TO-FENCE F2 (completion/Weil vacuity, `n<sqrt q`) + F0 (the residual phase
 cancellation is the worst-`b` rare-event BGK/Paley wall, invisible to L-value-size bounds). Also
 VACUOUS-AT-PRIZE via the thin-coset family-conductor mismatch.** Survivor: NONE.
+
+## Lane H1 (#444): Iwaniec-Sarnak amplification / Hecke sup-norm method — REDUCES-TO-FENCE F1+F5 (flat projection at the SECOND-MOMENT level)
+
+**Claim attacked (the flagship).** Is `M(n) = max_{b!=0}|eta_b| = lambda_2(Cay(F_p,mu_n))` a genuine
+automorphic/Hecke sup-norm, so the Iwaniec-Sarnak (IS) AMPLIFICATION method — designed to beat the 2nd
+moment for sup-norms via a Hecke-eigenvalue amplifier + pre-trace/Kuznetsov formula (IS95 "L-infinity norms
+of eigenfunctions"; Templier; Blomer-Maga; Marshall; Saha; Nelson orbit-method arXiv:2503.06224) — gives a
+sub-Johnson bound? This is the least-obviously-conservation-blind technique, so it gets the deepest scrutiny.
+
+**Literature structure of the IS gain (WebFetched arXiv:2503.06224, IS95, GL(3) amplification
+arXiv:1412.5022).** The IS amplifier is a Hecke-operator polynomial `Sum_l x_l T_l` over unramified primes;
+it is applied to the pre-trace formula (spectral expansion of the automorphic kernel). The gain over the
+trivial/2nd-moment bound requires THREE properties, ALL of which FAIL for the Gauss period:
+  (i)  a NON-ABELIAN Hecke algebra (distinct primes => independent eigenvalues to amplify against);
+  (ii) genuine eigenvalue VARIATION `lambda_l(pi)` across the spectral family, plus multiplicity;
+  (iii) a Diophantine OFF-DIAGONAL (counting matrices/lattice points of given determinant) one can SAVE on.
+
+**Why all three fail — EXACT integer kills.** `Cay(F_p,mu_n)` is an ABELIAN Cayley graph (F5): its
+eigenvectors are the additive characters of F_p, its eigenvalues are EXACTLY the Gauss periods
+`eta_b = Sum_{x in mu_n}e_p(bx)`, and it is diagonalized by the single additive Fourier basis — no
+non-commutative Hecke algebra (kills (i)). The only natural "Hecke" operators on the spectral index `b` are
+the multiplicative dilations `T_l: eta_b -> eta_{lb}`. Form the genuine IS AMPLIFIED SECOND MOMENT
+`Q(x) = Sum_{b!=0}|Sum_l x_l eta_{lb}|^2 |eta_b|^2`; expand by the pre-trace formula into the kernel
+`K(t) = Sum_b eta_b conj(eta_{tb})`.
+
+  - **`probe_wfH1_amplified_second_moment.py` (exact, beta=4, n=4..32, multi-prime):** the dilation amplifier
+    that SHOULD detect the worst b0 makes the amplified bound WORSE, not better: amp_bound/M = 2.76 -> 7.89 ->
+    21.3 -> 53.2 (blows up); amp_bound/sqrt(n) = 5.4 -> 21 -> 71 -> 216. The off-diagonal of `K` is EXACTLY
+    `n^2` (constant), the diagonal EXACTLY `q*n`.
+  - **`probe_wfH1_kernel_structure.py` (exact integer, verified to 1e-8):** the EXACT reason. Substituting
+    b -> l^{-1}b shows `K(t)` depends only on the RATIO `t`, and
+        `K(t) = q * #{(x,y) in mu_n^2 : x = t*y} = q * n * 1_{t in mu_n}`
+    because mu_n is a SUBGROUP (its multiplicative self-correlation is `n*1_{mu_n}`). So the IS pre-trace
+    kernel is `q*n` times the INDICATOR of mu_n = a SCALED RANK-m PROJECTION (m=(p-1)/n) onto the characters
+    trivial on mu_n (the AVERAGING/Parseval eigenspace), FLAT eigenvalue `q*n^2` there, ZERO elsewhere. There
+    is NO Diophantine off-diagonal to save on (kills (iii)) and NO eigenvalue variation: the "Hecke
+    eigenvalues" `eta_{lb}/eta_b` carry the SAME flat |Gauss-sum|=sqrt(q) modulus (kills (ii)).
+
+**The sharp content.** The companion `_AmplificationGainOne.lean` recorded the FIRST-moment flat-spectrum
+no-go (the Fourier coeffs of one eta_b are flat). This lane proves the no-go SURVIVES at the SECOND-moment
+level the IS method actually operates at: the amplified quadratic form `Q(x)=<x, K x>` with `K=c*P` a flat
+scaled projection is MAXIMIZED exactly on the averaging eigenspace and is `<= c*||x||^2` for EVERY amplifier
+— gain capped at `c=q*n`, achieved only by the flat averaging amplifier, never by a shape isolating worst b.
+So amplification certifies only the RMS/Parseval scale sqrt(n) (Johnson); the L-infinity prize factor
+sqrt(log(p/n)) lies strictly above and is invisible. `M(n)` is NOT a genuine amplifiable automorphic
+sup-norm. (Consistent with sibling A5 Terwilliger-reduces-to-wall, A8 dilation-amenable, and the dead F1
+moment route: the r-fold sum-product amplification on a GROUP IS the moment method,
+`probe_c3_higherfold_amplification.py`.)
+
+**Lean (axiom-clean, real lake build OK, [propext,Classical.choice,Quot.sound], 0 sorryAx):**
+`Frontier/_wfH1_AmplifiedSecondMomentProjection.lean` —
+  - `subgroup_self_correlation`: the combinatorial heart, `#{(x,y) in H^2 : x=t*y} = |H|*1_{t in H}` (the
+    exact fact making the kernel a flat projection);
+  - `amplified_form_le_scale`, `amplification_gain_capped`, `amplified_form_eq_on_range`: the
+    projection-ceiling no-go (gain capped at the flat eigenvalue, equality only on the averaging direction).
+Probes `scripts/probes/probe_wfH1_amplified_second_moment.py`, `probe_wfH1_kernel_structure.py`.
+
+**Verdict: REDUCES-TO-FENCE F1 (amplified 2nd moment = flat projection = additive/RMS energy) with F5
+(abelian Cayley => zero Hecke variation, no non-commutative amplifier). The IS amplification flagship has NO
+genuine non-reducing handle on the sup. Floor OPEN = the BGK/Paley wall.** Survivor: NONE.
