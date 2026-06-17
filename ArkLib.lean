@@ -1725,6 +1725,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.KKH26FixedRResultantBound
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldQuotientStack
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldStability
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldSupplyDecay
+import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldSupplyTower
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26FoldTransport
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26GapCensusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.KKH26LadderArithmetic
