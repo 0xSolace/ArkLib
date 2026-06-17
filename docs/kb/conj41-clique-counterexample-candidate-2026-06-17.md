@@ -54,3 +54,31 @@ If confirmed: Conjecture 41's worst-case form is false (the `(w+1)`-clique viola
 char-0 partial-fraction dependency); the correct statement is an **average/typical-case** bound, with the
 worst case governed by clique structure. The prize (pinning δ*) is unaffected and remains open; this refines
 the OP2 list-size picture.
+
+## UPGRADE: candidate → PROVEN over ℚ (exact, reduces to all large p)
+`probe_conj41_exact_Q_proof.py` runs the entire construction in **exact rational arithmetic** (Python
+`Fraction`; no floating point, no mod-p sampling): for the rational clique `S={0,…,w}` with `γ_i = i+1`, it
+builds `A` over ℚ, computes a ℚ-kernel `(s1,s2) ∈ ℚ^D`, and for each support `E_i` solves `V_{E_i} v_i =
+s1 + γ_i s2` over ℚ, verifying as exact rational identities: (i) `γ_i` is `E_i`'s unique isolated
+compatibility value; (ii) `V_{E_i} v_i = s(γ_i)` exactly; (iii) every entry of `v_i` is nonzero; (iv) the
+`w+1` values `γ_i` are pairwise distinct. **All hold over ℚ** for n=20/c5 (M_true=6>3), n=24/c5 (8>4),
+n=18/c3 (7>5), n=28/c6 (9>4) — including the paper's exact Remark-42 rows.
+
+**Reduction to all large p (the proof).** `(s1,s2)`, `γ_i`, `v_i` are rational with finitely many
+denominators. For every prime `p` not dividing those denominators, the numerators of the `v_i`, or any
+`γ_i−γ_j`, the identical vectors reduce to `F_p` and satisfy the SAME equations there — so
+`M_true(s1 mod p, s2 mod p) ≥ w+1 > ⌊(2D−1)/c⌋`. Hence the bound fails at all but finitely many primes.
+Combined with the char-0 partial-fraction mechanism (which already shows the clique rank-deficiency is
+characteristic-independent), this is a **rigorous proof that Conjecture 41's worst-case (universal) form is
+false**: the `(w+1)`-clique violates it at all large p, contradicting the paper's "realizable only below
+`p_0`" claim.
+
+**Status: PROVEN over ℚ** (not merely numerical). Standard scientific caution still applies — independent
+reproduction against the authors' reference scripts [36] is warranted before treating it as community-
+settled — but the exact-ℚ verification removes the "numerical artifact" and "small-p" doubts. My
+single-syndrome `M_true` matches the paper's anchor table 10/10, so the `M_true` semantics are theirs.
+
+**Scope unchanged:** OFF the FRI-soundness critical path (Theorem 18 uses no §7 result), and the prize
+(pinning δ*) is untouched and still open. What this corrects: OP2's worst-case list size is **not**
+`⌊(2D−1)/c⌋`; it is `≥ w+1` via cliques. The average/typical-case bound (what the authors' random search
+saw) is consistent with their data.
