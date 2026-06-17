@@ -17040,3 +17040,49 @@ DPP rigidity is RANDOM-matrix theory (GUE/Ginibre/Airy-Bessel-Gamma kernels, HKP
 Ghosh–Peres); arXiv 2604.06513 studies the Paley SPECTRUM algebraically, NOT as a DPP, and proves no
 hole/variance bound. Axiom-clean `[propext, Classical.choice, Quot.sound]` (no sorryAx);
 `autoImplicit=false` clean. Confidence high.
+
+---
+
+## T23 (G5-3) — Beilinson dilogarithm-regulator spacing floor — REFUTED + REDUCES-TO-WALL F0
+
+**Candidate.** View the Gauss periods `eta_b = sum_{x in mu_n} e_p(bx) in ZZ[zeta_n]` as points;
+conjecture a Lehmer-type LOWER bound on the SECOND Beilinson regulator (Bloch–Wigner dilogarithm
+covolume of cyclotomic-unit symbols `[eta_b/eta_b']`, the `K_3^{ind}` lattice covolume):
+`R_2(eta_b - eta_b') >= c/(log n)^A`. Chain: (B) regulator floor => (S) periods are
+`1/(sqrt n (log n)^A)`-separated => (C) `<= sqrt n (log n)^A` per unit window => (P) + Parseval
+`sum|eta_b|^2 = (p-n)n` => `M(n) <= sqrt n (log n)^A`. Claimed "sideways" Diophantine repulsion.
+
+**Novelty CONFIRMED** (WebSearch): Beilinson/Borel regulators + Bloch–Wigner dilogarithm at
+cyclotomic units are classical (Zagier, Goncharov math/0407308, Borel; Mahler measure = sum of
+`D(z)` values, Smyth/Boyd); Lehmer-for-the-dilogarithm is itself open. But NO result uses the
+degree-2 regulator as a SEPARATION device for a character-sum family. **Absence CONFIRMED**:
+`grep -riE 'beilinson|dilog|bloch.?wigner|bloch.?group'` over the ProximityGap cone = 0 hits (the
+only `regulator/polylog` hits are the word "polylog" in vertex-count contexts + unrelated Binius).
+
+**REFUTATION (step (S) is FALSE at prize scale, pigeonhole).** There are `m = (p-1)/n ~ n^3 ~ 2^90`
+DISTINCT periods (full degree-m Galois orbit). Parseval pins their total squared mass to `p-n`, so
+RMS over the `m` distinct periods `= sqrt((p-n)/m) ~ sqrt n`. By Chebyshev `>= m/2 ~ n^3/2` of them
+lie in a width-`2 sqrt2 sqrt n ~ 2.83 sqrt n` window. Pigeonhole forces a pair within
+`(2.83 sqrt n)/(m/2) ~ O(n^{-5/2}) = 1.5e-22` at `n=2^30` — BELOW the claimed floor
+`1/(sqrt n (log n)^A) ~ n^{-1/2}/polylog` by a factor `~ n^2` (ratio floor/forced `= 2.0e17` at
+A=0, `9.8e15` at A=1, `4.7e14` at A=2). `n^3` periods CANNOT all be `n^{-1/2}`-separated when their
+second moment crams them into an `O(sqrt n)` window. The (B)->(S) bridge ("regulator dominates a
+product of archimedean spacings") is independently the **T10/S8 reversed-covolume trap**: a covolume
+is a geometric mean over the `phi(n)` places; a LOWER bound on it does NOT lower-bound any individual
+spacing nor upper-bound the max (`geomMean_le_house`).
+
+**REDUCTION (default, even charitably) — F0.** Granting (B)->(S)->(C), the only quantitative input
+to the cap is Parseval mass `sum|eta_b|^2 = (p-n)n` + orbit-position counting = first/second-order
+arithmetic of `mu_n`. By the conservation law F0 this caps at `RMS = sqrt n` (Johnson); the `sqrt log`
+excess is a rare-event/tail phenomenon invisible to second moments and to any covolume (geometric-
+mean) object. Reduction map: T23 -> separation floor on orbit -> per-window count -> Parseval mass
+-> RMS = sqrt n = Johnson/second-moment ceiling = **F0** (proximate failure = (B)->(S) = T10/S8
+covolume reversal).
+
+**Lean (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx):**
+`Frontier/_wfT23_beilinson_regulator_spacing.lean` — `uniform_separation_impossible` (pigeonhole
+engine, any ordered field), `sep_impossible_prize`/`no_such_config_prize` (EXACT `QQ` certification:
+`(2^40-1)/32768 > 92682`, so even `2^40` periods << the `2^89` forced in-window cannot be
+`1/sqrt n`-separated), `secondMoment_bounds_average_not_max`+`covolume_lower_does_not_upper_bound_max`
+(the F0 / reversed-covolume captures). Probe: `scripts/probes/rust/probe_wfT23_regulator_spacing_pigeonhole.rs`.
+Verdict: REDUCES-TO-WALL F0 (separation step also REFUTED at scale). No prize gain. Confidence high.
