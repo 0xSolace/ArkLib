@@ -16221,3 +16221,38 @@ wall (di Benedetto n^{0.989} is the SOTA, just outside the prize regime). HGG gi
 per-frequency BGK statement lacks. (Consistent with the prior census tag: Sidelnikov listed among
 the "50 cross-domain theories DEAD"; this entry pins the EXACT mechanism -- complete-sum sqrt(N) +
 half-dimension norm subgroup -- rather than the generic "aggregate/second-order" dismissal.)
+
+## P2 No-Excess: EXACT faithfulness FALSE at prize scale; SOFT ceiling = cyclotomic-norm wall (sol, 2026-06-17)
+Worked the positive lane P2-prove-no-excess-uncond (complete the di Benedetto beat by proving No-Excess
+char-p E_r faithfulness r=2,3 UNCONDITIONALLY at the prize prime). Pulled di Benedetto et al
+(arXiv:2003.06165) §4 VERBATIM (pdftotext): the beat's energy inputs are Lemma 4.2 T_2(H)≪H^{49/20}log^{1/5}H
+and Lemma 4.3 T_3(H)≪H^4 log H (= Murphy-Rudnev-Shkredov-Shteinikov), BOTH require H<√p (so β>2; prize
+β=4 admissible), BOTH UNCONDITIONAL — these give the PUBLISHED 31/2880 (t_2=49/20, t_3=4). The "beat" to
+1/24 needs the DYADIC-SPECIFIC near-Sidon exponents t_2=2, t_3=3.
+
+DICHOTOMY (decisive, both halves rigorous):
+(NEG) EXACT No-Excess E_r^{Fp}=E_r^0 is PROVABLY FALSE at prize scale. The exact Sidon-mod-neg pin
+  (SidonSubgroupClosed/SidonModNegImproved) needs p>12^{n/4}≈2^{0.896n} ≫ prize p~n^4. At p~n^4 the wrap
+  excess A_2=E_2^{Fp}−(3n²−3n) is NONZERO: A_2=384 at n=32,p=194977 (E_2^{Fp}=3360≠2976); A_2=1536 at
+  n=64,p=2164417. So exact faithfulness is the WRONG target. (probe_p2_excess_count_law,
+  probe_p2_wrap_relation_structure; probe_charp_faithfulness_depth_law: 4-term breakers already at
+  p=97,n=16.)
+(POS, but reduces) SOFT No-Excess E_r^{Fp}≤C·n^r (the GENUINE di Benedetto input t_r=r) is empirically
+  TRUE: fitted char-p exponents t_2^p=2.003, t_3^p=3.013 at the WORST proper prize-band prime over
+  n=16..256 (probe_p2_mrss_vs_nearsidon); worst-case constants sup_p c_2≤3.4, sup_p c_3≤21.5 PEAK at the
+  Fermat-region prime then DECLINE (c_3:12.8→21.5→21.3→18.1→15.1 — NOT growing, probe_p2_worstconstant_growth).
+  So μ_n is genuinely near-Sidon IN CHAR-P at prize scale and the beat survives (the saving uses only the
+  EXPONENT t_r=r, robust to bounded constant inflation 3→3.4).
+
+THE WALL (why P2 is NOT elementarily closeable). probe_p2_wrap_relation_structure: A_2 factors as a SMALL
+number K(n,p) of short length-4 cyclotomic difference-patterns, each filling a rotation orbit of size O(n),
+so A_2=Θ(K·n) (n=32: K=4 patterns×{128,128,64,64}=12n; n=64: K=6×256=24n). K(n,p) = #{short relations R≠0
+in Z[ζ_n] : p∣N(R)} GROWS (4→6) and is PRIME-DEPENDENT. So the soft ceiling E_2^{Fp}≤C·n² is UNCONDITIONALLY
+EQUIVALENT to a uniform K(n,p)=O(n) bound = the cyclotomic-norm-divisibility wall (sibling of BGK). Best
+UNCONDITIONAL bound stays MRSS t_2=49/20 (the published 31/2880), NOT the 1/24 beat. Stepanov route already
+NO-GAIN (probe_c10: per-fiber count n^{2r-1}≫ needed).
+VERDICT: reduces-to-bgk. Lean Frontier/_P2NoExcessSoftCeilingDichotomy.lean — 8 thms, axiom-clean
+([propext,Classical.choice,Quot.sound]; the two integer witnesses [propext]; 0 sorryAx, my own #print
+axioms quoted): softCeiling_of_excess_linear (A_2≤K·n ⇒ E_2^{Fp}≤(3+K/n)n²), exact_noExcess_false_witness
+(3360≠2976), beat_exponent_robust_to_constant, beat_is_energy_ceiling (1/24<1/2). CORE M(μ_n)≤C·√(n·log(p/n))
+with absolute C UNCHANGED / OPEN.
