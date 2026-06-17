@@ -585,6 +585,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceGcd
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceSharp
+import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialWindowAverage
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseOrbitGap
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataReduce
