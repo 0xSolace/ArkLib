@@ -15742,3 +15742,50 @@ and headline `trinomial_gap_gcd_cap_fails`. CONSEQUENCE: the C71 <=3-sparse resi
 the binomial cyclic-kernel/gcd(d,n) law on the 3-term strata; the valid non-orbit bound remains the
 gcd-with-`X^n-1`/span container from `C71TrinomialIncidence`. NOT a CORE closure, not a Conj-7.1
 closure, no capacity/beyond-Johnson/cliff-at-n/2 claim. CORE remains open.
+
+### WORST-CASE θ-GIRTH COUNTING-CAPPED at β+O(1) — wf-S5 "girth grows" is typical-case; route reduces to BGK. + 6-angle worst-case attack: 0 survivors (#444, nubs, 2026-06-17)
+
+A 6-lane parallel attack on the WORST-CASE char-p bound M(μ_n) ≤ C√(n log(p/n)) (= E_r ≤ K^r·(2r−1)‼·n^r,
+K=O(1) uniform, the genuine open content), each angle grounded in the trichotomy and adversarially
+self-reduced. **0 survivors — every angle reduces to B1/B2/B3 = the BGK wall.** One genuinely new,
+verified sub-lemma (the only non-fabricated artifact):
+
+**θ-girth counting-cap.** wf-S5's transfer-exactness (`energy_exact_wick_below_girth`, char-p energy =
+char-0 Wick for r < γ/2) is real, but the in-tree reading "γ GROWS with n ⟹ band widens to the prize
+depth" is **typical-case only**. The WORST-CASE L1-theta girth (min Σ|c_j| of a nonzero spurious
+config, integer coeffs) is **counting-capped: γ ≤ ⌈log_n p⌉ + O(1) = β + O(1)** — because the
+(2φ(n))^w = n^w signed weight-w words must collide into F_p once n^w ≳ p, an alphabet-capacity ceiling
+no classical cyclic-code min-distance bound (BCH = 1+consecutive-run; HT/Roos/van-Lint-Wilson add O(1)
+needing defining-set structure the adversarial prime lacks) can exceed. ACHIEVED at high-2-adic/Fermat
+primes. VERIFIED (`probe_444_girth_countingcap_fermat.py`): n=16, p=65537 (Fermat, first prize prime
+≡1 mod 16) has worst-case girth **5**, via the integer-coeff relation `4·ζ⁰ − ζ¹¹ ≡ 0 mod p` (4 is a
+primitive 16th root since 2¹⁶=−1 ⟹ 4¹⁶=1; 4=h¹¹) — a {0,±1}-Hamming scan MISSES this (needs coeff 4),
+which is why a naive Hamming scan over-reads the girth. The workflow's exact iterative-deepening gives
+worst-case γ = 5 (n=16), 7 (n=32), tracking β=4 (generic primes 9–11). So the transfer-exact band
+r < γ/2 reaches only depth ~β/2 ~ 2–3 vs prize depth r ~ ln q ~ β ln n; the **shortfall GROWS ×5.5
+(n=16) → ×41.6 (n=2³⁰)**. The residual = count of spurs in the supra-girth band [γ, 2 ln q] = E_r above
+char-0 Wick = BCHKS Conj 1.12 = the BGK/Paley wall (B2).
+
+Sharpest reductions of the other 5 angles (all REDUCE-TO-BGK):
+* **Hasse–Davenport dual Gauss sums** (B2): HD is a PRODUCT relation; its args read only phase
+  DIFFERENCES (a coboundary), pinning 3n/4 of the n Gauss-sum phases, leaving n/4 (the Katz-primitive
+  count) FREE — and max_b|Σχ̄(b)g(χ)| depends entirely on those free ABSOLUTE phases HD cannot supply;
+  the only multiplicative output (the norm) AM–GM-caps at the √n geometric mean (B1 horn). (= GaussSumSatoTate.)
+* **S6 Deligne / bounded-Betti** (B2): the n-independent C(2r,r) bounds the AMBIENT toric Betti of V_r,
+  NOT the n-TORSION count we need (which rides a Kummer sheaf of rank ~n^{2r-1}, Weil-II loss n^{r-1/2});
+  effectivity needs n ≳ √p, violated by the prize n < p^{1/4}; the unconditional `SpurToricBounded` is
+  MEASURED, not proven. Kills "AG is vacuous past Fermat completion" as a *correction*, not a closure.
+* **EVT / random-matrix universality** (B1): the sup is moment-blind (in-tree `_AttackE2` spike no-go:
+  two vectors with identical S1,S2,S4 have maxima differing by m−1 ~ n³); negative-association FAILS
+  (cov +0.013 > 0); any tail strong enough to output the sup IS Paley sub-Gaussianity = BGK.
+* **Sharp high-r sum-product** (B2): thin-subgroup SOTA (MRSS19 E_2≤|G|^{2.45}, HBK |G|^{2.5}) is r=2-only,
+  saves ONE factor of n where depth r~ln q needs r−1 (~83 at prize); di Benedetto saving vanishes at β=4
+  (Burgess barrier). Result is trivial M=n.
+* **Choosable-prime certificate** (B2): the prize is ∀p; choosing p answers a weaker question, and even
+  then per-prime certification at prize depth is itself BGK-hard (BadPrimeNormBound vacuous at depth ln q).
+
+VERDICT: NOT a CORE closure and NOT a refutation of the prize (believed true) — a tier REDUCTION + one
+new worst-case counting-cap no-go sharpening wf-S5. The open content across all angles is the SAME single
+object: char-p additive-energy excess above char-0 Wick to depth r~ln q, uniform over worst-case
+Fermat/structured primes = BCHKS Conj 1.12 = the char-p BGK/Paley √-cancellation wall. Probe:
+scripts/probes/probe_444_girth_countingcap_fermat.py. CORE OPEN.
