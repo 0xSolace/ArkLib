@@ -41,6 +41,27 @@ divisibility count.** So the prize cannot be escaped by *reframing* — there is
 to pin it to; every candidate is a theorem-level synonym for BGK. The creative search space (71 theorems, 12
 families, all 5 escape archetypes) is exhausted, and the exhaustion is *proven*, not merely empirical.
 
+## Addendum (reduction-side audit): the target is the signed word-line incidence, NOT the sup-norm
+Re-reading the actual reduction (`CharSumDeltaStarBridge`, `IncidenceDeviationCharSum`,
+`IncidencePeriodBridge`) corrects a conflation that ran through this whole campaign. The object δ* needs
+is the **signed hyperplane sum / word-line incidence**
+
+> `I(s₀,s₁) = ∑_{b·s₁=0} conj(η_b)·ψ(b·s₀)`,  budget `I ≤ q·ε* ≈ n` (BCHKS Conjecture 1.12),
+
+**not** the sup-norm `M(n)=max_b‖η_b‖` (BGK). Two consequences, both verified against the in-tree lemmas:
+- **Even full BGK does not clear the naive budget.** The triangle bound gives `I ≤ |G|+q·B`; the budget
+  `(|G|+q·B)/q ≤ ε*` at the prize point `q·ε*≈n`, `|G|≈n` forces `B≈0`. So even `B=√(n log p)` (the BGK
+  sup-norm value) overshoots by `≈q√(n log p)/n`. The sup-norm route is **doubly** insufficient — the prize
+  needs the *signed* `√q·B` cancellation of `η_b` against the additive phase `ψ(b·s₀)`, a finer second
+  oscillation on top of the `|η_b|` magnitudes.
+- **The in-tree `V=F` avatar is degenerate.** Over the 1-dimensional syndrome field, `{b : b·s₁=0}={0}`
+  (no zero divisors), so `lineIncidence ≡ |G|` exactly and the deviation is identically `0`. The genuine
+  high-dimensional incidence is abstracted into the structural hypothesis `hStruct`
+  (`badScalars ≤ lineIncidence`); the real √q-cancellation lives in the *n-dimensional word geometry*, which
+  is exactly BCHKS-1.12 (di Benedetto's `n^{0.989}` sum-product incidence is the SOTA, short of the needed
+  exponent). So the prize floor is BCHKS-1.12, a recognized open RS-specific √-cancellation of the same
+  difficulty class as BGK — not the classical sup-norm, and not closed here.
+
 ## Honest conclusion
 δ* in the prize regime IS the BGK/Paley √-cancellation problem — canonically, biconditionally, with no
 object-change escape. 71 novel attempts, 0 survivors, refutations grounded in in-tree biconditionals. No
