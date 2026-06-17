@@ -6,20 +6,20 @@ Authors: ArkLib Contributors
 import Mathlib.Tactic
 
 /-!
-# char-0 step-ratio MONOTONICITY for `μ_{2^μ}`, proven for r = 2,3,4,5,6 (#444)
+# char-0 step-ratio MONOTONICITY for `μ_{2^μ}`, proven for r = 2,3,4,5,6,7 (#444)
 
 The localized prize reduced (`_StepRatioMonotone`) to the **monotonicity** of the step ratio
 `R(r) = E_{r+1}/((2r+1)·n·E_r)`, equivalently the bounded-log-convexity
 `(2r+1)·E_r·E_{r+2} ≤ (2r+3)·E_{r+1}²`. For the **Gaussian/Wick** values this is EQUALITY; the prize is
 that the smooth-subgroup energies are *less log-convex than Gaussian* (sub-Gaussian).
 
-This file PROVES the **char-0** monotonicity for the accessible depths `r = 2,3,4,5,6` from the in-tree
+This file PROVES the **char-0** monotonicity for the accessible depths `r = 2,3,4,5,6,7` from the in-tree
 exact energy closed forms `E_2 = 3n²−3n`, `E_3 = 15n³−45n²+40n`, `E_4 = 105n⁴−630n³+1435n²−1155n`,
-`E_5 = 945n⁵−9450n⁴+39375n³−77175n²+57456n`, plus the landed E₆,E₇,E₈ closed forms. The monotonicity gap `G(r) = (2r+3)E_{r+1}² −
+`E_5 = 945n⁵−9450n⁴+39375n³−77175n²+57456n`, plus the landed E₆,E₇,E₈,E₉ closed forms. The monotonicity gap `G(r) = (2r+3)E_{r+1}² −
 (2r+1)E_r·E_{r+2}` is a polynomial in `n` with all-nonnegative coefficients in the `(n−4)` basis, hence
-`> 0` for `n ≥ 8` (the prize regime `n = 2^μ`). Machine-verified by the one-sweep r=2..6 gap probe; proven here.
+`> 0` for `n ≥ 8` (the prize regime `n = 2^μ`). Machine-verified by the one-sweep r=2..7 gap probe; proven here.
 
-This is a genuine PARTIAL result: the char-0 step ratio `R(r)` is **antitone at r=2,3,4,5,6** (so the
+This is a genuine PARTIAL result: the char-0 step ratio `R(r)` is **antitone at r=2,3,4,5,6,7** (so the
 energy sequence is sub-Gaussian at these depths), char-free arithmetic, no `sorry`. The char-`p` transfer (the
 wraparound preserving the monotonicity) at deep `r` remains the open wall.
 -/
@@ -39,6 +39,10 @@ def E7 (n : ℝ) : ℝ :=
 def E8 (n : ℝ) : ℝ :=
   2027025*n^8 - 56756700*n^7 + 728377650*n^6 - 5439183750*n^5
     + 25055875845*n^4 - 69934975110*n^3 + 107438611995*n^2 - 68492499075*n
+def E9 (n : ℝ) : ℝ :=
+  34459425*n^9 - 1240539300*n^8 + 20744573850*n^7 - 206963306550*n^6
+    + 1327347186165*n^5 - 5524263935190*n^4 + 14357763632355*n^3
+    - 20957471507115*n^2 + 12885585512800*n
 
 /-- **char-0 step-ratio monotonicity at r = 2:** `5·E_2·E_4 ≤ 7·E_3²` for `n ≥ 8`. Equivalently the gap
 `G(2) = 7·E_3² − 5·E_2·E_4 = n⁴·(1575n−8400) + n²·(13650n−6125) ≥ 0` — a sum of two manifestly nonnegative
@@ -91,27 +95,51 @@ theorem charZero_stepRatio_monotone_r6 {n : ℝ} (hn : 8 ≤ n) :
     pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
     pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, mul_nonneg hd hd]
 
-/-- **The char-0 step ratio `R(r)` is ANTITONE for r = 2,3,4,5,6** — proven from the exact energy closed
+
+/-- **char-0 step-ratio monotonicity at r = 7:** `15·E_7·E_9 ≤ 17·E_8²` for `n ≥ 8` (`G(7) ≥ 0`, all
+coeffs nonneg in the `(n−8)` certificate basis). This extends the accessible char-0 monotonicity
+ladder one rung using the landed `E_9` closed form. -/
+theorem charZero_stepRatio_monotone_r7 {n : ℝ} (hn : 8 ≤ n) :
+    15 * E7 n * E9 n ≤ 17 * (E8 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 8 := by linarith
+  simp only [E7, E8, E9]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
+    pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, pow_nonneg hd 15,
+    pow_nonneg hd 16, mul_nonneg hd hd]
+
+/-- **The char-0 step ratio `R(r)` is ANTITONE for r = 2,3,4,5,6,7** — proven from the exact energy closed
 forms. So the smooth-subgroup energy sequence is *sub-Gaussian* (less log-convex than the Gaussian/Wick
 sequence, which has `R ≡ 1`) at every accessible depth. This establishes the char-0 half of the
 `_StepRatioMonotone` reduction across the formalizable range; the deep-`r` char-`p` transfer (the
 wraparound preserving the monotonicity at `r ≈ log p`) is the remaining open wall. -/
+theorem charZero_stepRatio_monotone_r2_to_r7 {n : ℝ} (hn : 8 ≤ n) :
+    (5 * E2 n * E4 n ≤ 7 * (E3 n)^2) ∧ (7 * E3 n * E5 n ≤ 9 * (E4 n)^2) ∧
+      (9 * E4 n * E6 n ≤ 11 * (E5 n)^2) ∧ (11 * E5 n * E7 n ≤ 13 * (E6 n)^2) ∧
+        (13 * E6 n * E8 n ≤ 15 * (E7 n)^2) ∧ (15 * E7 n * E9 n ≤ 17 * (E8 n)^2) :=
+  ⟨charZero_stepRatio_monotone_r2 hn, charZero_stepRatio_monotone_r3 hn,
+   charZero_stepRatio_monotone_r4 hn, charZero_stepRatio_monotone_r5 hn,
+   charZero_stepRatio_monotone_r6 hn, charZero_stepRatio_monotone_r7 hn⟩
+
+/-- Backward-compatible name for the already-landed r=2..6 bundle. -/
 theorem charZero_stepRatio_monotone_r2_to_r6 {n : ℝ} (hn : 8 ≤ n) :
     (5 * E2 n * E4 n ≤ 7 * (E3 n)^2) ∧ (7 * E3 n * E5 n ≤ 9 * (E4 n)^2) ∧
       (9 * E4 n * E6 n ≤ 11 * (E5 n)^2) ∧ (11 * E5 n * E7 n ≤ 13 * (E6 n)^2) ∧
-        (13 * E6 n * E8 n ≤ 15 * (E7 n)^2) :=
-  ⟨charZero_stepRatio_monotone_r2 hn, charZero_stepRatio_monotone_r3 hn,
-   charZero_stepRatio_monotone_r4 hn, charZero_stepRatio_monotone_r5 hn,
-   charZero_stepRatio_monotone_r6 hn⟩
+        (13 * E6 n * E8 n ≤ 15 * (E7 n)^2) := by
+  exact ⟨(charZero_stepRatio_monotone_r2_to_r7 hn).1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.2.1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.2.2.1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.2.2.2.1⟩
 
 /-- Backward-compatible name for the already-landed r=2..5 bundle. -/
 theorem charZero_stepRatio_monotone_r2_to_r5 {n : ℝ} (hn : 8 ≤ n) :
     (5 * E2 n * E4 n ≤ 7 * (E3 n)^2) ∧ (7 * E3 n * E5 n ≤ 9 * (E4 n)^2) ∧
       (9 * E4 n * E6 n ≤ 11 * (E5 n)^2) ∧ (11 * E5 n * E7 n ≤ 13 * (E6 n)^2) := by
-  exact ⟨(charZero_stepRatio_monotone_r2_to_r6 hn).1,
-    (charZero_stepRatio_monotone_r2_to_r6 hn).2.1,
-    (charZero_stepRatio_monotone_r2_to_r6 hn).2.2.1,
-    (charZero_stepRatio_monotone_r2_to_r6 hn).2.2.2.1⟩
+  exact ⟨(charZero_stepRatio_monotone_r2_to_r7 hn).1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.2.1,
+    (charZero_stepRatio_monotone_r2_to_r7 hn).2.2.2.1⟩
 
 end ArkLib.ProximityGap.CharZeroStepRatioMonotone
 
@@ -121,5 +149,7 @@ end ArkLib.ProximityGap.CharZeroStepRatioMonotone
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r4
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r5
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r6
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r7
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r7
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r6
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r5
