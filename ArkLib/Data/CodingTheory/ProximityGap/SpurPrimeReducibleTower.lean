@@ -63,6 +63,7 @@ local instance fact17 : Fact (Nat.Prime 17) := ⟨by decide⟩
 local instance fact37 : Fact (Nat.Prime 37) := ⟨by decide⟩
 local instance fact41 : Fact (Nat.Prime 41) := ⟨by decide⟩
 local instance fact53 : Fact (Nat.Prime 53) := ⟨by decide⟩
+local instance fact61 : Fact (Nat.Prime 61) := ⟨by decide⟩
 
 /-- **`Φ_{2^m} = X^{2^{m−1}} + 1` over any commutative ring** (`m ≥ 1`). The `p = 2` prime-power
 cyclotomic; pulled out as a reusable named form. -/
@@ -497,6 +498,49 @@ theorem not_irreducible_cyclotomic_two_pow_mod53 {m : ℕ} (hm : 3 ≤ m) :
     have hpos : 0 < 2 ^ (m - 2) := by positivity
     omega
 
+/-- **Explicit `F_61` half-degree factorization of every dyadic cyclotomic tower level.** For `m ≥ 2`,
+`11² = -1` in `F_61`, so
+`Φ_{2^m}(X) = X^{2^{m-1}} + 1 = (X^{2^{m-2}} + 11)(X^{2^{m-2}} - 11)`.
+This extends the square-root-of-minus-one reducible tower past the `F_53` rung. -/
+theorem cyclotomic_two_pow_mod61_factor {m : ℕ} (hm : 2 ≤ m) :
+    cyclotomic (2 ^ m) (ZMod 61) =
+      (X ^ (2 ^ (m - 2)) + 11) * (X ^ (2 ^ (m - 2)) - 11) := by
+  rw [cyclotomic_two_pow (by omega)]
+  have hpow : 2 ^ (m - 1) = 2 * 2 ^ (m - 2) := by
+    have h : m - 1 = (m - 2) + 1 := by omega
+    rw [h, pow_succ, mul_comm]
+  rw [hpow, pow_mul]
+  have h61 : (61 : (ZMod 61)[X]) = 0 := by
+    have : (61 : ZMod 61) = 0 := by decide
+    calc (61 : (ZMod 61)[X]) = C (61 : ZMod 61) := by norm_cast
+      _ = 0 := by rw [this]; exact map_zero C
+  linear_combination 2 * h61
+
+/-- **Ninth explicit uniform candidate-bad-prime tower: `Φ_{2^m}` is reducible over `F_61` for every
+`m ≥ 3`.** The two factors in `cyclotomic_two_pow_mod61_factor` both have positive degree. Honest scope:
+necessary reducibility only, not a short-relation witness and not a CORE bound. -/
+theorem not_irreducible_cyclotomic_two_pow_mod61 {m : ℕ} (hm : 3 ≤ m) :
+    ¬ Irreducible (cyclotomic (2 ^ m) (ZMod 61)) := by
+  rw [cyclotomic_two_pow_mod61_factor (by omega)]
+  rw [irreducible_iff, not_and_or]; right; push Not
+  refine ⟨X ^ (2 ^ (m - 2)) + 11, X ^ (2 ^ (m - 2)) - 11, rfl, ?_, ?_⟩
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) + 11 : (ZMod 61)[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) + 11 : (ZMod 61)[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) - 11 : (ZMod 61)[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) - 11 : (ZMod 61)[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+
 end ArkLib.ProximityGap.SpurPrimeReducible
 
 /-! ## Axiom audit -/
@@ -518,3 +562,5 @@ end ArkLib.ProximityGap.SpurPrimeReducible
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod41
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_mod53_factor
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod53
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_mod61_factor
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod61
