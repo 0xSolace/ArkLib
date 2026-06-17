@@ -5,6 +5,8 @@ Authors: ArkLib Contributors
 -/
 import Mathlib
 
+set_option linter.style.longLine false
+
 /-!
 # A machine-checked counterexample to Conjecture 41 (worst-case form) of ePrint 2026/858
 
