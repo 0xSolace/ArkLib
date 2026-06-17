@@ -16759,3 +16759,51 @@ convolution; WebSearch confirms). Absent from the cone (grep: "conditional entro
 `EntropyVolumeListSize.lean`; no chain-rule / Madiman / mutual-information in the cone). Distinct from
 the dynamical `_DilationZeroEntropyNoGo` (single n-cycle, zero DYNAMICAL entropy) and from the A10
 chaining/metric-entropy probe. Well-posed but REDUCES; CORE stays OPEN.
+
+## [wf-T13 2026-06-17] Rényi-α flatness factor / smoothing parameter at super-critical α* = 2 + c/log m — REDUCES-TO-WALL (F7 primary, F1 mechanism)
+
+**Candidate (architect G3-T3).** "New functional": the Rényi-α flatness factor ε_α(μ_n) of the
+subgroup-indicator pushforward f=(1/n)1_{μ_n} read through the spectrum (Ling–Luzzi–Yan, ePrint
+2025/986, transcribed from Euclidean lattices to μ_n⊂F_p), at a SINGLE super-critical order
+α*=2+c/log m (strictly above the energy order 2, below the sup order ∞), with the interpolation
+ε_∞ ≤ ε_{α*}^θ; pin ε_{α*} at the Gaussian floor ⇒ M ≤ √(2 n log m). Hoped lever: α* "carries
+strictly more than 2nd-order info (the α-derivative = log-density variance, a 3rd-order datum)".
+
+**Novelty/absence: CONFIRMED.** WebSearch: the Rényi smoothing parameter / flatness factor exists
+(Ling–Luzzi–Yan 2025/986) but is defined for Euclidean lattices / discrete Gaussian only; no prior
+work transcribes it to a thin multiplicative subgroup of F_p or links ε_∞ to the generalized-Paley
+sup M(n). Codebase grep: "flatness factor"=0, "smoothing parameter"=0, "Renyi smoothing"=0; the
+existing `ShawFlatnessRefuted.lean` concerns only α=2 (energy) vs α=∞ (sup), never the intermediate-α
+smoothing parameter. So the object is genuinely new-in-application.
+
+**REDUCTION (exact, axiom-clean in `Frontier/_wfT13_renyi_flatness_reduces.lean`,
+probe `scripts/probes/rust/probe_wfT13_renyi_flatness.rs`, β=4, n≤256):**
+
+(R1) The spectral Rényi-α flatness IS the deep-moment/energy functional re-coordinatized:
+`n·ε_α = (E_{α−1})^{1/(2(α−1))}` = the F1 moment M-bound at depth r=α−1
+(`flatness_eq_moment_bound`). At α=2: `(n·ε_2)² = E_1` = the additive energy = **F7**
+(`epsFlat_two_is_energy`). No new functional — it is E_{α−1} reparameterized.
+
+(R2) The super-critical offset COLLAPSES to the energy order at prize scale: the flatness depth
+r*=α*−1=1+c/log m exceeds the energy depth 1 by exactly c/log m, and m=(p−1)/n≈n^{β−1}=n³→∞ at β=4,
+so c/log m→0 (`superCritical_depth_to_one`, `superCritical_offset_small`). Probe: at n=64, α*=2.0801,
+ε_{α*}=0.12855 vs ε_{α=2.0001}=0.12499 — a 2.9% gap that SHRINKS as n grows (α*→2). The hoped
+"3rd-order log-density variance" datum is weighted by (α*−2)=c/log m→0. So ε_{α*}→ε_2=energy=F7.
+
+(R3) The interpolation `ε_∞ ≤ ε_{α*}^θ` is a TAUTOLOGY pinned by the answer: ε_α is monotone
+increasing in α (Rényi monotonicity; probe: ε_α ↑ ε_∞ from 0.125 at α≈2 to 0.530=ε_∞ at α=∞), so
+ε_{α*}<ε_∞<1; the only θ realizing the upper bound is θ=log ε_∞/log ε_{α*}∈(0,1)
+(`interpolation_exponent_lt_one`), which SATURATES with equality ε_∞=ε_{α*}^θ
+(`interpolation_is_tautology`). θ is a function of ε_∞ itself — knowing ε_{α*} bounds ε_∞ only after
+θ is fixed, and the only thing fixing θ<1 a priori is the Gaussian-floor hypothesis on ε_∞ = the
+prize. Measured forced θ: 0.11(n=16)→0.42(n=256), growing — the interpolation is the log-convexity
+`max ≤ L^{2r}` (F1) step, carrying no estimate beyond the moment ladder.
+
+**VERDICT: REDUCES-TO-WALL (F7 primary: Rényi-2=energy; F1 mechanism: flatness = deep-moment L^{2r}
+ladder at r=α−1; interpolation = max≤L^{2r}).** Matches DISPROOF_LOG line ~13775: "the only
+phase-aware exit (Hausdorff–Young/L^q deep-moment, min_r C_r^{1/2r} tracks M) merely RE-derives the
+char-p deep-moment crux E_r≤(2r−1)‼n^r at depth r~ln q — not a new harmonic-analysis route." The
+super-critical α* sits at r*≈1 (the SECOND moment), not at the deep r~ln q the prize needs; pushing
+α* to the deep order to escape F7 lands exactly on the open char-p energy transfer. `result_type =
+flatness=energy-reparam(R1) + supercritical-offset→0-at-prize(R2) + interpolation-tautology-pinned-by-
+answer(R3) + reduces-F7-primary-F1-mechanism`. CORE (M≤C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
