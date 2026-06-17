@@ -15450,6 +15450,20 @@ a hard refutation of the energy-transfer route — but it removes the empirical 
 measurable trend is rising, not flat. Probes: scripts/probes/probe_444_keff_creep_n128.py,
 probe_444_keff_rprofile_crosscheck.py (exact char-sums; no Lean).
 
+**AMENDMENT (n=256 extension — the creep SATURATES; softens the above) (nubs, 2026-06-17).** Pushed the
+4th point to n=256 (4 good primes just under 2^32 so t·x<2^64 fits uint64; β=4.0000;
+`probe_444_keff_n256_plateau.py`). Peak K_eff per n (4-prime means):
+    n=32: 0.608   n=64: 0.625   n=128: 0.675   n=256: 0.672
+    Δ/doubling:        +0.017        +0.050        −0.003
+n=256 band [0.646,0.703] OVERLAPS n=128's [0.653,0.698] — the sharp n=64→128 rise does NOT continue;
+the peak PLATEAUS at ≈0.67 through n=256. So the honest shape is RISE-THEN-PLATEAU, not unbounded creep.
+This SOFTENS the entry above: the "flat in n unsupported / trend rising" read was drawn from the rising
+n≤128 segment only; with n=256 the rise saturates, which is MORE consistent with S1's bounded-K
+optimism, not less. NET (corrected): peak K_eff is rise-then-plateau ≈0.67 through n=256 — neither a
+clean refutation of bounded-K nor a proof of it: a log-log-slow creep is still indistinguishable from a
+plateau at these scales, the peak-r marches deeper (12→14→18→20, prize needs r≈89), and the n→2^30
+asymptote remains the open BGK input. Probe: scripts/probes/probe_444_keff_n256_plateau.py.
+
 ## ARISING-DESCENT VACUITY (#444, sol, 2026-06-17): the fold-transport/descent lever is VACUOUS on the primitive (odd-difference) half of directions — CONSTRAINT LEMMA for the descent route
 LANE: the smooth-domain agreement/orbit descent (Q1ArisingFamilyDescent: agreement_deploy_eq_d_mul_base,
 orbitSize_descent) reduces a deployment pencil z^a + alpha z^b on mu_n to a primitive base on mu_{n/d}
