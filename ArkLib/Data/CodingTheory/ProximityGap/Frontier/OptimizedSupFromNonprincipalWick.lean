@@ -36,6 +36,7 @@ open `K^r`-slack). Mirrors `eta_le_optimized` exactly, swapping the unsatisfiabl
 satisfiable nonprincipal one. CORE (`M(μ_n) ≤ C·√(n·log(p/n))`) stays OPEN.
 -/
 
+open Finset
 open ArkLib.ProximityGap.GaussPeriodMomentBound ArkLib.ProximityGap.GaussPeriodOptimizedBound
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ProximityGap.Frontier.NonprincipalWickIsDCWick
@@ -43,6 +44,95 @@ open ProximityGap.Frontier.NonprincipalWickIsDCWick
 namespace ProximityGap.Frontier.OptimizedSupFromNonprincipalWick
 
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+
+
+/-- **The nonprincipal even-moment Wick bound with explicit `K^r` slack.** This is the measured
+`K_eff` form: the non-DC even moment is bounded by `q · K^r · (2r−1)‼ · |G|^r`.  `K = 1`
+recovers `NonprincipalWickBound`; allowing an absolute `K` is the form needed by the prize constant
+conversion and by the current reduced-energy measurements. -/
+def NonprincipalWickBoundK (ψ : AddChar F ℂ) (G : Finset F) (r : ℕ) (K : ℝ) : Prop :=
+  ∑ b ∈ univ.erase (0 : F), ‖eta ψ G b‖ ^ (2 * r)
+    ≤ (Fintype.card F : ℝ) * (K ^ r * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r))
+
+/-- **`K = 1` embeds the old nonprincipal Wick bound into the explicit-slack form.** -/
+theorem nonprincipalWickBoundK_one {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ}
+    (h : NonprincipalWickBound ψ G r) : NonprincipalWickBoundK ψ G r 1 := by
+  unfold NonprincipalWickBoundK NonprincipalWickBound at *
+  simpa using h
+
+/-- **Single-frequency transfer from the `K^r` nonprincipal Wick bound.** A single nonzero frequency
+is bounded by the nonprincipal moment total, now with explicit `K^r` slack. -/
+theorem eta_pow_le_of_nonprincipalWickK {ψ : AddChar F ℂ} {G : Finset F} {r : ℕ} {K : ℝ}
+    (h : NonprincipalWickBoundK ψ G r K) {b : F} (hb : b ≠ 0) :
+    ‖eta ψ G b‖ ^ (2 * r)
+      ≤ (Fintype.card F : ℝ) * (K ^ r * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r)) := by
+  have hterm : ‖eta ψ G b‖ ^ (2 * r) ≤ ∑ b' ∈ univ.erase (0 : F), ‖eta ψ G b'‖ ^ (2 * r) := by
+    apply Finset.single_le_sum (f := fun b' => ‖eta ψ G b'‖ ^ (2 * r))
+    · intro i _; positivity
+    · exact Finset.mem_erase.mpr ⟨hb, Finset.mem_univ b⟩
+  exact hterm.trans h
+
+/-- **Optimized square bound from the `K^r` nonprincipal Wick input.** For every nontrivial frequency,
+`NonprincipalWickBoundK ψ G r K` at `r ≥ log q` gives
+`‖η_b‖² ≤ 2e · K · |G| · r`.  This is the AddChar-level version of the wf-K1 conversion: an
+absolute `K` in the reduced/nonprincipal energy route only changes the final prize constant by
+`√K`.  The hard content is still proving the `K^r` input uniformly at prize depth. -/
+theorem eta_sq_le_optimized_of_nonprincipalWickK {ψ : AddChar F ℂ}
+    {G : Finset F} {r : ℕ} {K : ℝ} (hr : 1 ≤ r) (hK : 0 ≤ K)
+    (hrq : Real.log (Fintype.card F) ≤ r) (h : NonprincipalWickBoundK ψ G r K)
+    {b : F} (hb : b ≠ 0) :
+    ‖eta ψ G b‖ ^ 2 ≤ 2 * Real.exp 1 * K * (G.card : ℝ) * (r : ℝ) := by
+  set q : ℝ := (Fintype.card F : ℝ) with hq_def
+  set nc : ℝ := (G.card : ℝ) with hnc_def
+  have hr0 : (0 : ℝ) < (r : ℝ) := by exact_mod_cast hr
+  have hrne : (r : ℕ) ≠ 0 := by omega
+  have hqpos : 0 < q := by rw [hq_def]; exact_mod_cast Fintype.card_pos
+  have hd0 : (0 : ℝ) ≤ (Nat.doubleFactorial (2 * r - 1) : ℝ) := by positivity
+  have hKnc : 0 ≤ K * nc := by positivity
+  have hpow : (‖eta ψ G b‖ ^ 2) ^ r
+      ≤ q * (Nat.doubleFactorial (2 * r - 1) : ℝ) * (K * nc) ^ r := by
+    rw [← pow_mul]
+    have := eta_pow_le_of_nonprincipalWickK h hb
+    calc ‖eta ψ G b‖ ^ (2 * r)
+        ≤ q * (K ^ r * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * nc ^ r)) := this
+      _ = q * (Nat.doubleFactorial (2 * r - 1) : ℝ) * (K * nc) ^ r := by
+          rw [mul_pow]
+          ring
+  have hstep1 : ‖eta ψ G b‖ ^ 2
+      ≤ (q * (Nat.doubleFactorial (2 * r - 1) : ℝ) * (K * nc) ^ r) ^ ((r : ℝ)⁻¹) := by
+    calc ‖eta ψ G b‖ ^ 2
+        = ((‖eta ψ G b‖ ^ 2) ^ r) ^ ((r : ℝ)⁻¹) :=
+          (Real.pow_rpow_inv_natCast (sq_nonneg _) hrne).symm
+      _ ≤ _ := Real.rpow_le_rpow (by positivity) hpow (by positivity)
+  have hexpand : (q * (Nat.doubleFactorial (2 * r - 1) : ℝ) * (K * nc) ^ r) ^ ((r : ℝ)⁻¹)
+      = q ^ ((r : ℝ)⁻¹) * (Nat.doubleFactorial (2 * r - 1) : ℝ) ^ ((r : ℝ)⁻¹) * (K * nc) := by
+    rw [Real.mul_rpow (by positivity) (by positivity),
+        Real.mul_rpow (le_of_lt hqpos) hd0,
+        Real.pow_rpow_inv_natCast hKnc hrne]
+  rw [hexpand] at hstep1
+  have hbq : q ^ ((r : ℝ)⁻¹) ≤ Real.exp 1 := rpow_inv_le_exp_one hqpos hr0 hrq
+  have hbd : (Nat.doubleFactorial (2 * r - 1) : ℝ) ^ ((r : ℝ)⁻¹) ≤ 2 * (r : ℝ) := by
+    calc (Nat.doubleFactorial (2 * r - 1) : ℝ) ^ ((r : ℝ)⁻¹)
+        ≤ (((2 * r : ℕ) : ℝ) ^ r) ^ ((r : ℝ)⁻¹) :=
+          Real.rpow_le_rpow hd0 (doubleFactorial_le_pow r) (by positivity)
+      _ = ((2 * r : ℕ) : ℝ) := Real.pow_rpow_inv_natCast (by positivity) hrne
+      _ = 2 * (r : ℝ) := by push_cast; ring
+  calc ‖eta ψ G b‖ ^ 2
+      ≤ q ^ ((r : ℝ)⁻¹) * (Nat.doubleFactorial (2 * r - 1) : ℝ) ^ ((r : ℝ)⁻¹) * (K * nc) := hstep1
+    _ ≤ Real.exp 1 * (2 * (r : ℝ)) * (K * nc) := by gcongr
+    _ = 2 * Real.exp 1 * K * nc * (r : ℝ) := by ring
+
+/-- **Optimized norm bound from the `K^r` nonprincipal Wick input.** The reduced-energy `K_eff`
+hypothesis gives `‖η_b‖ ≤ √(2e · K · |G| · r)` for `b ≠ 0`.  This is not a CORE closure; the open
+BGK/Paley content is the uniform proof of `NonprincipalWickBoundK` at `r ≈ log q`. -/
+theorem eta_le_optimized_of_nonprincipalWickK {ψ : AddChar F ℂ}
+    {G : Finset F} {r : ℕ} {K : ℝ} (hr : 1 ≤ r) (hK : 0 ≤ K)
+    (hrq : Real.log (Fintype.card F) ≤ r) (h : NonprincipalWickBoundK ψ G r K)
+    {b : F} (hb : b ≠ 0) :
+    ‖eta ψ G b‖ ≤ Real.sqrt (2 * Real.exp 1 * K * (G.card : ℝ) * (r : ℝ)) := by
+  have hsq := eta_sq_le_optimized_of_nonprincipalWickK hr hK hrq h hb
+  calc ‖eta ψ G b‖ = Real.sqrt (‖eta ψ G b‖ ^ 2) := (Real.sqrt_sq (norm_nonneg _)).symm
+    _ ≤ Real.sqrt (2 * Real.exp 1 * K * (G.card : ℝ) * (r : ℝ)) := Real.sqrt_le_sqrt hsq
 
 /-- **Optimized per-frequency square bound from the satisfiable nonprincipal Wick input.** For every
 nontrivial frequency `b ≠ 0`, `NonprincipalWickBound ψ G r` (at `r ≥ max(1, log q)`) gives
@@ -108,6 +198,12 @@ theorem eta_le_optimized_of_nonprincipalWick {ψ : AddChar F ℂ}
 end ProximityGap.Frontier.OptimizedSupFromNonprincipalWick
 
 /-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.OptimizedSupFromNonprincipalWick.nonprincipalWickBoundK_one
+#print axioms ProximityGap.Frontier.OptimizedSupFromNonprincipalWick.eta_pow_le_of_nonprincipalWickK
+set_option linter.style.longLine false in
+#print axioms ProximityGap.Frontier.OptimizedSupFromNonprincipalWick.eta_sq_le_optimized_of_nonprincipalWickK
+set_option linter.style.longLine false in
+#print axioms ProximityGap.Frontier.OptimizedSupFromNonprincipalWick.eta_le_optimized_of_nonprincipalWickK
 set_option linter.style.longLine false in
 #print axioms ProximityGap.Frontier.OptimizedSupFromNonprincipalWick.eta_sq_le_optimized_of_nonprincipalWick
 set_option linter.style.longLine false in
