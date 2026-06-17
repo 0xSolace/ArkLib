@@ -174,3 +174,33 @@ theorem — `interior_threshold_strict` (`√n < √(n·L) < n`, the interior is
 overshoots — no partial interior), `deltaStar_determination_all_or_nothing` (assembled). This proves SOTA
 exponent gains short of the exact `1/2`-with-log scale (di Benedetto `0.9583`, etc.) **cannot** move δ\*
 off Johnson — determination is sharp at the `√(n log m)` scale, the single open BGK input.
+
+---
+
+## Crazier pass (2026-06-17) — worst-prime divergence, structured-prime hunt, ESD shape
+
+Three genuinely-new data-driven angles (`probe_crazy_angles.py`, `probe_esd_shape.py`, exact `F_p`):
+
+**(1) Negative-resolution / worst-prime divergence — no wedge either way.** `max_p C(n) = 0.88, 1.08, 1.22`
+(n=8,16,32; 25/25/8 primes) — trending up but with **decreasing increments** (0.20, 0.14). Neither a clean
+convergence (prize TRUE) nor divergence (prize FALSE = δ\*=Johnson, which would DETERMINE it). 3 points
+can't decide; the trend's PROOF is the wall.
+
+**(2) Structured-prime hunt — no anomalous prime.** At fixed n the C-spread is TIGHT (n=16: `[1.019,1.084]`
+over 25 primes); no outlier prime with exploitable structure (worst prime has no special `v₂(p−1)` / `p mod
+small` signature). No prime-family wedge.
+
+**(3) ★ ESD shape — the periods are SUB-GAUSSIAN (the most favorable evidence yet, but still the wall).**
+The full period spectral distribution has a tail decaying FASTER than Gaussian (n=16: `#{|η|/√n>3}` = 282
+vs Gaussian 553; `>4` = **0** vs 13. n=32: `>4` = 29 vs 104; `>5` = 0 vs ~1), and the max is **below** the
+iid-Gumbel prediction (`M/√(2n log m)` = 0.76, 0.85). So the periods are MORE concentrated than random —
+positive evidence δ\* reaches the interior (prize TRUE). **But this reduces:** a sub-Gaussian tail
+`#{|η_b|>t√n} ≤ m·e^{−t²/2}` is EQUIVALENT to the Wick/energy bound `E_r ≤ (2r−1)‼·n^r` (the tail's moments
+ARE the energy), so proving it at the deep `r≈ln q` is L3 of the chain = the wall. The sub-Gaussianity
+*sharpens the target* (prove the deterministic sub-Gaussian tail) but does not escape it.
+
+**Net of the crazier pass:** every genuinely-new angle (divergence binary, prime structure, ESD shape)
+**confirms the wall and is consistent with prize-TRUE but unprovable by data.** The sharpest positive
+evidence (sub-Gaussian periods, `M < `Gumbel) and the sharpest target (prove the deterministic sub-Gaussian
+tail = the energy bound at deep r) both point to the same single open input. No new escape; the
+sub-Gaussian-tail framing is the cleanest restatement of what must be proven.
