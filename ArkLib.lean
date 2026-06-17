@@ -1057,6 +1057,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.OverdetVanishingCosetCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingCoverSharpReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzAutocorr
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzFisher
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilPairwiseBonferroni
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PerPairingExactCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PeriodOrbitQuotientReduction
@@ -1069,6 +1071,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PseudocyclicDefectSum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Q1ArisingFamilyDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharZero
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharPLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioImagePermInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RawMGFSaddleVacuity
@@ -1286,6 +1289,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E6OddGradeVanish
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyFreqBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaRealNegClosed
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaSignNonMultiplicative
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyRatioMonotoneReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EntropyCeilingDecisionImpotence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FarLineProxyTowerN32Corrected
