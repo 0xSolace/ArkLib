@@ -81,6 +81,61 @@ theorem cyclotomic_two_pow {R : Type*} [CommRing R] {m : ℕ} (hm : 1 ≤ m) :
   rw [Finset.sum_range_succ, Finset.sum_range_one]
   ring
 
+
+/-- **Generic square-root-of-minus-one factorization of dyadic cyclotomic tower levels.**
+If a commutative ring contains `ι` with `ι² = -1`, then every `Φ_{2^m}` (`m ≥ 2`) splits
+into the two half-degree factors `X^{2^{m-2}} ± ι`. This packages the repeated explicit prime
+rungs into one reusable closed form. -/
+theorem cyclotomic_two_pow_factor_of_sq_eq_neg_one {R : Type*} [CommRing R] {m : ℕ}
+    (hm : 2 ≤ m) {ι : R} (hι : ι * ι = -1) :
+    cyclotomic (2 ^ m) R = (X ^ (2 ^ (m - 2)) + C ι) * (X ^ (2 ^ (m - 2)) - C ι) := by
+  rw [cyclotomic_two_pow (by omega)]
+  have hpow : 2 ^ (m - 1) = 2 * 2 ^ (m - 2) := by
+    have h : m - 1 = (m - 2) + 1 := by omega
+    rw [h, pow_succ, mul_comm]
+  rw [hpow]
+  rw [show (X ^ (2 ^ (m - 2)) + C ι) * (X ^ (2 ^ (m - 2)) - C ι) =
+      (X ^ 2) ^ (2 ^ (m - 2)) + 1 by
+    calc
+      (X ^ (2 ^ (m - 2)) + C ι) * (X ^ (2 ^ (m - 2)) - C ι)
+          = X ^ (2 ^ (m - 2) * 2) - (C ι) ^ 2 := by ring
+      _ = X ^ (2 ^ (m - 2) * 2) - C (ι ^ 2) := by rw [map_pow]
+      _ = X ^ (2 ^ (m - 2) * 2) + 1 := by
+        rw [show ι ^ 2 = -1 by simpa [pow_two] using hι]
+        rw [map_neg, map_one]
+        ring
+      _ = X ^ (2 * 2 ^ (m - 2)) + 1 := by
+        congr 2
+        ring
+      _ = (X ^ 2) ^ (2 ^ (m - 2)) + 1 := by rw [pow_mul]]
+  rw [pow_mul]
+
+/-- **Generic reducibility from a square root of `-1`.** Over any field containing `ι` with `ι² = -1`,
+the half-degree factorization above has two positive-degree factors for `m ≥ 3`, so `Φ_{2^m}` is not
+irreducible. This abstracts the repeated explicit `p ≡ 1 mod 4` prime rungs into one reusable lemma. -/
+theorem not_irreducible_cyclotomic_two_pow_of_sq_eq_neg_one {K : Type*} [Field K] {m : ℕ}
+    (hm : 3 ≤ m) {ι : K} (hι : ι * ι = -1) :
+    ¬ Irreducible (cyclotomic (2 ^ m) K) := by
+  rw [cyclotomic_two_pow_factor_of_sq_eq_neg_one (by omega) hι]
+  rw [irreducible_iff, not_and_or]; right; push Not
+  refine ⟨X ^ (2 ^ (m - 2)) + C ι, X ^ (2 ^ (m - 2)) - C ι, rfl, ?_, ?_⟩
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) + C ι : K[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) + C ι : K[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) - C ι : K[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) - C ι : K[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+
 /-- **THE DYADIC DOUBLING IDENTITY: `Φ_{2^{m+1}} = Φ_{2^m}(X²)` over any commutative ring** (`m ≥ 1`).
 Both sides equal `X^{2^m} + 1`. This is the single lever that lifts factorizations up the dyadic tower. -/
 theorem cyclotomic_two_pow_succ_eq_comp_sq {R : Type*} [CommRing R] {m : ℕ} (hm : 1 ≤ m) :
@@ -721,6 +776,8 @@ end ArkLib.ProximityGap.SpurPrimeReducible
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_factor_of_sq_eq_neg_one
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_of_sq_eq_neg_one
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_succ_eq_comp_sq
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_comp_sq_of_not_irreducible
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod3
