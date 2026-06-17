@@ -16079,3 +16079,36 @@ no fixed multiplier K closes the gap since M/sqrt(n) grows while E/sqrt(n) flat)
 VERDICT: OBSTRUCTION. Free probability is not a milder residual; its bulk reproduces the BGK growth
 (non-vanishing higher free cumulants) and its support edge under-estimates the true wall. Completeness
 result: the last untried distributional model also reduces to / under-shoots the 25-year BGK wall.
+
+---
+
+## [P3-weil-deligne-paramfamily] O(1)-conductor on the b-parameter line — REFUTED at the rank floor (2026-06-17)
+
+ANGLE: Realize the period family b ↦ η_b = Σ_{y∈μ_n} ψ(b·y) as the trace function of an ℓ-adic
+sheaf F on the parameter b-line 𝔸¹. The b-family has q ≫ √q points, so Deligne's Weil II bites
+(unlike the dead n-domain, n<√q). If F had conductor c = O(1) UNIFORMLY in n, the pointwise
+Lefschetz/Betti bound |η_b| = |trace_b F| ≤ c·√(q_geom) would give M(n) ≤ C√n ⟹ the prize floor.
+
+REFUTATION (axiom-clean, rigorous — not just measured): the EXACT second moment Σ_b ‖η_b‖² = q·|G|
+(proven in SubgroupGaussSumSecondMoment, [propext,Classical.choice,Quot.sound]) forces ANY uniform
+pointwise bound C (the shape of a sheaf output ‖η_b‖ ≤ C for all b) to satisfy C² ≥ |G|, i.e.
+C ≥ √|G| = √n. So an n-INDEPENDENT (O(1)) conductor is IMPOSSIBLE — the averaged L² scale IS the
+generic rank, pinned at n by the second moment. The trace sheaf has rank = n, Swan = 0 (all
+Artin–Schreier/Kummer constituents tame on 𝔾_m), so cond(F) = Θ(n) and the pointwise Deligne bound
+is the TRIVIAL |η_b| ≤ cond ~ n. The only √(q_geom) to spend is the sheaf's own √(rank) = √n, and
+extracting it = the n rank-1 pieces sitting in GENERAL POSITION = equidistribution = the open BGK
+wall (which Deligne supplies only on average / per-moment, the Johnson/Wick scale (2r-1)‼·n^r,
+never the single-b sup).
+
+Lean: Frontier/_P3ParamFamilyConductorRankFloor.lean — uniform_pointwise_bound_sq_ge_card (C²≥|G|),
+sqrt_card_le_of_uniform_pointwise_bound (√|G|≤C). Axiom-clean, 0 sorryAx (verified by #print axioms).
+Probe: scripts/probes/probe_p3_bparam_conductor_verdict.py — proper μ_n, generic primes p~n^4≫n^3,
+p−1≠n: Var_b‖η_b‖²=n to 4 decimals (rank-forcing), c_eff=M/√n = 2.78,3.59,4.25,4.57 at n=8,16,32,64
+(NOT bounded), tracking √(log p) (c_eff/√(log p) rises 0.85→1.00→1.10→1.11 = prize slack),
+M/√(n·log m) ≈ 1.0–1.3.
+
+VERDICT: REDUCES-TO-BGK. The pointwise O(1)-conductor relocation is refuted at the conductor level
+(this is the unconditional negative content); the residual √n-cancellation is the recognized
+on-average open core. Consistent with MonodromyConductorScaffold.lean (cond ~ n^{2r-1}, Swan=0)
+and MonodromyTailGaussianObstruction.lean (the limiting law is leptokurtic, not the Gaussian the
+EVT route needs). P3 is NOT a new handle.
