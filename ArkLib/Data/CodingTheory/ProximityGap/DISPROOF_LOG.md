@@ -17428,3 +17428,41 @@ Probes `scripts/probes/probe_wfH1_amplified_second_moment.py`, `probe_wfH1_kerne
 **Verdict: REDUCES-TO-FENCE F1 (amplified 2nd moment = flat projection = additive/RMS energy) with F5
 (abelian Cayley => zero Hecke variation, no non-commutative amplifier). The IS amplification flagship has NO
 genuine non-reducing handle on the sup. Floor OPEN = the BGK/Paley wall.** Survivor: NONE.
+
+## 2026-06-17 — ROUTE-1: W_r SIZE via finite-symmetry congruence is EXHAUSTED (6 angles) + Idea-A σ_p orbit-parity is VACUOUS at prize primes [wf wr-structural-constraints-hunt, #444]
+
+**Question:** can a NEW structural constraint on the char-p energy excess `W_r := E_r(μ_n) − (2r−1)‼·n^r`
+COMPOUND with the known parity to force `W_r ≤ slack_r` (= the char-p transfer = the prize)?
+**Verdict: NO survivor.** All six angles correct-but-SUBSUMED, one shared, now-quantified reason.
+
+**The methodological wall (quantified):** every finite symmetry / Galois / orbit / divisibility structure
+pins `W_r` only to a RESIDUE CLASS of modulus `M`, while `wraparound_zero_of_dvd_and_lt` needs `M > slack_r`.
+But `M ≤ |sym group|`: parity 2; swap×neg×S_r×S_r ≤ 4·(r!)² ≈ 10²⁷³ at r=89; Galois |(ℤ/n)ˣ| = n/2; the
+robust orbit-gcd divisor `D(n,r)` has `log₂D = O(1)` in r — all ≪ `slack_r ~ n^{2r}/q` (`log₂ ≈ 10⁹⁶⁰` at
+r=89; `D/slack_r → 0` geometrically, 3.7e-8 by r=6). A congruence/parity pin can NEVER bound the SIZE.
+
+**CORRECTION to Idea A (`Frontier/_NewANTInputBridge.lean`):** its ⟨σ_p⟩-Frobenius-orbit-parity is **VACUOUS
+at every prize prime.** The prize forces `p ≡ 1 mod n`, so p splits completely / by Fermat `x^p ≡ x` on
+`μ_n ⊂ F_p`, hence `f = ord_n(p) = 1`, NOT the docstring's `f = 2^{s+1} ≥ 2` (verified n=8, p∈{17,41,1048609}:
+f=1, Frobenius trivial on μ_n). So `orbit_size_even`'s hypothesis is unsatisfiable, EVERY wraparound point is
+σ_p-fixed, and ⟨σ_p⟩ gives zero leverage. The abstract lemmas stay correct as conditionals; only their W_r
+application is void. **The REAL, unconditional `2|W_r`** is the NON-Galois fixed-point-free negation involution
+`c↦−c` (`2c_i=0 ⟹ c_i=0 ∉ μ_n`, char≠2), already proven axiom-clean: `SignedZeroSumCountEven.two_dvd_zeroSumCount`.
+The `_NewANTInputBridge` docstring's Frobenius framing should be retired/redirected there.
+
+**Per-angle (all REDUCE):** A fixed-point-closure → σ_p vacuous (above). B 2-adic orbit-floor → min orbit size
+does NOT grow (fixed 8 at r=2; orbit-gcd collapses to 6 at n=8,r=3 once S_r injects odd factors 3,9 — robust
+2-floor beyond r=2 is just 2, sharpening the stale "16|W_r" claim; W_3(17)=10440 has v₂=3). C Galois-isotypic →
+splits-completely ⟹ (ℤ/n)ˣ transitive on the φ(n) primes, per-prime space = regular rep, zero internal
+symmetry = the orbit count (B2, `_SpecS3_GaloisReduction`, G-internal stay-ratio 0.000 at n=8 p=17,41).
+D variance/moment → Var(fiber count) = DC-subtracted energy = L2 char sum (B1, Parseval, Cauchy-Schwarz-saturated
+`_MomentRouteSaturationNoGo`); higher moments = E_{kr} (B2 cumulant); "avoid the character sum" is unsatisfiable.
+E polynomial-method → #V_r = E_r (not W_r), Bezout STRICTLY ABOVE Wick, Weil-II toric envelope `C(2r,r)p^{r-1}`
+swallows n^r at β=4 (`_wfA04`), Stepanov √q ≥ n at β≥3 (`StepanovWeilQVacuous`), X^n−1 separable ⟹ no manufactured
+multiplicity; W_r is p-dependent/signed so no p-independent degree applies (`_AttackR6`). F exact census → robust
+divisor `D(n,r)` bounded-v₂ × small odd, `W_r/D` spreads wide (not a short interval), W_r non-polynomial in p,
+vanishes for p > T(n,r) (`WraparoundThreshold`).
+
+**Open SIZE levers UNCHANGED (none is a congruence/orbit/parity):** rank-independent char-p ESS / cyclotomic
+S-unit count (N5/N25, itself a major theorem); step-ratio antitonicity `R(r) ≤ 1` (machine-data-only, unproven).
+**No fabricated closure; `W_r=0` / BCHKS 1.12 / δ* remain OPEN.** Survivor: NONE.
