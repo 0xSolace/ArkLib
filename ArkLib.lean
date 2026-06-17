@@ -2171,6 +2171,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.QuadraticGaussSumNorm
 import ArkLib.Data.CodingTheory.ProximityGap.QuartetTowerLaw
 import ArkLib.Data.CodingTheory.ProximityGap.QuarticPowerSumFiber
 import ArkLib.Data.CodingTheory.ProximityGap.QuarticSupplyDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.QuarticZeroSumPairingCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.QueryRoundAmplification
 import ArkLib.Data.CodingTheory.ProximityGap.QuotientDeepCore
 import ArkLib.Data.CodingTheory.ProximityGap.R4FiveSetSingleCoset
