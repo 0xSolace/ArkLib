@@ -17174,3 +17174,50 @@ cells. Same funnel as T24 (affine Koopman density), T11/T12 (level set / rate fu
 
 **Verdict: REFUTED (finite-dim ⇒ pure-point ⇒ a.c. density does not exist) + the only well-posed surrogate
 REDUCES-TO-WALL F1. No prize gain. Confidence high.** Survivor: NONE.
+
+---
+
+## Lane I1 (#444): discrete restriction / small-cap decoupling — VACUOUS for the prize SUP, reduces to F1/F12
+
+**Date 2026-06-17.** Mission: does Bourgain–Demeter–Guth decoupling / **discrete restriction** /
+**small-cap decoupling** (Guth–Maldague, Demeter–Guth–Wang) give a NON-reducing handle on the
+DIRECT sup `M(n) = max_{b≠0}|η_b|`, `η_b = Σ_{x∈μ_n} e_p(bx)`, at β=4? Mission flagged the honest
+split: `ℓ²`-decoupling is a MOMENT statement (likely F1/F12), but the RESTRICTION / small-cap form
+is *designed* to give sup-style control, so it had to be settled separately. **Settled: NO handle.**
+
+**Literature (cited, fetched):**
+- Demeter–Guth–Wang small-cap exponential-sum conjecture; Guth–Maldague `ℝ³` (arXiv:2206.01574);
+  moment curve `ℝ⁴` (arXiv:2605.27065, **Cor. 1.4**): the canonical small-cap exponential-sum
+  estimate is `∫_Ω |Σ_{n~N} c_n e(x·Φ(n/N))|^p dx ⪅ N^{p/2}|Ω|` — an **`L^p` AVERAGE over the
+  SPATIAL variable `x`** ("square-root cancellation"), NOT a pointwise sup, and the gain is
+  **driven by the moment-curve curvature** (confirmed in fetch).
+- BGK / di Benedetto–Garaev (arXiv:2003.06165) + Shakan exposition: the actual *subgroup-sum*
+  literature uses **sum-product / Rudnev incidence**, never decoupling/restriction, and yields only
+  power-saving `|H|p^{-δ}` — never `√(|H| log p)`.
+- Kemp arXiv:1908.07002 §6 (Flatness): **zero curvature ⟹ no `ℓ²`-decoupling gain, trivial bound.**
+
+**Three structural kills (the first two machine-checked):**
+1. **Wrong variable.** Restriction controls the **spatial** `L^p` average; the prize sup is over
+   the **multiplier `b`** (the dilation). The spatial SUP of the `μ_n` trig polynomial is achieved
+   at `x=0` (all phases align) and equals the total mass `n` — the trivial bound. Even a
+   hypothetical pointwise-spatial restriction upgrade yields only `n`.
+2. **`L^{2r}` input = additive energy `E_r` ⟹ F1/F12.** By orthogonality the spatial `L^{2r}` norm
+   over `μ_n` is `E_r(μ_n)`. EXACT-INT probe `probe_wfH1_restriction_supgap.rs` (β=4, n=16..128):
+   `E_2 = 3n(n−1)` (= Sidon floor, exact), `E_3 = 15n³−45n²+40n` (= closed form, exact). Feeding
+   `M^{2r} ≤ q·E_r` gives `(q·E_r)^{1/2r} ≥ n` for every `r`, every count — the SAME wall as the
+   moment ladder. Same object `_VinogradovDecouplingVacuous` already walled; bounded-`K` Wick
+   transfer is DEAD at β=4 (F12).
+3. **No curvature.** `μ_n`'s frequency set `j↦ζ^j` is a geometric progression; the moment map
+   `x↦x^k` sends `μ_n→μ_n` (FOLDS, does not open into `k` dims), so curvature degenerates. Exact
+   2nd-difference gauge: `t²` gives `2≠0`; the `μ_n` exponent progression gives `0` (flat).
+
+**Lean (axiom-clean, real `lake build` OK, `[propext,Classical.choice,Quot.sound]`, 0 sorryAx):**
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_wfH1_restriction_supgap.lean` —
+`spatial_value_le_total_mass` + `spatial_value_at_aligned` + `prize_spatial_sup_eq_card` (spatial
+sup = total mass = `n`, kill 1); `restriction_energy_bound_ge_card` + `restriction_energy_above_cs_floor`
+(`L^{2r}` energy input `≥ n`, kill 2 = F1/F12); `restriction_route_dead` (synthesis).
+Probe: `scripts/probes/rust/probe_wfH1_restriction_supgap.rs` (exact int, reproducible).
+
+**Verdict: VACUOUS-AT-PRIZE for the sup; nontrivial content REDUCES-TO-FENCE F1/F12. No prize
+gain. The floor stays OPEN, blocked on the BGK/Paley archimedean conjugate-spread a spatial-average
+restriction estimate over a curvature-free frequency set cannot supply.** Survivor: NONE.
