@@ -1661,6 +1661,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.HybridConcentrationDepthNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.HybridPinInstance
 import ArkLib.Data.CodingTheory.ProximityGap.I031MatchedGaussianCovariance
 import ArkLib.Data.CodingTheory.ProximityGap.I031SubGaussianMaxBridge
+import ArkLib.Data.CodingTheory.ProximityGap.I031TailFromPointwise
 import ArkLib.Data.CodingTheory.ProximityGap.IdealSVPGirthVerdict
 import ArkLib.Data.CodingTheory.ProximityGap.IidCoordinateHit
 import ArkLib.Data.CodingTheory.ProximityGap.IncidenceDeviationCharSum
