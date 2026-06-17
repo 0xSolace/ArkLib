@@ -582,6 +582,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.BruteForceRefutations
 import ArkLib.Data.CodingTheory.ProximityGap.BruteForceSearch
 import ArkLib.Data.CodingTheory.ProximityGap.C1ConditionalBound
 import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
+import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialBadScalarCount
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceGcd
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceSharp
