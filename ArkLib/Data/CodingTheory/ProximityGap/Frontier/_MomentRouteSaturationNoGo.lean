@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!
 # The moment/energy route is vacuous at scale: Cauchy–Schwarz forces the moment bound `≥ n` (#444)
@@ -88,9 +89,53 @@ theorem moment_certificate_cannot_reach_prize
   rw [hrw] at hfloor
   linarith
 
+/-- **The crossover lemma: the prize target is below `n` exactly past `n > C²·L`.** The prize sup-norm
+target is `T = C·√(n·L)` with `L = log q ≥ 0` the log field size and `C > 0` the absolute constant. Then
+`T < n` holds precisely when `n` exceeds the crossover `C²·L`. This is the quantitative gate the bare
+hypothesis `T < n` of `moment_certificate_cannot_reach_prize` encodes: it is satisfied for ALL `n` past the
+small `n ≈ C²·log q` crossover (e.g. at the prize scale `n = 2^30`, `β ≈ 4`, `C = √2`, the crossover is
+`C²·L ≈ 166 ≪ 2^30`, and `T ≈ 4.2·10^5 ≪ n`, an overshoot factor `√(n/(C²L)) ≈ 2540×`). Proved by squaring:
+`T² = C²·n·L < n·n = n²` (using `C²·L < n` and `n > 0`), hence `T < n` since both are nonnegative. -/
+theorem prize_target_lt_card_of_crossover
+    (n : ℕ) (C L T : ℝ) (hC : 0 < C) (hL : 0 ≤ L) (hn : 0 < (n : ℝ))
+    (hT : T = C * Real.sqrt ((n : ℝ) * L)) (hcross : C ^ 2 * L < (n : ℝ)) :
+    T < (n : ℝ) := by
+  have hnL : 0 ≤ (n : ℝ) * L := mul_nonneg hn.le hL
+  have hT0 : 0 ≤ T := by
+    rw [hT]; exact mul_nonneg hC.le (Real.sqrt_nonneg _)
+  -- T² = C²·n·L
+  have hTsq : T ^ 2 = C ^ 2 * ((n : ℝ) * L) := by
+    rw [hT, mul_pow, Real.sq_sqrt hnL]
+  -- C²·n·L < n·n  (multiply the crossover by n > 0, regrouped)
+  have hlt : T ^ 2 < (n : ℝ) ^ 2 := by
+    rw [hTsq, sq (n : ℝ)]
+    calc C ^ 2 * ((n : ℝ) * L) = (C ^ 2 * L) * (n : ℝ) := by ring
+      _ < (n : ℝ) * (n : ℝ) := by exact mul_lt_mul_of_pos_right hcross hn
+  -- conclude T < n from T² < n² with both sides nonnegative
+  nlinarith [hT0, hn.le, sq_nonneg (T - (n : ℝ)), sq_nonneg (T + (n : ℝ))]
+
+/-- **The moment/energy route is vacuous at the prize scale (named-condition form).** Combining the
+saturation floor `n^{2r} ≤ p·E` with the crossover lemma: granting the prize target `T = C·√(n·L)`
+(`C > 0`, `L = log q ≥ 0`), the depth `r ≥ 1`, and the prize-scale condition `n > C²·L` (true for all
+`n` past the `≈ 2 log q` crossover, in particular at `n = 2^30`), the moment certificate `M^{2r} ≤ p·E`
+cannot certify `M ≤ T`: indeed `T^{2r} < p·E`, so the upper bound on `M^{2r}` strictly exceeds `T^{2r}`.
+This discharges the bare `T < n` hypothesis of `moment_certificate_cannot_reach_prize` into the explicit
+prize-target arithmetic, making the no-go directly applicable in the prize regime. -/
+theorem moment_route_vacuous_at_prize_scale
+    (p n r : ℕ) (E C L T : ℝ) (hr : 1 ≤ r) (hC : 0 < C) (hL : 0 ≤ L) (hn : 0 < (n : ℝ))
+    (hT : T = C * Real.sqrt ((n : ℝ) * L)) (hcross : C ^ 2 * L < (n : ℝ))
+    (hfloor : ((n : ℝ) ^ r) ^ 2 ≤ (p : ℝ) * E) :
+    T ^ (2 * r) < (p : ℝ) * E := by
+  have hT0 : 0 ≤ T := by
+    rw [hT]; exact mul_nonneg hC.le (Real.sqrt_nonneg _)
+  exact moment_certificate_cannot_reach_prize p n r E T hr hT0
+    (prize_target_lt_card_of_crossover n C L T hC hL hn hT hcross) hfloor
+
 end ProximityGap.Frontier.MomentSaturation
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.MomentSaturation.energy_cauchy_schwarz_lower
 #print axioms ProximityGap.Frontier.MomentSaturation.moment_bound_ge_card
 #print axioms ProximityGap.Frontier.MomentSaturation.moment_certificate_cannot_reach_prize
+#print axioms ProximityGap.Frontier.MomentSaturation.prize_target_lt_card_of_crossover
+#print axioms ProximityGap.Frontier.MomentSaturation.moment_route_vacuous_at_prize_scale

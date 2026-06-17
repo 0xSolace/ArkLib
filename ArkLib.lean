@@ -2483,6 +2483,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.WeightedSparseCharPLift
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedSparseResultant
 import ArkLib.Data.CodingTheory.ProximityGap.WeightedThreadSplit
 import ArkLib.Data.CodingTheory.ProximityGap.WeilRegimeClosure
+import ArkLib.Data.CodingTheory.ProximityGap.WickStepRatio
 import ArkLib.Data.CodingTheory.ProximityGap.WideCircuitTrichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.WideRegimeDisjointness
 import ArkLib.Data.CodingTheory.ProximityGap.WindowChainStructure
