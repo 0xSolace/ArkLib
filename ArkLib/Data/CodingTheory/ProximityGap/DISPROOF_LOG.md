@@ -15827,3 +15827,40 @@ Lean guardrail (axiom-clean `{propext,Classical.choice,Quot.sound}`, real `lake 
 `ramanujan_flat_l1_vacuous` + `ramanujan_flat_l1_threshold` (flatness `L¹≥a√m·W₀` ⟹ ceiling
 `≥a√m > T` once `m>(T/a)²`), `l2_ceiling_also_loses_sqrt_m` (ℓ² ceiling `=√m·(L²/W₀)`),
 `both_ceilings_theta_sqrt_m` (both `Θ(√m)`). NOT a closure; a precise sieve-vacuity obstruction.
+
+
+IDEA [A04 / S6 Weil-II] (#444, route: turn the d-free toric Betti C(2r,r) of the config variety
+`V_r = {x∈μ_n^{2r} : Σεᵢxᵢ=0}` into an actual `spur_r(p) ≤ C(2r,r)·p^{r-1}` bound, then feed the
+char-0 moment consumer). The S6 reduction (`_wfS6_toric_config_betti.lean`) shows
+`SpurToricBounded ⟹ E_r^charp ≤ (2r-1)‼·n^r + C(2r,r)·p^{r-1}`. PROPOSED: the bounded Betti makes
+the Weil error `(ΣBetti)·p^{(dim-1)/2}` small enough to stay `o(char-0)` at depth `r≈ln q`.
+
+VERDICT: **OBSTRUCTION — the toric/degree Weil envelope is VACUOUS at the prize regime β=4.** The
+`d`-free Betti `C(2r,r)≤4^r` IS correct (Adolphson–Sperber/Bombieri–Katz; even `< (2r-1)‼` for r≥4),
+and `V_r` is genuinely 0-dimensional so the TRUE spur is a bounded, p-DECREASING count
+(`spur/p^{r-1} ∈ [10⁻⁸,10⁻¹⁸]`, faithful at the structured prize prime; p-free envelope
+`spur ≤ C(2r,r)·n^{2r-1}` holds with margin ~10⁻⁶). **But that is exactly why the bound is useless:**
+the envelope `C(2r,r)·p^{r-1}` STRICTLY DOMINATES the char-0 main term `(2r-1)‼·n^r` at β=4 for ALL
+r≥2. At prize `n=2^30`, `log2(env/char0) ≥ 61` (min at r=2), reaching `2^7000` at depth r≈83. The
+crossover `β*(r)=r/(r-1)·(1+o(1)) → 1`: the envelope is non-vacuous ONLY at β≈1 (saturated n≈p), NOT
+the prize β=4. The killer is the WEIGHT EXPONENT `(r-1)` of `p` in the Weil error term, independent
+of the (correct, small) Betti constant. This is the geometric restatement of the C15 finding: the
+per-term/degree Weil bound on `V_r` is Wick-level-or-worse; the only `o(char-0)` route is the
+`√(#spurious)` monodromy/large-sieve cancellation = the open BGK/Paley wall (dimension-obstructed at
+`n≪√p`). The S6 toric route is RULED OUT as a closure.
+
+PROBES (`scripts/probes/rust/probe_wfA04_weil_spur_exponent.rs`, `probe_wfA04_spur_true_pscaling.rs`;
+exact big-int, β=3.5..5.5, p≡1 mod n, FFT-free period histogram): spur_r(p) bounded & p-decreasing
+(60/60 nonzero-spur primes at β=3.5 → 0/60 at β=5); spur exactly 0 for r=2 (universal) and at generic
+prize prime; toric envelope/char0 ratio computed ≥ 2^61 at prize n. The 0-dim reading (no √p error)
+is the campaign's `_wfS6_prize_regime_transfer` "faithful transfer" finding; this lane quantifies WHY
+the resulting envelope still cannot discharge the prize.
+
+Lean guardrail (axiom-clean `{propext,Classical.choice,Quot.sound}`, real `lake build` OK, no sorryAx):
+`Frontier/_wfA04_weil_envelope_vacuity.lean` — `doubleFactorial_le_crude` ((2r-1)‼ ≤ (2r)^r, so the
+crude ceiling we obstruct against dominates the sharp char-0 term), `crude_le_pow4`
+((2r)^r·n^r ≤ (n^4)^{r-1} for 2r≤n, r≥2), `wickCrude_le_toricEnv4`/`wickCrude_lt_toricEnv4` (the toric
+envelope `C(2r,r)·(n^4)^{r-1}` is ≥, and for r≥3 strictly >, the crude char-0 ceiling `(2r)^r·n^r` at
+n≥16, 2r≤n), `energy_bound_is_vacuous` (the spur bound forces the energy estimate ABOVE the char-0
+ceiling, killing the `K^r·n^r` shape the moment method needs). NOT a closure; a precise envelope-
+vacuity obstruction pinning the residual back onto the BGK/Paley monodromy cancellation.
