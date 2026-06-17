@@ -16447,3 +16447,50 @@ the picture: the moment method is the CORRECT route, blocked only on its open BG
 
 **Status:** refuted (candidate impossibility is false); the DC-escape separation is the rigorous
 machine-checked content. CORE remains the BGK wall.
+
+---
+
+## T02 (Drinfeld two-variable partial-Frobenius decoupling) — REDUCES-TO-WALL F10 (diagonal collapse)
+
+**Candidate (architect G1-2).** Manufacture a genuinely two-variable trace function on `𝔸¹×𝔸¹/F_p`,
+`T(b,t) = Σ_{x∈μ_n} ψ(b·x + t·φ(x))`, `φ(x)=x^g` a fixed dilation exponent, whose DIAGONAL
+restriction `t=0` is the prize period `T(b,0)=η_b`. Claim: by Drinfeld's lemma (partial-Frobenius
+independence on a fiber product `X₁×_{F_p}X₂`; Lau/Kedlaya/Sawin) the two partial Frobenii act
+independently on the product cohomology, so the diagonal sup `max_b|T(b,0)|=M(n)` is controlled by
+an off-diagonal-decoupled Deligne bound that does NOT pay the rank-`n` of the diagonal → prize.
+
+**Novelty/absence: CONFIRMED.** WebSearch: Drinfeld's lemma (partial-Frobenius / external-product
+decoupling) is established (Kedlaya "Several forms…", Müller MSc thesis, F-isocrystals
+arXiv:2210.14866) and Sawin uses partial-Frobenius for the GL₂ sup-norm problem
+(arXiv:1907.08098) — but NONE applies it to a Gauss-period subgroup sup-norm; the specific
+two-variable-period construction is not indexed. `grep drinfeld` over the cone: 0 math hits.
+Route 60 (`deltastar-100-routes.md`) "Drinfeld modular analogue — ✗triv" and L5.4
+(`deltastar-100-attacks`, the DL-curve `y^q−y=x^n` whose ψ_b-isotypic partial-Frobenius trace IS
+η_b) are adjacent but neither builds the manufactured 2-variable family. Novel + absent.
+
+**Verdict: REDUCES-TO-WALL F10 (sheaf/FKM conductor floor), via DIAGONAL COLLAPSE — the exact danger
+the architect flagged.** Drinfeld's lemma is true, but the two partial-Frobenius factors `b·x` and
+`t·φ(x)=t·x^g` live on the SAME `n`-element domain `μ_n`, so the product cohomology is NOT thicker
+than the diagonal. The controlling L²-scale (= generic rank = conductor floor) of the 2-D family is
+the size of the diagonal fiber product `{(x,y)∈μ_n²: x=y ∧ φx=φy}`, which collapses to the
+`n`-point diagonal (proven exactly: `twoVar_fiberProduct_collapses`, any φ). Hence
+`Σ_{b,t∈F_p}‖T(b,t)‖² = q²·n` ⟹ 2-D rank = `n` = IDENTICAL to the 1-D `Σ_b‖η_b‖²=q·n`. FKM/Deligne
+on the family certify only `sup ≤ cond = n` = trivial ℓ¹ ceiling — exactly C2/A07/P3.
+
+**Reduction map (machine-checked, axiom-clean):**
+`_wfT02_drinfeld_twovar_diagonal_collapse.lean`:
+- `twoVar_diagonal_eq_eta`: `T(b,0)=η_b` (the diagonal IS the prize object).
+- `twoVar_fiberProduct_collapses`: the 2-D rank fiber product = the `n`-point diagonal, for ANY φ.
+- `twoVar_uniform_bound_sq_ge_card`: any uniform pointwise family bound `C` forces `C²≥|G|=n`
+  (DERIVED by restricting to `t=0` and feeding the proven 1-D `subgroup_gaussSum_secondMoment`).
+- `twoVar_bound_restricts_to_diagonal`: every 2-D family bound restricts to the diagonal bound →
+  the F10 floor `P3.uniform_pointwise_bound_sq_ge_card`. The 2-D lift buys exactly zero.
+- `sqrt_card_le_of_twoVar_uniform_bound`: `√n ≤ C` ⟹ no `O(1)`-conductor decoupled component.
+
+**Probe** `scripts/probes/rust/probe_wfT02_drinfeld_twovar.rs` (β=4 generic, exhaustive over `(b,t)`,
+`φ=squaring`): `avg|T(b,t)|² = 8.000 = n` EXACTLY (2-D rank), `M_2D=7.99 ≈ M(n)diag=7.56` (NO
+shrinkage; off-diagonal carries the same magnitude), `M_2D/√(n log(p/n)) ≈ M(n)/√(…) ≈ 1.1` (same
+scaling law). The diagonal does not escape — the family inherits the diagonal's floor.
+
+**Status:** REDUCES-TO-WALL F10. The genuine `√n`-cancellation residual is the archimedean
+general-position of the `n` Artin–Schreier phases = the open BGK/Paley core, NOT a Deligne output.
