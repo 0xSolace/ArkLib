@@ -5010,3 +5010,22 @@ and headline `trinomial_gap_gcd_cap_fails`. CONSEQUENCE: the C71 <=3-sparse resi
 the binomial cyclic-kernel/gcd(d,n) law on the 3-term strata; the valid non-orbit bound remains the
 gcd-with-`X^n-1`/span container from `C71TrinomialIncidence`. NOT a CORE closure, not a Conj-7.1
 closure, no capacity/beyond-Johnson/cliff-at-n/2 claim. CORE remains open.
+
+## R=2 SIDON BOUND CANNOT DISCHARGE THE SPECTRAL FRAME (sol, 2026-06-17) — moment-route wall, located exactly
+The two-sided spectral frame (GaussPeriodSpectralFrame) brackets M(n)=max_{b≠0}‖η_b‖ between the proven
+Parseval floor (≈√n) and the named-OPEN ceiling NearRamanujanSqrtLog: ‖η_b‖ ≤ C·√(n·log(q/n)) with the
+prize requiring ABSOLUTE C. The in-tree PROVEN r=2 Sidon bound worst_period_sidon_le (‖η_b‖⁴ ≤ 3qn², i.e.
+‖η_b‖ ≤ (3q)^{1/4}√n) DOES discharge that ceiling — but ONLY with the q-dependent constant
+  C_Sidon(q,n) = (3q)^{1/4} / √(log(q/n))   [sidonSqrtLogConstant]
+via the algebraic identity (3q)^{1/4}√n = C_Sidon·√(n·log(q/n)) (sidon_ceiling_eq_sqrtLog_scaled).
+CONSTRAINT: C_Sidon is STRICTLY MONOTONE INCREASING in q at fixed q/n-ratio
+(sidonSqrtLogConstant_strictMono_in_q) ⟹ NOT absolute; it diverges like q^{1/4} in the prize regime
+q=n^β (β≥4). So the PROVEN r=2 moment level provably CANNOT close the frame with an absolute constant —
+the gap is exactly the q^{1/4} over-shoot. The thinness signal the prize needs lives STRICTLY BEYOND the
+second moment (consistent with §3 meta-thm + cliff-at-n/2 guard: a single even moment is
+thickness-monotone, no √log-over-√q saving). PROBE probe_sidon_vs_nearram.py (EXACT thin μ_n, n=2^a,
+p≫n³, proper, never n=q-1, incl Fermat 257): C_forced=(3q)^{1/4}/√(log(q/n)) to ratio 1.0000, grows
+2.26→3.08→4.48 as n:4→8→16; true constant C_true=M/√(n log(q/n)) stays ≈1.0–1.4 (the O(1) prize
+constant). Formalized axiom-clean in Frontier/SidonFrameConstantDivergence.lean (3 thms). NOT a CORE
+closure; a precisely-mapped wall on the additive-moment route. CORE M(μ_n) ≤ C·√(n·log(p/n)) with
+absolute C remains OPEN.
