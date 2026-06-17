@@ -62,6 +62,24 @@ post it publicly first. Instead:
 4. **Claim only what the kernel checked.** "Super-budget at n=…, prime=…, reproduced" — not "the
    conjecture is false" until it survives independent re-verification.
 
+## Join the hunt (crowd mode — folding@home for the disproof)
+
+The search is embarrassingly parallel over directions, so many machines can split one big `n`:
+
+```sh
+# each contributor runs their slice (machine i of N) and saves the output:
+./mine --shard 3/16 44  > shard-03.txt        # n=44, directions a ∈ [3·44/16, 4·44/16)
+
+# a coordinator collects everyone's shard-*.txt and assembles the verdict:
+cat shard-*.txt | ./aggregate
+#   -> the worst-direction cascade, s*, δ*, and a loud flag if it NEVER binds (= a disproof)
+```
+
+Laptops take small `n`; GPU boxes take `n ≥ 36`. **A win is a single `‼ NO s*` from `aggregate`** —
+a cascade that never binds under budget = a counterexample = the conjecture is false. If that ever
+fires: re-verify at a second prime, pin the direction, and follow the responsible-disclosure steps
+below. This is a hunt, not a lottery — most `n` will just bind (no disproof), and that's still data.
+
 ## Where this fits
 
 - **Want to contribute a verified Lean/probe brick instead of grinding numbers?** Use the canonical
