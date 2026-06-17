@@ -92,3 +92,24 @@ average/random-case data, and (ii) the clique is a genuine **measure-zero worst-
 random search cannot reach — exactly why the authors' random-search verification missed it. Triangulated:
 anchor table 10/10 (single-syndrome) + average-case match (random line) + exact-ℚ proof (worst-case clique)
 + char-0 mechanism. The proven counterexample to Conj 41's worst-case form stands on all four legs.
+
+## Corrected law for the worst-case list size (grand list-decoding challenge)
+Having refuted Conj 41's `⌊(2D−1)/c⌋`, the natural question is the TRUE worst-case
+`max_{s₁,s₂} M_true(s₁,s₂)` in the FRI codimension regime. Evidence (`probe_conj41_true_law.py`,
+`probe_conj41_upper_bound.py`):
+- single `(w+1)`-clique ⇒ `M_true = w+1` (achieved; PROVEN over ℚ + Lean-checked, `Conj41CliqueCounterexample.lean`);
+- `(w+2)`- and `(w+3)`-"fat-clique" sets (all their size-`w` subsets) ⇒ `M_true = 0` (over-constrained: no common line);
+- 4000 random `(w+2)`-support configs (n=20,c=5) ⇒ max `M_true = 0`;
+- random lines ⇒ `M_true ≈ 0`.
+
+**Conjectured corrected law:** `max_{s₁,s₂} M_true(s₁,s₂) = D − c + 1` (` = w+1`), with the `(w+1)`-clique the
+extremal configuration (mechanism: the characteristic-0 partial-fraction identity `∑_i Λ_{E_i}/Λ_S'(a_i)=1`,
+a single linear dependency among the clique's error-locators — `(w+2)` sets have no common decodable line).
+- **Lower bound `≥ D−c+1`: PROVEN** (clique, exact-ℚ + Lean machine-checked).
+- **Upper bound `≤ D−c+1`: strongly evidenced**, not yet proven. A proof would observe each support meets the
+  1-dim syndrome line in ≤1 genuine `γ`, and bound the number of size-`w` error-locator subspaces a fixed
+  line can simultaneously meet by `D−c+1`; the `(w+1)`-clique saturates it via the partial-fraction relation.
+
+This is a concrete contribution to the **grand list-decoding challenge** (the worst-case RS list size for the
+FRI line family): a clean closed law `D−c+1`, correcting the refuted `⌊(2D−1)/c⌋`. (It does NOT pin the
+zero-loss δ*/MCA threshold — that remains the open BGK wall — but it pins the *list-size* face.)
