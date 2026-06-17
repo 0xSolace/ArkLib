@@ -1134,6 +1134,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonFrameConstantDivergen
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpectrumGFAlternatingSum
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpectrumGFCoeffPalindrome
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpectrumGFFunctionalEquation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpurBadPrimeChebotarev
