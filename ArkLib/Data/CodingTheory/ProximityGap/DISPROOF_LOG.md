@@ -15109,3 +15109,32 @@ magnitudes. Cyclotomy-side twin of B7. Joins the disc lever (CFT-fixed, vacuous)
 cocycle (#407 Attack-1, non-contractive): all three classical-cyclotomy levers collapse onto the
 open BGK sup-norm wall. Lean (axiom-clean): Frontier/_wf9G3_periodpoly_coeff_nogo.lean
 (coeff_route_loose, fujiwaraAtTwo_eq). NOT a closure; one more confirmation BGK is a real wall.
+
+### N13-CONSTRAINT: η_b is REAL on negation-closed μ_n, the phase is a SIGN not a continuous phase (#444, 2026-06-17)
+
+Formalized the issue-body §3.4 heuristic "−1 ∈ μ_n forces η_b real = a SIGN not a phase" as a
+THEOREM (it was prose-only, never a Lean fact), and mapped it as a CONSTRAINT on the open N13
+phase-aware contractive transfer operator (census §1.3), NOT a closure.
+
+**The theorem (Frontier/_EtaRealNegClosed.lean, axiom-clean, 6 thms):** for ANY negation-closed
+connection set G (∀ x ∈ G, −x ∈ G), the incomplete Gauss period η_b = Σ_{x∈G} ψ(b·x) is
+REAL-valued for every frequency b: `eta_conj_eq_self` (conj η_b = η_b), `eta_im_eq_zero`
+((η_b).im = 0), `eta_eq_ofReal_re` (η_b = ((η_b).re : ℂ)), `eta_mem_range_ofReal`
+(η_b ∈ range ofReal = the SIGN constraint), `eta_norm_eq_abs_re` (‖η_b‖ = |(η_b).re|). Mechanism =
+one reindex: conj(η_b) = Σ ψ(−(b·x)) = Σ ψ(b·(−x)) = η_b via the involution x ↦ −x on G
+(Finset.sum_nbij'); the only field input is the in-tree conj-of-character identity
+(AddChar.starComp_apply, needs 0 < ringChar F). EXTEND-proven on _PaleyCayleyEigenvalue.eta.
+
+**Probe (scripts/probes/probe_eta_real_negclosed.py, 15/15 decisive):** PROPER thin μ_n = 2^a
+(a=2..6), p ≫ n^3 (β=2.0/3.2/4.0), m=(p−1)/n ≥ 4 (NEVER n=q−1), all primes incl. Fermat-type. In
+EVERY case −1 ∈ μ_n (n even) and max_b |Im η_b| = 6.6e−15 = machine zero. Confirms η_b ∈ ℝ.
+
+**Why a CONSTRAINT, not progress (rule 4):** the N13 operator (𝒯f)(b)=f(b)+e^{iθ_b}f(ζb) has open
+object the phase law θ_b. This file pins arg(η_b) ∈ {0,π}, so the N13 "phase" is QUANTIZED to a
+discrete SIGN ±1 (sharpens the lever's open object), but realness is √(log)-BLIND: a real η_b can
+still be as large as |G| = n, so it supplies NO upper bound on ‖η_b‖ = |（η_b).re|. The
+√(n log(p/n)) BGK wall is untouched and OPEN. NON-MOMENT (pure character-sum symmetry, not an
+additive-energy/Wick route). The hypothesis is ESSENTIAL not cosmetic: for n ODD μ_n is NOT
+negation-closed and η_b is genuinely complex, but the prize regime n = 2^a is always even, so it
+always holds there. Joins N13/N7 as a structural fact about the surviving phase-aware route. Not a
+closure; a precise constraint that the phase-aware lever's "phase" is discrete.
