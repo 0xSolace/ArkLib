@@ -16708,3 +16708,54 @@ Kowalski Wasserstein-equidistribution, Sombra N-torus) exist; the SYNTHESIS appl
 conjugate cloud with local-mass coupling is not in the literature as a House bound (it can't be —
 W_p doesn't control the sup). In-tree the angle is already covered by `_AttackT1_BiluLinialTwistNoGo`,
 `_wf5E1_WassersteinUnionNoGo`, `_wf5M1_HeightCountRoute`. No prize gain. CORE stays OPEN.
+
+---
+
+## T15 (#444): conditional-entropy chain rule along the 2-adic dilation tower — REDUCES-TO-WALL (F0 via F7)
+
+**Candidate.** Form the conditional Shannon entropy `H(L_j | L_{j-1})` of the spectral magnitude
+`Z_j := ‖η_b^{(j)}‖` (period of level-`j` subgroup `μ_{2^j}`) along the dilation tower, `L_j :=
+log₂ Z_j`, conditioning over uniform `b`. IF each doubling step has a bounded conditional smoothing
+deficit `H(L_j|L_{j-1}) ≥ H_unif(j) − g*` with `g* = O(1)`, THEN by the entropy chain rule total
+deficit `≤ g*·log₂ n`, and a "(conditional) Pinsker/Fano step" yields `M(n) ≤ √(2g*/log2)·√(n log m)`.
+
+**Verdict: REDUCES-TO-WALL (F0 conservation law, via the F7 entropy fence).** Two independent kills,
+axiom-clean in `Frontier/_wfT15_tower_conditional_entropy.lean`
+(`[propext, Classical.choice, Quot.sound]`, no `sorryAx`).
+
+**Kill 1 — the Pinsker/Fano direction is backwards (the load-bearing error).** Conditional Shannon
+entropy `H(L_j|L_{j-1})` is an EXPECTATION (average over `b`) functional; `M(n) = max_b Z_j` is the
+L^∞/extreme over `m = (p−1)/n` coset reps. Pinsker (`‖P−U‖_TV ≤ √(KL/2)`) and Fano bound a
+total-variation / average / error-probability quantity by an entropy gap — never a MAX over `m`
+points. Passing from average information to a max over `m` values costs a union bound `log₂ m` — the
+SAME `√log m` (W4) the candidate set out to remove. Its own conclusion `√(2g*/log2)·√(n log m)`
+STILL contains `√log m` (`candidate_bound_contains_sqrt_log`: the ratio to the W4 ceiling is the
+constant `√(2g*/log2)`). The single-spike extremal (`max_concentration_needs_union_bound`): a vector
+with average-of-squares `σ²=n` (Parseval) can have `max = σ√m`, so average data forces the max up to
+the union scale. The route lands ON W4.
+
+**Kill 2 — the sup-defining rare event is invisible to the average entropy (F0).** Measured
+(`probe_wfT15_tower_conditional_entropy.rs` + rare-event probe, β=4, n=256, p=4294968833, m≈1.68·10⁷):
+the near-max set (`Z ≥ 0.95 M`) is `7` of `2·10⁶` coset reps = `2.3·10⁻⁶` fraction; deleting it
+changes the Shannon entropy of the value distribution by `3.8·10⁻⁵` bits while removing the ENTIRE
+prize signal `M`. Proven abstractly (`rareEvent_entropy_insensitive`): the entropy perturbation from
+deleting a probability-`ε` event → 0 as `ε → 0` (`entropyPerturbBound ε L → 0`), so no
+conditional-Shannon-entropy functional of the value distribution sees the tail that defines `M`. This
+is the F0 conservation law: the `√log` excess is a rare-event phenomenon invisible to average
+functionals.
+
+**Kill 0 — the chain rule gives no telescoping smoothing (measured).** Per-step mutual information
+`I(Z_{j-1};Z_j)` is FLAT `≈ 0.15` bits (n≤256, β=4): consecutive tower levels are nearly
+INDEPENDENT, so `H(L_μ) = Σ_j H(L_j|L_{j-1}) ≈ Σ_j H(L_j)` — the filtration adds nothing; the
+"bounded per-step deficit" hypothesis just re-sums the MARGINAL entropies (an F1/F7 object). Also the
+in-tree recursion `η_b^{(j+1)} = η_b^{(j)} + η_{ζb}^{(j)}` (`recursion_increment`,
+`SubgroupGaussSumDilationRecursion`) shows `Z_{j+1}` is the magnitude of a SUM at `b` and its DILATE
+`ζb`, with the two halves PHASE-ALIGNED (cos≈+1, A10 probe) at the maximizer — the L^∞ increment is
+coherent (the open BGK cocycle), not a sub-Gaussian conditional gain.
+
+**Novelty/absence.** No prior work runs an entropy chain rule along a multiplicative subgroup tower
+to bound a Gauss-period sup (Madiman–Kontoyiannis–Tao entropic sumset theory is along ADDITIVE
+convolution; WebSearch confirms). Absent from the cone (grep: "conditional entropy" only in unrelated
+`EntropyVolumeListSize.lean`; no chain-rule / Madiman / mutual-information in the cone). Distinct from
+the dynamical `_DilationZeroEntropyNoGo` (single n-cycle, zero DYNAMICAL entropy) and from the A10
+chaining/metric-entropy probe. Well-posed but REDUCES; CORE stays OPEN.
