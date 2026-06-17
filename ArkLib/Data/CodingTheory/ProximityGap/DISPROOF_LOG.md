@@ -16546,3 +16546,47 @@ metric" dodge fails because a principal divisor's section is unit-determined and
 ties it to `log|N|` with the wrong sign. F9/F11 (`L2MahlerNormBound`, `BadPrimeNormBound`):
 `content·φ=log|N(θ_b)|` is the in-tree bad-prime norm object and `ord_P(θ_b)≥1 ⟺ p|N(θ_b)` is the BGK
 divisibility count `#{c:p|N(c)}`. **Status: REFUTED + REDUCES-TO-WALL F3/F9/F11. No prize gain.**
+
+---
+
+## T10 (architect G2-5): Mahler/Lehmer LOWER bound + 1/k_b division UPPER-bounds House — REFUTED (#444)
+
+**Candidate** (`_wfTT10_mahler_lehmer_house_kb.lean`, `probe_wfT10_mahler_house_kb.rs`):
+the period polynomial `Ψ_b`, deg `φ(n)=n/2`, has Mahler measure `Mahler(Ψ_b)`; claim
+(S1) `House(θ_b) ≤ Mahler(Ψ_b)^{1/k_b}`, `k_b=#{|σθ_b|>1}`, then (S2) a 2-adic-content upper
+bound on Mahler squeezes `M(n) ≤ √n·exp(−c·content/k_b)` below the wall.
+
+**Refutation — (S1) is the AM–GM inequality REVERSED.** By Jensen/the product formula
+(Smyth survey) `Mahler(Ψ_b) = ∏_{|σ|>1}|σθ_b|`, so `Mahler^{1/k_b}` is the **geometric mean of the
+`k_b` large conjugate moduli**, which is `≤` their **max** `= House` (AM–GM). The candidate's (S1)
+has the geometric mean on the wrong side; it can only LOWER-bound House. Equality forces all `k_b`
+large conjugates equal-modulus (degenerate, e.g. quadratic Gauss sum) — it FAILS exactly when a
+conjugate spikes, the rare-event regime carrying the prize `√log` excess. Same sign trap as T06/T08.
+
+**Exact prize-shaped counterexamples** (`probe_wfT10_mahler_house_kb.rs`, `p=n⁴`-shaped, `p≡1 mod n`,
+full conjugate sweep): (S1) `House ≤ Mahler^{1/k_b}` is FALSE at every point and the gap GROWS:
+
+| n  | House (= M(n)) | k_b (large) | Mahler^{1/k_b} (geom-mean) | House − geomMean |
+|----|----------------|-------------|----------------------------|------------------|
+| 8  | 7.298          | 400         | 2.617                      | +4.68            |
+| 16 | 13.84          | 3408        | 3.268                      | +10.57           |
+| 32 | 22.98          | 28190       | 4.239                      | +18.74           |
+
+geomMean tracks `≈√n` flat; House/√n GROWS (2.58→3.46→4.06). The geometric mean is blind to the spike.
+
+**Reduction map (machine-checked, axiom-clean)** `_wfTT10_mahler_lehmer_house_kb.lean`:
+- `geomMean_le_house`: `(Σ log L)/k ≤ logHouse` — the geometric mean of large conjugates ≤ House
+  (the CORRECT AM–GM direction, opposite to (S1)).
+- `candidate_S1_forces_equal_moduli`: (S1)+`geomMean_le_house` ⟹ equality ⟹ all large conjugates
+  equal-modulus (degenerate case only).
+- `candidate_S1_violated_n32`: `geomMeanN32 = 4.24 < 22.98 = houseN32` (exact violation).
+- `house_geomMean_gap_grows`: certified monotone growth of the gap (+4.68 < +10.57 < +18.74).
+- `geomMean_le_quadraticMean`: the geometric mean is dominated by the conjugate L²-energy (F1).
+
+**Reduction to fences:** F0 (conservation law) + F1 (moment/energy): read in the correct direction
+`Mahler^{1/k_b}` is the per-period norm geometric mean `|N(θ_b)|^{1/φ}`, a second-moment functional
+of the conjugate set, capped at the Johnson scale `√n` (the in-tree `L2MahlerNormBound`/`_wfS8` route:
+`GM(w)≈√w` constant). The `√log` excess is the rare-event spike invisible to it. The (S2) 2-adic
+content residual is moot once (S1) breaks, and is itself the F3/F9/F11 content object retired by T06/T08
+(`φ·content = log|N(θ_b)|`, the bad-prime cyclotomic norm; `p|N(θ_b)` = BGK divisibility count).
+**Status: REFUTED + REDUCES-TO-WALL F0/F1 (secondarily F3/F9/F11). No prize gain.**
