@@ -1,3 +1,11 @@
+> ⚠️ **CORRECTIONS (2026-06-17, machine-verified — see `deltastar-444-25-new-ANT-attacks`):** (1) **Idea A
+> is REFUTED** — the prize requires `p ≡ 1 mod n`, so `p` SPLITS COMPLETELY in `ℚ(ζ_n)`, the decomposition
+> group is TRIVIAL (`σ_p=id`), and the Frobenius orbit principle is VACUOUS. The `W_r`-evenness is from the
+> swap+negation symmetry, not Frobenius (the Lean `wraparound_even` stays valid). (2) **The `W_r=0` framing
+> in Part 2/3 is TOO STRICT** — `W_r=0` fails at deep r for all primes; the real condition is `E_r(F_p) ≤
+> (2r−1)‼·n^r` (`W_r ≤ slack_r`), which HOLDS with the ratio `E_r/Wick` DECREASING in r (0.94→0.11 to r=9)
+> at all prize primes. The prize ⟺ the char-`p` step-ratio `R(r)≤1` (in-tree `_wf7W3`), favorable by data.
+
 # The new ANT input for δ* — all facts in one place + a genuine proof attempt (#444)
 
 **Goal:** collect every fact known to be TRUE, make the *bridge* (reduction) fully rigorous, state the
