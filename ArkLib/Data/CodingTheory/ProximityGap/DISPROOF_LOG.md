@@ -15644,3 +15644,58 @@ while the consumer needs the energy side — Burgess cannot reach the `R_r<=1` s
 produces the `(2r-1)!!` Wick slack. The soft ceiling survives empirically (R_r<<1 to depth) but IS the open
 char-p Wick-transfer / Paley-graph input itself; reaching it from the Burgess side is circular. NOT a
 refutation of CORE, NOT a closure. No Lean claim made (no real handle to formalize). Probes committed.
+
+---
+
+## [C8-cosh-mgf-charp-soft] The SOFT cosh-MGF ceiling `Φ_p^{nz}(y) ≤ exp(C·n·y²/2)`: smallest-C is C=1 (TIGHT), and C=1 caps at `floor·√(β/(β-1))` — NO-GAIN (date 2026-06-17)
+
+**The angle.** wf8-B4 closed the EXACT form `Φ_p^{nz}(y) ≤ exp(n y²/2)` (FALSE at spur primes, and = the
+W3 moment GF, no shortcut). The C8 task asked the SOFTER question: find the smallest constant `C` with
+`Φ_p^{nz}(y) ≤ exp(C n y²/2)` to the saddle `y*≈√(2 log m/n)`, hoping a bounded `C` gives
+`M ≤ √(2Cn log m)` and reaches the prize floor `√(2n log m)`.
+
+**Verdict: NO-GAIN (reduces to the same `log q` vs `log m` structural wall as the Bessel-saddle meta-theorem).**
+Four machine-witnessed facts over PROPER `μ_n` (n=2^μ∈{8,16,32,64,128}, p prime, n|p-1, p~n^β, β=4..7, never n=p-1),
+exact integer r-fold additive-energy counts + true FFT periods:
+
+- **(1) The per-moment soft ceiling holds with C=1, and C CANNOT be reduced below 1.** The nonzero ratio
+  `R_r' = A_r/((2r-1)‼ n^r)`, `A_r=(1/(q-1))∑_{b≠0}|η_b|^{2r}`, is `≤ 1` at prize band for ALL tested (n,r),
+  with slack GROWING in r (n=16: R_1'=0.99977, R_7'=0.232; n=32: R_1'=1.000, R_6'=0.613). By nonneg-coeff
+  Maclaurin domination, `R_r'≤1 ∀r ⟺ Φ_p^{nz}(y)≤exp(n y²/2)` (C=1) for all y≥0. But `R_1'=1 EXACTLY`:
+  Parseval on nonzero periods gives `∑_{b≠0}|η_b|²=(q-1)n` ⟹ `A_1=n` ⟹ the r=1 term is AT the ceiling.
+  So the smallest per-moment constant is **C=1, tight** — it cannot be pushed below 1.
+  (probe_c8_permoment_iff_mgf.py, probe_t1_charp_nonzero_ceiling.py)
+
+- **(2) C=1 forces the Chernoff bound to `floor·√(β/(β-1))` > floor, at EVERY finite β.** The honest
+  union-over-all-b Chernoff bound is `M ≤ inf_y [log(q-1)+log Φ^{nz}(y)]/y`. With the soft ceiling C=1 this is
+  `inf_y [log(q-1)+n y²/2]/y = √(2n log(q-1)) = floor·√(β/(β-1))` (since q-1≈nm, log q vs log m). Measured
+  `C1_bound/floor == √(β/(β-1))` EXACTLY: β=4→1.1547, β=5→1.1180, β=6→1.0954, β=7→1.0801. Approaches floor only
+  as β→∞; NEVER reaches it. (probe_c8_softC_verdict.py, probe_c8_chernoff_vs_softC.py) This is the SAME
+  `√(β/(β-1))` gap as the idealized Bessel-saddle (`probe_407_cosh_bessel_saddle_scaling.py`) and the in-tree
+  `CoshMGFSaddleFloorShape.lean` realized ratio ≈1.44 — i.e. the in-tree saddle lands at `√(n·log q)`, not
+  `√(n·log m)`. The extra `log n = log q − log m` is the irreducible union-over-(q-1)-residues penalty.
+
+- **(3) The "true periods beat the floor" is CIRCULAR.** The idealized inf `inf_y log(∑_{b≠0}cosh(|η_b|y))/y`
+  came out 0.68–0.92·floor — but it slides to `M_true` as y→∞ (inf@y=8 ≈ M_true to <4%). It uses the very
+  quantity it bounds; not provable-from-input.
+
+- **(4) The unclaimed slack is an AVERAGE-MGF fact, not a per-moment one.** At the C=1 saddle
+  `y*=√(2 log(q-1)/n)` the AVERAGE `Φ^{nz}(y*)` is sub-Wick: `C_eff(y*)=2 log Φ^{nz}(y*)/(n y*²)≈0.62–0.83`,
+  below the `(β-1)/β` line needed to beat the floor. So there is "room" — BUT C_eff<1 is a statement about the
+  AVERAGE over b (a second-moment-over-b / concentration fact: most of the q-1 periods are tiny ~√n, not at the
+  ceiling), and it DRIFTS (0.62→0.83 across n,β, not a clean constant). The provable input the DC-Wick consumer
+  carries (`DCWickBound`, `DCWickMGFFromTermwise.lean`) is the per-b ceiling R_r'≤1 ⟹ C=1; it cannot see the
+  average slack. A floor-reaching soft proof would need a constant-C AVERAGE-MGF bound C<(β-1)/β for char-p
+  Gauss-period spectra — no named proven theorem supplies one (it is itself a Ramanujan-strength concentration
+  statement). (probe_c8_softC_saddle_scaling.py, probe_c8_softC_verdict.py)
+
+**Mechanism class.** The soft-with-constant-C cosh-MGF is the GENERATING-FUNCTION form of the per-moment soft
+ceiling R_r'≤1 (axiom-clean producer `DCWickMGFFromTermwise.dcMGF_le_of_termwise_dcWick` exists in-tree,
+docstring-asserted axiom-clean — NOT re-verified here). The smallest per-moment C is 1 (forced by Parseval at
+r=1), and C=1 caps the union-Chernoff bound at `floor·√(β/(β-1))`. The "soft constant C" hoped for in the task
+is NOT the lever: C is already 1 and tight; the gap is the structural `log q` vs `log m` of the union over all
+b, which the cosh-MGF mechanism (summing cosh over all residues) cannot avoid. Reduces to the §4 second-order
+meta-theorem at the MGF level. NOT a refutation of CORE (the floor remains plausibly true), NOT a closure, NOT
+a real handle. No new Lean produced (diagnostic; would only re-encode the existing `CoshMGFSaddleFloorShape`
+`log q` gap). Probes committed: probe_c8_softC_verdict.py, probe_c8_softC_saddle_scaling.py,
+probe_c8_permoment_iff_mgf.py, probe_c8_chernoff_vs_softC.py.
