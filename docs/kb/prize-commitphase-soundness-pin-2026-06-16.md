@@ -34,11 +34,15 @@ times the single `1/q` collapse. `c(½)=1` (one slack round, fully passable ⇒ 
 claim that the action-orbit (multi-round) structure removes the `n` factor of the BCHKS `a=O(n/η⁵)` bound.
 
 ## Honest scope (what is NOT yet established)
-1. **N-independence is the crux and is NOT rigorously verified.** `c(1/2)=1` also appeared at N=16 (in an
-   earlier run with the buggy filter), which is *suggestive* of N-independence, but a clean N=16 (and N=32)
-   confirmation with the exact-distance leader check is pending (expensive: `C(16,8)` per candidate). If
-   `c(ρ)` is truly N-independent, this **pins** the prize-regime commit-phase soundness; if `c(ρ)` grows
-   with N, it is not `O(1)`.
+1. **N-independence is the crux and is INCONCLUSIVE (not verified).** N=16 with the *correct*
+   (probabilistic) leader check gives ratios 0.0159 (ρ=½) and 0.263 (ρ=¼) — *lower* than N=8's 0.0588 and
+   0.353 — but these runs are **badly under-sampled** (~1000 random leaders vs a `q^{N/2}`-size coset
+   space), so they are only loose *lower* bounds on the true worst case and cannot establish constancy or
+   growth. (An earlier N=16 run that gave a clean `c=1` used the *buggy* `≤2-column` filter, i.e. it was
+   contaminated by below-Johnson cosets — discard that.) So the clean `c(ρ)` law is established only at
+   **N=8** (small enough to sample densely). Whether `c(ρ)` is N-independent — the difference between a
+   genuine `O(1)/|F|` pin and a finite-size effect — needs a worst-case search at N=16/32 that pure-Python
+   sampling cannot deliver (compiled/GPU enumerator or an analytic worst-case construction required).
 2. Canonical BCIKS reconstruction, not 2026/861's exact commit-phase / action-orbit definition (gated PDF).
 3. The matched radius uses `⌊·⌋`; the exact constants may depend on this normalization.
 4. **It is a computation, not a proof.** A proof would derive `c(ρ)` (closed form) and the N-independence

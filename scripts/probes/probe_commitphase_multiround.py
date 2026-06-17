@@ -78,8 +78,23 @@ def run(q,N,k,trials=3000,seed=4):
         return H
     HN=pc(Ds[0],k);rN=len(HN);Hc=[[HN[i][j]for i in range(rN)]for j in range(N)]
     rho=k/N;johnson=1-math.sqrt(rho);wmin=math.floor(johnson*N)+1
-    # genuine distance-wmin leader: d(f,RS[N,k]) == wmin (no codeword closer); exact via mindist
-    def is_leader(f): return mindist(f,Ds[0],k)==wmin
+    # genuine distance-wmin leader. Exact (small N) or probabilistic k-subset sampling (large N).
+    import random as _r
+    def is_leader(f):
+        if N<=8: return mindist(f,Ds[0],k)==wmin
+        w=sum(1 for v in f if v); target=N-w+1
+        for _ in range(40):
+            sub=_r.sample(range(N),k); pts=[(Ds[0][i],f[i]) for i in sub]; ag=0
+            for t in range(N):
+                X=Ds[0][t];tot=0
+                for i,(xi,yi) in enumerate(pts):
+                    term=yi
+                    for j,(xj,_) in enumerate(pts):
+                        if j!=i: term=(term*((X-xj)%q)*inv[(xi-xj)%q])%q
+                    tot=(tot+term)%q
+                if tot==f[t]: ag+=1
+            if ag>=target: return False
+        return True
     # matched radius per level for a word at relative distance delta0=wmin/N: radius_L = floor(delta0*|D_L|)
     radii=[ (wmin*len(Ds[L]))//N for L in range(1,nr+1)]
     def commit_badcount(f):
@@ -109,6 +124,6 @@ def run(q,N,k,trials=3000,seed=4):
     return best
 print("Multi-round FRI COMMIT-PHASE worst-case bad-count over above-Johnson leaders (rho=1/2):")
 # stress-test: vary rate, field, N; also report against the trivial linear baseline
-# N=8 all rates+fields, correct exact-distance leader check; constants c(rho) := ratio*|F|
-for cfg in [(17,8,4),(41,8,4),(73,8,4),(17,8,2),(41,8,2),(73,8,2),(17,8,6),(41,8,6)]:
+# N-independence test of c(rho): N=16 rho=1/2 (predict c=1) and rho=1/4 (predict c=6)
+for cfg in [(17,16,8),(41,16,8),(17,16,4)]:
     run(*cfg)
