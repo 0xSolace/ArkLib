@@ -95,7 +95,7 @@ theorem chaiFan_Q1_charZero {n : ℕ} {μ : ℂ}
   have haeval : (aeval μ) P = 0 := by
     rw [hP, map_sum, ← hc]
     refine Finset.sum_congr rfl (fun j _ => ?_)
-    simp [aeval_C, zsmul_eq_mul]
+    simp
   -- Degree bound: every term has degree `< φ n`, so `natDegree P < φ n`.
   have hPdeg : P.natDegree < Nat.totient n := by
     refine lt_of_le_of_lt (natDegree_sum_le _ _) ?_
