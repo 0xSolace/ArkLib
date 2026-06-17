@@ -2085,6 +2085,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PrizeEntropyDeltaStar
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeRadiusCompletionCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSharp
+import ArkLib.Data.CodingTheory.ProximityGap.PrizeSpectralLevelSetSixth
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeStructuralConstant
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormFromPairing
 import ArkLib.Data.CodingTheory.ProximityGap.PrizeSupNormHeadline
