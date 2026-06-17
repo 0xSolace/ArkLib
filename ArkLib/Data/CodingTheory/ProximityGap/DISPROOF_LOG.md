@@ -16590,3 +16590,37 @@ of the conjugate set, capped at the Johnson scale `√n` (the in-tree `L2MahlerN
 content residual is moot once (S1) breaks, and is itself the F3/F9/F11 content object retired by T06/T08
 (`φ·content = log|N(θ_b)|`, the bad-prime cyclotomic norm; `p|N(θ_b)` = BGK divisibility count).
 **Status: REFUTED + REDUCES-TO-WALL F0/F1 (secondarily F3/F9/F11). No prize gain.**
+
+---
+
+## 2026-06-17 — ATTACK T11 "Spectral min-entropy / level-set count transfer" REDUCES-TO-WALL F0/F7 (Frontier/_wfT11_min_entropy_levelset.lean)
+
+Candidate (architect G3-T1): define the spectral level-set count `N(λ)=#{b≠0:|η_b|>λ√n}` and the
+spectral min-entropy `H_∞^spec(λ)=−log₂(N(λ)/(p−1))`; HYPOTHESIZE a sub-Gaussian level-set decay
+`N(λ)≤(p−1)·exp(−c₀λ²)` (i.e. `H_∞^spec(λ)≥(c₀/log2)λ²`); CLAIM ⟹ `M(n)≤√((2/c₀)·n·log m)` (prize).
+Claimed novelty: "min-entropy/Rényi-∞ of the SPECTRAL value-law, a tail/rare-event object F0 reserves,
+NOT Rényi-2/energy (F7)."
+
+**Verdict: REDUCES-TO-WALL (F0 escape-clause + F7/F1 conjugacy). NOT novel, NOT absent.**
+
+**(1) Already in the codebase under a different name.** The architect grepped `min-entropy`/`H_infty`
+(0 hits) but the SAME conditional bridge is `I031SubGaussianMaxBridge.SubGaussianTailBound` +
+`subgaussian_max_le` (`I031SubGaussianMaxBridge.lean`). MACHINE-CHECKED reduction map
+(`minEntropyDecay_iff_subGaussianTail`, axiom-clean): T11's `MinEntropyLevelSetDecay S c₀ n cardP`
+↔ `SubGaussianTailBound S (n/(2c₀)) cardP` under `s=λ√n`, `C=n/(2c₀)`, `m=cardP`. The "min-entropy
+lower bound" `−log₂(N/(p−1))≥(c₀/log2)λ²` IS `N≤(p−1)exp(−c₀λ²)` (apply `2^{−·}`). The forward
+implication (`minEntropy_prize_bound`) is the STANDARD `max of m sub-Gaussian values ≤√(2C log m)`
+union bound (MIT 18.S997 Ch.1) — free, already proven in-tree as `subgaussian_max_le`. ZERO new math.
+
+**(2) The HYPOTHESIS is the wall.** A sub-Gaussian level-set decay UNIFORM in λ up to √(2 log m) with
+proxy O(n) is the Legendre/Cramér dual of the moment bound `E_r≤(2r−1)!!n^r` up to `r≈log m` =
+the in-tree `GaussianEnergyBound G r` = the open char-p energy transfer (BGK wall, F1/F7). This is
+DISPROOF_LOG [I027] verbatim ("bounding L^∞ above from a count/L^p datum requires the sub-Gaussian
+flatness that IS the conjecture") and C29 HORN B (the sub-Gaussian variance proxy `proxy/n=0.77→0.72`
+DRIFTS, never locking to O(n) at fixed prize q). F0's escape clause names a "rare-event/tail
+phenomenon"; T11 supplies that phenomenon as a *conjectural hypothesis*, not a certificate — it is the
+open content, not an escape from it.
+
+Lean: `Frontier/_wfT11_min_entropy_levelset.lean` (4 thms axiom-clean [propext,Classical.choice,
+Quot.sound], real `lake build` OK 2075 jobs): the reduction map + the free forward bridge + the prize
+restatement. **No prize gain. CORE stays OPEN at the BGK char-p energy/sub-Gaussian-tail wall.**
