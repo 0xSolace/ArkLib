@@ -591,6 +591,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.C71SparseOrbitGap
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataReduce
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataWindow
+import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialGcdObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
@@ -1057,8 +1058,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DilationOrbitReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031DistinctPeriodCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031LogTargetForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031MFromConstantIndexConjecture
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031ModulusAlphabetRefine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031MFromPointwise
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031ModulusAlphabetRefine
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031OrbitCountPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031SupTransversalCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031TransversalConcreteCover

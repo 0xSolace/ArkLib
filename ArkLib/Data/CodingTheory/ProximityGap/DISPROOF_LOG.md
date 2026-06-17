@@ -15731,3 +15731,14 @@ isolate. The char-p Mann route does NOT close the wall but RE-EXPRESSES it as an
 
 **Tier:** TRANSFER-FALSE (witness p=17318209, n=64) + the spread-reduction is an OBSTRUCTION
 reformulation. Probes: `probe_wfS7_galois_spread_law.py`, `probe_wfS7_perprime_minweight.py`.
+
+## C71-TRINOMIAL-GAP-GCD OBSTRUCTION (sol, 2026-06-17)
+The binomial cyclotomic incidence law `#roots(mu_n, X^i-cX^j) = gcd(|i-j|,n)` does NOT extend to
+trinomials by replacing it with a gap-gcd cap `gcd(i-j,j-k,n)`. Exact witness over the proper 8-th
+root subgroup of `F_17`: `f=X^2-X-2` has two `mu_8` roots `{2,16}` while `gcd(2-1,1-0,8)=1`.
+Probe `probe_c71_trinomial_gcd_obstruction.py` reproduces the witness exactly. Formalized axiom-clean
+in `C71TrinomialGcdObstruction.lean`: `witness_trinomial_incidence_card = 2`, `witness_gap_gcd_eq_one`,
+and headline `trinomial_gap_gcd_cap_fails`. CONSEQUENCE: the C71 <=3-sparse residual cannot inherit
+the binomial cyclic-kernel/gcd(d,n) law on the 3-term strata; the valid non-orbit bound remains the
+gcd-with-`X^n-1`/span container from `C71TrinomialIncidence`. NOT a CORE closure, not a Conj-7.1
+closure, no capacity/beyond-Johnson/cliff-at-n/2 claim. CORE remains open.
