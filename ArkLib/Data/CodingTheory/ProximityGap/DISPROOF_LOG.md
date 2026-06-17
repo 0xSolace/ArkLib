@@ -15993,3 +15993,47 @@ cancellation bound, NOT a CGF-domination of char-p by char-0. The char-0 Bessel 
 brick (upper baseline for the MAIN term) but does NOT dominate the char-p MGF; the open core is the char-p
 EXCESS Psi_p - Psi_0 > 0 = the m^{2r}-twist sqrt-cancellation = the 25-yr BGK wall. P6 reduces-to-BGK
 (refuted as a standalone equidistribution route). Python-only + axiom audit of existing Lean, no new Lean.
+
+================================================================================
+A15 [COMPLETENESS-CRITIC] — FREE PROBABILITY of the period family: OBSTRUCTION (axiom-clean)
+================================================================================
+SCOPE: the completeness-critic lane (#444 A15) surveyed the full ledger for a genuinely-open angle
+NOT in A01..A14 and NOT among the C12 Sarnak-Xue / Ramanujan refutations. The one never-done angle:
+FREE PROBABILITY (E24 in docs/kb/deltastar-444-fifty-novel-directions, flagged "the free-cumulant
+computation was never done"). Conjecture E24: under the dilation trace the periods are FREELY
+independent => empirical spectral distribution semicircular of radius 2*sqrt(n) => free cumulants
+kappa_r = 0 for r>2 up to defect <= n^{-1} => support edge 2*sqrt(n)+defect = near-Ramanujan = closes BGK.
+
+A15 COMPUTED THE FREE CUMULANTS EXACTLY at PRIZE scale beta=log_n(p)=4 (scripts/probes/rust/
+probe_wfA15_free_cumulants.rs; exact F_p, p prime, n|p-1, m=(p-1)/n>1; nu=(1/p)[delta_n + n*sum_c
+delta_{eta_c}], moments inverted to free cumulants via Speicher NC-partition recurrence). RESULT
+DOUBLY REFUTES E24 (n in {16,32,64}):
+
+(1) BULK NOT SEMICIRCULAR. normalized free cumulants kappa_r/kappa_2^(r/2) do NOT vanish for r>2,
+    they GROW: kappa_4 ~ 0.91-1.11 (O(1), not ->0); kappa_6 ~ 3.2-5.3; kappa_8 ~ 21-34; kappa_10 ~
+    162-243. Conjectured defect <= n^{-1} FALSE by ~3 orders of magnitude already at n=64. (Odd
+    kappa_3,5,.. ~ 0 = float noise => measure symmetric, as expected.) The higher free cumulants ARE
+    the BGK content (conservation-law collapse: free-prob bulk reproduces the energy growth).
+(2) FREE-MODEL EDGE UNDERSHOOTS THE TRUE WALL. feeding the FULL measured free cumulants into the
+    free-support edge min_{z>0}(1/z + R(z)) gives edge < M=max|eta|: 17.0 < 23.0 (n=32), 24.6 < 33.9
+    (n=64); and free-edge/sqrt(n) is FLAT ~3.0-3.4 while M/sqrt(n) GROWS 3.46 -> 4.06 -> 4.24. Gap
+    WIDENS with n. The free convolution misses the rare-alignment tail that creates the true maximum,
+    so it cannot even be USED as an upper bound (it under-estimates), let alone certify near-Ramanujan.
+
+WHY THIS IS DISTINCT (not a relabel): free probability is NOT a sup bound and NOT the moment ladder;
+it is a DISTRIBUTIONAL model (free convolution / R-transform). C12 Sarnak-Xue (g_top=1 simple edge,
+NO-GAIN) and E21 Ramanujan-subgroup (REFUTED, not Ramanujan) are different objects. The free-prob
+route had genuinely never been computed. The verdict is the SAME wall (the higher free cumulants =
+the energy), but reached by a new, independent diagnostic.
+
+Lean guardrail (axiom-clean {propext,Classical.choice,Quot.sound}, lake env lean OK, no sorryAx):
+Frontier/_wfA15_free_cumulant_obstruction.lean — freeKappa4_eq (NC(4) inversion kappa_4 = m_4 - 2 m_2^2,
+the freeness exclusion of the crossing pairing {13}{24}), semicircle_iff_m4 (semicircle <=> m_4=2 m_2^2),
+not_semicircle_of_m4_gt (measured m_4 > 2 m_2^2 => kappa_4 > 0 => NON-semicircular, refutes E24),
+free_kurtosis_excess (kappa_4/m_2^2 = m_4/m_2^2 - 2; measured ~2.9 in (2,3) => neither free nor
+classical independence), free_edge_undershoots + free_edge_no_constant_multiplier (E<M structurally;
+no fixed multiplier K closes the gap since M/sqrt(n) grows while E/sqrt(n) flat).
+
+VERDICT: OBSTRUCTION. Free probability is not a milder residual; its bulk reproduces the BGK growth
+(non-vanishing higher free cumulants) and its support edge under-estimates the true wall. Completeness
+result: the last untried distributional model also reduces to / under-shoots the 25-year BGK wall.
