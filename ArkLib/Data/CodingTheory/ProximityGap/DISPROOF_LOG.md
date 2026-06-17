@@ -1,5 +1,51 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — LANE H2 "Kuznetsov / Petersson / relative-trace-formula amplification for the Gauss-period sup" REDUCES-TO-FENCE F5/F1 (probe_wfH2_kuznetsov_rtf_geometric_side.py, _wfH2_kuznetsov_rtf_geometric_side.lean)
+
+LANE (cluster: automorphic / amplification — flagged the LEAST-conservation-blind by the manifesto,
+since Iwaniec–Sarnak amplification is *designed* to beat the 2nd moment for sup-norms). Ask: is
+`M(n) = max_{b≠0}|η_b|`, `η_b=Σ_{x∈μ_n}e_p(bx)`, an automorphic/Hecke sup-norm whose
+`Σ_b f(b) η_b^k` admits a (relative) trace-formula expansion whose spectral/geometric side gives
+cancellation in the SUP invisible to the moment? RESEARCHED: Kuznetsov/Petersson = early relative
+trace formula (Jacquet); geometric side = weighted **Kloosterman** sums (GL(2)), spectral side =
+GL(2) Maass/holomorphic Fourier coeffs; Deshouillers–Iwaniec spectral large sieve exploits it.
+Iwaniec–Sarnak amplification (sup-norm) WINS **iff the geometric side has off-diagonal cancellation**
+(literature: "for amplification to work, the geometric side is expected to have non-trivial
+cancellation", arXiv:2503.06224 orbit-method survey + the level-aspect filtration papers).
+
+VERDICT = REDUCES-TO-FENCE **F5** (abelian torus ⟹ zero gap) **/ F1** (positive-definite geometric
+side = no spectral saving = the energy). Two structural failures, prize-faithful (`p` prime,
+`p≡1 mod n`, `μ_n` proper, `β≈4`, `p~n⁴`, NEVER `n=p−1`):
+
+1. **WRONG GROUP — `η_b` is GL(1)/abelian (Gauss sum), not Kloosterman (GL(2)).** By the abelian-
+   Cayley-graph spectral theorem (eigenvalues `Σ_{g∈S}χ(g)`, eigenvectors = the fixed additive
+   characters; Podestá–Videla 1911.08549) `η_b` = the eigenvalue of `Cay(F_p^+,μ_n)`; the dual
+   expansion writes it as a linear combination of **Gauss sums** `g(ψ)`, NOT a Kloosterman sum
+   `Σe_p(x+a/x)`. The dilation-torus Hecke algebra is commutative & 1-dim per frequency ⟹ **no Hecke
+   multiplicities** for an amplifier (F5). Sibling of the REFUTED C29 (Kowalski–Sawin Kloosterman-
+   PATH CLT, same object-mismatch); this is the *amplification / trace-formula* sibling.
+
+2. **POSITIVE-DEFINITE GEOMETRIC SIDE — nothing to cancel (exact-integer probe).** The only
+   amplifiers a trace formula produces are class functions of the dilation index. For the additive
+   amplifier `a_b=e_p(−h b)` the amplified 2nd moment expands (Parseval) to the geometric side
+   `A(h)=Σ_b e_p(−h b)|η_b|² = p·#{(x,y)∈μ_n²:x−y=h}` — the **additive autocorrelation of `μ_n`**.
+   Every term `A(h)≥0` (a count): `A` is **positive-definite**, diagonal `A(0)=p·n`, off-diagonal
+   total `Σ_{h≠0}A(h)=p·(n²−n)=(n−1)·A(0)` — it **GROWS** with `n`, never `o(diagonal)`. The probe
+   confirms EXACTLY (`n=16,32,64`, `β≈4`): `E_2=3n(n−1)` = the char-0 Wick value (2nd moment blind to
+   the worst `b`), off/diag ratio `= n−1`, and even the ORACLE amplifier average `≪ M²`. So the
+   amplified average collapses to the flat energy `p·E_r` — fence F1/F12 (`(q·E_r)^{1/2r} ≥ n` ∀r,
+   `_MomentMethodNoGo`). The amplification method needs an OSCILLATORY (Kloosterman) geometric side;
+   the abelian period supplies a non-oscillatory positive count instead.
+
+Lean (`_wfH2_kuznetsov_rtf_geometric_side.lean`, axiom-clean `⊆{propext,Classical.choice,Quot.sound}`,
+no `sorry`): `offdiag_is_growing_multiple` (off-diag `=(n−1)·diag`), `geometric_side_no_cancellation`
+(positive-definite ⟹ off-diag `≥0`, nothing to cancel), `amplified_average_le_max` (amplifier can't
+exceed the max it doesn't already know), `kuznetsov_route_bound_ge_card` / `kuznetsov_route_dead`
+(re-export of the moment-method no-go: the route's quantitative output is `≥n`). Method-boundary
+verdict, NOT a floor refutation; the floor `M≤C√(n log(p/n))` stays OPEN on the BGK/Paley wall. This
+rigorizes the long-standing flag (`deltastar-Bmun-IS-generalized-Paley-spectral-gap` §5: automorphic
+sup-norm papers are methodological analogs, not a ready bound).
+
 ## 2026-06-17 — ANGLE T16/G4-1 "Frobenius-refined Chang cover of the H-invariant large spectrum" REDUCES-TO-WALL (probe_wfT16_chang_frobenius_dim.rs, probe_wfT16_balance_arith.rs, _wfT16_chang_frobenius_cover.lean)
 
 ANGLE (cluster G4, post-2020 additive combinatorics, STRUCTURE/COVERING not norms): cover the large
