@@ -75,9 +75,49 @@ theorem order_neg_r_of_carrier {F : Type*} [Field F] (g : F) (n a : ℕ) (r : F)
   have hcg : (orderOf g).Coprime a := by rw [hord]; exact hcop
   rw [← h, hcg.orderOf_pow, hord]
 
+/-- **The inverse root-lift for the general carrier.** If `u` already has order `n` and `b` is an
+explicit inverse of the carrier exponent `a` modulo `n`, then `g = u^b` is again primitive of order `n`
+and satisfies `g^a = u`. This is the converse permutation step in the order criterion, stated with the
+modular inverse as data so it is usable for every concrete coprime carrier exponent. -/
+theorem exists_orderOf_eq_and_pow_eq_of_inverse {F : Type*} [Field F] (u : F) (n a b : ℕ)
+    (hn0 : n ≠ 0) (hord : orderOf u = n) (hinv : b * a ≡ 1 [MOD n]) :
+    ∃ g : F, orderOf g = n ∧ g ^ a = u := by
+  refine ⟨u ^ b, ?_, ?_⟩
+  · have hcop_b : Nat.Coprime n b := by
+      exact (Nat.coprime_of_mul_modEq_one a hinv).symm
+    have hcg : (orderOf u).Coprime b := by rw [hord]; exact hcop_b
+    rw [hcg.orderOf_pow, hord]
+  · rw [← pow_mul u b a]
+    have hu_fin : IsOfFinOrder u := by
+      rw [isOfFinOrder_iff_pow_eq_one]
+      exact ⟨n, Nat.pos_of_ne_zero hn0, by rw [← hord]; exact pow_orderOf_eq_one u⟩
+    have hmodu : b * a ≡ 1 [MOD orderOf u] := by rwa [hord]
+    simpa using (hu_fin.pow_eq_pow_iff_modEq).mpr hmodu
+
+/-- **The converse collision certificate.** If the carrier element `−r` has order `n` and `b` inverts
+`a` modulo `n`, then some primitive `n`-th root `g` realizes the single-carrier collision: `g^a = −r`
+and `r − (r−1)g^a − g^(2a) = 0`. Together with `order_neg_r_of_carrier`, this gives the exact
+`carrier collision exists ⇔ orderOf (-r) = n` skeleton for every depth `r` and every invertible
+carrier exponent. -/
+theorem exists_carrier_collision_of_order_neg_r {F : Type*} [Field F] (n a b : ℕ) (r : F)
+    (hn0 : n ≠ 0) (hn : n ≠ 1) (hord : orderOf (-r) = n) (hinv : b * a ≡ 1 [MOD n]) :
+    ∃ g : F,
+      orderOf g = n ∧ g ^ a = -r ∧ r - (r - 1) * g ^ a - g ^ (2 * a) = 0 := by
+  obtain ⟨g, hgord, hga⟩ := exists_orderOf_eq_and_pow_eq_of_inverse (-r) n a b hn0 hord hinv
+  refine ⟨g, hgord, hga, ?_⟩
+  have hy : g ^ a ≠ 1 := by
+    intro h1
+    have : orderOf (-r : F) = 1 := by simp [← hga, h1]
+    exact hn (hord ▸ this)
+  have hcrit := (collision_iff_eq_neg_r (r := r) (y := g ^ a) hy).mpr hga
+  have hpowa : (g ^ a) ^ 2 = g ^ (2 * a) := by rw [← pow_mul g a 2, Nat.mul_comm]
+  simpa [hpowa] using hcrit
+
 end ProximityGap.Frontier.CharPTransferGeneral
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.CharPTransferGeneral.singleCarrier_factor
 #print axioms ProximityGap.Frontier.CharPTransferGeneral.collision_iff_eq_neg_r
 #print axioms ProximityGap.Frontier.CharPTransferGeneral.order_neg_r_of_carrier
+#print axioms ProximityGap.Frontier.CharPTransferGeneral.exists_orderOf_eq_and_pow_eq_of_inverse
+#print axioms ProximityGap.Frontier.CharPTransferGeneral.exists_carrier_collision_of_order_neg_r
