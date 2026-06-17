@@ -43,12 +43,19 @@ The structural fact the multiplicative hope needs to be FALSE:
   the exact opposite of "more invariance ⟹ wider plateau."
 
 * `doubling_preserves_coset_size_doubles_budget` — **the tower step is ADDITIVE, not
-  multiplicative, in the budget.** Under the doubling embedding `μ_n ↪ μ_{2n}` a level-`n` coset
-  of size `S` (shift `b−a`, `d = gcd(b−a,n)`) lifts to a level-`2n` coset of the **SAME size `S`**
-  (shift preserved, `n` doubled ⟹ `d' = gcd(b−a, 2n) = 2d`, `S' = 2n/d' = n/d = S`). The budget
-  doubles (`n → 2n`) and `d` doubles (`d → 2d`), so the crossing test `O ≤ d` becomes `O ≤ 2d`:
-  the SAME orbit family `O` now has DOUBLE the headroom. A constant orbit family that was bad at
-  level `n` becomes good with one extra rung of headroom — `+1` per tower level, **additive**.
+  multiplicative, in the budget.** This theorem is the pure-arithmetic supply identity: if
+  `S · d = n` then `S · (2 d) = 2 n` — i.e. holding the orbit size `S` fixed, the budget supply
+  `n` DOUBLES when the crossing modulus argument is doubled. **⚠️ Correction to the prior
+  docstring:** it claimed `d' = gcd(b−a, 2n) = 2 d` under the embedding `μ_n ↪ μ_{2n}` ("the
+  imprimitivity doubles"). That number-theoretic claim is FALSE for the imprimitive directions in
+  the n=16 table below: for shift `t = b−a` with all its 2-adic content already `≤ n` (the
+  imprimitive case `t = 2 t'`), `gcd(t, 2n) = gcd(t, n) = d` is UNCHANGED, so the coset size
+  `S' = 2n/d = 2 S` actually DOUBLES and `S` is NOT preserved. The load-bearing, correct fact is the
+  abstract supply identity `S · d = n ↦ S · (2 d) = 2 n`: **the budget that grows under the tower
+  step is `n` (→ `2n`), not `d`.** The additive `+1`-per-level reading is the *abstract* statement
+  that doubling the budget `n` gives one extra step of headroom against a fixed orbit family `O`;
+  the precise gcd/coset bookkeeping of the embedding is NOT used by any theorem here (they consume
+  only `S · d = n`).
 
 * `multiplicative_needs_coset_count_doubling` — the contrapositive that pins exactly what the
   multiplicative scenario would REQUIRE: for the plateau width to DOUBLE, the coset count `O` would
@@ -112,36 +119,39 @@ theorem binding_budget_monotone_in_d
   have : O ≤ d₂ := le_trans hO hd
   exact (crossing_law hS (n := S * d₂) rfl rfl).mpr this
 
-/-- **The tower step is ADDITIVE in the budget: coset size preserved, budget (and `d`) doubled.**
-Under the doubling embedding `μ_n ↪ μ_{2n}` a far direction with shift `t = b − a` and
-`d = gcd(t, n)` lifts to the SAME shift `t` at level `2n`, where `d' = gcd(t, 2n)`.  For the prize
-tower level `n = 2^μ` and an imprimitive (`b−a`-even) direction, the orbit/coset size is PRESERVED
-(`S' = 2n/d' = n/d = S`) while the budget doubles (`n → 2n`) and the crossing modulus doubles
-(`d → 2d`).  Hence the SAME orbit family `O` (count unchanged) faces the test `O ≤ 2d` at level
-`2n` instead of `O ≤ d` at level `n` — DOUBLE the headroom, the signature of a `+1`-per-level
-(additive) descent, NOT a `×2` (multiplicative) one.
+/-- **The tower step is ADDITIVE in the budget (pure supply identity).**  Holding the orbit size
+`S` fixed, doubling the crossing modulus argument from `d` to `2 d` doubles the supply: from
+`S · d = n` we get `S · (2 d) = 2 n`.  This is the abstract content the additive-descent reading
+rests on: **the quantity that grows under the tower step is the budget `n` (→ `2n`)**, so a fixed
+orbit family `O` gains one step of headroom against the crossing test per level (`+1`-per-level,
+additive), NOT a `×2` (multiplicative) blow-up.
 
-We state the load-bearing arithmetic: with supply `S·d = n` at level `n`, the doubled level has
-supply `S·(2d) = 2n` at the SAME `S` — coset size invariant, budget doubled. -/
+**⚠️ Correction:** an earlier docstring asserted that under `μ_n ↪ μ_{2n}` the imprimitivity
+`d = gcd(t,n)` itself "doubles" (`d' = gcd(t, 2n) = 2 d`) with the coset size `S` preserved. That
+gcd claim is FALSE for the imprimitive directions of the n=16 table (e.g. shift `t = 6`:
+`gcd(6,16) = gcd(6,32) = 2`, NOT `4`); for an imprimitive `t = 2 t'` the gcd is UNCHANGED so the
+coset size `S' = 2n/d = 2S` actually doubles. The theorem below uses ONLY the abstract supply
+identity `S · d = n` and is correct regardless of the gcd bookkeeping. -/
 theorem doubling_preserves_coset_size_doubles_budget
     {S d n : ℕ} (hsupply : S * d = n) :
     S * (2 * d) = 2 * n := by
   rw [← hsupply]; ring
 
-/-- **Coset-size preservation, gcd form (the prize tower level).**  For `n = 2^μ` and an even shift
-`t` (`t = 2t'`, the imprimitive direction), the doubled-level imprimitivity is exactly twice:
-`gcd(t, 2·2^μ) = 2·gcd(t', 2^μ)` is NOT what we need directly; the clean load-bearing fact is the
-supply one above.  Here we record the coset-size invariance as the statement that the level-`2n`
-coset size `2n / (2d)` equals the level-`n` coset size `n / d`. -/
+/-- **The `2·(·)/(2·(·))` cancellation (abstract).**  `(2n)/(2d) = n/d` for all `n, d` — a pure
+`Nat` cancellation, independent of any gcd claim about the embedding.  (NOTE: this is NOT a "coset
+size is preserved under doubling" statement; as corrected above, for an imprimitive direction the
+gcd `d = gcd(t, 2^μ)` is UNCHANGED under `n → 2n`, so the coset size `S = n/d` actually DOUBLES.
+This lemma is only the algebraic identity used as bookkeeping; the load-bearing fact is the supply
+identity in `doubling_preserves_coset_size_doubles_budget`.) -/
 theorem coset_size_invariant_under_doubling
     {S d n : ℕ} (hS : 0 < S) (hsupply : S * d = n) :
     (2 * n) / (2 * d) = n / d :=
   Nat.mul_div_mul_left n d (by norm_num : 0 < 2)
 
 /-- **What the MULTIPLICATIVE scenario would require (the contrapositive pin).**  By
-`binding_budget_monotone_in_d`, at a fixed coset count `O` the binding only gets EASIER as `d`
-grows; and by `doubling_preserves_coset_size_doubles_budget` the tower step doubles the available
-`d` (the budget) at constant coset size `S`.  Therefore the ONLY way the plateau width can DOUBLE
+`binding_budget_monotone_in_d`, at a fixed coset count `O` the binding only gets EASIER as the
+budget modulus grows; and by `doubling_preserves_coset_size_doubles_budget` the tower step doubles
+the budget supply `n` (→ `2n`).  Therefore the ONLY way the plateau width can DOUBLE
 up the tower is if the coset count `O` itself grows (multiplicatively): if `O` stays bounded
 (`O ≤ O₀` along the tower) then for any level with budget modulus `d ≥ O₀` the direction binds
 (`O·S ≤ S·d`).  So a non-doubling (bounded) orbit count FORCES eventual binding — the plateau width
@@ -174,11 +184,15 @@ example : (8 * (2 * 2) : ℕ) = 2 * 16 := by norm_num
 /-- **The additive count law for a CONSTANT worst-orbit family.**  Suppose the worst-direction
 orbit count is a FIXED constant `O₀` along the tower (the empirical fact: the plateau value
 `89 = 1 + 8·11` is the SAME at `n = 16` and `n = 32`, forcing `O₀ = 11`, `S = 8` constant — size
-preserved, count preserved).  At tower level with imprimitivity modulus `d`, the crossing test is
-`O₀ ≤ d`.  Since `d` DOUBLES each tower level (`doubling_preserves_coset_size_doubles_budget`,
-`d → 2d`), starting from `d₀` the modulus at level `j` is `d₀·2^j`, and the family binds at the
-FIRST `j` with `d₀·2^j ≥ O₀` — i.e. after `⌈log₂(O₀/d₀)⌉` levels, a FIXED FINITE number depending
-only on the constant `O₀`, NOT growing geometrically.  This is the additive signature: a constant
+preserved, count preserved).  At tower level with budget modulus `d = n/S`, the crossing test is
+`O₀ ≤ d`.  Since the budget supply `n` DOUBLES each tower level
+(`doubling_preserves_coset_size_doubles_budget`: `S·d = n ↦ S·(2d) = 2n`), at constant `S` the
+budget modulus `d = n/S` doubles too; starting from `d₀` the modulus at level `j` is `d₀·2^j`, and
+the family binds at the FIRST `j` with `d₀·2^j ≥ O₀` — i.e. after `⌈log₂(O₀/d₀)⌉` levels, a FIXED
+FINITE number depending only on the constant `O₀`, NOT growing geometrically.  (This `d = n/S`
+doubling is a consequence of the budget `n` doubling at fixed `S` — NOT the FALSE gcd claim
+`gcd(t, 2n) = 2 gcd(t, n)`, which fails for the imprimitive directions; see the correction on
+`doubling_preserves_coset_size_doubles_budget`.)  This is the additive signature: a constant
 orbit family contributes a bounded (`O(log O₀)`) plateau, never a multiplicative blow-up.
 
 Stated cleanly: if the orbit count is bounded by `O₀` then once the modulus `d` reaches `O₀` the
