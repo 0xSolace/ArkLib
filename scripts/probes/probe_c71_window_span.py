@@ -90,3 +90,51 @@ for (n, p) in [(8,17),(8,41),(8,257),(8,521),(16,97),(16,257),(16,769),
 print(f"\ncases={cases} fails={fails} (window bound #roots <= d-t)")
 print(f"window strictly < n in {window_strictly_beats_n}/{cases} cases (sharper than trivial cap)")
 print("VERDICT:", "HOLDS — formalize d-t window bound" if fails == 0 else "REFUTED")
+
+
+# ---------------------------------------------------------------------------
+# Companion check for `gcd_natDegree_le_span`: deg gcd(X^n-1, gbar) <= d - t.
+# (The exact distinct-mu_n-root count = deg gcd is itself dominated by the
+#  gcd-free support span; this is the UNIFICATION theorem.)
+# Requires sympy; computes gcd in GF(p)[X] exactly.
+# ---------------------------------------------------------------------------
+try:
+    from sympy import symbols as _sym, Poly as _Poly, GF as _GF, gcd as _sgcd
+    _X = _sym('X')
+    random.seed(20260617)
+    gcds = 0
+    gcd_le_span_fails = 0
+    span_eq_gcd = 0
+    for (n, p) in [(8,17),(8,41),(8,257),(8,521),(16,97),(16,257),(16,769),
+                   (16,12289),(32,193),(4,13),(4,257)]:
+        if (p-1) % n != 0 or not is_prime(p):
+            continue
+        Fp = _GF(p)
+        Xn1 = _Poly(_X**n - 1, _X, domain=Fp)
+        for trial in range(40):
+            m = random.choice([2,3,4])
+            exps = random.sample(range(1, p-1), m)
+            coefs = [random.randrange(1, p) for _ in range(m)]
+            red = {}
+            for e, c in zip(exps, coefs):
+                er = e % n
+                red[er] = (red.get(er, 0) + c) % p
+            red = {e: c for e, c in red.items() if c != 0}
+            if not red:
+                continue
+            t = min(red); d = max(red); span = d - t
+            gbar = _Poly(sum(c * _X**e for e, c in red.items()), _X, domain=Fp)
+            if gbar.is_zero:
+                continue
+            dg = _sgcd(Xn1, gbar)
+            deg_gcd = dg.degree() if not dg.is_zero else 0
+            gcds += 1
+            if deg_gcd > span:
+                gcd_le_span_fails += 1
+            if deg_gcd == span:
+                span_eq_gcd += 1
+    print(f"\n[gcd_natDegree_le_span] cases={gcds} fails={gcd_le_span_fails} "
+          f"(deg gcd(X^n-1,gbar) <= d-t)  span==gcd in {span_eq_gcd}/{gcds}")
+    print("VERDICT:", "HOLDS — span dominates gcd" if gcd_le_span_fails == 0 else "REFUTED")
+except ImportError:
+    print("\n[gcd_natDegree_le_span] sympy unavailable; skipping the gcd companion check")

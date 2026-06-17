@@ -46,6 +46,9 @@ is strictly `< n` in every case (sharper than the trivial cap).
   direction. The `μ_n`-incidence of a sparse direction is at most the span of its reduced
   support `(reduce).natDegree − (reduce).natTrailingDegree`. By the proven incidence-invariance
   under mod-`n` reduction (`munRoot_sparse_iff_reduce`), this is the genuinely usable cap.
+* `gcd_natDegree_le_span` : the UNIFICATION. The abstract `deg gcd(X^n-1, g)` incidence bound (the
+  exact distinct-root count) is itself `≤ g.natDegree − g.natTrailingDegree`, so the span dominates
+  the gcd face: a single gcd-free cap subsumes both. Via the coprimality `IsCoprime (X^n-1) X`.
 
 ## Honest scope
 This is the support-span polynomial-method **incidence count** sharpening for the sparse strata. The
@@ -151,9 +154,47 @@ theorem sparse_munRoot_card_le_window {n : ℕ} (S : Finset F) (t : Finset ι) (
   rw [hfilter]
   exact card_nonzeroRoots_le_natDegree_sub_natTrailingDegree S hg
 
+/-- **The `deg gcd(X^n - 1, g)` incidence bound is itself dominated by the support span.** For any
+`g ≠ 0` and `0 < n`, `deg gcd(X^n - 1, g) ≤ g.natDegree - g.natTrailingDegree`. So the exact
+distinct-`μ_n`-root count (`= deg gcd`, the tighter bound used by `munRoot_card_le_gcd_natDegree`)
+is never larger than the cheaper gcd-free support span, UNIFYING the two incidence faces: the span
+is a sufficient (simpler) cap on the gcd bound. Mechanism: `gcd(X^n-1, g)` divides `g = X^t · h`
+(`t = natTrailingDegree`), and it is coprime to `X^t` (it divides `X^n - 1`, which is coprime to `X`
+via the Bezout witness `X · X^{n-1} - (X^n - 1) = 1`), so it divides `h` of degree
+`natDegree g - t`.
+Probe `scripts/probes/probe_c71_window_span.py` companion check: `deg gcd ≤ span` holds `440/440`
+(span strictly exceeds `deg gcd` in `412/440`, equal in `28/440` -- the span is the looser, gcd-free
+cap). -/
+theorem gcd_natDegree_le_span {n : ℕ} (hn : 0 < n) {g : F[X]} (hg : g ≠ 0) :
+    (gcd (X ^ n - 1 : F[X]) g).natDegree ≤ g.natDegree - g.natTrailingDegree := by
+  set d := gcd (X ^ n - 1 : F[X]) g with hddef
+  set t := g.natTrailingDegree with htdef
+  have hXt : (X : F[X]) ^ t ∣ g := by
+    have h0 := pow_rootMultiplicity_dvd g 0
+    rw [rootMultiplicity_eq_natTrailingDegree', C_0, sub_zero, ← htdef] at h0
+    exact h0
+  obtain ⟨h, hh⟩ := hXt
+  have hh0 : h ≠ 0 := by
+    rintro rfl; rw [mul_zero] at hh; exact hg hh
+  have hdeg : g.natDegree = t + h.natDegree := by
+    conv_lhs => rw [hh]
+    rw [natDegree_mul (pow_ne_zero _ X_ne_zero) hh0, natDegree_X_pow]
+  have hcop1 : IsCoprime (X ^ n - 1 : F[X]) X := by
+    refine ⟨-1, X ^ (n - 1), ?_⟩
+    have hx : (X : F[X]) * X ^ (n - 1) = X ^ n := by
+      rw [mul_comm, ← pow_succ]; congr 1; omega
+    ring_nf; rw [hx]; ring
+  have hcopd : IsCoprime d X := IsCoprime.of_isCoprime_of_dvd_left hcop1 (gcd_dvd_left _ _)
+  have hgh : d ∣ h := by
+    have hd : d ∣ X ^ t * h := hh ▸ gcd_dvd_right _ _
+    exact (hcopd.pow_right (n := t)).dvd_of_dvd_mul_left hd
+  calc d.natDegree ≤ h.natDegree := natDegree_le_of_dvd hgh hh0
+    _ = g.natDegree - t := by omega
+
 end ArkLib.ProximityGap.C71SparseStrataWindow
 
 /-! ## Axiom audit -/
 open ArkLib.ProximityGap.C71SparseStrataWindow in
 #print axioms card_nonzeroRoots_le_natDegree_sub_natTrailingDegree
 #print axioms ArkLib.ProximityGap.C71SparseStrataWindow.sparse_munRoot_card_le_window
+#print axioms ArkLib.ProximityGap.C71SparseStrataWindow.gcd_natDegree_le_span
