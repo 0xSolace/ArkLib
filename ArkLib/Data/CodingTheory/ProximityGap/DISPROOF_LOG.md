@@ -15487,59 +15487,6 @@ imprimitive (arising-family) directions ONLY; the per-direction BGK wall on the 
 EXTENDS Q1ArisingFamilyDescent.orbitSize_descent (the proven reduction) by pinning its inapplicability.
 NOT a CORE / Conj-7.1 closure. No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit.
 CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
-### POWER-SUM "EXACT IDENTITIES" AUDIT — Σw²=p−n universal, Σw⁴=p(3n−3)−n³ over-promises (classical; #444 25-novel doc, 2026-06-17)
-
-The δ* conjecture-bank (`docs/kb/deltastar-444-25-novel-conjectures-2026-06-17.md`, Zilber–Pink line)
-leans on "EXACT char-0 power-sum identities over ℤ" for the Gaussian-period value vector
-(w_1,…,w_m), m=(p−1)/n, of μ_n ⊂ F_p^* (n=2^μ | p−1), η_b = Σ_{x∈μ_n} ζ_p^{bx}:
-    (I2)  Σ_i w_i² = p − n
-    (I4)  Σ_i w_i⁴ = p(3n − 3) − n³.
-
-THESE ARE A SPECIAL CASE OF ONE MASTER IDENTITY (classical — see attribution):
-    Σ_i w_i^j = ( p·Z_j − n^j ) / n ,   Z_j := #{(x_1,…,x_j) ∈ μ_n^j : Σ x_k ≡ 0 (mod p)}.
-Derivation: η is constant on the n-element μ_n-cosets, so Σ_{all b∈F_p^*} η_b^j = n·Σ_i w_i^j; and
-additive-character orthogonality Σ_{b∈F_p^*} ζ^{b·s} = (p−1)[s≡0] − [s≢0] gives Σ_{all b} η_b^j =
-p·Z_j − n^j. (Holds over ℂ for ALL n|p−1; −1∈μ_n only makes η real.)
-
-CONSEQUENCE — an identity is field-UNIVERSAL iff its Z_j is field-independent:
-* Z_1 = 0 (0∉μ_n)            ⟹ Σw  = −1   UNIVERSAL (every n).
-* Z_2 = n REQUIRES −1∈μ_n (EVEN n, incl. all #444 n=2^μ) ⟹ Σw² = p−n there; (I2) is exact in the
-  dyadic #444 regime. CAVEAT (Step-8 audit): for ODD n, Z_2=0 and Σw²=−n, so "universal (every n)"
-  was an overstatement — the fully-universal (all n) form is the HERMITIAN moment Σ|w|²=p−n.
-* Z_4 = E2(μ_n) (additive energy, via −1∈μ_n bijection) is FIELD-DEPENDENT ⟹ (I4) holds iff
-  E2(μ_n)=3n²−3n, which FAILS in the small-field regime. (I4)'s claimed RHS even goes NEGATIVE at
-  large n (e.g. p=257,n=128: claimed −1999235 vs computed Σw⁴=8449) — a sum of 4th powers of reals
-  cannot be negative, so (I4) is a low-order-only identity dressed as exact.
-The RIGOROUSLY field-universal window is only j≤2 (and Σw² needs −1∈μ_n). The "j_max(n)≈64/n"
-heuristic (n=2→≥8, n=8→6, n=16→4, n=32→3) is the EMPIRICAL onset of PERSISTENT field-dependence
-(generic values stop being attained, modulo finitely many small-p artifacts) — NOT a strict
-all-primes statement (under a strict reading Z_4 already deviates at small p for n=8). n=2 (the r=2
-Sidon escape) stays clean to ALL tested powers, matching the in-tree fact that r=2 is the only clean
-char-p depth.
-
-ATTRIBUTION (HONEST — NOT NOVEL): the master identity is the classical "moments of Gaussian periods"
-computation. The EVEN case is ALREADY in-tree (`subgroup_gaussSum_moment`: Σ_b|η_b|^{2r}=q·rEnergy,
-plus `rEnergy_eq_zeroSumCount`: rEnergy=Z_{2r} for negation-closed G). Refs: Gerald Myerson, "Period
-polynomials and Gauss sums for finite fields", Acta Arith. 39 (1981) 251–264; Garcia–Lorenz–Todd,
-"Moments of Gaussian Periods and Modified Fermat Curves", arXiv:2112.13886 (Thm 6: 4th moment splits
-on p mod 8 — provably non-universal); Garcia–Hyde–Lutz, "Gauss's hidden menagerie", Notices AMS 62
-(2015). The field-dependence of j≥3 moments (Z_4 = additive energy of a multiplicative subgroup;
-Alon–Bourgain, Shkredov) is the central KNOWN phenomenon — governed by Jacobi sums / Fermat-curve
-point counts, not a (p,n)-polynomial.
-
-PROBES (exact arithmetic, self-cross-checked, all exit 0):
-* `scripts/probes/probe_444_period_powersum_identities.py` — (I2)/(I4), N0=E2 bridge, refined verdict.
-* `scripts/probes/test_444_powersum_signals.py` — S1–S5 falsifiable signals over a wide sweep; the
-  n=32,p=26177 (S5) witness shows E2=3n²−3n has NO clean threshold (sparse-but-persistent exceptions).
-* `scripts/probes/probe_444_period_master_identity.py` — master identity, golden+2 edges+adversarial.
-
-VERDICT: (I2) Σw²=p−n is exact for even n (all #444 n=2^μ; the fully-universal all-n form is the
-Hermitian Σ|w|²=p−n); (I4) Σw⁴=p(3n−3)−n³ OVER-PROMISES — it is a prize-regime conditional
-(= E2 Sidon-generic), false for small fields. This is an AUDIT/clarification,
-not a closure: it explains WHY the bank's power-sum route gives no universal pin, and confirms (3rd
-independent witness) the bank's pattern of "exact identity" claims being either false-when-scaled (I4)
-or truncated-into-untestability (Eichler–Selberg, Fusion-Rank, Frame-number — no committed RHS). The
-prize sup-norm M(μ_n) ≤ C√(n log(p/n)) remains the single open char-p BGK input; δ* untouched.
 
 ## DEPLOYED CENSUS-WELD BUDGET INFEASIBLE AT THE DEEP CENTRAL BAND (#444, sol, 2026-06-17): the named CensusDomination Prop needs K >= centralBinom(m-1) = 2^Theta(m) there — CONSTRAINT LEMMA for the deployed count/census route
 LANE: the count/census equivalence-to-CORE face (brief's named uncontested lever). The census-domination
@@ -15610,3 +15557,48 @@ few frequencies / shallow rmax.) So the prize β-band is NOT special; the β=4 n
 n=64 uptick at β≥4.5 is not firmly a β-effect vs noise. NOT a closure — the n→2^30 asymptote stays the
 open BGK input — but it validates that the β=4 characterization applies prize-wide. Probe:
 scripts/probes/probe_444_keff_beta_band.py (exact char-sums; no Lean). CORE OPEN.
+
+### C10-STEPANOV-CHARP-CEILING (Stepanov auxiliary on the WRAP COUNT A_r) NO-GAIN / reduces-to-bgk (#444/#389, 2026-06-17)
+
+ANGLE C10: a NEW Stepanov tailored to the char-p CEILING at depth — build an auxiliary whose VANISHING
+controls the mod-p WRAP COUNT `A_r` (the anomaly `E_r^{Fp,nonzero} − E_r^{char0,nonzero}`), exploiting
+the 2-adic tower. Motivating hope (the one that distinguishes it from the dead sup-Stepanov family): the
+soft ceiling `R_r = A_r/Wick ≤ 1` needs only `A_r ≤ slack`, a COUNT — and Stepanov-style auxiliaries can
+bound COUNTS even when they cannot bound the SUP (sup stalls at `n^{2/3}` / HBK `n^{9/8}`, both REFUTED
+in-tree). DISTINCT from the C1-anomaly-wrap-count height/divisor route (which controls only the ONSET
+`A_r=0` for `p>T~n^r`, NOT the SIZE of `A_r` at deep `r` where the consumer DCWickMGFFromTermwise lives).
+
+FOUR EXACT MEASUREMENTS (proper μ_n: p PRIME, n=2^μ, n|p−1, p>>n^3, NEVER n=p−1; pure-Python integer-exact
+⇒ axiom-clean trivially; probe `scripts/probes/probe_c10_stepanov_charp_ceiling.py`):
+
+(M1) WRAP-FIBER MULTIPLICITY. For Stepanov to beat the trivial count it MUST manufacture multiplicity
+     `M>1` at the counted points. Fix `(y-tuple, x_1..x_{r-1})`; the free `x_r` solves `x_r ≡ T mod p`.
+     μ_n INJECTS into F_p ⇒ this fiber has AT MOST ONE solution. MEASURED `max #sol/fiber = 1` (n=8 r=4
+     p=1193 β=3.41; n=16 r=3 p=7297 β=3.21). Every counted wrap point is the UNIQUE μ_n solution of its
+     fiber: `M=1`, FORCED by separability of `X^n−1` (the in-tree `stepanov_collapses_to_degree` wall).
+
+(M2) WRAP SPREADS, NOT CONCENTRATES. When alive (small p / deep r) the wrap is SPREAD across MANY residue
+     classes, each carrying ~2 colliding cyclotomic values (n=8 r=4 p=1201 Anom=64: 8 wrap-residues × 2;
+     n=16 r=3 p=6977 Anom=1920: 64 × 2) — NOT concentrated into few high-multiplicity fibers. A Stepanov
+     hook needs the OPPOSITE. Same mechanism as the I008 dyadic-tower NO-GAIN: the 2-adic tower telescopes
+     in ROOTS, never in multiplicity.
+
+(M3) SLACK ARITHMETIC (the quantitative kill). Best per-fiber Stepanov certifies `A_r ≤ n^{2r−1}` (the
+     trivial total over `n^{2r−1}` fibers, each 0/1). The consumer needs `A_r ≤ Wick = (2r−1)‼·n^r`. But
+     `(2r−1)‼·n^r ≪ n^{2r−1}` for ALL n,r≥2 (gap `2^{1.4}` at n=8 r=2 up to `2^{1967}` at n=2^30 r=83).
+     So even the BEST Stepanov-on-fiber bound is ORDERS ABOVE the needed slack — Stepanov certifies a
+     WORSE bound than the true `A_r` already satisfies. NO GAIN, quantitatively.
+
+(M4) MULTIVARIATE / WEIL-BOMBIERI version. The curve/variety Stepanov-Weil error term `√q·deg = n^{β/2}·deg`
+     is VACUOUS vs the n-scale count whenever `β>2` (always in the prize β∈[4,5]): exactly the in-tree
+     C36 / `probe_stepanov_weil_qvacuity` vacuity. The COUNT inherits it.
+
+VERDICT: **NO-GAIN (reduces-to-bgk).** C10 is the SAME wall as the entire Stepanov family on μ_n
+(C36 HBK REFUTED-FALSE; I008 dyadic-tower NO-GAIN; `stepanov_collapses_to_degree`): `X^n−1` separable ⇒ μ_n
+manufactures NO multiplicity ⇒ Stepanov is BLIND below the true count. Reframing the target from the SUP
+to the COUNT `A_r` does NOT escape, because (a) the wrap fiber is a single injective point (M=1), (b) the
+wrap SPREADS not concentrates, (c) the trivial per-fiber count `n^{2r−1}` is already ABOVE the needed Wick
+slack `(2r−1)‼n^r`, and (d) the multivariate Weil error `√q` is vacuous on the thin μ_n. NO push past the
+0.011 effective exponent; NO soft-ceiling `R_r≤1` proof. The soft ceiling survives EMPIRICALLY (it IS the
+open BGK / DSAR-faithfulness input; same wall reached from the auxiliary-degree side). NOT a refutation of
+CORE, NOT a closure. No Lean claim made (no real handle to formalize).
