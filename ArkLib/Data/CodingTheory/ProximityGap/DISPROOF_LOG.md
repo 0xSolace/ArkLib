@@ -15542,3 +15542,18 @@ energy-transfer route is a FAITHFUL proxy for the BGK sup constant: bounded-K �
 small loss. It does NOT close anything — proving K (=C) bounded as n→2^30 is still the open BGK input —
 but it confirms S1's energy route is not a lossy detour: it is the BGK constant in disguise.
 Probe: scripts/probes/probe_444_keff_to_bgk_constant.py (exact char-sums; no Lean). CORE OPEN.
+
+### STRUCTURAL: the K_eff peak is ~FLAT across the prize β-band 4–5 (β=4 work is prize-representative) (#444, nubs, 2026-06-17)
+
+Fills a gap: S1 + all prior K_eff work fixed β=4, but the ABF prize regime is β=log_n p ∈ [4,5].
+Measured peak K_eff vs β at fixed n (`probe_444_keff_beta_band.py`, good primes p<2^32):
+    n     β3.0   β3.5   β4.0   β4.5   β5.0
+    32    0.481  0.651  0.612  0.613  0.622
+    64    0.491  0.646  0.614  0.682  0.674
+Across the prize band β=4–5 the peak is ~flat (n=32: 0.612→0.622; n=64: 0.614→0.674, within/near the
+~0.05–0.07 prime-noise band) — no dramatic worsening toward β=5. (β=3.0 is anomalously low: small-p edge,
+few frequencies / shallow rmax.) So the prize β-band is NOT special; the β=4 n-trend (rise-then-plateau
+≈0.67) is representative across the full ABF β∈[4,5] regime. Caveat: single prime per point, so the mild
+n=64 uptick at β≥4.5 is not firmly a β-effect vs noise. NOT a closure — the n→2^30 asymptote stays the
+open BGK input — but it validates that the β=4 characterization applies prize-wide. Probe:
+scripts/probes/probe_444_keff_beta_band.py (exact char-sums; no Lean). CORE OPEN.
