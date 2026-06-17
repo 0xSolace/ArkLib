@@ -584,9 +584,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.C2CoreEliminationBound
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71BinomialIncidenceGcd
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseOrbitGap
-import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.C71SparseStrataReduce
+import ArkLib.Data.CodingTheory.ProximityGap.C71TrinomialIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.CAPairExtractionEngine
 import ArkLib.Data.CodingTheory.ProximityGap.CRTDoubleSlice
 import ArkLib.Data.CodingTheory.ProximityGap.CRTExponentGridSum
@@ -1462,6 +1462,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G6_stepanov_roughprime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT1_ChaiFanQ1Cyclotomic
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT2_DemandSideFaithfulness
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9OT4_charzero_ceiling_discharge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL1_OT2vsLC_Settled
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL3_char0_prize_moment
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL5_ChaiFanQ1CharP
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL6_charzero_ceiling_discharge_high
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
