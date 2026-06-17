@@ -9,6 +9,8 @@ import ArkLib.ProofSystem.Binius.FRIBinius.CoreInteractionPhase
 import ArkLib.ProofSystem.RingSwitching.BatchingPhase
 import ArkLib.OracleReduction.Security.Basic
 import ArkLib.OracleReduction.Security.Implications
+import ArkLib.OracleReduction.Composition.Sequential.AppendChallengeKeystoneOracle
+import ArkLib.OracleReduction.Composition.Sequential.AppendRbrKnowledgeFailingDetChallenge
 
 /-!
 # FRI-Binius IOPCS
@@ -524,6 +526,142 @@ theorem fullOracleVerifier_knowledgeSoundness :
       (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
     h_ks
   exact h_mono
+
+/-! ## Wired front-door theorems (issue #313)
+
+The two identity-wrapper front doors above (`fullOracleReduction_perfectCompleteness`,
+`fullOracleVerifier_rbrKnowledgeSoundness`) take the *entire* full-protocol security statement as
+a single hypothesis. The `_wired` theorems below replace that monolithic hypothesis with the
+*component* obligations across the `batchingCore ⋈ query` seam:
+
+* The seam itself is discharged by the proven challenge-seam append keystones
+  (`OracleReduction.append_perfectCompleteness_challenge_keystone` /
+  `OracleVerifier.append_rbrKnowledgeSoundness_failingDet_subsingleton_challenge`).
+* The **query phase** side is supplied by the *proven* BinaryBasefold keystones
+  (`queryOracleProof_perfectCompleteness` / `queryOracleVerifier_rbrKnowledgeSoundness`) — exactly
+  the wiring requested by the #313 close-out.
+
+What survives as a hypothesis is strictly smaller than the full-protocol statement it replaces:
+only the `batchingCore` phase (batching ⋈ core-interaction) completeness / rbr-KS, plus the
+failing-determinism witness for the compiled `batchingCore` verifier (rbr-KS only). This mirrors
+`BinaryBasefold.FullBinaryBasefold.fullOracleReduction_perfectCompleteness_wired`. -/
+
+section Wired
+
+open BinaryBasefold
+
+/-- Left-boundary direction transport for appended protocols: the appended protocol's direction
+at the seam index `m` is `pSpec₂`'s direction at its round `0`. -/
+private lemma append_dir_seam {m n : ℕ} {pSpec₁ : ProtocolSpec m} {pSpec₂ : ProtocolSpec n}
+    {d : Direction} (hn : 0 < n) (h : pSpec₂.dir ⟨0, hn⟩ = d) :
+    (pSpec₁ ++ₚ pSpec₂).dir (⟨m, by omega⟩ : Fin (m + n)) = d := by
+  rw [show (⟨m, by omega⟩ : Fin (m + n)) = Fin.natAdd m (⟨0, hn⟩ : Fin n) from by ext; simp]
+  rw [Prover.append_dir_natAdd]
+  exact h
+
+/-- **Perfect completeness of the full FRI-Binius protocol, wired (issue #313).** The
+`batchingCore ⋈ query` seam is discharged by the proven challenge-seam keystone; the query phase
+is the proven `BinaryBasefold.queryOracleProof_perfectCompleteness`. Only the `batchingCore` phase
+completeness (the existing `batchingCoreReduction` surface) survives as a hypothesis. -/
+theorem fullOracleReduction_perfectCompleteness_wired (hInit : NeverFail init)
+    (hBatchingCorePerfectCompleteness :
+      OracleReduction.perfectCompleteness
+        (oracleReduction := batchingCoreReduction κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
+        (relIn := BatchingPhase.strictBatchingInputRelation κ L K
+          (β:=booleanHypercubeBasis κ L K β)
+          ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn (β := β)
+            (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
+        (relOut := BinaryBasefold.strictFinalSumcheckRelOut K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (init := init)
+        (impl := impl)) :
+    OracleReduction.perfectCompleteness
+      (oracleReduction := fullOracleReduction κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate) h_l (𝓑:=𝓑))
+      (relIn := BatchingPhase.strictBatchingInputRelation κ L K (β:=booleanHypercubeBasis κ L K β)
+        ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn (β := β)
+          (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
+      (relOut := acceptRejectOracleRel)
+      (init := init)
+      (impl := impl) := by
+  have hQuery := BinaryBasefold.QueryPhase.queryOracleProof_perfectCompleteness K β γ_repetitions
+    (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) init hInit impl
+  exact OracleReduction.append_perfectCompleteness_challenge_keystone
+    (R₁ := batchingCoreReduction κ L K β ℓ ℓ' 𝓡 ϑ h_ℓ_add_R_rate h_l (𝓑 := 𝓑))
+    (R₂ := QueryPhase.queryOracleReduction K β γ_repetitions
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
+    (h₁ := hBatchingCorePerfectCompleteness)
+    (h₂ := hQuery)
+    (hn := Nat.one_pos)
+    (hDir := append_dir_seam Nat.one_pos rfl)
+    (hDir₂ := rfl)
+    (himplSP := fun t => t.elim)
+    (himplNF := fun t => t.elim)
+    (hInit := hInit)
+
+/-- **Round-by-round knowledge soundness of the full FRI-Binius oracle verifier, wired (issue
+#313, stateless regime).** The `batchingCore ⋈ query` seam is discharged by the proven
+failing-deterministic challenge-seam keystone; the query phase is the proven
+`BinaryBasefold.queryOracleVerifier_rbrKnowledgeSoundness`. Surviving hypotheses: the `batchingCore`
+phase rbr knowledge soundness, and the failing-determinism witness `verify?`/`hVerify` for the
+compiled `batchingCore` verifier. -/
+theorem fullOracleVerifier_rbrKnowledgeSoundness_wired [Subsingleton σ]
+    [Inhabited (BinaryBasefold.FinalSumcheckStatementOut (L := L) (ℓ := ℓ') ×
+      ∀ j, BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ
+        (Fin.last ℓ') j)]
+    (hInit : ∃ s, s ∈ support init) (hInitNF : Pr[⊥ | init] = 0)
+    (verify? : (BatchingStmtIn (L := L) (ℓ:=ℓ) ×
+        ∀ j, (BinaryBasefoldAbstractOStmtIn (β := β) (ϑ := ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).OStmtIn j) →
+      (batchingCorePspec κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate).FullTranscript →
+      Option (BinaryBasefold.FinalSumcheckStatementOut (L := L) (ℓ := ℓ') ×
+        ∀ j, BinaryBasefold.OracleStatement K β (h_ℓ_add_R_rate := h_ℓ_add_R_rate) ϑ
+          (Fin.last ℓ') j))
+    (hVerify : (batchingCoreVerifier κ (L := L) (K := K) (𝓑 := 𝓑) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+        (h_l := h_l) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).toVerifier
+      = ⟨fun p tr => OptionT.mk (pure (verify? p tr))⟩)
+    (hBatchingCoreRbrKnowledgeSoundness :
+      (batchingCoreVerifier κ (L := L) (K := K) (𝓑 := 𝓑) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+        (h_l := h_l) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)).rbrKnowledgeSoundness
+        (init := init) (impl := impl)
+        (relIn := BatchingPhase.batchingInputRelation κ L K (β := booleanHypercubeBasis κ L K β)
+          ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn (β := β)
+            (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
+        (relOut := BinaryBasefold.finalSumcheckRelOut K β (ϑ:=ϑ)
+          (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+        (rbrKnowledgeError := batchingCoreRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)) :
+    (fullOracleVerifier κ L K β ℓ ℓ' 𝓡 ϑ γ_repetitions
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (h_l := h_l) (𝓑 := 𝓑)).rbrKnowledgeSoundness init impl
+      (relIn := BatchingPhase.batchingInputRelation κ L K (β := booleanHypercubeBasis κ L K β)
+        ℓ ℓ' h_l (BinaryBasefoldAbstractOStmtIn (β := β)
+          (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate)))
+      (relOut := acceptRejectOracleRel)
+      (rbrKnowledgeError := fullRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ γ_repetitions
+        (h_ℓ_add_R_rate := h_ℓ_add_R_rate)) := by
+  have hKey := OracleVerifier.append_rbrKnowledgeSoundness_failingDet_subsingleton_challenge
+    (init := init) (impl := impl)
+    (V₁ := batchingCoreVerifier κ (L := L) (K := K) (𝓑 := 𝓑) (β := β) (ℓ := ℓ) (ℓ' := ℓ')
+      (h_l := h_l) (𝓡 := 𝓡) (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+    (V₂ := QueryPhase.queryOracleVerifier K β γ_repetitions
+      (h_ℓ_add_R_rate := h_ℓ_add_R_rate) (ϑ:=ϑ))
+    (verify? := verify?) (hVerify := hVerify)
+    (hInit := hInit) (hInitNF := hInitNF)
+    (hNEW₂ := ⟨()⟩)
+    (hn := Nat.one_pos)
+    (hDir := append_dir_seam Nat.one_pos rfl)
+    (hDir₂ := rfl)
+    (h₁ := hBatchingCoreRbrKnowledgeSoundness)
+    (h₂ := BinaryBasefold.QueryPhase.queryOracleVerifier_rbrKnowledgeSoundness K β γ_repetitions
+      (ϑ := ϑ) (h_ℓ_add_R_rate := h_ℓ_add_R_rate) init impl)
+  have herr : fullRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ γ_repetitions h_ℓ_add_R_rate
+      = (Sum.elim
+          (batchingCoreRbrKnowledgeError κ L K β ℓ' 𝓡 ϑ h_ℓ_add_R_rate)
+          (QueryPhase.queryRbrKnowledgeError K β γ_repetitions (h_ℓ_add_R_rate := h_ℓ_add_R_rate))
+          ∘ ⇑ChallengeIdx.sumEquiv.symm) := rfl
+  rw [herr]
+  exact hKey
+
+end Wired
 
 end CanonicalB
 
