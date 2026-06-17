@@ -33,21 +33,39 @@ namespace ArkLib.ProximityGap.C71TrinomialGcdObstruction
 def witnessRoots : Finset (ZMod 17) := {2, 16}
 
 /-- Both listed witness points lie in `mu_8(F_17)`. This is a finite-field computation,
-closed by plain `decide` (not `native_decide`). -/
+closed by plain `decide`. -/
 theorem witnessRoots_subset_mu8 : ∀ x ∈ witnessRoots, x ^ (8 : ℕ) = (1 : ZMod 17) := by
   decide
 
 /-- Both listed witness points vanish on the trinomial `X^2 - X - 2` over `F_17`. This is a
-finite-field computation, closed by plain `decide` (not `native_decide`). -/
+finite-field computation, closed by plain `decide`. -/
 theorem witnessRoots_vanish_trinomial :
     ∀ x ∈ witnessRoots, x ^ (2 : ℕ) - x - (2 : ZMod 17) = 0 := by
   decide
 
+/-- The **full** `mu_8(F_17)` incidence of the witness trinomial is exactly the two listed roots.
+This closes the possible loophole in the obstruction: the set `witnessRoots` is not merely a
+lower-bound subset, it is the complete root set inside the proper 8-th-root subgroup. The
+finite-field computation is closed by plain `decide`. -/
+theorem full_mu8_trinomial_roots_eq_witness :
+    (Finset.univ.filter (fun x : ZMod 17 =>
+      x ^ (8 : ℕ) = 1 ∧ x ^ (2 : ℕ) - x - (2 : ZMod 17) = 0)) = witnessRoots := by
+  decide
+
 /-- The witness incidence has cardinality exactly two. This finite check is the exact two-root
-obstruction; it is closed by plain `decide` (not `native_decide`). -/
+obstruction; it is closed by plain `decide`. -/
 theorem witness_trinomial_incidence_card :
     (witnessRoots.filter (fun x : ZMod 17 =>
       x ^ (8 : ℕ) = 1 ∧ x ^ (2 : ℕ) - x - (2 : ZMod 17) = 0)).card = 2 := by
+  decide
+
+/-- The complete `mu_8(F_17)` incidence of `X^2 - X - 2` has cardinality exactly two. This is
+the caller-facing exact-count form: the obstruction is sharp on the whole subgroup, not only on the
+named witness subset. -/
+theorem full_mu8_trinomial_incidence_card :
+    (Finset.univ.filter (fun x : ZMod 17 =>
+      x ^ (8 : ℕ) = 1 ∧ x ^ (2 : ℕ) - x - (2 : ZMod 17) = 0)).card = 2 := by
+  rw [full_mu8_trinomial_roots_eq_witness]
   decide
 
 /-- The naive trinomial analog of the binomial cyclic-gcd cap gives only `1` for the witness
@@ -66,10 +84,24 @@ theorem trinomial_gap_gcd_cap_fails :
   rw [witness_gap_gcd_eq_one, witness_trinomial_incidence_card]
   norm_num
 
+/-- **Full-subgroup obstruction.** On the entire proper subgroup `mu_8(F_17)`, the trinomial
+`X^2 - X - 2` has two roots, while the gap-gcd cap predicts only one. This is the exact incidence
+form consumed by the C71 non-orbit residual: a binomial-style `gcd(i-j,j-k,n)` law fails even before
+any sampling/subset restriction. -/
+theorem trinomial_gap_gcd_cap_fails_on_full_mu8 :
+    Nat.gcd (2 - 1) (Nat.gcd (1 - 0) 8) <
+      (Finset.univ.filter (fun x : ZMod 17 =>
+        x ^ (8 : ℕ) = 1 ∧ x ^ (2 : ℕ) - x - (2 : ZMod 17) = 0)).card := by
+  rw [witness_gap_gcd_eq_one, full_mu8_trinomial_incidence_card]
+  norm_num
+
 end ArkLib.ProximityGap.C71TrinomialGcdObstruction
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.witnessRoots_subset_mu8
 #print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.witnessRoots_vanish_trinomial
+#print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.full_mu8_trinomial_roots_eq_witness
 #print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.witness_trinomial_incidence_card
+#print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.full_mu8_trinomial_incidence_card
 #print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.trinomial_gap_gcd_cap_fails
+#print axioms ArkLib.ProximityGap.C71TrinomialGcdObstruction.trinomial_gap_gcd_cap_fails_on_full_mu8
