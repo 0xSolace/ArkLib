@@ -16112,3 +16112,59 @@ VERDICT: REDUCES-TO-BGK. The pointwise O(1)-conductor relocation is refuted at t
 on-average open core. Consistent with MonodromyConductorScaffold.lean (cond ~ n^{2r-1}, Swan=0)
 and MonodromyTailGaussianObstruction.lean (the limiting law is leptokurtic, not the Gaussian the
 EVT route needs). P3 is NOT a new handle.
+
+---
+
+## [P4-monodromy-max-control] EVT control of the MAX from effective monodromy — VACUOUS past r0=1+beta/2 (2026-06-17)
+
+ANGLE (the genuine analytic-NT input the census flags): Katz big-monodromy + Larsen's alternative
+=> EFFECTIVE equidistribution of the period family {eta_b} to its limiting (vertical Sato-Tate)
+law, with explicit Deligne/Weil-II error; THEN an extreme-value / large-deviation argument controls
+the MAX M(n)=max_{b!=0}||eta_b|| (not just the average), giving M <= sqrt(2n log(p/n)). The decisive
+sub-question: does effective monodromy control the MAX, not just the average moment?
+
+WHY IT IS DISTINCT FROM P3: P3 ([P3-weil-deligne-paramfamily]) refutes the O(1)-conductor at the
+BASE level r=1 (cond(F)=Theta(n), pointwise Deligne is trivial |eta_b|<=n). P4 is the r-FOLD
+moment-sheaf version that the EVT route actually needs: to control the MAX via extreme-value theory
+one must resolve the survival S(t) at the EVT depth t*=sqrt(2 log N) (N=(q-1)/n), i.e. control the
+moments up to order r* ~ log N ~ log q. P4 asks whether effective monodromy supplies THAT.
+
+REFUTATION (rigorous, closed-form threshold — not just measured): the honest conductor of the
+r-fold moment sheaf M^{*r} is RANK-DRIVEN, cond(r)=dim H^1_c ~ n^{2r-1} with Swan=0 (all Kummer
+sheaves tame; recorded in MonodromyConductorScaffold). With that honest conductor the Deligne/Weil-II
+error term ERR(r)=n^{2r-1}*sqrt(q) ALONE exceeds the ENTIRE summed Wick budget q*(2r-1)!!*n^r — i.e.
+the EffectiveConductorBound is informationally VACUOUS (cannot even witness E_r<=(2r-1)!!*n^r) —
+exactly when
+
+      n^{r-1} > (2r-1)!! * sqrt(q)     (product form, no logs)
+
+Taking logs at q=n^beta and dropping the slow ln((2r-1)!!) term, the VACUITY ONSET is the closed form
+
+      r0 = 1 + beta/2 .
+
+Prize regime beta=4..5 => r0 in {3, 3.5} => VACUOUS already at r=4, which is EXACTLY the moment
+order where the char-p additive-energy excess W_r first appears (E_3 is p-invariant / verified n<=40;
+E_4 first fails). The EVT/sup-control depth r* ~ log q ~ 89 (n=2^30, beta~5.27) lies FAR beyond r0,
+deep in the vacuous region; the gap n^{r-r0} grows without bound. So effective monodromy controls the
+AVERAGE moment only up to r <= r0 ~ 3, and the MAX (which needs r* ~ log q) is structurally
+unreachable by this route.
+
+NUMERICS (scripts/probes/probe_c5_monodromy_max_scissors.py, prize point n=2^30, q=2^158): the
+log-criterion (r-1)ln n vs ln((2r-1)!!)+(1/2)ln q crosses from -22.9 (r=3) to +4.3 (r=4) in log2,
+the product-form n^{r-1} vs (2r-1)!!*sqrt(q) crosses from 2^60 vs 2^82.9 (r=3, not vacuous) to
+2^90 vs 2^85.7 (r=4, VACUOUS). Far-tail Gaussianization (probe_c5_deeptail_gaussianize.py): the
+local Weibull exponent alpha(t) rises toward 2 at deeper fractions of t* but the deepest fractions
+(0.85-0.95 t*) are UNMEASURABLE at probe scale — the very depth t* that EVT needs.
+
+Lean: Frontier/_C5MonodromyMaxControlScissors.lean (axiom-clean [propext,Classical.choice,Quot.sound],
+0 sorryAx, verified by #print axioms on all 4 theorems): effErr_gt_wickBudget_of_vacuityCriterion
+(the core dichotomy: VacuityCriterion => ERR > Wick budget), vacuityCriterion_of_log (log/closed-form
+face giving r0=1+beta/2), prize_point_vacuous_at_four (concrete n=2^30,q=2^158,r=4 vacuous),
+vacuityCriterion_step (margin grows past onset). Mathlib-only imports (fast iterate, no cone build).
+
+VERDICT: REDUCES-TO-BGK. Effective monodromy/Larsen does NOT control the MAX: the depth-vs-conductor
+scissors close at r0=1+beta/2 (~3 in the prize regime), while EVT control of the sup needs r*~log q
+(~89). The only escape is proving E_r<=(2r-1)!!*n^r at deep r WITHOUT Weil-II = the BGK square-root
+cancellation wall. P4 is NOT a new handle; it sharpens MonodromyConductorScaffold's qualitative
+"rank-driven n^{2r-1}" into the exact closed-form vacuity onset r0=1+beta/2, and pins the structural
+coincidence that vacuity onset = char-p excess onset (both at r=4 in the prize band).
