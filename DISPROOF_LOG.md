@@ -5050,3 +5050,53 @@ ABSOLUTE (n,p-uniform) survival/MGF constant. Two rate facts, located so nobody 
 NET: do NOT add a rate-downshift MGF brick — of_rate_le already does it. The single open input is the
 ABSOLUTE survival/MGF constant = BGK. NOT a CORE closure, no capacity/beyond-Johnson/cliff-at-n/2 claim.
 CORE M(μ_n) ≤ C·√(n·log(p/n)) with absolute C remains OPEN.
+
+## [N2-uncond-lower-bound] REFUTED — no divergent unconditional lower bound M(n) ≥ √n·ω(n) exists; the floor is REACHABLE (constant-calibrated O(1)), Parseval forces only M ≥ √n (Johnson, the floor's lower side) (2026-06-17, opus-4-8 subagent)
+
+LENS / mandate (negative angle N2): prove an UNCONDITIONAL lower bound M(n) ≥ √n·ω(n) with ω→∞
+at worst-case prize-shaped primes, which would make the floor √(n log m) UNATTAINABLE. M(n)=max_{b≠0}|η_b|,
+η_b=Σ_{x∈μ_n}e_p(bx), μ_n=order-n=2^μ subgroup, m=(p-1)/n, prize p~n^β β=4–5.
+
+VERDICT: REFUTED. No such divergent lower bound is provable. Three rigorous facts close it:
+
+(1) THE ONLY METHOD-INDEPENDENT LOWER BOUND IS PARSEVAL: Σ_{b≠0}|η_b|² = q·n − n² EXACTLY (machine-verified:
+n=16,p=65537 gives 1048336 = 65537·16−256 to the integer; n=8,p=4153 gives 33160 = exact). Averaging over the
+q−1 nonzero b: max_b|η_b|² ≥ (qn−n²)/(q−1) ~ n ⟹ **M ≥ √n·(1−o(1))**. This is the floor's LOWER side (= Johnson
+1−√ρ), NOT a divergent √n·ω. probe_n2_parseval_lower_bound.py.
+
+(2) THE STRUCTURED (FERMAT-GEOMETRIC) CONSTRUCTION CAPS AT O(log p) COHERENT TERMS. At a Fermat prime p=2^k+1,
+ord_p(2)=2k, μ_{2k}=⟨2⟩={±2^j mod p : 0≤j<k}, and η_1 = 2Σ_{j<k}cos(2π2^j/p) = n − Θ(1) (EXACT closed form;
+deficit dominated by the j≈k−1 terms where 2^j≈p/2). This is a genuine clean lower bound M ≥ n−O(1) — but ONLY
+at n=2k=2log₂(p−1)=O(log p). The 5 known Fermat primes cap at p=65537 ⟹ n=32. probe_n2_fermat_geometric_head.py.
+
+(3) THE GEOMETRIC HEAD IS A VANISHING FRACTION AT PRIZE SCALE. The coherent cluster requires μ_n elements to
+equal {±R^j} as INTEGERS (R^j<p), which needs j<log_R p. In the prize regime p~n^β, that is at most
+log_R p = β·log_R n = O(log n) terms; the remaining n−O(log n) subgroup elements are R^j mod p which WRAP and
+equidistribute (n=ord_p(R) > log₂ p whenever n > β log₂ n, i.e. all n≥16 at β=4), contributing only O(√(n log m))
+by cancellation. Empirically (probe_n2_fermat_geometric_head.py / cluster-fraction at p=65537): cluster-fraction
+decays 1.0 (n≤8) → 0.25 (n≥1024), and η_1 STOPS growing (oscillates ~√n, even drops to 1.0 at n=65536). So
+M ≤ O(log n)+O(√(n log m)) = O(√(n log m)) — the head is LOWER ORDER than the floor.
+
+(4) WORST-CASE RATIO IS BOUNDED, NO GROWTH WITH n (probe_n2_worstcase_ratio_sweep.py, EXACT full b-sweep over
+proper μ_n, m=(p-1)/n>1, NEVER n=q−1, p PRIME). Worst M/√(2n log m) over generic + 2-adically-heavy + Fermat
+prize-band primes: n=8→0.775, n=16→0.861, n=32→0.959, n=64→1.008 (rises toward but ~1, no divergence); Fermat
+p=65537 subgroups peak 1.46; Fermat-factor p=6700417 (β=3.78) gives 1.14. The ratio sits in [0.77,1.46] and does
+NOT grow with n. (Consistent with the prior wide scan: worst 0.997 over generic β∈[3.8,4.2].)
+
+WHY A DIVERGENT LOWER BOUND IS UNPROVABLE (the impossibility, made precise): a lower bound M ≥ √n·ω(n) ω→∞ would
+require lower-bounding a SPECIFIC |η_b| beyond the √n Parseval average — i.e. exhibiting a frequency b at which
+Σ_{x∈μ_n}e_p(bx) FAILS to exhibit square-root cancellation by a divergent factor. That is precisely DISPROVING
+equidistribution of the multiplicative subgroup μ_n. Unconditionally the only guaranteed-coherent contribution is
+the LITERAL geometric integer head {h^j : h^j<p} of size O(log p)=o(√n); beyond it no unconditional statement
+forces coherence (it would be a lower bound on M, the very thing sought). And equidistribution is TRUE for generic
+primes (square-root cancellation holds, ratio<1), so any ∀-prime divergent lower bound is FALSE. Hence: the
+strongest provable lower bound is M ≥ √n (Parseval/Johnson), the floor √(n log m) is REACHABLE (the upper-side
+constant calibrates √2→~2.1 from F3→F4 but stays O(1)), and N2 — "floor unattainable in worst case" — is FALSE.
+
+CONSEQUENCE FOR THE PRIZE (rule-4 map, NOT a closure of #334): N2 is dead as a NEGATIVE route. The floor is
+not unreachable; the open content is entirely on the UPPER side (proving M ≤ C√(n log m) at depth r~ln q = the
+BGK/Paley char-p energy-transfer wall), not on a lower-bound obstruction. This corroborates the ground-truth
+memo: the Fermat datum is a CONSTANT-CALIBRATION fact (√2→2), not a floor-disproof; per-code δ*_C simply takes a
+different O(1)-constant value at structured F. The two-sided wall (moment NECESSITY + ERM equivalence) already
+pins δ* two-sidedly to BGK; N2 cannot escape it from below. Python-only, exact (integer Parseval check + exact
+cosine b-sweep, multi-prime incl. Fermat + 2-adic-heavy + non-Fermat), no Lean changed ⇒ axiom-clean trivially.
