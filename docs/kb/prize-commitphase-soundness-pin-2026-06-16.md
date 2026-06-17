@@ -1,4 +1,21 @@
-# CANDIDATE PIN: multi-round FRI commit-phase soundness = c(ρ)/|F|, O(1)/|F| with explicit constants (#444)
+# commit-phase soundness = c(ρ)/|F| — clean at N=8, but LIKELY FINITE-SIZE (downgraded; integrity update) (#444)
+
+> **DOWNGRADE (integrity, added after a structural analysis).** The clean N=8 constants below are now
+> assessed as **likely a finite-size coincidence, NOT a verified N-independent pin.** Reason — the *nesting
+> obstruction*: a witness is "fully slack" at a round (all `λ` keep it within radius `r`) iff its even/odd
+> error parts share support on `≤r` folded positions, i.e. the error occupies `≤r` antipodal orbits ⇒
+> Hamming weight `≤2r`. But above-Johnson requires weight `> (1−√ρ)N ≈ 0.29N`. At N=8, ρ=½ the minimal
+> above-Johnson weight is 3 and `r=1` (2 positions) *nearly* fits — which is exactly why `c=1` came out
+> clean. At larger `N`, above-Johnson weight `~0.29N` **cannot** nest into a fixed radius, so the early
+> rounds stop being fully slack and the clean structure breaks. This matches (a) the under-sampled N=16
+> ratio being *lower* than N=8, and (b) the single-fold bad-count growing with N. So the clean `c(ρ)` is
+> **not** established as a general-`N` `O(1)/|F|` pin; treat the N=8 numbers as small-`N` data, not a law.
+> The robust, defensible claim is only the *order* (commit-phase soundness is `O(?)/|F|` per round, with the
+> `O(1)` improvement of 2026/861 requiring the action-orbit structure my reconstruction does not capture).
+
+---
+
+# (original framing, now downgraded) CANDIDATE PIN: commit-phase soundness = c(ρ)/|F| (#444)
 
 The strongest positive result of the campaign, on the CORRECT object (multi-round commit-phase soundness,
 where the prize `O(1)/|F|` is claimed — not the single-fold proxy, which grows with N).
