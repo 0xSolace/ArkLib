@@ -1019,6 +1019,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenDirectionDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.EvenWitnessReverseCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ExplainableAmalgamation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.F6CliffInstantiationJohnson
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FarCosetCardDvd
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FarCosetCardLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FarLineProxyBelowJohnson
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FisherLevelLocked
