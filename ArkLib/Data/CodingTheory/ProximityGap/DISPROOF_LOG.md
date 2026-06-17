@@ -15138,3 +15138,34 @@ additive-energy/Wick route). The hypothesis is ESSENTIAL not cosmetic: for n ODD
 negation-closed and η_b is genuinely complex, but the prize regime n = 2^a is always even, so it
 always holds there. Joins N13/N7 as a structural fact about the surviving phase-aware route. Not a
 closure; a precise constraint that the phase-aware lever's "phase" is discrete.
+
+---
+
+## E12 three-gap positional rigidity is FREQUENCY-BLIND (WALL, 7e5b5ea01, ThreeGapPositionalRigidity.lean)
+
+ROUTE: census §1.3 E12 "three-gap / three-distance positional rigidity on the orbit positions"
+(a phase-aware survivor of the §4 meta-theorem). Was UNFORMALIZED (zero files).
+
+PROBE (probe_threegap_{positional,gapcount_law,symmetry_noseparation}.py; PROPER thin mu_n,
+n=2^a, p>>n^3, p=1 mod n, NEVER n=q-1; n=4..128 multiple primes):
+- -1 in mu_n ALWAYS (n even => the order-2 element lies in the order-n subgroup) => for EVERY
+  nonzero b, b*mu_n is CENTRALLY SYMMETRIC (b*mu_n = -(b*mu_n)). [0 fails]
+- The cyclic gap multiset of b*mu_n is therefore a +/- palindrome => #distinct gap lengths
+  <= n/2 + 1 (generically = n/2+1; occasionally fewer when gaps coincide, e.g. n=32 p=32993 gives
+  11..17, ALL <= 17 = n/2+1 so the BOUND holds). [0 bound-violations over the sweep]
+- THE REFUTATION: #distinct-gaps is b-INVARIANT (constant across all b => zero variance =>
+  corr(|eta_b|, #gaps) UNDEFINED). The positional rigidity carries ZERO information about which
+  frequency b is worst.
+
+CONSTRAINT LEMMA (formal, axiom-clean {propext,Classical.choice,Quot.sound}):
+- card_le_half_add_one_of_negClosed: any negation-closed T in ZMod p (p odd) has card <= 2k+1,
+  with (T.filter(.!=0)).card = 2k. The structural n/2+1 ceiling.
+- even_card_of_negClosed_fixedPointFree: the +/- pairing that forces the even nonzero part.
+
+THE WALL (rule 3 / §4 meta-theorem): E12 positional rigidity is DILATION-INVARIANT /
+FREQUENCY-BLIND, so it cannot isolate the worst frequency. Any frequency-/thickness-blind method is
+wrong for the prize (which is FALSE in the thick beta~2.3 window). So E12 ALONE cannot prove CORE.
+A precisely-mapped wall, NOT a closure. Joins N13/N7 (eta_b real on neg-closed mu_n, 3af6f978d) as
+a structural consequence of the SAME -1-central-symmetry; E12 is the POSITIONAL/gap-count face,
+3af6f978d the CHARACTER-SUM (eta real) face. No capacity / beyond-Johnson / growth-law / cliff-at-
+n/2 claim. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
