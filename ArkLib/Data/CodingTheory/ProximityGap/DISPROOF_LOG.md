@@ -17086,3 +17086,53 @@ engine, any ordered field), `sep_impossible_prize`/`no_such_config_prize` (EXACT
 `1/sqrt n`-separated), `secondMoment_bounds_average_not_max`+`covolume_lower_does_not_upper_bound_max`
 (the F0 / reversed-covolume captures). Probe: `scripts/probes/rust/probe_wfT23_regulator_spacing_pigeonhole.rs`.
 Verdict: REDUCES-TO-WALL F0 (separation step also REFUTED at scale). No prize gain. Confidence high.
+
+---
+
+## T24 (architect G5-4): affine-Koopman Sarnak–Xue DENSITY (non-tempered count) — REDUCES-TO-WALL (F1; terminal F0); sharp closing form REFUTED at beta=4
+
+**Claim.** `U` = Koopman op of the affine `ax+b` action on `L^2(F_p)`, decomposed over the principal
+series of `G_aff = F_p ⋊ μ_n`; periods are matrix coefficients `<U_b ξ,ξ> = η_b`; `b` is
+"`τ`-non-tempered" if `|η_b| > t√n`. CONJECTURE (affine Sarnak–Xue density):
+`N(s)=#{b≠0:|η_b|≥n^{1/2+s}} ≤ p^{1−2s+o(1)}`, sharp form `#{|η_b|≥t√n} ≤ m·e^{−(1−o(1))t²}`
+(`m=(p−1)/n`), claimed `⟹ M ≤ √(2n log(p/n))`. Novelty: Golubev–Kamber transferred SX density to
+SL₂(F_t) Schreier graphs (quasirandom, non-abelian); NO result states SX density for the finite
+AFFINE group's Koopman op nor counts Gauss periods as non-tempered multiplicities. Absent from tree
+(grep koopman/non-tempered/principal-series/sarnak-density = 0; only C12 EDGE + A15 free-cumulant).
+
+**Disposition.** Probes `scripts/probes/rust/probe_wfT24_affine_koopman_density.rs`,
+`probe_wfT24_density_overshoot.rs` (exact F_p, p prime, n|p−1, m>1, beta=log_p n=0.250 EXACT for
+n∈{8,16,32}, full p−1 sweep):
+- **(M0)** `max|Im η_b|≈1e-15` everywhere ⟹ periods REAL = abelian Cayley `Cay(F_p,μ_n)` spectrum;
+  the affine principal series restricted to `F_p⊴G_aff` is the regular rep of the ABELIAN `F_p`, whose
+  matrix coefficients vs the period vector ARE `η_b`. The "non-abelian affine" wrapping is COSMETIC
+  (= F5/F11 trigger: same eigenvalue multiset as the in-tree abelian object).
+- **(M1)** the LITERAL power-density `p^{1−2s}` is FALSE: empirical exponent `log_p N(s)` OVERSHOOTS
+  `1−2s` by up to `+0.29` (n=8), `+0.245` (n=16), `+0.204` (n=32); ratio `N/p^{1−2s}` blows to 11–17×.
+  The only spectral handle on `N(s)` is the Markov/Parseval level-set bound
+  `N(s)·n^{(1+2s)r} ≤ Σ_b|η_b|^{2r} = (p−1)n^r E_r` (the in-tree moment ladder at a threshold) = F1.
+- **(M2/M3) the SHARP prize-CLOSING form is REFUTED.** `N_t≤m·e^{−t²}` needs tail constant
+  `c_eff=−log(N_t/m)/t² ≥ 1`; measured `c_eff≈0.65–0.73` in the bulk (`t≥1.75`) at EVERY cell
+  (heavier-than-Gaussian = the BGK content, the GROWING free cumulants of `_wfA15`). Equivalently
+  `t_max=M/√n` VIOLATES `√(log m)`: `2.58>2.50` (n=8), `3.32>2.88` (n=16), `4.06>3.22` (n=32). With
+  `c<1` the true count `m·e^{−c t²} > m·e^{−t²}` and `M=√(n log m/c) > √(n log m)`.
+
+**Reduction map.** `N(s)=(p−1)S(s)`; the only handle is `S(t)≤E_r n^{−r}t^{−2r}` (Markov on the
+`2r`-th moment) = the level-set form of `M^{2r}≤Σ_b|η_b|^{2r}`. Min over `r≈ln q` with `N(s*)<1` gives
+`M≤√(2n ln q)` IFF `E_r≤(2r−1)‼ n^r` at `r≈ln q` — the char-p transfer (char-0 PROVEN; char-p OPEN at
+n=2^30 = BGK/Paley wall). Density-form vs edge/moment-form is a Legendre-dual recoordinatization with
+the SAME open input. Same funnel as T11 (min-entropy level set), T12 (rate function), A01 (S2 equidist).
+
+**Lean (axiom-clean, real `lake build` OK, `[propext,Classical.choice,Quot.sound]`, 0 sorryAx):**
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_wfT24_affine_koopman_density_reduces.lean` —
+`levelSet_le_moment` (Markov/Parseval level-set inequality = the F1 handle),
+`density_le_normalized_energy` (the count's only spectral bound = normalized energy moment),
+`sharp_density_iff_gaussian_energy` (sharp form `e^{−c t²}≤e^{−t²} ⟺ c≥1` = the sub-Gaussian energy
+transfer), `refuted_sharp_gaussian_density` (`c<1 ⟹ m e^{−t²} < m e^{−c t²}`, the closing form FALSE),
+`edge_exceeds_gaussian` (`c<1 ⟹ M edge t_max² = log m/c > log m`, the BGK excess),
+`affine_count_eq_abelian_count` (M0, cosmetic identity).
+
+**Verdict: REDUCES-TO-WALL — primary F1 (Parseval/Markov level-set duality), terminal F0
+(conservation law); the prize-closing SHARP Gaussian-density form additionally REFUTED at beta=4
+(measured c_eff≈0.66<1). No prize gain. Confidence high.** Honest survivor: NONE — the only well-posed
+non-refuted residual is the WEAK `p^{1−2s+o(1)}` form whose `o(1)` is the char-p `E_r` transfer = the wall.
