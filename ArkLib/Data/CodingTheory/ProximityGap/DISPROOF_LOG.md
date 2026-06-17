@@ -16861,3 +16861,55 @@ SHAPE of the spectrum (Chang/PFR), not its size at a magnitude level. So the lev
 single-coefficient max (F0). Same terminal mechanism as A7 (Croot-Sisask: L²-spectrum object reads
 the bulk avg=Johnson, blind to the worst-b tail). CORE (M≤C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
 Probes committed; Lean Frontier/_wfT19_dim_spectrum_duality.lean axiom-clean.
+
+---
+
+## T20 (G4-5) — Galois-equivariant covering of the large spectrum with a 2-power Frobenius floor `2^{ν(p)}`
+
+VERDICT = REFUTED (mechanism) + REDUCES-TO-WALL (F0 primary; F11 secondary). Files:
+Frontier/_wfT20_galois_spectrum_cover.lean (axiom-clean: propext/Classical.choice/Quot.sound, NO
+sorryAx); probes scripts/probes/rust/probe_wfT20_galois_spectrum_cover.rs,
+probe_wfT20_frobenius_orbit_structure.rs (exact F_p, n=8..128, p=Θ(n^4), p≡1 mod n).
+
+CANDIDATE: Spec_α = {b≠0:‖η_b‖≥α·n} closed under dilation (proven) AND a decomposition-group
+Frobenius σ_p preserving ‖η_b‖; #large-orbit-reps ≤ O((p/n)/2^{ν(p)}), ν(p)=v₂(ord(p mod n));
+Parseval caps M ≤ C√(n log(p/n)) PROVIDED ν(p) ≥ log₂ log(p/n) ("density-1 prime set").
+
+THE KILL (the architect's own "honest crux #2", decided by one arithmetic fact):
+  • The prize hypothesis μ_n ⊆ F_p^* of order n ⟺ n ∣ p−1 ⟺ p ≡ 1 (mod n). Hence p mod n = 1,
+    ord(p mod n) = 1, ν(p) = v₂(1) = 0, so the Frobenius floor 2^{ν(p)} ≡ 1. Equivalently: p splits
+    COMPLETELY in Q(ζ_n)/Q (residue degree f = ord(p mod n) = 1), so the decomposition group is
+    TRIVIAL — the "Frobenius σ_p" on the spectrum is the IDENTITY (b ↦ b^p = b, Fermat). There is no
+    nontrivial decomposition-group Frobenius to permute Spec_α. (twoPart_frobenius_eq_one.)
+  • THEREFORE the threshold ν(p) ≥ log₂ log(p/n) defines the EMPTY prize-prime set: at n=2^30,
+    log(p/n)≈62, log₂62≈6, so it demands ν(p)≥6, but ν(p)=0 for EVERY prize prime. The "density-1
+    set" is ∅; the conditional cap is vacuously about no primes.
+    (prize_primes_meeting_threshold_is_empty, prize_threshold_n30_unmet.)
+  • The covering rep-count therefore = (p−1)/n exactly (Frobenius factor 1), i.e. the I031
+    dilation-only handle (eta_norm_const_on_coset) — F11 OBJECT-CHANGE: the "Frobenius covering count"
+    IS the dilation quotient count; no improvement (covering_no_better_than_I031). Orbit count × orbit
+    size = (p−1)/n × n = p−1 = total frequencies (conservation), so Parseval-over-orbits is the plain
+    second moment, F1/F0 (covering_size_count_conservation).
+
+REDUCTION TO F0 (terminal): the ONLY spectrum symmetry that survives beyond dilation is the
+cyclotomic power-map group (Z/n)^* of order φ(n) — a function of n ALONE, p-INDEPENDENT (the SAME for
+every p ≡ 1 mod n). A p-independent symmetry is a domain second-order arithmetic input (F0
+conservation law): it sees μ_n's n-th roots, never p, so caps the covering at Johnson √n and cannot
+yield the √log excess (pIndependent_symmetry_F0). Probe confirms distinct-‖η‖ count is governed by
+this φ(n) symmetry + prime-special collisions (Fermat-prime p=65537 → 1/16; generic p → ≈1), with NO
+2^{ν(p)}-scaling. Per deltastar-444-p-sensitive-classification: the candidate's 2^{ν(p)} was sold as
+a Class-B p-sensitive non-magnitude lever, but it is constant (=1) ⟹ NOT p-sensitive at all; the only
+p-sensitive prize-controlling invariant is M itself (= the BGK wall).
+
+WHY THE PROVEN W_r-ORBIT-PARITY DOES NOT TRANSFER (architect's "biggest risk", resolved against the
+candidate): _NewANTInputBridge.wraparound_even makes W_r even via σ_p of 2-power order acting on the
+WRAPAROUND-RELATION solution set in the relation tower (relations among 2^μ-th roots mod p), where
+⟨σ_p⟩ ⊆ (Z/n)^* is nontrivial 2-power. On the FREQUENCY spectrum Spec_α ⊆ F_p^*, the only available
+decomposition-group Frobenius is Frob_p on F_p = identity. The candidate conflates two distinct
+σ_p's: the nontrivial 2-power one (relation tower → W_r parity) is NOT the one acting on the spectrum
+(identity). The parity principle does not lift to a spectrum covering reduction.
+
+CONSTRAINT LEMMA: any "p-sensitive Frobenius 2-part" lever on the SPECTRUM is identically 1 in the
+prize regime (p splits completely), so it is constant ⟹ p-independent ⟹ F0; the genuinely nontrivial
+2-power Frobenius lives on the relation tower (the W_r count), not the spectrum covering. CORE
+(M ≤ C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
