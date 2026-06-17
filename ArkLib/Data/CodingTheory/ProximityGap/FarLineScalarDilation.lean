@@ -170,6 +170,39 @@ theorem explainableScalars_rs_scalar_dilation
   rw [hrot] at hhom
   exact hhom
 
+/-- **Iterated coset closure (the explicit union-of-cosets statement).** From the single-step
+scalar-dilation invariance (`explainableScalars_rs_scalar_dilation`: the bad set is fixed by
+multiplication by `m := c₀⁻¹·c₁ = g^{A−B}`), the bad-scalar set is fixed by **every power** `mʲ`:
+
+  `γ ∈ explainableScalars RS δ u₀ u₁  ↔  mʲ·γ ∈ explainableScalars RS δ u₀ u₁`   for all `j`.
+
+Proof by induction on `j` chaining the single step. Consequently the bad set is invariant under the
+whole multiplicative cyclic group `⟨m⟩` it generates, i.e. it is a genuine **union of `⟨m⟩`-cosets**
+(each orbit `{mʲ·γ}` lies fully in or fully out). For a monomial RS line on `μ_n`, `m = g^{A−B}` and
+`⟨m⟩` runs over `μ_{n/gcd(A−B,n)}` as `g` ranges over `μ_n`, giving the cyclotomic coset structure
+explicitly. (Still the *forcing*; the `O(n)`-coset rigidity magnitude remains open.) -/
+theorem explainableScalars_rs_scalar_dilation_pow
+    (domain : ι ↪ F) (k : ℕ) (σ : Equiv.Perm ι) (g : F) (hg0 : g ≠ 0)
+    (hg : ∀ i, domain (σ i) = g * domain i)
+    (δ : ℝ≥0) (u₀ u₁ : ι → F) {c₀ c₁ : F} (hc₀ : c₀ ≠ 0) (hc₁ : c₁ ≠ 0)
+    (hu₀ : u₀ ∘ σ = c₀ • u₀) (hu₁ : u₁ ∘ σ = c₁ • u₁) (j : ℕ) (γ : F) :
+    (γ ∈ explainableScalars (F := F) (A := F)
+          (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁
+      ↔ ((c₀⁻¹ * c₁) ^ j * γ) ∈ explainableScalars (F := F) (A := F)
+          (ReedSolomon.code domain k : Set (ι → F)) δ u₀ u₁) := by
+  classical
+  induction j with
+  | zero => simp
+  | succ n ih =>
+    -- step: invariance under one more multiplication by m = c₀⁻¹*c₁
+    have hstep := explainableScalars_rs_scalar_dilation domain k σ g hg0 hg δ u₀ u₁ hc₀ hc₁
+      hu₀ hu₁ ((c₀⁻¹ * c₁) ^ n * γ)
+    rw [ih, hstep]
+    -- reconcile the scalar: c₀⁻¹*c₁*((c₀⁻¹*c₁)^n*γ) = (c₀⁻¹*c₁)^(n+1)*γ
+    have : c₀⁻¹ * c₁ * ((c₀⁻¹ * c₁) ^ n * γ) = (c₀⁻¹ * c₁) ^ (n + 1) * γ := by
+      rw [pow_succ]; ring
+    rw [this]
+
 end ProximityGap.FarCosetExplosion
 
 -- Axiom audit: must report only `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
@@ -177,3 +210,4 @@ end ProximityGap.FarCosetExplosion
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_smul_line
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_smul_line_eq
 #print axioms ProximityGap.FarCosetExplosion.explainableScalars_rs_scalar_dilation
+#print axioms ProximityGap.FarCosetExplosion.explainableScalars_rs_scalar_dilation_pow
