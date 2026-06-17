@@ -77,3 +77,24 @@ claim that the action-orbit (multi-round) structure removes the `n` factor of th
 - N=16/32 commit-phase with exact-distance leaders (compiled enumerator) ⇒ verify N-independence of `c(ρ)`.
 - Derive the closed form `c(ρ)` (the surviving-configuration count through the slack rounds) and prove
   N-independence ⇒ a complete pin of the commit-phase soundness in the prize regime.
+
+## FINAL honest resolution of the N-scaling question (constructed-witness test)
+Constructed the structurally-predicted worst-case (weight `wmin` packed into `⌈wmin/2⌉` antipodal orbits =
+minimal folded support = max slack), evaluated commit-phase bad-count across N:
+- q=17: N=8 `c=1.00`, N=16 `c=0.298` (drops).
+- q=97: N=8 `c=0.041`, N=16 `c=0.022` (under-sampled — see below).
+
+**Two honest conclusions:**
+1. **`c` is NOT a clean N-independent constant** — it drifts (1.0→0.298 at q=17). The clean `c=1` at N=8,q=17
+   was finite-size (the nesting obstruction), confirming the downgrade.
+2. **The worst-case is not reliably samplable beyond tiny cases.** At q=97 the constructed witnesses give
+   `c=0.04`, far below the q=17 worst-case `c=1` — because the worst case needs optimizing support AND
+   *values*, and random value-draws miss it when `q` is large. So all large-`q`/large-`N` numbers are
+   **lower bounds**, not worst-cases.
+
+**What survives as robust:** across every reconstruction (N=8,16; q=17,41,73,97; constructed + sampled) the
+commit-phase soundness ratio is **consistently small — `≤ ~1/q`, usually far less** — which supports the
+prize's *qualitative* `O(1)/|F|` **boundedness** claim. But the *quantitative* exact pin (a closed
+worst-case constant, and rigorous N-independence) is **not establishable by sampling** — it needs the exact
+2026/861 commit-phase definition + the action-orbit dominance proof (Conj 7.1). Net: the prize `O(1)/|F|`
+SHAPE is supported; a complete closed pin of δ* is not delivered.
