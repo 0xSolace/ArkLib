@@ -4785,3 +4785,51 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # `|Sigma_r|` is an additive-combinatorics SUMSET-SIZE object, NOT a delta*/incidence object --
 # asymptotic-guard cliff-at-n/2 UNTOUCHED, no capacity/beyond-Johnson claim. NON-MOMENT, EXTEND-proven
 # on F3's `SumsetExtremality`. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+# =====================================================================================
+# [LRTBI] LOG-RATIO TOWER BOUNDED-INCREMENT -- the Azuma/Freedman prerequisite holds, but
+#         controls only the FLUCTUATION, not the MEAN drift. (2026-06-16, axiom-clean brick)
+# =====================================================================================
+# LEVER: §1.2 "Martingale / Azuma-Freedman over the 2-power tower filtration". The proven geomean
+# recasting (DyadicGeomeanPrizeVsSqrtN) gives M(mu_{2^a}) = M(mu_1)*prod_{i<a} rho_i, so
+# S_a := log M(mu_{2^a}) - log M(mu_1) = sum_{i<a} log rho_i is a telescoped sum. The prize
+# M <= C sqrt(2^a log(p/2^a)) <=> S_a <= (1/2) a log2 + (1/2) log log(p/2^a) + log C.
+# A Freedman/Azuma concentration bound on S_a REQUIRES bounded increments Delta_i = log rho_i.
+#
+# RESULT (positive, the prerequisite HOLDS on the log-tower):
+#  - The DIRECT eta-tower is UNbounded-increment (probe_407_cumulant_martingale_deep: the per-level
+#    eta-increment is a full order-2^k period, magnitude ~sqrt(2^k log m) = as big as the whole sum).
+#    So Azuma on the eta-partial-sums gives nothing. KNOWN obstruction.
+#  - The LOG-RATIO tower IS bounded-increment: the landed Liu-Zhou doubling M(mu_{2^{i+1}}) <=
+#    2 M(mu_{2^i}) (LiuZhouSplitRecursion.M_union_le_two_mul) gives Delta_i = log rho_i <= log 2;
+#    subgroup monotonicity gives Delta_i >= 0. So Delta_i in [0, log 2] -- BOUNDED. The Freedman
+#    prerequisite is satisfied on the log-tower. This is the brick LogRatioTowerBoundedIncrement.lean.
+#
+# PROBE (probe_rho_increment_bounded.py + probe_rho_excess_growth.py, PROPER thin mu_n, p>>n^3,
+# p=1 mod 2^a, NEVER n=q-1): rho_i in [1.58, 2.0] (10 levels, beta=3.2/4.0), strictly > sqrt2=1.414
+# at EVERY level. So Delta_i - (1/2)log2 > 0 strictly; the EXCESS sum sum_i (Delta_i - (1/2)log2)
+# grows ~Theta(a) LINEAR (ratio E_N/N ~ 0.30, not ->0), NOT the O(log a) the prize needs.
+#
+# THE WALL (rule 4, logTower_excess_eq is the formal constraint): bounded increments give only
+# S_a <= a log2 (the trivial M <= 2^a = n, sqrt(n) short). A martingale concentration bound controls
+# the FLUCTUATION (~sqrt(a)) of S_a around its MEAN; but the prize is a statement about the MEAN of
+# Delta_i (it must average down to (1/2)log2 + o(1)). Bounded-increment concentration CANNOT supply a
+# mean-drift bound. The open object is the per-level mean drift E[Delta_i] - (1/2)log2, i.e. the
+# binding-frequency phase law theta_b (the N13 transfer operator) that the magnitude-only Liu-Zhou
+# recursion drops. Same wall as Liu-Zhou [LZSR], viewed on the log-tower.
+#
+# THE BRICK (landed, LogRatioTowerBoundedIncrement.lean, axiom-clean {propext,Classical.choice,
+# Quot.sound}, 6 thms):
+#  - logRatio_le_log2 (HEADLINE): the BOUNDED-INCREMENT property Delta_i <= log 2 from the doubling.
+#  - logRatio_nonneg: Delta_i >= 0 from monotonicity (so Delta_i in [0, log 2]).
+#  - logTower_telescope: log M(mu_{2^a}) - log M(mu_1) = sum_{i<a} Delta_i (exact telescope).
+#  - logTower_le_card_mul_log2: the bounded-increment SUM S_a <= a log2 (trivial bound as martingale-sum).
+#  - logTower_excess_eq: the rule-4 constraint -- prize <=> excess sum sum(Delta_i - (1/2)log2) <= R.
+#  - logRatio_le_log2_of_M: concrete discharge for the real M-tower via M_union_le_two_mul (non-vacuous).
+#
+# HONEST SCOPE (rules 1,3,6 + asymptotic guard): NOT a CORE closure. NOT thinness-essential -- the
+# doubling is the thickness-BLIND Liu-Zhou triangle inequality (holds in the thick beta~2.3 window
+# where the prize is FALSE), so by rule 3 nothing from Delta_i <= log2 alone can prove the prize. No
+# capacity/beyond-Johnson claim; cliff-at-n/2 UNTOUCHED (this is a log-tower mean-drift object, not an
+# incidence/delta* object). NON-MOMENT (log-ratio of sup-norms, not additive energy), EXTEND-proven on
+# the landed Liu-Zhou M_union_le_two_mul. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
