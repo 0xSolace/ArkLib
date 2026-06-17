@@ -17136,3 +17136,41 @@ transfer), `refuted_sharp_gaussian_density` (`c<1 ⟹ m e^{−t²} < m e^{−c t
 (conservation law); the prize-closing SHARP Gaussian-density form additionally REFUTED at beta=4
 (measured c_eff≈0.66<1). No prize gain. Confidence high.** Honest survivor: NONE — the only well-posed
 non-refuted residual is the WEAK `p^{1−2s+o(1)}` form whose `o(1)` is the char-p `E_r` transfer = the wall.
+
+---
+
+## T25 (G5-5): Rajchman a.c.-density of the dilation Koopman flow — REFUTED (pure-point) + REDUCES-TO-WALL F1
+
+**Candidate.** The dilation Koopman operator `V` (`x↦gx`, `g` a generator of `μ_n`) on `ℓ²(F_p)` has
+spectral measure `μ_V` claimed ABSOLUTELY CONTINUOUS across the `m=(p−1)/n` coset fibration, density
+`ρ_max ≤ 1 + C·log(p/n)/n` (Rajchman / Davenport–Erdős–LeVeque). "Bounded a.c. density forbids spectral
+atoms" ⟹ edge eigenvalue `M(n) ≤ √n·√(2 log(p/n))·(1+o(1))`. The architect flagged the honest risk:
+finite dilation ⟹ pure-point ⟹ a.c. claim VACUOUS ⟹ REFUTED.
+
+**Two decisive kills (probe `scripts/probes/rust/probe_wfT25_rajchman_density.rs`, beta=4 cells n=8,16):**
+- **(R0) REFUTED at the root.** `ℓ²(F_p)` is FINITE-dimensional (`dim p`); a finite-dim unitary is
+  diagonalizable with eigenvalues on the circle, so `μ_V` is a FINITE SUM OF DIRAC ATOMS — NO a.c.
+  part exists. Concretely `V` is the dilation permutation of `F_p` (one `(p−1)`-cycle on `F_p^*` + fixed
+  `0`); eigenvalues = all `(p−1)`-th roots of unity (once each) + `1`; `μ_V` = uniform ATOMIC measure on
+  `μ_{p−1}∪{1}`. So `ρ_max := sup(a.c. density)` is VACUOUS/UNDEFINED at every prize prime. (Confirmed:
+  WebSearch — finite-dim unitary ⟹ pure-point, no a.c. part.)
+- **(R1) On `H_η`: `μ̂_V(k)≡1`** (probe `all == 1? YES` at every n) because `μ_n` is `g`-closed
+  (`x↦g^k x` bijects `μ_n→μ_n`). A measure with all Fourier coeffs `=1` is `δ_1` — a SINGLE ATOM and the
+  MOST non-Rajchman measure possible (`μ̂≡1` never decays). `1_{μ_n}` is `V`-invariant (eigenvalue 1);
+  `H_η` carries ZERO info on `M(n)`.
+
+**Reduction map (the fallback surrogate).** The only well-posed "density" is the Wiener `|μ̂_V|²`-mass of
+the FULL operator across the fibration; by Parseval this is `Σ_{b≠0}|η_b|^{2r}=p·E_r(μ_n)−n^{2r}` and any
+`L^∞`-density bound is a level-set/moment bound on this sum = F1's moment ladder. The claimed edge
+conclusion `M≤√(2n log(p/n))` is the Gaussian-tail form of `E_r≤(2r−1)‼n^r` at `r≈ln(p/n)` = the open
+char-p energy transfer (A01/A15/F1). Probe `K_eff=(E_r/Wick)^{1/r}` FLAT near transfer at faithful β=4
+cells. Same funnel as T24 (affine Koopman density), T11/T12 (level set / rate function), A01.
+
+**Lean (axiom-clean, `lake env lean` OK, `[propext,Classical.choice,Quot.sound]`, 0 sorryAx):**
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_wfT25_rajchman_density_pure_point.lean` —
+`koopmanFourierCoeff_eq_one` (`μ̂_V≡1` on `H_η` ⟹ `δ_1`), `finite_koopman_spectral_mass_is_atomic`
+(total mass exhausted by atoms), `acDensity_does_not_bound_M` (a.c. mass forced `=0` ⟹ `ρ_max` empty),
+`density_surrogate_is_energy` (Wiener `|μ̂|²` mass `= p·E_r − n^{2r}`), `T25_refuted_and_reduces` (synthesis).
+
+**Verdict: REFUTED (finite-dim ⇒ pure-point ⇒ a.c. density does not exist) + the only well-posed surrogate
+REDUCES-TO-WALL F1. No prize gain. Confidence high.** Survivor: NONE.
