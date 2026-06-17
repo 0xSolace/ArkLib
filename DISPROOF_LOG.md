@@ -4972,3 +4972,30 @@ degree i-k (in-tree trinGcd_natDegree_le, 0 violations confirmed). CONSEQUENCE f
 binomial gcd-tight incidence does NOT propagate to the >=3-sparse strata; their incidence is governed by the
 generic deg-gcd(X^n-1, .) <= span, NOT a cyclotomic divisor -- consistent with C71-RESIDUAL (gcd, not term-count,
 governs incidence). NOT a CORE closure; maps the binomial->trinomial extension wall. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## CONSTRAINT (sol, 2026-06-17): the I031 distinct-period ALPHABET SIZE is THICKNESS-INVARIANT — no metric-entropy lever
+The I031 union bound spends metric entropy log(alphabet size); I031DistinctPeriodCount caps the value
+alphabet |{eta_b}| and the modulus alphabet |{‖eta_b‖}| each by the orbit/coset count (q-1)/n. NATURAL
+hope a metric-entropy argument might lean on: (H1) cross-coset COLLISIONS shrink the alphabet strictly
+below (q-1)/n at prize scale (smaller log => tighter union bound); (H2) any such shrink is THIN-SPECIFIC
+(thickness-essential), hence a rule-3-legal lever. BOTH REFUTED:
+probe_alphabet_thickness_invariance.py (EXACT F_p, PROPER thin mu_n n=2^a, n|p-1, (p-1)/n>=2, primes incl
+p>>n^3 + Fermat 257, NEVER n=q-1; one representative per coset):
+  - the VALUE alphabet |{eta_b}| = (q-1)/n EXACTLY in every config (160/160 in the collision sweep): the
+    Gauss-period map is INJECTIVE on coset labels — NO cross-coset value collision. So there is no
+    sub-(q-1)/n collapse of the value alphabet to harvest.
+  - the MODULUS alphabet |{‖eta_b‖}| <= the value alphabet, and is occasionally STRICTLY smaller by O(1)
+    (n=32, p=32801: |{eta_b}|=1025 but |{‖eta_b‖}|=1024 — a conjugate pair eta, conj(eta) merges under
+    ‖.‖). This O(1) drop does NOT move log (log 1024 vs log 1025 ~ identical), so it is not a
+    metric-entropy lever.
+  - THICKNESS test: thin (beta>>2) and thick (beta~2.3, where the prize bound is FALSE) give the SAME
+    alphabet size (q-1)/n. The count is THICKNESS-INVARIANT => carries NO thinness signal => by rule 3 it
+    cannot be a standalone prize lever.
+MECHANISM: eta_b is constant on each mu_n-coset (eta_dilation_invariant) and DISTINCT across cosets at
+every prime tested; the alphabet is exactly the (q-1)/n coset orbits, a formula with NO thickness term.
+CONSEQUENCE for the I031 route: the union-bound metric entropy is log((q-1)/n) EXACTLY (not an
+over-estimate that thins out) — the thinness signal must live in the MAGNITUDES of the (q-1)/n distinct
+periods (the open sup-vs-sqrt(n)-floor gap, GaussPeriodSpectralFrame), NOT in their COUNT. Companion
+axiom-clean brick I031ModulusAlphabetRefine.card_distinct_etaNorm_le_card_distinct_eta records the
+modulus-<=-value refinement (probe-shown sharp). NOT a CORE closure; a constraint on the I031
+metric-entropy face. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
