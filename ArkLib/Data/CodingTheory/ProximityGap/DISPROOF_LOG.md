@@ -1,5 +1,56 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — ANGLE T16/G4-1 "Frobenius-refined Chang cover of the H-invariant large spectrum" REDUCES-TO-WALL (probe_wfT16_chang_frobenius_dim.rs, probe_wfT16_balance_arith.rs, _wfT16_chang_frobenius_cover.lean)
+
+ANGLE (cluster G4, post-2020 additive combinatorics, STRUCTURE/COVERING not norms): cover the large
+spectrum `Spec_α={b:|η_b|≥αn}` of `1_{μ_n}` by `D` dilation-cosets via Chang's lemma, then claim a
+NEW factor `1/μ` (`μ=log₂n`) reduction of the dissociated dimension from 2-power Frobenius orbits of
+the `{-1,0,1}`-relations, getting `D=C₀α⁻²(log(p/n)/μ)` (vs Chang's wall `D₀=C₀α⁻²log(p/n)`); then
+"counting + Parseval-balance over ≤n·D large cosets at α=M/n forces M≤C√(n log(p/n))" — the floor.
+
+VERDICT = REDUCES-TO-WALL (F1 primary via Rudin/Khintchine; F0 the balancing reversal). Three
+independent failures, all prize-faithful (p prime, p≡1 mod n, μ_n proper, β=4, p~n⁴, NEVER n=p-1):
+
+1. **F1 — Chang's dimension IS a second moment (literature).** Chang's lemma `dim(Spec_α)≤C₀α⁻²
+   log(1/density)` is proved via **Rudin's inequality**, itself a corollary of **Khintchine** (the
+   dissociated characters behave as independent ±1 variables; the dimension bound is the even-moment
+   estimate). So `D₀` is conjugate to the energy ladder F1. The candidate ADMITS the base `D₀` form
+   recovers the BGK WALL — the entire prize content rests on the `1/μ` factor.
+
+2. **The `1/μ` Frobenius collapse is empirically FALSE** (`probe_wfT16_chang_frobenius_dim.rs`). The
+   mechanism needs the large spectrum organized into 2-power squaring orbits whose relations collapse
+   the dimension. Measured: the squaring map `b↦b²` (only 2-power orbit map, since μ_n is 2-power)
+   does NOT preserve |η| — `|η_{b*²}|/M` at the argmax b* drops to ≈0.05 immediately (n=64:1.00→0.063;
+   n=128:1.00→0.047; n=256:1.00→0.35). No Galois invariance of the spectrum to collapse along. And the
+   measured dissociated dimension of Spec_α tracks D₀ as a CONSTANT FRACTION (d/D₀≈0.18–0.36 at α=0.5,
+   n=8..64), NOT D₀/μ (which would force d/D₀→1/μ, the sequence 0.33,0.25,0.20,0.17,... — not seen).
+
+3. **F0 — the balancing step is REVERSED** (`probe_wfT16_balance_arith.rs`). Even granting a cover
+   `|Spec_α|≤n·D`, combining it with Parseval `Σ_{b≠0}|η_b|²=n(p-n)` gives a LOWER bound on M, never
+   an upper one: `mass≤|Spec|M²` ⟹ `M²≥mass/|Spec|=n(p-n)/(n·D)=(p-n)/D≥n` (Johnson RMS), and this
+   INCREASES as the cover D shrinks. So a smaller dissociated dimension (the candidate's whole point)
+   pushes the only forced M-bound UP. Measured: RMS coset period = √n to full precision (Johnson),
+   Σ_{b≠0}|η_b|²=n(p-n) exact, forced M-lower ≥ Johnson at every n=8..256. Cardinality+Parseval cannot
+   upper-bound the sup; it pins the Johnson floor — the conservation law F0 verbatim. A constant-cover
+   (the `1/μ` form makes D=O(1) in n at β=4) would force the ABSURD M≳n^{3/2}, far above true √(n log).
+
+DISTINCT from A7/A12 (which killed the PRIMAL Croot–Sisask almost-period object via the L²/L^q norm
+threshold q*=β/(β-1)<2): T16 attacks the DUAL (Chang dissociated-dimension / covering) object, but
+lands on the same wall — Chang's dimension is the Rudin/Khintchine 2nd moment (F1) and the covering
+cardinality enters Parseval on the lower-bound side (F0). The `1/μ` Galois refinement, the only new
+lever, has no empirical support (squaring breaks the peak). NOVEL vs literature (no paper applies a
+Frobenius-orbit collapse to Chang's dissociated dimension for 2-power subgroups — confirmed: Shkredov
+QJM2012/Cochrane–Pinner use Γ-ENERGY not orbit-collapse), ABSENT from codebase (grep: only DISPROOF_LOG
+false-positives), but REDUCES.
+
+LEAN (axiom-clean [propext,Classical.choice,Quot.sound], all six theorems, no sorryAx):
+`_wfT16_chang_frobenius_cover.lean` — `balance_is_lower_bound` (mass/S≤M², the only Parseval+cardinality
+relation, lower-bound direction), `forced_lower_antitone_in_D` (the forced lower bound grows as D
+shrinks), `forced_lower_at_least_johnson` (M²≥(p-n)/D≥n at β=4), `refined_dim_is_constant_in_n` (the
+1/μ form is O(1) in n at β=4), `constant_cover_forces_absurd_lower` (an O(1) cover forces a false huge
+M-lower), `conservation_law_T16` (F0: the unique forced relation is the monotone-wrong-way Johnson
+lower bound). Probes: `probe_wfT16_chang_frobenius_dim.rs`, `probe_wfT16_balance_arith.rs`.
+
 ## 2026-06-17 — ANGLE A14 "Terwilliger-algebra operator-norm bound on M" OBSTRUCTION (probe_wfA14_terwilliger_dim.rs, probe_wfA14_terw_fast.rs, _wfA14_terwilliger_module_dim.lean)
 
 ANGLE (manifesto route 5b): bound `M(n)=λ₂(Cay(F_p,μ_n))=max_i|η_i|` by the Terwilliger
@@ -16913,3 +16964,32 @@ CONSTRAINT LEMMA: any "p-sensitive Frobenius 2-part" lever on the SPECTRUM is id
 prize regime (p splits completely), so it is constant ⟹ p-independent ⟹ F0; the genuinely nontrivial
 2-power Frobenius lives on the relation tower (the W_r count), not the spectrum covering. CORE
 (M ≤ C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
+
+## 2026-06-17 — CANDIDATE T21 (G5-1) "reduced-crossed-product cb-norm via non-amenable defect" REDUCES-TO-WALL F5 (_wfT21_crossed_product_cb_collapse.lean, probe_wfT21_crossed_product_cb.rs)
+
+T21 (#444, operator-algebraic / non-abelian crossed-product C*-norm with metaplectic cocycle twist):
+in `A = C*_r(C(F_p) ⋊_r μ_n)` with trace `τ`, the orbit-averaging idempotent `P=(1/n)∑_{u∈μ_n}λ(u)`
+and diagonal multiplier `m_b=∑_{x∈μ_n}e_p(bx)E_xx` were claimed to give (i) `‖PmP‖−τ(PmP)=M/n`
+(forward identity) and (ii) a sideways bound `M ≤ n·(1−1/Λ_cb^θ)^{1/2}+√n` via a metaplectic-cocycle
+TWISTED completely-bounded constant `Λ_cb^θ(G_aff)`, claimed `>1` on the "oscillator/Weil-rep isotype",
+with `Λ_cb^θ = 1+Θ(log(p/n)/n)`.
+
+**Verdict: REDUCES-TO-WALL F5 (abelian Cayley gap), the very risk the architect flagged.**
+
+The candidate's ENTIRE super-√n content lives in the defect `n·(1−1/Λ_cb^θ)^{1/2}`, which is
+positive iff `Λ_cb^θ > 1` (`defect_pos_iff_cb_gt_one`). But `G_aff = F_p ⋊ μ_n` is FINITE and
+`μ_n ≅ ℤ/n` is CYCLIC, so its Schur multiplier `H²(ℤ/n,𝕋)=0`: every 2-cocycle is a coboundary.
+Hence the "metaplectic cover" SPLITS over the abelian torus, the twisted group algebra `C_θ[μ_n]≅C[μ_n]`
+is a direct sum of `n` ONE-dim characters (the 2-dim projective "oscillator isotype" does NOT exist
+over `μ_n`), the twisted crossed product is finite-dim → NUCLEAR → `Λ_cb^θ = 1` identically (cb-norm
+= op-norm, no matrix amplification). This is precisely the abelianness obstruction
+`_wfA11.abelian_dilation_no_uniform_gap`. At the forced `Λ_cb^θ=1` the defect is `0`
+(`defect_zero_at_cb_one`) and the bound degenerates to the trivial Johnson floor
+`M ≤ √n` (`candidate_bound_collapses_to_sqrt_n`) — which is FALSE in the measured regime
+(`candidate_bound_undershoots_measured`): the probe reports `M/√n` GROWING 2.58→5.09 over n=8..256
+at β=4 (the √log excess), so `√n < M` always. The forward identity `‖PmP‖−τ=M/n` is the
+`_wfA11.affine_fourier_input_norm` tautology (F5/F11). Literature (WebSearch): finite/amenable groups
+are weakly amenable with `Λ_cb=1`; twisted crossed products of nuclear algebras by amenable groups
+are nuclear (Λ_cb=1) — the twist cannot raise it. NOVEL+ABSENT (no crossed-product/cb-norm object in
+tree; metaplectic appears only in Parseval/moment F1), but reduces. Axiom-clean
+[propext, Classical.choice, Quot.sound]. Confidence high.
