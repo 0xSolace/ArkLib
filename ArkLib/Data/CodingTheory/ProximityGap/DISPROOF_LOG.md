@@ -15421,3 +15421,49 @@ arklib-444-char0-wick-faithfulness, reached from the divisor-count side):
 NOT a refutation of CORE and NOT a closure: the soft ceiling R_r≤1 survives EMPIRICALLY (FFT baseline
 probe_407_Ar_wick_depth_profile.py: R_r<1 with margin, but margin→0.99 at r=2 as n→256). δ* remains
 the single open char-p BGK input. Honest classification: reduces-to-bgk (via the DSAR wall).
+
+---
+
+IDEA [C2-weil-deligne-paramfamily] (#389/#444, route: relocate Weil to the b-PARAMETER family).
+Plain Weil on the `n`-DOMAIN `η_b = Σ_{x∈μ_n} e_p(bx)` is vacuous (`n<√q`, error `√p≫n` for β∈[4,5]).
+C2 PROPOSED: realize `b ↦ η_b`, `b∈𝔽_p^×` (≈`q` points ≫ √q), as the trace function `t(b)=η_b` of an
+`ℓ`-adic sheaf `F` on the `b`-line `𝔸¹/𝔽_p`; IF `F` is geom-irreducible with conductor `cond(F)=O(1)`
+uniformly in `n`, Deligne (Weil II)+Fouvry–Kowalski–Michel give `sup_b|η_b| ≤ cond(F)·√(L²-scale)`
+uniformly — the prize. Genuinely DISTINCT from the dead `n`-domain Weil (different object: a rank-`n`
+lisse sheaf on the parameter line, `m=(p-1)/n` distinct trace values; probe_i031_distinct_period_count
+confirms exactly `m` distinct periods).
+
+VERDICT: **REDUCES (to the same archimedean-argument-distribution open core as C11/C13) — via the
+RANK = CONDUCTOR obstruction.** The sheaf EXISTS and is correctly identified (the "obvious" rank-`n`
+realization `F = ⊕_{c∈μ_n} L_ψ(c·b)`, a sum of `n` Artin–Schreier sheaves; its trace is exactly `η_b`).
+But its conductor is provably `Θ(n)`, NOT `O(1)`:
+
+THE CRUX (machine-confirmed, closed-form). The second moment of the trace over the family equals the
+generic rank of any middle-extension realization (diagonal/orthogonality). Parseval forces it to `n`:
+  `Σ_{b∈𝔽_p}|η_b|² = Σ_{x,y∈μ_n} Σ_b e_p(b(x−y)) = p·#{x=y} = p·n`,
+so `avg_{b≠0}|η_b|² = (p·n−n²)/(p−1) → n` EXACTLY (probe: n=8→7.998, 64→63.9997, 128→127.9999).
+Hence ANY sheaf with trace `η_b` has generic rank `=n` ⟹ `cond(F) ≥ rank = n` ⟹ the Deligne/FKM
+bound `sup|t| ≤ cond(F)` is `≥ n` = the TRIVIAL `ℓ¹` ceiling (= triangle inequality on `n` unit terms).
+Relocation does NOT escape: the `b`-family inherits `rank = |μ_n| = n`. The `√n`-cancellation
+`sup ≈ √(rank·log) = √(n log p)` is the GENERAL POSITION of the `n` Artin–Schreier phases `L_ψ(c_i b)`
+as `b` varies — an equidistribution/archimedean statement on the parameter family (the OPEN CORE),
+NOT a Deligne output (Deligne gives `|L_ψ|=1` per summand and `cond=n` for the sum). C2 fails one rung
+EARLIER than C11/C13: its conductor is provably `n` so Deligne is trivial before equidistribution even
+enters. Does NOT push the exponent past 0.011, does NOT prove `R_r≤1`, does NOT reduce to NAMED proven
+math beyond the trivial `ℓ¹`.
+
+PROBES (proper `μ_n`: `n=2^μ`, `p` PRIME, `n∣p−1`, `p≫n³`, `p−1≠n`):
+`scripts/probes/probe_c2_weil_paramfamily_conductor.py`, `scripts/probes/probe_c2_conductor_nscaling.py`.
+| n | p | Var_b η_b | M=sup|η_b| | M/√Var | M/√(n log(p/n)) |
+|---|---|-----------|------------|--------|-----------------|
+| 8 | 25601 | 7.998 | 7.79 | 2.75 | 0.97 |
+| 64 | 16777601 | 63.92 | 38.5 | 4.82 | 1.36 |
+| 128 | 268437889 | 127.5 | 53.7 | 4.75 | 1.24 |
+`M/√(n log(p/n))` bounded ≈1 (prize Ramanujan-up-to-√log HOLDS empirically) but C2 does not PROVE it:
+`c_eff = M/√Var = M/√n` tracks `√(log p)`, i.e. `sup ≈ √(rank·log)`, the conjectured general-position.
+
+LEAN BRICK (axiom-clean, verified by `#print axioms`: `[propext, Classical.choice, Quot.sound]`, 0 sorryAx,
+no native_decide; `lake env lean` EXIT=0): `Frontier/_C2WeilDeligneParamFamilyNoGo.lean` —
+`parseval_mass_le_rank` (`(p·n−n²) ≤ n·(p−1)`: the second moment never exceeds `n`, forcing rank `=n`),
+`deligne_paramfamily_bound_is_trivial` (conductor ≥ rank = `n` ⟹ certified bound ≥ `n` = trivial),
+`no_subrank_conductor` (no sub-rank conductor exists — the Parseval floor). Signed C2-weil-deligne-paramfamily.
