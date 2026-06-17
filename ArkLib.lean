@@ -1188,6 +1188,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackThreePow_SubsetSumE
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E7ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E8ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E9ClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL7_OrbitSizeAtBinder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BadPrimeBoundCore
@@ -1289,6 +1290,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Close43_BaseCasesDecide
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoherenceIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CollisionExcessPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CompleteHomogeneousReadout
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41CapNondegReducesToSZ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41CliqueCapTwoPower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41FerreroWashingtonMismatch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Conj41IwasawaGrowthDichotomy
@@ -1380,6 +1382,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentMethodNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialNormTransport
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialWeylBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NTStrat_HDMagnitudeInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_DegBadRGrowingSlack
@@ -1437,6 +1440,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ThreadB_CosetUnionGenFn
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ThreadD_UnionCountFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerBaseRungDegenerate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerBaseRungListMuTwo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerCeilingIterated
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerDescentNoSaving
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerResidualFloorMuTwo
@@ -1514,12 +1518,25 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL8_charzero_ceiling_uni
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB2_Q1Direct_d16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLB_Q1RouteICharPGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfLD_crossparity_evensvp
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS10_analytic_rank_reencoding
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_subexp_tail_to_slack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS1_transfer_slack_prize
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_equidist_to_M
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_participation_floor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS3_badprime_density_finite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS3_badprime_norm_certificate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS4_galois_concentration_obstruction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS4_orbit_partition_law
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5_theta_count_wick
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS4_stickelberger_perweight_threshold
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5L3NoSpurPrizeTransfer
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS5_theta_count_wick
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS6_norm_divisibility_envelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS6_toric_config_betti
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS7_galois_spread
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS7_oddpart_transfer
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS8_sharp_house_threshold
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS9_dyadic_augmentation_parity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS9_vp_split_decomposition
 import ArkLib.Data.CodingTheory.ProximityGap.FullBandLadderLaw
 import ArkLib.Data.CodingTheory.ProximityGap.FullWindowDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.GG25CurveDecodFromListSize
@@ -2103,8 +2120,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.NodalSupplyWitness
 import ArkLib.Data.CodingTheory.ProximityGap.NormalRankSharpThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.NotRamanujanLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.O11StructureLoop48
-import ArkLib.Data.CodingTheory.ProximityGap.OddZeroSumCountVanishCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.OddZeroSumCountSpuriousLocalization
+import ArkLib.Data.CodingTheory.ProximityGap.OddZeroSumCountVanishCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.OnePointFiveJohnsonGeometry
 import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConditionalPin
 import ArkLib.Data.CodingTheory.ProximityGap.OpenCoreConverse
@@ -2427,6 +2444,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.SpectrumCosetLevelBound
 import ArkLib.Data.CodingTheory.ProximityGap.SpernerCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.SplitPencilBound
 import ArkLib.Data.CodingTheory.ProximityGap.SplittingLadder
+import ArkLib.Data.CodingTheory.ProximityGap.SpurPrimePersistTower
+import ArkLib.Data.CodingTheory.ProximityGap.SpurPrimeReducibleTower
 import ArkLib.Data.CodingTheory.ProximityGap.SpurSplitPrizeRegime
 import ArkLib.Data.CodingTheory.ProximityGap.SpurWeightFourCollision
 import ArkLib.Data.CodingTheory.ProximityGap.SpurWeightFourFermat641
