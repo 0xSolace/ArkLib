@@ -15421,3 +15421,31 @@ arklib-444-char0-wick-faithfulness, reached from the divisor-count side):
 NOT a refutation of CORE and NOT a closure: the soft ceiling R_r≤1 survives EMPIRICALLY (FFT baseline
 probe_407_Ar_wick_depth_profile.py: R_r<1 with margin, but margin→0.99 at r=2 as n→256). δ* remains
 the single open char-p BGK input. Honest classification: reduces-to-bgk (via the DSAR wall).
+
+### S1 "K_eff flat in n" — NOT flat through n=128; peak CREEPS upward (caution on the energy-transfer optimism) (#444, nubs, 2026-06-17)
+
+S1 (orchestrator) reported the nonprincipal energy slack K_eff(r)=(E_r'/[(2r−1)‼·n^r])^{1/r},
+E_r'=(1/p)Σ_{b∈⟨g^n⟩}η_b^{2r} (β=4), as "≈0.6, FLAT in n (0.62→0.65), structured-prime-robust", which
+via the proven char0_prize_moment_bound would give the prize with bounded C. INDEPENDENTLY CROSS-CHECKED
+(Python, exact S1 convention, `probe_444_keff_rprofile_crosscheck.py`) — the ≈0.6 value and
+structured-not-worse REPRODUCE. But extending to n=128 with a per-n prime band (4 good primes each,
+`probe_444_keff_creep_n128.py`) shows the peak is NOT flat:
+
+    n   peak K_eff mean   range            peak-r
+    32     0.608          [0.577,0.629]     12
+    64     0.625          [0.614,0.645]     14
+    128    0.675          [0.653,0.698]     18
+
+The bands SEPARATE — n=128's whole range [0.653,0.698] sits ABOVE n=64's [0.614,0.645] (no overlap) —
+so this is a genuine, prime-robust MONOTONE UPWARD CREEP (0.608→0.625→0.675), not noise, with the
+peak-r marching deeper (12→14→18 toward the prize r≈89). S1's own 0.62→0.65 (n=32→64) was already a
+rise read as "flat"; n=128 makes the creep unambiguous. Consistent with BGK log-growth and with the
+DSAR-margin shrink noted above (probe_407_Ar_wick_depth_profile: margin→0.99 as n→256) — same wall,
+energy-transfer side.
+
+VERDICT: the "K_eff ≤ K_0 absolute / flat in n" extrapolation is NOT supported by data through n=128 —
+the peak slack creeps upward. This does NOT prove divergence (3 doublings; could plateau), so it is not
+a hard refutation of the energy-transfer route — but it removes the empirical basis for the optimistic
+"flat" framing: the n→2^30 / r→89 limit of the peak constant is exactly the open BGK input, and the
+measurable trend is rising, not flat. Probes: scripts/probes/probe_444_keff_creep_n128.py,
+probe_444_keff_rprofile_crosscheck.py (exact char-sums; no Lean).
