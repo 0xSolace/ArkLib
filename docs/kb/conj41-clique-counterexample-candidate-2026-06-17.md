@@ -113,3 +113,30 @@ a single linear dependency among the clique's error-locators — `(w+2)` sets ha
 This is a concrete contribution to the **grand list-decoding challenge** (the worst-case RS list size for the
 FRI line family): a clean closed law `D−c+1`, correcting the refuted `⌊(2D−1)/c⌋`. (It does NOT pin the
 zero-loss δ*/MCA threshold — that remains the open BGK wall — but it pins the *list-size* face.)
+
+## Refinement: non-degenerate scope + Hankel upper bound (c ≥ w+1), and an honest caveat
+Two findings sharpen the law and its scope (probes `probe_conj41_{degenerate_line,hankel_upperbound}.py`):
+
+**(i) Degenerate lines must be excluded.** If the line `s(γ)` lies inside a *single* `Im(V_E)` (i.e.
+`s₁,s₂ ∈ Im(V_E)`), that one support decodes `≈ p−w` of the `p` challenges (the error `e₁+γe₂` is full
+weight for all but `≤w` values of `γ`), so the *literal* `M_true ≈ p ≫ w+1`. Hence the conjecture and the
+`w+1` law are necessarily about **non-degenerate lines** (not contained in a single `Im(V_E)`) — equivalently
+the FRI-fold line family. My `M_true` engine counts only *isolated*-γ supports (`N_E·s₂ ≠ 0`), so it
+automatically returns the non-degenerate count (0 on the degenerate line above); the `(w+1)`-clique line is
+non-degenerate (5 distinct isolated supports), so the clique counterexample is valid in this scope.
+*Caveat:* tying my isolated-γ `M_true` to the paper's literal `M_true` precisely requires their exact
+(FRI-fold) line restriction; under the only non-vacuous reading (non-degenerate lines), the clique refutes
+the bound.
+
+**(ii) Upper bound `M_true ≤ w+1` PROVEN in the unique-decoding regime `c ≥ w+1`** (via the Hankel pencil):
+`s(γ)` is weight-`≤w` decodable iff the `c×(w+1)` Hankel pencil `H_w(s(γ)) = A + γB` (linear in `γ`) has
+rank `≤ w`. For `c ≥ w+1` this forces a `(w+1)×(w+1)` minor `det(A+γB) = 0`, a degree-`≤(w+1)` polynomial in
+`γ` (verified `deg = w+1` exactly, and every decodable `γ` is a root), so `M_true ≤ w+1`. With the clique
+lower bound (also confirmed `= w+1` at `c≥w+1`, e.g. `n=8,k=1,w=3,c=4`), this **closes the law**
+`max M_true = w+1` for `c ≥ w+1` (the unique-decoding regime), both bounds rigorous.
+
+**Status of the FRI regime `c < w` (deployment).** There the Hankel pencil is wide (`c < w+1`) so the
+rank-`≤w` condition is vacuous and this argument gives nothing — the upper bound `≤ w+1` is **open** (the
+genuine restriction is that the weight-`w` error-locator splits over the size-`n` domain). Lower bound
+`w+1` is proven (clique). So: `c≥w+1` fully closed; `c<w` lower-bound-proven, upper-bound-open. Either way
+the published `⌊(2D−1)/c⌋` worst-case bound is refuted (clique, Lean-checked).
