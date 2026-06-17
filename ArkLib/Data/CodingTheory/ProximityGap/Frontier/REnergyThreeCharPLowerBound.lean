@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3StrataCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._E3NegSymConverse
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupGaussSumMoment
+import ArkLib.Data.CodingTheory.ProximityGap.SidonModNegEnergyEquality
+import ArkLib.Data.CodingTheory.ProximityGap.MonomialRowFullSupport
 
 set_option autoImplicit false
 set_option linter.style.longLine false
@@ -159,9 +161,37 @@ theorem rEnergy_three_ge_closed (G : Finset F) (h2 : (2 : F) ≠ 0) (h0 : (0 : F
   rw [hcount] at hle
   exact hle
 
+/-! ### The `mu_n` specialization (hypotheses discharged for the actual prize object) -/
+
+open ArkLib.ProximityGap.EnergyEqualitySidonModNeg (muN mem_muN mu_n_card_eq)
+open ArkLib.ProximityGap.WF5SidonFullSupport (zero_notMem_muN)
+
+/-- **The `mu_n` lower bound (prize object, hypotheses discharged).** For `n = 2^m` (`m >= 1`) and
+a primitive `n`-th root `omega in ZMod p` (`p` an odd prime, so char != 2), the depth-3 relation
+energy of the thin subgroup `mu_n = {z : z^n = 1}` is at least the char-0 closed form:
+`rEnergy (mu_n) 3 >= 15n^3 - 45n^2 + 40n`. This is `rEnergy_three_ge_closed` with `G = muN p n`,
+discharging negation-closure (`-1 in mu_n` since `n` even), `0 not in mu_n`, `2 != 0` (`p` odd), and
+`|mu_n| = n`. The directly-consumable `>=` half of the `census4` open r=2-rung input. -/
+theorem muN_rEnergy_three_ge_closed {p : ℕ} [Fact p.Prime] (hp2 : (2 : ZMod p) ≠ 0) {n m : ℕ}
+    (hn2 : n = 2 ^ m) (hm : 1 ≤ m) {ω : ZMod p} (hω : IsPrimitiveRoot ω n) :
+    15 * (n : ℤ) ^ 3 - 45 * (n : ℤ) ^ 2 + 40 * (n : ℤ) ≤ (rEnergy (muN p n) 3 : ℤ) := by
+  have hnpos : 0 < n := by rw [hn2]; positivity
+  have hmem : ∀ z : ZMod p, z ∈ muN p n ↔ z ^ n = 1 := fun z => mem_muN hnpos z
+  have hneg : ∀ z ∈ muN p n, -z ∈ muN p n := by
+    intro z hz
+    rw [hmem] at hz ⊢
+    have he : Even n := by rw [hn2]; exact Nat.even_pow.mpr ⟨even_two, by omega⟩
+    rw [neg_pow, he.neg_one_pow, one_mul]; exact hz
+  have h0 : (0 : ZMod p) ∉ muN p n := zero_notMem_muN hnpos
+  have hcard : (muN p n).card = n := mu_n_card_eq hω
+  have hge := rEnergy_three_ge_closed (muN p n) hp2 h0 hneg
+  rw [hcard] at hge
+  exact hge
+
 end ArkLib.ProximityGap.Frontier.REnergyThreeCharPLowerBound
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.Frontier.REnergyThreeCharPLowerBound.rEnergy_three_eq_zeroSumCount
 #print axioms ArkLib.ProximityGap.Frontier.REnergyThreeCharPLowerBound.negSymCount_le_rEnergy_three
 #print axioms ArkLib.ProximityGap.Frontier.REnergyThreeCharPLowerBound.rEnergy_three_ge_closed
+#print axioms ArkLib.ProximityGap.Frontier.REnergyThreeCharPLowerBound.muN_rEnergy_three_ge_closed
