@@ -16168,3 +16168,56 @@ scissors close at r0=1+beta/2 (~3 in the prize regime), while EVT control of the
 cancellation wall. P4 is NOT a new handle; it sharpens MonodromyConductorScaffold's qualitative
 "rank-driven n^{2r-1}" into the exact closed-form vacuity onset r0=1+beta/2, and pins the structural
 coincidence that vacuity onset = char-p excess onset (both at r=4 in the prize band).
+
+---
+
+## P7-HGG (Helleseth-Golomb-Gong / Sidelnikov / decimation cross-correlation) — NO-GAIN / REDUCES-TO-BGK
+
+CLAIM (named candidate non-CA route, ePrint 2026/858): the prize period eta_b = sum_{x in mu_n}
+e_p(b x) is a Gauss-sum-sequence correlation peak; HGG/Sidelnikov/decimation cross-correlation
+bounds deliver the Ramanujan-scale sup M(mu_n) <= sqrt(2 n log m), pinning delta*.
+
+WHAT HGG ACTUALLY DELIVERS (verified, arXiv:2407.16072 "An updated review on crosscorrelation of
+m-sequences"): C_d(tau) = sum_{x in F_{p^n}^x} omega^{Tr(c x) - Tr(x^d)}, a COMPLETE trace sum over
+the FULL multiplicative group of the EXTENSION field F_{p^n} (period N = p^n - 1), with omega =
+e^{2pi i/p}, Tr the absolute trace, d a decimation coprime to N. Sharp 3-valued spectra
+(Gold/Kasami-Welch p=2: values -1, -1 +- 2^{m+1}; Trachtenberg-Helleseth general p: -1, -1 +-
+p^{(n+e)/2}) => C_max ~ p^{(n+e)/2} ~ sqrt(N). This IS genuine sqrt-cancellation, but sqrt of the
+GROUP SUMMED OVER (the Weil/Sidelnikov regime), NOT sqrt of a thin subgroup's own size.
+
+TWO STRUCTURAL OBSTRUCTIONS (numerics: scripts/probes/probe_p7_hgg_crosscorr_vs_period.py,
+probe_p7_hgg_niho_normsubgroup.py):
+ (O1) FIELD/COMPLETION MISMATCH. The prize sum is INCOMPLETE over a thin subgroup mu_n (index
+      m=(p-1)/n>1) of the PRIME field F_p. HGG sums COMPLETELY over the WHOLE extension group.
+      Identifying eta_b with C_d(tau) forces extension degree 1 AND mu_n = whole F_p^x, i.e. the
+      complete-sum case, where sqrt-cancellation = sqrt(p). In the prize band p ~ n^beta, beta in
+      [4,5]: sqrt(p) = n^{beta/2} = n^{2..2.5} >> n, WORSE than the trivial subgroup bound n.
+ (O2) ASPECT-RATIO INCOMPATIBILITY. HGG's strongest mechanism (Niho reduction, Lemma 4:
+      C_d(tau)+1 = (N(a)-1) p^m, N(a) <= 2s-1 = #roots of a FIXED low-degree equation) lives on the
+      norm-1 'unit circle' subgroup U = {x in F_{p^{2m}} : x x^{p^m}=1}, |U| = p^m+1 ~ sqrt(ambient).
+      That is a HALF-dimension subgroup (log_ambient(|U|) = 1/2). The prize subgroup is THIN:
+      log_p(n) = 1/beta in [1/5,1/4] < 1/2. A thin subgroup is provably not a norm-1 subgroup
+      (|U|^2 = (p^m+1)^2 >= p^{2m}-1 = ambient contradicts n^2 < ambient). The bounded-valued-ness
+      (3/4/5-valued spectra => sup ~ sqrt(N)) is ALGEBRAIC (few roots of a fixed-degree polynomial),
+      with no analogue for a thin-subgroup character sum (eta_b is not a fixed equation's root-count).
+
+NUMERICS: probe (C) -- prize M(mu_n) tracks the Ramanujan scale sqrt(2 n log m) (ratio 0.68-1.10
+across generic and Fermat primes 97..65537), while sqrt(p) (HGG) is 1.4x-18x larger and growing.
+probe Niho [1] -- |U| = p^m+1 = 1.03-1.20 x sqrt(ambient) (half-dimension); [3] -- a single additive
+character summed over U tracks sqrt(ambient)=p, NOT sqrt(|U|) (no thin-subgroup gain); [2] --
+log_ambient(size): PRIZE = 0.20-0.25, NIHO = 0.50 (incompatible aspect ratios).
+
+Lean: Frontier/_P7HGGCrossCorrNoGo.lean (axiom-clean [propext,Classical.choice,Quot.sound], 0
+sorryAx, verified by #print axioms on all 7 theorems): hgg_complete_bound_vacuous (n^2<=p => n<=
+sqrt p), hgg_complete_bound_strictly_worse ((n+1)^2<=p => n<sqrt p), prize_beta4_satisfies_strict
+((n+1)^2<=n^4 for n>=2), hgg_vacuous_at_beta4 (n<sqrt(n^4)), norm_subgroup_half_dimension
+(q^2-1<=(q+1)^2), thin_not_norm_subgroup (thin => not a norm-1 subgroup), prize_subgroup_thin_strict
+(n^2<n^4). Mathlib-only imports (fast iterate, no cone build).
+
+VERDICT: NO-GAIN / REDUCES-TO-BGK. HGG = sqrt of the AMBIENT field, reached via a half-dimension
+norm subgroup with algebraically-bounded correlation values. The prize needs sqrt of a THIN
+subgroup's own size = BGK equidistribution over a 2-power subgroup at aspect ratio 1/4. Same ~25yr
+wall (di Benedetto n^{0.989} is the SOTA, just outside the prize regime). HGG gives nothing the
+per-frequency BGK statement lacks. (Consistent with the prior census tag: Sidelnikov listed among
+the "50 cross-domain theories DEAD"; this entry pins the EXACT mechanism -- complete-sum sqrt(N) +
+half-dimension norm subgroup -- rather than the generic "aggregate/second-order" dismissal.)
