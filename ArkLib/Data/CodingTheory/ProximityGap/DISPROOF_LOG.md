@@ -15206,3 +15206,42 @@ the lower-bound sub-question from the open ledger and isolates the wall as the e
 count). NON-MOMENT (a tuple-count injection, not an additive-moment cancellation bound).
 EXTEND-proven on the landed char-0 strata producer + the char-free converse. No capacity /
 beyond-Johnson / cliff-at-n/2 claim. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+---
+
+## ENERGY-LOWERBOUND-GENERAL-R: rEnergy G r >= negSymCount G (2r) is UNCONDITIONAL in char p, for ALL r (#444, 2026-06-17)
+
+Lifted the `r = 3` char-p energy lower bound (RE3LB, `ab18d8a41`) to GENERAL `r` as one uniform
+theorem, discharging the assumed-but-unproven LOWER half `0 <= W_r` of the `_BchksF5` anomaly
+squeeze for EVERY r.
+
+**Context.** `_BchksF5_CharPAnomalyExpZero` defines `W_r := E_r(F_p) - E_r^{char0}` and squeezes
+`0 <= W_r <= Wick_r - E_r^{char0}`. It PROVES only the UPPER half (`anomaly_le_gap`, from the open
+below-Wick hyp `hWick`); the LOWER half `0 <= W_r` (the char-p energy is AT LEAST the char-0 value;
+extra mod-p coincidences only ADD zero-sum tuples) is STATED in the docstring as fact but never
+proven.
+
+**The theorem (Frontier/REnergyGeneralCharPLowerBound.lean, axiom-clean, 3 thms):** for ANY
+negation-closed `G` (`0 not in G`, char != 2) in ANY finite field and ALL `r`,
+`negSymCount G (2r) <= rEnergy G r` (`negSymCount_le_rEnergy`); over Z, `0 <= rEnergy G r -
+negSymCount G (2r)` (`charP_anomaly_nonneg` = the F5 lower half). Mechanism is char-free,
+EXTEND-proven on COMMITTED substrate (NO Lam-Leung, NO CharZero):
+- negSymCount_le_zeroSumCount: for ANY arity m, the count-balanced filter INJECTS into the zero-sum
+  filter (every count-balanced tuple of nonzero values is a genuine zero-sum tuple,
+  E3NegSymConverse.sum_eq_zero_of_fiber_balanced, general-arity char-free).
+- chain with the COMMITTED char-free negation-closure bijection
+  CharZeroWickEnergy.rEnergy_eq_zeroSumCount (rEnergy G r = zeroSumCount G (2r), only hneg).
+
+**Probe (scripts/probes/probe_energy_lower_bound_general.py, 12/12 decisive):** PROPER thin
+mu_n=2^a (a=2..4), p=1 mod n, NEVER n=q-1, SMALL (p<n^3) AND LARGE (p>>n^3) primes incl Fermat
+257/65537, r=2,3,4. In EVERY case W_r = rEnergy(F_p) r - negSymCount(2r) >= 0. W_r = 0 EXACTLY when
+p > n^3 (no extra collisions); W_r > 0 at small p (extra-collision surplus: r=4 n=4 p=13 gives
+5796 > 4900; r=3 n=8 p=17 gives 15560 > 5120). The lower bound is UNCONDITIONAL.
+
+**Why a brick, not a closure (rule 4, rule 6, asymptotic guard):** discharges the LOWER half
+`0 <= W_r` of the F5 squeeze UNIFORMLY in r (the easy direction, char-p-universal: count-balanced
+tuples are always present). The matching UPPER bound `rEnergy G r <= E_r^{char0}` (equality, the
+`W_r = 0` char-p Lam-Leung transfer at depth r~log q) is FALSE at small p and IS the BGK/Burgess
+sqrt-cancellation wall -- NOT supplied. NON-MOMENT (tuple-count injection). EXTEND-proven on 2
+committed char-free lemmas. No capacity / beyond-Johnson / cliff-at-n/2 claim. CORE
+M(mu_n) <= C sqrt(n log(p/n)) OPEN.
