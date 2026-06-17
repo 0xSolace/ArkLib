@@ -1225,6 +1225,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CLTDecorrelatedCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCumulantBesselClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCushionBracket
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCushionBracketHigh
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroEnergyClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroLamLeungSlackLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroMGFBesselBound
