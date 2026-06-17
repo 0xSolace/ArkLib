@@ -1014,6 +1014,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DCWickWraparoundTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthGrowsInN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingCrossingDepthRateConstant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DecouplingDecayCrossingDepth
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeepBandCensusMarginRatio
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeepBandOrbitCountDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DelsarteLPNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DeltaStarEqEdge
@@ -1103,6 +1104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingFloorTwoPowLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSubgroupExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSumDoubleCount
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SumProductAsymmetrySubgroup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzAutocorr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzFisher
