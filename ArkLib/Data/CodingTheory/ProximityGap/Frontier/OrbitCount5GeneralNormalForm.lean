@@ -135,6 +135,22 @@ theorem deepBandBadCount5_eq_orbit_normalForm_even {g : ℕ} (hg : 2 ∣ g) :
   obtain ⟨h, rfl⟩ := hg
   simpa [two_mul, Nat.mul_comm] using deepBandBadCount5_eq_orbit_normalForm h
 
+/-- **`r = 5` orbit count is STRICTLY SUPER-LINEAR (the half-order ThreadD obstruction).**  For the
+prize tower `g = 2h ≥ 4` (`h ≥ 2`), the `r = 5` orbit count `full_orb(g)` exceeds `g`:
+`2h < deepBandFullOrb (2h)`.  This is the `r = 5` half-order (`d = n/2`) analogue of O196's order-2
+super-linearity (`orbitCount3 g > g`, `orbitCount4 (2h) > 2h`): the orbit count grows cubically
+(`full_orb(2h) = h(h+1)(8h−5)/6`) while the ThreadD union-count floor needs orbit collapse `O ≤ 1`.
+So the `O → 1` collapse CANNOT happen at the `r = 5` rung either; it can only occur at the deep
+binding rung `r ≈ log n` (= the BGK/BCHKS wall). -/
+theorem deepBandFullOrb_superlinear (h : ℕ) (hh : 2 ≤ h) :
+    2 * h < DeepBandR5.deepBandFullOrb (2 * h) := by
+  have hb := twentyfour_mul_fullOrb_even h
+  have hle : 10 * (2 * h) ≤ 4 * (2 * h) ^ 3 + 3 * (2 * h) ^ 2 + 0 := by
+    nlinarith [hh, Nat.one_le_iff_ne_zero.mpr (by positivity : h ^ 3 ≠ 0)]
+  have hadd : 24 * DeepBandR5.deepBandFullOrb (2 * h) + 10 * (2 * h)
+      = 4 * (2 * h) ^ 3 + 3 * (2 * h) ^ 2 + 0 := by omega
+  nlinarith [hadd, hh, sq_nonneg h]
+
 /-- Anchor sanity (matches the in-tree `rung_orbit_n16 … n128`): the general law reproduces the
 four kernel-calibrated rungs. -/
 theorem anchors_match :

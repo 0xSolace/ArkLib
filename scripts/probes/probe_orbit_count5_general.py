@@ -86,8 +86,19 @@ def main():
             print(f"  FAIL g={g}")
     print(f"  24 | orbnum for all even g=2..198: {div24}")
 
+    # (E) SUPER-LINEARITY of the r=5 orbit count (the half-order ThreadD obstruction)
+    print("\n--- (E) full_orb(g) > g on the prize tower g = 2^(k-2) >= 4 (half-order obstruction) ---")
+    superlin = True
+    for k in range(4, 13):
+        g = 2**k // 4
+        fo = full_orb(g)
+        ok = fo > g
+        superlin = superlin and ok
+        print(f"  g={g:>6}: full_orb={fo:>14}  full_orb/g={fo / g:>8.1f}  >g={ok}")
+    print(f"  full_orb(g) > g for all prize-tower g (cubic vs linear): {superlin}")
+
     print("\n" + "=" * 88)
-    verdict = allok and alleven and polyok and div24
+    verdict = allok and alleven and polyok and div24 and superlin
     print(f"VERDICT: {'PASS' if verdict else 'FAIL'} -- general-g orbit-count normal form holds for "
           f"all even g (prize tower g=2^(k-2) always even). #bad_5 = 1 + 2g*full_orb, division-free "
           f"core badnum=12+g*orbnum + 24|orbnum(even). NOT a CORE closure (one rung; deep rung r~log n "
