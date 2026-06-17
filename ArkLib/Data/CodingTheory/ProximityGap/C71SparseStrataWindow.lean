@@ -154,6 +154,24 @@ theorem sparse_munRoot_card_le_window {n : ℕ} (S : Finset F) (t : Finset ι) (
   rw [hfilter]
   exact card_nonzeroRoots_le_natDegree_sub_natTrailingDegree S hg
 
+/-- **Exact empty-stratum consumer when the reduced support span is zero.** If the mod-`n`
+reduced sparse direction is nonzero and has `natDegree = natTrailingDegree` (equivalently: its
+nonzero support is concentrated in one reduced exponent, so it is a monomial times a nonzero
+scalar), then it has no nonzero roots on `μ_n`. This is the zero-rung consumption of the
+support-span window bound, complementary to the gcd-coprime zero corollary in
+`C71SparseStrataReduce`. -/
+theorem sparse_munRoot_card_eq_zero_of_reduce_span_eq_zero {n : ℕ} (S : Finset F)
+    (t : Finset ι) (c : ι → F) (e : ι → ℕ)
+    (hg : ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e ≠ 0)
+    (hspan : (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natDegree
+      = (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natTrailingDegree)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧
+        (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePoly t c e).IsRoot x)).card = 0 := by
+  have hle := sparse_munRoot_card_le_window S t c e hg hSn
+  rw [hspan, Nat.sub_self] at hle
+  exact Nat.eq_zero_of_le_zero hle
+
 /-- **The `deg gcd(X^n - 1, g)` incidence bound is itself dominated by the support span.** For any
 `g ≠ 0` and `0 < n`, `deg gcd(X^n - 1, g) ≤ g.natDegree - g.natTrailingDegree`. So the exact
 distinct-`μ_n`-root count (`= deg gcd`, the tighter bound used by `munRoot_card_le_gcd_natDegree`)
@@ -194,7 +212,11 @@ theorem gcd_natDegree_le_span {n : ℕ} (hn : 0 < n) {g : F[X]} (hg : g ≠ 0) :
 end ArkLib.ProximityGap.C71SparseStrataWindow
 
 /-! ## Axiom audit -/
-open ArkLib.ProximityGap.C71SparseStrataWindow in
+namespace ArkLib.ProximityGap.C71SparseStrataWindow
+
 #print axioms card_nonzeroRoots_le_natDegree_sub_natTrailingDegree
-#print axioms ArkLib.ProximityGap.C71SparseStrataWindow.sparse_munRoot_card_le_window
-#print axioms ArkLib.ProximityGap.C71SparseStrataWindow.gcd_natDegree_le_span
+#print axioms sparse_munRoot_card_le_window
+#print axioms sparse_munRoot_card_eq_zero_of_reduce_span_eq_zero
+#print axioms gcd_natDegree_le_span
+
+end ArkLib.ProximityGap.C71SparseStrataWindow
