@@ -4877,3 +4877,19 @@ M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN.
 # honestly scoped (the witness is a hypothesis, grounded by the probe, not faked). Thinness-essential
 # via neg-closure (-1 in mu_{2^a}, the realness this rests on). NON-MOMENT (pure sign/character algebra).
 # No capacity/beyond-Johnson/cliff-at-n/2 claim. ONE sweep ONE commit. CORE M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## C71-ROUTE-B: Conjecture 7.1 worst-case sparse adversary is MULTI-TERM, not monomial (sol, 2026-06-17)
+Post-pivot (231b0ec9c) the prize = above-Johnson O(1)/|F|, reduced by 2026/861 to Conj 7.1 (worst
+case <=3-sparse). EXACT full-alpha-sweep bad-set strength on thin mu_n (n=8, k=2, affine pencil
+{g0+alpha*f}, g0 = deg-(k+1) monomial not in RS, Johnson agreement thr=4/8, NEVER n=q-1) over three
+primes p in {17, 41, 521} spanning p<=n^3 and p>n^3: s1max (monomial directions) = 8 UNIFORMLY,
+s23max (genuine 2- and 3-term directions) = 9 UNIFORMLY. So the worst-case <=3-sparse adversary is
+STRICTLY multi-term (s23max > s1max), NOT a monomial. CONSTRAINT LEMMA (formalized axiom-clean in
+ProximityGap/C71SparseOrbitGap.lean, extending the proven ActionOrbitGeneralF pin): a direction with
+>=2 dilation-distinct support terms is NOT a dilation eigenvector (multiterm_not_orbit_eligible), so
+its bad set is NOT a union of gamma-orbits => the action-orbit per-line O(1)/|F| compression
+(eigenvector-gated, hence monomial-only) provably MISSES the worst case. Localization: even granting
+Conj 7.1, closing the prize via the in-tree action-orbit machinery requires a NON-orbit incidence
+bound on the multi-term strata; the orbit count alone is insufficient. (probe c71_sparse_orbit_gap;
+the earlier probe_c71_sparse_dominance.py v1 was VACUOUS -- measured "is direction low-degree" --
+quarantined and rebuilt.) CORE / Conj-7.1 multi-term incidence bound OPEN.
