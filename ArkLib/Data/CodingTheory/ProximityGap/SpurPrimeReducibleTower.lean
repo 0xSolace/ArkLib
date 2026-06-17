@@ -69,6 +69,7 @@ local instance fact89 : Fact (Nat.Prime 89) := ⟨by decide⟩
 local instance fact97 : Fact (Nat.Prime 97) := ⟨by decide⟩
 local instance fact101 : Fact (Nat.Prime 101) := ⟨by decide⟩
 local instance fact109 : Fact (Nat.Prime 109) := ⟨by decide⟩
+local instance fact113 : Fact (Nat.Prime 113) := ⟨by decide⟩
 
 /-- **`Φ_{2^m} = X^{2^{m−1}} + 1` over any commutative ring** (`m ≥ 1`). The `p = 2` prime-power
 cyclotomic; pulled out as a reusable named form. -/
@@ -817,6 +818,25 @@ theorem not_irreducible_cyclotomic_two_pow_mod109 {m : ℕ} (hm : 3 ≤ m) :
     have hpos : 0 < 2 ^ (m - 2) := by positivity
     omega
 
+/-- **Explicit `F_113` half-degree factorization of every dyadic cyclotomic tower level.** For `m ≥ 2`,
+`15² = -1` in `F_113`, so
+`Φ_{2^m}(X) = X^{2^{m-1}} + 1 = (X^{2^{m-2}} + 15)(X^{2^{m-2}} - 15)`.
+This extends the square-root-of-minus-one reducible tower past the `F_109` rung, reusing the generic
+square-root-of-minus-one closed form. -/
+theorem cyclotomic_two_pow_mod113_factor {m : ℕ} (hm : 2 ≤ m) :
+    cyclotomic (2 ^ m) (ZMod 113) =
+      (X ^ (2 ^ (m - 2)) + 15) * (X ^ (2 ^ (m - 2)) - 15) := by
+  simpa using cyclotomic_two_pow_factor_of_sq_eq_neg_one (R := ZMod 113) hm
+    (ι := (15 : ZMod 113)) (by decide)
+
+/-- **Fifteenth explicit uniform candidate-bad-prime tower: `Φ_{2^m}` is reducible over `F_113` for every
+`m ≥ 3`.** The two factors in `cyclotomic_two_pow_mod113_factor` both have positive degree. Honest scope:
+necessary reducibility only, not a short-relation witness and not a CORE bound. -/
+theorem not_irreducible_cyclotomic_two_pow_mod113 {m : ℕ} (hm : 3 ≤ m) :
+    ¬ Irreducible (cyclotomic (2 ^ m) (ZMod 113)) := by
+  simpa using not_irreducible_cyclotomic_two_pow_of_sq_eq_neg_one (K := ZMod 113) hm
+    (ι := (15 : ZMod 113)) (by decide)
+
 end ArkLib.ProximityGap.SpurPrimeReducible
 
 /-! ## Axiom audit -/
@@ -852,3 +872,5 @@ end ArkLib.ProximityGap.SpurPrimeReducible
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod101
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_mod109_factor
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod109
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_mod113_factor
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod113
