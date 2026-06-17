@@ -16624,3 +16624,48 @@ open content, not an escape from it.
 Lean: `Frontier/_wfT11_min_entropy_levelset.lean` (4 thms axiom-clean [propext,Classical.choice,
 Quot.sound], real `lake build` OK 2075 jobs): the reduction map + the free forward bridge + the prize
 restatement. **No prize gain. CORE stays OPEN at the BGK char-p energy/sub-Gaussian-tail wall.**
+
+## 2026-06-17 — T14 Kolmogorov/MDL incompressibility of the worst-frequency witness REDUCES-TO-WALL (F0; equiv F1) [wf-T14, #444]
+
+**Candidate (architect localId G3-T4 = catalog N12, `docs/kb/...fifty-novel-directions`).** Worst
+witness set `W(λ)={b≠0:‖η_b‖>λ√n}`, an "alignment certificate" `c:b↦c(b)`, claiming (i) `c`
+INJECTIVE on each `‖η_b‖`-level set, (ii) an MDL/Kolmogorov lower bound `K(b)≥2log₂λ−O(1)`
+("large alignment is algorithmically costly"); Kraft `∑2^{−L(b)}≤1` then caps `#W(λ)≤(p−1)/λ²`
+and dyadic resummation gives `M≤C√(n log(p/n))`. Intended as a TAIL/algorithmic-information
+functional dodging F0 (2nd moment), F7 (Rényi-2).
+
+**Verdict: REDUCES-TO-WALL (F0 conservation law; equivalently F1). Both premises FALSE.** This is
+a re-statement of the already-logged D9 result ("Kolmogorov-incompressibility (=N12) vacuous because
+worst b is short-describable") with an axiom-clean Lean formalization + exact β=4 probe.
+
+**(R1) Premise (i) FALSE — the map is n-to-1, not injective; premise (ii) FALSE — worst b is
+short-describable.** ONE structural fact kills both: `‖η_b‖` is constant on `μ_n`-cosets
+(`η_{zb}=η_b` rotated for `z∈μ_n` ⇒ `‖η_{zb}‖=‖η_b‖`). So every level set is an EXACT union of
+`μ_n`-cosets (size a multiple of `n`), the certificate is ≥`n`-to-1, and `b*` is named by its coset
+rep among `(p−1)/n` cosets: `K(b*)≤log₂((p−1)/n)+O(1)` — sharper, `b*`="the maximiser of ‖η_b‖" is
+an O(log) description, so `b*` is the LEAST incompressible witness. Probe (β=4, p~n^4, n=8..64):
+worst level set = 1–16 cosets × n (always multiple of n); candidate NEEDS `K≥2log₂λ*≈2.7–4.2` bits,
+reality `K≤log₂((p−1)/n)≈10–19` bits — incompressibility certificate FALSE.
+
+**(R2) Even GRANTING the abstract Kraft count, the count it delivers IS the second moment (F0).**
+Measured `#{‖η_b‖>λ√n}≤(p−1)/λ²` for every λ (actual/(p−1)/λ²)=0.30,0.18,0.07,0.02<1) — bit-for-bit
+the Markov/Chebyshev bound on `∑_b‖η_b‖²=q·n` (Parseval). The MDL functional supplies NO datum
+beyond the 2nd moment. F0's escape-clause ("the √log excess is a rare-event/tail phenomenon
+invisible to 2nd moments") is exactly what the FALSE incompressibility hypothesis would have had to
+supply; it does not.
+
+**(R3) Resummed, F0's count is VACUOUS.** `(p−1)/λ²≥n` (one coset survives at the max) ⇒
+`λ≤√((p−1)/n)` ⇒ `M≤√p~n²`, never `√(n log(p/n))` (prize target ~7–28 at n=8..64). The route lands
+exactly on F0/Johnson-completion, not above it.
+
+**Novelty/absence (confirmed).** Incompressibility method (Li–Vitanyi) is known, never applied to
+character/Gauss-sum extrema (WebSearch); in-tree `Kraft`/`Kolmogorov`/`MDL`/`prefix-free` = 0 hits
+outside this log. The formulation is novel; it does NOT survive because both load-bearing premises
+are provably false and the surviving count is F0.
+
+Lean: `Frontier/_wfT14_kraft_mdl_witness.lean` (6 thms axiom-clean [propext,Classical.choice,
+Quot.sound]; real `lake build` OK 906 jobs): `kraft_complexity_count` (the abstract Kraft count is
+TRUE — piece (a) survives), `second_moment_count` (the count the route delivers = F0),
+`alignment_not_injective` + `level_set_not_singleton` + `T14_reduces_to_F0` (premises (i)(ii) FALSE
+under coset-invariance). Probe: `scripts/probes/rust/probe_wfT14_kraft_mdl.rs`. **No prize gain.
+CORE stays OPEN at the BGK char-p wall.** — wf-T14
