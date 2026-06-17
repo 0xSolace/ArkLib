@@ -126,6 +126,20 @@ theorem sparse_munRoot_card_le_reduce_gcd {n : ℕ} (S : Finset F) (t : Finset �
   rw [hfilter]
   exact ArkLib.ProximityGap.C71SparseStrataIncidence.munRoot_card_le_gcd_natDegree S hg hSn
 
+/-- **The punchline usable cap: the sparse-strata `μ_n`-incidence is `< n`.** Composing the headline
+gcd bound with `deg gcd(X^n-1, reduce) ≤ deg reduce < n` (the gcd divides the nonzero reduced
+polynomial, whose degree is `< n` by `sparsePolyReduce_natDegree_lt`). This is the explicit,
+closed `< n` count the abstract `deg gcd` did not expose -- the form a soundness bridge consumes. -/
+theorem sparse_munRoot_card_lt_n {n : ℕ} (hn : 0 < n) (S : Finset F) (t : Finset ι) (c : ι → F)
+    (e : ι → ℕ) (hg : sparsePolyReduce n t c e ≠ 0) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card < n := by
+  calc (S.filter (fun x => x ≠ 0 ∧ (sparsePoly t c e).IsRoot x)).card
+      ≤ (gcd (X ^ n - 1 : F[X]) (sparsePolyReduce n t c e)).natDegree :=
+        sparse_munRoot_card_le_reduce_gcd S t c e hg hSn
+    _ ≤ (sparsePolyReduce n t c e).natDegree :=
+        Polynomial.natDegree_le_of_dvd (gcd_dvd_right _ _) hg
+    _ < n := sparsePolyReduce_natDegree_lt hn t c e
+
 end ArkLib.ProximityGap.C71SparseStrataReduce
 
 /-! ## Axiom audit -/
@@ -133,3 +147,4 @@ end ArkLib.ProximityGap.C71SparseStrataReduce
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.munRoot_sparse_iff_reduce
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce_natDegree_lt
 #print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_le_reduce_gcd
+#print axioms ArkLib.ProximityGap.C71SparseStrataReduce.sparse_munRoot_card_lt_n
