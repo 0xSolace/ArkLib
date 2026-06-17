@@ -16807,3 +16807,57 @@ super-critical α* sits at r*≈1 (the SECOND moment), not at the deep r~ln q th
 α* to the deep order to escape F7 lands exactly on the open char-p energy transfer. `result_type =
 flatness=energy-reparam(R1) + supercritical-offset→0-at-prize(R2) + interpolation-tautology-pinned-by-
 answer(R3) + reduces-F7-primary-F1-mechanism`. CORE (M≤C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
+
+## 2026-06-17 — CANDIDATE T19 (G4-4) "Schoen-Shkredov additive-dimension → SPARSE large spectrum DUALITY" REDUCES-TO-WALL (F1 primary; terminal F0)
+
+CANDIDATE (architect G4-4, cluster G4 post-2020 additive combinatorics): use the PROVEN
+Schoen-Shkredov fact dim⁺(μ_n) ≥ d = Θ(n/polylog) (μ_n additively anti-structured;
+arXiv:1404.2044, 2304.13801, 2504.10202) as a SOURCE of spectral sparsity via a "Chang-converse /
+PFR spectral-stability" dualization, yielding |Spec_α|/n ≤ C·log(p/n)/d_eff, hence (d_eff growing)
+|Spec_α| small, hence M(n) ≤ C√(n·log(p/n)). The proposed novelty is the DIRECTION: read the
+large-dimension fact (normally used FORWARD to prove sum-product LOWER bounds, the wall direction)
+as an UPPER-bound on the dual's large spectrum.
+
+NOVELTY/ABSENCE: novel direction confirmed (WebSearch: Chang's lemma + Sanders "Covering the large
+spectrum" arXiv:1508.07109 both go large-spectrum ⟹ additive-structure/low-dim-covering, i.e. the
+WALL direction; no published reverse map dim⁺(set) ⟹ sparse spectrum). Object ABSENT from codebase
+(grep additiveDim|dissociat|spectralStability|changDuality|antiStructure — only CrossCellShkredovBound
+which is a DIFFERENT object, the diagonal third-energy bound, already probe-refuted).
+
+PROBES (prize-faithful: p PRIME, p=1 mod n, μ_n PROPER order n=2^μ, m=(p-1)/n>1, p~n^4 β=4,
+NEVER n=p-1), scripts/probes/rust/probe_wfT19_dim_spectrum_duality.rs + probe_wfT19_spectrum_threshold_sweep.rs:
+  (1) dim⁺(μ_n) MEASURED (exact brute, max dissociated subset): n=8→4, n=16→8. So dim⁺ = n/2,
+      LINEARLY growing — Schoen-Shkredov input is REAL (d_eff = Θ(n)). [n≥32 brute-infeasible.]
+  (2) THE DUALITY INEQUALITY IS BLATANTLY FALSE. Claimed RHS C·log(p/n)/d_eff ≈ 1.56 (n=8), 1.04
+      (n=16). MEASURED LHS |Spec_{1.5}|/n = 8.5 (n=8), 33 (n=16), 137 (n=32) — off by 1-2 orders
+      and GROWING (it is Θ(p/n) = Θ(m), not Θ(log/n)).
+  (3) The large-spectrum count is governed by PARSEVAL ALONE, dim⁺-FREE: |Spec_α| ≈ 0.3·p/α² at
+      EVERY threshold α≤M/√n (ratios to the Parseval permit p/α² are 0.32, 0.30, 0.22, 0.10 flat
+      across α and n). No dim⁺ signal anywhere.
+  (4) THE CRUX: M/√n GROWS like √(log(p/n)): 2.58→3.46→4.06→4.24 for n=8,16,32,64 — precisely WHILE
+      dim⁺ = n/2 grows linearly. The single largest coefficient is unaffected by spectral sparsity.
+
+VERDICT = REDUCES-TO-WALL (F1 primary, terminal F0). REDUCTION MAP (two independent kills, both
+machine-verified, Frontier/_wfT19_dim_spectrum_duality.lean, axiom-clean propext/Classical.choice/
+Quot.sound, NO sorryAx):
+  • F1: the "spectral sparsity" object |Spec_α| = {b≠0:|η_b|≥α√n} admits ONLY the Parseval count
+    bound |Spec_α| ≤ (∑|η_b|²)/(α²n) = p/α² (theorem largeSpectrum_card_le). This is a SECOND-MOMENT
+    / energy (E_1) quantity, independent of dim⁺. The claimed C·log/d_eff is false; the real bound
+    is the F1 energy count. The Chang-converse leaks into F1 because the only honest converse of
+    Chang (large dim ⟹ few large freqs) is Rudin's inequality = an L^q/L² energy statement (=F1/F6);
+    PFR spectral-stability is a covering/SHAPE statement, not a magnitude-threshold CARDINALITY bound.
+  • F0 (terminal): even an arbitrarily strong spectrum-COUNT bound cannot bound the SUP-norm. The
+    spike family (single support) has |Spec_α| = 1 at every α ≤ peak, yet unbounded peak
+    (no_count_method_bounds_sup: ∀ count-method g, g(1) ≥ √t — the spike saturates any count→sup
+    method at the second-moment scale). Count-sparsity bounds MULTIPLICITY, never MAGNITUDE; the
+    prize M is a single-coefficient extremum and the √log excess is a tail event invisible to the
+    count. T19_reduces_to_F1_and_F0 packages both.
+
+CONSTRAINT LEMMA (why the dual direction doesn't move the wall): dim⁺(μ_n) is genuinely a
+higher-order invariant (the architect is right it is not E_1), but the DUALITY MOVE that would
+convert it into a sup-bound has to pass through a CARDINALITY-at-threshold count of the spectrum,
+and that count is pinned by Parseval (F1) regardless of dim⁺ — the dimension governs the additive
+SHAPE of the spectrum (Chang/PFR), not its size at a magnitude level. So the lever never reaches the
+single-coefficient max (F0). Same terminal mechanism as A7 (Croot-Sisask: L²-spectrum object reads
+the bulk avg=Johnson, blind to the worst-b tail). CORE (M≤C√(n log(p/n)), β=4, n=2^30) UNCHANGED/OPEN.
+Probes committed; Lean Frontier/_wfT19_dim_spectrum_duality.lean axiom-clean.
