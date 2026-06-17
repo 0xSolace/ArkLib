@@ -15245,3 +15245,55 @@ tuples are always present). The matching UPPER bound `rEnergy G r <= E_r^{char0}
 sqrt-cancellation wall -- NOT supplied. NON-MOMENT (tuple-count injection). EXTEND-proven on 2
 committed char-free lemmas. No capacity / beyond-Johnson / cliff-at-n/2 claim. CORE
 M(mu_n) <= C sqrt(n log(p/n)) OPEN.
+
+## SETTLED 2026-06-16 (wf-L1 / #444 close-out): OT2 vs wf-LC conflict — R4 demand-side faithfulness HOLDS at the binding band for n=32 (wf-LC excess prime is a DEGENERATE-band artifact)
+
+LANE L1 settles the standing conflict: **wf-LC** (f830bbcc7) claimed R4 far-line/demand-side
+char-p faithfulness FAILS at n=32 via an exact prize-scale excess prime; **OT2** (01f2ea637) claimed
+it HOLDS. RESOLUTION (reproducible, two independent engines): **OT2 is correct — faithful at the
+binding band. wf-LC's excess prime is real but lives at a DEGENERATE (non-binding) band.**
+
+OBJECT. Far-line incidence I(a,b;r) over mu_n in F_p, ρ=1/4 (k=n/4), budget B=n. The binding
+AGREEMENT-SET SIZE is the EXACT closed form s* = 2k-1 = √(kn)-1, so δ* = 1-s*/n = Johnson+1/n =
+farLineProxy n ρ. Validated p-INDEPENDENT (full far-direction sweep, multiple primes each) at
+n=8,16,20,24: δ* = 9/16, 11/20, 13/24 (=Johnson+1/n exactly), identical across primes.
+
+WHY OT2 WINS (the two-engine settlement).
+- Engine 1 (fresh INDEPENDENT F_p incidence, Newton divided-difference RS-membership — a different
+  algorithm from the in-tree left-null Gaussian engine; scripts/probes/rust/wfL1_farline_singledir.rs):
+  reproduces the reference EXACTLY (n=16 binder (10,4): I=9 good@size7, I=89 bad@size6, identical
+  across p=200017/500113). The binding size s*=2k-1 is OVER-determined (size-k = k-1 >= 2 for k>=3):
+  n=16 size7 (size-k=3), n=32 size15 (size-k=7).
+- wf-LC computed N(h_3(ζ_32^T)) at SUBSET SIZE w=|T|=5 < k=8. A far agreement set R with |R|<=k fits
+  a deg-<k codeword TRIVIALLY (k×|R| Vandermonde has trivial left-null) => incidence I=q SATURATED
+  for EVERY prime — no char-0 baseline below q to "exceed". DIRECT F_p confirmation at the wf-LC band
+  (size=5, dir b=11): I=p at BOTH the wf-LC excess prime p=206889121 AND a generic prime p=200033
+  (δ=0.844, r=27 — Ω(n) rungs ABOVE the binding band δ*=17/32=0.531). So it is the universal
+  size<=k saturation, NOT a char-p excess, and NOT the binding band.
+- Engine 2 (INDEPENDENT cyclotomic field-norm: det of mult-by-h matrix on ℤ[ζ_n]/(Φ_n);
+  scripts/probes/probe_wfL1_excess_prime_fast.py): reproduces wf-LC's N(h_3(ζ_32^T))=206889121
+  EXACTLY (PRIME, ≡1 mod 32, =n^5.525), AND reproduces OT2's β_excess(16)=3.09<4 at the binding band.
+  BOTH prior numbers are correct — they describe DIFFERENT bands. (n=32 binding-band norm itself is
+  computationally intractable to factor here, but is governed by the disc-2-power law below.)
+
+STRUCTURAL CLOSER (already proven in overdet-incidence-pindependence-proof.md). For n=2^μ the
+over-determined (size-k>=2) far-line incidence equals its char-0 value EXACTLY for all odd
+p≡1 (mod n): a spurious mod-p proportionality needs p | disc(x^n-1)=±n^n, a power of 2 => only p=2
+(excluded). The binding band (size 2k-1, over-det) is therefore p-INDEPENDENT — wf-LC's
+p=206889121 cannot appear there; it only appears at the degenerate w=5<k band.
+
+VERDICT: δ* demand-side / R4 faithfulness HOLDS at the binding band (OT2). The conflict was an
+apples-vs-oranges band mismatch (wf-LC: degenerate w=5<k, universally saturated, δ=0.844;
+binding: size 2k-1, over-det, δ*=17/32=0.531). NOT a prize closure: this pins the COMPUTABLE
+Johnson-lane far-line MONOMIAL object (δ*=Johnson+1/n=farLineProxy, p-independent, off-BGK). The
+prize floor 1-ρ-Θ(1/log n) lives strictly ABOVE Johnson (general/curve witnesses) — open core
+unchanged (deep-rung SUPPLY-side energy faithfulness r≈ln q, the Lam-Leung-mod-p wall).
+
+KAMBIRE-EDGE STATUS: δ*_far-line-monomial = Johnson+1/n is BELOW the char-0 Kambiré edge (the
+deeper general-witness object). wf-LC's "δ* < Kambiré edge strictly" CONCLUSION is consistent, but
+its STATED MECHANISM (a prize-scale char-p excess at the binding band) is WRONG — the gap is the
+Johnson-vs-floor (monomial-vs-general-witness) separation, p-INDEPENDENT, not a char-p excess.
+
+Lean: Frontier/_wfL1_OT2vsLC_Settled.lean (axiom-clean [propext,Classical.choice,Quot.sound];
+demand_deltaStar_n32: 17/32 = farLineProxy 32 (1/4); binding_is_overdetermined; wfLC_band_is_degenerate;
+L1_settlement). Probes: rust/wfL1_farline_singledir.rs, probe_wfL1_excess_prime_fast.py.
