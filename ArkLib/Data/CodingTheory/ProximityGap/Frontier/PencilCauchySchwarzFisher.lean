@@ -207,8 +207,33 @@ theorem pencil_cs_fisher (univ : Finset G)
     rw [hfactor, pow_two] at hkeyN
     exact Nat.le_of_mul_le_mul_left hkeyN hApos
 
+/-- **The `√` extraction for the Cauchy-Schwarz pencil bound** (the CS-form analog of
+`stepanov_sqrt_bound` and `PencilSunflowerCore.pencil_sunflower_sqrt_bound`).
+From `pencil_cs_fisher`'s count `r·(r−1) ≤ (M+1)(N−1)` the offset root count satisfies
+
+  `(r − 1)² < (M + 1)·N`,
+
+i.e. `r − 1 < √((M+1)N)`, `r ≤ 1 + √((M+1)N)`. At `M = 0` this is `(r−1)² < N` (the Johnson radius
+`√N`, recovering `stepanov_sqrt_bound`); at the prize core `M ≍ n/2` the radius becomes
+`√((n/2)N) ≍ √(n·N/2)`, the Johnson-scale ceiling (NOT sub-Johnson). The strict `<` holds for all
+`N ≥ 1` since `(r−1)² ≤ r(r−1) ≤ (M+1)(N−1) < (M+1)N`. -/
+theorem pencil_cs_sqrt_bound (univ : Finset G)
+    (r M : ℕ) (hr : 1 ≤ r) (B : Fin r → Finset G) (p : G) (hN : 1 ≤ univ.card)
+    (hsub : ∀ i, B i ⊆ univ)
+    (hsize : ∀ i, (B i).card = r)
+    (hp : ∀ i, p ∈ B i)
+    (hpair : ∀ i j, i ≠ j → ((B i).erase p ∩ (B j).erase p).card ≤ M) :
+    (r - 1) * (r - 1) < (M + 1) * univ.card := by
+  have hcount : r * (r - 1) ≤ (M + 1) * (univ.card - 1) :=
+    pencil_cs_fisher univ r M hr B p hsub hsize hp hpair
+  have hsq : (r - 1) * (r - 1) ≤ r * (r - 1) := Nat.mul_le_mul_right _ (by omega)
+  have hstrict : (M + 1) * (univ.card - 1) < (M + 1) * univ.card :=
+    (Nat.mul_lt_mul_left (by omega : 0 < M + 1)).mpr (by omega)
+  omega
+
 end ProximityGap.Frontier.PencilCauchySchwarzFisher
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Frontier.PencilCauchySchwarzFisher.sq_eq_two_mul_choose_two_add
 #print axioms ProximityGap.Frontier.PencilCauchySchwarzFisher.pencil_cs_fisher
+#print axioms ProximityGap.Frontier.PencilCauchySchwarzFisher.pencil_cs_sqrt_bound
