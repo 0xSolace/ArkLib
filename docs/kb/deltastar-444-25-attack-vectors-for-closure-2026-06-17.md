@@ -155,3 +155,22 @@ frontier, and the prize remains the one open analytic input.**
 > Method: machine-tested (V1: `E_3=15n³−45n²+40n` exact, `W_3=0`; V2: dyadic ratio 3.88→2.82) in
 > `probe_attack_vectors.py`; vectors and ratings by direct analysis (agent fan-out weekly-limited to Jun 20).
 > No fabricated closure.
+
+---
+
+## Update (2026-06-17) — attacked the gap-hunts + landed the rigidity
+
+**B6 gap-hunt — machine result (`probe_gaphunt_b1b6.py`):** at feasible n the worst-case floor binding fold
+**EQUALS** the KKH26 ceiling fold `r=k+1` (n=8: both fold 3, list=8=budget; n=16: both fold 5,
+list=16=budget). The floor and ceiling **coincide at the proxy** — the interior gap that would make the
+prize easier than the wall is NOT visible at accessible scale (it only opens at the prize regime). So the
+gap-hunts find **no easy reduction gap** — strengthening the wall, not breaching it. (B1's exact-radius
+tolerance remains the open theoretical question; it cannot be settled at feasible n since the interior
+regime is unreachable.)
+
+**C2 LANDED (`_DeltaStarBindingRigidity`, axiom-clean, 0 sorryAx):** the all-or-nothing rigidity is now a
+theorem — `interior_threshold_strict` (`√n < √(n·L) < n`, the interior is a genuine middle scale),
+`partial_bound_overshoots` (`√(n·L) < n^{1/2+c}` when `L < n^{2c}`, so a polynomially-weaker bound
+overshoots — no partial interior), `deltaStar_determination_all_or_nothing` (assembled). This proves SOTA
+exponent gains short of the exact `1/2`-with-log scale (di Benedetto `0.9583`, etc.) **cannot** move δ\*
+off Johnson — determination is sharp at the `√(n log m)` scale, the single open BGK input.
