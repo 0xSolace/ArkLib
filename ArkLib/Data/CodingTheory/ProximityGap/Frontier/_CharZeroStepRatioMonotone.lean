@@ -108,6 +108,55 @@ theorem charZero_stepRatio_monotone_r7 {n : ℝ} (hn : 8 ≤ n) :
     pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, pow_nonneg hd 15,
     pow_nonneg hd 16, mul_nonneg hd hd]
 
+
+/-- **The r = 2 gap is strict/non-vacuous** in the prize regime `n ≥ 8`. -/
+theorem charZero_stepRatio_monotone_r2_strict {n : ℝ} (hn : 8 ≤ n) :
+    5 * E2 n * E4 n < 7 * (E3 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 4 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E2, E3, E4]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    hpos]
+
+/-- **The r = 3 gap is strict/non-vacuous** in the prize regime `n ≥ 8`. -/
+theorem charZero_stepRatio_monotone_r3_strict {n : ℝ} (hn : 8 ≤ n) :
+    7 * E3 n * E5 n < 9 * (E4 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 4 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E3, E4, E5]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, hpos]
+
+/-- **The r = 4 gap is strict/non-vacuous** in the prize regime `n ≥ 8`. -/
+theorem charZero_stepRatio_monotone_r4_strict {n : ℝ} (hn : 8 ≤ n) :
+    9 * E4 n * E6 n < 11 * (E5 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 4 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E4, E5, E6]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
+    hpos]
+
+/-- **The r = 5 gap is strict/non-vacuous** in the prize regime `n ≥ 8`. -/
+theorem charZero_stepRatio_monotone_r5_strict {n : ℝ} (hn : 8 ≤ n) :
+    11 * E5 n * E7 n < 13 * (E6 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 8 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E5, E6, E7]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
+    pow_nonneg hd 11, pow_nonneg hd 12, hpos]
+
+/-- **The r = 6 gap is strict/non-vacuous** in the prize regime `n ≥ 8`. -/
+theorem charZero_stepRatio_monotone_r6_strict {n : ℝ} (hn : 8 ≤ n) :
+    13 * E6 n * E8 n < 15 * (E7 n)^2 := by
+  have hd : (0 : ℝ) ≤ n - 8 := by linarith
+  have hpos : (0 : ℝ) < 1 := by norm_num
+  simp only [E6, E7, E8]
+  nlinarith [hd, pow_nonneg hd 2, pow_nonneg hd 3, pow_nonneg hd 4, pow_nonneg hd 5,
+    pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
+    pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, hpos]
+
 /-- **The r = 7 gap is strict/non-vacuous:** in the same prize regime `n ≥ 8`, the landed
 non-strict rung actually has positive slack. This records that the `r = 7` char-0 step-ratio drop
 is genuine, not just equality transported from the Gaussian/Wick model. -/
@@ -120,6 +169,19 @@ theorem charZero_stepRatio_monotone_r7_strict {n : ℝ} (hn : 8 ≤ n) :
     pow_nonneg hd 6, pow_nonneg hd 7, pow_nonneg hd 8, pow_nonneg hd 9, pow_nonneg hd 10,
     pow_nonneg hd 11, pow_nonneg hd 12, pow_nonneg hd 13, pow_nonneg hd 14, pow_nonneg hd 15,
     pow_nonneg hd 16, hpos]
+
+
+/-- **All accessible char-0 step-ratio drops are strict** for r = 2,3,4,5,6,7 in the prize
+regime `n ≥ 8`. This is the non-vacuity companion to `charZero_stepRatio_monotone_r2_to_r7`:
+the char-0 model is genuinely *below* Wick log-convex equality at every landed rung, not merely
+non-strict by transported equality. -/
+theorem charZero_stepRatio_strict_r2_to_r7 {n : ℝ} (hn : 8 ≤ n) :
+    (5 * E2 n * E4 n < 7 * (E3 n)^2) ∧ (7 * E3 n * E5 n < 9 * (E4 n)^2) ∧
+      (9 * E4 n * E6 n < 11 * (E5 n)^2) ∧ (11 * E5 n * E7 n < 13 * (E6 n)^2) ∧
+        (13 * E6 n * E8 n < 15 * (E7 n)^2) ∧ (15 * E7 n * E9 n < 17 * (E8 n)^2) :=
+  ⟨charZero_stepRatio_monotone_r2_strict hn, charZero_stepRatio_monotone_r3_strict hn,
+   charZero_stepRatio_monotone_r4_strict hn, charZero_stepRatio_monotone_r5_strict hn,
+   charZero_stepRatio_monotone_r6_strict hn, charZero_stepRatio_monotone_r7_strict hn⟩
 
 /-- **The char-0 step ratio `R(r)` is ANTITONE for r = 2,3,4,5,6,7** — proven from the exact energy closed
 forms. So the smooth-subgroup energy sequence is *sub-Gaussian* (less log-convex than the Gaussian/Wick
@@ -164,6 +226,13 @@ end ArkLib.ProximityGap.CharZeroStepRatioMonotone
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r6
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r7
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r7_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r3_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r4_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r5_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r6_strict
+#print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_strict_r2_to_r7
+
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r7
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r6
 #print axioms ArkLib.ProximityGap.CharZeroStepRatioMonotone.charZero_stepRatio_monotone_r2_to_r5
