@@ -1529,6 +1529,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS10_analytic_rank_reenc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_layercake_moment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_mgf_rate_monotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_subexp_tail_to_slack
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS11_survival_to_mgf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS1_transfer_slack_prize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_equidist_to_M
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfS2_participation_floor
