@@ -57,6 +57,7 @@ open Polynomial
 namespace ArkLib.ProximityGap.SpurPrimeReducible
 
 local instance fact3 : Fact (Nat.Prime 3) := ⟨by decide⟩
+local instance fact5 : Fact (Nat.Prime 5) := ⟨by decide⟩
 
 /-- **`Φ_{2^m} = X^{2^{m−1}} + 1` over any commutative ring** (`m ≥ 1`). The `p = 2` prime-power
 cyclotomic; pulled out as a reusable named form. -/
@@ -102,7 +103,7 @@ theorem not_irreducible_comp_sq_of_not_irreducible {K : Type*} [Field K] {p : K[
   rw [irreducible_iff, not_and_or] at hred
   rcases hred with h | h
   · exact absurd hpu h
-  · push_neg at h
+  · push Not at h
     obtain ⟨a, b, hab, hau, hbu⟩ := h
     -- a, b have positive degree (non-unit, nonzero since product is p ≠ 0)
     have ha0 : a ≠ 0 := by rintro rfl; simp [hab] at hp0
@@ -118,7 +119,7 @@ theorem not_irreducible_comp_sq_of_not_irreducible {K : Type*} [Field K] {p : K[
           (by rw [Polynomial.degree_eq_natDegree hb0, h0]; rfl)) hbu
       · exact h0
     -- lift: p.comp(X²) = a.comp(X²) * b.comp(X²)
-    rw [irreducible_iff, not_and_or]; right; push_neg
+    rw [irreducible_iff, not_and_or]; right; push Not
     refine ⟨a.comp (X ^ 2), b.comp (X ^ 2), by rw [hab, mul_comp], ?_, ?_⟩
     · -- a.comp(X²) non-unit: its natDegree = 2*natDegree a > 0
       intro hu
@@ -133,6 +134,7 @@ theorem not_irreducible_comp_sq_of_not_irreducible {K : Type*} [Field K] {p : K[
 /-- `Φ_{2^m}` over `F_3` has positive degree for `m ≥ 1` (`natDegree = 2^{m-1} ≥ 1`). -/
 theorem natDegree_cyclotomic_two_pow_pos {m : ℕ} (hm : 1 ≤ m) :
     0 < (cyclotomic (2 ^ m) (ZMod 3)).natDegree := by
+  have _hm0 : 0 < m := by omega
   rw [Polynomial.natDegree_cyclotomic]
   have : 0 < Nat.totient (2 ^ m) := Nat.totient_pos.2 (by positivity)
   exact this
@@ -148,7 +150,7 @@ theorem not_irreducible_phi8_mod3 : ¬ Irreducible (cyclotomic (2 ^ 3) (ZMod 3))
           calc (3 : (ZMod 3)[X]) = C (3 : ZMod 3) := by norm_cast
             _ = 0 := by rw [this]; exact map_zero C
         linear_combination (X ^ 2) * h3]
-  rw [irreducible_iff, not_and_or]; right; push_neg
+  rw [irreducible_iff, not_and_or]; right; push Not
   refine ⟨X ^ 2 + X - 1, X ^ 2 - X - 1, rfl, ?_, ?_⟩
   · intro hu
     have hd : (X ^ 2 + X - 1 : (ZMod 3)[X]).natDegree = 0 := Polynomial.natDegree_eq_zero_of_isUnit hu
@@ -186,6 +188,51 @@ theorem not_irreducible_cyclotomic_two_pow_mod3 {m : ℕ} (hm : 3 ≤ m) :
       exact not_irreducible_comp_sq_of_not_irreducible
         (natDegree_cyclotomic_two_pow_pos hk1) (ih hk)
 
+/-- **Explicit `F_5` half-degree factorization of every dyadic cyclotomic tower level.** For `m ≥ 2`,
+`2² = -1` in `F_5`, so
+`Φ_{2^m}(X) = X^{2^{m-1}} + 1 = (X^{2^{m-2}} + 2)(X^{2^{m-2}} - 2)`.
+This gives a second uniform candidate-bad-prime tower (`p = 5`) without invoking the abstract
+cyclotomic-order irreducibility criterion. -/
+theorem cyclotomic_two_pow_mod5_factor {m : ℕ} (hm : 2 ≤ m) :
+    cyclotomic (2 ^ m) (ZMod 5) =
+      (X ^ (2 ^ (m - 2)) + 2) * (X ^ (2 ^ (m - 2)) - 2) := by
+  rw [cyclotomic_two_pow (by omega)]
+  have hpow : 2 ^ (m - 1) = 2 * 2 ^ (m - 2) := by
+    have h : m - 1 = (m - 2) + 1 := by omega
+    rw [h, pow_succ, mul_comm]
+  rw [hpow, pow_mul]
+  have h5 : (5 : (ZMod 5)[X]) = 0 := by
+    have : (5 : ZMod 5) = 0 := by decide
+    calc (5 : (ZMod 5)[X]) = C (5 : ZMod 5) := by norm_cast
+      _ = 0 := by rw [this]; exact map_zero C
+  linear_combination h5
+
+/-- **Second uniform candidate-bad-prime tower: `Φ_{2^m}` is reducible over `F_5` for every `m ≥ 3`.**
+The two factors in `cyclotomic_two_pow_mod5_factor` both have positive degree, hence are non-units.
+Honest scope: this is only the reducibility necessary condition for a char-`5` spur collision, not a
+short-relation witness and not a CORE bound. -/
+theorem not_irreducible_cyclotomic_two_pow_mod5 {m : ℕ} (hm : 3 ≤ m) :
+    ¬ Irreducible (cyclotomic (2 ^ m) (ZMod 5)) := by
+  rw [cyclotomic_two_pow_mod5_factor (by omega)]
+  rw [irreducible_iff, not_and_or]; right; push Not
+  refine ⟨X ^ (2 ^ (m - 2)) + 2, X ^ (2 ^ (m - 2)) - 2, rfl, ?_, ?_⟩
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) + 2 : (ZMod 5)[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) + 2 : (ZMod 5)[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+  · intro hu
+    have hd : (X ^ (2 ^ (m - 2)) - 2 : (ZMod 5)[X]).natDegree = 0 :=
+      Polynomial.natDegree_eq_zero_of_isUnit hu
+    have hdeg : (X ^ (2 ^ (m - 2)) - 2 : (ZMod 5)[X]).natDegree = 2 ^ (m - 2) := by
+      compute_degree!
+    rw [hdeg] at hd
+    have hpos : 0 < 2 ^ (m - 2) := by positivity
+    omega
+
 end ArkLib.ProximityGap.SpurPrimeReducible
 
 /-! ## Axiom audit -/
@@ -193,3 +240,5 @@ end ArkLib.ProximityGap.SpurPrimeReducible
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_succ_eq_comp_sq
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_comp_sq_of_not_irreducible
 #print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod3
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.cyclotomic_two_pow_mod5_factor
+#print axioms ArkLib.ProximityGap.SpurPrimeReducible.not_irreducible_cyclotomic_two_pow_mod5
