@@ -23,6 +23,8 @@ sumset-support fact `r(c) = 0` off `G + G`
 
 * `gcd_natDegree_eq_zero_of_not_mem_sumset` : `c ∉ G + G ⟹ deg gcd(Xⁿ−1, (C c−X)ⁿ−1) = 0`.
 * `gcd_isUnit_of_not_mem_sumset` : `c ∉ G + G ⟹ IsUnit (gcd (Xⁿ−1) (reprPoly c n))`.
+* `sum_gcd_degree_sq_eq_sum_sumset` : the Stepanov target `Σ_c (deg gcd_c)²` over `F` EQUALS the
+  sum over `G + G` exactly (each off-sumset summand is `0`, not just dominated).
 
 This is **strictly stronger** than the rep-count support fact (which only says `r(c) = 0`):
 on a smooth domain the entire `gcd` polynomial degenerates to a unit off the sumset, so the
@@ -82,5 +84,20 @@ theorem gcd_isUnit_of_not_mem_sumset (G : Finset F) {n : ℕ} (hn : 0 < n)
   exact Polynomial.isUnit_iff_degree_eq_zero.mpr
     (Polynomial.natDegree_eq_zero_iff_degree_le_zero.mp hdeg |>.antisymm
       (Polynomial.zero_le_degree_iff.mpr hne))
+
+/-- **The squared-gcd-degree sum collapses to the sumset (exact).** Since each off-sumset gcd
+degree is `0` (hence its square is `0`), the full Stepanov target sum over `F` equals the sum
+restricted to `G + G`. This is the gcd-degree-`²`-level analogue of the rep-count identity
+`addEnergy_eq_sum_sumset_repFilter_sq`, applied to the actual Stepanov object
+`Σ (deg gcd_c)²`. -/
+theorem sum_gcd_degree_sq_eq_sum_sumset (G : Finset F) {n : ℕ} (hn : 0 < n)
+    (hGmem : ∀ z, z ∈ G ↔ z ^ n = 1) (hsep : (n : F) ≠ 0)
+    (hsplit : (X ^ n - 1 : F[X]).Splits) :
+    (∑ c : F, ((gcd (X ^ n - 1 : F[X]) (reprPoly c n)).natDegree) ^ 2)
+      = ∑ c ∈ G + G, ((gcd (X ^ n - 1 : F[X]) (reprPoly c n)).natDegree) ^ 2 := by
+  classical
+  refine (Finset.sum_subset (Finset.subset_univ (G + G)) ?_).symm
+  intro c _ hc
+  rw [gcd_natDegree_eq_zero_of_not_mem_sumset G hn hGmem hsep hsplit hc, pow_two, Nat.mul_zero]
 
 end ArkLib.ProximityGap.SubgroupGaussSumFourthMoment
