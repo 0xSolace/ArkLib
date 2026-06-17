@@ -16,8 +16,13 @@ always check this census before treating a `*Residual` name as open proof debt.
 > (`Frontier/_wf6P2_charp_lamleung_slack.lean`) consumes the char-`0` Lam–Leung ceiling
 > `(S-M1) : A_r ≤ (2r−1)‼·n^r` as a free hypothesis (`hZceiling`). That input is now **PROVEN
 > unconditionally** (axiom-clean) at `r ∈ {2,3}` (`Frontier/_wf9OT4_charzero_ceiling_discharge.lean`)
-> and at `r ∈ {7,8,9}` (`Frontier/_wfL6_charzero_ceiling_discharge_high.lean`), from the in-tree
-> exact `E_r` closed forms (`_AvL2_E{7,8,9}ClosedForm.lean`, `CharZeroEnergyThree`). So the slack
+> at `r ∈ {7,8,9}` (`Frontier/_wfL6_charzero_ceiling_discharge_high.lean`), and — close-out round —
+> at the MIDDLE rungs `r ∈ {4,5,6}` (`Frontier/_wfL6_charzero_ceiling_discharge_mid.lean`), from the
+> in-tree exact `E_r` closed forms (`_CharZeroEnergyClosedForm.lean`'s `E{4,5,6}_le_wick`,
+> `_AvL2_E{7,8,9}ClosedForm.lean`, `CharZeroEnergyThree`). The mid-rung file adds the previously
+> missing strict-slack certificates `deficit_{four,five,six}_pos` (the `deficit_*_pos` ladder
+> stopped at `r=3`), so the char-`0` ceiling-discharge ladder is now **contiguous and unconditional
+> at `r = 2..9`** (axiom-clean on the integer closed-form carrier). So the slack
 > route's `(S-M1)` at these rungs rests on ONLY the open `(P2-Slack)` spurious-domination residual
 > `Spur_r(p) ≤ ceiling − E_r` — the char-`0` half is discharged, the strict slack
 > `(2r−1)‼·n^r − E_r > 0` is exhibited (non-vacuous). The remaining `(P2-Slack)` residual is the
