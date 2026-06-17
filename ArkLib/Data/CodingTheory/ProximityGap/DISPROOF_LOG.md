@@ -15789,3 +15789,41 @@ new worst-case counting-cap no-go sharpening wf-S5. The open content across all 
 object: char-p additive-energy excess above char-0 Wick to depth r~ln q, uniform over worst-case
 Fermat/structured primes = BCHKS Conj 1.12 = the char-p BGK/Paley √-cancellation wall. Probe:
 scripts/probes/probe_444_girth_countingcap_fermat.py. CORE OPEN.
+
+---
+
+## A02 (#444): MULTIPLICATIVE / dilation-action large sieve — COLLAPSES (κ=O(1) NOT delivered)
+
+**Angle A02 [MILDER target]: bound the S2 equidistribution constant `κ` via a multiplicative /
+almost-orthogonality large sieve on the per-coset spectrum.** VERDICT = OBSTRUCTION (no gain over
+the second moment), exactly mirroring the *additive* collapse in `LargeSieveParsevalCollapse.lean`.
+
+The per-coset mass `w_j=|η_{g^j}|²` is a function on the cyclic quotient `Q=F_p^*/μ_n ≅ ℤ/m`,
+`m=(p-1)/n`; dilation = the `+1` shift. Expand in the multiplicative characters of `Q` (= DFT of
+`ℤ/m`): `w_j=∑_k W(k)e(jk/m)`, `W(0)=mean(w)=n(p-n)/(p-1)≈n`. The two sieve ceilings on `κ=max_j w_j/W(0)`:
+* **ℓ¹ (large sieve, triangle):** `κ ≤ L¹/W(0)`, `L¹=∑_k|W(k)|`.
+* **ℓ² (Cauchy–Schwarz/Plancherel):** `κ ≤ √m·(L²/W(0))`, `L²=√(∑_k|W(k)|²)`.
+
+**EXACT measurement (`scripts/probes/rust/probe_wfA02_multiplicative_largesieve.rs`, β=4, n=8..128,
+STRUCT max-v2 and GENERIC min-v2 primes):**
+* The dilation spectrum is **Ramanujan-FLAT**: `max_{k≠0}|W(k)| ≈ W(0)/√m` (e.g. n=16: 0.0424 vs
+  1/√m=0.0118; n=8: 0.0220 vs 0.0089). Hence `L¹/W(0)=(1.17–1.23)·√m` — flat ratio to `√m` across
+  all five n: 1.173 (n=8), 1.178 (n=12), 1.230 (n=16), 1.224 (n=24). So `L¹/W(0)=Θ(√m)=Θ(√p/n)`.
+* `L²/W(0) ≈ 1.62–1.70` (FLAT, bounded); `(L²/W(0))²≈2.6–2.9` = exactly the 4th-moment PAPR `E₂/mean²`.
+* `κ=max/mean` GROWS slowly: 7.8 (n=8) → 11.7 (n=16) → 16.3 (n=32) → 19.9 (n=64) → 26.7 (n=128),
+  consistent with `κ≈M²/n≈(M/√n)²~log(p/n)` — NOT O(1).
+
+**Why both ceilings are vacuous at prize scale.** ℓ¹ ceiling `=Θ(√m)`: at the prize point
+`m≈2^90`, `√m≈2^45`, vs target `√log(p/n)≈9.5` — vacuous by `2^45/9.5`. ℓ² ceiling `=√m·(L²/W(0))`
+ALSO carries `√m` (bounded `L²` does NOT rescue it). The bounded `L²` is exactly the proven
+second/fourth Parseval moment (`subgroup_gaussSum_fourthMoment`), which the conservation-law
+meta-theorem caps at Johnson `n^{1/2}`. **The multiplicative large sieve is ℓ²-blind, just like the
+additive one** — it reproduces only the diagonal/Parseval bound it is built from. The only way to
+beat `√m` is genuine off-diagonal cancellation in the dilation correlation = sub-√-cancellation of
+the η's = the BGK/Paley wall itself. CORE OPEN.
+
+Lean guardrail (axiom-clean `{propext,Classical.choice,Quot.sound}`, real `lake build` OK):
+`Frontier/_wfA02_multiplicative_largesieve.lean` — `largeSieve_l1_ceiling` (the ℓ¹ bound),
+`ramanujan_flat_l1_vacuous` + `ramanujan_flat_l1_threshold` (flatness `L¹≥a√m·W₀` ⟹ ceiling
+`≥a√m > T` once `m>(T/a)²`), `l2_ceiling_also_loses_sqrt_m` (ℓ² ceiling `=√m·(L²/W₀)`),
+`both_ceilings_theta_sqrt_m` (both `Θ(√m)`). NOT a closure; a precise sieve-vacuity obstruction.
