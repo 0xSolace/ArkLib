@@ -84,3 +84,44 @@ plan identifies exactly where a genuine escape lives and how to test it.
 
 > Machine: `probe_dyadic_tower.py` (onset scaling, `v_2(W_r)~2μ`). The Clifford/cusp-form targets (A1/C1)
 > need modular-forms / finite-group-invariant computation (next phase).
+
+---
+
+## ATTACK RESULTS (machine-verified this pass) — the structures rigorously examined
+
+I attacked the five structures directly. **The decisive two FAIL for clean, now-understood reasons:**
+
+- **A (Clifford group) — REFUTED.** Machine-tested (correct power-indexing, `probe_attack_structures.py`):
+  the symmetry group preserving the *fixed-`𝔭`* wraparound `{Σx≡Σy mod 𝔭}` is EXACTLY **dilation (`ζ^k↦ζ^{k+1}`,
+  order `n`) × negation (⊂ dilation) × swap × `S_r`-perms**. **Galois `ζ↦ζ^a` does NOT preserve it** (it
+  sends `𝔭↦𝔭^σ`, a different prime), and the full Clifford group (Fourier/quadratic-phase) mixes roots into
+  sums — neither acts. So there is NO `2^{O(μ²)}` Clifford divisibility; only `v_2(W_r) ~ μ` from dilation,
+  insufficient (`W_r ≫ 2^{v_2}`). **The "fixed-`𝔭` obstruction": the symmetries big enough to force `W_r=0`
+  (Galois, Clifford-Fourier) all MOVE the prime; the ones fixing `𝔭` (dilation) are small.**
+
+- **S4 (modular / transcendental generating function) — REFUTED.** The energy generating function is
+  `Σ_r E_r·t^r = (1/p)·Σ_b 1/(1−η_b²·t)` — **RATIONAL**, with poles exactly at the periods `η_b²` (order =
+  #distinct periods, ~172 at n=8). So `E_r` and `W_r` are C-finite (my earlier "not C-finite" was a
+  low-order-only test); the generating function literally **IS the period spectrum**. No transcendental /
+  mock-modular escape: sequence analysis of `W_r` reduces to the periods = the wall.
+
+- **B (Barnes–Wall theta), C (Clifford-invariant cusp forms) — undercut.** Both are about the *lattice*
+  theta (Clifford-invariant), but the wraparound is a fixed-`𝔭` subset whose generating function (above) is
+  the periods — so the lattice-theta connection routes back to the period spectrum, not an independent count.
+- **D (dyadic norm recursion):** onset-scaling complication (levels good/bad at different `p/n^4`); unresolved
+  but not obviously escaping.
+- **E (dilation divisibility):** PROVABLE `v_2(W_r) ≥ μ`, but insufficient (confirmed).
+
+## The sharpened understanding (the honest conclusion)
+The 2-power structures do NOT provide the escape, and now we know WHY, cleanly: **the wraparound `W_r` is a
+FIXED-PRIME object, and (i) the 2-power symmetries large enough to force it to vanish move the prime `𝔭`
+(only the small dilation×swap group fixes it), while (ii) its generating function is rational with poles =
+the periods.** So every structural handle on `W_r` routes back to the period spectrum at the fixed prime —
+which is the BGK wall itself. This is the *reason* the wall is irreducible at this object: not a failure of
+imagination, but that the wraparound's only fixed-`𝔭` invariants are the periods.
+
+**What survives as genuinely open** (not refuted, just unresolved): D (matched-thinness tower recursion),
+and the analytic question of whether the *specific* prize prime `p~2^38·n^4` (deep thin regime, smallest
+wraparound) is good — which is the effective-Linnik / `S`-unit problem, the irreducible analytic input. The
+2-power-structure hunt, rigorously executed, confirms the wall is the period spectrum and localizes the one
+genuine open input to the fixed-prime arithmetic. NO fabricated closure.
