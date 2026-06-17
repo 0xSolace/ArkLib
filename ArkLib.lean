@@ -330,6 +330,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitFRI
 import ArkLib.Data.CodingTheory.ProximityGap.ActionOrbitGeneralF
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyCubeBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGcdDegreeBound
+import ArkLib.Data.CodingTheory.ProximityGap.AddEnergySumsetSupport
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyGroupRepBound
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMathlibBridge
 import ArkLib.Data.CodingTheory.ProximityGap.AddEnergyMulHomogeneous
