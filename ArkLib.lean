@@ -2048,6 +2048,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Mu6LiteralBands
 import ArkLib.Data.CodingTheory.ProximityGap.Mu8AntipodalProfile
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRIMRank
 import ArkLib.Data.CodingTheory.ProximityGap.MuTwoPowDerandRefutation
+import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityAttainment
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityFiber
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityProducts
 import ArkLib.Data.CodingTheory.ProximityGap.MultiplicativeRigidityZMod
