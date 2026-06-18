@@ -80,6 +80,14 @@ namespace ArkLib.ProximityGap.C71TrinomialIncidence
 
 variable {F : Type*} [Field F] [DecidableEq F]
 
+/-- A positive-order root of unity in a field is nonzero. This packages the puncturing guard used
+by the C71 trinomial incidence callers: on `μ_n` with `n > 0`, the condition `x ≠ 0` is automatic. -/
+theorem ne_zero_of_pow_eq_one {n : ℕ} (hn : 0 < n) {x : F} (hx : x ^ n = 1) : x ≠ 0 := by
+  intro hx0
+  have hzero : x ^ n = 0 := by rw [hx0, zero_pow (Nat.ne_of_gt hn)]
+  rw [hx] at hzero
+  exact zero_ne_one hzero.symm
+
 /-- The **dehomogenised trinomial-direction polynomial** of a genuine trinomial
 `X^i - c1 X^j - c2 X^k` (`i > j > k`): divide by `X^k` to get the degree-`(i-k)` polynomial
 `X^(i-k) - C c1 * X^(j-k) - C c2`. Its `mu_n`-roots are exactly the nonzero `mu_n`-roots of the
@@ -279,6 +287,7 @@ theorem trinomial_incidence_card_le_span_unpunctured {n : ℕ} (S : Finset F) (c
 end ArkLib.ProximityGap.C71TrinomialIncidence
 
 /-! ## Axiom audit -/
+#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.ne_zero_of_pow_eq_one
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_root_iff_dehom
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinDirPoly_ne_zero
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree
