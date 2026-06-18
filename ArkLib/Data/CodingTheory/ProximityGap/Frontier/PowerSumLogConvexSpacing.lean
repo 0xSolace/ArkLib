@@ -27,6 +27,8 @@ exponent split `a_i^{t+k} = √(a_i^t)·√(a_i^{t+2k})`. The adjacent case `pow
 * `powerSum_sq_le_mul_spacing` — `(S_{t+k})^2 ≤ S_t · S_{t+2k}` for any nonnegative `a`, any `t, k`.
 * `powerSum_ratio_spacing_monotone` — the same-gap ratio rises one rung:
   `S_{t+k}/S_t ≤ S_{t+2k}/S_{t+k}`.
+* `powerSum_ratio_spacing_le_max_pow` — the gap-`k` ratio is bounded by `M^k` when
+  every spectral entry is at most `M`.
 
 ## Honesty / scope (rules 1,3,6 + ASYMPTOTIC GUARD)
 
@@ -88,8 +90,23 @@ theorem powerSum_ratio_spacing_monotone [Fintype ι] (a : ι → ℝ) (ha : ∀ 
   have hkey := powerSum_sq_le_mul_spacing a ha t k
   nlinarith [hkey]
 
+/-- **Gap-`k` ratio bounded by the spectral max to the `k`.** If every entry of the nonnegative
+spectrum is at most `M`, then `S_{t+k}/S_t ≤ M^k`. This is the general-gap version of
+`PowerSumRatioMonotone.powerSum_ratio_le_max` (`k = 1`). -/
+theorem powerSum_ratio_spacing_le_max_pow [Fintype ι] (a : ι → ℝ) (ha : ∀ i, 0 ≤ a i)
+    (M : ℝ) (hM : ∀ i, a i ≤ M) (t k : ℕ) (hSt : 0 < ∑ i, (a i) ^ t) :
+    (∑ i, (a i) ^ (t + k)) / (∑ i, (a i) ^ t) ≤ M ^ k := by
+  rw [div_le_iff₀ hSt, Finset.mul_sum]
+  refine Finset.sum_le_sum (fun i _ => ?_)
+  have hpow : (a i) ^ k ≤ M ^ k := pow_le_pow_left₀ (ha i) (hM i) k
+  have hsplit : (a i) ^ (t + k) = (a i) ^ k * (a i) ^ t := by
+    rw [Nat.add_comm t k, pow_add]
+  rw [hsplit]
+  exact mul_le_mul_of_nonneg_right hpow (pow_nonneg (ha i) t)
+
 end ProximityGap.Frontier.PowerSumLogConvexSpacing
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.PowerSumLogConvexSpacing.powerSum_sq_le_mul_spacing
 #print axioms ProximityGap.Frontier.PowerSumLogConvexSpacing.powerSum_ratio_spacing_monotone
+#print axioms ProximityGap.Frontier.PowerSumLogConvexSpacing.powerSum_ratio_spacing_le_max_pow
