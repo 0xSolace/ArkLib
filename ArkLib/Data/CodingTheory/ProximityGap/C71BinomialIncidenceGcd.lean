@@ -135,6 +135,26 @@ theorem binomial_incidence_card_le_gcd_unpunctured (S : Finset F) (c : F)
   rw [← C71BinomialIncidence.binomial_incidence_filter_punctured_eq_unpunctured S c hn hSn]
   exact binomial_incidence_card_le_gcd S c hij hSn
 
+/-- **Coprime-step binomial incidence is at most one.** In the gcd-tight C71 binomial bound, the
+most useful thin-subgroup rows are the steps `i-j` coprime to the subgroup order `n`: the power map
+`x ↦ x^(i-j)` has trivial kernel on `μ_n`, so a binomial direction has at most one nonzero root on
+any finite `S ⊆ μ_n`. This is the caller-facing exact-incidence corollary used to isolate the
+Sidon-like rows of the 2-sparse stratum. -/
+theorem binomial_incidence_card_le_one_of_coprime (S : Finset F) (c : F)
+    {i j n : ℕ} (hij : j < i) (hSn : ∀ x ∈ S, x ^ n = 1)
+    (hcop : Nat.Coprime (i - j) n) :
+    (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card ≤ 1 := by
+  simpa [hcop.gcd_eq_one] using binomial_incidence_card_le_gcd S c hij hSn
+
+/-- **Unpunctured coprime-step binomial incidence is at most one.** Positive-order `μ_n` removes
+the explicit `x ≠ 0` guard from `binomial_incidence_card_le_one_of_coprime`. -/
+theorem binomial_incidence_card_le_one_of_coprime_unpunctured (S : Finset F) (c : F)
+    {i j n : ℕ} (hn : 0 < n) (hij : j < i) (hSn : ∀ x ∈ S, x ^ n = 1)
+    (hcop : Nat.Coprime (i - j) n) :
+    (S.filter (fun x => x ^ i - c * x ^ j = 0)).card ≤ 1 := by
+  simpa [hcop.gcd_eq_one] using
+    binomial_incidence_card_le_gcd_unpunctured S c hn hij hSn
+
 end ArkLib.ProximityGap.C71BinomialIncidenceGcd
 
 /-! ## Axiom audit -/
@@ -143,5 +163,7 @@ namespace ArkLib.ProximityGap.C71BinomialIncidenceGcd
 #print axioms pow_gcd_of_pow_eq_of_pow_n
 #print axioms binomial_incidence_card_le_gcd
 #print axioms binomial_incidence_card_le_gcd_unpunctured
+#print axioms binomial_incidence_card_le_one_of_coprime
+#print axioms binomial_incidence_card_le_one_of_coprime_unpunctured
 
 end ArkLib.ProximityGap.C71BinomialIncidenceGcd
