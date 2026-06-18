@@ -106,6 +106,22 @@ theorem powerSum_ratio_monotone [Fintype ι] (a : ι → ℝ) (ha : ∀ i, 0 ≤
   have hkey := powerSum_sq_le_mul a ha t
   nlinarith [hkey]
 
+/-- **Two-step ratio chaining.** The adjacent monotonicity can be composed without re-opening the
+Cauchy--Schwarz proof: if `S_t`, `S_{t+1}`, and `S_{t+2}` are positive, then the lower-bracket
+ratio at depth `t` is already below the ratio two rungs later. -/
+theorem powerSum_ratio_two_step [Fintype ι] (a : ι → ℝ) (ha : ∀ i, 0 ≤ a i) (t : ℕ)
+    (hSt : 0 < ∑ i, (a i) ^ t) (hSt1 : 0 < ∑ i, (a i) ^ (t + 1))
+    (hSt2 : 0 < ∑ i, (a i) ^ (t + 2)) :
+    (∑ i, (a i) ^ (t + 1)) / (∑ i, (a i) ^ t)
+      ≤ (∑ i, (a i) ^ (t + 3)) / (∑ i, (a i) ^ (t + 2)) := by
+  calc
+    (∑ i, (a i) ^ (t + 1)) / (∑ i, (a i) ^ t)
+        ≤ (∑ i, (a i) ^ (t + 2)) / (∑ i, (a i) ^ (t + 1)) :=
+          powerSum_ratio_monotone a ha t hSt hSt1
+    _ ≤ (∑ i, (a i) ^ ((t + 1) + 2)) / (∑ i, (a i) ^ ((t + 1) + 1)) :=
+          powerSum_ratio_monotone a ha (t + 1) hSt1 hSt2
+    _ = (∑ i, (a i) ^ (t + 3)) / (∑ i, (a i) ^ (t + 2)) := by ring_nf
+
 /-- **The ratio is bounded by the spectral max.** With `S_t = ∑ a_i^t`, `M` an entrywise upper bound
 (`∀ i, a_i ≤ M`) and `S_t > 0`, the ratio `S_{t+1}/S_t ≤ M`. With `powerSum_ratio_monotone` the lower
 bound on `M = max a` tightens with depth, approaching `max a` from below. -/
@@ -123,4 +139,5 @@ end ProximityGap.Frontier.PowerSumRatioMonotone
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.PowerSumRatioMonotone.powerSum_sq_le_mul
 #print axioms ProximityGap.Frontier.PowerSumRatioMonotone.powerSum_ratio_monotone
+#print axioms ProximityGap.Frontier.PowerSumRatioMonotone.powerSum_ratio_two_step
 #print axioms ProximityGap.Frontier.PowerSumRatioMonotone.powerSum_ratio_le_max
