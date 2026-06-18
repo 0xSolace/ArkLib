@@ -193,6 +193,25 @@ theorem exists_window_scalar_binomial_incidence_le_one (S : Finset F)
   have hpos : 0 < S.card := Finset.card_pos.mpr hne
   omega
 
+/-- **Caller-facing light scalar for ordinary vanishing incidence on `μ_n`.** In every nonempty
+positive-order root-of-unity dilation window, some scalar has ordinary binomial vanishing incidence
+at most `1`. This is the unpunctured pigeonhole form consumed by incidence callers. -/
+theorem exists_window_scalar_binomial_incidence_unpunctured_le_one (S : Finset F) {n : ℕ}
+    {i j : ℕ} (hn : 0 < n) (hij : j ≤ i)
+    (hSn : ∀ x ∈ S, x ^ n = 1) (hclosed : ∀ x ∈ S, x ^ (i - j) ∈ S)
+    (hne : S.Nonempty) :
+    ∃ c ∈ S, (S.filter (fun x => x ^ i - c * x ^ j = 0)).card ≤ 1 := by
+  have hzero : (0 : F) ∉ S := by
+    intro h0
+    have hpow : (0 : F) ^ n = 1 := hSn 0 h0
+    rw [zero_pow (Nat.ne_of_gt hn)] at hpow
+    exact zero_ne_one hpow
+  obtain ⟨c, hc, hle⟩ := exists_window_scalar_binomial_incidence_le_one S hij hclosed hzero hne
+  refine ⟨c, hc, ?_⟩
+  rw [← ArkLib.ProximityGap.C71BinomialIncidence.binomial_incidence_filter_punctured_eq_unpunctured
+    (S := S) (c := c) (hn := hn) (hSn := hSn)]
+  exact hle
+
 end ArkLib.ProximityGap.C71BinomialWindowAverage
 
 /-! ## Axiom audit -/
@@ -201,3 +220,4 @@ end ArkLib.ProximityGap.C71BinomialWindowAverage
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card_of_subgroup
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card_unpunctured_of_roots
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.exists_window_scalar_binomial_incidence_le_one
+#print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.exists_window_scalar_binomial_incidence_unpunctured_le_one
