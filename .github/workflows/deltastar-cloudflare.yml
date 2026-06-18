@@ -48,6 +48,16 @@ jobs:
           grep -q "bootstrap-version:" out/skill.md
           grep -q "bootstrap-version:" out/codex.md
 
+      - name: Ensure Cloudflare Pages production branch is main
+        run: |
+          curl -fsS -X PATCH \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/pages/projects/deltastar-paper" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"production_branch":"main"}' \
+            -o /tmp/cloudflare-pages-project.json
+          node -e "const r = require('/tmp/cloudflare-pages-project.json'); if (!r.success) { console.error(JSON.stringify(r)); process.exit(1); }"
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
