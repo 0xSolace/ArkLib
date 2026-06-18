@@ -124,6 +124,38 @@ theorem sq_card_pow_le_support_mul_mulEnergy (S : Finset G) :
   have hcs := ArkLib.sq_sum_le_card_support_mul_sum_sq (fun ρ : G => (S ∩ dilate ρ S).card)
   rwa [hsum] at hcs
 
+/-- **The support-aware pigeonhole bound for autocorrelation.**  If every nonzero autocorrelation
+fiber is bounded by `M₀`, and only `K` shifts have a nonzero fiber, then the first double-count forces
+
+  `|S|² ≤ K · M₀`,
+
+where `K = #{ρ : |S ∩ ρS| ≠ 0}` is the autocorrelation-support size.  This is the exact support
+version of the first-moment pigeonhole: a large set cannot have both small overlap fibers and small
+dilation-difference support.  For a subgroup the support is `H` and the inequality becomes the sharp
+`|H|² ≤ |H|·M₀`, hence again `|H| ≤ M₀` after cancellation. -/
+theorem sq_card_le_support_mul_maxAutocorr (S : Finset G) {M₀ : ℕ}
+    (hM₀ : ∀ ρ : G, (S ∩ dilate ρ S).card ≤ M₀) :
+    S.card ^ 2
+      ≤ (Finset.univ.filter (fun ρ : G => (S ∩ dilate ρ S).card ≠ 0)).card * M₀ := by
+  classical
+  let f : G → ℕ := fun ρ => (S ∩ dilate ρ S).card
+  let supp : Finset G := Finset.univ.filter (fun ρ : G => f ρ ≠ 0)
+  have hsum_all : ∑ ρ : G, f ρ = S.card ^ 2 :=
+    PencilAutocorrSumDoubleCount.autocorr_sum_eq_sq S
+  have hsum_support : (∑ ρ : G, f ρ) = ∑ ρ ∈ supp, f ρ := by
+    refine (Finset.sum_subset (Finset.filter_subset _ _) ?_).symm
+    intro ρ _ hρ
+    simp only [f, Finset.mem_filter, Finset.mem_univ, true_and, not_not] at hρ
+    exact hρ
+  calc
+    S.card ^ 2 = ∑ ρ : G, f ρ := hsum_all.symm
+    _ = ∑ ρ ∈ supp, f ρ := hsum_support
+    _ ≤ ∑ ρ ∈ supp, M₀ := by
+      refine Finset.sum_le_sum ?_
+      intro ρ _
+      exact hM₀ ρ
+    _ = supp.card * M₀ := by rw [Finset.sum_const, smul_eq_mul]
+
 /-- **Subgroup tightness of the Cauchy–Schwarz energy floor.**  For the prize object `S = H` (a
 multiplicative subgroup), the autocorrelation support is EXACTLY `H` (`subgroup_autocorr_support`),
 so `#support = |H|`, and the Cauchy–Schwarz floor `|H|⁴ ≤ #support · E_×(H)` becomes
@@ -158,6 +190,25 @@ theorem subgroup_support_mul_energy_eq_card_four (H : Finset G)
   rw [subgroup_support_card_eq H hmul hinv hne,
     subgroup_multiplicativeEnergy_eq_card_cube hmul hinv]
   ring
+/-- **Subgroup exactness from support-aware pigeonhole.**  For a multiplicative subgroup `H`, the
+autocorrelation support has size exactly `|H|`; therefore the support-aware pigeonhole bound alone
+already forces the worst overlap bound `M₀` to be at least `|H|` (for nonempty `H`).  This is the
+first-moment support counterpart to `subgroup_maxAutocorr_ge_card`, and pins the same all-or-nothing
+subgroup rigidity without invoking the squared-energy identity. -/
+theorem subgroup_maxAutocorr_ge_card_of_support {H : Finset G} {M₀ : ℕ}
+    (hmul : ∀ a ∈ H, ∀ b ∈ H, a * b ∈ H)
+    (hinv : ∀ a ∈ H, a⁻¹ ∈ H)
+    (hne : H.Nonempty)
+    (hM₀ : ∀ ρ : G, (H ∩ dilate ρ H).card ≤ M₀) :
+    H.card ≤ M₀ := by
+  have hbound := sq_card_le_support_mul_maxAutocorr H hM₀
+  rw [subgroup_support_card_eq H hmul hinv hne] at hbound
+  have hpos : 0 < H.card := Finset.card_pos.mpr hne
+  have hsq : H.card ^ 2 = H.card * H.card := by ring
+  rw [hsq] at hbound
+  exact Nat.le_of_mul_le_mul_left hbound hpos
+
+
 
 end ProximityGap.Frontier.PencilAutocorrelation
 
@@ -170,6 +221,10 @@ open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms subgroup_maxAutocorr_ge_card
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms sq_card_pow_le_support_mul_mulEnergy
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms sq_card_le_support_mul_maxAutocorr
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms subgroup_maxAutocorr_ge_card_of_support
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms subgroup_support_card_eq
 open ProximityGap.Frontier.PencilAutocorrelation in
