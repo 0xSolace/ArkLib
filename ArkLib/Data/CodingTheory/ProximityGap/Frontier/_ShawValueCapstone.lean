@@ -40,6 +40,19 @@ noncomputable def shawScale (q n : ℝ) : ℝ :=
 noncomputable def shawValue (q n M : ℝ) : ℝ :=
   M / shawScale q n
 
+
+/-- In the genuine prize regime `q > n > 0`, the Shaw normalization scale is positive.
+This discharges the only analytic side condition in the capstone from the usual thin-subgroup
+size assumptions. -/
+theorem shawScale_pos_of_pos_lt {q n : ℝ} (hn : 0 < n) (hnq : n < q) :
+    0 < shawScale q n := by
+  unfold shawScale
+  apply Real.sqrt_pos.2
+  apply mul_pos hn
+  apply Real.log_pos
+  have hdiv : n / n < q / n := div_lt_div_of_pos_right hnq hn
+  simpa [div_self (ne_of_gt hn)] using hdiv
+
 /-- Pointwise Shaw-value capstone: after the positive-scale guard, `Sh(q,n) ≤ C` is exactly the
 prize core bound `M(q,n) ≤ C * sqrt (n * log(q/n))`. -/
 theorem shawValue_le_iff_core_bound {q n M C : ℝ} (hscale : 0 < shawScale q n) :
@@ -98,6 +111,7 @@ theorem shawValue_trivial_ceiling_of_le {q n M : ℝ} (hscale : 0 < shawScale q 
 
 end ProximityGap.Frontier.ShawValueCapstone
 
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawScale_pos_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_le_iff_core_bound
 #print axioms ProximityGap.Frontier.ShawValueCapstone.core_bound_iff_shawValue_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound
