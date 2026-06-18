@@ -1098,6 +1098,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031SupTransversalCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.I031TransversalConcreteCover
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ImprimitiveSpikeStructure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.IncidenceDevL2Offset
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.IsSidonSetProperties
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Issue407SaturatedIncidence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.JohnsonCountFromNonprincipalWick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.K2Affine
