@@ -1159,6 +1159,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.R2UnfoldedDesignFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyDiagonalFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergySwapFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergySwapFloorSidonSharp
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCyclicFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyGeneralCharPLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharPLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharZero
