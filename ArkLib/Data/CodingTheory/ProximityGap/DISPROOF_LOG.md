@@ -1,5 +1,58 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — LANE L1 "Hardy–Littlewood circle method / Weyl differencing / Vinogradov minor-arc on the SUP M(n)" REDUCES-TO-FENCE F1/F12 (+F0) (probe_wfHL1_circle_method_supform.rs, _wfHL1_circle_method_supform.lean)
+
+LANE (cluster: alien/cross — analytic number theory). Ask: does a major/minor-arc decomposition,
+or a Weyl-differencing / Vinogradov minor-arc estimate, bound the prize SUP
+`M(n)=max_{b≠0}|η_b|`, `η_b=Σ_{x∈μ_n}e_p(bx)`, in a SUP form that is NOT a moment of `η_b` (i.e.
+that dodges the dead additive-energy route F12)? RESEARCHED (cite): Tao 2013 "Bounding short
+exponential sums on smooth moduli via Weyl differencing" — Weyl differencing requires INTERVAL
+summation + rational/polynomial phase + smooth modulus, gaining by reducing the modulus PERIOD;
+inapplicable to a multiplicative subgroup with a LINEAR phase. Bourgain–Glibichuk–Konyagin (J. LMS
+2006) get the SOTA `M≤n^{1−o(1)}` by ABANDONING the circle method for additive combinatorics
+(sum-product / Balog–Szemerédi–Gowers) — precisely because the multiplicative↔additive structure
+clash (the sum-product phenomenon) is invisible to arc/Weyl machinery. Shakan's exposition: the SOTA
+route uses the large SPECTRUM `Spec_α(H)` + additive energy and does NOT optimize a moment bound.
+Vinogradov's mean-value theorem (Wooley; Bourgain–Demeter–Guth) is intrinsically a MEAN-VALUE
+(moment) method `∫|f|^{2k}` — the fence-F12 object by construction; it has no individual/sup form.
+
+VERDICT = REDUCES-TO-FENCE F1/F12 (+F0). The circle method offers exactly TWO Fourier-dual handles on
+`η_b`, plus a saving MECHANISM that needs structure `μ_n` lacks; all three pinned by exact-integer
+probe (p prime, p≡1 mod n, μ_n proper, β≈4, p~n⁴, NEVER n=p−1; n=16,32,64):
+
+  (i) WEYL DIFFERENCING / van der Corput on the degree-1 phase ⟶ the additive AUTOCORRELATION =
+      the 2nd moment. `|η_b|²=Σ_h A_n(h)e_p(bh)`, `A_n(h)=#{x−y=h}`. Differencing a LINEAR phase does
+      not lower its degree (none to lower); it returns `A_n`, a nonnegative count: diagonal `A_n(0)=n`,
+      off-diagonal total `n(n−1)=(n−1)·diag` (probe T1: off/diag ratio EXACTLY n−1 = 15/31/63 at
+      n=16/32/64) — GROWS with n, positive-definite, phase-blind to the argmax. Fence F0 (conservation)
+      + F1 (energy). [Same object as in-tree `period_autocovariance_eq` Wiener–Khinchin tautology and
+      the positive-definite geometric side of H2 Kuznetsov/RTF.]
+
+  (ii) MAJOR/MINOR-ARC POWER-SUM is the ONLY nontrivial arc split, and it IS the moment. `Σ_b η_b^{2r}
+      = q·N₀(μ_n,2r) = q·E_r` (`subgroup_gaussSum_rawMoment`); major arc `b=0` gives `η_0^{2r}=n^{2r}`,
+      minor arcs `b≠0` carry the deviation. Positivity ⟹ induced sup bound `M^{2r}≤q·E_r`, i.e.
+      `(q·E_r)^{1/2r}`, which by the moment no-go is `≥n` for every r. Probe T2 (exact-int E_r at β=4):
+      the moment optimum `min_r (q·E_r)^{1/2r}` OVERSHOOTS the floor `√(n log m)` by `1.54 / 1.82 /
+      2.48` at n=16/32/64 (ratio rising with n) — fence F12 (bounded-K Wick DEAD past depth onset).
+
+  (iii) the Weyl/Vinogradov SAVING MECHANISM (smooth-modulus period reduction / interval+polynomial
+      phase) is INAPPLICABLE: `μ_n` is a multiplicative subgroup, NOT an interval — probe T3: `μ_n`
+      meets every additive window of length p/n in O(1) points (max = 3/3/5 at n=16/32/64, ~equidistr.,
+      not interval-filling) — and the phase `bx` is linear. Nothing for differencing to localize or
+      reduce. This is exactly why BGK abandons the circle method.
+
+Distinct from prior circle-method bricks: `CircleMethodFreeSetSupport` ran it on the bad-scalar count
+`a` (REMOVES the char sum → binomial threshold); `CrossCellCircleMethodSplit` ran it on the
+cross-resonance MOMENT (concentration on the random main term = F12 again). This lane targets the SUP
+`M(n)` DIRECTLY and pins why the method has no sup form for it. Method-boundary verdict, NOT a closure
+or refutation: the floor `M≤C√(n log(p/n))` stays OPEN on the BGK/Paley wall. Lean
+(`_wfHL1_circle_method_supform.lean`, axiom-clean `⊆{propext,Classical.choice,Quot.sound}`, no sorry):
+`major_arc_value` (η_0^{2r}=n^{2r}), `circle_major_minor_pow` (the arc split), `sup_le_total_pow`
+(sup ≤ total = energy), `circle_sup_bound_ge_card` / `circle_method_sup_dead` (the induced sup estimate
+is ≥ n, dead), `weyl_offdiag_growing` (off-diag = (n−1)·diag).
+
+---
+
 ## 2026-06-17 — LANE K2 "Katz–Sarnak symmetry type / n-level density / extreme-value statistics of the Gauss-period family {η_b}" REDUCES-TO-FENCE F0/F11 (probe_wfHK2_logcorr_field.rs, _wfHK2_katz_sarnak_extreme_value.lean)
 
 LANE (cluster: quantum/physics — random-matrix / Katz–Sarnak symmetry type). Ask: does the family
