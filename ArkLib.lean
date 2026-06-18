@@ -1198,6 +1198,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.UncertaintyTwoPowerTrinomi
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.WickMGFFromTermwise
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.WickMomentCapability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.WorstMonomialListTwo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.WorstPeriodSqrtNFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A002GoodPrimeJohnsonWeld
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A008SupplyCrossoverConstraint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A8ContainerTransferenceNoGo
