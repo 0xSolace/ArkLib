@@ -36,6 +36,18 @@ This file proves that chain with NO open input: it turns the machine-FITTED `exp
 leading-term fact only — NOT the prize. The prize is the char-`p` transfer of the *full* energy bound
 (the BGK/Paley wall, with the non-abelian Chebotarev obstruction of `_CharPTransferChebotarevObstruction`).
 No CORE/BGK/capacity claim is made.
+
+**CRITICAL CLARIFICATION (generic ≠ subgroup; see `_SubgroupVsGenericEnergyReconcile`).** The `E_r^{char0}`
+here is the energy of a GENERIC (Sidon-to-high-order) set, which sits BELOW the falling-factorial form
+`(2r−1)‼·(n)_r = Wick·∏(1−j/n)` (probe n=8,r=2: `120 < 168`). The PRIZE object is the multiplicative
+SUBGROUP `μ_n`, which is generally NOT Sidon and EXCEEDS the falling-factorial form at deep `r`, the excess
+growing with `r` (probe `E_r(μ_n)/[Wick·∏(1−j/n)]` = 1.0→1.016→1.078 at n=8). The subgroup `E_r(μ_n)` is
+(n,p)-DEPENDENT (NOT a universal closed form): at r=2 it is `2n²−n` for n=3,5 (Sidon), `3n²−3n` for n=4,6,8,
+and p-dependent at n=16 — see `_SubgroupVsGenericEnergyReconcile` for the full honest accounting (an earlier
+draft over-claimed `E_2(μ_n)=3n²−3n` universally; FALSE, corrected after adversarial re-audit). So conj #3
+fails on BOTH sides — generic decays faster (below), subgroup variably above (Shaw 0040d6507) — and the prize
+wall lives in the (n,p)-dependent subgroup EXCESS. The `leadingTerm` and bounds below are the GENERIC
+leading-term object (a clean lower reference), NOT a bound on the subgroup energy.
 -/
 
 set_option autoImplicit false

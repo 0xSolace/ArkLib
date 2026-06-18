@@ -1484,6 +1484,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepRatioMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StructuredFloorRateQuarter
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubgroupConvolutionIdempotent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubgroupVsGenericEnergyReconcile
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumPeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SubsetSumSpectrumRisingStep
