@@ -99,9 +99,12 @@ theorem mgf_le_exp_of_wick {a : ℕ → ℝ} {K n y : ℝ}
         = t ^ r / (r.factorial : ℝ) := by
       rw [ht, ← hcollapse]
       have hyr : y ^ (2 * r) = (y ^ 2) ^ r := by rw [← pow_mul, Nat.mul_comm]
-      rw [hyr]
-      rw [div_eq_div_iff (by positivity) (ne_of_gt hfacr)]
-      ring
+      have h2r : (2 : ℝ) ^ r ≠ 0 := by positivity
+      have hdf : (((2 * r - 1)‼ : ℕ) : ℝ) ≠ 0 := by
+        exact_mod_cast (Nat.doubleFactorial_pos (2 * r - 1)).ne'
+      rw [hyr, div_pow, mul_pow, mul_pow,
+        div_eq_div_iff (by positivity) (ne_of_gt hfacr)]
+      field_simp
     calc a r * y ^ (2 * r) / ((2 * r).factorial : ℝ)
         ≤ (K ^ r * ((2 * r - 1)‼ : ℝ) * n ^ r) * y ^ (2 * r) / ((2 * r).factorial : ℝ) :=
           (div_le_div_iff_of_pos_right hfac2).mpr hnum
