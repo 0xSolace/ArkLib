@@ -5278,3 +5278,32 @@ brick to assemble (now done on the necessity side), but it does NOT route AROUND
 it RE-EXPRESSES the wall as "the census cap rm+1 is itself unproven", a faithful reformulation, not
 an escape. No CORE closure; no growth-law claim; asymptotic guard untouched. Lean-free entry (doc) =>
 axiom-clean trivially.
+
+## [meanfloor-saturates-johnson] the power-sum mean floor S_1/S_0 on the Gauss-period spectrum SATURATES EXACTLY at Johnson sqrt(n) in the prize regime — the easy lower direction is capped (2026-06-18, opus-4-8 subagent)
+
+Lane: quantify the prize-regime TEETH of the just-landed depth-uniform mean floor
+(PowerSumRatioMeanFloor.powerSum_ratio_ge_base: S_1/S_0 <= S_{t+1}/S_t <= max a = M(n)^2).
+
+CONSTRAINT LEMMA (probe scripts/probes/probe_meanfloor_prize_teeth.py, exact Gauss periods on
+2-power subgroups mu_n = <g> of order n=2^a in F_p^*, b != 0):
+  S_1/S_0 = (sum_{b!=0} |eta_b|^2)/(p-1) = mean square of the Gauss periods, and mean/n -> 1 as
+  beta = log_n(p) grows. Measured: (p=17,n=8) mean/n=0.5625; (p=41,n=8) 0.825; (p=97,n=16) 0.844;
+  (p=65537,n=16,beta=4 prize-regime) mean/n=0.9998.
+  => the mean floor gives M(n)^2 >= S_1/S_0 ~ n in the prize regime, i.e. M(n) >= sqrt(n) EXACTLY
+  the Johnson/Weil floor, and NO MORE. The L2-mass identity sum_{b!=0}|eta_b|^2 = n(p-n) (Parseval,
+  ConcreteParsevalLower) divided by p-1 -> n as p/n -> inf forces mean/n -> 1 from below; the mean
+  floor CANNOT exceed n, so it CANNOT beat sqrt(n) as a lower bound on M(n).
+
+WHY THIS IS A WALL (consistent with the meta-thm + DISPROOF terminal): the mean floor is the
+2nd-moment (Renyi-2 / additive-energy) read of the spectrum (F1/F7 face). By the F0/F1 fence it is
+capped at the Johnson sqrt(n) contribution — it bounds M(n) from the WRONG (easy/lower) side and
+saturates at the agreement-sharing/Johnson value n. The beyond-Johnson gap lives in the SIGNED
+sup-norm UPPER bound (the open char-p energy transfer), which no mean/2nd-moment lower object can
+supply. So the ENTIRE power-sum-ratio LOWER-bracket family (ladder_antitone's lower companion,
+powerSum_ratio_monotone, the mean floor, the log-convexity spacing) is structurally pinned at
+Johnson: it localizes max a from BELOW but its floor saturates at the L2 mean = n. This MAPS the
+ceiling of the lower-bracket lane precisely: real reusable structure, zero beyond-Johnson teeth.
+No CORE closure; no char-p transfer; no capacity/growth-law; asymptotic guard untouched (this is a
+LOWER bound, structurally orthogonal to cliff-at-n/2). Lean-free constraint entry (doc, probe-backed).
+
+Co-Authored-By: wakesync <shadow@shad0w.xyz>
