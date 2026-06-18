@@ -73,8 +73,28 @@ theorem twoPieceNormCoherence_lt_one_of_not_sameRay {x y : E} (hden : 0 < ‖x�
     div_lt_div_of_pos_right hlt hden
   simpa [div_self (ne_of_gt hden)] using hdiv
 
+/-- Threshold obstruction: any claimed two-piece coherence drop below a fixed `θ < 1` must first
+rule out same-ray alignment of the pieces. -/
+theorem not_sameRay_of_twoPieceNormCoherence_le {x y : E} {θ : ℝ} (hden : 0 < ‖x‖ + ‖y‖)
+    (hθ : θ < 1) (hcoh : twoPieceNormCoherence x y ≤ θ) :
+    ¬ SameRay ℝ x y := by
+  intro hsame
+  have hone : twoPieceNormCoherence x y = 1 :=
+    (twoPieceNormCoherence_eq_one_iff_sameRay (x := x) (y := y) hden).2 hsame
+  linarith
+
+/-- Epsilon-drop obstruction: same-ray alignment forbids any positive `1 - ε` coherence bound. -/
+theorem sameRay_not_twoPieceNormCoherence_le_one_sub {x y : E} {ε : ℝ}
+    (hden : 0 < ‖x‖ + ‖y‖) (hε : 0 < ε) (hsame : SameRay ℝ x y) :
+    ¬ twoPieceNormCoherence x y ≤ 1 - ε := by
+  intro hcoh
+  exact (not_sameRay_of_twoPieceNormCoherence_le (x := x) (y := y) (θ := 1 - ε) hden
+    (sub_lt_self 1 hε) hcoh) hsame
+
 end ProximityGap.Frontier.DoorIVComplexRayCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_le_one
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_eq_one_iff_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_of_not_sameRay
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
