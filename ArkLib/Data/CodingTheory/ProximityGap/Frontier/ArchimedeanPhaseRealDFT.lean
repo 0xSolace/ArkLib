@@ -97,8 +97,23 @@ theorem dft_eq_realSum_of_hermitian (ψ : AddChar (ZMod m) ℂ)
   unfold dft
   rw [Complex.re_sum]
 
+/-- **Modulus realification.** For a Hermitian `s` and reflective unit-modulus `ψ`, the squared
+modulus of the DFT has NO imaginary cross-term: `‖dft ψ s β‖^2 = (dft ψ s β).re ^ 2`. Hence the prize
+modulus `|dft ψ s β|` is the absolute value of the single real coordinate `(dft ψ s β).re`, and the
+spectral sup `max_β ‖dft ψ s β‖` is a sup of `|real|`. (Probe `probe_dft_normsq_real.py`: 0 fails over
+m ∈ {6,8,12,16,17,32}, PROPER thin instances; the Plancherel companion also held but is left to the
+standard L² theory.) -/
+theorem dft_normSq_eq_re_sq_of_hermitian (ψ : AddChar (ZMod m) ℂ)
+    (hψ : ∀ x : ZMod m, ψ (-x) = (starRingEnd ℂ) (ψ x))
+    {s : ZMod m → ℂ} (hHerm : Hermitian s) (β : ZMod m) :
+    Complex.normSq (dft ψ s β) = (dft ψ s β).re ^ 2 := by
+  have him : (dft ψ s β).im = 0 := dft_im_eq_zero_of_hermitian ψ hψ hHerm β
+  rw [Complex.normSq_apply, him]
+  ring
+
 end ArkLib.ProximityGap.ArchimedeanPhase
 
 #print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_isReal_of_hermitian
 #print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_im_eq_zero_of_hermitian
 #print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_eq_realSum_of_hermitian
+#print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_normSq_eq_re_sq_of_hermitian
