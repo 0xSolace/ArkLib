@@ -1178,6 +1178,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RawMGFSaddleVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RealizerL2NotSup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ResolveFieldIndependent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RootsOfUnityApproximateSubgroup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SalemZygmundMomentAssemblyA3
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurRatioRotationEquivariance
