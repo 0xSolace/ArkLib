@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonClosure
-import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Permutation
 
 /-!
 # `B_h`-Sidon ordered-list bridge (#444, §0)
@@ -53,7 +53,23 @@ theorem IsBhSidon.list_perm_of_sum_eq {h : ℕ} {S : Set G} (hS : IsBhSidon h S)
     hS (l : Multiset G) (m : Multiset G) hcard_l hcard_m hmem_l hmem_m hsum_ms
   exact Multiset.coe_eq_coe.mp hms
 
+/-- **Ordered representations are contained in one permutation fibre.** Under `IsBhSidon h S`,
+if `l` is one ordered length-`h` representation of a target sum, then every other ordered
+length-`h` representation `m` of that target lies in `l.permutations`.
+
+This is the finite-list container behind the informal ordered-count consequence `≤ h!`: duplicate
+permutations can only shrink the container, while `List.length_permutations` gives exactly `h!`
+slots before quotienting duplicates. -/
+theorem IsBhSidon.list_mem_permutations_of_sum_eq {h : ℕ} {S : Set G} (hS : IsBhSidon h S)
+    {l m : List G}
+    (hl : l.length = h) (hm : m.length = h)
+    (hlS : ∀ y ∈ l, y ∈ S) (hmS : ∀ y ∈ m, y ∈ S)
+    (hsum : l.sum = m.sum) : m ∈ l.permutations := by
+  rw [List.mem_permutations]
+  exact hS.list_perm_of_sum_eq hl hm hlS hmS hsum |>.symm
+
 end ArkLib.ProximityGap.BhSidon
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.BhSidon.IsBhSidon.list_perm_of_sum_eq
+#print axioms ArkLib.ProximityGap.BhSidon.IsBhSidon.list_mem_permutations_of_sum_eq
