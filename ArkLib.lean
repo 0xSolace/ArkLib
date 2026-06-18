@@ -1183,6 +1183,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurRatioRotationEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShallowDiagonalRouteNonReach
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonClosure
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonPairwiseBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonFrameConstantDivergence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonWorstPeriodSqrt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
