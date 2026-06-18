@@ -1,5 +1,25 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) TWO-PIECE PHASE COHERENCE saturates iff same-ray — subdivision alone cannot produce anti-concentration (2026-06-18)
+
+Lens: door-(iv) Lane 3 constraint lemma, deconflicted from the already-landed real sign-mass and
+negation-stable coset-refinement bricks.  Those files pin real-piece saturation; the missing
+phase-sensitive bookkeeping fact is the general complex/two-vector version: for any two vector pieces
+`x,y` in a strictly convex real normed space (in particular `ℂ`), the two-piece norm coherence
+`‖x+y‖/(‖x‖+‖y‖)` equals `1` exactly when `x` and `y` lie on the same nonnegative ray.
+
+VERDICT (constraint lemma, does not close CORE): a two-piece Door-IV split has strict slack only after
+proving genuine non-collinearity (or a quantitative distance from same-ray alignment) of the two
+adversarial pieces.  Mere subdivision of the monomial sum is powerless: triangle equality permits
+`ρ=1` precisely at same-ray alignment.  This packages the complex/phase analogue of the real same-sign
+wall and tells future anti-concentration attempts exactly what they must prove.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
+axiom-clean.  Theorems: `twoPieceNormCoherence_le_one`,
+`twoPieceNormCoherence_eq_one_iff_sameRay`, and
+`twoPieceNormCoherence_lt_one_of_not_sameRay`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No moment/completion route and no CORE claim.
+
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
 ## door-(iv) the SIGNED off-diagonal 4-point connected cumulant VANISHES — the period field is Gaussian to FULL 4th order, the phase-sensitive 4-point door-(iv) object does not exist (closes the sweep-5 pointer) (2026-06-18)
