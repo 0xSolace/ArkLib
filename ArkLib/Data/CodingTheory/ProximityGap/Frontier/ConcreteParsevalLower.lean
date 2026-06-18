@@ -118,9 +118,44 @@ theorem worstPeriod_ge_sqrt_parseval {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
   rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
   exact Real.sqrt_le_sqrt hsq
 
+/-- **Prize-regime numeric floor (squared).** In the prize regime `q ≥ 2n` (i.e. `2·card G ≤ card F`,
+which `q = n^β` with `β ≥ 4` satisfies with huge room), the Parseval ratio floor simplifies to the
+clean numeric bound `M(μ_n)² ≥ n/2`. Mechanism: `q ≥ 2n ⇒ (q−n)/(q−1) ≥ 1/2` (since
+`2(q−n) ≥ q ≥ q−1`), so `n(q−n)/(q−1) ≥ n/2`, chained with `worstPeriod_sq_ge_parseval`.
+(Probe `probe_parseval_half_floor.py`: 0 fails, holds even at the threshold `q = 2n−1`.) -/
+theorem worstPeriod_sq_ge_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hreg : 2 * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    (G.card : ℝ) / 2 ≤ (worstPeriod ψ G hne) ^ 2 := by
+  have hsq := worstPeriod_sq_ge_parseval hψ G hne hq1
+  -- n(q−n)/(q−1) ≥ n/2 in the regime q ≥ 2n
+  have hqm1 : (0 : ℝ) < (Fintype.card F : ℝ) - 1 := by linarith
+  have hnn : (0 : ℝ) ≤ (G.card : ℝ) := Nat.cast_nonneg _
+  have hfloor : (G.card : ℝ) / 2
+      ≤ (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    rw [le_div_iff₀ hqm1]
+    -- (n/2)·(q−1) ≤ n·(q−n)  ⇔  n·(q−1) ≤ 2n·(q−n);  from q ≤ 2(q−n) i.e. 2n ≤ q
+    nlinarith [hnn, hreg, hqm1]
+  linarith [hfloor, hsq]
+
+/-- **Prize-regime numeric floor (root form).** `√(n/2) ≤ M(μ_n)` whenever `q ≥ 2n`. The clean
+usable `≥ √(n/2)` floor on the worst period in the prize regime, rooted from
+`worstPeriod_sq_ge_half_card`. Still the EASY/unconditional Parseval direction (no BGK); the prize
+gap to `√(n·log(p/n))` is untouched. -/
+theorem worstPeriod_ge_sqrt_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hreg : 2 * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((G.card : ℝ) / 2) ≤ worstPeriod ψ G hne := by
+  have hsq := worstPeriod_sq_ge_half_card hψ G hne hq1 hreg
+  have hMnn : 0 ≤ worstPeriod ψ G hne := worstPeriod_nonneg ψ G hne
+  rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
+  exact Real.sqrt_le_sqrt hsq
+
 end ProximityGap.Frontier.ConcreteParsevalLower
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.sum_nonzero_secondMoment
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_parseval
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_parseval
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_half_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_half_card
