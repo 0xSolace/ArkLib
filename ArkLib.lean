@@ -1392,6 +1392,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaSignNonMultiplicative
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FarLineProxyTowerN32Corrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FoldRankNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FourierSparseZeros
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GG25AffineFactorInstance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GG25CurveDecodNextBrick
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GG25CurveDecodabilityOpener
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GG25LineToAffine
