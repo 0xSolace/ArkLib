@@ -1289,6 +1289,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._C2WeilDeligneParamFamilyN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._C5MonodromyMaxControlScissors
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CLTDecorrelatedCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChaiFanBasePanelGate
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Char0LeadingGaussianTailBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferGeneralOrderForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferW4OrderForm
