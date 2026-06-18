@@ -92,6 +92,16 @@ theorem uniformCoreBound_iff_uniformShawBound {ι : Type*} {q n M : ι → ℝ} 
     exact (shawValue_le_iff_core_bound (q := q i) (n := n i) (M := M i) (C := C)
       (hscale i)).mp (h i)
 
+
+/-- Prize-regime specialization of the uniform capstone.  If every family member lies in the thin
+subgroup size regime `q_i > n_i > 0`, then the uniform prize core bound is equivalent to a uniform
+bound on Shaw's value, with no separate scale hypothesis. -/
+theorem uniformCoreBound_iff_uniformShawBound_of_pos_lt {ι : Type*} {q n M : ι → ℝ} {C : ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    UniformCoreBound q n M C ↔ UniformShawBound q n M C := by
+  exact uniformCoreBound_iff_uniformShawBound (q := q) (n := n) (M := M) (C := C)
+    (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
+
 /-- Plancherel/Johnson-floor normalization: if `sqrt n ≤ M`, then Shaw's value is at least
 `sqrt n / sqrt(n log(q/n))`.  This records the floor in normalized units without claiming any
 upper bound. -/
@@ -115,5 +125,6 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_le_iff_core_bound
 #print axioms ProximityGap.Frontier.ShawValueCapstone.core_bound_iff_shawValue_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound
+#print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_sqrt_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_trivial_ceiling_of_le
