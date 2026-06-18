@@ -5678,3 +5678,19 @@ refinement: prove a genuine lower bound on the minority sign mass.  Subdivision 
 or highly imbalanced fibers keep coherence near `1`.
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## [door-iv-common-ray-coherence] constraint — ray-collinear piece decompositions have rho=1, so subdivision alone cannot supply anti-concentration (2026-06-18, g55 subagent)
+
+Lane: Door-IV / Lane 3 constraint lemma for the localized worst-frequency coherence object
+`rho = |Σ pieces| / Σ |pieces|`.
+
+VERDICT: Any split whose complex pieces lie on one closed ray has exact triangle-inequality
+saturation: if pieces are nonnegative real multiples of a fixed unit complex direction, then
+`rho = 1`. This generalizes the earlier real same-sign / proper-coset real-piece obstruction to
+arbitrary complex common-ray decompositions. Therefore a proposed door-(iv) anti-concentration
+argument must first prove genuine angular spread of the pieces at the adversarial `b`; merely
+subdividing the sum into more ray-collinear pieces cannot create cancellation slack.
+
+Lean: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCommonRayCoherence.lean` proves
+`sum_commonRay`, `sum_abs_commonRay_of_unit_of_nonneg`, and
+`complexPieceCoherence_eq_one_of_commonRay_nonneg`, axiom-clean. No CORE/capacity claim.

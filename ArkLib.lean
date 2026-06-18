@@ -1519,6 +1519,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DilationZeroEntropyNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DividedDifferenceDilation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCommonRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVConnectedCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence
