@@ -54,6 +54,12 @@ and `orbitCountAux` aliased to `OffBGKAgreementDepthMerge.orbitCount`.
   `2`-power tower from `μ₀`.  Single-orbit persistence WITHOUT fold injectivity, on the proven-antitone
   substrate.
 
+* `OP_le_one_of_crossing_antitone` / `OP_persist_from_crossing` — **the crossing-collapse refinement.**
+  Anchors persistence at the MEASURED binding rung `μ*` instead of a guessed base: from a SINGLE budget
+  crossing `Dstar μ* ≤ z + S` (the binder's defining property — the first depth the bad set fits in one
+  orbit unit) plus antitonicity from `μ*`, the count is `≤ 1` (no `OP μ* = 1` hypothesis), and with the
+  floor it is exactly `1` for every `μ ≥ μ*`.  Strictly weaker base than the composite above.
+
 ## What this does NOT do (honesty contract, rules 1, 3, 6)
 
 It does NOT prove CORE `M(μ_n) ≤ C√(n log(p/n))`.  It RELOCATES the open content: from the black-box
@@ -129,6 +135,63 @@ theorem OP_persist_of_antitone_orbitCount
   OP_persist_of_descent hbase hfloor
     (OPDescentStep_of_antitone_orbitCount z S hreal hanti)
 
+/-! ## The crossing-collapse bridge — persistence anchored at the MEASURED crossing rung
+
+The composite above anchors persistence at a guessed base `OP μ₀ = 1`.  But the actual measured anchor
+is the BINDING rung itself: it is the FIRST depth `μ*` where the distinct-bad-α envelope crosses into
+one orbit unit, `Dstar μ* ≤ z + S` (the bad set first fits in one `⟨ζ^s⟩`-orbit plus the `γ=0` point).
+At that crossing the collapse `OP ≤ 1` is FORCED — no separate base hypothesis is needed — and it
+PERSISTS for every deeper rung by antitonicity.  This anchors persistence at the measured crossing,
+not at a guessed `OP μ₀ = 1`. -/
+
+/-- **The orbit-count collapse from a single budget crossing** (inline of
+`OffBGKAgreementDepthMerge.orbitCount_le_one_of_crossing`): if `D ≤ z + S` (the distinct-bad-α count
+fits in one orbit unit plus the fixed point), then `orbitCountAux D z S ≤ 1`.  Pure `Nat`-division:
+`(D - z) ≤ S < 2S ⇒ (D-z)/S ≤ 1`. -/
+theorem orbitCountAux_le_one_of_crossing {D z S : ℕ} (hcross : D ≤ z + S) :
+    orbitCountAux D z S ≤ 1 := by
+  unfold orbitCountAux
+  rcases Nat.eq_zero_or_pos S with hS | hS
+  · subst hS; simp
+  · have hlt : (D - z) / S < 2 := by
+      rw [Nat.div_lt_iff_lt_mul hS]; omega
+    omega
+
+/-- **THE CROSSING-COLLAPSE BRIDGE — `OP μ ≤ 1` from a single measured crossing + antitonicity.**
+If the binder free-orbit count is realised `OP μ = orbitCountAux (Dstar μ) z S`, the envelope CROSSES
+into one orbit unit at the binding rung `μ*` (`Dstar μ* ≤ z + S`), and `Dstar` is antitone up the tower
+from `μ*`, then the free-orbit count is `≤ 1` for EVERY `μ ≥ μ*`.  No `OP μ* = 1` base hypothesis: the
+crossing FORCES `≤ 1` at `μ*` (`orbitCountAux_le_one_of_crossing`) and antitonicity carries it up
+(`Dstar μ ≤ Dstar μ*` for `μ ≥ μ*`).  This is the agreement-depth analogue of
+`OP_le_one_of_descent`, anchored at the MEASURED crossing rather than a guessed base. -/
+theorem OP_le_one_of_crossing_antitone
+    {OP : ℕ → ℕ} {μstar : ℕ} {Dstar : ℕ → ℕ} (z S : ℕ)
+    (hreal : ∀ μ, μstar ≤ μ → OP μ = orbitCountAux (Dstar μ) z S)
+    (hcross : Dstar μstar ≤ z + S)
+    (hanti : ∀ μ₁ μ₂, μstar ≤ μ₁ → μ₁ ≤ μ₂ → Dstar μ₂ ≤ Dstar μ₁) :
+    ∀ μ, μstar ≤ μ → OP μ ≤ 1 := by
+  intro μ hμ
+  rw [hreal μ hμ]
+  exact orbitCountAux_le_one_of_crossing
+    (le_trans (hanti μstar μ (le_refl μstar) hμ) hcross)
+
+/-- **PERSISTENCE FROM THE CROSSING (no guessed base).**  Combining the crossing-collapse `OP ≤ 1`
+with the geometric floor `1 ≤ OP μ` (the binder always carries a free orbit), the free-orbit count is
+EXACTLY `1` for every `μ ≥ μ*`.  The anchor is the measured crossing `Dstar μ* ≤ z + S`, the binder's
+defining property — NOT a separately-assumed `OP μ₀ = 1`.  This is the sharpest packaging: single-orbit
+persistence from the one measured fact that the binding rung is where `D*` first fits in one orbit unit. -/
+theorem OP_persist_from_crossing
+    {OP : ℕ → ℕ} {μstar : ℕ} {Dstar : ℕ → ℕ} (z S : ℕ)
+    (hfloor : ∀ μ, μstar ≤ μ → 1 ≤ OP μ)
+    (hreal : ∀ μ, μstar ≤ μ → OP μ = orbitCountAux (Dstar μ) z S)
+    (hcross : Dstar μstar ≤ z + S)
+    (hanti : ∀ μ₁ μ₂, μstar ≤ μ₁ → μ₁ ≤ μ₂ → Dstar μ₂ ≤ Dstar μ₁) :
+    ∀ μ, μstar ≤ μ → OP μ = 1 := by
+  intro μ hμ
+  exact le_antisymm
+    (OP_le_one_of_crossing_antitone z S hreal hcross hanti μ hμ)
+    (hfloor μ hμ)
+
 /-! ## Non-vacuity — the bridge genuinely fires on a measured antitone envelope -/
 
 /-- **Non-vacuity (the bridge fires on a measured envelope).**  Take `μ₀ = 4`, `z = 1`, `S = 8`
@@ -161,6 +224,18 @@ example :
     (fun _ _ => show 1 ≤ orbitCountAux 9 1 8 by decide)
     (fun _ _ => rfl) (fun _ _ => le_refl 9) 7 (by norm_num)
 
+/-- **Non-vacuity (persistence FROM the measured crossing, no guessed base).**  At the binder
+`μ* = 4`, `z = 1`, `S = 8`, the envelope crosses: `Dstar μ* = 9 ≤ 1 + 8 = z + S`.  With the floor
+`1 ≤ OP μ` and the realisation `OP μ = orbitCountAux 9 1 8 = 1`, `OP_persist_from_crossing` gives
+`OP μ = 1` for all `μ ≥ 4`, anchored ONLY on the crossing `9 ≤ 9` — no `OP μ₀ = 1` assumed.  At `μ=9`. -/
+example : (fun _ => orbitCountAux 9 1 8) 9 = 1 :=
+  OP_persist_from_crossing (OP := fun _ => orbitCountAux 9 1 8) (μstar := 4)
+    (Dstar := fun _ => 9) 1 8
+    (fun _ _ => show 1 ≤ orbitCountAux 9 1 8 by decide)
+    (fun _ _ => rfl)
+    (show (9 : ℕ) ≤ 1 + 8 by norm_num)
+    (fun _ _ _ _ => le_refl 9) 9 (by norm_num)
+
 end ArkLib.ProximityGap.OPDescentFromAntitoneOrbitCount
 
 /-! ## Axiom audit (expected: `propext, Classical.choice, Quot.sound` only — no `sorryAx`) -/
@@ -168,3 +243,7 @@ open ArkLib.ProximityGap.OPDescentFromAntitoneOrbitCount in
 #print axioms OPDescentStep_of_antitone_orbitCount
 open ArkLib.ProximityGap.OPDescentFromAntitoneOrbitCount in
 #print axioms OP_persist_of_antitone_orbitCount
+open ArkLib.ProximityGap.OPDescentFromAntitoneOrbitCount in
+#print axioms OP_le_one_of_crossing_antitone
+open ArkLib.ProximityGap.OPDescentFromAntitoneOrbitCount in
+#print axioms OP_persist_from_crossing
