@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonClosure
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.Permutation
 
 /-!
@@ -68,8 +69,33 @@ theorem IsBhSidon.list_mem_permutations_of_sum_eq {h : ℕ} {S : Set G} (hS : Is
   rw [List.mem_permutations]
   exact hS.list_perm_of_sum_eq hl hm hlS hmS hsum |>.symm
 
+/-- **Ordered representation count bound.**  If a target `t` has one ordered length-`h`
+representation `l` in a `B_h`-Sidon set, then any finite container `R` of ordered length-`h`
+representations of the same target has at most `h!` elements.
+
+This is the promised counting interface for `list_mem_permutations_of_sum_eq`: every `m ∈ R` lies
+in the single permutation fibre `l.permutations`; passing to `toFinset` accounts for duplicate
+permutations, so the cardinality is bounded by `List.length_permutations = h!`. -/
+theorem IsBhSidon.card_ordered_representations_le_factorial
+    {h : ℕ} {S : Set G} (hS : IsBhSidon h S) {t : G} {l : List G}
+    (hl : l.length = h) (hlS : ∀ y ∈ l, y ∈ S) (hlt : l.sum = t)
+    (R : Finset (List G))
+    (hR : ∀ m ∈ R, m.length = h ∧ (∀ y ∈ m, y ∈ S) ∧ m.sum = t) :
+    R.card ≤ h.factorial := by
+  classical
+  have hsub : R ⊆ l.permutations.toFinset := by
+    intro m hm
+    rw [List.mem_toFinset]
+    have hm' := hR m hm
+    exact hS.list_mem_permutations_of_sum_eq hl hm'.1 hlS hm'.2.1 (by rw [hm'.2.2, hlt])
+  calc
+    R.card ≤ l.permutations.toFinset.card := Finset.card_le_card hsub
+    _ ≤ l.permutations.length := List.toFinset_card_le _
+    _ = h.factorial := by rw [List.length_permutations, hl]
+
 end ArkLib.ProximityGap.BhSidon
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.BhSidon.IsBhSidon.list_perm_of_sum_eq
 #print axioms ArkLib.ProximityGap.BhSidon.IsBhSidon.list_mem_permutations_of_sum_eq
+#print axioms ArkLib.ProximityGap.BhSidon.IsBhSidon.card_ordered_representations_le_factorial
