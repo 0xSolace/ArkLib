@@ -61,6 +61,43 @@ theorem mu_le_EC_iff_wraparound_le_mean (μ EC W N₂ p : ℝ) (hp : 1 < p)
     rw [← key] at h
     exact (mul_nonneg_iff_of_pos_right hp1).mp h
 
+
+/-- **Strict margin form.** If the wraparound count is strictly below its heuristic mean, then the
+char-`p` nonzero period moment is strictly lighter than the char-`0` energy. This is the quantitative
+version of the same reduction: a positive spare margin in `N₂ − E_C − p·W` is exactly a positive spare
+margin in `(E_C − μ)·(p−1)`. -/
+theorem strict_charP_lighter_of_wraparound_strict (μ EC W N₂ p : ℝ) (hp : 1 < p)
+    (hdef : μ * (p - 1) = p * (EC + W) - N₂) (hwrap : p * W < N₂ - EC) :
+    μ < EC := by
+  have hp1 : 0 < p - 1 := by linarith
+  have key : (EC - μ) * (p - 1) = (N₂ - EC) - p * W := by linear_combination -hdef
+  have hpos : 0 < (EC - μ) * (p - 1) := by
+    rw [key]
+    linarith
+  have hdiff : 0 < EC - μ := (mul_pos_iff_of_pos_right hp1).mp hpos
+  linarith
+
+/-- **Contrapositive overload form.** Any violation of char-`p`-lighter-than-char-`0` is exactly an
+overload of wraparound collisions above their heuristic mean. This is the audit form used when a proposed
+moment route fails: `E_C < μ` forces `N₂ − E_C < p·W`. -/
+theorem wraparound_overload_of_charP_heavier (μ EC W N₂ p : ℝ) (hp : 1 < p)
+    (hdef : μ * (p - 1) = p * (EC + W) - N₂) (hheavy : EC < μ) :
+    N₂ - EC < p * W := by
+  have hp1 : 0 < p - 1 := by linarith
+  have key : (EC - μ) * (p - 1) = (N₂ - EC) - p * W := by linear_combination -hdef
+  have hneg : (EC - μ) * (p - 1) < 0 := by
+    have : EC - μ < 0 := by linarith
+    exact mul_neg_of_neg_of_pos this hp1
+  rw [key] at hneg
+  linarith
+
+/-- **No overload form.** The non-strict wraparound budget is exactly the no-heavier-than-char-`0`
+statement, restated in the direction used by later files. -/
+theorem charP_lighter_of_no_wraparound_overload (μ EC W N₂ p : ℝ) (hp : 1 < p)
+    (hdef : μ * (p - 1) = p * (EC + W) - N₂) (hwrap : p * W ≤ N₂ - EC) :
+    μ ≤ EC :=
+  (mu_le_EC_iff_wraparound_le_mean μ EC W N₂ p hp hdef).mpr hwrap
+
 /-- **The chain to the open core.** If the char-p periods are lighter than char-0 (`μ ≤ E_C`) and the char-0 energy
 is sub-Gaussian (`E_C ≤ Wick`, the proven Bessel bound), then the open core `μ ≤ Wick` holds. -/
 theorem open_core_of_charP_lighter (μ EC Wick : ℝ) (h1 : μ ≤ EC) (h2 : EC ≤ Wick) : μ ≤ Wick :=
@@ -87,6 +124,9 @@ end ProximityGap.Frontier.OpenCoreCharPLighter
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.OpenCoreCharPLighter.mu_le_EC_iff_wraparound_le_mean
+#print axioms ProximityGap.Frontier.OpenCoreCharPLighter.strict_charP_lighter_of_wraparound_strict
+#print axioms ProximityGap.Frontier.OpenCoreCharPLighter.wraparound_overload_of_charP_heavier
+#print axioms ProximityGap.Frontier.OpenCoreCharPLighter.charP_lighter_of_no_wraparound_overload
 #print axioms ProximityGap.Frontier.OpenCoreCharPLighter.open_core_of_charP_lighter
 #print axioms ProximityGap.Frontier.OpenCoreCharPLighter.base_case_r1
 #print axioms ProximityGap.Frontier.OpenCoreCharPLighter.subOnset_open_core
