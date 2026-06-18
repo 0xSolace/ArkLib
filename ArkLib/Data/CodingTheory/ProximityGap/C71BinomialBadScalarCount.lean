@@ -113,6 +113,18 @@ theorem card_distinct_pow_mul_gcd (d : ℕ) :
   rw [card_image_pow_eq (G := G) d, Nat.div_mul_cancel]
   exact Nat.gcd_dvd_right d (Fintype.card G)
 
+/-- **Half-period gaps have exactly two support scalars.** If the cyclic window has size `2k`, the
+half-period power map `x ↦ x^k` concentrates the binomial-window support onto exactly two scalars,
+each with fiber size `k` by the gcd dichotomy. This is the explicit cliff-at-`n/2` calibration for
+the C71 binomial support count, not a CORE or capacity claim. -/
+theorem card_image_pow_half_period_eq_two (k : ℕ) (hk : 0 < k)
+    (hcard : Fintype.card G = 2 * k) :
+    (univ.image (fun x : G => x ^ k)).card = 2 := by
+  rw [card_image_pow_eq (G := G) k, hcard]
+  have hgcd : Nat.gcd k (2 * k) = k := by
+    exact Nat.gcd_eq_left ⟨2, by rw [mul_comm]⟩
+  rw [hgcd, Nat.mul_div_left _ hk]
+
 end ArkLib.ProximityGap.C71BinomialBadScalarCount
 
 /-! ## Axiom audit -/
@@ -121,3 +133,4 @@ end ArkLib.ProximityGap.C71BinomialBadScalarCount
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_zero_eq_one
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq_one_of_card_dvd
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_distinct_pow_mul_gcd
+#print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_half_period_eq_two
