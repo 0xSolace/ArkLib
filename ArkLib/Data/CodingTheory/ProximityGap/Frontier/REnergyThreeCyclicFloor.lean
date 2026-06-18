@@ -120,6 +120,19 @@ private theorem constantTriples_count (G : Finset F) :
   · intro a ha
     simp
 
+
+/-- At `r = 3`, the cyclic floor dominates the `r = 3` specialization of the all-`r`
+swap floor.  This pins the first higher permutation rung as a genuine improvement over the
+single-transposition floor, still by pure char-free bookkeeping. -/
+theorem swap_floor_le_cyclic_floor_three (n : ℕ) :
+    2 * n ^ 3 - n ^ 2 ≤ 3 * n ^ 3 - 2 * n := by
+  rcases n with _ | n
+  · simp
+  rcases n with _ | n
+  · simp
+  ring_nf
+  omega
+
 /-- **The universal cyclic floor at the first higher rung.**  For every finite `G`,
 `3|G|^3 - 2|G| ≤ rEnergy G 3`, by counting the three cyclic rotations of each triple, with the
 only collision being the constant triples. -/
@@ -199,3 +212,5 @@ theorem rEnergy_three_ge_cyclic_floor (G : Finset F) :
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_three_ge_cyclic_floor
+
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.swap_floor_le_cyclic_floor_three
