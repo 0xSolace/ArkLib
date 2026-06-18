@@ -169,6 +169,15 @@ theorem guaranteedQuads_card_eq_floor (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S
     omega
   simpa [guaranteedQuads, A, B, C] using hABCunion
 
+
+/-- Exact additive-energy decomposition into the char-free floor plus the named genuine excess.
+Under negation closure and the local no-two-torsion condition, the partition theorem becomes the
+literal formula `E₂(S) = (3|S|²-3|S|) + G(S)`. -/
+theorem E2_eq_floor_add_genuine (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S)
+    (h2 : ∀ x ∈ S, x + x ≠ 0) :
+    E2 S = (3 * (S.card * S.card) - 3 * S.card) + (genuineQuads S).card := by
+  rw [E2_eq_guaranteed_add_genuine S hS, guaranteedQuads_card_eq_floor S hS h2]
+
 /-- With the exact guaranteed-family count, the named genuine count is literally the additive
 energy excess over `3|S|²-3|S|`. -/
 theorem genuineQuads_card_eq_E2_sub_floor (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S)
@@ -182,4 +191,5 @@ end ArkLib.ProximityGap.E2CharFree
 #print axioms ArkLib.ProximityGap.E2CharFree.diag_inter_anti_card_eq
 #print axioms ArkLib.ProximityGap.E2CharFree.swap_inter_anti_card_eq
 #print axioms ArkLib.ProximityGap.E2CharFree.guaranteedQuads_card_eq_floor
+#print axioms ArkLib.ProximityGap.E2CharFree.E2_eq_floor_add_genuine
 #print axioms ArkLib.ProximityGap.E2CharFree.genuineQuads_card_eq_E2_sub_floor
