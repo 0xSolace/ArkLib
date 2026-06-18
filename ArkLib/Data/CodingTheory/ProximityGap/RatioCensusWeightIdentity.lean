@@ -254,6 +254,23 @@ theorem farIncidence_mul_le_support [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
         Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
           (fun _ _ _ => Nat.zero_le _)
 
+
+/-- **Quotient form of the per-line far-incidence bound.**  When the demanded agreement
+`n − z₀ − w` is positive, the product bound `incidence · agreement ≤ wt(s₁)` gives the reusable
+ratio form
+
+`incidence(w) ≤ wt(s₁) / (n − z₀ − w)`.
+
+This is often the form needed at the binding radius.  It is still a **single fixed line** bound;
+MCA/CORE remains open because the global far-line incidence unions over many closest codewords. -/
+theorem farIncidence_le_support_div [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
+    (hpos : 0 < Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w) :
+    (univ.filter (fun γ : F => hammingNorm (s₀ + γ • s₁) ≤ w)).card
+      ≤ (univ.filter (fun i => s₁ i ≠ 0)).card /
+          (Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w) := by
+  classical
+  exact (Nat.le_div_iff_mul_le hpos).2 (farIncidence_mul_le_support s₀ s₁ w)
+
 end ArkLib.ProximityGap.RatioCensus
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -264,3 +281,4 @@ end ArkLib.ProximityGap.RatioCensus
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_ge_of_ratioMult_le
 #print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_eq_ratioMult_level
 #print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_mul_le_support
+#print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_le_support_div
