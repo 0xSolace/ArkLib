@@ -1276,7 +1276,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvE4_SidonOffSpikeFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvE5_ExistsGoodPrimeNonSequitur
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvE6_LargeSieveVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvK1_EnergyKUniformityExtrapolation
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL12_BindingDiagonalOrbitCountConstant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E10ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E11ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E12ClosedForm
@@ -1548,7 +1547,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LambdaQRudinEndToEnd
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LambdaQSpectralMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LambdaQTowerTensor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LambdaQTrivialInterpRefuted
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LaneB_OrbitFoldDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._LaneC_DegBadR6R7Extension
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MasterGapOffByOneCorrected
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MetaTheoremSecondOrderFloor
@@ -1674,7 +1672,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyB1MomentBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwiseIndependenceFramework
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._V7GeometricDecayLogCrossing
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ValuationClassBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VinogradovDecouplingVacuous
