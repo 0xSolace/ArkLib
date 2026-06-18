@@ -16,6 +16,7 @@ hereditary facts the depth-`ℓ` `B_h`-Sidon ladder (§0) leans on:
 * **`isSidonSet_empty`**, **`isSidonSet_singleton`** — the trivial base cases.
 * **`IsSidonSet.translate`** — Sidon is invariant under translation `G ↦ G + t` (the coincidence
   relation `a+b = c+d` is translation-equivariant).
+* **`IsSidonSet.scale`** — Sidon is invariant under nonzero dilation `G ↦ tG`.
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`).  No CORE closure, no char-p transfer, no
 capacity / beyond-Johnson / growth-law claim.  Issues #444, #389.
@@ -63,8 +64,38 @@ theorem IsSidonSet.translate {G : Finset F} (hG : IsSidonSet G) (t : F) :
   · exact Or.inl ⟨by rw [h1], by rw [h2]⟩
   · exact Or.inr ⟨by rw [h1], by rw [h2]⟩
 
+/-- The embedding `x ↦ t * x` for a nonzero scalar `t`. -/
+def mulLeftEmbeddingOfNe (t : F) (ht : t ≠ 0) : F ↪ F where
+  toFun := fun x => t * x
+  inj' := by
+    intro x y hxy
+    exact mul_left_cancel₀ ht hxy
+
+/-- **Nonzero-dilation invariance:** if `G` is Sidon then so is its nonzero scalar multiple.
+The coincidence relation `a + b = c + d` is preserved under multiplying each element by `t ≠ 0`,
+and cancellation by `t` recovers the original Sidon coincidence. -/
+theorem IsSidonSet.scale {G : Finset F} (hG : IsSidonSet G) {t : F} (ht : t ≠ 0) :
+    IsSidonSet (G.map (mulLeftEmbeddingOfNe t ht)) := by
+  intro a ha b hb c hc d hd hsum
+  simp only [Finset.mem_map] at ha hb hc hd
+  obtain ⟨a', ha', rfl⟩ := ha
+  obtain ⟨b', hb', rfl⟩ := hb
+  obtain ⟨c', hc', rfl⟩ := hc
+  obtain ⟨d', hd', rfl⟩ := hd
+  change t * a' + t * b' = t * c' + t * d' at hsum
+  have hsum' : a' + b' = c' + d' := by
+    apply mul_left_cancel₀ ht
+    calc
+      t * (a' + b') = t * a' + t * b' := by ring
+      _ = t * c' + t * d' := hsum
+      _ = t * (c' + d') := by ring
+  rcases hG a' ha' b' hb' c' hc' d' hd' hsum' with ⟨h1, h2⟩ | ⟨h1, h2⟩
+  · exact Or.inl ⟨by rw [h1], by rw [h2]⟩
+  · exact Or.inr ⟨by rw [h1], by rw [h2]⟩
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.subset
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.translate
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.scale
