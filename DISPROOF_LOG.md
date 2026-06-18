@@ -5244,3 +5244,37 @@ residual everywhere is the char-p energy transfer at depth r~ln q (char-0 PROVEN
 regenerated to import all 24. No #334/#444 closure.
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+## [census-necessity-skeleton] the count/census <-> CORE equivalence necessity half is ASSEMBLED but the cap=>CORE direction is WALLED at the spectral bound (the census face alone cannot supply M(mu_n)) (2026-06-17, opus-4-8 subagent)
+
+Lane: the brief's named "asserted but never proven" census<->CORE equivalence. This entry MAPS the
+boundary precisely after landing the necessity skeleton (commits da4fcd3f9, 5d71f5624, b76f9c518).
+
+WHAT IS NOW PROVEN (axiom-clean, in-tree):
+ FORWARD (sufficiency): epsMCA_le_of_alignableSets_card_le — a uniform census cap L => eps_mca <= L/|F|.
+ NECESSITY FLOOR (single set): choose_card_le_alignableSets — one gamma-aligned set A with a non-deg
+   (k+1)-tuple forces C(|A|-(k+1), a-(k+1)) <= #alignableSets.
+ NECESSITY CONTRAPOSITIVE: no_large_aligned_of_census_cap / not_aligned_of_census_cap_lt /
+   census_cap_ge_full_domain_supply — a census cap K forbids aligned sets whose subset supply > K;
+   prize band (A=univ): C(n-(k+1),a-(k+1)) <= K.
+ NECESSITY MULTI-SCALAR: sum_choose_le_alignableSets / card_mul_choose_le_alignableSets — supplies
+   ADD across the DISJOINT scalar partition (#alignableSets = sum_g #alignedSetsForScalar g): if P
+   distinct bad scalars each align the full domain, #P * C(n-(k+1),a-(k+1)) <= #alignableSets. So a
+   cap K bounds BOTH the bad-scalar COUNT and each one's aligned SIZE.
+
+THE EXACT GAP (the wall, made precise): the equivalence's MISSING direction is cap => CORE, i.e.
+"#alignableSets <= rm+1 (the prize cap) => M(mu_n) <= C sqrt(n log(p/n))". The census face is a
+COMBINATORIAL/incidence object over a-subsets of the domain; CORE is a SIGNED character-sum bound.
+The necessity skeleton above shows the census cap CONTROLS the agreement/list structure (size + count
+of aligned sets) from below — but turning a census UPPER bound (#alignableSets <= rm+1) into the
+SPECTRAL bound M <= C sqrt(n log(p/n)) requires bounding #alignableSets ABOVE, which is precisely the
+open CORE: the census face cannot self-supply its own upper bound. Concretely, the per-scalar supply
+C(n-(k+1),a-(k+1)) is a LOWER bound on the census from a single deep agreement set; proving the cap
+rm+1 holds = proving NO scalar has a deep aligned set beyond the list-decoding radius = the BGK/Paley
+signed-cancellation wall. CONSISTENT with the meta-thm: the unsigned combinatorial census face
+collapses to the agreement-sharing/Johnson contribution; the beyond-Johnson gap lives in the signed
+contribution (same conclusion as the over-det cliff-at-n/2 guard). The census EQUIVALENCE is a real
+brick to assemble (now done on the necessity side), but it does NOT route AROUND the spectral wall —
+it RE-EXPRESSES the wall as "the census cap rm+1 is itself unproven", a faithful reformulation, not
+an escape. No CORE closure; no growth-law claim; asymptotic guard untouched. Lean-free entry (doc) =>
+axiom-clean trivially.
