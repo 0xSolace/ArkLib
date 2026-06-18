@@ -1022,6 +1022,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFour
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFourDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOne
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOneDeficit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungSlackDepletion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossingDepthLinearTracking
