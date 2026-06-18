@@ -103,9 +103,31 @@ theorem fallingFactorial_generating_function (n : ℕ) (t : ℝ) :
   rw [add_comm (1 : ℝ) t]
   exact this.symm
 
+
+/-- At `t = 1`, the normalized leading contributions sum to `2^n`.  This is the
+finite mass form of the leading-term binomial EGF, useful as a coefficient-normalized
+check that the leading char-0 layer is exactly binomial rather than merely bounded. -/
+theorem leading_normalized_mass (n : ℕ) :
+    (∑ r ∈ range (n + 1),
+        ((leadingNat n r : ℝ) / ((r.factorial : ℝ) * (r.factorial : ℝ))))
+      = (2 : ℝ) ^ n := by
+  have h := leading_generating_function n (1 : ℝ)
+  norm_num at h
+  exact h
+
+/-- Equivalently, the falling-factorial coefficients have total binomial mass `2^n`. -/
+theorem fallingFactorial_normalized_mass (n : ℕ) :
+    (∑ r ∈ range (n + 1), ((Nat.descFactorial n r : ℝ) / (r.factorial : ℝ)))
+      = (2 : ℝ) ^ n := by
+  have h := fallingFactorial_generating_function n (1 : ℝ)
+  norm_num at h
+  exact h
+
 end ArkLib.ProximityGap.Char0LeadingBinomialEGF
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.leadingNat_eq_factorial_sq_mul_choose
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.leading_generating_function
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.fallingFactorial_generating_function
+#print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.leading_normalized_mass
+#print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.fallingFactorial_normalized_mass
