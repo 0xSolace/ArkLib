@@ -142,6 +142,75 @@ theorem cliqueColors_subset (γ : Finset V → β) (k m : ℕ) (cols : Finset β
   intro g hg
   exact (cliqueColors_mem_iff.mp hg).1
 
+/-! ## Clique NESTING — the agreement-depth antitone descent of `D*(m)` (the real substrate)
+
+The `_OffBGK_*` off-BGK persistence files (`_OffBGK_AgreementDepthMerge`,
+`_OPDescentFromAntitoneOrbitCount`) reduce single-orbit persistence to the antitonicity of the
+distinct-level envelope `D*(m) = #cliqueColors` in the agreement depth `m`, and cite a
+`cliqueColors_antitone` substrate as if proven.  It had NEVER been written (its claimed host file
+`_DStarDecreasingEnvelope.lean` does not exist in the tree).  It is proven HERE, purely combinatorially,
+by clique NESTING — the genuine structural fact those files depend on. -/
+
+/-- **Clique nesting (one depth step).** A `(k + (m+1))`-clique `W` for color `g` contains a
+`(k + m)`-clique for `g`: any `(k+m)`-subset `W' ⊆ W` is again a clique, because `W'`'s `(k+1)`-faces
+are a subset of `W`'s `(k+1)`-faces (a face of `W'` lies in `W' ⊆ W`), all of which carry color `g`.
+This is the structural engine of the agreement-depth descent: deepening the clique by one vertex can
+only RESTRICT, never create, surviving levels. -/
+theorem isClique_succ_imp_isClique
+    {γ : Finset V → β} {k m : ℕ} {g : β} {W : Finset V}
+    (hW : IsClique γ k (m + 1) g W) :
+    ∃ W', IsClique γ k m g W' := by
+  obtain ⟨hcard, hcol⟩ := hW
+  -- pick a (k+m)-subset of W (exists since k+m ≤ k+(m+1) = #W)
+  obtain ⟨W', hsub, hW'card⟩ :=
+    Finset.exists_subset_card_eq (n := k + m) (s := W) (by omega)
+  refine ⟨W', hW'card, ?_⟩
+  intro R hR
+  -- a (k+1)-face of W' is a (k+1)-face of W (R ⊆ W' ⊆ W, #R = k+1)
+  have hRsubW' : R ⊆ W' := (Finset.mem_powersetCard.mp hR).1
+  have hRcard : R.card = k + 1 := (Finset.mem_powersetCard.mp hR).2
+  have hRW : R ∈ faces k W :=
+    Finset.mem_powersetCard.mpr ⟨hRsubW'.trans hsub, hRcard⟩
+  exact hcol R hRW
+
+/-- **`D*(m)` is ANTITONE in the agreement depth `m` (one step).**  `cliqueColors γ k (m+1) cols ⊆
+cliqueColors γ k m cols`: every color carrying a `(k+(m+1))`-clique also carries a `(k+m)`-clique
+(`isClique_succ_imp_isClique`), so deepening the agreement by one rung can only DROP clique-bearing
+colors.  This is the structural merge map `D*(m+1) ≤ D*(m)` the off-BGK persistence skeleton relies on. -/
+theorem cliqueColors_succ_subset (γ : Finset V → β) (k m : ℕ) (cols : Finset β) :
+    cliqueColors γ k (m + 1) cols ⊆ cliqueColors γ k m cols := by
+  intro g hg
+  rw [cliqueColors_mem_iff] at hg ⊢
+  obtain ⟨hgc, W, hW⟩ := hg
+  exact ⟨hgc, isClique_succ_imp_isClique hW⟩
+
+/-- **`D*(m)` antitone, MONOTONE form** (`m₁ ≤ m₂ ⟹ D*(m₂) ⊆ D*(m₁)`): iterating the one-step nesting
+`cliqueColors_succ_subset` down the depth difference.  The full agreement-depth merge substrate. -/
+theorem cliqueColors_antitone (γ : Finset V → β) (k : ℕ) (cols : Finset β)
+    {m₁ m₂ : ℕ} (hm : m₁ ≤ m₂) :
+    cliqueColors γ k m₂ cols ⊆ cliqueColors γ k m₁ cols := by
+  induction m₂ with
+  | zero =>
+    have : m₁ = 0 := Nat.le_zero.mp hm
+    subst this; exact fun _ hx => hx
+  | succ n ih =>
+    rcases Nat.lt_or_ge m₁ (n + 1) with hlt | hge
+    · -- m₁ ≤ n: nest one step then induct
+      have hm₁n : m₁ ≤ n := Nat.lt_succ_iff.mp hlt
+      exact (cliqueColors_succ_subset γ k n cols).trans (ih hm₁n)
+    · -- m₁ = n+1: reflexive
+      have : m₁ = n + 1 := le_antisymm hm hge
+      subst this; exact fun _ hx => hx
+
+/-- **`D*(m)` antitone, CARDINALITY form** (`m₁ ≤ m₂ ⟹ D*(m₂) ≤ D*(m₁)`): the count of
+clique-bearing colors is non-increasing in the agreement depth.  This is exactly the antitone
+envelope hypothesis the off-BGK orbit-count merge (`orbitCount_antitone_depth`) consumes — supplied
+here as a genuine clique-nesting proof rather than an absent import. -/
+theorem cliqueColors_card_antitone (γ : Finset V → β) (k : ℕ) (cols : Finset β)
+    {m₁ m₂ : ℕ} (hm : m₁ ≤ m₂) :
+    (cliqueColors γ k m₂ cols).card ≤ (cliqueColors γ k m₁ cols).card :=
+  Finset.card_le_card (cliqueColors_antitone γ k cols hm)
+
 /-- **The pigeonhole bound on `D*(m)`.** Choosing a witnessing clique per clique-bearing color,
 `D*(m) · C(k+m, k+1) ≤ C(n, k+1)`. -/
 theorem cliqueColors_mul_choose_le

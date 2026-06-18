@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DStarDecreasingEnvelope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueDecayPigeonholeVacuous
 
 set_option linter.style.longLine false
 set_option autoImplicit false
@@ -37,8 +37,8 @@ NON-INCREASING in the agreement depth `m = s − k` in every stratum (`152 ↘ 1
 `214 ↘ 6 ↘ 2`).  Each extra unit of agreement depth imposes one more `(k+1)`-face divided-difference
 constraint, and a deeper agreement clique CONTAINS a shallower sub-clique of the same level `γ`
 (clique nesting), so the surviving-level set — hence the free-orbit count — can only SHRINK.  This
-is the proven substrate `DStarDecreasingEnvelope.cliqueColors_antitone_depth` (`D*(m+1) ≤ D*(m)`),
-which the table matches verbatim (its own `n=16` row: `D*(1)=3936, D*(2)=89, D*(3)=9`; with `z=1`
+is the proven substrate `CliqueDecayPigeonhole.cliqueColors_card_antitone` (`D*(m+1) ≤ D*(m)`, by
+clique nesting — `isClique_succ_imp_isClique`), which the table matches verbatim (its own `n=16` row: `D*(1)=3936, D*(2)=89, D*(3)=9`; with `z=1`
 and `S=8` that is `O = ⌊(3936−1)/8⌋…, 11, 1`).  The "two plateau orbits at `s*−1` become one free
 orbit at `s*`" is ONE antitone-descent step crossing the orbit-size threshold `S`.
 
@@ -63,7 +63,7 @@ at the worst `d=2` direction, not a pointwise identity over all directions.
 
 The free-orbit count is the distinct-level envelope quotiented by the (constant) orbit size:
 `O(m) = ⌊(D*(m) − z)/S⌋` with `z ≤ 1` the `γ=0` fixed point.  FACT 1 says `D*(m)` is antitone in `m`
-(PROVEN: `cliqueColors_antitone_depth`).  We land the consequence the persistence skeleton needs:
+(PROVEN: `cliqueColors_card_antitone`, clique nesting).  We land the consequence the persistence skeleton needs:
 
 * **`orbitCount_antitone_depth`** — the integer free-orbit count `O(m) = (D*(m) − z)/S` is itself
   NON-INCREASING in the agreement depth `m` (antitone of `D*` ⟹ antitone of `(D* − z)/S`).  This is
@@ -85,7 +85,7 @@ The free-orbit count is the distinct-level envelope quotiented by the (constant)
 
 This is **off-BGK SUBSTRATE**, NOT a δ* pin and NOT a closure.  What is NEW and PROVEN here
 (axiom-clean): the free-orbit count inherits the agreement-depth antitone descent from the proven
-clique-nesting envelope (`DStarDecreasingEnvelope`), so the binding-rung collapse `O ≤ 1` is ONE
+clique-nesting envelope (`CliqueDecayPigeonhole.cliqueColors_card_antitone`), so the binding-rung collapse `O ≤ 1` is ONE
 antitone step crossing the orbit-size threshold `D* − z ≤ S` — `v₂`-INDEPENDENT.  This relocates the
 open content precisely: the collapse MECHANISM is proven structural (antitone merge map), but the
 RATE — that the crossing depth is `m* = O(log n)`, i.e. that `D*(m)` drops below `z + S` by depth
@@ -94,8 +94,11 @@ law = BCHKS Conj 1.12.  The merge map says WHY orbits collapse (nesting, not spl
 HOW FAST.  We prove the former, NAME the latter, and REFUTE the `v₂`-pin detour.
 
 ## References
-- `_DStarDecreasingEnvelope.lean` (`cliqueColors_antitone_depth`: `D*(m+1) ≤ D*(m)` by clique
-  nesting — the proven agreement-depth merge substrate this file quotients to orbit count).
+- `CliqueDecayPigeonholeVacuous.lean` (`cliqueColors_antitone` / `cliqueColors_card_antitone`:
+  `D*(m+1) ≤ D*(m)` by clique nesting `isClique_succ_imp_isClique` — the PROVEN agreement-depth
+  merge substrate this file quotients to orbit count; previously cited as a nonexistent
+  `_DStarDecreasingEnvelope.cliqueColors_antitone_depth`, now supplied as a genuine clique-nesting
+  proof in its real host file).
 - `_OffBGK_OPSingleOrbitPersistence.lean` (`OPDescentStep`/`OP_persist_of_descent`: the TOWER-form
   descent; this file supplies the AGREEMENT-DEPTH form and shows the collapse is `v₂`-blind).
 - `_AngleB_OddCosetOrbitCount.lean` (`oddOrbitCount_N_independent` = `2^{v₂−1}`: the AMBIENT plateau
@@ -127,14 +130,14 @@ theorem orbitCount_mono_in_D {D₁ D₂ z S : ℕ} (hD : D₂ ≤ D₁) :
 
 /-! ## Part 2 — the AGREEMENT-DEPTH antitone descent of the free-orbit count (the merge map)
 
-Pull the proven envelope antitonicity (`DStarDecreasingEnvelope.cliqueColors_antitone_depth`)
+Pull the proven envelope antitonicity (`CliqueDecayPigeonhole.cliqueColors_card_antitone`)
 through the orbit-count quotient.  We phrase it on an abstract depth-indexed envelope `Dstar : ℕ → ℕ`
 that is antitone (the proven property of `fun m => (cliqueColors γ k m cols).card`), so the result is
 exactly the merge-map descent on the free-orbit count. -/
 
 /-- **THE MERGE MAP — the free-orbit count is antitone in agreement depth.**  Given an
 agreement-depth envelope `Dstar : ℕ → ℕ` that is non-increasing in the depth `m` (the PROVEN
-property of the distinct-level count `m ↦ D*(m)`, `DStarDecreasingEnvelope.cliqueColors_antitone_depth`
+property of the distinct-level count `m ↦ D*(m)`, `CliqueDecayPigeonhole.cliqueColors_card_antitone`
 / `cliqueColors_antitone`), and a constant `γ=0` fixed-point count `z` and orbit size `S`, the
 free-orbit count `O(m) = (Dstar m − z)/S` is itself non-increasing in `m`:
 
@@ -187,11 +190,11 @@ theorem orbitCount_collapses_at_crossing {Dstar : ℕ → ℕ} (z S : ℕ)
 /-! ## Part 4 — wiring the PROVEN envelope antitonicity into the merge map (non-vacuity)
 
 The abstract `hanti` hypothesis above is exactly the proven
-`DStarDecreasingEnvelope.cliqueColors_antitone`.  Here we instantiate the merge map on the real
+`CliqueDecayPigeonhole.cliqueColors_card_antitone`.  Here we instantiate the merge map on the real
 distinct-level envelope `Dstar m := (cliqueColors γ k m cols).card`, so the conclusion is the
 agreement-depth descent of the genuine far-line free-orbit count — NOT an abstract toy. -/
 
-open ArkLib.ProximityGap.DStarDecreasingEnvelope
+open ArkLib.ProximityGap.CliqueDecayPigeonhole
 
 /-- **The merge map fires on the REAL envelope (the discharge of `hanti`).**  For the genuine
 distinct-level envelope `Dstar m = (cliqueColors γ k m cols).card`, the imported
@@ -206,7 +209,7 @@ theorem realEnvelope_orbitCount_antitone
     orbitCount ((cliqueColors γ k m₂ cols).card) z S
       ≤ orbitCount ((cliqueColors γ k m₁ cols).card) z S :=
   orbitCount_antitone_depth z S
-    (fun a b hab => cliqueColors_antitone γ k cols hab) hm
+    (fun a b hab => cliqueColors_card_antitone γ k cols hab) hm
 
 /-- **The collapse fires on the REAL envelope.**  If the genuine distinct-level envelope crosses into
 one orbit unit at some depth `m*` (`D*(m*) ≤ z + S`), then the real far-line free-orbit count is
@@ -219,7 +222,7 @@ theorem realEnvelope_collapses_at_crossing
     {mstar : ℕ} (hcross : (cliqueColors γ k mstar cols).card ≤ z + S) :
     ∀ m, mstar ≤ m → orbitCount ((cliqueColors γ k m cols).card) z S ≤ 1 :=
   orbitCount_collapses_at_crossing z S
-    (fun a b hab => cliqueColors_antitone γ k cols hab) hcross
+    (fun a b hab => cliqueColors_card_antitone γ k cols hab) hcross
 
 /-! ## Part 5 — the `v₂`-pin REFUTATION certificate (FACT 2) -/
 

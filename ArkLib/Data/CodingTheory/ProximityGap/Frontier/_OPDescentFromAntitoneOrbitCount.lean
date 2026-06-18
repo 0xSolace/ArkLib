@@ -27,17 +27,21 @@ It exhibited TWO candidate routes to discharge it, and the just-landed work show
 
 This file is the missing BRIDGE: it wires the Route-2 merge to discharge the Route-1 target.
 
-## NOTE — why this file is self-contained (an orphan-file finding, 2026-06-17)
+## NOTE — why this file inlines the orbit-count primitive (orphan-file finding 2026-06-17, RESOLVED 2026-06-18)
 
 The abstract orbit-count merge content (`orbitCount`, `orbitCount_mono_in_D`, `orbitCount_antitone_depth`)
-lives in `_OffBGK_AgreementDepthMerge.lean`, BUT that module currently does **not build** on `origin/main`
-(@ `7f1e51730`): it `import`s `ArkLib...Frontier._DStarDecreasingEnvelope`, a file that does NOT exist
-anywhere in the tree, and it is NOT registered in the `ArkLib.lean` umbrella.  Its abstract core
-(`orbitCount` + the pure-`Nat` monotonicity, file lines ~118-185) is independent of that missing import
-— only its `realEnvelope_*` corollaries `open DStarDecreasingEnvelope`.  To keep this BRIDGE buildable and
-axiom-clean we therefore INLINE the trivial abstract primitive (`orbitCountAux` + `orbitCountAux_mono_in_D`,
-pure `Nat` division monotonicity) rather than import the broken module.  When `_DStarDecreasingEnvelope`
-lands (or `_OffBGK_AgreementDepthMerge` is repaired/registered), this inline can be replaced by the import
+lives in `_OffBGK_AgreementDepthMerge.lean`.  When this BRIDGE landed (@ `7f1e51730`) that module did **not
+build**: it `import`ed `ArkLib...Frontier._DStarDecreasingEnvelope`, a file that never existed in the tree,
+and cited a `cliqueColors_antitone_depth` substrate that was never written; it was also unregistered in the
+`ArkLib.lean` umbrella.  So to keep this bridge buildable and axiom-clean it INLINES the trivial abstract
+primitive (`orbitCountAux` + `orbitCountAux_mono_in_D`, pure `Nat` division monotonicity).
+
+**RESOLVED (2026-06-18):** `_OffBGK_AgreementDepthMerge.lean` was REPAIRED — its missing import was
+redirected to the real `CliqueDecayPigeonholeVacuous`, where the antitone substrate is now supplied as a
+genuine clique-nesting proof (`cliqueColors_antitone` / `cliqueColors_card_antitone` from
+`isClique_succ_imp_isClique`), and the module is now registered in the umbrella and builds axiom-clean.
+The inline `orbitCountAux` below is retained (it keeps this file's import surface minimal and is a verbatim
+copy of `OffBGKAgreementDepthMerge.orbitCount`); it can now be replaced by the import
 and `orbitCountAux` aliased to `OffBGKAgreementDepthMerge.orbitCount`.
 
 ## What is proven here (axiom-clean, `propext / Classical.choice / Quot.sound`, no `sorry`)
