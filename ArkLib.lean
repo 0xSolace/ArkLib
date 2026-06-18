@@ -965,6 +965,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.FpVanishingBridge
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusImmunityMuN
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSubfieldBlowup
 import ArkLib.Data.CodingTheory.ProximityGap.FrobeniusSupplyExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AdditiveEnergySwapFloors
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetMaximal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetPacking
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.AgreementSetTuplePacking
