@@ -1154,6 +1154,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarMultDivision
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PinnedScalarRatioImage
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PoissonAveragedMGF
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PowerSumMaxBracket
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PowerSumRatioMeanFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PowerSumRatioMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Prize407EntropyPinSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PrizeConditionalPinCapstone
