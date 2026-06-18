@@ -134,6 +134,25 @@ theorem eta_normSq_eq_card_add_nontrivial {ψ : AddChar F ℂ} {G : Finset F}
   rw [this, eta]
   simp [AddChar.map_zero_eq_one]
 
+set_option linter.unusedFintypeInType false in
+/-- **Defect form of the pointwise autocorrelation identity.** The nontrivial difference-set
+shift sum is exactly the real defect between the squared period and the subgroup size:
+
+> `∑_{ζ ∈ G \ {1}} η_{b(ζ-1)} = ‖η_b‖² - |G|`.
+
+This is the named consumer form of the pointwise identity: all open cancellation content is now
+localized in one explicit defect term. It is NOT a bound; bounding this defect uniformly is the
+BGK/Paley wall. -/
+theorem eta_nontrivial_shiftSum_eq_normSq_sub_card {ψ : AddChar F ℂ} {G : Finset F}
+    (hbij : ∀ u ∈ G, G.image (fun z => u * z) = G) (h0 : (0 : F) ∉ G) (h1 : (1 : F) ∈ G)
+    (b : F) :
+    (∑ ζ ∈ G.erase 1, eta ψ G (b * (ζ - 1)))
+      = (((‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) - (G.card : ℂ)) := by
+  have h := eta_normSq_eq_card_add_nontrivial (ψ := ψ) hbij h0 h1 b
+  rw [h]
+  ring
+
 #print axioms ArkLib.ProximityGap.EtaPointwiseAutocorr.eta_normSq_eq_card_add_nontrivial
+#print axioms ArkLib.ProximityGap.EtaPointwiseAutocorr.eta_nontrivial_shiftSum_eq_normSq_sub_card
 
 end ArkLib.ProximityGap.EtaPointwiseAutocorr
