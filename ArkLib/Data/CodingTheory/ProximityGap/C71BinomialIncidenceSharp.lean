@@ -99,6 +99,18 @@ theorem binomial_self_incidence_image_card_eq_one_of_coprime
   simpa [hcop.gcd_eq_one] using
     binomial_self_incidence_image_card_eq_gcd (F := F) (H := H) hji
 
+/-- **Divisible-step sharpness: the whole subgroup is incident.** At the opposite edge from the
+coprime rows, if the subgroup order divides the exponent gap, the witness `X^i - X^j` vanishes on
+all `|H|` points of the thin subgroup. This records the exact large-incidence face of the same gcd
+law, and is only a sharpness/obstruction datum, not a route to CORE. -/
+theorem binomial_self_incidence_image_card_eq_card_of_dvd
+    {H : Subgroup Fˣ} [Fintype H] [IsCyclic H] [DecidableEq H]
+    {i j : ℕ} (hji : j < i) (hdiv : Fintype.card H ∣ i - j) :
+    (((univ : Finset H).image (fun x : H => ((x : Fˣ) : F))).filter
+        (fun y : F => y ≠ 0 ∧ y ^ i - y ^ j = 0)).card = Fintype.card H := by
+  simpa [Nat.gcd_eq_right hdiv] using
+    binomial_self_incidence_image_card_eq_gcd (F := F) (H := H) hji
+
 end ArkLib.ProximityGap.C71BinomialIncidenceSharp
 
 /-! ## Axiom audit -/
@@ -106,5 +118,6 @@ namespace ArkLib.ProximityGap.C71BinomialIncidenceSharp
 
 #print axioms binomial_self_incidence_image_card_eq_gcd
 #print axioms binomial_self_incidence_image_card_eq_one_of_coprime
+#print axioms binomial_self_incidence_image_card_eq_card_of_dvd
 
 end ArkLib.ProximityGap.C71BinomialIncidenceSharp
