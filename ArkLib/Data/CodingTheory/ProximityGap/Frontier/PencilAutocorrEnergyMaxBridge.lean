@@ -5,6 +5,7 @@ Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSumDoubleCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSubgroupExact
+import ArkLib.ToMathlib.SupportSqBound
 
 /-!
 # The multiplicative-ENERGY lower bound on the worst autocorrelation (#407/#444)
@@ -106,6 +107,39 @@ theorem subgroup_maxAutocorr_ge_card {H : Finset G} {M₀ : ℕ}
   rw [hcube, hrhs] at hbound
   exact Nat.le_of_mul_le_mul_left hbound hpos
 
+/-- **The Cauchy–Schwarz energy FLOOR by autocorrelation support.**  Dual to
+`mulEnergy_le_maxAutocorr_mul_sq`: the multiplicative energy is bounded BELOW by `|S|⁴` divided by the
+size of the autocorrelation support `{ρ : |S ∩ ρS| ≠ 0}`.  With the double-count `∑_ρ |S ∩ ρS| = |S|²`,
+Cauchy–Schwarz `(∑ f)² ≤ #support · ∑ f²` gives
+
+  `|S|⁴ ≤ (#autocorrelation-support) · E_×(S)`.
+
+The fewer shifts carry the autocorrelation mass, the LARGER the energy must be — multiplicative
+rigidity is exactly support-concentration of the unsigned overlap. -/
+theorem sq_card_pow_le_support_mul_mulEnergy (S : Finset G) :
+    (S.card ^ 2) ^ 2
+      ≤ (Finset.univ.filter (fun ρ : G => (S ∩ dilate ρ S).card ≠ 0)).card
+          * ∑ ρ : G, (S ∩ dilate ρ S).card ^ 2 := by
+  have hsum := PencilAutocorrSumDoubleCount.autocorr_sum_eq_sq S
+  have hcs := ArkLib.sq_sum_le_card_support_mul_sum_sq (fun ρ : G => (S ∩ dilate ρ S).card)
+  rwa [hsum] at hcs
+
+/-- **Subgroup tightness of the Cauchy–Schwarz energy floor.**  For the prize object `S = H` (a
+multiplicative subgroup), the autocorrelation support is EXACTLY `H` (`subgroup_autocorr_support`),
+so `#support = |H|`, and the Cauchy–Schwarz floor `|H|⁴ ≤ #support · E_×(H)` becomes
+`|H|⁴ ≤ |H| · |H|³ = |H|⁴` — an EQUALITY.  The subgroup SATURATES the Cauchy–Schwarz bound: its
+unsigned multiplicative autocorrelation is maximally support-concentrated, the extremal rigid case. -/
+theorem subgroup_support_card_eq (H : Finset G)
+    (hmul : ∀ a ∈ H, ∀ b ∈ H, a * b ∈ H)
+    (hinv : ∀ a ∈ H, a⁻¹ ∈ H)
+    (hne : H.Nonempty) :
+    (Finset.univ.filter (fun ρ : G => (H ∩ dilate ρ H).card ≠ 0)).card = H.card := by
+  have hset : Finset.univ.filter (fun ρ : G => (H ∩ dilate ρ H).card ≠ 0) = H := by
+    ext ρ
+    rw [Finset.mem_filter, subgroup_autocorr_support hmul hinv hne ρ]
+    exact ⟨fun h => h.2, fun h => ⟨Finset.mem_univ ρ, h⟩⟩
+  rw [hset]
+
 end ProximityGap.Frontier.PencilAutocorrelation
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -115,3 +149,7 @@ open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms mulEnergy_le_maxAutocorr_mul_sq
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms subgroup_maxAutocorr_ge_card
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms sq_card_pow_le_support_mul_mulEnergy
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms subgroup_support_card_eq
