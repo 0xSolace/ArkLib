@@ -141,6 +141,29 @@ theorem windowSum_binomial_incidence_eq_card_of_subgroup (S : Finset F)
   rintro rfl
   exact hzero hx
 
+/-- **Caller-facing unpunctured window total on `μ_n`.** If every point of `S` is an `n`-th root
+of unity with `n > 0`, the explicit nonzero guard in the binomial window-average theorem is
+redundant at every scalar. Thus the exact dilation-window total applies directly to the ordinary
+vanishing filter used by incidence callers. This is the unpunctured companion to
+`windowSum_binomial_incidence_eq_card_of_subgroup`. -/
+theorem windowSum_binomial_incidence_eq_card_unpunctured_of_roots (S : Finset F) {n : ℕ}
+    {i j : ℕ} (hn : 0 < n) (hij : j ≤ i)
+    (hSn : ∀ x ∈ S, x ^ n = 1) (hclosed : ∀ x ∈ S, x ^ (i - j) ∈ S) :
+    (∑ c ∈ S, (S.filter (fun x => x ^ i - c * x ^ j = 0)).card) = S.card := by
+  have hzero : (0 : F) ∉ S := by
+    intro h0
+    have hpow : (0 : F) ^ n = 1 := hSn 0 h0
+    rw [zero_pow (Nat.ne_of_gt hn)] at hpow
+    exact zero_ne_one hpow
+  calc
+    (∑ c ∈ S, (S.filter (fun x => x ^ i - c * x ^ j = 0)).card)
+        = ∑ c ∈ S, (S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)).card := by
+          apply Finset.sum_congr rfl
+          intro c _
+          rw [ArkLib.ProximityGap.C71BinomialIncidence.binomial_incidence_filter_punctured_eq_unpunctured
+            (S := S) (c := c) (hn := hn) (hSn := hSn)]
+    _ = S.card := windowSum_binomial_incidence_eq_card_of_subgroup S hij hclosed hzero
+
 /-- **There is a light scalar in every nonempty dilation window.** In the subgroup-window case,
 the exact total `Σ_c incidence(c) = #S` immediately implies that some scalar `c ∈ S` has binomial
 incidence at most `1`. This is the pigeonhole form of the window-average `= 1` law: the large
@@ -176,4 +199,5 @@ end ArkLib.ProximityGap.C71BinomialWindowAverage
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_pow_fiber_eq_card
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card_of_subgroup
+#print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.windowSum_binomial_incidence_eq_card_unpunctured_of_roots
 #print axioms ArkLib.ProximityGap.C71BinomialWindowAverage.exists_window_scalar_binomial_incidence_le_one
