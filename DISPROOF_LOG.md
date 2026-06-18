@@ -2,6 +2,39 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) TERMINAL: the period field is an UNCORRELATED (white) field on the multiplicative quotient — the JOINT b↔b' structure is dead too (autocorr→0 at all lags), the last door-(iv) surface I localized closes (2026-06-18)
+
+Lens: door-(iv) Lane-1 CLOSURE. My three prior sweeps pinned the worst-b cancellation to the MARGINAL
+Gaussian-EVT law of {|η_b|} (dead = door iii) and localized the ONLY surviving surface as the JOINT
+correlation across cosets b. Since η is constant on μ_n-cosets, the field lives on the cyclic quotient
+Z_{(p-1)/n} via j ↦ η_{g^j}. Test: is this field SHORT-RANGE white (joint dead) or LONG-RANGE
+multiplicatively-structured (door-iv grip)?
+
+PROBE (`scripts/probes/probe_dooriv_joint_bcorrelation.py`, EXACT ℂ over coset reps g^j, proper μ_n,
+p≫n³, never n=q−1):
+| n  | p        | N=cosets | ac1|η| | ac2|η| | ac1_complex | ac1_energy | add_nbr | max_{1..50}|ac| |
+|----|----------|----------|--------|--------|-------------|------------|---------|----------------|
+| 16 | 65537    | 4096     | 0.060  | -0.018 | 0.0002      | 0.136      | 0.740   | 0.060          |
+| 32 | 1048609  | 32769    | -0.0001| 0.001  | 0.0000      | -0.0005    | -0.037  | 0.0068         |
+| 64 | 16777153 | 262143   | -0.001 | 0.004  | 0.007       | -0.001     | -0.007  | 0.013          |
+| 16 | 262193   | 16387    | 0.004  | 0.001  | 0.0001      | -0.0005    | -0.043  | 0.0064         |
+| 32 | 5931649  | 185364   | 0.003  | 0.002  | 0.0055      | 0.001      | -0.024  | 0.0085         |
+
+VERDICT (door-(iv) TERMINAL WALL / constraint lemma): the field j ↦ η_{g^j} is an UNCORRELATED WHITE
+field. The lag-k autocorrelation of |η|, of complex η, and of the energy |η|² are all ≈0 at EVERY nonzero
+lag and SHRINK with N (|ac1| 0.06 → 1e-3 → 1e-3; max over 50 lags → 0). The lone additive-neighbour
+correlation 0.74 appears ONLY at the Fermat prime 65537 (p/n=4096 small) and COLLAPSES to ≈0 for the
+larger generic primes — a finite-size/Fermat artifact, NOT a prize-regime signal. So even the JOINT
+structure is dead: NO exploitable low-order multiplicative correlation. CONSEQUENCE (closes the surface
+I localized, does NOT close CORE): together with the marginal Gaussian-EVT saturation, the period field
+has NEITHER marginal NOR low-order joint structure to grip — the cancellation difficulty is the
+irreducible BGK/Paley wall. Any door-(iv) crack must live BEYOND second-order joint statistics (in a
+higher-order / non-linear functional of the field that this white-noise autocorrelation cannot see).
+Formal kernel (Lean, `Frontier/_DoorIVJointFieldWhite.lean`, axiom-clean): zero cross-covariance
+diagonalizes the second moment — `Σ g_i g_{σ i}=0` ⇒ `Σ (g_i+g_{σ i})² = 2Σ g_i²`
+(`white_field_diagonalizes`); the lag-k joint block contributes nothing beyond the diagonal variance.
+The second-order joint route is mapped + dead. CORE OPEN.
+
 ## door-(iv) the worst-b SATURATES the GAUSSIAN extreme-value prediction M ≈ √(n·log(p/n)) with NO marginal slack (M/rmsM ≈ √log, kurtosis→3) ⇒ the crack, if any, is in the JOINT b-correlation, not the marginal (2026-06-18)
 
 Lens: door-(iv) Lane-1, the UPPER-side companion to the L2 mean-floor entry (which pins the LOWER

@@ -4217,3 +4217,4 @@ import ArkLib.Whir113Keystone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
