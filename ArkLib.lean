@@ -4150,3 +4150,5 @@ import ArkLib.Whir113Keystone
 import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailReindexed
 
 import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailRootSharp
+
+import ArkLib.Data.CodingTheory.ProximityGap.REnergyTrivialSandwich
