@@ -1,58 +1,15 @@
-import cmath, math
-def prime_factors(n):
-    f=set(); d=2
-    while d*d<=n:
-        while n%d==0: f.add(d); n//=d
-        d+=1
-    if n>1: f.add(n)
-    return f
-def find_primes(n, count, minratio=4):
-    out=[]; k=minratio
-    while len(out)<count and k<minratio+50000:
-        p=n*k+1
-        if p>3 and all(p%d for d in range(2,int(p**0.5)+1)): out.append(p)
-        k+=1
-    return out
-def munit(p,n):
-    m=(p-1)//n
-    for a in range(2,p):
-        h=pow(a,m,p)
-        if pow(h,n,p)==1 and all(pow(h,n//q,p)!=1 for q in prime_factors(n)):
-            G=[]; v=1
-            for _ in range(n): G.append(v); v=v*h%p
-            return G
-    return None
-def ep(p): return lambda t: cmath.exp(2j*math.pi*(t%p)/p)
-def eta(G,c,p,w): return sum(w((c*x)%p) for x in G)
-
-# FULL coset-invariance: eta_{c*u} = eta_c for ALL u in G, all c (incl c=0). Thinness-essential.
-# Also test it FAILS for a non-subgroup thin set S (random same-size subset of F_p^*).
-import random
-cases=[]
-for n in [8,16,32,64]:
-    for p in find_primes(n,2,4): cases.append((n,p))
-cases += [(16,65537),(32,65537),(64,65537)]
-
-allok=True
-for n,p in cases:
-    G=munit(p,n)
-    if G is None: continue
-    w=ep(p)
-    maxerr=0
-    for c in [0,1,3,(p-1)//2,p-2,7]:
-        c%=p
-        base=eta(G,c,p,w)
-        for u in G:
-            maxerr=max(maxerr,abs(eta(G,(c*u)%p,p,w)-base))
-    # non-subgroup control
-    random.seed(p)
-    S=random.sample([x for x in range(1,p)], n)
-    ctrl=0
-    for c in [1,3]:
-        base=eta(S,c,p,w)
-        for u in S[:4]:
-            ctrl=max(ctrl,abs(eta(S,(c*u)%p,p,w)-base))
-    ok = maxerr<1e-9
-    allok = allok and ok
-    print(f"n={n:3d} p={p:7d}  subgroup_inv_err={maxerr:.2e} {'OK' if ok else 'FAIL'}  | nonsubgroup_ctrl_err={ctrl:.2e} (should be >>0)")
-print("ALL SUBGROUP COSET-INVARIANCE:", "PASS" if allok else "FAIL")
+import numpy as np
+# Claim: eta_{c b} = eta_b for any c in G=mu_n (multiplicative coset invariance).
+# Because eta_b = sum_{x in G} psi(b x); c*G = G for c in G (subgroup), so reindex x->c^{-1}x... wait:
+# eta_{cb} = sum_{x in G} psi(c b x) = sum_{x in G} psi(b (c x)); cx ranges over G as x does (c in G).
+# So eta_{cb} = sum_{y in G} psi(b y) = eta_b. Holds for ANY field, c in G. Verify.
+for (p,n) in [(257,16),(257,8),(193,8),(97,16),(73,9),(41,5)]:
+    if (p-1)%n: continue
+    G=sorted({x for x in range(1,p) if pow(x,n,p)==1})
+    w=np.exp(2j*np.pi/p)
+    eta=np.array([sum(w**((b*x)%p) for x in G) for b in range(p)])
+    ok=True
+    for b in range(p):
+        for c in G:
+            if abs(eta[(c*b)%p]-eta[b])>1e-9: ok=False
+    print(f"p={p} n={n}: eta_{{cb}}=eta_b for all c in G, all b: {ok}")
