@@ -140,6 +140,17 @@ theorem swap_floor_le_cyclic_floor_three (n : ℕ) :
   ring_nf
   omega
 
+/-- For every nontrivial support size `n ≥ 2`, the `r = 3` cyclic floor is **strictly** above
+the all-`r` swap-floor specialization.  The exact positive gap is `n(n-1)(n+2)`. -/
+theorem swap_floor_lt_cyclic_floor_three_of_two_le {n : ℕ} (hn : 2 ≤ n) :
+    2 * n ^ 3 - n ^ 2 < 3 * n ^ 3 - 2 * n := by
+  rcases n with _ | n
+  · omega
+  rcases n with _ | n
+  · omega
+  ring_nf
+  omega
+
 /-- The exact arithmetic gap between the `r = 3` cyclic floor and the diagonal floor `n^3`,
 recorded in `ℤ` to avoid truncating subtraction.  The extra cyclic-orbit supply beyond the
 universal diagonal contribution is `2n(n-1)(n+1)`. -/
@@ -154,6 +165,17 @@ theorem diagonal_floor_le_cyclic_floor_three (n : ℕ) :
   · simp
   rcases n with _ | n
   · simp
+  ring_nf
+  omega
+
+/-- For every nontrivial support size `n ≥ 2`, the `r = 3` cyclic floor is **strictly** above
+the diagonal floor.  The exact positive gap is `2n(n-1)(n+1)`. -/
+theorem diagonal_floor_lt_cyclic_floor_three_of_two_le {n : ℕ} (hn : 2 ≤ n) :
+    n ^ 3 < 3 * n ^ 3 - 2 * n := by
+  rcases n with _ | n
+  · omega
+  rcases n with _ | n
+  · omega
   ring_nf
   omega
 
@@ -235,9 +257,15 @@ theorem rEnergy_three_ge_cyclic_floor (G : Finset F) :
 
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_three_ge_cyclic_floor
+namespace ArkLib.ProximityGap.SubgroupGaussSumMoment
 
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.cyclic_floor_three_gap_eq_int
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.swap_floor_le_cyclic_floor_three
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.cyclic_floor_three_diagonal_gap_eq_int
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.diagonal_floor_le_cyclic_floor_three
+#print axioms rEnergy_three_ge_cyclic_floor
+
+#print axioms cyclic_floor_three_gap_eq_int
+#print axioms swap_floor_le_cyclic_floor_three
+#print axioms swap_floor_lt_cyclic_floor_three_of_two_le
+#print axioms cyclic_floor_three_diagonal_gap_eq_int
+#print axioms diagonal_floor_le_cyclic_floor_three
+#print axioms diagonal_floor_lt_cyclic_floor_three_of_two_le
+
+end ArkLib.ProximityGap.SubgroupGaussSumMoment
