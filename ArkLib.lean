@@ -4166,3 +4166,4 @@ import ArkLib.Data.CodingTheory.ProximityGap.REnergyTrivialSandwich
 
 import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailComparison
 
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence

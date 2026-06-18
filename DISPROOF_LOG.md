@@ -5386,4 +5386,20 @@ Lean (axiom-clean, `⊆{propext,Classical.choice,Quot.sound}`): Frontier/_WorstB
 argmax set, downstream of `norm_eta_dilate_eq`); the additive-flatness verdict is the empirical NOTE. No
 #444 closure (constraint lemma + regime-bounded refutation of a sub-hope, not a breakthrough).
 
+## [door-iv-coset-half-degeneracy] raw index-2 coset-half coherence saturates at rho=1 on same-sign half-periods (2026-06-18, g55)
+
+Lane: Door-(iv) localized object, Lane 1. Probe `scripts/probes/probe_dooriv_cosethalf_coherence.py` split the 2-power subgroup H into H0=<h^2> and H1=hH0 and measured
+`rho(b)=|A_b+B_b|/(|A_b|+|B_b|)` over quotient cosets bH, where A_b and B_b are the two half-period sums.
+
+RESULT: the raw two-piece object is sign-degenerate. For n divisible by 4, both H0 and H1 are closed under negation, hence A_b and B_b are real. Whenever they have the same sign, rho(b)=1 exactly. Full scans in prize-regime primes found same-sign half sums for about half the quotient cosets and the adversarial |eta| cosets inside that same-sign set:
+- n=16, p=65537: 2045/4096 same-sign, best rho=1.000000.
+- n=32, p=1048609: 16315/32769 same-sign, best rho=1.000000.
+- n=64, p=16777153: 131320/262143 same-sign, best rho=1.000000.
+- n=128, p=268437889: 120k-coset sample, best sampled rho=1.000000.
+Top worst-b representatives are not explained by small additive b or q=b^n near ±1.
+
+Lean: `ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_nonneg`, `_of_nonpos`, and `_of_sameSign` prove axiom-clean that real same-sign two-piece sums have coherence exactly 1. Axioms: propext, Classical.choice, Quot.sound.
+
+VERDICT: this does NOT close CORE. It refutes the naive/raw index-2 coset-half anti-concentration lever: the worst-b coset-half coherence has no upper slack because the split is negation-stable and same-sign cases saturate rho=1. Any surviving door-(iv) theorem must use a finer/non-negation-stable decomposition or a different arithmetic statistic of {b*x^m}; the two-half coherence by itself cannot be bounded below 1.
+
 Co-authored-by: wakesync <shadow@shad0w.xyz>
