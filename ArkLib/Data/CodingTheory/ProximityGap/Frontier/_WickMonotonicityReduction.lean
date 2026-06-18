@@ -147,6 +147,52 @@ content); we never `sorry` it nor discharge it vacuously. -/
 def WickMonotonicity (ψ : AddChar F ℂ) (G : Finset F) : Prop :=
   ∀ r, 1 ≤ r → wickRatio ψ G (r + 1) ≤ wickRatio ψ G r
 
+/-- The same open core with denominators cleared. This is often the exact algebraic form one wants
+to attack: the next DC-subtracted moment, weighted by the present Wick value, is at most the present
+moment weighted by the next Wick value. It is only a definition here, not a proof of the inequality. -/
+def WickStepCross (ψ : AddChar F ℂ) (G : Finset F) : Prop :=
+  ∀ r, 1 ≤ r → Ar ψ G (r + 1) * Wick G r ≤ Ar ψ G r * Wick G (r + 1)
+
+/-- Clearing the positive Wick denominators: ratio monotonicity implies the cross-multiplied step. -/
+theorem wickStepCross_of_monotonicity {ψ : AddChar F ℂ} {G : Finset F} (hG : G.Nonempty)
+    (hmono : WickMonotonicity ψ G) : WickStepCross ψ G := by
+  intro r hr
+  have hWr : 0 < Wick G r := Wick_pos hG r
+  have hWnext : 0 < Wick G (r + 1) := Wick_pos hG (r + 1)
+  have h := hmono r hr
+  unfold wickRatio at h
+  calc
+    Ar ψ G (r + 1) * Wick G r
+        = (Ar ψ G (r + 1) / Wick G (r + 1)) * (Wick G (r + 1) * Wick G r) := by
+            field_simp [ne_of_gt hWnext]
+    _ ≤ (Ar ψ G r / Wick G r) * (Wick G (r + 1) * Wick G r) := by
+            exact mul_le_mul_of_nonneg_right h (le_of_lt (mul_pos hWnext hWr))
+    _ = Ar ψ G r * Wick G (r + 1) := by
+            field_simp [ne_of_gt hWr]
+
+/-- Conversely, the cross-multiplied step is exactly ratio monotonicity once the Wick denominators
+are known positive (here supplied by `G.Nonempty`). -/
+theorem monotonicity_of_wickStepCross {ψ : AddChar F ℂ} {G : Finset F} (hG : G.Nonempty)
+    (hcross : WickStepCross ψ G) : WickMonotonicity ψ G := by
+  intro r hr
+  have hWr : 0 < Wick G r := Wick_pos hG r
+  have hWnext : 0 < Wick G (r + 1) := Wick_pos hG (r + 1)
+  have h := hcross r hr
+  unfold wickRatio
+  calc
+    Ar ψ G (r + 1) / Wick G (r + 1)
+        = (Ar ψ G (r + 1) * Wick G r) / (Wick G (r + 1) * Wick G r) := by
+            field_simp [ne_of_gt hWr, ne_of_gt hWnext]
+    _ ≤ (Ar ψ G r * Wick G (r + 1)) / (Wick G (r + 1) * Wick G r) := by
+            exact div_le_div_of_nonneg_right h (le_of_lt (mul_pos hWnext hWr))
+    _ = Ar ψ G r / Wick G r := by
+            field_simp [ne_of_gt hWr, ne_of_gt hWnext]
+
+/-- The ratio and denominator-cleared formulations of the single open step are equivalent. -/
+theorem wickMonotonicity_iff_wickStepCross {ψ : AddChar F ℂ} {G : Finset F} (hG : G.Nonempty) :
+    WickMonotonicity ψ G ↔ WickStepCross ψ G :=
+  ⟨wickStepCross_of_monotonicity hG, monotonicity_of_wickStepCross hG⟩
+
 /-- **The prize floor (as a named target).** `A_r ≤ Wick_r` for all `r ≥ 1`: the DC-subtracted
 Gauss-period moments are sub-Gaussian at every depth. This is what the reduction PRODUCES from the
 open core. -/
@@ -178,4 +224,5 @@ end ProximityGap.Frontier.WickMonotonicityReduction
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.antitone_le_one_of_base
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.wickRatio_one_le
+#print axioms ProximityGap.Frontier.WickMonotonicityReduction.wickMonotonicity_iff_wickStepCross
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.floorViaWick_of_monotonicity
