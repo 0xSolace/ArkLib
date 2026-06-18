@@ -2,6 +2,45 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) SINGLE-WINDOW phase-set concentration is ENERGY-BLIND: the coarse window functional decorrelates from |η| (Spearman→0) and is sub-√n (C/√n→0) — coarse spatial clustering is NOT the cancellation mechanism (2026-06-18)
+
+Lens: door-(iv) Lane-1 anti-concentration, the UNSIGNED additive spread of the phase set
+`A_b = { b·y mod p : y ∈ μ_n }` itself (distinct from the prior ILO entry below, which probes the
+SIGNED character-sum small-ball `Q(t)` over the sign cube — an energy/relations object on the signs).
+The door-(iv) hope: if a large `|η_b|` were produced by `A_b` CLUSTERING into a short arc (small-ball),
+one could read a sup-norm bound off the spatial concentration WITHOUT a moment/completion. Test the
+coarse window functional `C_b = max over arcs W of length p/n of #{ y : b·y mod p ∈ W }`.
+
+PROBE (`scripts/probes/probe_dooriv_phaseset_anticoncentration.py` +
+`scripts/probes/probe_dooriv_smallball_vs_energy.py`, EXACT ℂ over PROPER μ_n, p≫n³, m=(p−1)/n≥2,
+incl. Fermat 65537, NEVER n=q−1; random same-size additive control; full sampled b-sweep + Spearman):
+| n   | p          | M=|η|_max | M/√n | C_worst | C_worst/√n | argmax(C)=argmax(η)? | Spearman(|η|,C) |
+|-----|------------|-----------|-------|---------|-----------|---------------------|----------------|
+| 16  | 65537      | 13.84     | 3.46  | 12      | 3.00      | NO                  | 0.49           |
+| 32  | 1048609    | 22.98     | 4.06  | 9       | 1.59      | NO                  | 0.19           |
+| 64  | 16777153   | 32.23     | 4.03  | 12      | 1.50      | NO                  | 0.11           |
+| 128 | 268437889  | 43.73     | 3.87  | 12      | 1.06      | NO                  | 0.074          |
+| 256 | 4294968833 | 62.03     | 3.88  | 10      | 0.625     | NO                  | 0.046          |
+(window-concentration of `A_b` IS larger than random at the worst-b for C, e.g. n=16: 12 vs 4 — so it
+is thinness-sensitive — but on the two diagnostics that matter it FAILS.)
+
+VERDICT (door-(iv) sub-lane WALL / constraint lemma): the single-window concentration functional is
+ENERGY-BLIND on BOTH axes. (i) SCALE: `C_worst/√n → 0` (3.0, 1.59, 1.50, 1.06, 0.625) — the worst window
+count is FLAT (~10–12 points) and *sub*-√n, far BELOW the prize √n scale, so it cannot be the prize
+object. (ii) DECORRELATION: `C_b` is NOT a repackaging of `|η_b|` — Spearman(|η|,C) collapses
+(0.49→0.046) and the argmax of `C` decouples from the argmax of `|η|`; at the ACTUAL worst-b for `|η|`,
+`C` is not maximal. MECHANISM: a large `|η_b|` is produced by FINE PHASE coherence (the unit vectors
+`e_p(b·y)` aligning), which is exactly the moment/energy object, NOT by coarse spatial clustering of
+the residues. The formal kernel (Lean, `Frontier/_DoorIVWindowConcentrationTrivial.lean`,
+axiom-clean): for unit-modulus summands, splitting into the `C` in-window and `n−C` out-of-window terms,
+**each** out-of-window term still has modulus `1`, so a single window yields only
+`|η_b| ≤ C·1 + (n−C)·1 = n` — the trivial linear ceiling, INDEPENDENT of `C`
+(`window_split_rhs_constant`: the split RHS equals `n` for every admissible window). CONSEQUENCE
+(complements the ILO entry below, does NOT close CORE): door-(iv) anti-concentration cannot be supplied
+by a single-window / coarse-spatial small-ball quantity; any real anti-concentration lever must grip the
+FINE phase alignment (the energy/coherence object) — i.e. the route back to the BGK/Paley wall. The
+coarse-clustering escape is mapped + dead. CORE OPEN.
+
 ## the POINTWISE-AUTOCORRELATION self-consistency ceiling is TRIVIAL (linear n) — the triangle inequality discards exactly the difference-set cancellation that IS the wall (2026-06-17)
 
 Lens: the just-landed pointwise identity `‖η_b‖² = Σ_{ζ∈μ_n} η_{b(ζ-1)}` (EtaPointwiseAutocorr.lean,
