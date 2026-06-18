@@ -36,6 +36,18 @@ jobs:
           npm ci
           npm run build
 
+      - name: Ensure miner onboarding files are deployed
+        working-directory: website/deltastar-paper
+        run: |
+          node scripts/copy-mine.mjs
+          cp public/mission.md public/skill.md public/codex.md out/
+          test -s out/mission.md
+          test -s out/skill.md
+          test -s out/codex.md
+          grep -q "mission-version:" out/mission.md
+          grep -q "bootstrap-version:" out/skill.md
+          grep -q "bootstrap-version:" out/codex.md
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
