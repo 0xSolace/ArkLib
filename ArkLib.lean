@@ -1166,6 +1166,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharPLowerBoun
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCharZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyThreeCyclicFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyTwoCharFreeFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergyTwoEqAdditiveEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioImagePermInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RatioLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.RawMGFSaddleVacuity
