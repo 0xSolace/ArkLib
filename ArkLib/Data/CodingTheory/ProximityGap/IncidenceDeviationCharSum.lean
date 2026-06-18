@@ -186,9 +186,37 @@ theorem lineIncidence_le_mean_add {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
     exact_mod_cast deviationSupport_card_le s₁
   linarith
 
+/-- **Worst-case incidence LOWER bound from a uniform char-sum bound.** The matching lower companion
+of `lineIncidence_le_mean_add`: the same modulus deviation bound `|I − |G|| ≤ (#devSupport)·B ≤ q·B`
+bounds the deviation from BELOW too, so `I(s₀,s₁) ≥ |G| − q·B`. Together with the upper bound this
+pins the far-line incidence to the band `|G| ± q·B` around its first-moment mean `|G|`, from a uniform
+Gauss-period bound `B`. (Same naive `(#frequencies)·B` triangle scale — see the file honesty header;
+NOT the cancellation-sharp bound, and NOT a CORE statement.) -/
+theorem lineIncidence_ge_mean_sub {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (s₀ s₁ : F) {B : ℝ} (hB0 : 0 ≤ B)
+    (hB : ∀ b : F, b ≠ 0 → ‖eta ψ G b‖ ≤ B) :
+    (G.card : ℝ) - (Fintype.card F : ℝ) * B ≤ (lineIncidence G s₀ s₁ : ℝ) := by
+  classical
+  have hdev := incidence_dev_le hψ G s₀ s₁ hB
+  have hcast : ‖(lineIncidence G s₀ s₁ : ℂ) - (G.card : ℂ)‖
+      = |(lineIncidence G s₀ s₁ : ℝ) - (G.card : ℝ)| := by
+    rw [show ((lineIncidence G s₀ s₁ : ℂ) - (G.card : ℂ))
+          = (((lineIncidence G s₀ s₁ : ℝ) - (G.card : ℝ) : ℝ) : ℂ) from by push_cast; ring,
+      Complex.norm_real, Real.norm_eq_abs]
+  rw [hcast] at hdev
+  -- the deviation is bounded from below: -(devSupport·B) ≤ I - |G|
+  have habs : -(((deviationSupport s₁).card : ℝ) * B)
+      ≤ (lineIncidence G s₀ s₁ : ℝ) - (G.card : ℝ) :=
+    neg_le_of_abs_le hdev
+  have hcard : ((deviationSupport s₁).card : ℝ) * B ≤ (Fintype.card F : ℝ) * B := by
+    apply mul_le_mul_of_nonneg_right _ hB0
+    exact_mod_cast deviationSupport_card_le s₁
+  linarith
+
 end ArkLib.ProximityGap.IncidenceDeviationCharSum
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.IncidenceDeviationCharSum.incidence_sub_mean
 #print axioms ArkLib.ProximityGap.IncidenceDeviationCharSum.incidence_dev_le
 #print axioms ArkLib.ProximityGap.IncidenceDeviationCharSum.lineIncidence_le_mean_add
+#print axioms ArkLib.ProximityGap.IncidenceDeviationCharSum.lineIncidence_ge_mean_sub
