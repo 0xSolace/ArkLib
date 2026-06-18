@@ -18305,3 +18305,52 @@ for the large n where it would sit inside. So the room lemma is a viable, axiom-
 with a NAMED RHS, but the probe CANNOT certify its hypothesis at the asymptotic saddle — that certification
 IS the char-p energy transfer = the BGK wall. **No prize gain from the room route alone; the room makes the
 target explicit and confirms char-0 dominance in the regime interior, nothing past it.** CORE OPEN. Confidence high.
+
+## [door-iv-marginal-moment-ladder] period MARGINAL is Gaussian-collapsed through 6th order; 8th = noise, no signal; worst-b internal geometry = generic EVT (2026-06-18, sol opus-4-8 subagent)
+
+Lane: door-(iv) marginal moment hierarchy + the "outside-the-moment-hierarchy" worst-b-internal fork.
+Builds on 8b2df98a5 ("Gaussian to 4th order; any crack must live at 6th order+ or outside the moment
+hierarchy"). Probes: PROPER mu_n, p≈n⁴≫n³, EXACT bignum modular arithmetic (no int64 wraparound),
+multiple structured primes per n, never n=q−1. (codex-reviewed; numerical-overflow + sampling-honesty
+findings all fixed.)
+
+WHAT IS PROVEN / MAPPED (axiom-clean bricks, in-tree):
+ - 6th connected cumulant VANISHES (57b3d915c, _DoorIVSixthCumulantVanishes.lean): normalized
+   g3=κ6/m2³ mean→0 while across-prime sd DOMINATES mean and sign flips prime-to-prime (+0.071±0.093
+   @n=64, +0.006±0.039 @n=128, +0.003±0.033 @n=256) = finite-size noise. Kurtosis g2=κ4/m2² decays
+   MONOTONE −0.190→−0.005, prime-invariant to 4 decimals at small n (deterministic finite-n subgroup
+   correction, not exploitable). => period marginal GAUSSIAN to 6th order. Wick collapse: m6 forced to
+   15·m4·m2−30·m2³ (a fixed poly in the dead Plancherel floor m2=n and E₂ energy m4).
+ - WORST-b internal term geometry = generic EVT (78d1df596, _DoorIVWorstBParticipationGeneric.lean):
+   worst-b coherence R1=|η|/n tracks EVT √(log(p/n)/n) within a bounded NON-monotone constant
+   (R1/EVT=1.20,1.26,1.29,1.13); forward-fraction A₊ decays 1.00→0.766 (not rational-locked);
+   participation PR decays 0.874→0.669 (not rational-locked). The Cauchy–Schwarz brick pins worst-b
+   coherence to the L² magnitude data for ALL b (sampling-independent upper bound). => the
+   "outside-the-moment via worst-b internal rigidity" fork is DEAD; worst-b alignment is the generic
+   large deviation of n unit vectors (door-(iii) EVT). (n=64,128 worst-b SAMPLED — conservative.)
+ - GENERAL Wick-collapse capstone (_DoorIVMomentLadderWickCollapse.lean): the UNCONDITIONAL content
+   is `moment_eq_wick_of_cumulant_zero` — a vanishing connected cumulant at ANY even order forces the
+   moment to equal its Wick value, i.e. a polynomial in the strictly-LOWER moments/cumulants (no new
+   datum at that order). This alone is what a single κ_{2r}=0 buys. The further collapse to the
+   m2-ONLY Gaussian value `(2r−1)‼·m2ʳ` (`moment_eq_gaussMoment_of_cumulant_zero`) requires the ADDED
+   hypothesis that ALL lower connected cumulants above order 2 have ALSO vanished (encoded in its
+   `hdecomp`): with only κ_{2r}=0 the moment can still depend on lower non-Gaussian moments. That
+   added hypothesis is what the probes ESTABLISH empirically at orders 4 and 6 (κ4,κ6→0), so the
+   ladder IS m2-collapsed through order 6; at order 8 it is only 'no stable signal' (noise), not a
+   proven vanishing, so the m2-only collapse is NOT asserted at order 8. Marginal moment-ladder rungs
+   through order 6 supply nothing beyond the dead m2=n; order 8 is mapped-as-noise, not closed.
+
+HONEST NON-CLAIM (8th order): the 8th normalized cumulant g4 is NOISE, NO stable signal. Multi-prime
+check (3 primes/n): g4 across-prime sd DOMINATES mean with prime-to-prime SIGN FLIPS (n=32:
++0.26,−0.36,−0.36; n=64: +0.42,−0.06,+1.54; n=128: −0.59,+0.34,−0.23), mean consistent with 0. The
+8th moment is dominated by the few largest |η_b| in the sample, so it fluctuates wildly with prime +
+subsample. We do NOT claim an axiom-clean 8th-order vanishing — only "no stable non-Gaussian signal".
+A single-prime 8th-order number must NOT be over-read.
+
+NET: the door-(iv) MARGINAL moment hierarchy is mapped (Gaussian-collapsed through 6th, noise at 8th)
+and the worst-b INTERNAL geometry fork is mapped (generic EVT, coherence is an L² object). No marginal
+moment-ladder rung and no worst-b internal-geometry object supplies a non-moment door-(iv) lever. This
+is consistent with the meta-thm: every marginal object read off the period field collapses onto the
+2nd-moment/E₂ (BGK/Paley √n) wall. No CORE/cancellation claim; asymptotic-claim guard untouched.
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>
