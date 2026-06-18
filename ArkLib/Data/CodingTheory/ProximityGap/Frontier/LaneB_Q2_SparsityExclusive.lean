@@ -104,6 +104,35 @@ theorem triexp_subst (z μ α β : F) {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤
   have hμc : μ ^ a * μ ^ (c - a) = μ ^ c := by rw [← pow_add, Nat.add_sub_cancel' hac]
   rw [mul_pow, mul_pow, mul_pow, ← hμb, ← hμc]; ring
 
+
+/-- **Four-monomial substitution (the next obstruction rung).** For
+`g(z) = z^a + α z^b + β z^c + γ z^d` (`a ≤ b ≤ c ≤ d`), dilation rescales the three
+free coefficients by the three diagonal factors `μ^(b-a)`, `μ^(c-a)`, and `μ^(d-a)`.
+
+This is the precise 4-term analogue of `triexp_subst`: moving beyond a pencil does not recover a
+single cyclic parameter.  The action dimension grows with the number of independent exponents, so
+the Action–Orbit compression used by the sparse two-monomial lane remains pencil-exclusive. -/
+theorem quadexp_subst (z μ α β γ : F) {a b c d : ℕ} (hab : a ≤ b) (hbc : b ≤ c) (hcd : c ≤ d) :
+    (μ * z) ^ a + α * (μ * z) ^ b + β * (μ * z) ^ c + γ * (μ * z) ^ d
+      = μ ^ a * (z ^ a + (α * μ ^ (b - a)) * z ^ b
+          + (β * μ ^ (c - a)) * z ^ c + (γ * μ ^ (d - a)) * z ^ d) := by
+  have hac : a ≤ c := le_trans hab hbc
+  have had : a ≤ d := le_trans hac hcd
+  have hμb : μ ^ a * μ ^ (b - a) = μ ^ b := by rw [← pow_add, Nat.add_sub_cancel' hab]
+  have hμc : μ ^ a * μ ^ (c - a) = μ ^ c := by rw [← pow_add, Nat.add_sub_cancel' hac]
+  have hμd : μ ^ a * μ ^ (d - a) = μ ^ d := by rw [← pow_add, Nat.add_sub_cancel' had]
+  rw [mul_pow, mul_pow, mul_pow, mul_pow, ← hμb, ← hμc, ← hμd]
+  ring
+
+/-- **Four-monomial non-collapse witness.** Over `ZMod 17`, with `μ = 2` and exponents
+`(0,1,2,3)`, the three non-leading rescalers are the distinct values `2, 4, 8`. Thus the
+4-monomial substitution is genuinely diagonal in three coefficient directions, not a disguised
+single-parameter pencil orbit. -/
+theorem quadexp_three_rescalers_distinct :
+    (2 : ZMod 17) ^ (1 - 0) ≠ (2 : ZMod 17) ^ (2 - 0)
+      ∧ (2 : ZMod 17) ^ (1 - 0) ≠ (2 : ZMod 17) ^ (3 - 0)
+      ∧ (2 : ZMod 17) ^ (2 - 0) ≠ (2 : ZMod 17) ^ (3 - 0) := by decide
+
 /-- **The two rescaling factors genuinely differ** (concrete obstruction witness over `ZMod 17`).
 With `μ = 2`, exponents `(a,b,c) = (0,1,2)`, the pencil-coefficient rescaler `μ^{b−a} = 2` and the
 third-monomial rescaler `μ^{c−a} = 4` are DIFFERENT. So `triexp_subst` cannot collapse to a
@@ -157,6 +186,8 @@ end ArkLib.ProximityGap.LaneBQ2
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.LaneBQ2.pencil_subst_two
 #print axioms ArkLib.ProximityGap.LaneBQ2.triexp_subst
+#print axioms ArkLib.ProximityGap.LaneBQ2.quadexp_subst
+#print axioms ArkLib.ProximityGap.LaneBQ2.quadexp_three_rescalers_distinct
 #print axioms ArkLib.ProximityGap.LaneBQ2.triexp_no_single_orbit
 #print axioms ArkLib.ProximityGap.LaneBQ2.pencil_rescaler_nontrivial
 #print axioms ArkLib.ProximityGap.LaneBQ2.badCount_eq_orbitSize_mul_orbitCount
