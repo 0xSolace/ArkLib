@@ -59,7 +59,28 @@ theorem worst_period_sidon_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : F
     _ ≤ (Fintype.card F : ℝ) * (3 * (G.card : ℝ) ^ 2) := mul_le_mul_of_nonneg_left hE hqnn
     _ = 3 * (Fintype.card F : ℝ) * (G.card : ℝ) ^ 2 := by ring
 
+/-- **Exact Sidon sub-completion threshold, in fourth-power form.**  The Sidon fourth-moment
+incidence bound beats the trivial completion fourth power `q²` as soon as `3 |G|² ≤ q`.  This
+is the precise scale condition hidden in the informal fourth-root statement: the fourth-moment
+Sidon route gives sub-`√q` control only in the very thin range `|G| ≤ √(q/3)`, so it is a
+useful exact incidence brick but not a prize-regime CORE closure by itself. -/
+theorem worst_period_sidon_le_completion_pow4 {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hrep : ∀ t : F, t ≠ 0 → repCount G t ≤ 2) (b : F)
+    (hthin : 3 * G.card ^ 2 ≤ Fintype.card F) :
+    ‖eta ψ G b‖ ^ 4 ≤ (Fintype.card F : ℝ) ^ 2 := by
+  have hsidon := worst_period_sidon_le hψ G hrep b
+  have hthinR : 3 * (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ) := by
+    exact_mod_cast hthin
+  have hqnn : (0 : ℝ) ≤ (Fintype.card F : ℝ) := by positivity
+  calc ‖eta ψ G b‖ ^ 4
+      ≤ 3 * (Fintype.card F : ℝ) * (G.card : ℝ) ^ 2 := hsidon
+    _ = (Fintype.card F : ℝ) * (3 * (G.card : ℝ) ^ 2) := by ring
+    _ ≤ (Fintype.card F : ℝ) * (Fintype.card F : ℝ) :=
+        mul_le_mul_of_nonneg_left hthinR hqnn
+    _ = (Fintype.card F : ℝ) ^ 2 := by ring
+
 end ArkLib.ProximityGap.WorstPeriodSidon
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.WorstPeriodSidon.worst_period_sidon_le
+#print axioms ArkLib.ProximityGap.WorstPeriodSidon.worst_period_sidon_le_completion_pow4
