@@ -4148,3 +4148,5 @@ import ArkLib.ToVCVio.UniformFamilyComap
 import ArkLib.Whir113Keystone
 
 import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailReindexed
+
+import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailRootSharp
