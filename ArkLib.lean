@@ -2774,6 +2774,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListBound
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListSupply
+import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonListSupplyJohnsonRegime
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonResidualFloor
 import ArkLib.Data.CodingTheory.ProximityGap.SubJohnsonSupplyReframe
 import ArkLib.Data.CodingTheory.ProximityGap.SubgroupAdditiveEnergyF17
