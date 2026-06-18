@@ -88,6 +88,33 @@ theorem minority_mass_ge_of_coherence_le_one_sub {P N eps : ℝ}
     have hhalf : eps * (P + N) / 2 ≤ P := by linarith
     simpa [min_eq_left hPN] using hhalf
 
+/-- Exact one-line sign-mass formula: real-piece coherence is one minus twice the
+minority sign mass divided by total mass. -/
+theorem signMassCoherence_eq_one_sub_twice_min {P N : ℝ} (hden : 0 < P + N) :
+    signMassCoherence P N = 1 - 2 * min P N / (P + N) := by
+  rcases le_total N P with hNP | hPN
+  · simpa [min_eq_right hNP] using signMassCoherence_eq_one_sub_twice_neg hNP hden
+  · simpa [min_eq_left hPN] using signMassCoherence_eq_one_sub_twice_pos hPN hden
+
+/-- Exact threshold equivalence for real-piece coherence.  Achieving a target `theta`
+is equivalent to proving that the minority sign mass is at least `(1-theta)/2` of the
+total mass. -/
+theorem signMassCoherence_le_iff_minority_mass_ge {P N theta : ℝ}
+    (hden : 0 < P + N) :
+    signMassCoherence P N ≤ theta ↔ (1 - theta) * (P + N) / 2 ≤ min P N := by
+  rw [signMassCoherence_eq_one_sub_twice_min hden]
+  constructor
+  · intro hcoh
+    have hle : 1 - theta ≤ 2 * min P N / (P + N) := by linarith
+    have hmul : (1 - theta) * (P + N) ≤ 2 * min P N := by
+      exact (le_div_iff₀ hden).mp hle
+    linarith
+  · intro hminor
+    have hmul : (1 - theta) * (P + N) ≤ 2 * min P N := by linarith
+    have hle : 1 - theta ≤ 2 * min P N / (P + N) := by
+      exact (le_div_iff₀ hden).mpr hmul
+    linarith
+
 /-- Equivalent operational corollary: if the minority sign mass is below an `eps/2`
 fraction of total mass, then a real-piece coherence drop of size `eps` is impossible. -/
 theorem not_coherence_le_one_sub_of_minority_mass_lt {P N eps : ℝ}
@@ -105,4 +132,6 @@ open ProximityGap.Frontier.DoorIVRealSignMassSlack
 #print axioms signMassCoherence_eq_one_sub_twice_pos
 #print axioms signMassCoherence_le_one
 #print axioms minority_mass_ge_of_coherence_le_one_sub
+#print axioms signMassCoherence_eq_one_sub_twice_min
+#print axioms signMassCoherence_le_iff_minority_mass_ge
 #print axioms not_coherence_le_one_sub_of_minority_mass_lt
