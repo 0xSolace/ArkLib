@@ -98,6 +98,24 @@ theorem not_all_aligned_of_sum_choose_census_cap_lt (dom : Fin n ↪ F) {k a : �
   exact Nat.not_lt_of_ge hfloor hcap
 
 open Classical in
+/-- **External cap consumer for arbitrary multi-scalar supplies.**  If a separate argument proves the
+census bound `#alignableSets ≤ K`, and the proposed aligned packages would contribute a total subset
+supply strictly larger than `K`, then those packages cannot all be aligned.  This is the non-uniform
+version of the full-domain cap consumer below, retaining the actual sizes `|A γ|`. -/
+theorem not_all_aligned_of_external_sum_choose_cap (dom : Fin n ↪ F) {k a K : ℕ}
+    (u₀ u₁ : Fin n → F) (hka : k + 1 ≤ a)
+    (P : Finset F) (A : F → Finset (Fin n)) (t : F → Fin (k + 1) → Fin n)
+    (htinj : ∀ γ ∈ P, Function.Injective (t γ))
+    (htmem : ∀ γ ∈ P, ∀ b, (t γ) b ∈ A γ)
+    (hnd : ∀ γ ∈ P, ¬ (residual dom k (t γ) u₀ = 0 ∧ residual dom k (t γ) u₁ = 0))
+    (hK : (alignableSets dom k a u₀ u₁).card ≤ K)
+    (hcap : K < ∑ γ ∈ P, ((A γ).card - (k + 1)).choose (a - (k + 1))) :
+    ¬ ∀ γ ∈ P, Aligned dom k u₀ u₁ γ (A γ) := by
+  have hcap' : (alignableSets dom k a u₀ u₁).card
+      < ∑ γ ∈ P, ((A γ).card - (k + 1)).choose (a - (k + 1)) := lt_of_le_of_lt hK hcap
+  exact not_all_aligned_of_sum_choose_census_cap_lt dom u₀ u₁ hka P A t htinj htmem hnd hcap'
+
+open Classical in
 /-- **The full-domain multi-scalar floor (prize band).**  If `P` distinct scalars each align the
 WHOLE domain `univ` (`|A γ| = n`) with a non-degenerate `(k+1)`-tuple, the census dominates
 `#P · C(n − (k+1), a − (k+1))`.  Hence a census cap `K` bounds the number of such bad scalars:
@@ -161,6 +179,7 @@ end ProximityGap.Ownership
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.sum_choose_le_alignableSets
 #print axioms ProximityGap.Ownership.not_all_aligned_of_sum_choose_census_cap_lt
+#print axioms ProximityGap.Ownership.not_all_aligned_of_external_sum_choose_cap
 #print axioms ProximityGap.Ownership.card_mul_choose_le_alignableSets
 #print axioms ProximityGap.Ownership.not_all_full_domain_aligned_of_census_cap_lt
 #print axioms ProximityGap.Ownership.not_all_full_domain_aligned_of_external_census_cap
