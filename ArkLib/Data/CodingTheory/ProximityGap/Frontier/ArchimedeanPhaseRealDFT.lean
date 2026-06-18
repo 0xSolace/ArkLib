@@ -76,7 +76,29 @@ theorem dft_im_eq_zero_of_hermitian (ψ : AddChar (ZMod m) ℂ)
   rw [Complex.conj_eq_iff_im] at h
   exact h
 
+/-- **Realification (explicit form).** For a Hermitian `s` and a unit-modulus reflective
+character `ψ`, the DFT equals the complex cast of the *explicit real sum* of the per-term
+real parts: `dft ψ s β = ↑(∑_k (s k * ψ (k·β)).re)`. Combined with
+`dft_im_eq_zero_of_hermitian` this turns the complex prize sup `max_β |dft ψ s β|` into a sup
+of an explicitly **real-valued** sum `β ↦ ∑_k (s k * ψ (k·β)).re`, the computable
+realification the archimedean-phase oddness brick delivers. (Probe `probe_dft_re_sum.py`:
+0 fails over m ∈ {6,8,12,16,17,32}, PROPER thin instances, never the full group.) -/
+theorem dft_eq_realSum_of_hermitian (ψ : AddChar (ZMod m) ℂ)
+    (hψ : ∀ x : ZMod m, ψ (-x) = (starRingEnd ℂ) (ψ x))
+    {s : ZMod m → ℂ} (hHerm : Hermitian s) (β : ZMod m) :
+    dft ψ s β = ((∑ k : ZMod m, (s k * ψ (k * β)).re : ℝ) : ℂ) := by
+  -- a real complex number equals the cast of its real part
+  have him : (dft ψ s β).im = 0 := dft_im_eq_zero_of_hermitian ψ hψ hHerm β
+  have hre : dft ψ s β = ((dft ψ s β).re : ℂ) := by
+    apply Complex.ext <;> simp [him]
+  rw [hre]
+  -- now reduce the real part of the DFT sum to the sum of real parts
+  congr 1
+  unfold dft
+  rw [Complex.re_sum]
+
 end ArkLib.ProximityGap.ArchimedeanPhase
 
 #print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_isReal_of_hermitian
 #print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_im_eq_zero_of_hermitian
+#print axioms ArkLib.ProximityGap.ArchimedeanPhase.dft_eq_realSum_of_hermitian
