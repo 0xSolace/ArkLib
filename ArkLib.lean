@@ -1017,6 +1017,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteParsevalLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTwoSidedBracket
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepCeilingInsufficient
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFour
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungFourDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepRungOne
