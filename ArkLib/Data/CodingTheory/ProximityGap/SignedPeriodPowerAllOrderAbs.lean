@@ -1,0 +1,135 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors
+-/
+import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodPowerEvenFloor
+import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodZeroSumBridge
+
+set_option linter.unusedSectionVars false
+
+/-!
+# The ALL-ORDER (incl. ODD) signed period-power ABSOLUTE bound (#444, #407)
+
+The signed period-power identity (`SignedPeriodZeroSumBridge`) puts the located thinness-essential
+prize object into the canonical form
+
+>   `∑_{ψ≠0} η_ψ^r = q · W_r − |S|^r`,    `W_r = zeroSumCount S r`,   `η_ψ = ∑_{x∈S} ψ x`.
+
+`SignedPeriodPowerEvenFloor` exploits this at **EVEN** `r` only: there each `η_ψ^r = (η_ψ.re)^r ≥ 0`
+is a nonnegative real, giving the one-sided **floor** `q·W_r − |S|^r ≤ (q−1)·M^r` (and `|S|^r ≤ q·W_r`).
+The even route is structurally blind to **odd** `r` — exactly the regime the `OddZeroSumCountVanish`
+analysis flags as the locus of the open BGK wall over the finite field `F_q` (over ℂ the odd-order
+`W_r` vanishes; the `F_q`-reduction creates the signed odd zero-sum coincidences char 0 forbids).
+
+This file supplies the **ALL-ORDER** (odd `r` included) **two-sided absolute** companion. The plain
+absolute bound needs nothing about `S`: by the triangle inequality and `‖η_ψ^r‖ = ‖η_ψ‖^r ≤ M^r`,
+
+>   `‖q·W_r − |S|^r‖  =  ‖∑_{ψ≠0} η_ψ^r‖  ≤  (q−1)·M^r`     (`abs_signedPeriodPow_le_card_mul_max_pow`).
+
+The point of negation-closure (reality) is only that it makes the bounded quantity
+`∑_{ψ≠0} η_ψ^r = q·W_r − |S|^r` a genuinely **signed real** number, so the absolute bound becomes a
+**two-sided bracket** `−(q−1)M^r ≤ q·W_r − |S|^r ≤ (q−1)M^r` on a real residual. The right inequality
+recovers (and extends to ODD `r`) the even-floor's one-sided bound; the left inequality is the new
+odd-side content the even file gets free from nonnegativity but cannot *state* at odd `r`.
+
+(Here the residual `q·W_r − |S|^r` is automatically real — `W_r`, `|S|` are naturals — so the complex
+norm of the residual is its real absolute value with NO hypothesis; the real-form bracket is therefore
+also hypothesis-free. Negation-closure is what makes the *equal* signed sum `∑_{ψ≠0} η_ψ^r` real
+term-by-term, but we route through the residual, so the statements are clean and unconditional.)
+
+## HONEST SCOPE
+
+This is still a LOWER constraint on `M` (it bounds the signed residual *by* `M`: a small `M` would
+*force* the signed odd residual `q·W_r − n^r` small), NOT an UPPER bound on `M`. So it is **NOT** a
+CORE closure and cannot be — bounding `M` from above at `r ≈ log q` is the open BGK wall. Its value:
+it extends the even-floor pin to the ODD grade, locating the signed odd residual `q·W_r − n^r`
+(which is `≠ 0` over `F_q`, `= 0` over ℂ by `OddZeroSumCountVanish`) inside the `±(q−1)M^r` band, so
+the entire all-order signed object is now M-controlled, not just the even one. NON-MOMENT (the bound
+is on the SIGNED real residual, not a `|·|^{2r}` energy packaging), field-universal, EXTEND of the
+canonical bridge + even floor. `CORE  M(μ_n) ≤ C·√(n·log(q/n))  OPEN.`
+
+Issues #444, #407.
+-/
+
+open scoped BigOperators
+
+namespace ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
+
+open Finset SignedPeriodPowerCount
+
+variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+
+/-- **`‖η_ψ^r‖ = ‖η_ψ‖^r ≤ M^r` for ANY `r` (odd or even).**
+`‖η^r‖ = ‖η‖^r` (multiplicativity of the norm) and `‖η‖ ≤ M`. No parity and no structural hypothesis
+on `S`: this is the bare absolute bound on a complex power, and the absolute value is taken, so odd
+`r` is included. -/
+theorem abs_period_pow_le_max_pow {ψ : AddChar F ℂ} {S : Finset F} (r : ℕ) {M : ℝ}
+    (hM : ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    ‖(∑ x ∈ S, ψ x) ^ r‖ ≤ M ^ r := by
+  rw [norm_pow]
+  exact pow_le_pow_left₀ (norm_nonneg _) hM r
+
+/-- **THE ALL-ORDER ABSOLUTE BOUND: `‖q·W_r − |S|^r‖ ≤ (q−1)·M^r` for EVERY `r` (odd incl.).**
+
+The triangle inequality over the `q − 1` nonzero characters gives `‖∑_{ψ≠0} η_ψ^r‖ ≤ (q−1)·M^r`
+(each `‖η_ψ^r‖ = ‖η_ψ‖^r ≤ M^r`, no parity), and the canonical bridge
+`∑_{ψ≠0} η_ψ^r = q·W_r − |S|^r` (`nonzeroSignedPeriodPow_eq`) rewrites the LHS. This is the ODD-order
+companion the even floor (which needs `η_ψ^r ≥ 0`) cannot express: only the absolute value is used. -/
+theorem abs_signedPeriodPow_le_card_mul_max_pow {S : Finset F} (r : ℕ) {M : ℝ}
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    ‖(Fintype.card F : ℂ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℂ) ^ r‖
+      ≤ ((univ.erase (0 : AddChar F ℂ)).card : ℝ) * M ^ r := by
+  -- the canonical bridge: q·W_r − |S|^r = ∑_{ψ≠0} η_ψ^r
+  have hid : (Fintype.card F : ℂ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℂ) ^ r
+      = ∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ S, ψ x) ^ r :=
+    (nonzeroSignedPeriodPow_eq S r).symm
+  rw [hid]
+  -- triangle inequality, then each summand ≤ M^r
+  calc ‖∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ S, ψ x) ^ r‖
+      ≤ ∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖(∑ x ∈ S, ψ x) ^ r‖ :=
+        norm_sum_le _ _
+    _ ≤ ∑ _ψ ∈ (univ.erase (0 : AddChar F ℂ)), M ^ r :=
+        Finset.sum_le_sum (fun ψ hψ => abs_period_pow_le_max_pow r (hM ψ hψ))
+    _ = ((univ.erase (0 : AddChar F ℂ)).card : ℝ) * M ^ r := by
+        rw [Finset.sum_const, nsmul_eq_mul]
+
+/-- **Two-sided REAL form: `|q·W_r − |S|^r| ≤ (q−1)·M^r` for EVERY `r` (odd incl.).**
+
+The residual `q·W_r − |S|^r` is the coercion of a real number (`W_r`, `|S|` are naturals), so its
+complex norm is the real absolute value `|·|`. This turns the all-order absolute bound into a genuine
+two-sided bracket on a SIGNED real quantity: `−(q−1)M^r ≤ q·W_r − |S|^r ≤ (q−1)M^r`. The right side
+extends the even floor's `signedPeriodPow_le_card_mul_max_pow` to ODD `r`; the left side is the new
+odd-grade lower bracket (the even file gets it from nonnegativity but cannot state it at odd `r`). -/
+theorem signedPeriodPow_re_abs_le {S : Finset F} (r : ℕ) {M : ℝ}
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    |((Fintype.card F : ℝ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℝ) ^ r)|
+      ≤ ((univ.erase (0 : AddChar F ℂ)).card : ℝ) * M ^ r := by
+  have habs := abs_signedPeriodPow_le_card_mul_max_pow (S := S) r hM
+  -- the complex residual is the coercion of the real residual q·W_r − |S|^r
+  have hcoe : (Fintype.card F : ℂ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℂ) ^ r
+      = (((Fintype.card F : ℝ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℝ) ^ r : ℝ) : ℂ) := by push_cast; ring
+  rw [hcoe, Complex.norm_real] at habs
+  exact habs
+
+-- Axiom audit (full-env `lean` confirms ⊆ {propext, Classical.choice, Quot.sound}).
+#print axioms abs_period_pow_le_max_pow
+#print axioms abs_signedPeriodPow_le_card_mul_max_pow
+#print axioms signedPeriodPow_re_abs_le
+
+end ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
