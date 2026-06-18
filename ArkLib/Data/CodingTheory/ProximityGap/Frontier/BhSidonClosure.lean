@@ -157,6 +157,20 @@ theorem IsBhSidon.pred_of_mem {h : ℕ} {S : Set G} (hS : IsBhSidon (h + 1) S)
   have hpad : a ::ₘ s = a ::ₘ t := hS _ _ hcard_s hcard_t hmem_s hmem_t hsum'
   exact (Multiset.cons_inj_right a).mp hpad
 
+/-- **Representation uniqueness.** If `S` is `B_h`-Sidon then for every target `x`
+the size-`h` multisets over `S` summing to `x` are unique: any two such are equal.
+
+This is the bridge from the `B_h`-Sidon *predicate* to the `h`-fold *multiset
+representation function* `R_h(x) ≤ 1` that the §0 program counts against — the
+structural content of `B_h`-Sidon stated as injectivity of the multiset-sum map
+on the size-`h` slice over `S`. -/
+theorem IsBhSidon.rep_unique {h : ℕ} {S : Set G} (hS : IsBhSidon h S)
+    {x : G} {s t : Multiset G}
+    (hs : Multiset.card s = h) (ht : Multiset.card t = h)
+    (hsS : ∀ y ∈ s, y ∈ S) (htS : ∀ y ∈ t, y ∈ S)
+    (hxs : s.sum = x) (hxt : t.sum = x) : s = t :=
+  hS s t hs ht hsS htS (hxs.trans hxt.symm)
+
 /-- **Transport along an additive isomorphism.** If `S` is `B_h`-Sidon in `G` and
 `e : G ≃+ H` is an additive equivalence, then the image `e '' S` is `B_h`-Sidon
 in `H`.
