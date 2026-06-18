@@ -48,7 +48,7 @@ namespace ProximityGap.Frontier.TwoAdicGate
 
 open Finset
 
-variable {R : Type*} [CommRing R]
+variable {ι R : Type*} [CommRing R]
 
 /-- **The signed-sum / signed-weight identity.** `Σ_{i∈s} c_i·g_i − (Σ_{i∈s} c_i)·1 = Σ_{i∈s} c_i·(g_i − 1)`. (The
 algebra behind `D ≡ σ(D) (mod λ)`: each root `g_i ≡ 1`, so the difference collects `c_i·(g_i − 1)`.) -/
