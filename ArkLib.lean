@@ -1642,6 +1642,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpecS6_LeadingExponent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectralTraceZeroSignForcing
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ClosedWalkPowerSum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NonPrincipalClosedWalkTrace
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SymmetricEtaRealBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectrumClosedFormWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpurEvenValuationTwoSquares
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SqrtFreeRSBridge
