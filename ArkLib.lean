@@ -1672,6 +1672,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TowerSpikeBetaGate
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyB1MomentBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwiseIndependenceFramework
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedDepth2
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ValuationClassBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
