@@ -219,6 +219,15 @@ theorem floorViaWick_of_monotonicity {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
   unfold wickRatio at hle
   rwa [div_le_one hWpos] at hle
 
+/-- **Denominator-cleared consumer form.** It is enough to prove the cross-multiplied Wick step
+`A_{r+1} * Wick_r ≤ A_r * Wick_{r+1}` for every `r ≥ 1`; together with the proven Parseval
+base case, that gives the full floor. This is just `floorViaWick_of_monotonicity` after the
+positive-denominator equivalence above, so the only open input is still the same step inequality. -/
+theorem floorViaWick_of_wickStepCross {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) {G : Finset F}
+    (hG : G.Nonempty) (hcross : WickStepCross ψ G) :
+    FloorViaWick ψ G :=
+  floorViaWick_of_monotonicity hψ hG (monotonicity_of_wickStepCross hG hcross)
+
 end ProximityGap.Frontier.WickMonotonicityReduction
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
@@ -226,3 +235,4 @@ end ProximityGap.Frontier.WickMonotonicityReduction
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.wickRatio_one_le
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.wickMonotonicity_iff_wickStepCross
 #print axioms ProximityGap.Frontier.WickMonotonicityReduction.floorViaWick_of_monotonicity
+#print axioms ProximityGap.Frontier.WickMonotonicityReduction.floorViaWick_of_wickStepCross
