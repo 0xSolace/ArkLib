@@ -197,6 +197,30 @@ theorem union_norm_le_M_of_opposite_sign {ψ : AddChar F ℂ} (G : Finset F) (hG
         union_norm_le_max_of_opposite_sign G hG hζ hdisj b hopp
     _ ≤ M := max_le (hM b) (hM (ζ * b))
 
+/-- **Same-sign branch under a child supremum.** If both child periods are bounded by `M`, then a
+same-sign rung is still bounded by the trivial doubling envelope `2*M`. This is the formal
+`2·M` half of the trichotomy advertised above. -/
+theorem union_norm_le_two_mul_M_of_same_sign {ψ : AddChar F ℂ} (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0) (hdisj : Disjoint G (dilate ζ G))
+    {M : ℝ} (hM : ∀ c : F, ‖eta ψ G c‖ ≤ M) (b : F)
+    (hsame : 0 ≤ (eta ψ G b).re * (eta ψ G (ζ * b)).re) :
+    ‖eta ψ (G ∪ dilate ζ G) b‖ ≤ 2 * M := by
+  rw [union_norm_eq_add_of_same_sign G hG hζ hdisj b hsame]
+  nlinarith [hM b, hM (ζ * b)]
+
+/-- **Exceedance forces a positive sign.** Under a uniform child-level bound `M`, any parent period
+which exceeds `M` cannot lie on the cancellation branch. Hence it must have strictly positive child
+real-product. This is the local caller-facing reduction of the open tower problem: every frequency
+that grows past the previous-level supremum is trapped in the `+` sign cocycle. -/
+theorem same_sign_of_M_lt_union_norm {ψ : AddChar F ℂ} (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0) (hdisj : Disjoint G (dilate ζ G))
+    {M : ℝ} (hM : ∀ c : F, ‖eta ψ G c‖ ≤ M) (b : F)
+    (hbig : M < ‖eta ψ (G ∪ dilate ζ G) b‖) :
+    0 < (eta ψ G b).re * (eta ψ G (ζ * b)).re := by
+  by_contra hnot
+  have hopp : (eta ψ G b).re * (eta ψ G (ζ * b)).re ≤ 0 := le_of_not_gt hnot
+  exact (not_lt_of_ge (union_norm_le_M_of_opposite_sign G hG hζ hdisj hM b hopp)) hbig
+
 /-- **The sign-balance law (the L²-budget identity that forces the cocycle).** For a negation-closed
 `G` with disjoint dilate, the REAL signed cross-products sum to ZERO over all frequencies:
 `∑_b (η_b(G)).re · (η_{ζb}(G)).re = 0`. This is the cross-orthogonality `coset_period_orthogonal`
@@ -215,7 +239,7 @@ theorem sign_balance_zero {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finse
         = (((eta ψ G b).re * (eta ψ G (ζ * b)).re : ℝ) : ℂ) := by
     intro b
     rw [eta_eq_ofReal_re G hG b, eta_eq_ofReal_re G hG (ζ * b)]
-    simp [Complex.ext_iff]
+    simp
   -- the cross-orthogonality (dilate uses the same `image (ζ * ·)` as `coset_period_orthogonal`).
   have horth :
       ∑ b : F, eta ψ G b * (starRingEnd ℂ) (eta ψ G (ζ * b)) = 0 :=
