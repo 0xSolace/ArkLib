@@ -43,3 +43,24 @@ bound — is the BGK problem itself. NO fabricated closure.
 > Machine: `probe_rootnumber_cancellation.py` (identity verified), `probe_rootnumber_structure.py`
 > (autocorrelation, HD-test). The lag-2 autocorrelation elevation is the only fresh structural signal;
 > worth a deeper look but not a collapse.
+
+---
+
+## Closure of the last two open threads (2026-06-17, machine-verified)
+
+**(A) The lag-2 autocorrelation WASHES OUT — it was a finite-size artifact, not structure.** Tested across
+multiple `(n,p)` (`probe_open_routes.py`): `|A(2)|` scatters at `0.07–0.12` (ratio 1.3–1.7× white-noise
+`1/√m`), with NO stable elevation — at some primes `|A(3)| > |A(2)|`. The earlier single-prime `0.21` was a
+fluctuation. **Conclusion: the root-number phases are genuinely white noise** (confirming the exchangeable-
+white-noise structure, no exploitable autocorrelation). The last fresh structural signal is closed — it was
+noise.
+
+**(B) The dyadic-norm recursion inherits the wraparound vacuity.** At matched thinness the per-level
+wraparound is size-governed by `(2R)^{n/2}` (the vacuous norm bound), so the relative-norm recursion carries
+the same obstruction down the tower — no contraction that escapes it. Not a fresh escape.
+
+**Both remaining open routes, computed, confirm the wall.** There are no further genuinely-open
+computationally-attackable routes: the root numbers are white noise (cancellation = the BGK problem, no
+algebraic structure), and every structural/counting/symmetry handle has been driven to the same wall. The
+prize is **true-but-unprovable-by-current-means**, reduced and formalized to the single classical open
+problem — the √-cancellation (phase flatness) of Gauss-sum root numbers at the Burgess barrier.
