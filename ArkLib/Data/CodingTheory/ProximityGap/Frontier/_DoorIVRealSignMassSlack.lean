@@ -63,6 +63,40 @@ theorem signMassCoherence_le_one {P N : ℝ}
     constructor <;> linarith
   exact (div_le_one hden).mpr h_abs
 
+/-- Threshold form of the sign-mass constraint.  To force real-piece coherence below
+`1 - eps`, the minority sign mass must be at least an `eps/2` fraction of the total
+mass.  Thus a real, negation-stable door-(iv) refinement only helps after proving a
+quantitative lower bound on minority sign mass. -/
+theorem minority_mass_ge_of_coherence_le_one_sub {P N eps : ℝ}
+    (hden : 0 < P + N) (hcoh : signMassCoherence P N ≤ 1 - eps) :
+    eps * (P + N) / 2 ≤ min P N := by
+  rcases le_total N P with hNP | hPN
+  · have hform := signMassCoherence_eq_one_sub_twice_neg hNP hden
+    have hineq : 1 - 2 * N / (P + N) ≤ 1 - eps := by
+      simpa [hform] using hcoh
+    have heps_le : eps ≤ 2 * N / (P + N) := by linarith
+    have hmul : eps * (P + N) ≤ 2 * N := by
+      exact (le_div_iff₀ hden).mp heps_le
+    have hhalf : eps * (P + N) / 2 ≤ N := by linarith
+    simpa [min_eq_right hNP] using hhalf
+  · have hform := signMassCoherence_eq_one_sub_twice_pos hPN hden
+    have hineq : 1 - 2 * P / (P + N) ≤ 1 - eps := by
+      simpa [hform] using hcoh
+    have heps_le : eps ≤ 2 * P / (P + N) := by linarith
+    have hmul : eps * (P + N) ≤ 2 * P := by
+      exact (le_div_iff₀ hden).mp heps_le
+    have hhalf : eps * (P + N) / 2 ≤ P := by linarith
+    simpa [min_eq_left hPN] using hhalf
+
+/-- Equivalent operational corollary: if the minority sign mass is below an `eps/2`
+fraction of total mass, then a real-piece coherence drop of size `eps` is impossible. -/
+theorem not_coherence_le_one_sub_of_minority_mass_lt {P N eps : ℝ}
+    (hden : 0 < P + N) (hminor : min P N < eps * (P + N) / 2) :
+    ¬ signMassCoherence P N ≤ 1 - eps := by
+  intro hcoh
+  have hge := minority_mass_ge_of_coherence_le_one_sub hden hcoh
+  linarith
+
 end ProximityGap.Frontier.DoorIVRealSignMassSlack
 
 open ProximityGap.Frontier.DoorIVRealSignMassSlack
@@ -70,3 +104,5 @@ open ProximityGap.Frontier.DoorIVRealSignMassSlack
 #print axioms signMassCoherence_eq_one_sub_twice_neg
 #print axioms signMassCoherence_eq_one_sub_twice_pos
 #print axioms signMassCoherence_le_one
+#print axioms minority_mass_ge_of_coherence_le_one_sub
+#print axioms not_coherence_le_one_sub_of_minority_mass_lt
