@@ -1387,6 +1387,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EVTFloorRoute
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyFreqBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EnergyRatioMonotoneReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EntropyCeilingDecisionImpotence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ErWickGaussianKnifeEdge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ErWickGaussianTailDecay
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaRealNegClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaSignNonMultiplicative
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FarLineProxyTowerN32Corrected
