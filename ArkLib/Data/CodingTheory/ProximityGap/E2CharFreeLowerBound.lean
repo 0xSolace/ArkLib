@@ -183,6 +183,153 @@ def GenuineQuadruple {R : Type*} [Ring R] [DecidableEq R] (S : Finset R) : Prop 
   ∃ B C D : R, B ∈ S ∧ C ∈ S ∧ D ∈ S ∧ (1 : R) + B = C + D ∧
     ¬ (({(1 : R), B} : Finset R) = {C, D})
 
+/-! ### The antipodal `T3` family and the full char-free `3n²−3n` lower bound
+
+The `2n²−n` bound above is fully characteristic-free.  The remaining `T3 = n²−2n` term — which
+lifts the floor to the `3n²−3n` value that the entire prize campaign uses as `E₂(μ_n)` — comes
+from the **antipodal** family `(a, −a, c, −c)`, valid whenever `S = −S` (negation-closed), since
+`a + (−a) = 0 = c + (−c)`.  For `μ_n` (`n = 2^μ`, so `−1 ∈ μ_n`) this closure holds char-freely
+(`BGKSolSetSymmetry.neg_mem_of_mem` / `EvenOddAntipodal`).  Probes
+(`scripts/probes/probe_e2_t3_overlaps.py`, proper subgroups `μ_n ⊊ F_p^*`, `p∈{769,…,40961}`)
+confirm `|F1|=|F2|=|F3|=n²`, each pairwise overlap is **exactly `n`**, and
+`|F1∪F2∪F3| = 3n²−3n` exactly (the value `E₂` attains in the near-Sidon regime and exceeds in
+the deep prize regime).  Hence inclusion–exclusion gives the **lower** bound `E₂(S) ≥ 3n²−3n`.
+This completes the char-free floor left as a hook above; only the matching UPPER bound stays
+character-dependent (it FAILS once a `GenuineQuadruple` appears, i.e. once `μ_n` loses near-
+Sidonicity in the deep prize regime — `scripts/probes/probe_e2_excess_*.py`). -/
+
+/-- The **antipodal** family: `(a, −a, c, −c)` for `(a,c) ∈ S×S`.  Each is a valid energy
+quadruple (`a+(−a)=0=c+(−c)`) **provided** `−a, −c ∈ S`, i.e. `S` is negation-closed. -/
+def antiQuads (S : Finset F) : Finset (F × F × F × F) :=
+  (S ×ˢ S).image (fun p => (p.1, -p.1, p.2, -p.2))
+
+/-- Membership of `antiQuads S`. -/
+theorem mem_antiQuads {S : Finset F} {q : F × F × F × F} :
+    q ∈ antiQuads S ↔ ∃ a ∈ S, ∃ c ∈ S, q = (a, -a, c, -c) := by
+  classical
+  simp only [antiQuads, Finset.mem_image, Finset.mem_product]
+  constructor
+  · rintro ⟨⟨a, c⟩, ⟨ha, hc⟩, rfl⟩; exact ⟨a, ha, c, hc, rfl⟩
+  · rintro ⟨a, ha, c, hc, rfl⟩; exact ⟨(a, c), ⟨ha, hc⟩, rfl⟩
+
+/-- The antipodal family injects into the energy solution set **when `S` is negation-closed**
+(`∀ x ∈ S, −x ∈ S`): each `(a,−a,c,−c)` satisfies `a+(−a) = c+(−c)` (both `0`). -/
+theorem antiQuads_subset (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S) :
+    antiQuads S ⊆ energyQuads S := by
+  classical
+  intro q hq
+  obtain ⟨a, ha, c, hc, rfl⟩ := mem_antiQuads.mp hq
+  simp only [energyQuads, Finset.mem_image, Finset.mem_filter, Finset.mem_product]
+  refine ⟨((a, -a), (c, -c)), ⟨⟨⟨ha, hS a ha⟩, ⟨hc, hS c hc⟩⟩, ?_⟩, rfl⟩
+  simp [add_neg_cancel]
+
+/-- The antipodal family has cardinality `|S|²` (the image map is injective: the first and third
+coordinates recover `(a,c)`). -/
+theorem antiQuads_card (S : Finset F) : (antiQuads S).card = S.card * S.card := by
+  classical
+  unfold antiQuads
+  rw [Finset.card_image_of_injective _ (by
+    intro x y h
+    simp only [Prod.mk.injEq, neg_inj] at h
+    exact Prod.ext h.1 h.2.2.1),
+    Finset.card_product]
+
+/-- `diagQuads ∩ antiQuads` is `≤ |S|`: an element `(a,b,a,b) = (c,−c,c,−c)` forces `a=c`,
+`b=−a`, so it is determined by `a`. -/
+theorem diag_inter_anti_card_le (S : Finset F) :
+    (diagQuads S ∩ antiQuads S).card ≤ S.card := by
+  classical
+  apply Finset.card_le_card_of_injOn (fun q => q.1)
+  · intro q hq; rw [Finset.mem_coe, Finset.mem_inter] at hq
+    obtain ⟨a, ha, _, _, rfl⟩ := mem_diagQuads.mp hq.1
+    exact ha
+  · intro q hq q' hq' hqq'
+    rw [Finset.mem_coe, Finset.mem_inter] at hq hq'
+    obtain ⟨a, _, b, _, rfl⟩ := mem_diagQuads.mp hq.1
+    obtain ⟨a', _, b', _, rfl⟩ := mem_diagQuads.mp hq'.1
+    obtain ⟨c, _, d, _, hcd⟩ := mem_antiQuads.mp hq.2
+    obtain ⟨c', _, d', _, hcd'⟩ := mem_antiQuads.mp hq'.2
+    simp only [Prod.mk.injEq] at hcd hcd' hqq'
+    -- (a,b,a,b)=(c,-c,d,-d): a=c, b=-c, a=d, b=-d ⟹ b=-a; and q'.1 = a' = a from hqq'
+    -- the full quad is determined by `a` once we know b=-a and a=d.
+    obtain ⟨hac, hbc, had, hbd⟩ := hcd
+    obtain ⟨hac', hbc', had', hbd'⟩ := hcd'
+    have hba : b = -a := by subst hac; exact hbc
+    have hda : a = d := had
+    have hba' : b' = -a' := by subst hac'; exact hbc'
+    have hda' : a' = d' := had'
+    have haa : a = a' := hqq'
+    subst haa; subst hba; subst hba'; rfl
+
+/-- `swapQuads ∩ antiQuads` is `≤ |S|`: an element `(a,b,b,a) = (c,−c,d,−d)` forces `a=c`,
+`b=−a`, so it is determined by `a`. -/
+theorem swap_inter_anti_card_le (S : Finset F) :
+    (swapQuads S ∩ antiQuads S).card ≤ S.card := by
+  classical
+  apply Finset.card_le_card_of_injOn (fun q => q.1)
+  · intro q hq; rw [Finset.mem_coe, Finset.mem_inter] at hq
+    obtain ⟨a, ha, _, _, rfl⟩ := mem_swapQuads.mp hq.1
+    exact ha
+  · intro q hq q' hq' hqq'
+    rw [Finset.mem_coe, Finset.mem_inter] at hq hq'
+    obtain ⟨a, _, b, _, rfl⟩ := mem_swapQuads.mp hq.1
+    obtain ⟨a', _, b', _, rfl⟩ := mem_swapQuads.mp hq'.1
+    obtain ⟨c, _, d, _, hcd⟩ := mem_antiQuads.mp hq.2
+    obtain ⟨c', _, d', _, hcd'⟩ := mem_antiQuads.mp hq'.2
+    simp only [Prod.mk.injEq] at hcd hcd' hqq'
+    -- (a,b,b,a)=(c,-c,d,-d): a=c, b=-c, b=d, a=-d ⟹ b=-a; determined by a
+    obtain ⟨hac, hbc, hbd, had⟩ := hcd
+    obtain ⟨hac', hbc', hbd', had'⟩ := hcd'
+    have hba : b = -a := by subst hac; exact hbc
+    have hba' : b' = -a' := by subst hac'; exact hbc'
+    have haa : a = a' := hqq'
+    subst haa; subst hba; subst hba'; rfl
+
+/-- **The full char-free `3n²−3n` lower bound for negation-closed sets.**  For any finite
+negation-closed set `S = −S` in any additive commutative group,
+`E₂(S) ≥ 3|S|² − 3|S|`, via the diagonal ∪ swap ∪ antipodal families (`T1 + T2 + T3`).  Each
+family has cardinality `|S|²` and the three pairwise overlaps are each `≤ |S|`, so
+inclusion–exclusion gives `|F1∪F2∪F3| ≥ 3|S|² − 3|S|`.  This is the char-free FLOOR that
+`E₂(μ_n)` always meets; equality is the near-Sidon (char-dependent) UPPER half, which FAILS in
+the deep prize regime (probes `probe_e2_excess_*.py`). -/
+theorem E2_ge_three_card_sq_sub_three_card (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S) :
+    3 * (S.card * S.card) - 3 * S.card ≤ E2 S := by
+  classical
+  -- The union of all three families is contained in the energy set.
+  have hsub : diagQuads S ∪ swapQuads S ∪ antiQuads S ⊆ energyQuads S :=
+    Finset.union_subset (diag_union_swap_subset S) (antiQuads_subset S hS)
+  have hunion_le : (diagQuads S ∪ swapQuads S ∪ antiQuads S).card ≤ E2 S :=
+    Finset.card_le_card hsub
+  -- Lower-bound the union card by inclusion–exclusion (three-set form, lower direction).
+  -- |A ∪ B ∪ C| ≥ |A| + |B| + |C| − |A∩B| − |A∩C| − |B∩C|.
+  set A := diagQuads S
+  set B := swapQuads S
+  set C := antiQuads S
+  have hAB : (A ∩ B).card ≤ S.card := diag_inter_swap_card_le S
+  have hAC : (A ∩ C).card ≤ S.card := diag_inter_anti_card_le S
+  have hBC : (B ∩ C).card ≤ S.card := swap_inter_anti_card_le S
+  -- |A ∪ B| = |A| + |B| − |A∩B|
+  have hcardAB : (A ∪ B).card = A.card + B.card - (A ∩ B).card := Finset.card_union A B
+  -- |(A∪B) ∪ C| = |A∪B| + |C| − |(A∪B)∩C|, and (A∪B)∩C = (A∩C)∪(B∩C)
+  have hcardUC : ((A ∪ B) ∪ C).card
+      = (A ∪ B).card + C.card - ((A ∪ B) ∩ C).card := Finset.card_union _ _
+  have hdistrib : (A ∪ B) ∩ C = (A ∩ C) ∪ (B ∩ C) := Finset.union_inter_distrib_right A B C
+  have hcardABC : ((A ∪ B) ∪ C).card
+      ≥ (A ∪ B).card + C.card - ((A ∩ C) ∪ (B ∩ C)).card := by
+    rw [hcardUC, hdistrib]
+  have hinterUnion : ((A ∩ C) ∪ (B ∩ C)).card ≤ (A ∩ C).card + (B ∩ C).card :=
+    Finset.card_union_le _ _
+  have hAcard : A.card = S.card * S.card := diagQuads_card S
+  have hBcard : B.card = S.card * S.card := swapQuads_card S
+  have hCcard : C.card = S.card * S.card := antiQuads_card S
+  -- Assemble. Let m = S.card. |A∪B| = m²+m²−|A∩B| ≥ 2m²−m (|A∩B|≤m).
+  -- |ABC| ≥ |A∪B| + m² − (|A∩C|+|B∩C|) ≥ (2m²−m) + m² − 2m = 3m²−3m.
+  have hgoal : 3 * (S.card * S.card) - 3 * S.card ≤ ((A ∪ B) ∪ C).card := by
+    have hABge : (A ∪ B).card ≥ 2 * (S.card * S.card) - S.card := by
+      rw [hcardAB, hAcard, hBcard]; omega
+    omega
+  exact le_trans hgoal hunion_le
+
 end ArkLib.ProximityGap.E2CharFree
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
@@ -193,3 +340,8 @@ end ArkLib.ProximityGap.E2CharFree
 #print axioms ArkLib.ProximityGap.E2CharFree.swapQuads_card
 #print axioms ArkLib.ProximityGap.E2CharFree.diag_inter_swap_card_le
 #print axioms ArkLib.ProximityGap.E2CharFree.E2_ge_two_card_sq_sub_card
+#print axioms ArkLib.ProximityGap.E2CharFree.antiQuads_subset
+#print axioms ArkLib.ProximityGap.E2CharFree.antiQuads_card
+#print axioms ArkLib.ProximityGap.E2CharFree.diag_inter_anti_card_le
+#print axioms ArkLib.ProximityGap.E2CharFree.swap_inter_anti_card_le
+#print axioms ArkLib.ProximityGap.E2CharFree.E2_ge_three_card_sq_sub_three_card
