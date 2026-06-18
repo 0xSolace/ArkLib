@@ -149,10 +149,32 @@ theorem max_pow_ge_abs_signed_div {S : Finset F} (r : ℕ) {M : ℝ}
   have h := signedPeriodPow_re_abs_le (S := S) r hM
   linarith [h]
 
+/-- **The nonzero-character count is exactly `q − 1`.** `#(univ.erase 0) = #(AddChar F ℂ) − 1 = q − 1`
+via `AddChar.card_eq` (`#(AddChar F ℂ) = #F = q`). Lets the bracket be read in the BGK `q−1` vocabulary. -/
+theorem card_erase_zero_addChar :
+    (univ.erase (0 : AddChar F ℂ)).card = Fintype.card F - 1 := by
+  rw [Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, AddChar.card_eq]
+
+/-- **The bracket in the BGK `q−1` vocabulary: `|q·W_r − |S|^r| ≤ (q−1)·M^r`.**
+The `q−1`-normalized restatement of `signedPeriodPow_re_abs_le` (rewriting the nonzero-character count
+`#(univ.erase 0)` to `q − 1` via `card_erase_zero_addChar`), so it plugs directly into the `q−1`-shaped
+BGK / Parseval statements. Holds for EVERY `r` (odd incl.). -/
+theorem signedPeriodPow_re_abs_le_qsub_one {S : Finset F} (r : ℕ) {M : ℝ}
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    |((Fintype.card F : ℝ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℝ) ^ r)|
+      ≤ ((Fintype.card F - 1 : ℕ) : ℝ) * M ^ r := by
+  have h := signedPeriodPow_re_abs_le (S := S) r hM
+  rwa [card_erase_zero_addChar] at h
+
 -- Axiom audit (full-env `lean` confirms ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms abs_period_pow_le_max_pow
 #print axioms abs_signedPeriodPow_le_card_mul_max_pow
 #print axioms signedPeriodPow_re_abs_le
 #print axioms max_pow_ge_abs_signed_div
+#print axioms card_erase_zero_addChar
+#print axioms signedPeriodPow_re_abs_le_qsub_one
 
 end ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
