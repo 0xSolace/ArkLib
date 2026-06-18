@@ -161,6 +161,59 @@ theorem noWraparound_fails_of_count_exceeds {d : ℕ} (p : ℕ) [NeZero p] (g : 
   obtain ⟨c, hIdeal, hne, hweight⟩ := witness_exists_of_count_exceeds p g w W hbudget hcard
   exact ⟨c, hIdeal, hne, le_trans hweight (Nat.mul_le_mul_left 2 hwr)⟩
 
+/-! ## The self-contained `2^w` trigger (removes the abstract `#W > p` hypothesis)
+
+The pigeonhole brick above takes the surplus `#W > p` as a hypothesis. We discharge it concretely
+with the `{0,1}`-indicator family: the `2^w` subsets of any fixed `w`-element coordinate block give
+`2^w` distinct coefficient vectors, each of `ℓ¹`-weight `≤ w`. So once `p < 2^w` (i.e. `w > log₂ p`),
+a wrap witness is FORCED — a fully self-contained arithmetic trigger `w₀(n,p) ≤ 2⌈log₂ p⌉`. (This is
+looser than the counting `2 log_n p`, but needs no combinatorial cardinality estimate.) -/
+
+/-- The `{0,1}`-indicator coefficient vector of a subset `S ⊆ Fin d`: `1` on `S`, `0` off it. Its
+`ℓ¹`-weight is exactly `#S`, and `S ↦ boolVec S` is injective. -/
+def boolVec {d : ℕ} (S : Finset (Fin d)) : Fin d → ℤ := fun k => if k ∈ S then 1 else 0
+
+/-- `‖boolVec S‖₁ = #S`. -/
+theorem l1Norm_boolVec {d : ℕ} (S : Finset (Fin d)) : l1Norm (boolVec S) = S.card := by
+  classical
+  unfold l1Norm boolVec
+  simp only [apply_ite Int.natAbs, Int.natAbs_one, Int.natAbs_zero]
+  rw [Finset.sum_ite_mem, Finset.univ_inter, Finset.sum_const, smul_eq_mul, mul_one]
+
+/-- `boolVec` is injective: distinct subsets give distinct indicator vectors. -/
+theorem boolVec_injective {d : ℕ} : Function.Injective (boolVec (d := d)) := by
+  intro S T h
+  ext k
+  have hk : boolVec S k = boolVec T k := congrFun h k
+  unfold boolVec at hk
+  by_cases hS : k ∈ S <;> by_cases hT : k ∈ T <;> simp [hS, hT] at hk ⊢ <;> tauto
+
+/-- **★ Self-contained trigger: `p < 2^w` (with `w ≤ d`) FORCES a wrap witness.** Taking the family
+`W = {boolVec S : S ⊆ block of w coords}` of `2^w` weight-`≤ w` indicator vectors, the pigeonhole
+brick yields a nonzero ideal element of `ℓ¹`-weight `≤ 2w` as soon as `p < 2^w`. So the wrap onset
+obeys `w₀(n,p) ≤ 2·⌈log₂ p⌉` UNCONDITIONALLY — no abstract surplus hypothesis. -/
+theorem witness_exists_of_two_pow_gt {d : ℕ} (p : ℕ) [NeZero p] (g : Fin d → ZMod p)
+    (w : ℕ) (hwd : w ≤ d) (hp : p < 2 ^ w) :
+    ∃ c : Fin d → ℤ, InIdeal g c ∧ c ≠ 0 ∧ l1Norm c ≤ 2 * w := by
+  classical
+  -- A fixed `w`-element coordinate block `B ⊆ Fin d` (the image of `Fin w` under `castLE`).
+  set B : Finset (Fin d) := Finset.map (Fin.castLEEmb hwd) (Finset.univ : Finset (Fin w)) with hB
+  have hBcard : B.card = w := by
+    rw [hB, Finset.card_map, Finset.card_univ, Fintype.card_fin]
+  -- The family of `2^w` indicator vectors of subsets of `B`.
+  set W : Finset (Fin d → ℤ) := (B.powerset).image boolVec with hW
+  have hWcard : W.card = 2 ^ w := by
+    rw [hW, Finset.card_image_of_injective _ boolVec_injective, Finset.card_powerset, hBcard]
+  have hbudget : ∀ c ∈ W, l1Norm c ≤ w := by
+    intro c hc
+    rw [hW, Finset.mem_image] at hc
+    obtain ⟨S, hS, rfl⟩ := hc
+    rw [Finset.mem_powerset] at hS
+    rw [l1Norm_boolVec]
+    exact le_trans (Finset.card_le_card hS) (le_of_eq hBcard)
+  have hcard : p < W.card := by rw [hWcard]; exact hp
+  exact witness_exists_of_count_exceeds p g w W hbudget hcard
+
 /-- **Non-vacuity witness.** The existence brick is not vacuously true: a weight-`≤ w` family with
 `#W > p` genuinely exists and forces a nonzero ideal element. Here `d = 1`, `p = 2`, `g 0 = 1`
 (`ZMod 2`), `w = 2`, and `W = {(0), (1), (2)}` (three weight-`≤ 2` vectors, `3 > 2 = p`). The map
@@ -180,5 +233,8 @@ end ArkLib.ProximityGap.PigeonholeWraparoundOnset
 #print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.l1Norm_sub_le
 #print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.residue_sub
 #print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.witness_exists_of_count_exceeds
+#print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.l1Norm_boolVec
+#print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.boolVec_injective
+#print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.witness_exists_of_two_pow_gt
 #print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.wrapExcess_nonempty_of_count_exceeds
 #print axioms ArkLib.ProximityGap.PigeonholeWraparoundOnset.noWraparound_fails_of_count_exceeds
