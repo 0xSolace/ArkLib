@@ -80,6 +80,31 @@ theorem guaranteedQuads_card_ge (S : Finset F) :
   show 3 * (S.card * S.card) - 3 * S.card ≤ (A ∪ B ∪ C).card
   omega
 
+/-- The **genuine-quadruple set**: energy quadruples NOT among the three guaranteed families.
+Its cardinality `G(S) := card (genuineQuads S)` is exactly the additive-energy EXCESS over the
+guaranteed count, and (probe-grounded) is the carrier of the open BGK content: `G(μ_n) = 0` in the
+near-Sidon regime and `G(μ_n) > 0` in the deep prize regime. -/
+def genuineQuads (S : Finset F) : Finset (F × F × F × F) :=
+  energyQuads S \ guaranteedQuads S
+
+/-- **The exact partition identity.**  Since `guaranteedQuads S ⊆ energyQuads S` (for negation-
+closed `S`), the additive energy splits EXACTLY into the guaranteed count plus the genuine count:
+`E₂(S) = card (T1∪T2∪T3) + card (genuineQuads S)`.  This NAMES the open BGK additive-energy
+content as a concrete Finset cardinality `G(S) = card (genuineQuads S)`. -/
+theorem E2_eq_guaranteed_add_genuine (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S) :
+    E2 S = (guaranteedQuads S).card + (genuineQuads S).card := by
+  classical
+  have hsub : guaranteedQuads S ⊆ energyQuads S := guaranteedQuads_subset S hS
+  -- E2 S = card (energyQuads S) by definition; partition by guaranteed ⊆ energy.
+  show (energyQuads S).card = (guaranteedQuads S).card + (genuineQuads S).card
+  rw [genuineQuads, Nat.add_comm, Finset.card_sdiff_add_card_eq_card hsub]
+
+/-- The genuine count equals the additive-energy excess over the guaranteed families:
+`card (genuineQuads S) = E₂(S) − card (T1∪T2∪T3)`. -/
+theorem genuineQuads_card_eq (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S) :
+    (genuineQuads S).card = E2 S - (guaranteedQuads S).card := by
+  rw [E2_eq_guaranteed_add_genuine S hS]; omega
+
 /-- **One genuine additive quadruple forces strict excess.**  If `S` is negation-closed and there
 is an energy quadruple `q₀` outside the three guaranteed families `T1 ∪ T2 ∪ T3`, then the additive
 energy strictly exceeds the char-free floor: `3|S|² − 3|S| < E₂(S)`. -/
@@ -103,4 +128,6 @@ end ArkLib.ProximityGap.E2CharFree
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.E2CharFree.guaranteedQuads_subset
 #print axioms ArkLib.ProximityGap.E2CharFree.guaranteedQuads_card_ge
+#print axioms ArkLib.ProximityGap.E2CharFree.E2_eq_guaranteed_add_genuine
+#print axioms ArkLib.ProximityGap.E2CharFree.genuineQuads_card_eq
 #print axioms ArkLib.ProximityGap.E2CharFree.E2_strictGt_of_genuineQuad
