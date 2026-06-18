@@ -1116,6 +1116,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingDeflationBandAntito
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PackingFloorTwoPowLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSubgroupExact
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrEnergyMaxBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrSumDoubleCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilAutocorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.PencilCauchySchwarzAutocorr
