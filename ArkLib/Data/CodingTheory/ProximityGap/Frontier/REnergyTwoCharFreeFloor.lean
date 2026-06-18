@@ -92,9 +92,19 @@ theorem rEnergy_two_ge_three_card_sq_sub_three_card (G : Finset F) (hG : ∀ x �
   rw [rEnergy_two_eq_E2]
   exact ArkLib.ProximityGap.E2CharFree.E2_ge_three_card_sq_sub_three_card G hG
 
+/-- **The hypothesis-free `2n²−n` floor on the moment object.**  For ANY finite `G` (no negation
+closure needed), `2|G|² − |G| ≤ rEnergy G 2`, via the char-free diagonal+swap families (`T1+T2`).
+Weaker than the negation-closed `3n²−3n` floor but UNCONDITIONAL — a usable `≥` on the moment
+object even where negation-closure is unavailable. -/
+theorem rEnergy_two_ge_two_card_sq_sub_card (G : Finset F) :
+    2 * (G.card * G.card) - G.card ≤ rEnergy G 2 := by
+  rw [rEnergy_two_eq_E2]
+  exact ArkLib.ProximityGap.E2CharFree.E2_ge_two_card_sq_sub_card G
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_two_eq_filter_card
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_two_eq_E2
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_two_ge_three_card_sq_sub_three_card
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_two_ge_two_card_sq_sub_card
