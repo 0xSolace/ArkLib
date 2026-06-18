@@ -169,6 +169,26 @@ theorem signedPeriodPow_re_abs_le_qsub_one {S : Finset F} (r : ℕ) {M : ℝ}
   have h := signedPeriodPow_re_abs_le (S := S) r hM
   rwa [card_erase_zero_addChar] at h
 
+/-- **VANISHING-CASE FLOOR: if `W_r = 0` then `(q−1)·M^r ≥ |S|^r`.**
+
+When the zero-sum count `W_r = zeroSumCount S r` vanishes (no order-`r` additive coincidence at all
+— the maximally-Sidon case, e.g. the ODD orders over ℂ by `OddZeroSumCountVanish`, or any depth below
+the Sidon depth `ℓ`), the signed residual collapses to its pure diagonal `q·0 − |S|^r = −|S|^r`, so the
+bracket `|q·W_r − |S|^r| ≤ (q−1)M^r` becomes the clean floor `|S|^r ≤ (q−1)·M^r`, i.e.
+`M^r ≥ |S|^r/(q−1)`. So *absence* of order-`r` zero-sum coincidences FORCES the period max up to
+`≈ |S|/q^{1/r}`. This is the sharp endpoint of the all-order bracket: the diagonal term, unopposed by
+any off-diagonal cancellation, is itself an `M`-lower push. Holds for EVERY `r` (odd incl.).
+Honest scope: an `M`-LOWER bound in the no-coincidence regime; NOT a CORE upper bound. CORE OPEN. -/
+theorem card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero {S : Finset F} (r : ℕ) {M : ℝ}
+    (hW : ((Fintype.piFinset (fun _ : Fin r => S)).filter (fun t => ∑ i, t i = 0)).card = 0)
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    (S.card : ℝ) ^ r ≤ ((Fintype.card F - 1 : ℕ) : ℝ) * M ^ r := by
+  have h := signedPeriodPow_re_abs_le_qsub_one (S := S) r hM
+  rw [hW] at h
+  -- residual is |q·0 − |S|^r| = |S|^r
+  simp only [Nat.cast_zero, mul_zero, zero_sub, abs_neg] at h
+  rwa [abs_of_nonneg (by positivity)] at h
+
 -- Axiom audit (full-env `lean` confirms ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms abs_period_pow_le_max_pow
 #print axioms abs_signedPeriodPow_le_card_mul_max_pow
@@ -176,5 +196,6 @@ theorem signedPeriodPow_re_abs_le_qsub_one {S : Finset F} (r : ℕ) {M : ℝ}
 #print axioms max_pow_ge_abs_signed_div
 #print axioms card_erase_zero_addChar
 #print axioms signedPeriodPow_re_abs_le_qsub_one
+#print axioms card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero
 
 end ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
