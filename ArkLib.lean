@@ -1252,6 +1252,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AnomalyLocalization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalAgreementScope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalInvariantWeightKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalPlotkinHalfCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntitoneCrossExcessDecomp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ArcsineIIDFraming
