@@ -140,6 +140,25 @@ theorem subgroup_support_card_eq (H : Finset G)
     exact ⟨fun h => h.2, fun h => ⟨Finset.mem_univ ρ, h⟩⟩
   rw [hset]
 
+/-- **Exact subgroup saturation of the support-energy Cauchy–Schwarz floor.**  The preceding two exact
+subgroup identities (`#support = |H|` and `E_×(H)=|H|³`) multiply to the equality form of the
+Cauchy–Schwarz floor:
+
+  `#support(H) · E_×(H) = |H|⁴`.
+
+Thus the floor in `sq_card_pow_le_support_mul_mulEnergy` is not merely sharp up to constants for the
+thin subgroup; it is saturated on the nose.  This is still an unsigned autocorrelation statement, not a
+signed Gauss-period / CORE closure. -/
+theorem subgroup_support_mul_energy_eq_card_four (H : Finset G)
+    (hmul : ∀ a ∈ H, ∀ b ∈ H, a * b ∈ H)
+    (hinv : ∀ a ∈ H, a⁻¹ ∈ H)
+    (hne : H.Nonempty) :
+    (Finset.univ.filter (fun ρ : G => (H ∩ dilate ρ H).card ≠ 0)).card
+        * ∑ ρ : G, (H ∩ dilate ρ H).card ^ 2 = H.card ^ 4 := by
+  rw [subgroup_support_card_eq H hmul hinv hne,
+    subgroup_multiplicativeEnergy_eq_card_cube hmul hinv]
+  ring
+
 end ProximityGap.Frontier.PencilAutocorrelation
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -153,3 +172,5 @@ open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms sq_card_pow_le_support_mul_mulEnergy
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms subgroup_support_card_eq
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms subgroup_support_mul_energy_eq_card_four
