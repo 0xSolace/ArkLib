@@ -8,6 +8,8 @@ import Mathlib.Algebra.Polynomial.Eval.Degree
 import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 set_option linter.style.longLine false
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
 set_option autoImplicit false
 
 /-!
@@ -140,8 +142,25 @@ auxiliaries of field-scale degree `≥ q − 1 ≈ n^β`. -/
 theorem freqSensitive_forces_high_degree (g : K[X]) (hfs : FreqSensitive g) :
     Fintype.card K - 1 ≤ g.natDegree := by
   by_contra hlt
-  push_neg at hlt
+  push Not at hlt
   exact hfs (poly_sum_zero_of_natDegree_lt g hlt)
+
+/-- **Low-degree blindness, contrapositive form.**  A polynomial whose degree is below the
+top finite-field degree `q − 1` is not frequency-sensitive: its full-field sum is forced
+to vanish.  This is the exact consumer form used to rule out subgroup-scale direct
+surrogates before taking the prize-scale arithmetic corollary below. -/
+theorem not_freqSensitive_of_natDegree_lt (g : K[X])
+    (hdeg : g.natDegree < Fintype.card K - 1) : ¬ FreqSensitive g := by
+  intro hfs
+  exact hfs (poly_sum_zero_of_natDegree_lt g hdeg)
+
+/-- **Subgroup-scale direct surrogates are blind.**  If a proposed direct algebraic surrogate
+has degree at most a subgroup-scale budget `n`, and `n < q − 1`, then it cannot be
+frequency-sensitive.  Thus any direct-surrogate Stepanov attack must leave the subgroup
+degree scale and pay the field-scale `q − 1` barrier. -/
+theorem no_subgroupScale_freqSensitive (g : K[X]) (n : ℕ)
+    (hdeg : g.natDegree ≤ n) (hn : n < Fintype.card K - 1) : ¬ FreqSensitive g := by
+  exact not_freqSensitive_of_natDegree_lt g (lt_of_le_of_lt hdeg hn)
 
 /-! ### §3  Real-arithmetic packaging at the prize scale `q − 1 ≥ n²`. -/
 
@@ -152,7 +171,7 @@ budget `≥ n²` — strictly above the trivial degree bound `n`.  Hence the dir
 match the trivial `M(n) ≤ n`, let alone reach the prize `C√(n log(p/n))`. -/
 theorem direct_surrogate_below_trivial_impossible
     (g : K[X]) (hfs : FreqSensitive g) (n : ℕ)
-    (hprize : (n : ℝ)^2 ≤ ((Fintype.card K : ℝ) - 1)) :
+    (hprize : (n : ℝ) ^ 2 ≤ ((Fintype.card K : ℝ) - 1)) :
     (n : ℝ)^2 ≤ (g.natDegree : ℝ) := by
   have hfence : Fintype.card K - 1 ≤ g.natDegree := freqSensitive_forces_high_degree g hfs
   have hcast : ((Fintype.card K : ℝ) - 1) ≤ (g.natDegree : ℝ) := by
@@ -161,10 +180,25 @@ theorem direct_surrogate_below_trivial_impossible
     rwa [Nat.cast_sub hpos, Nat.cast_one] at this
   linarith
 
+/-- **Prize-regime subgroup-scale blindness.**  In the prize-sized window `n² ≤ q − 1`,
+every degree-`≤ n` direct surrogate is frequency-blind (for the nontrivial case `2 ≤ n`).
+This is the usable no-go form: subgroup-scale auxiliary polynomials cannot see the worst
+frequency; frequency sensitivity starts only at field-scale degree. -/
+theorem no_subgroupScale_freqSensitive_of_prizeNat
+    (g : K[X]) (n : ℕ) (hn : 2 ≤ n) (hprize : n ^ 2 ≤ Fintype.card K - 1)
+    (hdeg : g.natDegree ≤ n) : ¬ FreqSensitive g := by
+  apply no_subgroupScale_freqSensitive g n hdeg
+  have hn_sq : n < n ^ 2 := by
+    nlinarith [hn]
+  exact lt_of_lt_of_le hn_sq hprize
+
 end ArkLib.ProximityGap.Frontier.L3c
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ArkLib.ProximityGap.Frontier.L3c.poly_sum_zero_of_natDegree_lt
 #print axioms ArkLib.ProximityGap.Frontier.L3c.monomial_sum_zero_below_top
 #print axioms ArkLib.ProximityGap.Frontier.L3c.freqSensitive_forces_high_degree
+#print axioms ArkLib.ProximityGap.Frontier.L3c.not_freqSensitive_of_natDegree_lt
+#print axioms ArkLib.ProximityGap.Frontier.L3c.no_subgroupScale_freqSensitive
 #print axioms ArkLib.ProximityGap.Frontier.L3c.direct_surrogate_below_trivial_impossible
+#print axioms ArkLib.ProximityGap.Frontier.L3c.no_subgroupScale_freqSensitive_of_prizeNat
