@@ -167,6 +167,45 @@ theorem worstPeriod_sq_ge_three_quarters_card {ψ : AddChar F ℂ} (hψ : ψ.IsP
     nlinarith [hnn, hreg, hqm1]
   linarith [hfloor, hsq]
 
+/-- **General Parseval constant floor (squared form).** If the field is `C` times larger than the
+subgroup (`C·n ≤ q`) with `C > 1`, then the exact Parseval ratio gives
+`M(μ_n)² ≥ (1 - 1/C)·n`. This packages the `1/2` and `3/4` rungs into the closed form that the
+mean-square floor approaches `n` from below as `q/n → ∞`. It is only the lower/Johnson side, not the
+BGK upper-bound core. -/
+theorem worstPeriod_sq_ge_const_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    {C : ℝ} (hC : 1 < C) (hreg : C * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    ((C - 1) / C) * (G.card : ℝ) ≤ (worstPeriod ψ G hne) ^ 2 := by
+  have hsq := worstPeriod_sq_ge_parseval hψ G hne hq1
+  have hqm1 : (0 : ℝ) < (Fintype.card F : ℝ) - 1 := by linarith
+  have hCpos : (0 : ℝ) < C := by linarith
+  have hnn : (0 : ℝ) ≤ (G.card : ℝ) := Nat.cast_nonneg _
+  have hratio : (C - 1) / C
+      ≤ ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    rw [div_le_div_iff₀ hCpos hqm1]
+    nlinarith [hreg, hC]
+  have hfloor : ((C - 1) / C) * (G.card : ℝ)
+      ≤ (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    calc ((C - 1) / C) * (G.card : ℝ)
+        ≤ (((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1))
+            * (G.card : ℝ) := mul_le_mul_of_nonneg_right hratio hnn
+      _ = (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) /
+            ((Fintype.card F : ℝ) - 1) := by ring
+  linarith [hfloor, hsq]
+
+/-- **General Parseval constant floor (root form).** Under `C·n ≤ q` with `C > 1`,
+`√(((C−1)/C) n) ≤ M(μ_n)`. This is the closed-form lower-side saturation statement: in the
+thin prize regime the unconditional mean-square floor tends to `√n`, and no lower-bracket argument
+from Parseval alone can produce the missing upper cancellation. -/
+theorem worstPeriod_ge_sqrt_const_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    {C : ℝ} (hC : 1 < C) (hreg : C * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt (((C - 1) / C) * (G.card : ℝ)) ≤ worstPeriod ψ G hne := by
+  have hsq := worstPeriod_sq_ge_const_card hψ G hne hq1 hC hreg
+  have hMnn : 0 ≤ worstPeriod ψ G hne := worstPeriod_nonneg ψ G hne
+  rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
+  exact Real.sqrt_le_sqrt hsq
+
 /-- **Deeper prize-regime numeric floor (root form).** `√(3n/4) ≤ M(μ_n)` whenever `q ≥ 4n`.
 This sharpens the clean Parseval lower constant deeper in the thin prize regime, but remains a lower
 bound only and does not touch the BGK/Paley upper-bound core. -/
@@ -188,4 +227,6 @@ end ProximityGap.Frontier.ConcreteParsevalLower
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_half_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_half_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_three_quarters_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_const_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_const_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_three_quarters_card
