@@ -157,4 +157,49 @@ theorem IsBhSidon.pred_of_mem {h : ℕ} {S : Set G} (hS : IsBhSidon (h + 1) S)
   have hpad : a ::ₘ s = a ::ₘ t := hS _ _ hcard_s hcard_t hmem_s hmem_t hsum'
   exact (Multiset.cons_inj_right a).mp hpad
 
+/-- **Transport along an additive isomorphism.** If `S` is `B_h`-Sidon in `G` and
+`e : G ≃+ H` is an additive equivalence, then the image `e '' S` is `B_h`-Sidon
+in `H`.
+
+This carries the `B_h`-Sidon property across an additive iso — in particular a
+dilation automorphism `x ↦ u·x` of `μ_n`, which the §0 ladder uses to move between
+cosets.  Proof: an image multiset is `s₀.map e` for the preimage `s₀ = s.map e.symm`
+(no choice needed: `e` has a two-sided inverse); `e` commutes with sums, so an
+image sum-coincidence pulls back to one over `S`, where `B_h`-Sidon-ness applies. -/
+theorem IsBhSidon.map_addEquiv {H : Type*} [AddCommGroup H]
+    {h : ℕ} {S : Set G} (hS : IsBhSidon h S) (e : G ≃+ H) :
+    IsBhSidon h ((e : G → H) '' S) := by
+  intro s t hs ht hsS htS hsum
+  -- pull back via `e.symm`
+  set s₀ : Multiset G := s.map (e.symm : H → G) with hs₀
+  set t₀ : Multiset G := t.map (e.symm : H → G) with ht₀
+  have hcard_s₀ : Multiset.card s₀ = h := by rw [hs₀, Multiset.card_map]; exact hs
+  have hcard_t₀ : Multiset.card t₀ = h := by rw [ht₀, Multiset.card_map]; exact ht
+  have hmem_s₀ : ∀ x ∈ s₀, x ∈ S := by
+    intro x hx
+    rw [hs₀, Multiset.mem_map] at hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    obtain ⟨a, ha, rfl⟩ := hsS y hy
+    simpa using ha
+  have hmem_t₀ : ∀ x ∈ t₀, x ∈ S := by
+    intro x hx
+    rw [ht₀, Multiset.mem_map] at hx
+    obtain ⟨y, hy, rfl⟩ := hx
+    obtain ⟨a, ha, rfl⟩ := htS y hy
+    simpa using ha
+  -- `e.symm` commutes with sums, so equal image sums give equal preimage sums
+  have hsum₀ : s₀.sum = t₀.sum := by
+    have es : s₀.sum = e.symm s.sum := by rw [hs₀, Multiset.sum_hom s e.symm]
+    have et : t₀.sum = e.symm t.sum := by rw [ht₀, Multiset.sum_hom t e.symm]
+    rw [es, et, hsum]
+  have h₀ : s₀ = t₀ := hS s₀ t₀ hcard_s₀ hcard_t₀ hmem_s₀ hmem_t₀ hsum₀
+  -- push forward by `e`: `s = s₀.map e`, `t = t₀.map e`, so `s = t`
+  have hpush : s₀.map (e : G → H) = t₀.map (e : G → H) := by rw [h₀]
+  rw [hs₀, ht₀] at hpush
+  simp only [Multiset.map_map, Function.comp] at hpush
+  have hid : (fun x => (e : G → H) (e.symm x)) = (id : H → H) := by
+    funext x; simp
+  rw [hid, Multiset.map_id, Multiset.map_id] at hpush
+  exact hpush
+
 end ArkLib.ProximityGap.BhSidon
