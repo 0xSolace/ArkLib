@@ -154,6 +154,34 @@ theorem sparse_munRoot_card_le_window {n : ℕ} (S : Finset F) (t : Finset ι) (
   rw [hfilter]
   exact card_nonzeroRoots_le_natDegree_sub_natTrailingDegree S hg
 
+/-- **Caller-facing bounded-window consumer.** If the reduced sparse direction has support span at
+most `B`, then its `μ_n`-incidence is at most `B`. This packages the support-span theorem in the
+form downstream C71 strata/soundness arguments consume: prove a small reduced degree window, get the
+same small bad-root budget immediately. -/
+theorem sparse_munRoot_card_le_of_reduce_span_le {n B : ℕ} (S : Finset F)
+    (t : Finset ι) (c : ι → F) (e : ι → ℕ)
+    (hg : ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e ≠ 0)
+    (hspan : (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natDegree
+      - (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natTrailingDegree ≤ B)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧
+        (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePoly t c e).IsRoot x)).card ≤ B := by
+  exact le_trans (sparse_munRoot_card_le_window S t c e hg hSn) hspan
+
+/-- **Strict reduced-window consumer.** If the reduced sparse support span is strictly below `N`,
+then the `μ_n`-incidence is strictly below `N`. This is the exact caller-facing form needed to turn
+a short reduced exponent window into a nontrivial C71 root-count budget, sharper than the bare `< n`
+cap whenever the reduced support window is smaller. -/
+theorem sparse_munRoot_card_lt_of_reduce_span_lt {n N : ℕ} (S : Finset F)
+    (t : Finset ι) (c : ι → F) (e : ι → ℕ)
+    (hg : ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e ≠ 0)
+    (hspan : (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natDegree
+      - (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePolyReduce n t c e).natTrailingDegree < N)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧
+        (ArkLib.ProximityGap.C71SparseStrataReduce.sparsePoly t c e).IsRoot x)).card < N := by
+  exact lt_of_le_of_lt (sparse_munRoot_card_le_window S t c e hg hSn) hspan
+
 /-- **Exact empty-stratum consumer when the reduced support span is zero.** If the mod-`n`
 reduced sparse direction is nonzero and has `natDegree = natTrailingDegree` (equivalently: its
 nonzero support is concentrated in one reduced exponent, so it is a monomial times a nonzero
@@ -216,6 +244,8 @@ namespace ArkLib.ProximityGap.C71SparseStrataWindow
 
 #print axioms card_nonzeroRoots_le_natDegree_sub_natTrailingDegree
 #print axioms sparse_munRoot_card_le_window
+#print axioms sparse_munRoot_card_le_of_reduce_span_le
+#print axioms sparse_munRoot_card_lt_of_reduce_span_lt
 #print axioms sparse_munRoot_card_eq_zero_of_reduce_span_eq_zero
 #print axioms gcd_natDegree_le_span
 
