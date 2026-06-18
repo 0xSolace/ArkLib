@@ -2,6 +2,40 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) the worst-b SATURATES the GAUSSIAN extreme-value prediction M ≈ √(n·log(p/n)) with NO marginal slack (M/rmsM ≈ √log, kurtosis→3) ⇒ the crack, if any, is in the JOINT b-correlation, not the marginal (2026-06-18)
+
+Lens: door-(iv) Lane-1, the UPPER-side companion to the L2 mean-floor entry (which pins the LOWER
+bracket at Johnson √n). Both prior sweeps (758205014 window energy-blind, 592490748 worst-b ~5σ spike)
+concluded the cancellation routes through the 2nd moment of {|η_b|}. Decisive remaining question: does
+the actual sup M = max_b|η_b| SATURATE its moment/extreme-value ceiling, or is there marginal SLACK a
+non-moment door-(iv) method could occupy?
+
+PROBE (`scripts/probes/probe_dooriv_sup_vs_sndmoment_slack.py`, EXACT ℂ over coset reps, proper μ_n,
+p≫n³, never n=q−1; rmsM = √(mean_b|η_b|²)):
+| n   | p         | M      | M/√n | rmsM/√n | M/rmsM | √log(p/n) | (M/rms)/√log | kurtosis |
+|-----|-----------|--------|-------|---------|--------|-----------|--------------|----------|
+| 16  | 65537     | 13.84  | 3.46  | 1.000   | 3.46   | 2.884     | 1.200        | 2.810    |
+| 32  | 1048609   | 22.98  | 4.06  | 1.000   | 4.06   | 3.224     | 1.260        | 2.905    |
+| 64  | 16777153  | 37.44  | 4.68  | 1.000   | 4.68   | 3.532     | 1.325        | 2.937    |
+| 128 | 268437889 | 50.66  | 4.48  | 0.999   | 4.48   | 3.815     | 1.175        | 2.975    |
+| 32  | 5931649   | 22.63  | 4.00  | 0.996   | 4.02   | 3.483     | 1.153        | 2.898    |
+| 64  | 134217409 | 33.93  | 4.24  | 1.001   | 4.24   | 3.815     | 1.110        | 2.968    |
+
+VERDICT (door-(iv) sub-lane WALL / constraint lemma): (i) `rmsM/√n = 1.000` confirms the Plancherel
+identity `mean_b|η_b|² = n` exactly. (ii) `M/rmsM ≈ √(log(p/n))` with a NEARLY CONSTANT prefactor
+`(M/rms)/√log ≈ 1.1–1.33`: the sup overshoots the L2 scale by EXACTLY the prize √log factor, i.e.
+`M ≈ √n·C·√(log(p/n))` SATURATES the prize form `M ≤ C√(n·log(p/n))`. (iii) kurtosis
+`mean|η|⁴/(mean|η|²)² → 3` (2.81→2.97 ↑): the `|η_b|` MARGINAL converges to the Gaussian-modulus law,
+whose extreme over `N≈p/n` samples is `σ√(2 log N)` = exactly the observed √log overshoot. So the worst-b
+sits AT the Gaussian extreme-value prediction with NO marginal slack — this IS Shaw's door (iii) =
+equidistribution/EVT = BGK, PROVEN DEAD. CONSEQUENCE (localizes the crack, does NOT close CORE): a
+door-(iv) lever cannot come from the MARGINAL distribution of `|η_b|` (Gaussian, moment-determined,
+EVT-saturated); if any crack survives it must live in the JOINT correlation structure across b that the
+marginal moments cannot see. Formal kernel (Lean, `Frontier/_DoorIVSupRmsGaussianSaturation.lean`,
+axiom-clean): `(max f)² ≥ mean(f²)` (`sq_max_ge_mean_sq`), i.e. `M ≥ rmsM = √n`
+(`max_ge_rms`) — the moment route bounds the sup from the WRONG (lower) side only. The marginal-moment
+escape is mapped + dead. CORE OPEN.
+
 ## door-(iv) WORST-b is an ISOLATED ≈5σ large-deviation SPIKE (not a plateau) ⇒ a b-side count bound is MOMENT-EQUIVALENT (routes through the 2nd moment = BGK; lands in dead door-iii) (2026-06-18)
 
 Lens: door-(iv) Lane-1, "what arithmetic of b selects the worst coset alignment? is the worst-b SET
