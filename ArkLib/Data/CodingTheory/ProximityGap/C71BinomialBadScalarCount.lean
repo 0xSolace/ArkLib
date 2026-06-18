@@ -94,6 +94,16 @@ theorem card_image_pow_zero_eq_one :
   have hpos : 0 < Fintype.card G := Fintype.card_pos
   rw [card_image_pow_eq (G := G) 0, Nat.gcd_zero_left, Nat.div_self hpos]
 
+/-- **Full-period gaps have one support scalar.** If the exponent gap is divisible by the cyclic
+window size `n`, the power map is constant on the window (`x^d = 1` for all `x`), so exactly one
+scalar carries the incidence mass. This extends the `d = 0` edge to every wrapped/divisible
+binomial direction. -/
+theorem card_image_pow_eq_one_of_card_dvd (d : ℕ)
+    (hdvd : Fintype.card G ∣ d) :
+    (univ.image (fun x : G => x ^ d)).card = 1 := by
+  have hpos : 0 < Fintype.card G := Fintype.card_pos
+  rw [card_image_pow_eq (G := G) d, Nat.gcd_eq_right hdvd, Nat.div_self hpos]
+
 /-- **Support × per-scalar value = window total.** The support count `n / gcd(d,n)` times the
 per-scalar incidence `gcd(d,n)` (the nontrivial branch of the dichotomy) is exactly `n`. This
 recombines `card_image_pow_eq` and the rigidity dichotomy into the window total `Σ_c fiber = n`,
@@ -109,4 +119,5 @@ end ArkLib.ProximityGap.C71BinomialBadScalarCount
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq_card_of_coprime
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_zero_eq_one
+#print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq_one_of_card_dvd
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_distinct_pow_mul_gcd
