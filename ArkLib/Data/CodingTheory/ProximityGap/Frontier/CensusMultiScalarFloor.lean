@@ -80,6 +80,24 @@ theorem sum_choose_le_alignableSets (dom : Fin n ↪ F) {k a : ℕ}
   exact le_trans h1 h2
 
 open Classical in
+/-- **Contrapositive general multi-scalar cap.**  If the census is strictly below the sum of the
+per-scalar subset supplies, then the whole proposed package of aligned sets cannot exist.  This is the
+fully general consumer form of `sum_choose_le_alignableSets`, before specializing to full-domain
+witnesses. -/
+theorem not_all_aligned_of_sum_choose_census_cap_lt (dom : Fin n ↪ F) {k a : ℕ}
+    (u₀ u₁ : Fin n → F) (hka : k + 1 ≤ a)
+    (P : Finset F) (A : F → Finset (Fin n)) (t : F → Fin (k + 1) → Fin n)
+    (htinj : ∀ γ ∈ P, Function.Injective (t γ))
+    (htmem : ∀ γ ∈ P, ∀ b, (t γ) b ∈ A γ)
+    (hnd : ∀ γ ∈ P, ¬ (residual dom k (t γ) u₀ = 0 ∧ residual dom k (t γ) u₁ = 0))
+    (hcap : (alignableSets dom k a u₀ u₁).card
+      < ∑ γ ∈ P, ((A γ).card - (k + 1)).choose (a - (k + 1))) :
+    ¬ ∀ γ ∈ P, Aligned dom k u₀ u₁ γ (A γ) := by
+  intro halign
+  have hfloor := sum_choose_le_alignableSets dom u₀ u₁ hka P A t halign htinj htmem hnd
+  exact Nat.not_lt_of_ge hfloor hcap
+
+open Classical in
 /-- **The full-domain multi-scalar floor (prize band).**  If `P` distinct scalars each align the
 WHOLE domain `univ` (`|A γ| = n`) with a non-degenerate `(k+1)`-tuple, the census dominates
 `#P · C(n − (k+1), a − (k+1))`.  Hence a census cap `K` bounds the number of such bad scalars:
@@ -124,5 +142,6 @@ end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.sum_choose_le_alignableSets
+#print axioms ProximityGap.Ownership.not_all_aligned_of_sum_choose_census_cap_lt
 #print axioms ProximityGap.Ownership.card_mul_choose_le_alignableSets
 #print axioms ProximityGap.Ownership.not_all_full_domain_aligned_of_census_cap_lt
