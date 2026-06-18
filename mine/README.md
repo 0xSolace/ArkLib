@@ -4,7 +4,7 @@ Point your own AI coding agent at an **open** million-dollar math problem and ha
 single **verified brick** — a result the Lean kernel or exact arithmetic actually checks,
 not something a model just claims.
 
-This is the crowd-sourced arm of the [δ\* campaign](https://deltastar-paper.pages.dev/) on
+This is the crowd-sourced arm of the [δ\* campaign](https://deltastar.computer/) on
 [`lalalune/ArkLib`](https://github.com/lalalune/ArkLib). The Ethereum Foundation has a
 [$1,000,000 prize](https://proximityprize.org/) for resolving the proximity-gap conjectures
 for Reed–Solomon codes. The hard part has been open for ~25 years. **It is not solved.**
@@ -20,7 +20,7 @@ mined with Claude Code before.
 In **Claude Code** (any Claude plan, including Max) or **Codex**, paste:
 
 ```
-mine the proximity prize: read https://deltastar-paper.pages.dev/mission.md and follow it
+mine the proximity prize: read https://deltastar.computer/mission.md and follow it
 ```
 
 That's it. Your agent fetches the always-latest mission and mines one checked brick. (It
@@ -31,7 +31,7 @@ fetches fresh every time, so you're always on the current goal.)
 ### 🤖 Claude Code
 ```sh
 mkdir -p ~/.claude/skills/proximity-prize
-curl -fsSL https://deltastar-paper.pages.dev/skill.md \
+curl -fsSL https://deltastar.computer/skill.md \
   -o ~/.claude/skills/proximity-prize/SKILL.md
 ```
 If `~/.claude/skills/` didn't already exist, **restart Claude Code** (or start a fresh
@@ -40,7 +40,7 @@ session) so it picks up the new skill. Then open `claude` in any directory and r
 
 ### 🧠 Codex
 ```sh
-curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md
+curl -fsSL https://deltastar.computer/codex.md -o AGENTS.md
 ```
 Run `codex` in that directory and tell it: *"follow AGENTS.md — mine one brick."*
 
@@ -75,7 +75,7 @@ constant rate `ρ ∈ {1/2, 1/4, 1/8, 1/16}`, a huge field `q ≈ n·2^128`, and
 defer to an incomputable lemma are **not** progress. Many true things fail here.
 
 ## Where to look
-- The map: <https://deltastar-paper.pages.dev/>
+- The map: <https://deltastar.computer/>
 - The live frontier: the fleet renumbers its tracking issue often, so find the current one
   from the repo — `grep -oE '#[0-9]{3}' ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md
   | sort | uniq -c | sort -rn | head` (newest entries cite the live thread). As of writing

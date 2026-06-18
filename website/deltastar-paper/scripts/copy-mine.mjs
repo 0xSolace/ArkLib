@@ -1,8 +1,8 @@
 // Publishes the canonical miner files (single source of truth in /mine) to the
 // site's public/ dir so they're served at the domain root:
-//   deltastar-paper.pages.dev/mission.md   (the always-latest mission)
-//   deltastar-paper.pages.dev/skill.md     (Claude Code skill bootstrap)
-//   deltastar-paper.pages.dev/codex.md     (Codex bootstrap)
+//   deltastar.computer/mission.md   (the always-latest mission)
+//   deltastar.computer/skill.md     (Claude Code skill bootstrap)
+//   deltastar.computer/codex.md     (Codex bootstrap)
 // Runs automatically before `dev` and `build` (npm pre* hooks). Generated files
 // are git-ignored; /mine/* stays the only edited copy.
 import { copyFileSync, mkdirSync } from "node:fs";

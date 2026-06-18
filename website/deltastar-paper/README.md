@@ -6,7 +6,7 @@ universal staircase law, the Welch–Berlekamp pencil programme, 28
 machine-checked refutations, and a precise statement of the open core. The
 prize problem itself remains open; the site is the map, and says so.
 
-Live preview: https://deltastar-paper.pages.dev
+Live preview: https://deltastar.computer
 
 ## Stack
 
