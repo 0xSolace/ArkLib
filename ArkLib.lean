@@ -1228,6 +1228,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E19ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E20ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E21ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E22ClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E23ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E7ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E8ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E9ClosedForm
