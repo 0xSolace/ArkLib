@@ -18231,3 +18231,53 @@ cancellation** = `ShawOperator.MCAShawConjecture` = BCHKS Conj 1.12 (the Shaw fa
 `MCAShawConjecture` IS the incidence core; its 2nd-moment bracket leaves the `√|V|=q^{n/2}` gap open).
 **Sharpest open sub-question:** can ANY route turn a sup-bound into a far-line incidence bound better than
 the naive `q·B`? (No known route = the open core.) `M≤C√(n log)` / BCHKS 1.12 / δ* remain OPEN. No escaper.
+
+---
+
+### W3-DC step-antitonicity attack (#444): the DC-subtracted W3 ladder — genuinely-new reduction, but the gap is NOT strictly easier than BGK (margin co-degrades with n) (nubs, 2026-06-18)
+
+**Attack form:** W3 `_wf7W3_HypercontractiveStepAntitone` — all-r `A_r≤Wick` ⟺ `R(r)=M(r+1)/((2r+1)s·M(r))≤1`
+(one ratio + finite base). Task hypothesis: deep-r saturation (`E_{r+1}≈n·E_r`) forces `R(r)→1/(2r+1)<1`.
+
+**REFUTATION of the saturation premise (exact, n=8,16,32; small/large primes):** the W3 file's `M(r)` is the
+**FULL energy `E_r`**, NOT DC-subtracted. At saturation the sumset fills `F_p` so `E_r≈n^{2r}/p` (DC mode),
+hence the DC mode self-convolves at rate **n², not n**: `E_{r+1}/E_r → n²` (exact-measured: n=16 p=97
+gives `E_{r+1}/E_r→256.00=n²`). Therefore `R_full(r)→ n/(2r+1)`, which is `>1` for every `r<(n−1)/2`. At the
+prize `n=2^30`, the W3-on-full-E ratio stays `>1` up to `r≈2^29 ≫ r*≈89`. **The task's saturation intuition
+is directionally wrong for the full energy** (matches `_wf5M3_crossstep_ceiling`: trivial ceiling `E_{r+1}≤n²E_r`
+only beats prize for `r≳1.36n`). The proposed test `cross_r≤2r·n·E_r` ⟺ `R_full(r)≤1` is thus FALSE in the
+whole prize band, NOT provable by saturation.
+
+**NEW reduction (the right object is DC-subtracted `A_r`, recursion exactly closed):** with
+`A_r=(1/q)Σ_{b≠0}B_b^r`, `B_b=|η_b|²≥0` (a positive power-sum / moment sequence), the proven recursion splits
+`E_{r+1}=nE_r+cross_r` into `A_{r+1}=nA_r+crossA_r`, `crossA_r=cross_r−n(n−1)·n^{2r}/q` (the DC part of `cross_r`
+is exactly `n(n−1)·n^{2r}/q`). Then `R_dc(r)=A_{r+1}/((2r+1)nA_r)` and `R_dc(r)≤1 ⟺ crossA_r≤2r·n·A_r`. The
+DC subtraction removes the `(n−1)/2` saturation crossover; `R_dc` is antitone & `<1` across ALL 246 primes
+`p≡1 mod n`, n∈{8,16}, all β (incl. heavily char-p-polluted small β where `R_full>2`).
+
+**NEW exact characterization of the W3 antitonicity (the genuine structural brick):** since `A_r` is a moment
+sequence it is log-convex (`Q_r:=A_{r+2}A_r/A_{r+1}²≥1`, Cauchy–Schwarz). Algebraic identity:
+`R_dc(r+1)≤R_dc(r) ⟺ Q_r ≤ (2r+3)/(2r+1)`. **Deep-r:** single-eigenvalue dominance gives `A_{r+1}/A_r→M²`,
+so `Q_r→1 < (2r+3)/(2r+1)` ALWAYS ⟹ **deep-r antitonicity is automatic/free** (does NOT reference the deep
+arithmetic). The nontrivial antitone steps are confined to small r. So the W3-DC ladder = `[base R_dc(1)≤1,
+i.e. A_2≤3n·A_1]` + `[antitone Q_r≤(2r+3)/(2r+1), nontrivial only at small r]`; the deep prize value
+`M²≤(2r*+1)n` is then DERIVED (telescoped), not assumed — **structurally non-circular**, unlike the 1st-order
+`R_dc(r)≤1` whose deep limit `M²/((2r+1)n)` IS the prize (circular).
+
+**Base closed form:** `A_1=n(q−n)/q` always; char-0-faithful `E_2=2n²−n` ⟹ `R_dc(1)→(2n−1)/(3n)→2/3` as
+`q→∞`. So at the prize prime (depth-2 faithful) the base is comfortably `≈2/3<1`.
+
+**WHY THE GAP IS NOT STRICTLY EASIER THAN BGK (honest verdict):** the antitone condition `Q_r≤(2r+3)/(2r+1)`
+DOES fail (exact, 3 points found: n=32 p∈{3137,3169,3457}, β≈2.3, all at **r=1**), and — decisively — the
+**antitone margin `(2r+3)/(2r+1)−Q_r` HALVES with each doubling of n** at fixed β=4 (r=1 margin: n=8 +0.219,
+n=16 +0.110, n=32 +0.055). Extrapolated to n=2^30 the margin is `~2^-25·0.055≈1.6e-9` — knife-edge. So the
+two W3-DC hypotheses (base + small-r antitone) **co-degrade with n at exactly the rate the prize margin
+`1−R_dc` degrades**; the antitone condition does not decouple from the deep wall. The remaining gap
+(`A_2≤3n·A_1` + `Q_r≤(2r+3)/(2r+1) ∀r`) is a *cleaner-shaped, lower-2nd-order* restatement of the char-p
+energy transfer, but is **the same wall**, not strictly weaker than raw BGK `n^{1/2}`.
+
+**Deliverables (exact, no fabrication):** (1) refutation of the full-E saturation premise; (2) the DC-subtracted
+recursion `A_{r+1}=nA_r+crossA_r` with `crossA_r=cross_r−n(n−1)n^{2r}/q`; (3) the antitonicity↔log-convexity-margin
+identity `R_dc antitone ⟺ Q_r≤(2r+3)/(2r+1)` with deep-r automaticity; (4) the n-co-degradation of the margin =
+the precise reason it isn't easier than BGK. Probes: `/tmp/probe_w3_antitone.py`, `/tmp/probe_dc.py`,
+`/tmp/scaling.py` (exact bigint, n≤32). **CORE (`M≤C√(n log)`) stays OPEN.** No escaper.
