@@ -25,6 +25,8 @@ exponent split `a_i^{t+k} = √(a_i^t)·√(a_i^{t+2k})`. The adjacent case `pow
 ## What is PROVEN here (axiom target `{propext, Classical.choice, Quot.sound}`)
 
 * `powerSum_sq_le_mul_spacing` — `(S_{t+k})^2 ≤ S_t · S_{t+2k}` for any nonnegative `a`, any `t, k`.
+* `powerSum_ratio_spacing_monotone` — the same-gap ratio rises one rung:
+  `S_{t+k}/S_t ≤ S_{t+2k}/S_{t+k}`.
 
 ## Honesty / scope (rules 1,3,6 + ASYMPTOTIC GUARD)
 
@@ -74,7 +76,20 @@ theorem powerSum_sq_le_mul_spacing [Fintype ι] (a : ι → ℝ) (ha : ∀ i, 0 
   simp_rw [hsqL, hsqR] at hcs
   exact hcs
 
+/-- **Same-gap ratio monotonicity.** The general-spacing log-convexity inequality can be read as
+one rung of monotonicity for the `k`-spaced lower-bracket ratio: `S_{t+k}/S_t ≤ S_{t+2k}/S_{t+k}`.
+This is the direct gap-`k` analogue of `powerSum_ratio_monotone`, with no new analytic input beyond
+`powerSum_sq_le_mul_spacing`. -/
+theorem powerSum_ratio_spacing_monotone [Fintype ι] (a : ι → ℝ) (ha : ∀ i, 0 ≤ a i) (t k : ℕ)
+    (hSt : 0 < ∑ i, (a i) ^ t) (hStk : 0 < ∑ i, (a i) ^ (t + k)) :
+    (∑ i, (a i) ^ (t + k)) / (∑ i, (a i) ^ t)
+      ≤ (∑ i, (a i) ^ (t + 2 * k)) / (∑ i, (a i) ^ (t + k)) := by
+  rw [div_le_div_iff₀ hSt hStk]
+  have hkey := powerSum_sq_le_mul_spacing a ha t k
+  nlinarith [hkey]
+
 end ProximityGap.Frontier.PowerSumLogConvexSpacing
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.PowerSumLogConvexSpacing.powerSum_sq_le_mul_spacing
+#print axioms ProximityGap.Frontier.PowerSumLogConvexSpacing.powerSum_ratio_spacing_monotone
