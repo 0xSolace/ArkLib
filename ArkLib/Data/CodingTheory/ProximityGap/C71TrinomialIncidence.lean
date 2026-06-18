@@ -232,6 +232,28 @@ theorem trinomial_incidence_card_le_span {n : ℕ} (S : Finset F) (c1 c2 : F) {i
           trinomial_incidence_card_le_gcd_natDegree S c1 c2 hjk hji hik hSn
     _ ≤ i - k := trinGcd_natDegree_le c1 c2 hjk hji
 
+
+/-- **Caller-facing span cap without a puncturing predicate.** If `n > 0`, every point of a finite
+`S ⊆ μ_n` is automatically nonzero, so the trinomial span cap applies directly to the ordinary
+vanishing-incidence set. This packages the common `μ_n` nonzero guard for downstream C71 callers. -/
+theorem trinomial_incidence_card_le_span_unpunctured {n : ℕ} (S : Finset F) (c1 c2 : F)
+    {i j k : ℕ} (hn : 0 < n) (hjk : k ≤ j) (hji : j < i) (hik : k < i)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card ≤ i - k := by
+  have hsubset :
+      (S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0))
+        ⊆ (S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)) := by
+    intro x hx
+    rw [mem_filter] at hx ⊢
+    obtain ⟨hxS, hvanish⟩ := hx
+    refine ⟨hxS, ?_, hvanish⟩
+    intro hx0
+    have hzero : x ^ n = 0 := by rw [hx0, zero_pow (Nat.ne_of_gt hn)]
+    rw [hSn x hxS] at hzero
+    exact zero_ne_one hzero.symm
+  exact (Finset.card_le_card hsubset).trans
+    (trinomial_incidence_card_le_span S c1 c2 hjk hji hik hSn)
+
 end ArkLib.ProximityGap.C71TrinomialIncidence
 
 /-! ## Axiom audit -/
@@ -240,3 +262,4 @@ end ArkLib.ProximityGap.C71TrinomialIncidence
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinGcd_natDegree_le
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span
+#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span_unpunctured
