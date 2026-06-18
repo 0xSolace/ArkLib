@@ -167,6 +167,23 @@ theorem sum_ratioMult_eq_support [Fintype F] (s₀ s₁ : ι → F) :
     (f := fun i => ratioSeq s₀ s₁ i) (s := univ.filter (fun i => s₁ i ≠ 0)) (t := (univ : Finset F))
     (fun i _ => Finset.mem_univ _)]
 
+/-- **Full-support specialization of the support count.** If the direction has no zero
+coordinates, its support size is the full blocklength. -/
+theorem support_card_eq_card_of_fullSupport (s₁ : ι → F) (hfull : ∀ i, s₁ i ≠ 0) :
+    (univ.filter (fun i => s₁ i ≠ 0)).card = Fintype.card ι := by
+  classical
+  congr 1
+  ext i
+  simp [hfull i]
+
+/-- **Full-support first moment.** For a far direction with no zero coordinates, the total ratio
+multiplicity is exactly the blocklength `n`. This is the `μ = n` specialization used by the
+ratio-census ledger. -/
+theorem sum_ratioMult_eq_card_of_fullSupport [Fintype F] (s₀ s₁ : ι → F)
+    (hfull : ∀ i, s₁ i ≠ 0) :
+    ∑ γ : F, ratioMult s₀ s₁ γ = Fintype.card ι := by
+  rw [sum_ratioMult_eq_support, support_card_eq_card_of_fullSupport s₁ hfull]
+
 /-! ### The level-set degree consumer -/
 
 /-- **Level-set lower bound on the weight.** Any cap `m` on the ratio multiplicity at `γ`
@@ -254,6 +271,16 @@ theorem farIncidence_mul_le_support [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
         Finset.sum_le_sum_of_subset_of_nonneg (Finset.filter_subset _ _)
           (fun _ _ _ => Nat.zero_le _)
 
+/-- **Full-support per-line Markov bound.** If the far direction has no zero coordinates, then
+the single-line incidence times the demanded agreement is at most the blocklength `n`. This is the
+exact `μ = n` form of `farIncidence_mul_le_support`, with no hidden character-sum input. -/
+theorem farIncidence_mul_le_card_of_fullSupport [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
+    (hfull : ∀ i, s₁ i ≠ 0) :
+    (univ.filter (fun γ : F => hammingNorm (s₀ + γ • s₁) ≤ w)).card
+        * (Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w)
+      ≤ Fintype.card ι := by
+  simpa [support_card_eq_card_of_fullSupport s₁ hfull]
+    using farIncidence_mul_le_support s₀ s₁ w
 
 /-- **Quotient form of the per-line far-incidence bound.**  When the demanded agreement
 `n − z₀ − w` is positive, the product bound `incidence · agreement ≤ wt(s₁)` gives the reusable
@@ -271,6 +298,19 @@ theorem farIncidence_le_support_div [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
   classical
   exact (Nat.le_div_iff_mul_le hpos).2 (farIncidence_mul_le_support s₀ s₁ w)
 
+/-- **Full-support quotient form.** In the full-support far-direction case, the per-line
+incidence at radius `w` is at most `n / (n - z₀ - w)`. At Johnson binding agreement this is the
+explicit `n/a` single-line count. The global MCA union over closest codewords remains the open
+content. -/
+theorem farIncidence_le_card_div_of_fullSupport [Fintype F] (s₀ s₁ : ι → F) (w : ℕ)
+    (hfull : ∀ i, s₁ i ≠ 0)
+    (hpos : 0 < Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w) :
+    (univ.filter (fun γ : F => hammingNorm (s₀ + γ • s₁) ≤ w)).card
+      ≤ Fintype.card ι /
+          (Fintype.card ι - (univ.filter (fun i => s₁ i = 0 ∧ s₀ i = 0)).card - w) := by
+  exact (Nat.le_div_iff_mul_le hpos).2
+    (farIncidence_mul_le_card_of_fullSupport s₀ s₁ w hfull)
+
 end ArkLib.ProximityGap.RatioCensus
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -278,7 +318,10 @@ end ArkLib.ProximityGap.RatioCensus
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_eq
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_eq_sub_ratio_mult
 #print axioms ArkLib.ProximityGap.RatioCensus.sum_ratioMult_eq_support
+#print axioms ArkLib.ProximityGap.RatioCensus.sum_ratioMult_eq_card_of_fullSupport
 #print axioms ArkLib.ProximityGap.RatioCensus.hammingNorm_line_ge_of_ratioMult_le
 #print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_eq_ratioMult_level
 #print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_mul_le_support
+#print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_mul_le_card_of_fullSupport
 #print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_le_support_div
+#print axioms ArkLib.ProximityGap.RatioCensus.farIncidence_le_card_div_of_fullSupport
