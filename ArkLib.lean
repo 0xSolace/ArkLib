@@ -902,6 +902,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.EtaNormSqRealShiftForm
 import ArkLib.Data.CodingTheory.ProximityGap.EtaPointwiseAutocorr
 import ArkLib.Data.CodingTheory.ProximityGap.EtaQuarticUncond
 import ArkLib.Data.CodingTheory.ProximityGap.EtaShallowTailUncond
+import ArkLib.Data.CodingTheory.ProximityGap.EtaShiftRealPartPairing
 import ArkLib.Data.CodingTheory.ProximityGap.EvenOddAntipodalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.EvenTowerSupplyGrowth
 import ArkLib.Data.CodingTheory.ProximityGap.ExactCoherenceCount
