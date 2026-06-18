@@ -140,6 +140,23 @@ theorem swap_floor_le_cyclic_floor_three (n : ℕ) :
   ring_nf
   omega
 
+/-- The exact arithmetic gap between the `r = 3` cyclic floor and the diagonal floor `n^3`,
+recorded in `ℤ` to avoid truncating subtraction.  The extra cyclic-orbit supply beyond the
+universal diagonal contribution is `2n(n-1)(n+1)`. -/
+theorem cyclic_floor_three_diagonal_gap_eq_int (n : ℤ) :
+    (3 * n ^ 3 - 2 * n) - n ^ 3 = 2 * n * (n - 1) * (n + 1) := by
+  ring
+
+/-- At `r = 3`, the cyclic floor also dominates the universal diagonal floor `n^3`. -/
+theorem diagonal_floor_le_cyclic_floor_three (n : ℕ) :
+    n ^ 3 ≤ 3 * n ^ 3 - 2 * n := by
+  rcases n with _ | n
+  · simp
+  rcases n with _ | n
+  · simp
+  ring_nf
+  omega
+
 /-- **The universal cyclic floor at the first higher rung.**  For every finite `G`,
 `3|G|^3 - 2|G| ≤ rEnergy G 3`, by counting the three cyclic rotations of each triple, with the
 only collision being the constant triples. -/
@@ -222,3 +239,5 @@ end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.cyclic_floor_three_gap_eq_int
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.swap_floor_le_cyclic_floor_three
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.cyclic_floor_three_diagonal_gap_eq_int
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.diagonal_floor_le_cyclic_floor_three
