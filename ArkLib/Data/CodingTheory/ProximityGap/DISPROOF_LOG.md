@@ -18281,3 +18281,27 @@ recursion `A_{r+1}=nA_r+crossA_r` with `crossA_r=cross_r−n(n−1)n^{2r}/q`; (3
 identity `R_dc antitone ⟺ Q_r≤(2r+3)/(2r+1)` with deep-r automaticity; (4) the n-co-degradation of the margin =
 the precise reason it isn't easier than BGK. Probes: `/tmp/probe_w3_antitone.py`, `/tmp/probe_dc.py`,
 `/tmp/scaling.py` (exact bigint, n≤32). **CORE (`M≤C√(n log)`) stays OPEN.** No escaper.
+
+---
+
+## ROOM-REACH constraint on the explicit char-0 room route (`b22e91f5e`, `_CharZeroRoomDominance`) — PROBE, not a refutation
+
+**Setup.** The room lemma proves the SOUND sufficient condition: char-p correction
+`p·(W_{r+1}E_r − W_r E_{r+1}) ≤ N_r·n·(n−(2r+1))·E_r` (the explicit char-0 room) ⟹ antitone step ⟹
+(modulo all r) the prize. The open question is whether the hypothesis HOLDS at the saddle `r ≈ β·log₂n`.
+
+**Probe (exact bigint, `/tmp/probe_room_ratio_vs_r.py`, `/tmp/probe_room_n16_deep.py`; n=8 p∈{73,89}, n=16 p∈{97,193,257}).**
+Measured `ratio := PartB(char-p) / room(char-0)` across the in-regime steps `2r+1 ≤ n`:
+- **n=16, p=257:** ratio = 0.70 (r=2) → 0.57 → 0.49 → 0.46 (r=5), strictly DECREASING; room dominates at
+  EVERY in-regime step probed. n=16 p∈{97,193} agree (ratio 0.42–0.53).
+- **n=8, p=73:** ratio 0.27 (r=2) but **1.68 (r=3)** — room route FAILS at the LAST in-regime step
+  (`2·3+1=7 ≤ 8`), because the room coefficient `n−(2r+1) = 1` collapses at the regime EDGE. (p=89: 1.06.)
+
+**Constraint lemma (honest verdict).** The explicit-room sufficient condition is satisfied throughout the
+SMALL-r interior of the regime but DEGRADES at the regime EDGE `r → (n−1)/2` where the room coefficient
+`n−(2r+1) → 0`. Decisive obstruction to claiming the prize from this lemma: the prize SADDLE `r ≈ β·log₂n`
+sits OUTSIDE the regime `2r+1 ≤ n` for small n (n=16: saddle ≈18 > 7), and is UNREACHED by exact compute
+for the large n where it would sit inside. So the room lemma is a viable, axiom-clean SUFFICIENT condition
+with a NAMED RHS, but the probe CANNOT certify its hypothesis at the asymptotic saddle — that certification
+IS the char-p energy transfer = the BGK wall. **No prize gain from the room route alone; the room makes the
+target explicit and confirms char-0 dominance in the regime interior, nothing past it.** CORE OPEN. Confidence high.
