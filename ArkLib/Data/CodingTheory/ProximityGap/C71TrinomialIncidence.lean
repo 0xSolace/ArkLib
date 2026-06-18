@@ -217,6 +217,28 @@ theorem trinGcd_natDegree_le {n : ℕ} (c1 c2 : F) {i j k : ℕ} (hjk : k ≤ j)
       ≤ (trinDirPoly c1 c2 i j k).natDegree := Polynomial.natDegree_le_of_dvd hdvd hgne
     _ ≤ i - k := trinDirPoly_natDegree_le c1 c2 hjk hji
 
+/-- **Unpunctured gcd-degree incidence bound.** If `n > 0`, every point of `S ⊆ μ_n` is
+nonzero, so the sharp gcd-degree container applies to the ordinary trinomial vanishing-incidence
+set without an explicit puncturing predicate. -/
+theorem trinomial_incidence_card_le_gcd_natDegree_unpunctured {n : ℕ} (S : Finset F) (c1 c2 : F)
+    {i j k : ℕ} (hn : 0 < n) (hjk : k ≤ j) (hji : j < i) (hik : k < i)
+    (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card
+      ≤ (gcd (X ^ n - 1 : F[X]) (trinDirPoly c1 c2 i j k)).natDegree := by
+  have hsubset :
+      (S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0))
+        ⊆ (S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)) := by
+    intro x hx
+    rw [mem_filter] at hx ⊢
+    obtain ⟨hxS, hvanish⟩ := hx
+    refine ⟨hxS, ?_, hvanish⟩
+    intro hx0
+    have hzero : x ^ n = 0 := by rw [hx0, zero_pow (Nat.ne_of_gt hn)]
+    rw [hSn x hxS] at hzero
+    exact zero_ne_one hzero.symm
+  exact (Finset.card_le_card hsubset).trans
+    (trinomial_incidence_card_le_gcd_natDegree S c1 c2 hjk hji hik hSn)
+
 /-- **The caller-facing bare span cap for the 3-term strata.** The sharp gcd container above
 immediately implies the robust polynomial-method fallback bound: a genuine trinomial direction of
 span `i-k` has at most `i-k` nonzero incidences on any finite `S ⊆ μ_n`. This is the exact bound
@@ -262,4 +284,5 @@ end ArkLib.ProximityGap.C71TrinomialIncidence
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinGcd_natDegree_le
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span
+#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree_unpunctured
 #print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span_unpunctured
