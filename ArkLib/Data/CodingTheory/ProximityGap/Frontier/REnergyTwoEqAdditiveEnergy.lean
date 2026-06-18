@@ -3,7 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier.REnergySwapFloorSidonIff
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.IsSidonSetProperties
 import ArkLib.Data.CodingTheory.ProximityGap.AdditiveEnergyRepBound
 
 /-!
@@ -23,6 +23,7 @@ They are the **same number**:
 so the swap-floor characterization transfers verbatim to the representation-count object:
 
 > **`additiveEnergy_eq_swap_floor_iff_sidon`.**  `additiveEnergy G = 2|G|² − |G| ↔ IsSidonSet G`.
+> **`additiveEnergy_affine_eq_swap_floor_iff_sidon`.**  The same exactness after a nonzero affine image.
 
 This unifies the two parallel Sidon characterizations (the plain `2n² − n` minimum here and the
 negation-closed `3n² − 3n` minimum in `AdditiveEnergySidonModNeg`) onto a single object.
@@ -115,8 +116,23 @@ theorem additiveEnergy_eq_swap_floor_iff_sidon (G : Finset F) :
   rw [← rEnergy_two_eq_additiveEnergy]
   exact (isSidonSet_iff_rEnergy_two_eq_swap_floor).symm
 
+/-- **Affine-normalized swap-floor characterization.**  The representation-count additive
+energy of the nonzero affine image `u + tG` hits the plain Sidon swap floor exactly iff the
+original set `G` is Sidon.  This packages affine normalization/de-normalization for the
+`additiveEnergy` face; no upper bound or CORE claim is involved. -/
+theorem additiveEnergy_affine_eq_swap_floor_iff_sidon (G : Finset F) (u : F) {t : F}
+    (ht : t ≠ 0) :
+    additiveEnergy (G.map (affineEmbeddingOfNe u t ht)) = 2 * G.card ^ 2 - G.card
+      ↔ IsSidonSet G := by
+  have hcard : (G.map (affineEmbeddingOfNe u t ht)).card = G.card := by
+    simp
+  rw [← hcard]
+  rw [additiveEnergy_eq_swap_floor_iff_sidon]
+  exact isSidonSet_map_affine_iff G u ht
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_two_eq_additiveEnergy
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_eq_swap_floor_iff_sidon
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_affine_eq_swap_floor_iff_sidon
