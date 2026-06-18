@@ -17676,3 +17676,83 @@ is structurally absent; what remains is the additive structure, whose QUE-varian
 `flat_shifted_convolution_no_offdiagonal`, `que_route_caps_at_energy` (packaged). Probe:
 `scripts/probes/rust/probe_wfK1_que_hecke_flatness.rs` (exact integer, beta=4). The `sqrt(log)`
 BGK/Paley wall is untouched and OPEN. NOT a closure, NOT a refutation of the floor. Survivor: NONE.
+
+## J2 (#444) — Pila-Wilkie o-minimality point-counting / Bombieri-Pila & Heath-Brown determinant method on the worst-`b` level set: REDUCES-TO-FENCE (F0 + F2)
+
+**Lane:** J2 (Diophantine / model-theory). **Object:** the worst-`b` level set
+`L(T) = { b in F_p^* : |eta_b|^2 >= T }`, `eta_b = Sum_{x in mu_n} e_p(bx)`, and whether its
+Pila-Wilkie / determinant-method point count is sub-Johnson. **Files:**
+`Frontier/_wfHJ2_LevelSetDeterminantMethod.lean` (axiom-clean), probe
+`scripts/probes/probe_wfH_J2_levelset_determinant.py` (exact integer Parseval + coset structure).
+
+**Literature (cited, read at the prize regime).**
+- **Pila-Wilkie counting theorem** (Pila-Wilkie 2006, *Duke* 133; survey: Scanlon, "Counting special
+  points", Bull. AMS 2012): for `X subset R^n` definable in an o-minimal structure, the number of
+  TRANSCENDENTAL rational points of height `<= t` is `<= C_eps t^eps`. The Andre-Oort / Zilber-Pink
+  circle (Pila-Zannier) counts SPECIAL points. **Both are statements about positive-dimensional
+  transcendental varieties over `R`/`C` with controlled archimedean derivatives.**
+- **Bombieri-Pila / Heath-Brown determinant method** (Bombieri-Pila 1989; Heath-Brown 2002, Ann.
+  Math. 155; survey arXiv:2312.12890 "The Bombieri-Pila determinant method"): bounds integer/rational
+  points NEAR a positive-dimensional algebraic variety (curve `F(x,y)=0` in a box) via a Vandermonde
+  determinant being divisible by a high power; the saving exponent is `~ N^{1/deg}` and depends on the
+  DEGREE/DIMENSION of the variety. **It counts points on/near EQUATIONS, never sublevel sets of
+  exponential sums / congruence inequalities** (verified against arXiv:2312.12890: no level-set or
+  large-values count exists in the method).
+- **Determinant/Stepanov method FOR character sums over subgroups** (the relevant adaptation):
+  Heath-Brown-Konyagin (`p^{1/3}`), Konyagin (`p^{1/4}`), Shkredov 1311.5726 ("medium size",
+  `|G| in [p^{c1},p^{c2}]`, `c` near `1/2`); BGK = Bourgain-Glibichuk-Konyagin (Kowalski's account
+  math/0504316-adjacent / arXiv:2401.04756). These give `Sum_{x in H} psi(x) << |H| p^{-beta(alpha)}`
+  for `|H| > p^alpha` — i.e. `n^{1-delta}` (the BGK wall), VACUOUS below `p^{1/4}` and never
+  `sqrt(n log)`.
+- **Exponential sums over DEFINABLE subsets of finite fields** (Kowalski, *Israel J. Math.* 2007,
+  arXiv:math/0504316): the model-theoretic / definability framework for `Sum_{x in X} psi(x)`,
+  `X subset F_p` definable in the language of rings. **It GENERALIZES Weil-Deligne** and the
+  Chatzidakis-van den Dries-Macintyre point count; the saving is governed by `dim` of the Zariski
+  closure of `X`.
+
+**Applicability verdict at the prize regime (`p ~ n^4`, `beta=4`, `n = 2^30 = p^{1/4}`): VACUOUS /
+REDUCES.** Two independent obstructions, both formalized:
+
+1. **(O1) The level set is a 0-dimensional union of full `mu_n`-cosets — no variety for PW/BP.**
+   `eta_b` is multiplicatively rigid: `|eta_{ub}| = |eta_b|` for every `u in mu_n` (the inner sum
+   just permutes `mu_n`; this is exactly Shakan's "large at one frequency => large at many",
+   `omega_H^hat(h.xi) = omega_H^hat(xi)`). So `w(b) = |eta_b|^2` is `mu_n`-invariant and
+   `L(T)` is an EXACT union of full `mu_n`-cosets — a finite, **0-dimensional** set. Pila-Wilkie
+   needs a positive-dimensional definable set; Bombieri-Pila/Heath-Brown need a positive-dimensional
+   variety to count points near. A 0-dim set has no geometry to exploit, so both default to the
+   trivial count `|L(T)|`. Kowalski's definable-sets estimate confirms: dimension 0 => no power
+   saving (only the trivial `|X|`), and it generalizes Weil-Deligne, which is itself vacuous for
+   `n < sqrt(q)` (= fence **F2**). EXACT-arithmetic probe: `|L(T)|` is always a multiple of `n`
+   (n=8,16,32 confirmed). Lean: `coset_union_card_dvd` (`n | |L(T)|`, free `mu_n`-action),
+   `invariant_levelSet_smul_mem`.
+
+2. **(O2) The only count `L(T)` admits is the Parseval second moment.**
+   EXACT integer Parseval (cross-checked, no float): `Sum_{b!=0} |eta_b|^2 = n*p - n^2` (matches
+   in-tree `GaussPeriodParsevalFloor`'s `q*n` form). Markov gives `|L(T)| <= (Sum_b w(b))/T` for
+   every `T`, a pure 2nd-order count, `Theta(q/log)` at the prize threshold `T = n log(p/n)` —
+   exactly Johnson scale, never distinguishing the worst `b` from the RMS `sqrt(n)`. A
+   determinant/PW count would have to BEAT this; (O1) says it cannot even see `L(T)` as a variety.
+   This is fence **F0** (the conservation law: domain 2nd-order arithmetic caps at Johnson; the
+   `sqrt(log)` excess is a rare-event tail invisible to the second moment). Lean:
+   `levelSet_card_le_sum_div`.
+
+**Distinct from prior lanes.** Not T22 (that is random-matrix *determinantal repulsion* of the
+exceedance count, a different "determinant"; this is the *algebraic* Bombieri-Pila/Heath-Brown
+determinant method + o-minimality PW). Not the dead Stepanov/Lang-Weil dismissal alone (N8): the
+sharpened question — count the SUBLEVEL SET, not `mu_n` — is answered (the level set IS 0-dim and
+coset-rigid, and its only count is Parseval).
+
+**Why J2 is not a new escape.** o-minimality / André-Oort / Zilber-Pink and the determinant method
+are tools for positive-dimensional transcendental/algebraic varieties over `R`/`C`/`Q`; the worst-`b`
+locus is a 0-dimensional, multiplicatively-rigid finite set whose only count is the Parseval second
+moment. The determinant-method adaptation to short character sums (HBK/Konyagin/Shkredov) IS the BGK
+wall (`n^{1-o(1)}`, vacuous at `n = p^{1/4}`). The `sqrt(log)` BGK/Paley wall is untouched and OPEN.
+Survivor: NONE.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, real lake build OK):**
+`Frontier/_wfHJ2_LevelSetDeterminantMethod.lean` — `levelSet_card_le_sum_div` (O2: the Markov /
+Parseval second-moment count, the only count of the level set), `invariant_levelSet_smul_mem` +
+`coset_union_card_dvd` (O1: the level set is a union of full `mu_n`-cosets, `n | |L(T)|`, hence
+0-dimensional with no variety for PW/BP). Probe:
+`scripts/probes/probe_wfH_J2_levelset_determinant.py` (exact integer Parseval `n*p-n^2` +
+coset-multiple + multiplicative-rigidity, n=8,16,32).
