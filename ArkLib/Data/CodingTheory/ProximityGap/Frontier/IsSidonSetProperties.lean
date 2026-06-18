@@ -18,6 +18,7 @@ hereditary facts the depth-`ℓ` `B_h`-Sidon ladder (§0) leans on:
   relation `a+b = c+d` is translation-equivariant).
 * **`IsSidonSet.scale`** — Sidon is invariant under nonzero dilation `G ↦ tG`.
 * **`IsSidonSet.affine`** — Sidon is invariant under affine maps `x ↦ u + t*x`, `t ≠ 0`.
+* **`isSidonSet_map_affine_iff`** — affine images preserve and reflect Sidon exactly.
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`).  No CORE closure, no char-p transfer, no
 capacity / beyond-Johnson / growth-law claim.  Issues #444, #389.
@@ -125,6 +126,35 @@ theorem IsSidonSet.affine {G : Finset F} (hG : IsSidonSet G) (u : F) {t : F} (ht
   · exact Or.inl ⟨by rw [h1], by rw [h2]⟩
   · exact Or.inr ⟨by rw [h1], by rw [h2]⟩
 
+/-- **Affine images preserve and reflect Sidon exactly.**  A nonzero affine map is injective and
+transports the equation `a+b=c+d` bijectively up to the same additive/scalar normalization, so
+passing to `u + tG` loses no `B₂`/Sidon information. -/
+theorem isSidonSet_map_affine_iff (G : Finset F) (u : F) {t : F} (ht : t ≠ 0) :
+    IsSidonSet (G.map (affineEmbeddingOfNe u t ht)) ↔ IsSidonSet G := by
+  constructor
+  · intro hImage a ha b hb c hc d hd hsum
+    have ha' : u + t * a ∈ G.map (affineEmbeddingOfNe u t ht) := by
+      exact Finset.mem_map.mpr ⟨a, ha, rfl⟩
+    have hb' : u + t * b ∈ G.map (affineEmbeddingOfNe u t ht) := by
+      exact Finset.mem_map.mpr ⟨b, hb, rfl⟩
+    have hc' : u + t * c ∈ G.map (affineEmbeddingOfNe u t ht) := by
+      exact Finset.mem_map.mpr ⟨c, hc, rfl⟩
+    have hd' : u + t * d ∈ G.map (affineEmbeddingOfNe u t ht) := by
+      exact Finset.mem_map.mpr ⟨d, hd, rfl⟩
+    have hsum' : u + t * a + (u + t * b) = u + t * c + (u + t * d) := by
+      calc
+        u + t * a + (u + t * b) = u + u + t * (a + b) := by ring
+        _ = u + u + t * (c + d) := by rw [hsum]
+        _ = u + t * c + (u + t * d) := by ring
+    rcases hImage (u + t * a) ha' (u + t * b) hb' (u + t * c) hc' (u + t * d) hd' hsum' with
+      ⟨h1, h2⟩ | ⟨h1, h2⟩
+    · exact Or.inl ⟨mul_left_cancel₀ ht (add_left_cancel h1),
+          mul_left_cancel₀ ht (add_left_cancel h2)⟩
+    · exact Or.inr ⟨mul_left_cancel₀ ht (add_left_cancel h1),
+          mul_left_cancel₀ ht (add_left_cancel h2)⟩
+  · intro hG
+    exact hG.affine u ht
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
@@ -132,3 +162,4 @@ end ArkLib.ProximityGap.SubgroupGaussSumMoment
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.translate
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.scale
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.affine
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.isSidonSet_map_affine_iff
