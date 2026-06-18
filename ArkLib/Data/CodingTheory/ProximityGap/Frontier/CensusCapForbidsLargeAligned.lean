@@ -110,9 +110,33 @@ theorem aligned_supply_le_census_cap (dom : Fin n ↪ F) {k a : ℕ}
   ⟨(A.card - (k + 1)).choose (a - (k + 1)), rfl,
     no_large_aligned_of_census_cap dom u₀ u₁ hcap hAa hka halign htinj htmem hnd⟩
 
+set_option linter.unusedVariables false in
+open Classical in
+/-- **Prize-band consumer form.**  At the full domain `A = univ` (`|A| = n`, the prize band where
+the alignment is over ALL `n` evaluation points), a census cap `K` must dominate the genuine
+supply `C(n − (k+1), a − (k+1))`.  Here the cap BITES: at `a < n` the binomial grows in `n`, so a
+polynomial census cap forbids the whole domain from being aligned with a non-degenerate tuple
+once `C(n − (k+1), a − (k+1))` is super-polynomial.  This is the prize-band instance of the
+necessity converse — the form a CORE-side list-size bound would consume. -/
+theorem census_cap_ge_full_domain_supply (dom : Fin n ↪ F) {k a : ℕ}
+    (u₀ u₁ : Fin n → F) {K : ℕ}
+    (hcap : (alignableSets dom k a u₀ u₁).card ≤ K)
+    (hka : k + 1 ≤ a) (han : a ≤ n)
+    {γ : F} (halign : Aligned dom k u₀ u₁ γ (Finset.univ : Finset (Fin n)))
+    {t : Fin (k + 1) → Fin n} (htinj : Function.Injective t)
+    (hnd : ¬ (residual dom k t u₀ = 0 ∧ residual dom k t u₁ = 0)) :
+    (n - (k + 1)).choose (a - (k + 1)) ≤ K := by
+  have hcardeq : (Finset.univ : Finset (Fin n)).card = n := by
+    rw [Finset.card_univ, Fintype.card_fin]
+  have hAa : a ≤ (Finset.univ : Finset (Fin n)).card := by rw [hcardeq]; exact han
+  have htmem : ∀ b, t b ∈ (Finset.univ : Finset (Fin n)) := fun b => Finset.mem_univ _
+  have := no_large_aligned_of_census_cap dom u₀ u₁ hcap hAa hka halign htinj htmem hnd
+  rwa [hcardeq] at this
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Ownership.no_large_aligned_of_census_cap
 #print axioms ProximityGap.Ownership.not_aligned_of_census_cap_lt
 #print axioms ProximityGap.Ownership.aligned_supply_le_census_cap
+#print axioms ProximityGap.Ownership.census_cap_ge_full_domain_supply
