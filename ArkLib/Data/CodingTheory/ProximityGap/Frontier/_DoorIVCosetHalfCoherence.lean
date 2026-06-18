@@ -65,8 +65,42 @@ theorem twoPieceCoherence_eq_one_of_sameSign {A B : ℝ}
   · exact twoPieceCoherence_eq_one_of_nonpos hA hB
       (lt_of_le_of_ne (add_nonpos hA hB) hsum)
 
+/-- Opposite nonzero signs give strict slack in the real two-piece coherence.  Thus the only
+possible saving in the raw index-2 split is a sign-cancellation event; magnitude imbalance alone
+cannot produce a nontrivial door-(iv) theorem. -/
+theorem twoPieceCoherence_lt_one_of_pos_neg {A B : ℝ}
+    (hA : 0 < A) (hB : B < 0) :
+    twoPieceCoherence A B < 1 := by
+  unfold twoPieceCoherence
+  rw [abs_of_pos hA, abs_of_neg hB]
+  have hden : 0 < A + -B := by linarith
+  have hnum_lt : |A + B| < A + -B := by
+    rw [abs_lt]
+    constructor <;> linarith
+  calc
+    |A + B| / (A + -B) < (A + -B) / (A + -B) :=
+      div_lt_div_of_pos_right hnum_lt hden
+    _ = 1 := div_self (ne_of_gt hden)
+
+/-- Symmetric opposite-sign slack. -/
+theorem twoPieceCoherence_lt_one_of_neg_pos {A B : ℝ}
+    (hA : A < 0) (hB : 0 < B) :
+    twoPieceCoherence A B < 1 := by
+  unfold twoPieceCoherence
+  rw [abs_of_neg hA, abs_of_pos hB]
+  have hden : 0 < -A + B := by linarith
+  have hnum_lt : |A + B| < -A + B := by
+    rw [abs_lt]
+    constructor <;> linarith
+  calc
+    |A + B| / (-A + B) < (-A + B) / (-A + B) :=
+      div_lt_div_of_pos_right hnum_lt hden
+    _ = 1 := div_self (ne_of_gt hden)
+
 end ProximityGap.Frontier.DoorIVCosetHalfCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_nonneg
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_nonpos
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_sameSign
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_lt_one_of_pos_neg
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_lt_one_of_neg_pos
