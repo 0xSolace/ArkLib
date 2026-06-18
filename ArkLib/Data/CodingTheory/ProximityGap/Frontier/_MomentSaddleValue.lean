@@ -78,8 +78,37 @@ theorem prod_le_pow_of_le {r : ℕ} {B : ℝ} (hB : 0 ≤ B) (a : ℕ → ℝ)
         Finset.prod_le_prod ha hle
     _ = B ^ r := by rw [Finset.prod_const, Finset.card_range]
 
+/-- **The MINIMAL residual: single-depth Wick ⟹ explicit prize floor.** Composing `moment_saddle_value`
+with `p^{1/2r} ≤ √e` at depth `r ≥ log p` (`p ≤ exp r`): from the char-`p` energy bound at the SINGLE depth
+`r = ⌈log p⌉`, `M^{2r} ≤ p·(2r·n)^r`, the floor is pinned `M ≤ √e · √(2r·n) = √(2e·r·n)`. This is the
+WEAKEST sufficient input for the prize floor — implied by all-depth Wick (hence by the step-ratio
+monotonicity and the Gaussian-tail decay law). So the campaign's many named residuals consolidate: the
+prize floor needs only ONE energy bound at depth `≈ log p`, not the full sub-Gaussian decay. -/
+theorem prize_floor_of_single_depth {M p n : ℝ} {r : ℕ} (hr : 0 < r)
+    (hM : 0 ≤ M) (hp : 0 ≤ p) (hn : 0 ≤ n)
+    (hWick : M ^ (2 * r) ≤ p * (2 * r * n) ^ r)
+    (hdepth : p ≤ Real.exp r) :
+    M ≤ Real.sqrt (Real.exp 1) * Real.sqrt (2 * r * n) := by
+  have hsaddle := moment_saddle_value hr hM hp (by positivity : (0:ℝ) ≤ 2 * r * n) hWick
+  refine le_trans hsaddle ?_
+  apply mul_le_mul_of_nonneg_right _ (Real.sqrt_nonneg _)
+  -- `p^{1/2r} ≤ √e`: from `p ≤ exp r` and `(exp r)^{1/2r} = exp(1/2) = √(exp 1)`.
+  have hexp_pos : (0 : ℝ) < Real.exp (r : ℝ) := Real.exp_pos _
+  have hrinv : (0 : ℝ) ≤ (((2 * r : ℕ) : ℝ))⁻¹ := by positivity
+  calc p ^ (((2 * r : ℕ) : ℝ))⁻¹
+      ≤ (Real.exp (r : ℝ)) ^ (((2 * r : ℕ) : ℝ))⁻¹ :=
+        Real.rpow_le_rpow hp hdepth hrinv
+    _ = Real.sqrt (Real.exp 1) := by
+        rw [Real.rpow_def_of_pos (Real.exp_pos _), Real.log_exp, Real.sqrt_eq_rpow,
+            Real.rpow_def_of_pos (Real.exp_pos 1), Real.log_exp]
+        congr 1
+        have hrne : (r : ℝ) ≠ 0 := by positivity
+        push_cast
+        field_simp
+
 end ArkLib.ProximityGap.MomentSaddleValue
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.MomentSaddleValue.moment_saddle_value
 #print axioms ArkLib.ProximityGap.MomentSaddleValue.prod_le_pow_of_le
+#print axioms ArkLib.ProximityGap.MomentSaddleValue.prize_floor_of_single_depth
