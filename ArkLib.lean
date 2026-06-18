@@ -1061,6 +1061,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DyadicGeomeanPrizeVsSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E2GenuineQuadStrictExcess
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E2GuaranteedQuadsExact
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E2RigidityCountTransfer
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3RouteBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.E3StrataCharZero
