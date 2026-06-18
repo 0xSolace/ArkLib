@@ -1189,6 +1189,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonClosure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonPairwiseBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonFrameConstantDivergence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthThreeNonSharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonWorstPeriodSqrt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
