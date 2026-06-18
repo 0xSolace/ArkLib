@@ -85,9 +85,21 @@ theorem card_nonzero_threshold_ge_card_of_mem {ψ : AddChar F ℂ} (G : Finset F
     _ ≤ (Finset.univ.filter (fun y => y ≠ 0 ∧ thr ≤ ‖eta ψ G y‖)).card :=
       Finset.card_le_card (frequency_orbit_subset_nonzero_threshold G hGnz hmulG thr hbne hbthr)
 
+/-- Contrapositive quotient-count certificate: if fewer than `|G|` non-principal frequencies clear a
+threshold, then no nonzero frequency clears it.  Thus any nonempty above-threshold event is visible only
+at the quotient-orbit scale, never as an isolated `b`. -/
+theorem not_exists_nonzero_threshold_of_card_lt {ψ : AddChar F ℂ} (G : Finset F)
+    (hGnz : ∀ c ∈ G, c ≠ 0)
+    (hmulG : ∀ c ∈ G, ∀ x ∈ G, c * x ∈ G) (thr : ℝ)
+    (hcard : (Finset.univ.filter (fun y => y ≠ 0 ∧ thr ≤ ‖eta ψ G y‖)).card < G.card) :
+    ¬ ∃ b : F, b ≠ 0 ∧ thr ≤ ‖eta ψ G b‖ := by
+  rintro ⟨b, hbne, hbthr⟩
+  exact not_lt_of_ge (card_nonzero_threshold_ge_card_of_mem G hGnz hmulG thr hbne hbthr) hcard
+
 end ProximityGap.Frontier.WorstBOrbitLowerBound
 
 /-! ## Axiom audit (expected: `propext, Classical.choice, Quot.sound` only). -/
 #print axioms ProximityGap.Frontier.WorstBOrbitLowerBound.frequency_orbit_subset_threshold
 #print axioms ProximityGap.Frontier.WorstBOrbitLowerBound.frequency_orbit_subset_nonzero_threshold
 #print axioms ProximityGap.Frontier.WorstBOrbitLowerBound.card_nonzero_threshold_ge_card_of_mem
+#print axioms ProximityGap.Frontier.WorstBOrbitLowerBound.not_exists_nonzero_threshold_of_card_lt
