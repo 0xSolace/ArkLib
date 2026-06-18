@@ -54,6 +54,34 @@ theorem tower_le_two_pow_mul (a : ℕ)
           exact mul_le_mul_of_nonneg_left ih this
       _ = 2 ^ (n + 1) * Mtow 0 := by ring
 
+/-- **Exponentiated excess form.** If the log-tower has only `R` excess above the square-root
+baseline, `log(Mtow a) − log(Mtow 0) ≤ (a log 2)/2 + R`, then the tower itself satisfies
+`Mtow a ≤ exp((a log 2)/2 + R) · Mtow 0`. This is the multiplicative form of the exact wall mapped
+by `logTower_excess_eq`: the prize would require `R = O(log log(p/2^a))`, not just bounded
+increments. -/
+theorem tower_le_exp_sqrtBaseline_mul (a : ℕ) (R : ℝ)
+    (hpos : ∀ i, 0 < Mtow i)
+    (hlog : Real.log (Mtow a) - Real.log (Mtow 0) ≤ (a : ℝ) * (Real.log 2 / 2) + R) :
+    Mtow a ≤ Real.exp ((a : ℝ) * (Real.log 2 / 2) + R) * Mtow 0 := by
+  have hRHSpos : 0 < Real.exp ((a : ℝ) * (Real.log 2 / 2) + R) * Mtow 0 := by
+    exact mul_pos (Real.exp_pos _) (hpos 0)
+  have hlog2 : Real.log (Mtow a) ≤
+      Real.log (Real.exp ((a : ℝ) * (Real.log 2 / 2) + R) * Mtow 0) := by
+    rw [Real.log_mul (Real.exp_ne_zero _) (ne_of_gt (hpos 0)), Real.log_exp]
+    linarith
+  exact (Real.log_le_log_iff (hpos a) hRHSpos).mp hlog2
+
+/-- **Exponentiated excess-sum form.** Combining `logTower_excess_eq` with
+`tower_le_exp_sqrtBaseline_mul`: a direct bound on the centered increment sum gives the
+multiplicative square-root-baseline tower bound. This is a packaging lemma only; bounding this sum
+sublinearly is exactly the open mean-drift / char-p transfer wall. -/
+theorem tower_le_exp_sqrtBaseline_mul_of_excess_sum (a : ℕ) (R : ℝ)
+    (hpos : ∀ i, 0 < Mtow i)
+    (hexcess : (∑ i ∈ Finset.range a,
+        ((Real.log (Mtow (i + 1)) - Real.log (Mtow i)) - Real.log 2 / 2)) ≤ R) :
+    Mtow a ≤ Real.exp ((a : ℝ) * (Real.log 2 / 2) + R) * Mtow 0 := by
+  exact tower_le_exp_sqrtBaseline_mul a R hpos ((logTower_excess_eq (Mtow := Mtow) a R).mpr hexcess)
+
 /-- **The un-logged trivial bound, DERIVED from the log-side lemma.** Exponentiating
 `LogRatioTowerBoundedIncrement.logTower_le_card_mul_log2` (which gives
 `log(Mtow a) − log(Mtow 0) ≤ a·log 2`) recovers `Mtow a ≤ 2^a · Mtow 0`, given positivity to invert
@@ -75,3 +103,7 @@ theorem tower_le_two_pow_mul_of_log (a : ℕ)
   exact (Real.log_le_log_iff (hpos a) hRHSpos).mp hlog2
 
 end ProximityGap.Frontier.LogRatioTowerExpForm
+
+/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+#print axioms ProximityGap.Frontier.LogRatioTowerExpForm.tower_le_exp_sqrtBaseline_mul
+#print axioms ProximityGap.Frontier.LogRatioTowerExpForm.tower_le_exp_sqrtBaseline_mul_of_excess_sum
