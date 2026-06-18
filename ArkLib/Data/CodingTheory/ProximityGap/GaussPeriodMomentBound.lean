@@ -15,23 +15,27 @@ Gauss sum over the smooth domain `G = μ_n` (`n = 2^μ`). This file packages the
 in-tree `2r`-th moment identity `Σ_b ‖η_b‖^{2r} = q·E_r(G)` (`subgroup_gaussSum_moment`) turns a bound
 on the `r`-th additive energy `E_r(G)` directly into a per-frequency bound.
 
-**The single named input (`GaussianEnergyBound`):** `E_r(μ_n) ≤ (2r-1)‼·n^r` — the **real-Gaussian**
-energy bound. This is PROVEN in characteristic 0 (Lam–Leung: every vanishing sum of `2^μ`-th roots of
+**The named DC-included input (`GaussianEnergyBound`):** `E_r(μ_n) ≤ (2r-1)‼·n^r` — the
+**real-Gaussian** energy bound. This is PROVEN in characteristic 0 (Lam–Leung: every vanishing sum of `2^μ`-th roots of
 unity decomposes into negation pairs `{ζ^c, ζ^{c+n/2}}`; union bound over the `(2r-1)‼` perfect
 matchings of the `2r` exponents, each contributing `n^r`). It transfers to `F_q` whenever char-`p` is
 safe, i.e. `q > (2r)^{φ(n)} = (2r)^{n/2}` (then no nonzero `2r`-term `±1` cyclotomic integer `α`,
 `|N(α)| ≤ (2r)^{φ(n)}`, vanishes mod `p`). See
 `docs/references/proximity-gap-paley-spectrum/README.md` and `memory issue389-gauss-sum-reformulation`.
 
+**Prize-depth correction:** `GaussianEnergyBound` includes the DC frequency `b=0`. At the prize saddle
+depth this full-energy hypothesis is false past the `b=0` crossover; see
+`DCEnergyEssential.not_gaussianEnergyBound_of_deep`. For the actual nonzero-frequency
+house bound at prize depth, use the DC-subtracted formulation in `DCEnergyCorrection.DCEnergyBound`
+and `DCSubtractedMoment.sum_nonzero_moment`.
+
 **Consequence (proven here, axiom-clean):** `‖η_b‖^{2r} ≤ q·(2r-1)‼·n^r` for every `b`, hence
 `‖η_b‖² ≤ (q·(2r-1)‼·n^r)^{1/r}` — the in-tree open residual `WorstCaseIncompleteSumBound` at scale
 `M_r = (q·(2r-1)‼·n^r)^{1/r}`. Minimizing over `r` (optimum `r* ≈ ln q`, using `((2r-1)‼)^{1/2r} ~
 √(2r/e)`) gives `B ≤ √(2·n·ln q)` — the Gaussian/Ramanujan per-frequency target, beating the best
-*proven* literature bound (BGK `n^{1-o(1)}`). **Honest scope:** the char-`p` transfer of the proven
-char-0 bound to `k ≈ ln q` is only known for `n < 2 log q / log log q ≈ 40` (norm bound) — so this
-closes the per-frequency core for *small* `n`; the prize-regime `n = 2^30` (`q = 2^158`) char-`p`
-transfer is the remaining open input. The math content (char-0 lemma) is genuine and `n`-uniform; the
-`GaussianEnergyBound` Prop is the cleanest cited carrier of the open core.
+*proven* literature bound (BGK `n^{1-o(1)}`). **Honest scope:** this DC-included route is useful before
+the DC crossover (and for small/safe transfers), but it is not the prize-depth carrier. The prize-regime
+`n = 2^30` (`q = 2^158`) input is the DC-subtracted char-`p` transfer in `DCEnergyCorrection`.
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`). Issue #389.
 -/

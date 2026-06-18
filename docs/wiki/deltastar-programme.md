@@ -11,6 +11,7 @@ codes ([ABF26] Definition 4.3), with matching machine-checked bounds.
 | Agent guide (build recipe, honesty rules, pitfalls, state of knowledge) | [`ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md`](../../ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md) |
 | Compiled campaign knowledge (#357, by theme) | [`docs/kb/deltastar-357-compiled-knowledge.md`](../kb/deltastar-357-compiled-knowledge.md) |
 | Research map (papers + adjacent math + ranked attack vectors) | [`docs/kb/deltastar-research-map.md`](../kb/deltastar-research-map.md) |
+| #444 no-larp companion map (25 directions/status tags) | [`ArkLib/Data/CodingTheory/ProximityGap/docs/kb/deltastar-444-complete-map-25x25-2026-06-17.md`](../../ArkLib/Data/CodingTheory/ProximityGap/docs/kb/deltastar-444-complete-map-25x25-2026-06-17.md) |
 | Refuted approaches with constraint lemmas | [`ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md`](../../ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md) |
 | Probes (exact small-scale computation) | `scripts/probes/probe_*.py` |
 | **The paper** (the complete machine-checked theory, rounds 64–84) | [`docs/papers/mca-threshold-above-johnson.md`](../papers/mca-threshold-above-johnson.md) |

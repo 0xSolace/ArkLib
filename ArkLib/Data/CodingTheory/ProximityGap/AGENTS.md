@@ -23,6 +23,8 @@
 >   by theme (every exact result, refutation, probe, and the open core).
 > - `docs/kb/deltastar-research-map.md` — paper inventory + adjacent-math survey +
 >   ranked attack vectors.
+> - `ArkLib/Data/CodingTheory/ProximityGap/docs/kb/deltastar-444-complete-map-25x25-2026-06-17.md`
+>   — issue #444 no-larp companion map: 25 directions, status tags, and the current reduced-energy wall.
 > - `ArkLib/Data/CodingTheory/ProximityGap/DISPROOF_LOG.md` — every refuted approach
 >   with its constraint lemma. Check it before re-trying anything.
 
@@ -133,13 +135,16 @@ threshold constant. The δ* core and B4 are blocked — only touch them when new
    `B≤2√n ⟺ Ramanujan` = the **Paley Graph Conjecture** (open; best PROVEN is BGK `n^{1-o(1)}`, HBK
    vacuous below `q^{1/3}`). TWO axiom-clean named-conditional bridges land it: `GeneralizedPaleyRamanujan.lean`
    (`‖η_b‖≤2√n ⟹ WorstCaseIncompleteSumBound`) and `GaussPeriodMomentBound.lean` (the **moment method**:
-   `GaussianEnergyBound G r := E_r(μ_n)≤(2r-1)‼·n^r` ⟹ `‖η_b‖^{2r}≤q(2r-1)‼n^r` ⟹ `WorstCaseIncompleteSumBound`
-   at `M_r`; min over `r≈ln q` gives `B≤√(2n ln q)`). The energy input `E_r(μ_n)≤(2r-1)‼n^r` is **PROVEN in
-   char-0** (Lam–Leung: vanishing 2-power-root sums = negation pairs; union bound over the `(2r-1)‼` matchings;
-   not yet Lean-formalized — Mathlib lacks Lam–Leung). **THE open residual = the char-`p` transfer** of that
-   char-0 bound to `r≈ln q`: proven for `n<2log q/loglog q≈40` (norm bound `q>(2r)^{n/2}`), OPEN for the prize
-   `n=2^30` (whether short `≤2ln q`-term `±1`-relations of `2^μ`-th roots vanish mod the prize prime). Same wall
-   as faces 3↔4 and the additive-energy CRUX, now stated as ONE cited Prop (`GaussianEnergyBound`).
+   a Gaussian moment bound for the nontrivial spectrum implies `WorstCaseIncompleteSumBound` at `M_r`; min over
+   `r≈ln q` gives `B≤√(2n ln q)`). **Important correction (#444):** the raw full-energy predicate
+   `GaussianEnergyBound G r := E_r(μ_n)≤(2r-1)‼·n^r` includes the DC term `η_0=n`, and is now known false past
+   the DC crossover at prize depth (`DCEnergyEssential.not_gaussianEnergyBound_of_deep`). The usable residual is
+   the **DC-subtracted** transfer recorded by `DCEnergyCorrection.DCEnergyBound` and
+   `DCSubtractedMoment.sum_nonzero_moment`: prove the char-`p` nontrivial-period surplus stays Wick-like for
+   `r≈ln q`. The char-0 shadow is Lam–Leung/Bessel (not yet fully Lean-formalized — Mathlib lacks Lam–Leung);
+   the prize case `n=2^30` remains open because it asks whether short `≤2ln q`-term `±1`-relations of
+   `2^μ`-th roots vanish mod the prize prime. Same wall as faces 3↔4 and the additive-energy CRUX, but the
+   canonical statement is DC-subtracted, not the raw `GaussianEnergyBound`.
 4. **Line–ball incidence** (`epsMCA_ge_far_incidence`): max incidence of an affine
    line with far-coset direction against the weight-⌊δn⌋ syndrome ball in F_q^{n−k}.
    The explosion-band dichotomy (far cosets: every explainable scalar is bad;

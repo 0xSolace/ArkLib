@@ -1002,6 +1002,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharZeroStepLawSlackHigh
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ClassInjectiveCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueDecayPigeonholeVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CliqueOrbitFreeness
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CongruenceSizeBlindNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFArcoshInversion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity

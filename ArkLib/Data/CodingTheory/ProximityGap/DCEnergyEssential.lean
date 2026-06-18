@@ -80,6 +80,22 @@ theorem not_gaussianEnergyBound_of_dc_gt_wick {ψ : AddChar F ℂ} (hψ : ψ.IsP
   -- h : E_r ≤ Wick ; hge : DC ≤ E_r ; hdc : Wick < DC — contradiction.
   exact absurd (lt_of_lt_of_le hdc (le_trans hge h)) (lt_irrefl _)
 
+/-- **Cleared-denominator DC no-go.** If the full-field-scaled Wick ceiling is already below the
+DC mass, `q·(2r−1)‼·|G|^r < |G|^{2r}`, then the raw full-energy `GaussianEnergyBound` is false.
+This is the most direct form of the `b=0` obstruction: `q·E_r` is at least the DC contribution, while
+`GaussianEnergyBound` would force `q·E_r` below the scaled Wick ceiling. -/
+theorem not_gaussianEnergyBound_of_deep {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (r : ℕ)
+    (hdeep : (Fintype.card F : ℝ) * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r)
+      < (G.card : ℝ) ^ (2 * r)) :
+    ¬ GaussianEnergyBound G r := by
+  intro h
+  have hlb := q_mul_energy_ge_dc hψ G r
+  have hub : (Fintype.card F : ℝ) * (rEnergy G r : ℝ)
+      ≤ (Fintype.card F : ℝ) * ((Nat.doubleFactorial (2 * r - 1) : ℝ) * (G.card : ℝ) ^ r) :=
+    mul_le_mul_of_nonneg_left h (by positivity)
+  linarith [hlb, hub, hdeep]
+
 /-- **Clean sufficient condition (prize-shaped).** `q·(2r−1)‼ < |G|^r` implies the DC term beats
 Wick, hence refutes the raw energy bound. This is the algebraically clean trigger
 `|G|^{2r}/q > (2r−1)‼·|G|^r ⟺ |G|^r > q·(2r−1)‼` (for `|G| > 0`), the form the probe measures via
@@ -106,4 +122,5 @@ end ArkLib.ProximityGap.DCEnergyEssential
 #print axioms ArkLib.ProximityGap.DCEnergyEssential.q_mul_energy_ge_dc
 #print axioms ArkLib.ProximityGap.DCEnergyEssential.energy_ge_dc
 #print axioms ArkLib.ProximityGap.DCEnergyEssential.not_gaussianEnergyBound_of_dc_gt_wick
+#print axioms ArkLib.ProximityGap.DCEnergyEssential.not_gaussianEnergyBound_of_deep
 #print axioms ArkLib.ProximityGap.DCEnergyEssential.not_gaussianEnergyBound_of_card_pow_gt
