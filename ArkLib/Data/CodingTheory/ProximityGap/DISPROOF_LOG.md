@@ -17756,3 +17756,65 @@ Parseval second-moment count, the only count of the level set), `invariant_level
 0-dimensional with no variety for PW/BP). Probe:
 `scripts/probes/probe_wfH_J2_levelset_determinant.py` (exact integer Parseval `n*p-n^2` +
 coset-multiple + multiplicative-rigidity, n=8,16,32).
+
+## J1 (#444) — subspace theorem / S-unit equations (ESS) / Conway-Jones / Dvornicich-Zannier count of vanishing relations: REDUCES-TO-FENCE (F9 + F11 + F1/F12), VACUOUS-AT-PRIZE (2026-06-17)
+
+**Lane J1 [Diophantine].** Does the machinery that bounds the NUMBER of vanishing relations — Schmidt's
+subspace theorem, Evertse-Schlickewei-Schmidt (ESS, Annals 155 (2002) 807-836) for S-unit/unit
+equations, Conway-Jones (1976) and Dvornicich-Zannier (Archiv der Math. 79 (2002) 104-108) for
+(modular) vanishing sums of roots of unity — cap the spurious short-relation count and so DIRECTLY
+bound the sup `M(n) = max_{b!=0} |Sum_{x in mu_n} e_p(bx)|` at prize regime (`n=2^30`, `p=n^4`,
+`p=1 mod n`)? Researched the actual papers; pre-screened with EXACT integer arithmetic. Three
+independent, decisive failures.
+
+**(1) When ESS applies, its COUNT is super-quadratically vacuous at prize depth (fence F9).** ESS counts
+NON-DEGENERATE solutions (no proper subsum vanishing) of `a_1x_1+...+a_kx_k=1` in a rank-`r`
+multiplicative group; for roots of unity (`r=0`, Evertse 1999) the bound is `(k+1)^{3(k+1)^2}`,
+depending ONLY on `k`, NOT on the field/order/p. At the moment method's optimal half-length
+`r approx ln q approx 172` (prize), `k=2r`, the count's log-exponent is `3(2r+1)^2 >= 12 r^2` —
+SUPER-QUADRATIC in `r`, while the supply-side budget a useful union bound can spend at depth `r approx log q`
+is `log_2 q` = LINEAR in `r`. The count overshoots all of `F_p` astronomically and tightens nothing.
+This is fence F9 (effective-Chebotarev / supply-side union cap, MAXNORM `Theta(n)` >> band-floor
+`Theta(log n)`) restated for the S-unit count. ALSO matches the prior in-tree C02 finding (Evertse
+constant is super-exponential in `t`, contradicting the C02 "stays polynomial at `t=rho*n+2`" claim).
+
+**(2) ESS/CJ/Lam-Leung are CHARACTERISTIC 0; the prize defect is the genuinely-char-p relations (F1/F12).**
+ESS states "Let K be a field of characteristic 0". For `mu_n` 2-power, the char-0 minimal vanishing
+sums are exactly the antipodal/Mann pairs (Lam-Leung: `N in N<prime factors of m>`; for `m=2^mu` only
+`p=2`, `Psi(2)=2`); these char-0 relation types are precisely the `(2r-1)!!` Wick matchings — fence
+F1/F12 (energy = conjugate to the wall; the bounded-K Wick transfer `E_r <= K^r Wick` is DEAD at
+beta=4 by exact arithmetic). The prize gap lives in `W_r` = the genuinely-char-p relations
+(`Sum +-zeta^a = 0 mod p` but `!= 0` over `Z[zeta_n]`), which a char-0 count provably does NOT see.
+
+**(3) Dvornicich-Zannier IS the "Mann mod P" theorem — but it is l-INDEPENDENT, no rate (F0 + F11).**
+DZ (the only paper that actually treats the mod-`l` case) proves: for `gcd(n,l)=1` the congruence
+`Sum a_i zeta_i = 0 (mod l)` obeys the SAME Conway-Jones inequality as char-0, with the structure
+theorem that an irreducible relation forces a root `zeta_N` of bounded ORDER `N`
+(`Sum_{p|N}((p-1)/gcd(p-1,d)-1) <= k-2`). This constrains the ORDER of roots appearing; it is
+INDEPENDENT of `l`, so it cannot see the `p`-scale and gives NO quantitative length lower bound
+`k >= c log p`. So it is `sqrt(q)`-completion-blind (fence F0: a count whose only input is the relation
+combinatorics is invisible to the `b`-phase rare-event separating the worst `b` from Johnson) and is the
+conjugate-norm synonym `#{c: p|N(c)}` (fence F11).
+
+**Exact-int corroboration (no float).** `probe_wfH_J1c_minrel_growth.py` (MITM over signed `+-1`-SUBSET
+relations, the actual far-line vanishing-subset object): at prize-shaped `(n,p)`, `n in {8,16,32,64}`,
+`p approx n^4`, 3 primes each, NO genuine char-p `+-1`-subset relation of length `<= 5-6` exists at ANY
+prime — the short lengths are 2-power-norm-protected. Consistent with BOTH the floor AND DZ/CJ, but
+furnishes no rate. (The earlier `J1b` "L*=5 at n=16, p=65537" was a single-prime integer-coefficient
+artifact `4*h^0+h^3=0`, NOT a genuine sparse `+-1` relation; it does not recur and is excluded by the
+corrected subset-only J1c.)
+
+Survivor: NONE. The lane is the precise NAMED home of the open core: in-tree (`ProximityGap/CLAUDE.md`
+face 3) the open residual is exactly the char-`p` transfer = "whether short `<=2 ln q`-term `+-1`-relations
+of `2^mu`-th roots vanish mod the prize prime" = the "Mann's theorem mod P" that DZ classifies but does
+NOT quantitatively bound. J1 confirms: the S-unit/subspace count theorems either (a) overshoot
+(super-exponential count, F9), (b) are char-0 (F1/F12), or (c) are `l`-independent with no rate (F0/F11).
+The BGK/Paley `sqrt(log)` wall is untouched and OPEN.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, `lake env lean` OK):**
+`Frontier/_wfHJ1_SubspaceSUnitCountVacuous.lean` — `essExp_two_mul_ge_quadratic` (the ESS count log-exponent
+`>= 12 r^2`, super-quadratic in half-length `r`), `essExp_eventually_dominates_linear` (super-quadratic
+eventually exceeds any linear supply budget `B r + C`), `subspace_sunit_route_no_supply_gain` (the lane
+verdict: past the optimal depth the ESS relation-type count strictly exceeds the union-bound budget, so it
+gives no supply cap). Probes: `scripts/probes/probe_wfH_J1{,b,c}_*.py` (exact integer; subspace count vs
+Wick, shortest genuine char-p relation, MITM minimal `+-1`-subset relation length vs growing `p`).
