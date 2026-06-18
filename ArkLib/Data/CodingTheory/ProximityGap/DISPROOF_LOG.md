@@ -17617,3 +17617,62 @@ the orbit distributes (weak-* against fixed test functions); the prize is an L^i
 rare-event statement. The abelian torus has no gap (F5), and its only effective discrepancy rate is
 fed by the exponential sums themselves (circular). The `sqrt(log)` BGK/Paley wall is untouched and
 OPEN. Survivor: NONE.
+
+## 2026-06-17 — lane K1: QUE / Lindenstrauss-Soundararajan sup-norm of Hecke eigenfunctions — REDUCES-TO-FENCE (F5 flat multiplicative Hecke + F1/F12 quantum-variance=energy + F0 sup-excess-is-tail)
+
+**Claim attacked.** `M(n)=max_b|eta_b|` is the sup of the Gauss-period eigenfunction over the Paley
+Cayley graph. Arithmetic **quantum unique ergodicity** (Rudnick-Sarnak conj; Lindenstrauss 2006 for
+`SL2(Z)\H` + Soundararajan no-escape-of-mass; Holowinsky-Soundararajan 2010, arXiv:0809.1636,
+holomorphic mass equidistribution) and the companion sup-norm/random-wave bounds control eigenfunction
+concentration. Since `mu_n` IS a multiplicative subgroup, is the Gauss-period eigenfunction QUE, and
+does the QUE/L-S machinery give `sqrt(n log)`? (The least-obviously-conservation-blind cousin of H1/H2,
+sibling of J4 homogeneous-dynamics; deep scrutiny.)
+
+**Literature mechanism (WebSearched: Soundararajan AWS-2010 notes; Holowinsky-Soundararajan 0809.1636;
+Holowinsky "Sieving for mass equidistribution" 0809.1640; Brooks-Lindenstrauss "Graph eigenfunctions
+and QUE" 1006.3583; Naor et al "Cayley graphs that have a quantum ergodic eigenbasis", Israel J Math
+2023; "Circulant graphs as discrete QUE" arXiv:2411.09028; Iwaniec-Sarnak L-infinity 1995).** The QUE
+/ L-S engine runs on TWO fuels, BOTH absent for the prize:
+  (i)  the eigenfunction is a JOINT Hecke eigenfunction whose mass is governed by its **multiplicative
+       Hecke eigenvalues** `lambda(n)` — a genuinely multiplicative, **varying**, Ramanujan-Petersson-
+       bounded (`|lambda(p)|<=2` w/ fluctuation) sequence; Holowinsky's unfolding reduces the mass/sup
+       to **shifted convolution sums** `Sum_n lambda1(n)lambda2(n+h)`, and the saving is the large-sieve
+       cancellation over that VARYING multiplicative spectrum;
+  (ii) the QUE statement is about the mass `|psi|^2` — its quantitative form is a **quantum variance**.
+
+**Why both fuels are absent — DECISIVE reads + EXACT integer kills (`probe_wfK1_que_hecke_flatness.rs`, beta=4, n=8/16/32, multi-prime).**
+  - **OBJECT: QE/QUE for Cayley graphs targets the WRONG quantity.** Brooks-Lindenstrauss / Naor /
+    circulant-DQUE are explicit: graph quantum (unique) ergodicity is about **eigenVECTOR spatial
+    equidistribution** (mass `|psi(v)|^2` not concentrating on few vertices), NOT **eigenVALUE
+    magnitudes / spectral gap**. The prize `M(n)=lambda_2` is an eigenVALUE. The circulant-DQUE paper
+    notes circulants "do not have the expander property" with eigenvalues arbitrarily close to the top —
+    QUE there says NOTHING about the gap. Naor: **abelian Cayley graphs are NOT quantum ergodic in the
+    character basis**. So QUE-for-graphs does not even aim at `M(n)`.
+  - **(K1-a) The QUE quantum-variance of the prize mass IS the second moment / additive energy.** The
+    microlocal mass functional is `b -> |eta_b|^2`; its L^2-spread is `Sum_b|eta_b|^4 = q*E_2(mu_n)`,
+    `E_2=3n(n-1)` EXACT (probe: n=8->168, 16->720, 32->2976, all `=3n(n-1)`; additive autocorr `r(0)=n`,
+    total `n^2`, off/diag `=n-1` exact). A QUE variance bound `V<=B` gives only `max|eta_b|^2<=sqrt(V)
+    ~sqrt(q)*n` (trivial Weil/RMS), NEVER `<=C n log(p/n)`. The sup excess `sqrt(log)` is a rare-event/
+    tail phenomenon (F0): invisible to the L^2 variance QUE delivers. = fence F1/F12.
+  - **(K1-b) The prize "Hecke eigenvalues" are FLAT — no RP variation for the L-S sieve.** The only
+    Hecke operators on spectral index are dilations `T_l: eta_b->eta_{lb}`; their multiplicative
+    **shifted convolution** `Sum_b eta_b conj(eta_{lb}) = q*n*1_{l in mu_n}` (probe: `s(l)=#{x=l y}` is
+    EXACTLY `n*1_{mu_n}`, max over `l NOT in mu_n` = `0`). A FLAT indicator — OPPOSITE of a varying
+    multiplicative spectrum. The QUE/H-S large-sieve over multiplicative `lambda` has no off-diagonal
+    cancellation to consume (off-diag shifted-conv total = 0, only because flat). = fence F5 (abelian
+    torus / commutative Hecke acting by 1-dim character) feeding F1 (returns the energy). QUE-specific
+    re-statement of the flat-spectrum no-go: H1 pinned the flat amplifier KERNEL, H2 the
+    positive-definite GEOMETRIC side, K1 pins **quantum-variance=energy** + the **flat (RP-free)
+    shifted-convolution spectrum** the L-S SIEVE specifically requires.
+
+**Why K1 is not a new escape.** QUE/L-S beats the 2nd moment for sups via Hecke multiplicativity with
+cancellation in the MULTIPLICATIVE direction. The prize period's multiplicative (dilation) direction is
+`mu_n` acting trivially on the modulus (coset-constancy), so the multiplicative cancellation QUE needs
+is structurally absent; what remains is the additive structure, whose QUE-variance is the energy.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, real lake build):**
+`Frontier/_wfK1_que_quantum_variance.lean` — `que_variance_is_second_moment`, `que_variance_blind_to_sup`
+(F0), `hecke_shifted_convolution_flat` (dilation shifted-conv `= |H|*1_H`), 
+`flat_shifted_convolution_no_offdiagonal`, `que_route_caps_at_energy` (packaged). Probe:
+`scripts/probes/rust/probe_wfK1_que_hecke_flatness.rs` (exact integer, beta=4). The `sqrt(log)`
+BGK/Paley wall is untouched and OPEN. NOT a closure, NOT a refutation of the floor. Survivor: NONE.
