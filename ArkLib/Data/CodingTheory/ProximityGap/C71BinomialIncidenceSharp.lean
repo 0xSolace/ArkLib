@@ -87,7 +87,24 @@ theorem binomial_self_incidence_image_card_eq_gcd
   have hself := MultiplicativeRigidity.binomial_self_agree_card_eq_gcd (H := H) (1 : Fˣ) hji
   simpa using hself
 
+/-- **Coprime-step sharpness: exactly one incidence.** When the binomial exponent gap `i-j` is
+coprime to the subgroup order, the sharp gcd-attainment theorem specializes to a single root on
+the full thin subgroup. This is the matching lower/attainment side for the `≤ 1` C71 coprime-row
+upper bound in `C71BinomialIncidenceGcd`. -/
+theorem binomial_self_incidence_image_card_eq_one_of_coprime
+    {H : Subgroup Fˣ} [Fintype H] [IsCyclic H] [DecidableEq H]
+    {i j : ℕ} (hji : j < i) (hcop : Nat.Coprime (i - j) (Fintype.card H)) :
+    (((univ : Finset H).image (fun x : H => ((x : Fˣ) : F))).filter
+        (fun y : F => y ≠ 0 ∧ y ^ i - y ^ j = 0)).card = 1 := by
+  simpa [hcop.gcd_eq_one] using
+    binomial_self_incidence_image_card_eq_gcd (F := F) (H := H) hji
+
 end ArkLib.ProximityGap.C71BinomialIncidenceSharp
 
--- Axiom audit:
--- #print axioms ArkLib.ProximityGap.C71BinomialIncidenceSharp.binomial_self_incidence_image_card_eq_gcd
+/-! ## Axiom audit -/
+namespace ArkLib.ProximityGap.C71BinomialIncidenceSharp
+
+#print axioms binomial_self_incidence_image_card_eq_gcd
+#print axioms binomial_self_incidence_image_card_eq_one_of_coprime
+
+end ArkLib.ProximityGap.C71BinomialIncidenceSharp
