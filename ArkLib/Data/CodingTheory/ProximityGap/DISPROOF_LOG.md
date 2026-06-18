@@ -18200,3 +18200,34 @@ geometric/sheaf universe can buy = nothing, because the abelian period's sheaf h
 (R = n exactly from the second moment), `no_geometric_bound_below_sqrt_card` (sub-sqrt-n geometric
 bound contradicts the second moment). Builds on `_P3ParamFamilyConductorRankFloor`. Probe:
 `scripts/probes/rust/probe_wfH_L5_charcycle_rank_floor.rs`.
+
+## 2026-06-18 — NON-MOMENT inversion / real-shift / Shaw-operator line: VERIFIED SOUND but B2 (the sup re-expressed); and the sup it targets is INSUFFICIENT anyway [wf nonmoment-inversion-escape-assess, #444/#389]
+
+**Independent verify-and-attack of the live non-moment frontier (9 files: `EtaNormSqRealShiftForm`,
+`EtaAutocorrInvolutionPaired`, `EtaInvolutionFixedPointReal`, `EtaOffDiagImagCancel`, `EtaPointwiseAutocorr`,
+`EtaShiftRealPartPairing`, `ShawOperator`, `ShawFlatnessRefuted`, `WorstPeriodMomentRatioLower`).** All
+SOUND: axiom-clean (grep + `#print axioms`; `ShawOperator` re-built + pg-iterated clean), honestly scoped
+(every file labels itself identity/symmetry, NOT a bound). No defect to flag. Numerics: `n+S(b)=‖η_b‖²` to
+1e-15; Shaw decomposition `incidence=average+𝒮` exact over `F^m` to 1e-14; `ShawFlatnessRefuted` key ≡
+`n·(q(n−3)−n²(n−2))` (sympy).
+
+**VERDICT: B2 — a correct, genuinely NON-MOMENT (E2 ✓) reframing that REDUCES to the BGK/Paley wall; NOT
+an escape.** Decisive obstruction (E1 ✗): the real-shift form has `S(b) := ∑_{ζ≠1} Re(η_{b(ζ−1)}) =
+‖η_b‖² − |μ_n|` **EXACTLY (zero slack)**, so bounding the real cosine shift-sum at the worst `b` *is*
+bounding the sup. The imaginary cancellation (`sum_im_shift_eq_zero`, off-diag, fixed point `η_{−2b}`
+real) is **lossless-but-inert** — `b`-independent, zero damping; the full ± interference survives at the
+argmax. Half-orbit pairing (`EtaShiftRealPartPairing`) only **doubles** equal terms (no cancellation).
+Probe: the single largest real shift term = the sup `B` itself at p=257 — the form literally contains the
+eigenvalue it aims to bound. The inversion involution does NOT localize/bound the argmax (global even-n
+symmetry, applies to every `b`). `ShawFlatnessRefuted` is a one-sided sharpening (kills the `√2` constant;
+true `B=Θ(√(n log))`), no argmax localization.
+
+**STRATEGIC KICKER (do NOT re-try this line as a sup-escape):** even a FULL sup-bound `M ≤ C√(n log)` is
+**insufficient** for the prize, per the two-input finding (`Frontier/_PrizeFloorOfBGK`, workbench §1.5): a
+sup-bound feeds ONLY the additive-energy lane (`addEnergy_le_of_worstCase`) and via
+`lineIncidence_le_mean_add` pays the naive `q·B` (one `B` per annihilating frequency, NO inter-frequency
+cancellation), vacuous at budget `q·ε*~n`. The genuine prize input is the **incidence/Shaw `√q·B`
+cancellation** = `ShawOperator.MCAShawConjecture` = BCHKS Conj 1.12 (the Shaw facet confirmed
+`MCAShawConjecture` IS the incidence core; its 2nd-moment bracket leaves the `√|V|=q^{n/2}` gap open).
+**Sharpest open sub-question:** can ANY route turn a sup-bound into a far-line incidence bound better than
+the naive `q·B`? (No known route = the open core.) `M≤C√(n log)` / BCHKS 1.12 / δ* remain OPEN. No escaper.
