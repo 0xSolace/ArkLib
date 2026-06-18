@@ -123,6 +123,65 @@ theorem E2_strictGt_of_genuineQuad (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S)
   -- E2 ≥ card(guaranteed)+1 ≥ floor + 1 > floor
   omega
 
+/-- **Genuine-quadruple membership from an explicit certificate.**  A quadruple `(a,b,c,d)` with
+all entries in `S` and `a+b = c+d` lands in `genuineQuads S` provided it avoids the three
+guaranteed shapes:
+* not diagonal `T1`: `¬(c = a ∧ d = b)`,
+* not swap `T2`: `¬(c = b ∧ d = a)`,
+* not antipodal `T3`: `¬(b = -a ∧ d = -c)`.
+This is the honest char-free certificate that a 4-term additive relation in `S` is GENUINE (the
+multiplicative `1+B=C+D`, `{1,B}≠{C,D}` obstruction of the base file, normalized additively, with
+the antipodal shape explicitly excluded). -/
+theorem mem_genuineQuads_of_certificate (S : Finset F) {a b c d : F}
+    (ha : a ∈ S) (hb : b ∈ S) (hc : c ∈ S) (hd : d ∈ S) (hsum : a + b = c + d)
+    (hT1 : ¬ (c = a ∧ d = b)) (hT2 : ¬ (c = b ∧ d = a)) (hT3 : ¬ (b = -a ∧ d = -c)) :
+    (a, b, c, d) ∈ genuineQuads S := by
+  classical
+  rw [genuineQuads, Finset.mem_sdiff]
+  refine ⟨?_, ?_⟩
+  · -- (a,b,c,d) is a genuine energy quadruple
+    simp only [energyQuads, Finset.mem_image, Finset.mem_filter, Finset.mem_product]
+    exact ⟨((a, b), (c, d)), ⟨⟨⟨ha, hb⟩, ⟨hc, hd⟩⟩, hsum⟩, rfl⟩
+  · -- and it is outside T1 ∪ T2 ∪ T3
+    rw [guaranteedQuads, Finset.mem_union, Finset.mem_union]
+    push_neg
+    refine ⟨⟨?_, ?_⟩, ?_⟩
+    · -- not in diagQuads: would force (c,d)=(a,b)
+      intro hmem
+      obtain ⟨x, _, y, _, hxy⟩ := mem_diagQuads.mp hmem
+      simp only [Prod.mk.injEq] at hxy
+      exact hT1 ⟨by rw [hxy.2.2.1, hxy.1], by rw [hxy.2.2.2, hxy.2.1]⟩
+    · -- not in swapQuads: would force (c,d)=(b,a)
+      intro hmem
+      obtain ⟨x, _, y, _, hxy⟩ := mem_swapQuads.mp hmem
+      simp only [Prod.mk.injEq] at hxy
+      exact hT2 ⟨by rw [hxy.2.2.1, hxy.2.1], by rw [hxy.2.2.2, hxy.1]⟩
+    · -- not in antiQuads: would force b=-a and d=-c
+      intro hmem
+      obtain ⟨x, _, y, _, hxy⟩ := mem_antiQuads.mp hmem
+      simp only [Prod.mk.injEq] at hxy
+      refine hT3 ⟨?_, ?_⟩
+      · rw [hxy.2.1, hxy.1]
+      · rw [hxy.2.2.2, hxy.2.2.1]
+
+/-- **The bridge to strict excess via an explicit genuine quadruple certificate.**  Given a
+negation-closed `S` and a certified genuine 4-term additive relation in `S` (entries in `S`,
+`a+b=c+d`, avoiding the diagonal/swap/antipodal shapes), the additive energy strictly exceeds the
+char-free floor.  This connects the named `GenuineQuadruple` obstruction (base file) to the
+concrete count: a single certificate ⟹ `genuineQuads S` nonempty ⟹ `E₂ > 3n²−3n`. -/
+theorem E2_strictGt_of_certificate (S : Finset F) (hS : ∀ x ∈ S, -x ∈ S) {a b c d : F}
+    (ha : a ∈ S) (hb : b ∈ S) (hc : c ∈ S) (hd : d ∈ S) (hsum : a + b = c + d)
+    (hT1 : ¬ (c = a ∧ d = b)) (hT2 : ¬ (c = b ∧ d = a)) (hT3 : ¬ (b = -a ∧ d = -c)) :
+    3 * (S.card * S.card) - 3 * S.card < E2 S := by
+  classical
+  have hmem : (a, b, c, d) ∈ genuineQuads S :=
+    mem_genuineQuads_of_certificate S ha hb hc hd hsum hT1 hT2 hT3
+  have hq₀ : (a, b, c, d) ∈ energyQuads S := (Finset.mem_sdiff.mp (by
+    rw [← genuineQuads]; exact hmem)).1
+  have hout : (a, b, c, d) ∉ guaranteedQuads S := (Finset.mem_sdiff.mp (by
+    rw [← genuineQuads]; exact hmem)).2
+  exact E2_strictGt_of_genuineQuad S hS hq₀ hout
+
 end ArkLib.ProximityGap.E2CharFree
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
@@ -131,3 +190,5 @@ end ArkLib.ProximityGap.E2CharFree
 #print axioms ArkLib.ProximityGap.E2CharFree.E2_eq_guaranteed_add_genuine
 #print axioms ArkLib.ProximityGap.E2CharFree.genuineQuads_card_eq
 #print axioms ArkLib.ProximityGap.E2CharFree.E2_strictGt_of_genuineQuad
+#print axioms ArkLib.ProximityGap.E2CharFree.mem_genuineQuads_of_certificate
+#print axioms ArkLib.ProximityGap.E2CharFree.E2_strictGt_of_certificate
