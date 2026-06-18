@@ -1010,6 +1010,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleAssembled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleFloorShape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CoshMGFSaddleTargetShape
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CosetUnionVanishingLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CountLaneNotSecondOrder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossCellCircleMethodSplit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CrossStepCeilingInsufficient
