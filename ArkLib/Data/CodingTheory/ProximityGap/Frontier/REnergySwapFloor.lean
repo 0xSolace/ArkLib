@@ -41,24 +41,24 @@ namespace ArkLib.ProximityGap.SubgroupGaussSumMoment
 variable {F : Type*} [Field F] [Fintype F] [DecidableEq F]
 
 /-- The adjacent transposition on the first two coordinates of a tuple `v : Fin (m+2) → F`. -/
-private def swap01 {m : ℕ} (v : Fin (m + 2) → F) : Fin (m + 2) → F :=
+def swap01 {m : ℕ} (v : Fin (m + 2) → F) : Fin (m + 2) → F :=
   fun i => v (Equiv.swap (0 : Fin (m + 2)) 1 i)
 
 /-- `swap01` preserves the coordinate sum (it permutes the index set). -/
-private theorem sum_swap01 {m : ℕ} (v : Fin (m + 2) → F) :
+theorem sum_swap01 {m : ℕ} (v : Fin (m + 2) → F) :
     ∑ i, (swap01 v) i = ∑ i, v i := by
   unfold swap01
   exact Equiv.sum_comp (Equiv.swap (0 : Fin (m + 2)) 1) v
 
 /-- `swap01 v` lands in the same product finset as `v`. -/
-private theorem swap01_mem {m : ℕ} {G : Finset F} {v : Fin (m + 2) → F}
+theorem swap01_mem {m : ℕ} {G : Finset F} {v : Fin (m + 2) → F}
     (hv : v ∈ Fintype.piFinset (fun _ : Fin (m + 2) => G)) :
     swap01 v ∈ Fintype.piFinset (fun _ : Fin (m + 2) => G) := by
   rw [Fintype.mem_piFinset] at hv ⊢
   intro i; exact hv _
 
 /-- If `v 0 ≠ v 1` then `swap01 v ≠ v`. -/
-private theorem swap01_ne {m : ℕ} {v : Fin (m + 2) → F} (hne : v 0 ≠ v 1) :
+theorem swap01_ne {m : ℕ} {v : Fin (m + 2) → F} (hne : v 0 ≠ v 1) :
     swap01 v ≠ v := by
   intro h
   apply hne
@@ -71,7 +71,7 @@ private theorem swap01_ne {m : ℕ} {v : Fin (m + 2) → F} (hne : v 0 ≠ v 1) 
 /-- The number of tuples `v : Fin (m+2) → G` with `v 0 = v 1` is `|G|^(m+1)`.
 Proved by peeling coordinate `0` (`consEquiv`): after fixing `v 0 = a`, the predicate becomes
 `(tail v) 0 = a`, leaving the first tail coordinate forced and the remaining `m` free. -/
-private theorem eqPair_count (G : Finset F) (m : ℕ) :
+theorem eqPair_count (G : Finset F) (m : ℕ) :
     ((Fintype.piFinset (fun _ : Fin (m + 2) => G)).filter
         (fun v => v 0 = v 1)).card = G.card ^ (m + 1) := by
   classical
