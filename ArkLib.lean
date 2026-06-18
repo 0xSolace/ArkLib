@@ -1193,6 +1193,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthThreeNonSharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthFourNonSharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthFiveNonSharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthFiveNoWrapNonSharp
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonDepthSixNoWrapNonSharp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SidonWorstPeriodSqrt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SliceRankDiagonalVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SpanCriterionGeneral
