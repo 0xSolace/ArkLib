@@ -1,5 +1,71 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — SYNTHESIS CAP: DEEP/EXOTIC DIRECT-SUP-NORM SWEEP (18 techniques H1–L5, energy route DEAD) — 0 NEW-DIRECT-HANDLE, 17 REDUCES-TO-FENCE, 1 VACUOUS-AT-PRIZE
+
+The energy/moment route is now DEAD at β=4 (F12: exact-integer `K_eff=(E_r/[(2r-1)‼ n^r])^{1/r}`
+CROSSES 1 and GROWS — 1.000/1.127/1.848 at n=16/32/64 — so `E_r ≤ K^r·Wick` with bounded K is FALSE
+at prize scale; `M^{2r}≤q E_r` is too weak; `RatioDecreasing` numerically FALSE). The terminal
+question became whether ANY technique bounds the SUP `M(n)=max_{b≠0}|η_b|` DIRECTLY, NOT via any
+moment/energy/cumulant. 18 deep techniques across 5 clusters were researched + adversarially verified:
+
+- **Automorphic / amplification (H1, H2, H3):** the structurally-promising class (Iwaniec–Sarnak
+  sup-norm method is DESIGNED to beat the 2nd moment). ALL REDUCE. H1 (genuine IS amplified 2nd
+  moment): the dilation-Hecke pre-trace kernel `K(t)=Σ_b η_b conj(η_{tb}) = q·n·1_{t∈μ_n}` is a SCALED
+  RANK-m PROJECTION (exact) ⇒ every amplifier caps at `q·n‖x‖²`, certifies only RMS/Johnson √n
+  (F1+F5; the abelian Cayley graph has ZERO Hecke variation). H2 (Kuznetsov/Petersson/relative trace
+  formula): the geometric side `A(h)=Σ_b e_p(−hb)|η_b|² = p·#{x−y=h}` is POSITIVE-DEFINITE (off/diag
+  ratio = n−1 GROWS, nothing to cancel — F5/F1; even the multiplicative IS amplifier spreads over
+  15–30% of all m modes, no SHORT amplifier). H3 (subconvexity / root numbers): `|τ(χ)|=√q` EXACT, so
+  the L-side carries ZERO size content; the entire prize cancellation is in the modulus-1 PHASE = the
+  open BGK/Paley wall (F2 completion-vacuity + F0); thin-coset family `m=q^{3/4}` too thick for
+  Garcia–Young.
+- **Decoupling / harmonic (I1, I2):** I1 (discrete restriction / small-cap DGW) VACUOUS-AT-PRIZE
+  (wrong variable — spatial average not sup-over-b; zero curvature; the L^{2r} input = `E_r` = F1/F12).
+  I2 (exponent pairs / vdC A-B / Bombieri–Iwaniec) REDUCES F1 (A-process = Weyl differencing = 2nd
+  moment) + aspect-ratio vacuity (`N=n < √T=n²`, below the entire regime) + F0.
+- **Diophantine / model-theory (J1, J2, J3, J4):** J1 (subspace/S-unit relation count) F9 (count
+  super-quadratic `12r²` overshoots the linear `log q` union budget) + F1/F12 (char-0 count = Wick
+  matchings) — char-0 cannot see the genuinely-char-p defect `W_r`. J2 (Pila–Wilkie / Bombieri–Pila
+  determinant) F0 (level set `L(T)` is 0-dim coset-rigid, only count = Parseval) + F2 (determinant-for-
+  character-sums IS the BGK wall, vacuous at `n=p^{1/4}`). J3 (prismatic / q-de-Rham cohomology of the
+  Gauss-sum motive) F3 (every p-adic output channel — Newton polygon / Hodge–Tate / Nygaard — is
+  archimedean-blind; the only magnitude is weight-1 purity = F2). J4 (effective equidistribution /
+  Ratner / EMV) F0 (bulk weak-*, blind to L^∞ tail) + F5 (abelian torus = zero spectral gap) + circular
+  abelian discrepancy (ETK takes the η_b as INPUT).
+- **Quantum / physics (K1, K2, K3):** K1 (arithmetic QUE / quantum-variance + graph-QUE) F5→F1/F12
+  (variance `Σ_b|η_b|⁴ = q·E_2`; flat multiplicative Hecke spectrum, no RP variation; abelian Cayley
+  graphs NOT quantum-ergodic). K2 (Katz–Sarnak symmetry / RMT extreme value / FHK log-correlated max)
+  F0 + F11 (the EVT optimizer `√(2n log m)` EQUALS the open BGK floor; NEW exact probe: `b↦log|η_b|` is
+  WHITE NOISE, no log-correlation ⇒ FHK sub-Gaussian sub-route CLOSED). K3 (Berry–Tabor / Poisson
+  spacing → EVT) F0 (spacing-ratio `⟨r⟩` invariant under a single-coordinate tail warp — bulk blind to
+  the tail sup) + F12 at the threshold (depth `r∼log m` = dead energy).
+- **Alien / cross (L1, L2/H47, L3, L4, L5):** L1 (circle method / Weyl / Vinogradov) F1/F12 (both
+  Fourier-dual handles are moments; multiplicative×additive clash invisible to arc decomposition). L2
+  (Selberg / Gallagher larger sieve / Bombieri–Vinogradov, file `_wfH47`) F0 (parity: count≠sup) +
+  VACUOUS (Gallagher needs residue avoidance `ν(l)≪l`; measured `ν(l)=l` FULL occupancy at prize). L3
+  (Berkovich / Chambert-Loir COUPLED adelic equidistribution) F0 + F3 + F11 (small-point hypothesis
+  height→0 UNMET; coupled energy + product formula give a LOWER bound — cannot flip; the product formula
+  IS the source of F11). L4 (Gowers `U^k` / GTZ inverse theorem) F1/F7 + F0 + F11 (U²=E_2; higher norms
+  LOOSER ceilings; the quadratic obstruction `Q(n)=2·M(μ_{n/2})` EXACTLY = the same wall one level down
+  the 2-power tower). L5 (geometric Langlands / perverse sheaves / Deligne–Lusztig / finite-field theta,
+  ONE completeness cluster) F10 + F2 + F1 (every Frobenius-trace bound is LINEAR in effective rank R;
+  the exact 2nd moment `Σ_b‖η_b‖²=q·n` FORCES R=n ⇒ trivial `M≤n`; the √n cancellation = the open wall).
+
+**HEADLINE.** NO NEW-DIRECT-HANDLE, NO PARTIAL-HANDLE, NO LIVE NON-REDUCING OPEN-LEAD on the sup. The
+amplification flagship (H1, the deepest non-reducing attempt — the genuine IS amplified SECOND moment,
+one level past the existing first-moment flat-spectrum no-go) DIES on an EXACT pre-trace kernel identity:
+the amplifier collapses to a scaled rank-m projection = the additive/RMS energy. Every cluster's closest
+approach is stopped by a NAMED fence applying STRUCTURALLY at `p~n^4 / β=4 / n=2^30` (scale-independent:
+abelian-ness of `Cay(F_p,μ_n)`, kernel-flatness `K=q·n·1_{μ_n}`, and `Σ_b‖η_b‖²=q·n` are subgroup facts
+true at all scales). The √(log) sup excess is a rare-event/L^∞ tail (F0 conservation law) invisible to
+any 2nd-moment/bulk/weak-* functional; the only objects that DO see it (energy moments at depth `r∼log q`)
+are F12-dead. The no-escape terminal is REINFORCED: `δ*` IS the BGK conjugate-norm count, and the deep/
+exotic far-depths add a SECOND boundary beyond Johnson — the **boundary of geometric/automorphic
+relocation** (L5): relocating the cancellation to the sheaf/Langlands/QUE/trace-formula universe buys
+nothing because every such bound is linear in the rank-n second moment. 17 axiom-clean Lean no-go files
+(`⊆{propext,Classical.choice,Quot.sound}`), all registered in `ArkLib.lean`. Floor `M(n)≤C√(n log(p/n))`
+stays OPEN; this is a method-boundary census, not a closure or refutation. Per-lane detail below.
+
 ## 2026-06-17 — LANE L4 "Gowers-norm inverse theorem / nilsequences / quadratic Fourier (Green–Tao–Ziegler) on the SUP M(n)" REDUCES-TO-FENCE F1/F7 (energy) + F0 (conservation) + F11 (fold synonym) (probe_wfH_L4_gowers{,_fold}.py, _wfL4_gowers_quadratic_fold.lean)
 
 LANE (cluster: alien/cross — additive-combinatorics frontier). Ask: does the inverse theorem for the
