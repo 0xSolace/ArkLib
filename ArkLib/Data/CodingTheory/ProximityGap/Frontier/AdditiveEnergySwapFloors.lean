@@ -15,7 +15,8 @@ list-decoding rep-count bounds consume):
 
 > **`additiveEnergy_ge_card_sq`.**  `|G|² ≤ additiveEnergy G`   (the diagonal floor).
 > **`additiveEnergy_ge_swap_floor`.**  `2|G|² − |G| ≤ additiveEnergy G`   (the swap floor).
-> **`additiveEnergy_affine_ge_swap_floor`.**  The same floor for `u + tG`, written in `|G|`.
+> **`additiveEnergy_affine_ge_card_sq`.**  The diagonal floor for `u + tG`, written in `|G|`.
+> **`additiveEnergy_affine_ge_swap_floor`.**  The swap floor for `u + tG`, written in `|G|`.
 
 Both are char-free and need no hypothesis on `G`.  The swap floor is the **plain Sidon minimum**
 (attained iff `IsSidonSet G`, `additiveEnergy_eq_swap_floor_iff_sidon`); the diagonal floor is the
@@ -48,6 +49,16 @@ theorem additiveEnergy_ge_swap_floor (G : Finset F) :
   rw [← rEnergy_two_eq_additiveEnergy]
   simpa using rEnergy_ge_swap_floor G 0
 
+/-- **Affine-normalized diagonal floor.**  A nonzero affine image `u + tG` obeys the same
+representation-count additive-energy diagonal floor, with the floor expressed using the original
+cardinality `|G|` (cardinality is preserved by the embedding). -/
+theorem additiveEnergy_affine_ge_card_sq (G : Finset F) (u : F) {t : F} (ht : t ≠ 0) :
+    G.card ^ 2 ≤ additiveEnergy (G.map (affineEmbeddingOfNe u t ht)) := by
+  have hcard : (G.map (affineEmbeddingOfNe u t ht)).card = G.card := by
+    simp
+  rw [← hcard]
+  exact additiveEnergy_ge_card_sq (G.map (affineEmbeddingOfNe u t ht))
+
 /-- **Affine-normalized swap floor.**  A nonzero affine image `u + tG` obeys the same
 representation-count additive-energy swap floor, with the floor expressed using the original
 cardinality `|G|` (cardinality is preserved by the embedding). -/
@@ -63,4 +74,5 @@ end ArkLib.ProximityGap.SubgroupGaussSumMoment
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_ge_card_sq
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_ge_swap_floor
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_affine_ge_card_sq
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_affine_ge_swap_floor
