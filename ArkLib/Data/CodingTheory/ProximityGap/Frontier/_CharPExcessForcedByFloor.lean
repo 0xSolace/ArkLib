@@ -59,8 +59,34 @@ theorem excess_lower_bound (p E0 Ep ceil N₂ : ℝ) (hp : 0 < p)
   have hEp : N₂ / p ≤ Ep := by rw [div_le_iff₀ hp]; linarith [hfloor]
   linarith
 
+/-- **Strict positive excess, in the literal `W_r = Ep - E0` form.** This is the direct
+"no good prime past the saturation depth" statement consumed by the good-prime route: once
+`p * ceil < N₂`, the excess cannot vanish. -/
+theorem excess_sub_pos_of_ceiling_below_floor (p E0 Ep ceil N₂ : ℝ) (hp : 0 < p)
+    (hfloor : N₂ ≤ p * Ep) (hE0 : E0 ≤ ceil) (hgap : p * ceil < N₂) :
+    0 < Ep - E0 := by
+  exact sub_pos.mpr (excess_pos_of_ceiling_below_floor p E0 Ep ceil N₂ hp hfloor hE0 hgap)
+
+/-- **No zero-excess good prime beyond the floor/ceiling crossing.** In the notation of the
+char-`p` transfer route, `W_r = Ep - E0`; the saturation gap rules out `W_r = 0` for every
+prime satisfying the hypotheses. -/
+theorem no_zero_excess_of_ceiling_below_floor (p E0 Ep ceil N₂ : ℝ) (hp : 0 < p)
+    (hfloor : N₂ ≤ p * Ep) (hE0 : E0 ≤ ceil) (hgap : p * ceil < N₂) :
+    Ep - E0 ≠ 0 := by
+  exact ne_of_gt (excess_sub_pos_of_ceiling_below_floor p E0 Ep ceil N₂ hp hfloor hE0 hgap)
+
+/-- **Equivalently, good-prime equality `E_r(F_p)=E_r(ℂ)` is impossible** once the
+char-0 ceiling lies below the Cauchy--Schwarz floor. -/
+theorem no_equal_energy_of_ceiling_below_floor (p E0 Ep ceil N₂ : ℝ) (hp : 0 < p)
+    (hfloor : N₂ ≤ p * Ep) (hE0 : E0 ≤ ceil) (hgap : p * ceil < N₂) :
+    E0 ≠ Ep := by
+  exact ne_of_lt (excess_pos_of_ceiling_below_floor p E0 Ep ceil N₂ hp hfloor hE0 hgap)
+
 end ProximityGap.Frontier.CharPExcessFloor
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.CharPExcessFloor.excess_pos_of_ceiling_below_floor
 #print axioms ProximityGap.Frontier.CharPExcessFloor.excess_lower_bound
+#print axioms ProximityGap.Frontier.CharPExcessFloor.excess_sub_pos_of_ceiling_below_floor
+#print axioms ProximityGap.Frontier.CharPExcessFloor.no_zero_excess_of_ceiling_below_floor
+#print axioms ProximityGap.Frontier.CharPExcessFloor.no_equal_energy_of_ceiling_below_floor
