@@ -922,7 +922,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.EtaCosetSplit
 import ArkLib.Data.CodingTheory.ProximityGap.EtaInvolutionFixedPointReal
 import ArkLib.Data.CodingTheory.ProximityGap.EtaNormSqRealShiftForm
 import ArkLib.Data.CodingTheory.ProximityGap.EtaOffDiagImagCancel
-import ArkLib.Data.CodingTheory.ProximityGap.EtaOffDiagRealPairing
 import ArkLib.Data.CodingTheory.ProximityGap.EtaPointwiseAutocorr
 import ArkLib.Data.CodingTheory.ProximityGap.EtaQuarticUncond
 import ArkLib.Data.CodingTheory.ProximityGap.EtaShallowTailUncond
@@ -1429,7 +1428,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NTStrat_HDMagnitudeInvari
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NewANTInputBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_AgreementDepthMerge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_DegBadRGrowingSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_OPSingleOrbitPersistence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_UnionGrowthGeneratingFn
