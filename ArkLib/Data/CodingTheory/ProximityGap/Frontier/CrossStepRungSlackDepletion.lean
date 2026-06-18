@@ -43,10 +43,11 @@ in-tree `defect_four / defect_five / defect_six`.
 ## Results (axiom-clean, ℤ-arithmetic on the in-tree char-`0` carrier)
 
 * `crossMassZ`, `stepTarget`            — the ℤ-carrier cross mass `E_{r+1} − n·E_r` and step target.
-* `rungSlack_eq_defect_diff_four/five`  — `stepTarget r − crossMassZ r = δ̂_{r+1} − n·δ̂_r` at `r=4,5`.
-* `crossStepRung_iff_defect_superlinear_four/five` — `crossMassZ r ≤ stepTarget r ↔ n·δ̂_r ≤ δ̂_{r+1}`.
-* `defect_superlinear_four/five`        — `n·δ̂_r ≤ δ̂_{r+1}` for `n ≥ 2` (hence the rung), proven by
-    the in-tree defect polynomials + a shifted-variable nonnegativity certificate.
+* `rungSlack_eq_defect_diff_two..five`  — `stepTarget r − crossMassZ r = δ̂_{r+1} − n·δ̂_r`, `r=2..5`.
+* `crossStepRung_iff_defect_superlinear_two..five` — `crossMassZ r ≤ stepTarget r ↔ n·δ̂_r ≤ δ̂_{r+1}`.
+* `defect_superlinear_two..five`        — `n·δ̂_r ≤ δ̂_{r+1}` for `n ≥ 2` (hence the rung), proven by
+    the in-tree defect polynomials + a shifted-variable nonnegativity certificate. So the bridge +
+    characterization cover the FULL contiguous proven range `r = 2..5`.
 
 ## Honest scope (rules 1, 3, 4, 6)
 
@@ -72,7 +73,15 @@ def stepTarget (r : ℕ) (n : ℤ) : ℤ :=
   (2 * r : ℤ) * (Nat.doubleFactorial (2 * r - 1) : ℤ) * n ^ (r + 1)
 
 /-- **The step target is the one-step Wick gap.** `stepTarget r = wick (r+1) − n·wick r`, since
-`(2r+1)‼ − (2r−1)‼ = 2r·(2r−1)‼` (`doubleFactorial_add_two`). Proven at `r = 4, 5`. -/
+`(2r+1)‼ − (2r−1)‼ = 2r·(2r−1)‼` (`doubleFactorial_add_two`). Proven at `r = 2, 3, 4, 5`. -/
+theorem stepTarget_eq_wickGap_two (n : ℤ) :
+    stepTarget 2 n = wick 3 n - n * wick 2 n := by
+  simp only [stepTarget, wick, Nat.doubleFactorial]; ring
+
+theorem stepTarget_eq_wickGap_three (n : ℤ) :
+    stepTarget 3 n = wick 4 n - n * wick 3 n := by
+  simp only [stepTarget, wick, Nat.doubleFactorial]; ring
+
 theorem stepTarget_eq_wickGap_four (n : ℤ) :
     stepTarget 4 n = wick 5 n - n * wick 4 n := by
   simp only [stepTarget, wick, Nat.doubleFactorial]; ring
@@ -80,6 +89,19 @@ theorem stepTarget_eq_wickGap_four (n : ℤ) :
 theorem stepTarget_eq_wickGap_five (n : ℤ) :
     stepTarget 5 n = wick 6 n - n * wick 5 n := by
   simp only [stepTarget, wick, Nat.doubleFactorial]; ring
+
+/-- **THE BRIDGE at `r = 2`: the rung slack equals the depletion-defect difference.**
+`stepTarget 2 − crossMassZ E2 E3 = δ̂_3 − n·δ̂_2`. -/
+theorem rungSlack_eq_defect_diff_two (n : ℤ) :
+    stepTarget 2 n - crossMassZ E2 E3 n
+      = depletionDefect E3 3 n - n * depletionDefect E2 2 n := by
+  simp only [stepTarget, crossMassZ, depletionDefect, wick, E2, E3, Nat.doubleFactorial]; ring
+
+/-- **THE BRIDGE at `r = 3`.** `stepTarget 3 − crossMassZ E3 E4 = δ̂_4 − n·δ̂_3`. -/
+theorem rungSlack_eq_defect_diff_three (n : ℤ) :
+    stepTarget 3 n - crossMassZ E3 E4 n
+      = depletionDefect E4 4 n - n * depletionDefect E3 3 n := by
+  simp only [stepTarget, crossMassZ, depletionDefect, wick, E3, E4, Nat.doubleFactorial]; ring
 
 /-- **THE BRIDGE at `r = 4`: the rung slack equals the depletion-defect difference.**
 `stepTarget 4 − crossMassZ E4 E5 = δ̂_5 − n·δ̂_4`. Pure ℤ-ring identity:
@@ -94,6 +116,25 @@ theorem rungSlack_eq_defect_diff_five (n : ℤ) :
     stepTarget 5 n - crossMassZ E5 E6 n
       = depletionDefect E6 6 n - n * depletionDefect E5 5 n := by
   simp only [stepTarget, crossMassZ, depletionDefect, wick, E5, E6, Nat.doubleFactorial]; ring
+
+/-- **The characterization at `r = 2`: the rung is defect-superlinearity.**
+`crossMassZ E2 E3 ≤ stepTarget 2 ↔ n·δ̂_2 ≤ δ̂_3`. -/
+theorem crossStepRung_iff_defect_superlinear_two (n : ℤ) :
+    crossMassZ E2 E3 n ≤ stepTarget 2 n
+      ↔ n * depletionDefect E2 2 n ≤ depletionDefect E3 3 n := by
+  have h := rungSlack_eq_defect_diff_two n
+  constructor
+  · intro hr; linarith
+  · intro hd; linarith
+
+/-- **The characterization at `r = 3`.** `crossMassZ E3 E4 ≤ stepTarget 3 ↔ n·δ̂_3 ≤ δ̂_4`. -/
+theorem crossStepRung_iff_defect_superlinear_three (n : ℤ) :
+    crossMassZ E3 E4 n ≤ stepTarget 3 n
+      ↔ n * depletionDefect E3 3 n ≤ depletionDefect E4 4 n := by
+  have h := rungSlack_eq_defect_diff_three n
+  constructor
+  · intro hr; linarith
+  · intro hd; linarith
 
 /-- **The characterization at `r = 4`: the rung is defect-superlinearity.**
 `crossMassZ E4 E5 ≤ stepTarget 4  ↔  n·δ̂_4 ≤ δ̂_5`. Immediate from the bridge identity. -/
@@ -113,6 +154,23 @@ theorem crossStepRung_iff_defect_superlinear_five (n : ℤ) :
   constructor
   · intro hr; linarith
   · intro hd; linarith
+
+/-- **Defect superlinearity at `r = 2` (`n ≥ 2`).** `n·δ̂_2 ≤ δ̂_3`, i.e. `n·(3n) ≤ 45n²−40n`.
+Slack `42n² − 40n ≥ 0` for `n ≥ 2`. Hence the `r = 2` cross-step rung holds on the ℤ-carrier. -/
+theorem defect_superlinear_two (n : ℤ) (hn : 2 ≤ n) :
+    n * depletionDefect E2 2 n ≤ depletionDefect E3 3 n := by
+  rw [defect_two, defect_three]
+  nlinarith [hn, sq_nonneg n, mul_nonneg (by linarith : (0:ℤ) ≤ n) (by linarith : (0:ℤ) ≤ n - 2)]
+
+/-- **Defect superlinearity at `r = 3` (`n ≥ 2`).** `n·δ̂_3 ≤ δ̂_4`. Slack
+`585n³ − 1395n² + 1155n ≥ 0` for `n ≥ 2`. Hence the `r = 3` cross-step rung holds. -/
+theorem defect_superlinear_three (n : ℤ) (hn : 2 ≤ n) :
+    n * depletionDefect E3 3 n ≤ depletionDefect E4 4 n := by
+  rw [defect_three, defect_four]
+  have ht : (0 : ℤ) ≤ n - 2 := by linarith
+  have hn0 : (0 : ℤ) ≤ n := by linarith
+  nlinarith [mul_nonneg hn0 (sq_nonneg (n - 2)), mul_nonneg hn0 ht, sq_nonneg (n - 2), ht,
+    mul_nonneg hn0 (mul_nonneg ht ht)]
 
 /-- **Defect superlinearity at `r = 4` (`n ≥ 2`).** `n·δ̂_4 ≤ δ̂_5`, i.e.
 `n·(630n³−1435n²+1155n) ≤ 9450n⁴−39375n³+77175n²−57456n`. Shifted-variable nonnegativity:
@@ -139,6 +197,16 @@ theorem defect_superlinear_five (n : ℤ) (hn : 2 ≤ n) :
     mul_nonneg hn0 (mul_nonneg ht (pow_nonneg ht 3)),
     mul_nonneg hn0 (mul_nonneg ht (sq_nonneg (n - 2)))]
 
+/-- **The `r = 2` rung on the ℤ-carrier, from defect superlinearity.** -/
+theorem crossStepRungZ_two (n : ℤ) (hn : 2 ≤ n) :
+    crossMassZ E2 E3 n ≤ stepTarget 2 n :=
+  (crossStepRung_iff_defect_superlinear_two n).mpr (defect_superlinear_two n hn)
+
+/-- **The `r = 3` rung on the ℤ-carrier, from defect superlinearity.** -/
+theorem crossStepRungZ_three (n : ℤ) (hn : 2 ≤ n) :
+    crossMassZ E3 E4 n ≤ stepTarget 3 n :=
+  (crossStepRung_iff_defect_superlinear_three n).mpr (defect_superlinear_three n hn)
+
 /-- **The `r = 4` rung on the ℤ-carrier, from defect superlinearity.** -/
 theorem crossStepRungZ_four (n : ℤ) (hn : 2 ≤ n) :
     crossMassZ E4 E5 n ≤ stepTarget 4 n :=
@@ -152,6 +220,14 @@ theorem crossStepRungZ_five (n : ℤ) (hn : 2 ≤ n) :
 end ProximityGap.Frontier.ShawDepletion
 
 /-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ShawDepletion.rungSlack_eq_defect_diff_two
+#print axioms ProximityGap.Frontier.ShawDepletion.rungSlack_eq_defect_diff_three
+#print axioms ProximityGap.Frontier.ShawDepletion.crossStepRung_iff_defect_superlinear_two
+#print axioms ProximityGap.Frontier.ShawDepletion.crossStepRung_iff_defect_superlinear_three
+#print axioms ProximityGap.Frontier.ShawDepletion.defect_superlinear_two
+#print axioms ProximityGap.Frontier.ShawDepletion.defect_superlinear_three
+#print axioms ProximityGap.Frontier.ShawDepletion.crossStepRungZ_two
+#print axioms ProximityGap.Frontier.ShawDepletion.crossStepRungZ_three
 #print axioms ProximityGap.Frontier.ShawDepletion.rungSlack_eq_defect_diff_four
 #print axioms ProximityGap.Frontier.ShawDepletion.rungSlack_eq_defect_diff_five
 #print axioms ProximityGap.Frontier.ShawDepletion.crossStepRung_iff_defect_superlinear_four
