@@ -1066,6 +1066,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.FloorAsymptoticRadius
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GaussPeriodR2CeilingGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GaussianEnergyBoundMuNDepthTwo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GradedAntipodalVanishingLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountSigmaUniform
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericCountTransversal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.GenericSuperDiagonalLower
