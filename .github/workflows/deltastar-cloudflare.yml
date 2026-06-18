@@ -56,7 +56,13 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"production_branch":"main"}' \
             -o /tmp/cloudflare-pages-project.json
-          node -e "const r = require('/tmp/cloudflare-pages-project.json'); if (!r.success) { console.error(JSON.stringify(r)); process.exit(1); }"
+          node <<'JS'
+          const r = require('/tmp/cloudflare-pages-project.json');
+          if (!r.success || r.result?.production_branch !== 'main') {
+            console.error(JSON.stringify(r));
+            process.exit(1);
+          }
+          JS
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
