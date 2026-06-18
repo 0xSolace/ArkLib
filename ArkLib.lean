@@ -1526,6 +1526,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
