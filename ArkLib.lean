@@ -1527,6 +1527,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFourthMomentEnergyC
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMomentLadderWickCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseSetDilationInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes

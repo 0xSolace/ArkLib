@@ -18354,3 +18354,32 @@ is consistent with the meta-thm: every marginal object read off the period field
 2nd-moment/E₂ (BGK/Paley √n) wall. No CORE/cancellation claim; asymptotic-claim guard untouched.
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## [door-iv-phaseset-smallball] the x-side phase set {b·x mod p} is additively SPREAD + dilation-INVARIANT ⇒ the Halász/small-ball lever is b-blind and reproduces the EVT ceiling (2026-06-18, sol opus-4-8 subagent)
+
+Lane: door-(iv) Lane-1, the brief's VERBATIM target ("how spread is {b·x^m mod p}? Any
+Littlewood-Offord / Halász small-ball bound that does NOT route through multiplicative energy?").
+DISTINCT from ae2bc7e0b (b-SIDE worst-set additive structure) and 78d1df596 (complex alignment):
+this is the ADDITIVE structure of the x-side phase-RESIDUE set S_b = {b·x mod p : x∈μ_n} ⊆ F_p.
+
+Probe scripts/probes/probe_dooriv_phaseset_additive_smallball.py (EXACT bignum, full worst-b scan
+n<=64, PROPER μ_n, p≈n⁴, never n=q−1):
+ - E+(μ_n)/n² FLAT at ~2.81,2.91,2.95 (n=16,32,64) — does NOT grow ⇒ additively SPREAD (Sidon-like
+   up to a constant), NOT additively structured.
+ - sumset doubling |S+S|/n ≈ n/2 (8.06,16.03,32.02) = the Sidon signature |S+S|≈|S|²/2.
+ - arc small-ball ρ* DECAYS 0.75→0.25→0.078 (residues spread, no concentration).
+ - worst-b sum at the EVT/Plancherel ceiling M/√(n·log(p/n)) ≈ 1.20,1.26,1.36.
+
+KEY STRUCTURAL FACT (axiom-clean, _DoorIVPhaseSetDilationInvariant.lean): the additive energy
+E+(b·S) = E+(S) for every nonzero b (DILATION-INVARIANT — proven via the mul-by-b bijection
+preserving a+b=c+d). So the WORST b CANNOT tune the additive structure; the Halász/small-ball lever
+is b-BLIND. Since E+(μ_n) is Sidon-spread, the small-ball bound gives only |η_b| ≲ √(n·log) = the
+SAME EVT ceiling — it REPRODUCES BGK, does NOT beat it and does NOT avoid the moment route. (And the
+additive energy of a multiplicative subgroup IS a multiplicative-energy object, so even a structured
+branch would route through the dead mult-energy wall.) Mapped wall, NOT a non-moment lever.
+
+Lean: addEnergy_smul_eq (E+ dilation-invariant), addEnergy_phaseSet_indep_of_scalar (the worst-b
+small-ball certificate equals the typical-b one). Axioms ⊆ {propext,Classical.choice,Quot.sound}.
+No CORE/cancellation claim; asymptotic-claim guard untouched.
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>
