@@ -28,6 +28,16 @@ open input (the Λ(q) bound itself, which IS the prize = BGK / Λ(p)-set bounded
 So the Λ(q) route is proved end-to-end: the Λ(q) bound ⟹ the prize floor `M = O(√(n log m))`, with the
 explicit constant `√(2e)·C`. Only the Λ(q) bound is open (= BGK / Λ(p) for multiplicative subgroups). The
 final step prize-floor ⟹ δ* interior is the in-tree two-sided dichotomy (`_DeltaStarDefinitive`).
+
+**Literature finding (2026-06-18, `docs/kb/deltastar-444-literature-sweep-2026-06-18.md`).** This route is a
+*reformulation*, not a *reduction*: by **Pisier's iff theorem** (arXiv:1704.02969) for bounded orthonormal
+systems, "`μ_n` is a Λ(q)-set with a `p`-independent bounded constant" is **logically EQUIVALENT** to `μ_n`
+being Sidon/dissociated, which for this object is equivalent to the sub-Gaussian moment bound — i.e. to the
+prize itself. So the forward implication proved here is genuine and useful (it is the cleanest packaging of
+the prize floor), but the open input `hLambdaQ` is *equal in strength* to the prize, not weaker. A 13-domain
+verified-citation literature sweep found **no** unconditional / conditional / 2-power-special-case route to
+the exponent-1/2 Λ(q) bound at the prize parameters (`n ≈ p^{1/5.27}`, worst-case `b`); SOTA stays BGK
+`n^{1−o(1)}` (Kowalski arXiv:2401.04756).
 -/
 
 set_option autoImplicit false
