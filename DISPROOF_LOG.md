@@ -5307,3 +5307,34 @@ No CORE closure; no char-p transfer; no capacity/growth-law; asymptotic guard un
 LOWER bound, structurally orthogonal to cliff-at-n/2). Lean-free constraint entry (doc, probe-backed).
 
 Co-Authored-By: wakesync <shadow@shad0w.xyz>
+
+## [graded-weight-injectivity] the depth-r graded-weight map is INJECTIVE on signed relations of support r => tower-depth is bounded by support size, NOT free (2026-06-18, opus-4-8 subagent)
+
+CONSTRAINT (the brick): for the 2-adic graded tower (_TwoAdicGradedTower.lean: D == sum_{j<l} sigma_j t^j
+mod I^l, sigma_j = sum_i eps_i C(a_i,j)), the graded-weight map eps -> (sigma_0,...,sigma_{r-1}) on a
+signed relation supported on r DISTINCT exponents A = {a_1,...,a_r} is the r x r Pascal/binomial matrix
+P[i][j] = C(a_i, j). This matrix is NONSINGULAR for distinct a_i (probe_sigma_rank.py: 0 singular /
+1730 cases, n=8,16,32, r=2..5) -- it column-reduces to a Vandermonde prod_{i<j}(a_i - a_j) != 0 since
+C(X,j) is a degree-j monic-up-to-1/j! polynomial in X.
+
+CONSEQUENCE: a NONZERO signed relation on r distinct exponents CANNOT have sigma_0 = ... = sigma_{r-1} = 0.
+At least one of the first r graded moments is nonzero. Via the tower congruence this means the
+graded-weight map is INJECTIVE up to depth r: the 2-adic descent v_lambda(D) cannot be forced arbitrarily
+deep by "all moments vanish through depth r" -- the depth at which all sigma_j (j<l) vanish is < r for any
+nonzero relation. (The PARITY version -- all sigma_j EVEN through depth l -- is a coarser, separate
+condition: evenness is not vanishing, so v_lambda can exceed r via even-but-nonzero moments; this entry
+bounds the VANISHING depth, the Sidon-exactness, not the valuation depth.)
+
+RELEVANCE: this is the support-size <-> Sidon-depth interaction in the brief's "B_infty <- B_{log n} Sidon
+bootstrap" lane: the graded weights cannot all vanish below the support size, so deep Sidon-exactness
+(sigma_j = 0 for many j) FORCES large support r. Does NOT cross the BGK wall: it constrains the VANISHING
+structure of low-order moments, while the prize sup M(n) lives in the char-p energy transfer at depth
+r ~ ln q (the open conjugate-norm wall). The parity/valuation criterion (the actual gate) is governed by
+the LOCAL arithmetic of Z[zeta_{2^mu}] (v_lambda(2) = e = n/2), orthogonal to this rank fact.
+
+STATUS: probe-backed (1730 cases, 0 singular) + reducible to the standard Vandermonde nonsingularity
+(det P = c * prod_{i<j}(a_i - a_j), c != 0). Lean formalization of det P != 0 deferred (column-op reduction
+to det_vandermonde is a heavier proof; logged as constraint to honor probe-first + no-overclaim). No CORE
+closure, no capacity/growth-law claim, asymptotic guard untouched.
+
+Co-Authored-By: wakesync <shadow@shad0w.xyz>
