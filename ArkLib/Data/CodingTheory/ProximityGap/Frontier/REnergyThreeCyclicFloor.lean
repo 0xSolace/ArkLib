@@ -121,6 +121,13 @@ private theorem constantTriples_count (G : Finset F) :
     simp
 
 
+/-- The exact arithmetic gap between the `r = 3` cyclic floor and the `r = 3`
+specialization of the all-`r` swap floor, recorded in `ℤ` to avoid truncating subtraction.
+The cyclic-orbit improvement over the adjacent-swap floor is precisely `n(n-1)(n+2)`. -/
+theorem cyclic_floor_three_gap_eq_int (n : ℤ) :
+    (3 * n ^ 3 - 2 * n) - (2 * n ^ 3 - n ^ 2) = n * (n - 1) * (n + 2) := by
+  ring
+
 /-- At `r = 3`, the cyclic floor dominates the `r = 3` specialization of the all-`r`
 swap floor.  This pins the first higher permutation rung as a genuine improvement over the
 single-transposition floor, still by pure char-free bookkeeping. -/
@@ -213,4 +220,5 @@ end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy_three_ge_cyclic_floor
 
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.cyclic_floor_three_gap_eq_int
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.swap_floor_le_cyclic_floor_three
