@@ -4221,3 +4221,4 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFourthMomentEnergyCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVConnectedCumulantVanishes

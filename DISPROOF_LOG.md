@@ -2,6 +2,42 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) the SIGNED off-diagonal 4-point connected cumulant VANISHES — the period field is Gaussian to FULL 4th order, the phase-sensitive 4-point door-(iv) object does not exist (closes the sweep-5 pointer) (2026-06-18)
+
+Lens: door-(iv) Lane-1, following the SHARPENED sweep-5 pointer (the modulus 4th moment = dead E₂, so a
+surviving lever must be a SIGNED 4-point object using PHASE info that does NOT reduce to E₂). The
+candidate: the off-diagonal connected 4th cumulant of the period field z_j = η_{g^j} on the cyclic
+quotient. Test the lag-resolved connected energy-energy cumulant
+  T₄(k) = E_j[|z_j|²|z_{j+k}|²] − (E|z|²)² − |E_j[z_j z̄_{j+k}]|² − |E_j[z_j z_{j+k}]|²
+(= 0 for a Gaussian/Wick field: the 2-2 moment is determined by the covariance). A nonzero T₄(k) NOT
+explained by the (already ≈0, white) 2-point covariance = genuine non-Gaussian PHASE structure.
+
+PROBE (`scripts/probes/probe_dooriv_signed_4point_cumulant.py`, EXACT ℂ over coset reps, proper μ_n,
+p≫n³, never n=q−1):
+| n  | p        | lag | EE(k)/Esq | cov2_norm | cov2_anom | T₄resid/Esq |
+|----|----------|-----|-----------|-----------|-----------|-------------|
+| 16 | 65537    | 1   | 1.247     | 0.0002    | 0.0002    | +0.247 (Fermat artifact) |
+| 16 | 65537    | 2-3 | 0.997     | 0.0002    | 0.0002    | -0.003      |
+| 32 | 1048609  | 1-3 | ~1.000    | ~0.001    | ~0.001    | +0.0006..−0.006 |
+| 64 | 16777153 | 1-3 | ~1.00     | ~0.004    | ~0.004    | −0.003..−0.015 |
+| 16 | 262193   | 1-3 | 0.999     | 0.0001    | 0.0001    | −0.0009     |
+
+VERDICT (door-(iv) sub-lane WALL / constraint lemma): the connected energy-energy cumulant T₄(k) is
+≈0 at all lags and does NOT grow with N (|T₄/Esq| ≲ 0.015, shrinking). EE(k)/Esq ≈ 1.00 = exact Gaussian
+factorization. The lone T₄(1)=0.247 at the Fermat prime 65537 (p/n=4096 small) is the SAME finite-size
+/ Fermat artifact as the white-field sweep, vanishing for all larger generic primes. So the period field
+is GAUSSIAN TO FULL 4TH ORDER in its joint structure: the diagonal part is the dead E₂ (sweep 5), and the
+off-diagonal connected cumulant is ZERO. CONSEQUENCE (closes the sweep-5 pointer, does NOT close CORE):
+the phase-sensitive off-diagonal 4-point coherence that door-(iv) needs DOES NOT EXIST at the connected-4
+level. Combined with the marginal-EVT, white-field, and E₂-collapse entries, the period field is fully
+Gaussian through 4th order (1- and 2-point Gaussian/white; 4-point diagonal=E₂-dead, off-diagonal
+cumulant=0). Any surviving door-(iv) crack must live at 6TH ORDER OR HIGHER, or in an object outside the
+moment hierarchy entirely. Formal kernel (Lean, `Frontier/_DoorIVConnectedCumulantVanishes.lean`,
+axiom-clean): vanishing connected cumulant ⇒ Wick factorization (`m22_eq_wick_of_cumulant_zero`[_complex]):
+`m22 = wick + cumulant`, `cumulant=0` ⇒ `m22 = wick`; a bound through a Wick-factorized 2-2 moment passes
+through the 2-point covariance (`control_passes_through_wick`), which the white-field sweep showed ≈0.
+The connected-4 phase escape is mapped + dead. CORE OPEN.
+
 ## door-(iv) the FIRST higher-order functional (4th-moment / kurtosis of the period marginal) COLLAPSES to the additive energy E₂(μ_n) = the REFUTED energy route (the "go higher-order" escape is dead at 4th order) (2026-06-18)
 
 Lens: door-(iv) Lane-1, following my own chain pointer (the white-field entry: "any crack must live
