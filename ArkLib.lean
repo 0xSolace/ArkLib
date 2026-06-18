@@ -1212,6 +1212,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackThreePow_SubsetSumE
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E7ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E8ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E9ClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E10ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL7_OrbitSizeAtBinder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
