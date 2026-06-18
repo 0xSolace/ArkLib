@@ -125,8 +125,23 @@ theorem binomial_incidence_card_le_gcd (S : Finset F) (c : F)
     have : i - j = 0 := hd0
     omega
 
+/-- **Gcd-tight binomial incidence bound without a puncturing predicate.** If `n > 0`, every
+point of `S ⊆ μ_n` is nonzero, so the sharp cyclic-kernel bound applies directly to the ordinary
+binomial vanishing filter. This is the caller-facing form of
+`binomial_incidence_card_le_gcd` for positive-order thin subgroups. -/
+theorem binomial_incidence_card_le_gcd_unpunctured (S : Finset F) (c : F)
+    {i j n : ℕ} (hn : 0 < n) (hij : j < i) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ^ i - c * x ^ j = 0)).card ≤ Nat.gcd (i - j) n := by
+  rw [← C71BinomialIncidence.binomial_incidence_filter_punctured_eq_unpunctured S c hn hSn]
+  exact binomial_incidence_card_le_gcd S c hij hSn
+
 end ArkLib.ProximityGap.C71BinomialIncidenceGcd
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.C71BinomialIncidenceGcd.pow_gcd_of_pow_eq_of_pow_n
-#print axioms ArkLib.ProximityGap.C71BinomialIncidenceGcd.binomial_incidence_card_le_gcd
+namespace ArkLib.ProximityGap.C71BinomialIncidenceGcd
+
+#print axioms pow_gcd_of_pow_eq_of_pow_n
+#print axioms binomial_incidence_card_le_gcd
+#print axioms binomial_incidence_card_le_gcd_unpunctured
+
+end ArkLib.ProximityGap.C71BinomialIncidenceGcd
