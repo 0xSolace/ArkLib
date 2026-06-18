@@ -2,6 +2,41 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) the FIRST higher-order functional (4th-moment / kurtosis of the period marginal) COLLAPSES to the additive energy E₂(μ_n) = the REFUTED energy route (the "go higher-order" escape is dead at 4th order) (2026-06-18)
+
+Lens: door-(iv) Lane-1, following my own chain pointer (the white-field entry: "any crack must live
+BEYOND 2nd-order, in a higher-order/nonlinear functional"). The FIRST higher-order functional is the
+complex 4th moment of the period marginal, K₄ = E_b|η_b|⁴ / (E_b|η_b|²)². Complex-Gaussian baseline
+K₄=2; n-independent-phases baseline K₄ = 2−1/n. Test: is the marginal heavy-tailed (K₄>2, candidate
+structure) and if so is the excess a NEW object or the refuted energy?
+
+PROBE (`probe_dooriv_complex4thmoment_gaussianity.py` + `probe_dooriv_4thmoment_iid_control.py`, EXACT
+ℂ over coset reps, proper μ_n, p≫n³, never n=q−1; random n-subset control):
+| n  | p        | K₄     | K₄−2  | K₆    | E₂(μ_n) | E₂_rand=E₂_iid(2n²−n) | E₂_sub/iid |
+|----|----------|--------|-------|-------|---------|----------------------|------------|
+| 16 | 65537    | 2.810  | 0.810 | 12.29 | 720     | 496                  | 1.452      |
+| 32 | 1048609  | 2.905  | 0.905 | 13.60 | 2976    | 2016                 | 1.476      |
+| 64 | 16777153 | 2.937  | 0.937 | 14.14 | 12096   | 8128                 | 1.488      |
+| 128| 268437889| 2.975  | 0.975 | 14.66 | —       | —                    | —          |
+
+VERDICT (door-(iv) sub-lane WALL / constraint lemma): K₄ ≈ 2.8–3.0 — the marginal IS heavy-tailed
+(K₄−2 ≈ +0.9 above complex-Gaussian; also above 2−1/n), and the excess IS thinness-essential (E₂(μ_n)
+is 1.45–1.49× the random/iid value 2n²−n; rule-3 PASS). BUT the EXACT character-orthogonality identity
+(verified to machine precision, p=97 n=8: both = 168)
+  `(1/p)·Σ_{b∈F_p} |η_b|⁴ = E₂(S) := #{(x₁,x₂,x₃,x₄)∈S⁴ : x₁+x₂=x₃+x₄}`
+shows the 4th moment IS the additive energy. So the K₄ heavy-tail excess collapses EXACTLY to
+E₂(μ_n)/n² — the additive-moment/energy route, PROVEN NON-PROVING in §6 of #444 (meta-theorem:
+additive-energy bounds saturate at structured primes). CONSEQUENCE (kills the higher-order escape MY
+chain pointed at, does NOT close CORE): the FIRST higher-order functional of the period field routes
+straight back to the refuted E₂ lane. The "go beyond 2nd-order" door is dead AT 4TH ORDER. A surviving
+door-(iv) crack, if any, must be a higher-order functional that does NOT reduce to E₂ (i.e. it must use
+the PHASE / sign information that the modulus 4th moment discards — a 4-point object that is NOT the
+additive-quadruple count). Formal kernel (Lean, `Frontier/_DoorIVFourthMomentEnergyCollapse.lean`,
+axiom-clean): the b-averaged 4th power, being an additive energy `Σ_t mult(t)²`, is a nonnegative
+quadruple-count (`additiveEnergy_nonneg`); any sup bound through it is a bound through E₂
+(`sup_fourthPower_le_energy_scale`: `M⁴ ≤ p·avg ⇒ M⁴ ≤ p·E₂`). The energy substrate identity itself
+lives in-tree under `AdditiveEnergy*`/`*ParsevalFloor`. The 4th-moment escape is mapped + dead. CORE OPEN.
+
 ## door-(iv) TERMINAL: the period field is an UNCORRELATED (white) field on the multiplicative quotient — the JOINT b↔b' structure is dead too (autocorr→0 at all lags), the last door-(iv) surface I localized closes (2026-06-18)
 
 Lens: door-(iv) Lane-1 CLOSURE. My three prior sweeps pinned the worst-b cancellation to the MARGINAL
