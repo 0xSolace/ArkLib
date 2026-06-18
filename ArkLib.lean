@@ -991,6 +991,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusCapFullDomainForcedB
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusDominationFullDomainNecessary
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusDominationSufficiency
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusMultiScalarFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusProductCapForcedBelow
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusScalarPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
