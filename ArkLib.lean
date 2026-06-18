@@ -4215,3 +4215,4 @@ import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.ToVCVio.UniformFamilyComap
 import ArkLib.Whir113Keystone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound

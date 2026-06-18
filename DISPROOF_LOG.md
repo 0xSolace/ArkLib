@@ -2,6 +2,38 @@
 
 Machine-checked refutations and precise pins. Each entry: lens, test, exact result, wall.
 
+## door-(iv) WORST-b is an ISOLATED ≈5σ large-deviation SPIKE (not a plateau) ⇒ a b-side count bound is MOMENT-EQUIVALENT (routes through the 2nd moment = BGK; lands in dead door-iii) (2026-06-18)
+
+Lens: door-(iv) Lane-1, "what arithmetic of b selects the worst coset alignment? is the worst-b SET
+structured?" A b-side ANTI-CONCENTRATION hope: bound the sup `M = max_b |η_b|` by controlling HOW MANY
+cosets b achieve near-M (if few + arithmetically special, exploit them). Test the DISTRIBUTION of
+`|η_b|` over ALL `(p−1)/n` multiplicative-coset reps: spike or plateau?
+
+PROBE (`scripts/probes/probe_dooriv_worstb_plateau.py`, EXACT ℂ over ALL coset reps, proper μ_n,
+p≫n³, never n=q−1):
+| n  | p         | #cosets | M/√n | frac(|η|≥0.9M) | frac(≥0.75M) | mean/M | (M−mean)/σ |
+|----|-----------|---------|-------|--------------|-------------|--------|-----------|
+| 16 | 65537     | 4096    | 3.46  | 7e-4         | 7.3e-3      | 0.233  | 4.47      |
+| 32 | 1048609   | 32769   | 3.81  | 1e-4         | 3.3e-3      | 0.211  | 5.01      |
+| 64 | 16777153  | 262143  | 4.04  | 2e-4         | 2.1e-3      | 0.200  | 5.31      |
+| 16 | 262193    | 16387   | 3.55  | 6e-4         | 5.2e-3      | 0.226  | 4.62      |
+| 32 | 5931649   | 185364  | 4.00  | 3e-4         | 2.1e-3      | 0.200  | 5.32      |
+
+VERDICT (door-(iv) sub-lane WALL / constraint lemma): the sup is a SHARP ISOLATED large-deviation
+SPIKE, NOT a plateau. `frac(|η_b| ≥ 0.9 M) → 0` (negligible: ~1e-4), `mean/M ≈ 0.20–0.23` (sup is ~5×
+the mean period), and `(M−mean)/σ ≈ 4.5 → 5.0 → 5.3` GROWING with n (the sup deepens in σ-units). A deep,
+isolated, σ-growing spike is exactly the EXTREME-VALUE / equidistribution profile = Shaw's door (iii)
+= BGK, PROVEN DEAD. So the worst-b does NOT open a new door: its isolation routes the sup back through
+the SECOND MOMENT of the `|η_b|` family. The b-side count route is MOMENT-EQUIVALENT. Formal kernel
+(Lean, `Frontier/_DoorIVWorstBSpikeMomentBound.lean`, axiom-clean): one-sided Chebyshev/Cantelli — the
+above-threshold COUNT satisfies `count · d² ≤ Σ(xᵢ−μ)²` (`threshold_count_mul_sq_le_centered_sndMoment`),
+equivalently `count ≤ Σ(xᵢ−μ)²/d²` (`threshold_count_le_sndMoment_div`). An isolated spike (small count
+at large d) is EXPLAINED BY a small second moment `Σ(xᵢ−μ)²` = the additive-energy/moment object; any sup
+bound via the spike count passes through it. CONSEQUENCE (complements the energy-blind window entry,
+does NOT close CORE): a "worst-b is structured / b-side anti-concentration" door-(iv) lever cannot beat
+the 2nd moment — the worst-b's isolation is itself a moment statement, landing in the dead extreme-value
+door. The b-side-count escape is mapped + dead. CORE OPEN.
+
 ## door-(iv) SINGLE-WINDOW phase-set concentration is ENERGY-BLIND: the coarse window functional decorrelates from |η| (Spearman→0) and is sub-√n (C/√n→0) — coarse spatial clustering is NOT the cancellation mechanism (2026-06-18)
 
 Lens: door-(iv) Lane-1 anti-concentration, the UNSIGNED additive spread of the phase set
