@@ -123,6 +123,32 @@ theorem fallingFactorial_normalized_mass (n : ℕ) :
   norm_num at h
   exact h
 
+
+/-- At `t = -1`, the normalized leading contributions have zero alternating mass for
+positive `n`.  This is the cancellation-side specialization of the same exact
+binomial EGF: `Σ (-1)^r L_r/(r!)² = 0`. -/
+theorem leading_normalized_alternating_mass_zero {n : ℕ} (hn : 0 < n) :
+    (∑ r ∈ range (n + 1),
+        ((leadingNat n r : ℝ) / ((r.factorial : ℝ) * (r.factorial : ℝ))) * (-1 : ℝ) ^ r)
+      = 0 := by
+  have h := leading_generating_function n (-1 : ℝ)
+  norm_num at h
+  have hne : n ≠ 0 := Nat.ne_of_gt hn
+  rw [zero_pow hne] at h
+  exact h
+
+/-- Falling-factorial version of the same alternating cancellation:
+`Σ (-1)^r (n)_r/r! = 0` for positive `n`. -/
+theorem fallingFactorial_alternating_mass_zero {n : ℕ} (hn : 0 < n) :
+    (∑ r ∈ range (n + 1),
+        ((Nat.descFactorial n r : ℝ) / (r.factorial : ℝ)) * (-1 : ℝ) ^ r)
+      = 0 := by
+  have h := fallingFactorial_generating_function n (-1 : ℝ)
+  norm_num at h
+  have hne : n ≠ 0 := Nat.ne_of_gt hn
+  rw [zero_pow hne] at h
+  exact h
+
 end ArkLib.ProximityGap.Char0LeadingBinomialEGF
 
 /-! ## Axiom audit -/
@@ -131,3 +157,5 @@ end ArkLib.ProximityGap.Char0LeadingBinomialEGF
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.fallingFactorial_generating_function
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.leading_normalized_mass
 #print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.fallingFactorial_normalized_mass
+#print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.leading_normalized_alternating_mass_zero
+#print axioms ArkLib.ProximityGap.Char0LeadingBinomialEGF.fallingFactorial_alternating_mass_zero
