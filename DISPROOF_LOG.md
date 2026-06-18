@@ -5568,3 +5568,22 @@ non-negation-stable/asymmetric statistic or new arithmetic of `{b*x^m}`, not onl
 negation-stable cosets.
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## [door-iv-real-sign-mass-slack] any real refinement needs minority sign mass, not just more pieces (2026-06-18, g55)
+
+Lane: Door-(iv) localized coherence object, Lane 3 constraint.  After the half-coherence and multi-piece
+sign-saturation bricks, the exact obstruction can be stated in one real formula.  For any negation-stable
+refinement, the piece periods are real.  Compress the positive pieces to total mass `P ≥ 0` and the
+negative pieces to total mass `N ≥ 0`.  The coherence becomes `|P-N|/(P+N)`, and its slack from `1` is
+exactly twice the minority sign mass divided by total mass.
+
+Lean: `Frontier/_DoorIVRealSignMassSlack.lean` proves axiom-clean:
+- `signMassCoherence_eq_one_sub_twice_neg`: if `N ≤ P`, then coherence is `1 - 2N/(P+N)`.
+- `signMassCoherence_eq_one_sub_twice_pos`: if `P ≤ N`, then coherence is `1 - 2P/(P+N)`.
+- `signMassCoherence_le_one`: nonnegative sign masses always have coherence at most `1`.
+
+VERDICT: this does not close CORE.  It pins the burden for any surviving real/negation-stable door-(iv)
+refinement: prove a genuine lower bound on the minority sign mass.  Subdivision alone is empty; same-sign
+or highly imbalanced fibers keep coherence near `1`.
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>

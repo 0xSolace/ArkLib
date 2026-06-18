@@ -4219,3 +4219,4 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
