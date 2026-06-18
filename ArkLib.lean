@@ -4146,3 +4146,5 @@ import ArkLib.ToVCVio.ToMathlib.Control.StateT
 import ArkLib.ToVCVio.ToMathlib.Data.Vector.Basic
 import ArkLib.ToVCVio.UniformFamilyComap
 import ArkLib.Whir113Keystone
+
+import ArkLib.Data.CodingTheory.ProximityGap.CharPDeepMomentTailReindexed
