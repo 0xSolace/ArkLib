@@ -986,6 +986,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusBudgetInfeasibleDeep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusCapForbidsLargeAligned
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusCapForcedBelow
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusDominationSufficiency
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusMultiScalarFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CensusScalarPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.Char0CountExplodes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CharPCapRefuted
