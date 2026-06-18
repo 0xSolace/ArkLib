@@ -5338,3 +5338,52 @@ to det_vandermonde is a heavier proof; logged as constraint to honor probe-first
 closure, no capacity/growth-law claim, asymptotic guard untouched.
 
 Co-Authored-By: wakesync <shadow@shad0w.xyz>
+
+## [door-(iv) Lane-1] the WORST-`b` SET is coset-closed + additively SPREAD — no additive structure to exploit beyond the proven multiplicative coset-invariance (2026-06-18, opus-4-8 subagent)
+
+Lens: the brief's SINGLE LIVE TARGET Lane-1 question (Shaw-value essay 2026-06-18): "what arithmetic of
+`b` selects the worst coset alignment? is the worst-`b` SET itself structured?" — the door-(iv) hope being
+an arithmetic anti-concentration of the worst-`b` set `W(thr)={b≠0 : ‖η_b‖≥thr}` that a moment-free /
+completion-free bound could grip. `η_b = Σ_{x∈μ_n} e_p(bx)`, prize regime: PROPER thin `μ_n<F_p^*`,
+`p≡1 mod n`, `p≫n³`, `m=(p-1)/n` ODD, NEVER `n=q−1`.
+
+PROBES (probe-first, NO moment, NO completion):
+ (1) scripts/probes/probe_444_worstb_set_arithmetic.py — structure of `W(thr)` on the `F_p^*` line,
+     `n=8,16,32`, `β=4,4.5`, `τ∈{2,5,10}%`. RESULT: `W` is ALWAYS exactly a union of full `μ_n`-cosets
+     (`muOrbit=True`, `|W|/n` an integer = #cosets) and negation-symmetric (`-b*` near-max always). It is
+     NOT a square-coset and NOT a single multiplicative-`g` orbit. Additively `|W+W|/|W|` GROWS with `n`
+     (Sidon-like / spread), longest AP ≤ 3-4.
+ (2) scripts/probes/probe_444_worstcoset_quotient_structure.py — the SHARP test: quotient out the PROVEN
+     coset-invariance (`η` descends to `F_p^*/μ_n ≅ ℤ_m`) and ask whether the worst-COSET set
+     `W_q⊆ℤ_m` is additively structured. `n=8..32`, `β=4..5`. RESULT: `W_q` is NOT dilation-closed in
+     `ℤ_m^×` (`dilClosed=False`), has no nontrivial AP (`longestAP_{ℤ_m}≤4`), `|W_q+W_q|/|W_q|` grows
+     toward `|W_q|` (spread), and the magnitude profile `f(j)=‖η(g^j)‖` on `ℤ_m` is Fourier-FLAT:
+     `‖f̂‖_∞/‖f̂‖_2` is within `≈1.2–2.2×` of the flat baseline `1/√(m/2)` and SHRINKS toward it as `m`
+     grows; top-5 frequency mass fractions ≈ `1e-4..6e-3` (no frequency carries appreciable mass).
+ (3) scripts/probes/probe_444_worstcoset_quotient_structure_b.py — adversarial re-checks:
+     (a) generator-INDEPENDENCE: the flatness statistic is IDENTICAL across two distinct generators
+     (it must be — a different generator is a dilation of `ℤ_m`, and the statistic is dilation-invariant).
+     (b) STRUCTURED Fermat-type primes, `v₂(p−1)` up to 16 incl. `p=65537=F₄`: NO Fourier concentration
+     appears; flatness ratio stays in `[1.18, 1.99]`. Structured primes do not create exploitable structure.
+
+EXACT RESULT / WALL: the ONLY forced structure of the worst-`b` set is the PROVEN multiplicative
+coset-invariance `‖η_{cb}‖=‖η_b‖` for `c∈μ_n` (commit 9909ef905 `_EtaCosetInvariance.norm_eta_dilate_eq`)
+plus the antipodal `c=−1` case — i.e. `W(thr)` is exactly the `μ_n`-orbit-closure of a subset `W_q⊆ℤ_m`.
+Once that (trivial, already-proven) multiplicative symmetry is quotiented out, the worst-coset set on `ℤ_m`
+carries NO residual additive structure (not an AP, not dilation-closed, additively Sidon-spread, Fourier-flat
+magnitude profile, generator-independent, robust to structured primes). Hence the door-(iv) Lane-1 sub-hope
+"the worst-`b` SET is additively structured" is REFUTED in the computed prize regime: there is no additive
+handle for a moment-free / completion-free anti-concentration lever to grip. The structure is PURELY
+multiplicative (the coset-invariance) and additively generic. This is CONSISTENT with the meta-theorem (the
+exploitable structure is the multiplicative coset-collapse to `m=(p-1)/n` distinct eigenvalues, already known;
+turning the flat per-coset profile into the signed sup-norm bound is still the char-`p` BGK/Paley wall). NO
+`M`-bound, NO CORE/capacity/growth-law claim; asymptotic cliff-at-n/2 guard untouched (this is a worst-SET
+structure result, not an over-det incidence claim).
+
+Lean (axiom-clean, `⊆{propext,Classical.choice,Quot.sound}`): Frontier/_WorstBSetCosetClosed.lean —
+`mem_worstSet_dilate_iff` (worst-`b` set is `μ_n`-coset-closed: `c·b∈W ↔ b∈W`), `worstSet_dilate_mem`,
+`maximiser_orbit` (the maximiser is never isolated). Formalises the PROVEN half (the coset-closure of the
+argmax set, downstream of `norm_eta_dilate_eq`); the additive-flatness verdict is the empirical NOTE. No
+#444 closure (constraint lemma + regime-bounded refutation of a sub-hope, not a breakthrough).
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>
