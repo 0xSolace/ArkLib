@@ -138,6 +138,24 @@ theorem not_all_full_domain_aligned_of_census_cap_lt (dom : Fin n ↪ F) {k a : 
   have hfloor := card_mul_choose_le_alignableSets dom u₀ u₁ hka P t halign htinj hnd
   exact Nat.not_lt_of_ge hfloor hcap
 
+open Classical in
+/-- **External census-cap consumer.**  If an external argument supplies a numerical census cap
+`#alignableSets ≤ K`, and `K` is strictly below the full-domain multi-scalar supply floor, then the
+whole proposed bad-scalar package cannot exist.  This is the form used by a future CORE/spectral input:
+plug in a cap `K`, compare it to `#P · C(n-(k+1), a-(k+1))`, and immediately rule out that many
+simultaneous full-domain aligned scalars. -/
+theorem not_all_full_domain_aligned_of_external_census_cap (dom : Fin n ↪ F) {k a K : ℕ}
+    (u₀ u₁ : Fin n → F) (hka : k + 1 ≤ a)
+    (P : Finset F) (t : F → Fin (k + 1) → Fin n)
+    (htinj : ∀ γ ∈ P, Function.Injective (t γ))
+    (hnd : ∀ γ ∈ P, ¬ (residual dom k (t γ) u₀ = 0 ∧ residual dom k (t γ) u₁ = 0))
+    (hK : (alignableSets dom k a u₀ u₁).card ≤ K)
+    (hcap : K < P.card * (n - (k + 1)).choose (a - (k + 1))) :
+    ¬ ∀ γ ∈ P, Aligned dom k u₀ u₁ γ (Finset.univ : Finset (Fin n)) := by
+  have hcap' : (alignableSets dom k a u₀ u₁).card
+      < P.card * (n - (k + 1)).choose (a - (k + 1)) := lt_of_le_of_lt hK hcap
+  exact not_all_full_domain_aligned_of_census_cap_lt dom u₀ u₁ hka P t htinj hnd hcap'
+
 end ProximityGap.Ownership
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -145,3 +163,4 @@ end ProximityGap.Ownership
 #print axioms ProximityGap.Ownership.not_all_aligned_of_sum_choose_census_cap_lt
 #print axioms ProximityGap.Ownership.card_mul_choose_le_alignableSets
 #print axioms ProximityGap.Ownership.not_all_full_domain_aligned_of_census_cap_lt
+#print axioms ProximityGap.Ownership.not_all_full_domain_aligned_of_external_census_cap
