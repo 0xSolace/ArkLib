@@ -148,7 +148,9 @@ def foldDown (n : ℕ) (j : Fin (2 * n)) : Fin n := ⟨j.val / 2, by have := j.i
 /-- **The fold-down inverts the doubling: `foldDown (dbl i) = i`.**  So on the doubled (even) residues
 the fold is a genuine section — distinct doubled residues fold back to distinct level-`n` residues. -/
 theorem foldDown_dbl (n : ℕ) (i : Fin n) : foldDown n (dbl n i) = i := by
-  apply Fin.ext; simp only [foldDown, dbl]; omega
+  apply Fin.ext
+  simp only [foldDown, dbl, ArkLib.ProximityGap.Close26.dbl]
+  omega
 
 /-- **The EVEN part folds INJECTIVELY (clean half, axiom-clean).**  The fold-down `foldDown` is
 injective on the even residues `evens n` (`= dbl '' univ`): if two even residues fold to the same
