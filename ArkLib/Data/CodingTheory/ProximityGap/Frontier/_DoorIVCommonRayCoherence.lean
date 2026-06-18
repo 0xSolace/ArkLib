@@ -54,6 +54,26 @@ theorem sum_abs_commonRay_of_unit_of_nonneg {xs : List ℝ} {u : ℂ}
       change ‖(x : ℂ) * u‖ + ((xs.map fun x => (x : ℂ) * u).map norm).sum = x + xs.sum
       rw [Complex.norm_mul, Complex.norm_real, hu, mul_one, Real.norm_of_nonneg hx, ih htail]
 
+/-- The finite-list triangle inequality for complex pieces, in the same normalization as
+`complexPieceCoherence`. -/
+theorem norm_sum_le_sum_norm (zs : List ℂ) : ‖zs.sum‖ ≤ (zs.map norm).sum := by
+  induction zs with
+  | nil => simp
+  | cons z zs ih =>
+      change ‖z + zs.sum‖ ≤ ‖z‖ + (zs.map norm).sum
+      exact le_trans (norm_add_le z zs.sum) (by
+        simpa [add_comm, add_left_comm, add_assoc] using add_le_add_left ih ‖z‖)
+
+/-- The coherence ratio is always at most one when the denominator is positive.  Thus any bound
+`rho ≤ 1 - ε` is exactly a quantitative triangle-inequality deficit, not a free consequence of
+splitting the sum. -/
+theorem complexPieceCoherence_le_one {zs : List ℂ}
+    (hden : 0 < (zs.map norm).sum) : complexPieceCoherence zs ≤ 1 := by
+  unfold complexPieceCoherence
+  have hdiv : ‖zs.sum‖ / (zs.map norm).sum ≤ (zs.map norm).sum / (zs.map norm).sum :=
+    div_le_div_of_nonneg_right (norm_sum_le_sum_norm zs) (le_of_lt hden)
+  simpa [div_self (ne_of_gt hden)] using hdiv
+
 /-- Any nonzero list of nonnegative pieces on a fixed unit complex ray has coherence exactly `1`.
 This is the complex common-ray version of the real same-sign obstruction: triangle-inequality
 saturation gives no door-(iv) anti-concentration slack. -/
@@ -68,9 +88,24 @@ theorem complexPieceCoherence_eq_one_of_commonRay_nonneg {xs : List ℝ} {u : �
   rw [habs_sum]
   exact div_self (ne_of_gt hsum)
 
+/-- Epsilon-drop contrapositive for common-ray lists: if nonnegative pieces on a fixed unit ray are
+nonzero, then no positive `1 - ε` coherence improvement can hold. A useful door-(iv) theorem must
+prove angular spread before it can obtain a strict drop. -/
+theorem commonRay_not_complexPieceCoherence_le_one_sub {xs : List ℝ} {u : ℂ} {ε : ℝ}
+    (hu : ‖u‖ = 1) (hxs : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) (hε : 0 < ε) :
+    ¬ complexPieceCoherence (xs.map fun x => (x : ℂ) * u) ≤ 1 - ε := by
+  intro hcoh
+  have hone := complexPieceCoherence_eq_one_of_commonRay_nonneg hu hxs hsum
+  rw [hone] at hcoh
+  linarith
+
 end ProximityGap.Frontier.DoorIVCommonRayCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVCommonRayCoherence.sum_commonRay
 #print axioms ProximityGap.Frontier.DoorIVCommonRayCoherence.sum_abs_commonRay_of_unit_of_nonneg
+#print axioms ProximityGap.Frontier.DoorIVCommonRayCoherence.norm_sum_le_sum_norm
+#print axioms ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence_le_one
 #print axioms
   ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence_eq_one_of_commonRay_nonneg
+#print axioms
+  ProximityGap.Frontier.DoorIVCommonRayCoherence.commonRay_not_complexPieceCoherence_le_one_sub

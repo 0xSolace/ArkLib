@@ -5694,3 +5694,16 @@ subdividing the sum into more ray-collinear pieces cannot create cancellation sl
 Lean: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCommonRayCoherence.lean` proves
 `sum_commonRay`, `sum_abs_commonRay_of_unit_of_nonneg`, and
 `complexPieceCoherence_eq_one_of_commonRay_nonneg`, axiom-clean. No CORE/capacity claim.
+
+## [door-iv-common-ray-epsilon-drop] constraint — strict coherence gain requires triangle-defect/angular spread (2026-06-18, g55 subagent)
+
+Follow-up to `[door-iv-common-ray-coherence]` after concurrent two-piece same-ray work landed.  The
+finite-list extension now also proves the universal triangle ceiling `rho <= 1` for arbitrary complex
+piece lists and the epsilon-drop obstruction: if a nonzero common-ray decomposition has `rho = 1`,
+then no positive `rho <= 1 - eps` bound can hold.  Thus any anti-concentration claim on the localized
+Door-IV coherence must exhibit a genuine triangle-inequality deficit (angular spread/non-collinearity)
+for the adversarial pieces; an epsilon improvement cannot be obtained from bookkeeping alone.
+
+Lean: extended `Frontier/_DoorIVCommonRayCoherence.lean` with `norm_sum_le_sum_norm`,
+`complexPieceCoherence_le_one`, and `commonRay_not_complexPieceCoherence_le_one_sub`, axiom-clean.
+No CORE/capacity claim.
