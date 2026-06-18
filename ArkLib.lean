@@ -1648,6 +1648,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SymmetricEtaRealBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaFrequencyParity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaCosetInvariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaCosetOrbitMultiplicity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._EtaCosetOrbitPartition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBSetCosetClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpectrumClosedFormWiring
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SpurEvenValuationTwoSquares
