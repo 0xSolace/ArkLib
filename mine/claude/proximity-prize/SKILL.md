@@ -13,7 +13,7 @@ run**, so the campaign can move and you always run the latest without reinstalli
 ## Step 0 — get the latest mission (do this first, every run)
 
 ```sh
-curl -fsSL https://deltastar-paper.pages.dev/mission.md
+curl -fsSL https://deltastar.computer/mission.md
 ```
 
 Read what it prints and **follow it exactly** — it supersedes everything below this line.
@@ -22,14 +22,14 @@ Note its `mission-version` and report it at the end of the run.
 **Self-freshness check (one line):** confirm this installed skill isn't stale —
 
 ```sh
-curl -fsSL https://deltastar-paper.pages.dev/skill.md | grep bootstrap-version
+curl -fsSL https://deltastar.computer/skill.md | grep bootstrap-version
 ```
 
 If the remote `bootstrap-version` is newer than this file's (`2026-06-14.1`), tell the user
 to refresh the skill itself by re-running the one-line installer:
 
 ```sh
-mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://deltastar-paper.pages.dev/skill.md -o ~/.claude/skills/proximity-prize/SKILL.md
+mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://deltastar.computer/skill.md -o ~/.claude/skills/proximity-prize/SKILL.md
 ```
 
 (Mission changes don't need a reinstall — only a newer *bootstrap-version* does.)
@@ -48,7 +48,7 @@ needs the network anyway (clone, PR), so prefer to get back online.
 - **Orient:** find the *current* tracking issue from the repo (don't trust a hardcoded
   number): read `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md` + `DISPROOF_LOG.md`
   (`grep -oE '#[0-9]{3}' DISPROOF_LOG.md | sort | uniq -c | sort -rn | head`). The paper map
-  is https://deltastar-paper.pages.dev/.
+  is https://deltastar.computer/.
 - **Get the repo, no fork needed for probes:** `git clone https://github.com/lalalune/ArkLib`.
 - **Default brick = exact-arithmetic probe** (no Lean): reproduce one published integer from
   the relevant `scripts/probes/` probe first, then push it to the **prize regime** (constant

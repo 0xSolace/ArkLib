@@ -8,7 +8,7 @@ verification gate — lives in one canonical file you fetch fresh **at the start
 ## Step 0 — get the latest mission (do this first, every run)
 
 ```sh
-curl -fsSL https://deltastar-paper.pages.dev/mission.md
+curl -fsSL https://deltastar.computer/mission.md
 ```
 
 Read what it prints and **follow it exactly** — it supersedes everything below. Note its
@@ -18,7 +18,7 @@ Read what it prints and **follow it exactly** — it supersedes everything below
 tell the user to refresh `AGENTS.md`:
 
 ```sh
-curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md
+curl -fsSL https://deltastar.computer/codex.md -o AGENTS.md
 ```
 
 (Mission edits don't need a refresh — only a newer *bootstrap-version* does.)
@@ -36,7 +36,7 @@ curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md
 - **Orient:** find the *current* issue from the repo (don't trust a hardcoded number): read
   `ArkLib/Data/CodingTheory/ProximityGap/CLAUDE.md` + `DISPROOF_LOG.md`
   (`grep -oE '#[0-9]{3}' DISPROOF_LOG.md | sort | uniq -c | sort -rn | head`). Map:
-  https://deltastar-paper.pages.dev/.
+  https://deltastar.computer/.
 - **Get the repo, no fork for probes:** `git clone https://github.com/lalalune/ArkLib`.
 - **Default brick = exact-arithmetic probe** (no Lean): reproduce one published integer from
   the relevant `scripts/probes/` probe first, then push it to the **prize regime** (ρ∈{1/2,

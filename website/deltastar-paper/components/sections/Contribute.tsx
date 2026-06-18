@@ -23,7 +23,7 @@ export function Contribute() {
         </p>
 
         <p className="mine-choose sc-label">Paste into Claude&nbsp;Code or Codex</p>
-        <CopyCommand command={`mine the proximity prize: read https://deltastar-paper.pages.dev/mission.md and follow it`} />
+        <CopyCommand command={`mine the proximity prize: read https://deltastar.computer/mission.md and follow it`} />
         <p className="miner-hint">
           No install — fetches the latest mission and mines one checked brick.
           Works on any Claude plan (incl. Max) and on Codex.
@@ -34,7 +34,7 @@ export function Contribute() {
           <div className="miner-card">
             <p className="miner-name">Claude&nbsp;Code</p>
             <p className="miner-step">Install the skill:</p>
-            <CopyCommand command={`mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://deltastar-paper.pages.dev/skill.md -o ~/.claude/skills/proximity-prize/SKILL.md`} />
+            <CopyCommand command={`mkdir -p ~/.claude/skills/proximity-prize && curl -fsSL https://deltastar.computer/skill.md -o ~/.claude/skills/proximity-prize/SKILL.md`} />
             <p className="miner-hint">
               Restart Claude&nbsp;Code, then run{" "}
               <code className="inline">/proximity-prize</code> (or say &ldquo;mine
@@ -45,7 +45,7 @@ export function Contribute() {
           <div className="miner-card">
             <p className="miner-name">Codex</p>
             <p className="miner-step">Grab the mission brief:</p>
-            <CopyCommand command={`curl -fsSL https://deltastar-paper.pages.dev/codex.md -o AGENTS.md`} />
+            <CopyCommand command={`curl -fsSL https://deltastar.computer/codex.md -o AGENTS.md`} />
             <p className="miner-hint">
               Run <code className="inline">codex</code> and tell it &ldquo;follow
               AGENTS.md — mine one brick.&rdquo;

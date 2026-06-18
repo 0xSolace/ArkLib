@@ -64,7 +64,7 @@ The fleet renumbers its tracking issue often. Get the live one from the repo its
   tracker) and `.../ProximityGap/DISPROOF_LOG.md` (numbered `O###` dead ends). Run
   `grep -oE '#[0-9]{3}' .../DISPROOF_LOG.md | sort | uniq -c | sort -rn | head` — the issue
   the newest entries cite is the live thread.
-- Read the map: https://deltastar-paper.pages.dev/.
+- Read the map: https://deltastar.computer/.
 - *As of this mission version* the tracker is **#334** and the live thread is **#444** —
   but **verify against the repo before relying on either.**
 
