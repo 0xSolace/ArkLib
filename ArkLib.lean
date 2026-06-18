@@ -1220,6 +1220,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E12ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E13ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E14ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E16ClosedForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL2_E17ClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvL7_OrbitSizeAtBinder
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._B2DoorAOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BGKSOTAInsufficiency
