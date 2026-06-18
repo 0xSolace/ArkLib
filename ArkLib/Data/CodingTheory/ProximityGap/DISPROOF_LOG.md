@@ -18071,3 +18071,66 @@ Survivor: NONE. The `sqrt(log)` excess remains the open BGK/Paley wall, untouche
 `gallagher_vacuous_when_full_residue_occupancy`, `gallagher_informative_needs_residue_avoidance`
 (K2, vacuous). Probes: `scripts/probes/rust/probe_wfH47_sieve_largeset_structure.rs` (exact-int
 residue occupancy `nu(l)=l`), `probe_wfH47_sieve_suptip.rs` (exact-int tip structurelessness).
+
+---
+
+## L5 — FAR-DEPTHS COMPLETENESS: geometric-Langlands / perverse / Deligne-Lusztig / theta sup-norm ALL floored at the second-moment rank — REDUCES-TO-FENCE F10/F2/F1 (2026-06-17)
+
+**Lane L5 (alien/cross completeness critic).** Surveyed every remaining genuinely-distinct
+"far-depth" thread in modern mathematics not yet pulled, against the prize sup
+`M(n) = max_{b!=0}|eta_b|`, `eta_b = sum_{x in mu_n} e_p(bx)`, beta=4, n=2^30. Candidates weighed
+(with literature): Connes NCG/trace, Beilinson-Bloch-Kato heights, Deligne-Lusztig rep theory,
+Springer/Lusztig character sheaves, motivic integration, Arthur trace formula, theta
+correspondence / Weil representation, Eisenstein cohomology, condensed/analytic, geometric
+Langlands, trace of Frobenius on perverse sheaves (Gabber decomposition).
+
+**Literature pulled and assessed at prize regime:**
+- Sawin, *A geometric approach to the sup-norm problem for automorphic forms over function fields*
+  (arXiv:1907.08098): the function-field sup-norm is bounded by the largest stalk-cohomology
+  dimension / polar multiplicities of the characteristic cycle of the Hecke eigensheaf. This is
+  the deepest modern (geometric-Langlands) sup-norm method, STRONGER than classical GL2(Q).
+- Theta/fourth-moment sup-norm (arXiv:2009.07194): the theta kernel REALIZES a FOURTH MOMENT
+  (an L^4 = energy quantity); the sup is controlled via that moment => fence F1/F12 (energy).
+- Finite-field theta correspondence (Aubert, arXiv:2603.25658): Weil-rep character VALUES involve
+  Gauss sums as exact algebraic numbers, NOT analytic upper bounds on a deterministic max.
+- BGK-revisited (arXiv:2401.04756): expository of Bourgain-Glibichuk-Konyagin; ineffective
+  n^{1-o(1)}; Bourgain-Garaev explicit n^{1-175/9437184} only AT n~p^{1/4}; nothing crosses below.
+
+**The meta-obstruction (the completeness result).** Every one of these techniques realizes eta_b
+as a trace of Frobenius of a sheaf F on the b-line and produces a bound of the SAME shape
+  |eta_b| = |sum_i trace(i-th pure constituent at b)| <= (#constituents = effective rank R) * w,
+i.e. bounded by the characteristic-cycle polar multiplicity / rank, times per-point weight w.
+The EXACT second moment `sum_b ||eta_b||^2 = q*|G|` (in-tree, axiom-clean) forces the effective
+rank R = |G| = n. So with bounded weight (w = O(1), the pure-of-weight-0 case the method needs to
+beat trivial) the rank is >= sqrt(n), and the honest rank is the full n, giving the TRIVIAL
+M(n) <= n. The sqrt(n) cancellation (n constituents in general position) is the on-average
+per-moment content = the OPEN BGK/Paley wall.
+
+**Why this kills the whole cluster structurally:** the sheaf realizing the ABELIAN Gauss period
+eta_b is an n-dimensional space of additive characters (rank n); every Frobenius-trace bound is
+LINEAR in that rank. This is the geometric/Langlands shadow of the analytic wall, joined to the
+already-proven H2 fact (the trace-formula geometric side of this abelian period is
+POSITIVE-DEFINITE = energy, nothing to cancel) and T21 (cyclic mu_n => trivial Schur multiplier =>
+crossed-product cb-norm = 1, killing the Connes/NCG operator-algebra route). p=1 mod n => Frob_p=id
+on F_p kills all p-sensitive Galois levers (Deligne-Lusztig eigenvalue-of-Frobenius gives the exact
+SIZE q^a*root-of-unity, a magnitude not an upper bound = F11 sign-reversal).
+
+**EXACT-INTEGER PRE-SCREEN** (`scripts/probes/rust/probe_wfH_L5_charcycle_rank_floor.rs`, prize-
+faithful p=1 mod n, p~n^4, multi-prime, n up to 1024; brute difference-multiset count cross-checked
+against the closed form p*n - n^2 for all n<=64): the effective sheaf rank
+  R2 = (1/(p-1)) sum_{b!=0}||eta_b||^2 = n - n(n-1)/(p-1) = n - O(n^2/p) -> n EXACTLY
+for every prize-faithful prime. NO sub-linear characteristic cycle exists. Confirmed at n=1024
+(deficit < 1e-6).
+
+**Survivor: NONE.** Every far-depth geometric technique adds nothing beyond the rank-n second
+moment — they are the energy in geometric clothing. The sqrt(log) excess is untouched; the floor
+M(n) <= C sqrt(n log(p/n)) stays OPEN, blocked on the same BGK/Paley wall. This is the second
+boundary (after Johnson): the boundary of what relocating the cancellation locus to the
+geometric/sheaf universe can buy = nothing, because the abelian period's sheaf has rank n.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, real lake build OK):**
+`Frontier/_wfHL5_GeometricSupNormCharCycleFloor.lean` — `geometric_supnorm_rank_floor`
+(sqrt|G| <= R*w for any rank-times-weight bound), `effective_rank_eq_card`
+(R = n exactly from the second moment), `no_geometric_bound_below_sqrt_card` (sub-sqrt-n geometric
+bound contradicts the second moment). Builds on `_P3ParamFamilyConductorRankFloor`. Probe:
+`scripts/probes/rust/probe_wfH_L5_charcycle_rank_floor.rs`.
