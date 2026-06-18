@@ -1118,6 +1118,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ListAtBinomialExtremalTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LiuZhouSplitRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LogRatioTowerBoundedIncrement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LogRatioTowerExpForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MuNIteratedDoubling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MultEmptyFiberBelowBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MultUniformAgreementSizeCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.MultUpperAgreementBinom
