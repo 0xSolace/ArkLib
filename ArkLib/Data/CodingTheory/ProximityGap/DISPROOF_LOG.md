@@ -17873,3 +17873,56 @@ moment), `smallpoint_hypothesis_unmet` + `avg2_exceeds_one` (premise FALSE: avg 
 arbitrarily large House), `coupled_energy_is_lower_bound` (F11 survives the coupling),
 `berkovich_maxmod_is_nonarch` (F3), `Req_assertion_is_circular` (F0). Probe:
 `scripts/probes/rust/probe_wfH_L3_berkovich_equidist.rs` (exact-int; House/bulk growing in n).
+
+---
+
+## #444 lane L2 (H47) — Selberg / Gallagher larger sieve / parity problem on the large-value set: REDUCES-TO-FENCE F0 + VACUOUS-AT-PRIZE
+
+**Date:** 2026-06-17. **Verdict: NO non-reducing handle on the sup `M(n)=max_b|eta_b|`.** Two
+independent kills, both axiom-clean.
+
+The lane asks whether a sieve STRUCTURALLY DIFFERENT from the L^2 large sieve (= Parseval = F1,
+already collapsed in `LargeSieveParsevalCollapse.lean` and `_wfA02_multiplicative_largesieve.lean`)
+— specifically the Selberg upper-bound sieve, Gallagher's LARGER sieve (which bounds `|A|` via
+congruence/residue-class structure, not via L^2), or Bombieri-Vinogradov machinery — can detect /
+cap the large-value frequency set and thereby bound the prize sup.
+
+**(K1) Parity / cardinality-vs-sup obstruction (F0).** Every sieve is a tool for bounding the
+CARDINALITY of a set (or averaged L^1/L^2 estimates over a modulus family). The parity problem
+(Selberg 1949; Tao 2007, "Open question: the parity problem in sieve theory") is the canonical
+statement that sieves cannot see finer-than-cardinality information. But `M = max_b|eta_b|` is a
+POINTWISE functional: `M > T` iff the level set `A_T={b:|eta_b|>T}` is NONEMPTY. A cardinality
+upper bound `|A_T| <= N` with any `N >= 1` is consistent with `A_T != empty`, hence places NO upper
+bound on `M`. Only `|A_T| = 0` (empty) would bound `M` — but the Markov/2nd-moment count
+`|A_T| <= (qn-n^2)/T^2 >> 1` at the floor `T ~ sqrt(n log m)`. Conservation law F0: the count is a
+2nd-order Parseval datum (Johnson scale), blind to the rare-event tail separating the worst `b`
+from the RMS. (Lean: `largerSieve_count_does_not_bound_sup`, `sup_le_iff_levelset_card_zero`.)
+
+**(K2) Gallagher larger-sieve PRECONDITION FAILS (vacuous).** Gallagher's bound
+`|A| <= (sum log l - log N)/(sum (log l)/nu(l) - log N)` is nontrivial ONLY when the set occupies
+FEW residue classes `nu(l) << l` mod many primes `l` (as the squares do, `nu(l)=(l+1)/2`). EXACT
+INTEGER PROBE (`probe_wfH47_sieve_largeset_structure.rs`, beta=4, n=16/32/64/128/256, p~n^4):
+the large-value set `A_T` (a union of mu_n-cosets, since eta is coset-constant) is EQUIDISTRIBUTED
+in residue classes — `nu(l) = l` EXACTLY for every `l in {3,5,7,11,13,17,19,23}` at every
+top-fraction (top 1%/5%/10%). The sup-TIP itself (top-50 cosets, `probe_wfH47_sieve_suptip.rs`) is
+spread over all residue classes mod `l` AND all coset-index parities (`j mod 2 ~ 25/25`,
+`j mod 4 ~ uniform`). With `nu(l)=l` the Gallagher saving sum is minimal and the bound is the
+trivial `|A| <= N`: no cap. The condition `b -> |eta_b|` is a GENERIC ANALYTIC condition, not a
+congruence condition; the only multiplicative structure (`|eta_{ub}|=|eta_b|`, `u in mu_n`) is
+`mod-l`-equidistributed for `l ∤ n`. (Lean: `gallagher_vacuous_when_full_residue_occupancy`,
+`gallagher_informative_needs_residue_avoidance`.)
+
+Bombieri-Vinogradov is averaged-over-moduli (no individual/pointwise control — standard) and
+inherits both kills. Matches the in-tree lit finding (`proximity-lit-sweep-...-info-we-lack.md`):
+Darbar-Kerr-Munsch-Shparlinski (arXiv:2604.02960, Thm 2.7, on Heath-Brown 1979) gives the MEAN over
+a character subgroup `= sqrt(n)` (the Parseval floor); the MAX can be `sqrt(A)` larger — "the
+L^1->L^infty gap IS the entire open problem."
+
+Survivor: NONE. The `sqrt(log)` excess remains the open BGK/Paley wall, untouched.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, `pg-iterate` OK 30s):**
+`Frontier/_wfH47_SelbergLargerSieveLargeValues.lean` — `sup_gt_iff_levelset_nonempty`,
+`largerSieve_count_does_not_bound_sup`, `sup_le_iff_levelset_card_zero` (K1, F0);
+`gallagher_vacuous_when_full_residue_occupancy`, `gallagher_informative_needs_residue_avoidance`
+(K2, vacuous). Probes: `scripts/probes/rust/probe_wfH47_sieve_largeset_structure.rs` (exact-int
+residue occupancy `nu(l)=l`), `probe_wfH47_sieve_suptip.rs` (exact-int tip structurelessness).
