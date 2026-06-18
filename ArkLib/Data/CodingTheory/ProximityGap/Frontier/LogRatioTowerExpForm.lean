@@ -82,6 +82,22 @@ theorem tower_le_exp_sqrtBaseline_mul_of_excess_sum (a : ℕ) (R : ℝ)
     Mtow a ≤ Real.exp ((a : ℝ) * (Real.log 2 / 2) + R) * Mtow 0 := by
   exact tower_le_exp_sqrtBaseline_mul a R hpos ((logTower_excess_eq (Mtow := Mtow) a R).mpr hexcess)
 
+/-- **Linear-excess exponentiation recovers the trivial exponential bound.** Combining the
+centered-excess wall `Σ(Δ_i - ½log2) ≤ (a/2)log2` with the square-root-baseline exponential form
+collapses to `Mtow a ≤ exp(a log2) · Mtow 0`. This is the square-root-baseline bookkeeping version
+of the same wall: bounded increments leave LINEAR excess, hence recover only the trivial `2^a`
+scale rather than the prize-scale `2^(a/2)·polylog`. -/
+theorem tower_le_exp_linearExcess_mul (a : ℕ)
+    (hpos : ∀ i, 0 < Mtow i)
+    (hdouble : ∀ i, Mtow (i + 1) ≤ 2 * Mtow i) :
+    Mtow a ≤ Real.exp ((a : ℝ) * Real.log 2) * Mtow 0 := by
+  have hexcess := logTower_excess_le_half_card_mul_log2 (Mtow := Mtow) a hpos hdouble
+  have h := tower_le_exp_sqrtBaseline_mul_of_excess_sum (Mtow := Mtow) a
+    ((a : ℝ) * (Real.log 2 / 2)) hpos hexcess
+  have harg : (a : ℝ) * (Real.log 2 / 2) + (a : ℝ) * (Real.log 2 / 2)
+      = (a : ℝ) * Real.log 2 := by ring
+  simpa [harg] using h
+
 /-- **The un-logged trivial bound, DERIVED from the log-side lemma.** Exponentiating
 `LogRatioTowerBoundedIncrement.logTower_le_card_mul_log2` (which gives
 `log(Mtow a) − log(Mtow 0) ≤ a·log 2`) recovers `Mtow a ≤ 2^a · Mtow 0`, given positivity to invert
@@ -107,3 +123,4 @@ end ProximityGap.Frontier.LogRatioTowerExpForm
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.LogRatioTowerExpForm.tower_le_exp_sqrtBaseline_mul
 #print axioms ProximityGap.Frontier.LogRatioTowerExpForm.tower_le_exp_sqrtBaseline_mul_of_excess_sum
+#print axioms ProximityGap.Frontier.LogRatioTowerExpForm.tower_le_exp_linearExcess_mul
