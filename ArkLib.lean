@@ -1506,6 +1506,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseHypercontractive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseLinearFormDecoupling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseMartingaleConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhasePairwiseToSubGaussian
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PigeonholeWraparoundOnset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PlateauObjectDisentangle
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PlateauWidthImprimitivityMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PrimeCapacityUncertainty
