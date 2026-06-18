@@ -62,9 +62,26 @@ theorem chebotarev_obstruction :
     (7 : ℕ) ≡ 31 [MOD 24] ∧ (∃ x : ZMod 31, f x = 0) ∧ (∀ x : ZMod 7, f x ≠ 0) :=
   ⟨seven_congr_31_mod_24, f_root_mod_31, f_no_root_mod_7⟩
 
+/-- **No mod-24 classifier for the witness cofactor.**  This packages the previous three facts in
+the exact functional form needed by later transfer arguments: there is no predicate on residue classes
+mod `24` whose value simultaneously decides root-existence of the witness cofactor at the two primes
+`7` and `31`.  They are the same residue class mod `24`, but the root predicate is false at `7` and
+true at `31`, so this non-abelian collision contribution cannot be absorbed by a cyclotomic-order
+congruence rule at the first modulus where the `μ₈` single-carrier route would live. -/
+theorem no_mod24_root_classifier :
+    ¬ ∃ P : ZMod 24 → Prop,
+      (P (7 : ZMod 24) ↔ ∃ x : ZMod 7, f x = 0) ∧
+        (P (31 : ZMod 24) ↔ ∃ x : ZMod 31, f x = 0) := by
+  rintro ⟨P, h7, h31⟩
+  have hsame : (7 : ZMod 24) = (31 : ZMod 24) := by decide
+  have hP31 : P (31 : ZMod 24) := h31.mpr f_root_mod_31
+  have hP7 : P (7 : ZMod 24) := by simpa [hsame] using hP31
+  exact (h7.mp hP7).elim f_no_root_mod_7
+
 end ProximityGap.Frontier.CharPChebotarev
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.CharPChebotarev.f_no_root_mod_7
 #print axioms ProximityGap.Frontier.CharPChebotarev.f_root_mod_31
 #print axioms ProximityGap.Frontier.CharPChebotarev.chebotarev_obstruction
+#print axioms ProximityGap.Frontier.CharPChebotarev.no_mod24_root_classifier
