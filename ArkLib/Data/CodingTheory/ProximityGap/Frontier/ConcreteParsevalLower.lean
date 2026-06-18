@@ -151,6 +151,34 @@ theorem worstPeriod_ge_sqrt_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive
   rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
   exact Real.sqrt_le_sqrt hsq
 
+/-- **Deeper prize-regime numeric floor (squared).** If `q ≥ 4n`, the same Parseval ratio gives
+`M(μ_n)² ≥ 3n/4`. This is the next clean constant rung after `worstPeriod_sq_ge_half_card`:
+`q ≥ 4n ⇒ 4(q−n) ≥ 3(q−1)`, so `(q−n)/(q−1) ≥ 3/4`. Still only the unconditional LOWER side. -/
+theorem worstPeriod_sq_ge_three_quarters_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hreg : 4 * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    (3 * (G.card : ℝ)) / 4 ≤ (worstPeriod ψ G hne) ^ 2 := by
+  have hsq := worstPeriod_sq_ge_parseval hψ G hne hq1
+  have hqm1 : (0 : ℝ) < (Fintype.card F : ℝ) - 1 := by linarith
+  have hnn : (0 : ℝ) ≤ (G.card : ℝ) := Nat.cast_nonneg _
+  have hfloor : (3 * (G.card : ℝ)) / 4
+      ≤ (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    rw [le_div_iff₀ hqm1]
+    nlinarith [hnn, hreg, hqm1]
+  linarith [hfloor, hsq]
+
+/-- **Deeper prize-regime numeric floor (root form).** `√(3n/4) ≤ M(μ_n)` whenever `q ≥ 4n`.
+This sharpens the clean Parseval lower constant deeper in the thin prize regime, but remains a lower
+bound only and does not touch the BGK/Paley upper-bound core. -/
+theorem worstPeriod_ge_sqrt_three_quarters_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hreg : 4 * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((3 * (G.card : ℝ)) / 4) ≤ worstPeriod ψ G hne := by
+  have hsq := worstPeriod_sq_ge_three_quarters_card hψ G hne hq1 hreg
+  have hMnn : 0 ≤ worstPeriod ψ G hne := worstPeriod_nonneg ψ G hne
+  rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
+  exact Real.sqrt_le_sqrt hsq
+
 end ProximityGap.Frontier.ConcreteParsevalLower
 
 /-! ## Axiom audit -/
@@ -159,3 +187,5 @@ end ProximityGap.Frontier.ConcreteParsevalLower
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_parseval
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_half_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_half_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_three_quarters_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_three_quarters_card
