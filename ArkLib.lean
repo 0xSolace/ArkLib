@@ -1316,6 +1316,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroEnergyClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroLamLeungSlackLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroMGFBesselBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroOpenCoreSmallR
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroRoomDominance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroStepRatioMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroWickEnergy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ChebotarevAlternantClosedForm
