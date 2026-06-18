@@ -52,6 +52,55 @@ axiom-clean `{propext,Classical.choice,Quot.sound}`).
 
 ---
 
+## 2026-06-17 — LANE K3 "Berry–Tabor / Poisson spacing statistics of the Gauss-period spectrum → EVT for the sup M(n)" REDUCES-TO-FENCE F0 (+ F12 at the threshold) (probe_wfH_K3_berry_tabor_evt.rs, verify_survivors_d5d8.rs, _wfHK3_berry_tabor_poisson_evt.lean)
+
+LANE (cluster: quantum/physics — spectral statistics / Berry–Tabor / determinantal repulsion). Ask:
+the period spectrum `{|η_b|}` is **Poisson-spaced** (integrable, no level repulsion; in-tree D8); a
+Poisson process has a clean extreme-value law `max ≈ scale·√(2 log N)`. Does the *proven* Poisson /
+Berry–Tabor spacing give the floor `M(n)≤C√(n log(p/n))` DIRECTLY via EVT, with a NON-energy
+independence/mixing input that DODGES the dead fence F12 (bounded-K energy transfer)?
+
+MEASURED (exact integer, multi-prime, prize-faithful `p≡1 mod n`, `μ_n` proper, `β≈4`; NOT float-FFT;
+`probe_wfH_K3_berry_tabor_evt.rs`, de-tied/unfolded level spacing):
+- **T1 — Poisson confirmed.** Gap-ratio `⟨r⟩` of the SORTED DISTINCT magnitudes = **0.387, 0.392,
+  0.390, 0.421** at (n=64,m=2.5e5),(64,4.1e6),(128,2.0e6),(256,1.6e7) — dead-on Poisson `0.386`, NOT
+  GUE `0.603`. The spectrum is genuinely integrable / level-repulsion-free (Berry–Tabor). `M/√(n log
+  m)` plateaus at 1.24–1.30.
+- **T2 — DECISIVE: spacing is BLIND to the max.** Multiplying ONLY the single largest value by `K`
+  (one "bad coset" resonance) leaves `⟨r⟩ = 0.3869` **identically unchanged** for K=1,2,5,20,100,
+  while the **max scales exactly ×K**. A family can be Poisson-spaced with an arbitrarily inflated
+  max: the bulk spacing statistic carries ZERO information about the single tail event that IS the
+  prize sup.
+- **T3 — the rigorous-EVT upgrade is F12.** The EVT threshold `u_n=√(2n log m)` sits at tail-depth
+  `√(2 log m) ≈ 5` s.d. (`#{|η_b|≥u_n}=0` at testable scales; max comes in below the iid threshold).
+  Rigorous Poisson EVT (Leadbetter: max⇒Gumbel iff long-range mixing `D(u_n)` AND local
+  anti-clustering `D'(u_n)`, extremal index θ=1, hold AT u_n) requires controlling the law to
+  moment-order `r ≈ (√(2 log m))²/2 = log m` — the effective CLT at depth `log m` = `E_r≤(2r-1)‼n^r`
+  at `r≈log m` = BCHKS 1.12 = **F12** (DEAD at β=4, exact-arithmetic refuted).
+
+RESEARCHED (cite): Berry–Tabor conjecture (Marklof, ICMP2000 survey; Poisson spacing for integrable
+systems). Leadbetter `D(u_n)/D'(u_n)` mixing + anti-clustering conditions for stationary-sequence EVT
+(Leadbetter 1974 PTRF, 1983 "Extremes and local dependence"); extremal index θ — θ=1 ⇔ isolated
+exceedances (needs tail/threshold control, NOT bulk spacing). Rudnick–Sarnak pair-correlation; the
+lattice-points-on-circles Poisson-spacing theorem (Bourgain–Rudnick–Sarnak / arXiv:2112.08522,
+Invent. 2025) is explicitly a LOCAL BULK nearest-neighbour result, says nothing about a maximum. No
+proven mixing/independence of `η_b` across cosets at the threshold level exists — only the
+QUALITATIVE joint Gauss-sum equidistribution (Rojas-León 2207.12439), a q→∞ averaged limit, not the
+effective uniform tail-depth-`log m` control rigour needs.
+
+VERDICT = REDUCES-TO-FENCE **F0** (the Poisson/Berry–Tabor spacing is a BULK statistic, structurally
+blind to the rare-event tail sup — `⟨r⟩` is literally invariant under a single-coordinate tail warp
+that sends the max → ∞; this is the conservation law in spacing-statistics dialect) **+ F12** (the
+only path from spacing to a rigorous max — Leadbetter `D'(u_n)` anti-clustering at the threshold —
+needs the dead threshold-depth `r≈log m` energy/CLT input). No non-energy EVT input survives: the
+spacing law is real but tail-blind. **Floor stays OPEN** — method-boundary verdict, not a closure or
+refutation. Lean: `_wfHK3_berry_tabor_poisson_evt.lean` (`spacing_blind_to_sup` = the warp
+obstruction; `evt_threshold_depth_is_logm` = the F12 reduction; 5 theorems axiom-clean
+`{propext,Classical.choice,Quot.sound}`, no sorryAx). Distinct from K2 (log-correlation/FHK gate):
+K3 is the spacing-vs-tail (bulk-vs-max) distinction.
+
+---
+
 ## 2026-06-17 — LANE H2 "Kuznetsov / Petersson / relative-trace-formula amplification for the Gauss-period sup" REDUCES-TO-FENCE F5/F1 (probe_wfH2_kuznetsov_rtf_geometric_side.py, _wfH2_kuznetsov_rtf_geometric_side.lean)
 
 LANE (cluster: automorphic / amplification — flagged the LEAST-conservation-blind by the manifesto,
