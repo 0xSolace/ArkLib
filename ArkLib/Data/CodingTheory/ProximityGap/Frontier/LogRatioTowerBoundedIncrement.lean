@@ -7,6 +7,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.LiuZhouSplitRecursion
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Algebra.BigOperators.Intervals
 
+set_option linter.style.longLine false
+
 /-!
 # The log-ratio tower has BOUNDED increments, the Azuma/Freedman prerequisite (#444)
 
@@ -146,6 +148,27 @@ theorem logTower_excess_eq (a : ℕ) (R : ℝ) :
       ← logTower_telescope a]
   constructor <;> intro h <;> linarith
 
+/-- **Bounded increments give only a linear excess ceiling.** From `Δ_i ≤ log 2`, each centered
+increment `Δ_i − ½log 2` is at most `½log 2`; summing gives
+`Σ_{i<a}(Δ_i − ½log 2) ≤ (a/2) log 2`. This formalizes the wall stated in the file header: the
+bounded-increment theorem by itself supplies a LINEAR excess allowance, while the prize needs the
+excess to be sublinear (`O(log log(p/2^a))`). No mean-drift control is obtained here. -/
+theorem logTower_excess_le_half_card_mul_log2 (a : ℕ)
+    (hpos : ∀ i, 0 < Mtow i)
+    (hdouble : ∀ i, Mtow (i + 1) ≤ 2 * Mtow i) :
+    (∑ i ∈ Finset.range a,
+        ((Real.log (Mtow (i + 1)) - Real.log (Mtow i)) - Real.log 2 / 2))
+      ≤ (a : ℝ) * (Real.log 2 / 2) := by
+  calc
+    (∑ i ∈ Finset.range a,
+        ((Real.log (Mtow (i + 1)) - Real.log (Mtow i)) - Real.log 2 / 2))
+        ≤ ∑ _i ∈ Finset.range a, Real.log 2 / 2 :=
+          Finset.sum_le_sum (fun i _ => by
+            have hΔ := logRatio_le_log2 i (hpos i) (hpos (i + 1)) (hdouble i)
+            linarith)
+    _ = (a : ℝ) * (Real.log 2 / 2) := by
+          rw [Finset.sum_const, Finset.card_range, nsmul_eq_mul]
+
 /-- **The predictable quadratic-variation bound (Freedman prerequisite).** Freedman's martingale
 concentration inequality — the sharper sibling of Azuma the file header invokes — consumes not just
 bounded increments but the PREDICTABLE QUADRATIC VARIATION `⟨S⟩_a = ∑_{i<a} Δ_i²`. Since each
@@ -219,4 +242,5 @@ theorem logRatio_le_log2_of_M (ψ : AddChar F ℂ) {A B : Finset F}
 
 end ProximityGap.Frontier.LogRatioTowerBoundedIncrement
 
+#print axioms ProximityGap.Frontier.LogRatioTowerBoundedIncrement.logTower_excess_le_half_card_mul_log2
 #print axioms ProximityGap.Frontier.LogRatioTowerBoundedIncrement.logTower_sq_le_log2_mul
