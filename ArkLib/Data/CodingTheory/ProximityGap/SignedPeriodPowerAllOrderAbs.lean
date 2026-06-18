@@ -127,9 +127,32 @@ theorem signedPeriodPow_re_abs_le {S : Finset F} (r : ℕ) {M : ℝ}
   rw [hcoe, Complex.norm_real] at habs
   exact habs
 
+/-- **M-LOWER bound from the SIGNED residual: `M^r ≥ |q·W_r − |S|^r| / (q−1)` for EVERY `r` (odd incl.).**
+
+The consumer form of `signedPeriodPow_re_abs_le`: dividing the two-sided bracket by the positive count
+`q − 1` of nonzero characters solves for `M^r` and lower-bounds it by the signed residual. For ODD `r`
+this is genuinely new (the even floor's `signedPeriodPow_le_card_mul_max_pow` only reaches even `r`):
+any odd-order signed zero-sum residual `q·W_r − n^r` — which is `≠ 0` precisely via the `F_q`-reduction
+(`OddZeroSumCountVanish`: it is `0` over ℂ) — FORCES the period max `M` up. So the deep odd `F_q`-only
+zero-sum coincidences, the located locus of the BGK wall, are exactly the source of an `M`-lower push.
+Honest scope: a LOWER bound on `M` (the prize wants an UPPER bound), NOT a CORE closure. CORE OPEN. -/
+theorem max_pow_ge_abs_signed_div {S : Finset F} (r : ℕ) {M : ℝ}
+    (hpos : 0 < ((univ.erase (0 : AddChar F ℂ)).card : ℝ))
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    |((Fintype.card F : ℝ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℝ) ^ r)|
+        / ((univ.erase (0 : AddChar F ℂ)).card : ℝ)
+      ≤ M ^ r := by
+  rw [div_le_iff₀ hpos]
+  have h := signedPeriodPow_re_abs_le (S := S) r hM
+  linarith [h]
+
 -- Axiom audit (full-env `lean` confirms ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms abs_period_pow_le_max_pow
 #print axioms abs_signedPeriodPow_le_card_mul_max_pow
 #print axioms signedPeriodPow_re_abs_le
+#print axioms max_pow_ge_abs_signed_div
 
 end ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
