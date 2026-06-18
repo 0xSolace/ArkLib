@@ -1,5 +1,48 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — LANE L4 "Gowers-norm inverse theorem / nilsequences / quadratic Fourier (Green–Tao–Ziegler) on the SUP M(n)" REDUCES-TO-FENCE F1/F7 (energy) + F0 (conservation) + F11 (fold synonym) (probe_wfH_L4_gowers{,_fold}.py, _wfL4_gowers_quadratic_fold.lean)
+
+LANE (cluster: alien/cross — additive-combinatorics frontier). Ask: does the inverse theorem for the
+Gowers `U^k` norms (Green–Tao–Ziegler, Ann. of Math. 176 (2012) 1231–1372, arXiv:1009.3998;
+finite-field case Tao–Ziegler / Bergelson–Tao–Ziegler, Tao 254B Notes 5) — which detects correlation
+with degree-`(k−1)` polynomial phases / `(k−1)`-step nilsequences BEYOND the linear Fourier spectrum
+— give a genuinely non-second-order, non-linear handle on the SUP `M(n)=max_{b≠0}|η_b|`,
+`η_b=Σ_{x∈μ_n}e_p(bx)`, that dodges the dead energy route (F1/F12)? RESEARCHED (cite, verified):
+
+(i) **U² IS the energy / the η_b themselves.** `‖f‖_{U²}^4 = Σ_ξ|f̂(ξ)|^4` (Tao 254B Notes 5; Green
+*Additive Combinatorics* ch. 5). For `f=1_{μ_n}`, `f̂(b)=η_b/p`, so `‖1_{μ_n}‖_{U²}^4 = E₂(μ_n)/p³`
+= additive energy; the U² inverse theorem returns the linear phase `e_p(bx)`, i.e. the `η_b`. The
+4th absolute moment of these Gaussian periods is computed via Fermat-curve point counts
+(Garcia–Lorenz–Todd, arXiv:2112.13886) and explicitly controls the moment, NOT the sup. = fence F1/F7.
+
+(ii) **Monotonicity runs the WRONG way.** `U²≤U³≤U⁴≤…` (Tao 254B Notes 3 Ex.19) and `‖f̂‖_∞≤‖f‖_{U²}`,
+with `M=p·‖f̂‖_∞`. So `M ≤ p·‖f‖_{U²} ≤ p·‖f‖_{U^k}` ∀k≥2: each higher norm is LARGER ⇒ a LOOSER
+ceiling. No `U^k` (k>2) sharpens the energy bound on a single coefficient. = fence F0 (the √log tail
+is invisible to fixed moments). The inverse theorem is moreover an EXISTENCE/lower-bound tool, not
+an upper bound — it cannot cap `M` at all (Tao 254B Notes 5 Prop. 6: a fn can have `U^{d+1}=1` with
+negligible correlation to all low-degree classical polynomials).
+
+(iii) **THE decisive mechanism (this file): the quadratic obstruction FOLDS to the same wall.** The
+one non-reducing hope was `1_{μ_n}` correlating with a genuine quadratic phase `e_p(cx²)` MORE than
+any linear phase. EXACT-INTEGER probe (β=4 where feasible, 4≤n≤64): the quadratic correlation
+`Q(n)=max_{c≠0}|Σ_{x∈μ_n}e_p(cx²)|` DOES exceed `M(n)` and the gap GROWS (`Q/M = 1.06,1.36,1.43,1.62`
+at `n=8,16,32,64`) — so the terse prior "it's just the wall" (N17) needed a mechanism. The mechanism:
+`x↦x²` is a 2-to-1 hom of `μ_n` onto the index-2 subgroup `μ_{n/2}` (probe: `μ_n² = 2·μ_{n/2}` EXACTLY),
+so `Σ_{x∈μ_n}e_p(cx²) = 2·Σ_{y∈μ_{n/2}}e_p(cy) = 2·η^{(μ_{n/2})}_c`. The probe confirms the EXACT
+identity `Q(n)=2·M(μ_{n/2})` to machine precision (`|Q−2M_half|=0`) for `n=8,16,32,64`. So the U³
+"non-linear" obstruction IS twice the SAME BGK/Paley wall over the half-size 2-power subgroup `μ_{n/2}`;
+U⁴,U⁵,… iterate the fold to `μ_{n/4}`,`μ_{n/8}`,…, never leaving the family. = fence F11 (object-change
+synonym). The inverse theorem fed `1_{μ_n}` returns a Gauss period over a smaller 2-power subgroup.
+
+VERDICT = REDUCES-TO-FENCE F1/F7 + F0 + F11. Lean (`_wfL4_gowers_quadratic_fold.lean`, axiom-clean
+`[propext,Classical.choice,Quot.sound]`, real `lake build` 8313 jobs): `quadratic_phase_folds_to_half`
+(the exact 2-to-1 fold engine: a phase pulled through any exactly-2-to-1 hom sums to `2×` its image
+sum), `quadratic_correlation_le_two_mul_half_sup` (`Q ≤ 2·M_half` magnitude form), and
+`gowers_higher_norm_no_improvement` (`Sup≤U₂≤U₃ ⇒ Sup≤U₃`, the looser-ceiling no-go). Probes
+`scripts/probes/probe_wfH_L4_gowers{,_fold}.py` (exact integer fold-set equality + numpy argmax).
+Confirms & sharpens the terse in-tree verdicts N17 (GTZ inverse Gowers REDUCES), E8 (μ_n phase
+collapses to linear), and DISPROOF_LOG "U² Gowers = E₂ = Johnson".
+
 ## 2026-06-17 — LANE L1 "Hardy–Littlewood circle method / Weyl differencing / Vinogradov minor-arc on the SUP M(n)" REDUCES-TO-FENCE F1/F12 (+F0) (probe_wfHL1_circle_method_supform.rs, _wfHL1_circle_method_supform.lean)
 
 LANE (cluster: alien/cross — analytic number theory). Ask: does a major/minor-arc decomposition,
