@@ -181,6 +181,24 @@ theorem kappa10_eq (n : ℝ) :
       + 22680 * n ^ 5 = 57456 * n := by
   ring
 
+/-- **Exact r=4 Wick slack.**  The depth-4 char-0 closed form is below the Wick budget by
+`630n³ − 1435n² + 1155n`.  This is the arithmetic identity used by `E4_le_wick`, recorded as a
+separate reusable bookkeeping lemma so later DC-Wick slack arguments can rewrite the gap exactly. -/
+theorem E4_wick_slack_eq (n : ℝ) :
+    105 * n ^ 4 - (105 * n ^ 4 - 630 * n ^ 3 + 1435 * n ^ 2 - 1155 * n)
+      = 630 * n ^ 3 - 1435 * n ^ 2 + 1155 * n := by
+  ring
+
+/-- **Exact r=5 Wick slack in the dyadic-valid shifted form.**  The depth-5 Wick gap factors as
+`n` times a polynomial in `t = n - 2` with positive coefficients.  This packages the positivity
+certificate used by `E5_le_wick`; in the dyadic regime `n = 2^μ ≥ 2`, every displayed term is
+nonnegative and the constant term is strictly positive. -/
+theorem E5_wick_slack_shift_eq (n : ℝ) :
+    945 * n ^ 5
+        - (945 * n ^ 5 - 9450 * n ^ 4 + 39375 * n ^ 3 - 77175 * n ^ 2 + 57456 * n)
+      = n * (9450 * (n - 2) ^ 3 + 17325 * (n - 2) ^ 2 + 33075 * (n - 2) + 14994) := by
+  ring
+
 /-- **The r=4 energy Wick-budget rung: `E₄ ≤ 105 n⁴`** for `n ≥ 1** (`105 = 7‼`).  The slack
 `105n⁴ − E₄ = 630n³ − 1435n² + 1155n = n(630n² − 1435n + 1155)` is positive: the quadratic
 `630n² − 1435n + 1155` has negative discriminant (`1435² − 4·630·1155 < 0`), so it is positive for
@@ -212,5 +230,7 @@ end ArkLib.ProximityGap.Frontier.Kappa8Kappa10
 #print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.B10_eq_E5
 #print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.kappa8_eq
 #print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.kappa10_eq
+#print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.E4_wick_slack_eq
+#print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.E5_wick_slack_shift_eq
 #print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.E4_le_wick
 #print axioms ArkLib.ProximityGap.Frontier.Kappa8Kappa10.E5_le_wick
