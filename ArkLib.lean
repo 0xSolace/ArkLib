@@ -1684,6 +1684,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedTower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicMomentAnnihilation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._UnconditionalWrapRungR3
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._UnconditionalWrapRungR4Onset
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ValuationClassBarrier
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VietaScopeGapNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._VinogradovDecouplingVacuous
