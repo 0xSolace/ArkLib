@@ -247,6 +247,30 @@ theorem trinomial_incidence_card_le_gcd_natDegree_unpunctured {n : ℕ} (S : Fin
   exact (Finset.card_le_card hsubset).trans
     (trinomial_incidence_card_le_gcd_natDegree S c1 c2 hjk hji hik hSn)
 
+/-- **Puncturing is exactly redundant on `μ_n` when `n > 0`.** The nonzero guard in the
+trinomial incidence set is not merely harmless for cardinal bounds: over any finite `S ⊆ μ_n`, the
+punctured and unpunctured vanishing filters are equal. This packages the precise subset/equality
+relation behind the caller-facing C71 unpunctured incidence lemmas. -/
+theorem trinomial_incidence_filter_punctured_eq_unpunctured {n : ℕ} (S : Finset F) (c1 c2 : F)
+    {i j k : ℕ} (hn : 0 < n) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)
+      = S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0) := by
+  ext x
+  simp only [mem_filter]
+  constructor
+  · intro hx
+    exact ⟨hx.1, hx.2.2⟩
+  · intro hx
+    exact ⟨hx.1, ne_zero_of_pow_eq_one hn (hSn x hx.1), hx.2⟩
+
+/-- Cardinal form of `trinomial_incidence_filter_punctured_eq_unpunctured`: on positive-order
+`μ_n`, adding the nonzero guard to a trinomial vanishing-incidence set does not change its size. -/
+theorem trinomial_incidence_card_punctured_eq_unpunctured {n : ℕ} (S : Finset F) (c1 c2 : F)
+    {i j k : ℕ} (hn : 0 < n) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ≠ 0 ∧ x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card
+      = (S.filter (fun x => x ^ i - c1 * x ^ j - c2 * x ^ k = 0)).card := by
+  rw [trinomial_incidence_filter_punctured_eq_unpunctured S c1 c2 hn hSn]
+
 /-- **The caller-facing bare span cap for the 3-term strata.** The sharp gcd container above
 immediately implies the robust polynomial-method fallback bound: a genuine trinomial direction of
 span `i-k` has at most `i-k` nonzero incidences on any finite `S ⊆ μ_n`. This is the exact bound
@@ -287,11 +311,17 @@ theorem trinomial_incidence_card_le_span_unpunctured {n : ℕ} (S : Finset F) (c
 end ArkLib.ProximityGap.C71TrinomialIncidence
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.ne_zero_of_pow_eq_one
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_root_iff_dehom
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinDirPoly_ne_zero
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinGcd_natDegree_le
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_gcd_natDegree_unpunctured
-#print axioms ArkLib.ProximityGap.C71TrinomialIncidence.trinomial_incidence_card_le_span_unpunctured
+namespace ArkLib.ProximityGap.C71TrinomialIncidence
+
+#print axioms ne_zero_of_pow_eq_one
+#print axioms trinomial_root_iff_dehom
+#print axioms trinDirPoly_ne_zero
+#print axioms trinomial_incidence_card_le_gcd_natDegree
+#print axioms trinGcd_natDegree_le
+#print axioms trinomial_incidence_card_le_span
+#print axioms trinomial_incidence_filter_punctured_eq_unpunctured
+#print axioms trinomial_incidence_card_punctured_eq_unpunctured
+#print axioms trinomial_incidence_card_le_gcd_natDegree_unpunctured
+#print axioms trinomial_incidence_card_le_span_unpunctured
+
+end ArkLib.ProximityGap.C71TrinomialIncidence
