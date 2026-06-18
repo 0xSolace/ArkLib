@@ -5541,3 +5541,30 @@ Lean: `ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_o
 VERDICT: this does NOT close CORE. It refutes the naive/raw index-2 coset-half anti-concentration lever: the worst-b coset-half coherence has no upper slack because the split is negation-stable and same-sign cases saturate rho=1. Any surviving door-(iv) theorem must use a finer/non-negation-stable decomposition or a different arithmetic statistic of {b*x^m}; the two-half coherence by itself cannot be bounded below 1.
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## [door-iv-multipiece-sign-coherence] negation-stable refinements still have sign-saturation, so subdivision alone does not create phase anti-concentration (2026-06-18, g55)
+
+Lane: Door-(iv) localized coherence object, Lane 1/3 constraint.  After the raw index-2 split saturated
+at `rho=1`, the natural follow-up was to subdivide the 2-power subgroup into more cosets and ask whether
+finer pieces force phase spread.  Probe `scripts/probes/probe_dooriv_multipiece_sign_coherence.py` split
+`H` into `d` cosets of `<h^d>` for `d=4,8`.  In the 2-power prize regime with `d | n/2`, every piece is
+still negation-stable, hence every piece-period sum is real.  Therefore the normalized coherence
+`rho_d(b)=|sum_j A_j|/sum_j |A_j|` again saturates at `1` whenever all real pieces have one sign.
+
+Probe results, proper thin subgroups `p≈n^4`, never full group:
+- `d=4`: all-same-sign fibers occur at about `12.4%` of quotient cosets for `n=16,32,64,128`; the top
+  `|eta_b|` rows in the scan all had `rho_4=1`.
+- `d=8`: all-same-sign fibers occur at about `0.78%` of quotient cosets; nevertheless the adversarial or
+  near-adversarial rows repeatedly still hit `rho_8=1` (e.g. `n=16,64,128`, and top rows at `n=32`).
+
+Lean: `Frontier/_DoorIVMultiPieceSignCoherence.lean` proves axiom-clean real-analysis constraints
+`multiPieceCoherence_eq_one_of_nonneg`, `_of_nonpos`, and `_of_sameSign`: for any finite family of real
+pieces, if all pieces have one sign and the total is nonzero, `|sum A_i|/sum |A_i| = 1`.
+
+VERDICT: this is not CORE and not a moment/completion route.  It refutes the naive refinement hope
+"split the coset halves into more negation-stable cosets and get automatic phase anti-concentration":
+same-sign fibers survive and saturate exactly.  A surviving door-(iv) theorem must use a genuinely
+non-negation-stable/asymmetric statistic or new arithmetic of `{b*x^m}`, not only a finer subdivision of
+negation-stable cosets.
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>

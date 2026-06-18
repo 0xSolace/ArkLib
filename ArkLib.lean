@@ -4218,3 +4218,4 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
