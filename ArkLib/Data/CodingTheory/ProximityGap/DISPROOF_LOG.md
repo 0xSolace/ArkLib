@@ -1,5 +1,57 @@
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
+## 2026-06-17 — LANE K2 "Katz–Sarnak symmetry type / n-level density / extreme-value statistics of the Gauss-period family {η_b}" REDUCES-TO-FENCE F0/F11 (probe_wfHK2_logcorr_field.rs, _wfHK2_katz_sarnak_extreme_value.lean)
+
+LANE (cluster: quantum/physics — random-matrix / Katz–Sarnak symmetry type). Ask: does the family
+`{η_b}_{b∈F_p^*}`, `η_b=Σ_{x∈μ_n}e_p(bx)`, have a Katz–Sarnak symmetry type whose extreme-value
+statistics (CUE/USp/SO largest eigenvalue, one-/n-level density) control `M(n)=max_b|η_b|`? Is the
+predicted max `√(n log)` PROVABLE as a one-sided UPPER bound, or only heuristic / a LOWER bound?
+
+RESEARCHED (cite): resonance method (Soundararajan; Bober–Goldmakher arXiv:1109.1786 large character
+sums; Bondarenko–Seip arXiv:1507.05840 ζ; de la Bretèche–Tenenbaum) produces **LOWER** bounds on
+maxima (exhibits large values) — constructive, NO upper-bound analogue. FHK/Arguin–Belius–Bourgade
+(arXiv:1602.08875) CUE-max `log N−(3/4)loglog N` is SHARP and sub-Gaussian but available **only for
+a LOG-CORRELATED field** (`Cov(log|P(θ)|,log|P(θ')|)∼−log|θ−θ'|`). One-/n-level density (Katz–Sarnak,
+Iwaniec–Luo–Sarnak) controls LOW-LYING ZEROS near the central point, NOT the max; and is a `q→∞`
+averaged limit (HORN-EFF, same as C13/C14/C31).
+
+VERDICT = REDUCES-TO-FENCE **F0** (the only one-sided handle is the iid-Gaussian union-bound upper
+tail; transferring it to the deterministic arithmetic family is the 2nd-order-blind Johnson wall —
+the `√log` excess is the rare-event tail) **/ F11** (the extreme-value prediction `√(2n log(p/n))`
+*equals* the open BGK object; object-change synonym). Prize-faithful, exact-integer multi-prime probe
+(`probe_wfHK2_logcorr_field.rs`; `p` PRIME, `p≡1 mod n`, `μ_n` proper, `β≈4`, `p~n⁴`, NEVER `n=p−1`):
+
+HORN-WHITE (NEW, the load-bearing measurement). The field `b↦log|η_b|` is **WHITE NOISE, not
+log-correlated**. `Cov(log|η_b|,log|η_{b'}|)/Var` at archimedean lags `d=1..256` AND 2-adic lags
+`v₂(b−b')=0..7` are ALL `≈0` (`|cov/var|<0.04`, no `−ln d` slope) for every generic prime at
+n=32,64,128. (Sole exception: `p=2^16+1` Fermat prime — non-generic, spurious; excluded by 2nd
+prime.) ⟹ the FHK/ABB log-correlated-field machinery — the ONLY route to a max **sharper** than the
+iid-Gaussian one — **does NOT apply**. There is no covariance structure to exploit, archimedean or
+2-adic (kills the manifesto's "2-adic locus" hope for this lane too).
+
+HORN-GAUSSIAN (confirms C31). Excess kurtosis of `Re η_b → 0` (`−0.10` n=32 → `−0.035` n=128): the
+Sato–Tate / symmetry-type law is the **complex Gaussian**, support all of `ℂ`, **NO compact edge**.
+"Symmetry-group edge bounds the max" is a category error — the law is unbounded; its "edge" is its
+extreme value = the open object.
+
+HORN-TARGET (the reduction). A white-noise Gaussian field over `m=(p−1)/n` cosets has iid extreme
+value `√n·√(2 log m)=√(2n·log(p/n))`. Probe: empirical max tracks `√(2n ln m)` (ratio `0.78→0.89`,
+rising with n), NOT FHK (ratio falling `0.37→0.35`). But `√(2n·log(p/n))` IS the conjectured prize
+floor. The EVT heuristic REPRODUCES the open statement; it does not prove it. The one-sided upper
+handle (union/first-moment `P(max>t)≤m·P(|Z|>t/√n)`) is a PROBABILISTIC model statement; its transfer
+to the specific arithmetic family requires exactly the `√q`-cancellation in short subgroup character
+sums = the open BGK wall.
+
+Sibling to REFUTED C13 (vertical Sato–Tate sup-control), C14 (Kloosterman purity), C31 (Sato–Tate
+support edge), C29 (Kowalski–Sawin path CLT) — same effectivity + Gaussian-unbounded-support family.
+This lane adds the NEW negative measurement (white-noise log-field ⟹ no FHK gain), closing the
+*sharpest* extreme-value sub-route. **Floor `M(n)≤C√(n log(p/n))` stays OPEN** — this is a
+method-boundary verdict, not a closure or refutation. Lean: `_wfHK2_katz_sarnak_extreme_value.lean`
+(union-bound EVT + the Gaussian-tail optimizer = the open floor + the white-noise⟹no-FHK gate;
+axiom-clean `{propext,Classical.choice,Quot.sound}`).
+
+---
+
 ## 2026-06-17 — LANE H2 "Kuznetsov / Petersson / relative-trace-formula amplification for the Gauss-period sup" REDUCES-TO-FENCE F5/F1 (probe_wfH2_kuznetsov_rtf_geometric_side.py, _wfH2_kuznetsov_rtf_geometric_side.lean)
 
 LANE (cluster: automorphic / amplification — flagged the LEAST-conservation-blind by the manifesto,
@@ -17466,3 +17518,48 @@ vanishes for p > T(n,r) (`WraparoundThreshold`).
 **Open SIZE levers UNCHANGED (none is a congruence/orbit/parity):** rank-independent char-p ESS / cyclotomic
 S-unit count (N5/N25, itself a major theorem); step-ratio antitonicity `R(r) ≤ 1` (machine-data-only, unproven).
 **No fabricated closure; `W_r=0` / BCHKS 1.12 / δ* remain OPEN.** Survivor: NONE.
+
+---
+
+## 2026-06-17 — lane wf-J3: prismatic / syntomic / q-de-Rham cohomology of the Gauss-sum motive — REDUCES-TO-FENCE (F3 generic, F2 magnitude prong)
+
+**Angle.** Does the newest *integral* p-adic cohomology — prismatic cohomology (Bhatt–Scholze
+arXiv:1905.08229, unifying crystalline+étale+de-Rham), its syntomic / q-de-Rham incarnations — of
+the Gauss-sum motive (the Fermat/Artin–Schreier `H¹`, whose Frobenius eigenvalue IS the Gauss/Jacobi
+sum: Katz *Crystalline cohomology, Dieudonné modules, Jacobi sums*; Otsubo–Yamazaki *Motivic Gauss
+and Jacobi sums* arXiv:2402.06072) give a bound on `η_b` / `M(n)` the classical Weil bound (F2)
+misses?
+
+**Verdict — REDUCES, by a clean dichotomy on what a p-adic cohomology theory can output.**
+Prismatic cohomology is BY CONSTRUCTION a p-adic theory (attached to a p-adic formal scheme;
+specializes to crystalline/étale/de-Rham). Its Frobenius carries (i) the **Newton polygon** (p-adic
+valuations of eigenvalues) and (ii) **Hodge–Tate weights** — both VALUATION data; there is no
+comparison theorem with an archimedean place.
+- **Prong A (= F2).** The only *magnitude* statement it delivers is weight-1 purity `|τ(χ^j)| = √q`
+  (the Riemann Hypothesis for the curve / Weil purity — Katz: "the RH tells us the exact magnitude
+  ... separately"). Vacuous for the floor: `M(n)` is a DFT *combination* of `m` eigenvalues each of
+  modulus `√q`; the common modulus bounds it only by triangle/Parseval (= `√q` completion, vacuous
+  `n<√q`; or `√n` average = Johnson). Purity says nothing about the phase interference.
+- **Prong B (= F3).** Everything prismatic adds over the Weil magnitude — Newton polygon,
+  Hodge–Tate weights, the integral q-de-Rham / Nygaard refinement — is a p-adic-valuation functional.
+  Katz's own dichotomy: crystalline gives "the p-adic valuation and the first non-vanishing p-adic
+  digit" (Stickelberger/Gross–Koblitz), NOT the complex magnitude. Mazur–Ogus: Newton polygon ≥
+  Hodge polygon, both valuation data; "the p-adic valuation does not directly determine the complex
+  absolute value of a Frobenius eigenvalue." This is exactly the in-tree `_ValuationClassBarrier`
+  (Dirichlet-unit/archimedean-blindness), `_wfA09` (Amice/Iwasawa archimedean-blind), and
+  `_GrossKoblitzPhaseNoGo` (the `Γ_p` unit decouples from the archimedean phase for index `m ≥ 3`).
+  q-de-Rham / syntomic are still p-adic theories ⟹ still Prong B. p=1 mod n additionally kills any
+  p-sensitive Galois lever (Frob_p = id on F_p).
+
+There is no third prong: output = (Newton polygon, Hodge weights, integral lattice); magnitude = the
+weight = purity (Prong A, F2); everything finer = valuation (Prong B, F3). **Prismatic is the same F3
+as the existing valuation column, now covering the FULL Bhatt–Scholze integral cohomology of the
+Gauss-sum motive — it does NOT escape F3.**
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`):**
+`Frontier/_wfJ3_prismatic_frobenius_archblind.lean` — `prismatic_magnitude_is_F2_vacuous` (Prong A:
+common modulus places no bound on phase interference), `purity_consistent_with_full_range` (purity ⇒
+floor anywhere in `[0,n]`), `prismatic_valuation_archimedean_blind` (Prong B: fixed valuation datum
+compatible with any complex magnitude), `sqrt_growth_escapes_constant` (a constant valuation
+functional cannot bound the growing sup), `wfJ3_obstruction` (packaged). The `√(log)` BGK/Paley wall
+is untouched and OPEN. NOT a closure. Survivor: NONE.
