@@ -58,3 +58,34 @@ prize-implication is rigorous up to the one named open input (the sharp falling-
 
 > Machine: `probe_decay_mechanism.py` (falling-factorial exact at r=2, `(1+t)^n` EGF). Lean LANDED:
 > `_FallingFactorialDecay`. The binomial-EGF conjecture is the cleanest next target.
+
+---
+
+## Attacking all remaining decay-law directions (closure, machine-verified)
+
+**(L1) Binomial-EGF conjecture REFUTED** (`probe_attack_all_leads.py`). The creative lead
+`Σ_r [A_r/(2r−1)‼] t^r/r! ≤ (1+t)^n` requires `E_0/(2r−1)‼ ≤ (n)_r` coefficient-wise; machine-verified
+**FALSE at r ≥ 3** (`E_0/(2r−1)‼ = 3370.7 > (n)_r = 3360` at n=16,r=3; same all n). The char-0 energy
+EXCEEDS the falling factorial (the `O(r²/n)` correction), so the binomial-EGF bound is violated. Dead.
+
+**(L2) `W_r/slack_r` — the real open input, characterized.** Bounded `< 1` at all measured `r` (so the
+prize `A_r ≤ Wick` ⟺ `W_r ≤ slack` HOLDS), but the ratio grows with `r` and grows FASTER at the thinnest
+prime `p = n^4` (n=32: `W_r/slack = 0, 0, 0.034, 0.108, 0.245, 0.479` for r=2..7 — approaching ~0.5 by r=7).
+**Favorable caveat:** `p = n^4` is the SMALLEST prize-regime prime (most wraparound); the ACTUAL prize prime
+`p = 2^38·n^4 ≫ n^4` has far fewer mod-`p` collisions, so `W_r` (hence `W_r/slack`) is much smaller. The
+deep-`r` ratio at the actual prize prime is uncomputable — the irreducible open question.
+
+**(L3) Slack size `slack_r/Wick ≈ r²/2n` confirmed** (the falling-factorial-derived growing room).
+
+**Negative-dependence lead → REDUCES.** Negative association would prove the char-0 Wick bound
+`E_0 ≤ (2r−1)‼·n^r` — but that is ALREADY PROVEN (Lam–Leung). It does not reach the char-`p` wraparound
+`W_r` (the open part), which is the mod-`p` collision count, not a char-0 NA-moment. So NA re-proves the
+done half, not the open half.
+
+## Net (closure of the decay-law attack)
+The decay law was a genuine advance — it DERIVED the favorable phenomenon's mechanism (falling factorial)
+and the slack size (`≈ Wick·r²/2n`). But all three follow-up leads resolve: the binomial-EGF is REFUTED,
+negative-dependence REDUCES to the proven char-0 half, and the slack form returns to the one irreducible
+open input `W_r ≤ slack_r` (the mod-`p` wraparound count = the good-prime / rank-independent vanishing-sum
+bound). Favorable evidence intact (`W_r/slack < 1`, prize prime far from the hard `p=n^4` edge); the deep-`r`
+behavior at the prize prime is the uncomputable, irreducible wall. NO fabricated closure.
