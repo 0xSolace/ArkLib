@@ -146,6 +146,39 @@ theorem logTower_excess_eq (a : ℕ) (R : ℝ) :
       ← logTower_telescope a]
   constructor <;> intro h <;> linarith
 
+/-- **The predictable quadratic-variation bound (Freedman prerequisite).** Freedman's martingale
+concentration inequality — the sharper sibling of Azuma the file header invokes — consumes not just
+bounded increments but the PREDICTABLE QUADRATIC VARIATION `⟨S⟩_a = ∑_{i<a} Δ_i²`. Since each
+`Δ_i ∈ [0, log 2]` (`logRatio_nonneg` + `logRatio_le_log2`), the per-step square is dominated by the
+step itself scaled by the increment bound: `Δ_i² ≤ (log 2)·Δ_i`. Summing over the telescope gives the
+quadratic variation in terms of the telescoped drift:
+`∑_{i<a} Δ_i² ≤ (log 2)·(log(Mtow a) − log(Mtow 0))`.
+This is the genuine Freedman QV prerequisite (distinct from the bounded-increment SUM): it ties the
+quadratic variation to the same telescoped drift `S_a = log(Mtow a) − log(Mtow 0)` whose MEAN is the
+open object.
+
+NOTE: this is a DEDUCTIVE consequence of the already-landed envelope `Δ_i ∈ [0, log 2]`
+(`logRatio_nonneg` + `logRatio_le_log2`), not a new empirical fact — `Δ_i² ≤ (log 2)·Δ_i` holds for
+any `Δ_i` in that interval. The companion `probe_logtower_qv.py` is a SYNTHETIC algebraic sanity
+check (it samples `Δ_i` directly inside the envelope and confirms the bound is consequence-true);
+the envelope itself is the prize-regime-validated input (`rho_i ∈ [√2, 2]` on PROPER thin subgroups,
+per the file header probes), not re-derived here. -/
+theorem logTower_sq_le_log2_mul (a : ℕ)
+    (hpos : ∀ i, 0 < Mtow i)
+    (hdouble : ∀ i, Mtow (i + 1) ≤ 2 * Mtow i)
+    (hmono : ∀ i, Mtow i ≤ Mtow (i + 1)) :
+    (∑ i ∈ Finset.range a, (Real.log (Mtow (i + 1)) - Real.log (Mtow i)) ^ 2)
+      ≤ Real.log 2 * (Real.log (Mtow a) - Real.log (Mtow 0)) := by
+  rw [logTower_telescope a, Finset.mul_sum]
+  refine Finset.sum_le_sum (fun i _ => ?_)
+  set Δ := Real.log (Mtow (i + 1)) - Real.log (Mtow i) with hΔ
+  have hlo : 0 ≤ Δ := logRatio_nonneg i (hpos i) (hmono i)
+  have hhi : Δ ≤ Real.log 2 := logRatio_le_log2 i (hpos i) (hpos (i + 1)) (hdouble i)
+  -- Δ² = Δ·Δ ≤ (log 2)·Δ since 0 ≤ Δ ≤ log 2
+  have : Δ ^ 2 = Δ * Δ := by ring
+  rw [this]
+  exact mul_le_mul_of_nonneg_right hhi hlo
+
 /-! ## Concrete discharge for the real `M`-tower
 
 The abstract doubling hypothesis `Mtow (i+1) ≤ 2·Mtow i` is EXACTLY the landed Liu–Zhou recursion
@@ -185,3 +218,5 @@ theorem logRatio_le_log2_of_M (ψ : AddChar F ℂ) {A B : Finset F}
   linarith
 
 end ProximityGap.Frontier.LogRatioTowerBoundedIncrement
+
+#print axioms ProximityGap.Frontier.LogRatioTowerBoundedIncrement.logTower_sq_le_log2_mul
