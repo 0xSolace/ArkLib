@@ -17818,3 +17818,58 @@ eventually exceeds any linear supply budget `B r + C`), `subspace_sunit_route_no
 verdict: past the optimal depth the ESS relation-type count strictly exceeds the union-bound budget, so it
 gives no supply cap). Probes: `scripts/probes/probe_wfH_J1{,b,c}_*.py` (exact integer; subspace count vs
 Wick, shortest genuine char-p relation, MITM minimal `+-1`-subset relation length vs growing `p`).
+
+## 2026-06-17 — LANE L3 (Berkovich / tropical / non-arch potential theory): Chambert-Loir COUPLED adelic equidistribution — REDUCES-TO-FENCE (F0 + F3 + F11)
+
+**Candidate (alien/cross).** Bound the wall `M(n)=max_{b!=0}|eta_b|` (the archimedean House of the
+Gauss period) via arithmetic equidistribution on the BERKOVICH projective line: Baker-Rumely /
+Chambert-Loir / Favre-Rivera-Letelier weak-* convergence of the Galois-conjugate empirical measure
+to the local equilibrium measure at EVERY place (arch AND non-arch on `P^{1,an}_{C_v}`), driven by
+an energy-minimization principle for the Arakelov-Green function and glued by the product formula.
+The hoped-for escape: the COUPLING of archimedean + non-archimedean local energies (the whole point
+of the Berkovich/Chambert-Loir machinery, absent from the rest of the cone) pins the archimedean
+equilibrium-support radius `R_eq = sqrt(log(p/n))`, escaping the F11 product-formula sign-reversal
+that killed the pure adelic-height/capacity cluster (`_wfTT06/07/08`).
+
+**Verdict: REDUCES-TO-FENCE (F0 primary; F3 + F11 confluence).** Three independent obstructions:
+
+- **(A) F0 — weak-* is blind to the support edge.** Chambert-Loir gives `(1/m)Sum_c phi(eta_c) ->
+  integral phi` for FIXED continuous `phi`; the House is `L^inf`, the support EDGE. Moving ONE
+  conjugate (mass `1/m`) to radius `R` raises the House to `R` while perturbing any `W_q` by only
+  `O(m^{-1/q})`. **EXACT-INT probe** `probe_wfH_L3_berkovich_equidist.rs` (beta=4): the second moment
+  is the exact integer `T = Sum_{b!=0}|eta_b|^2 = (p-1)n - (n^2-n)`, per-coset avg `-> n` (Johnson
+  floor); the equilibrium BULK radius (90th pct conjugate modulus) is the `sqrt(n)` Johnson scale,
+  while `House/bulk` GROWS in n (1.70 / 2.09 / 2.46 / 2.57 at n=8/16/32/64). The sup escapes the
+  equilibrium support into a rare-event `O(1)`-outlier tail that weak-* convergence cannot see.
+  Verbatim the F0 conservation law, now potential-theoretic (cf. `_wfTT09` Bilu, `_wfHJ4` EMV).
+
+- **(B) Small-point hypothesis UNMET — the theorem does not apply.** Every Baker-Rumely / CL / Bilu
+  form requires the (canonical) log-height to tend to the minimum (`-> 0`): a CLUSTERING small-point
+  sequence. The period's conjugates have `sqrt(log m)`-wide archimedean support (`T>0`, avg `~ n`),
+  so its Weil height is bounded away from 0 — the OPPOSITE of clustering. Premise FALSE at prize;
+  invoking CL is vacuous-at-prize.
+
+- **(C) F3 + F11 — the non-arch prong is archimedean-blind and the coupling preserves the sign
+  reversal.** The Berkovich machinery's only sup-control is the NON-archimedean max-modulus principle
+  (`|f|` attained on the Shilov boundary = a `p`-adic / `2`-adic norm), which says nothing about the
+  complex `|eta_c|` = House (F3). The non-arch local energies reduce to the ramification valuations
+  `v_p(disc)=m-1`, `v_2 in f^2`, class-field-FIXED by `(p,m)` (the `_wfTT07` `disc=p^{m-1}f^2`
+  finding) = the BGK bad-prime divisibility (F11). The energy-minimization + product formula gives a
+  LOWER bound on the height-spread; ADDING the (nonnegative) non-arch `log+` energies only enlarges
+  the total height — it CANNOT flip a lower bound into an upper bound. The coupling moves the
+  inequality the SAME way: F11 SURVIVES the arch+non-arch coupling, because the product formula is
+  the SOURCE of F11 and Berkovich/CL is built ON the product formula. Asserting `R_eq=sqrt(log(p/n))`
+  restates the prize conclusion (circular, F0).
+
+Survivor: NONE. The Chambert-Loir EQUIDISTRIBUTION (the genuinely new arch+non-arch coupling, the
+honest L3 candidate for escaping F11) does NOT escape: it is a weak-* statement whose small-point
+hypothesis is unmet, whose non-arch prong is `p`-blind, and whose product-formula coupling preserves
+the sign reversal. The BGK/Paley `sqrt(log)` wall is untouched and OPEN.
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, `pg-iterate` OK):**
+`Frontier/_wfHL3_berkovich_chambertloir_equidist.lean` — `T_secondmoment_exact` (exact-int 2nd
+moment), `smallpoint_hypothesis_unmet` + `avg2_exceeds_one` (premise FALSE: avg sq modulus `>1`),
+`house_unbounded_under_weakstar_rate` + `W2_outlier_cost` (F0: any weak-*/`W_2` rate admits
+arbitrarily large House), `coupled_energy_is_lower_bound` (F11 survives the coupling),
+`berkovich_maxmod_is_nonarch` (F3), `Req_assertion_is_circular` (F0). Probe:
+`scripts/probes/rust/probe_wfH_L3_berkovich_equidist.rs` (exact-int; House/bulk growing in n).
