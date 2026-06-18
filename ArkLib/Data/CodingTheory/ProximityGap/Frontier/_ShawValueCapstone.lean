@@ -23,6 +23,9 @@ This file is deliberately elementary and axiom-clean: it proves that the normali
 
 Nothing here proves the open Gauss-period bound. It packages the reduction target so later formal
 work can cite one exact capstone instead of repeatedly re-normalizing the same inequality.
+
+The final `O(1)` theorem records the precise Shaw-value essay slogan: on any positive-scale prize
+family, `Sh(n)=O(1)` is equivalent to the square-root `CORE` bound with one absolute constant.
 -/
 
 set_option autoImplicit false
@@ -39,7 +42,6 @@ noncomputable def shawScale (q n : ℝ) : ℝ :=
 /-- The Shaw value: the Gauss-period sup norm divided by the prize scale. -/
 noncomputable def shawValue (q n M : ℝ) : ℝ :=
   M / shawScale q n
-
 
 /-- In the genuine prize regime `q > n > 0`, the Shaw normalization scale is positive.
 This discharges the only analytic side condition in the capstone from the usual thin-subgroup
@@ -92,7 +94,6 @@ theorem uniformCoreBound_iff_uniformShawBound {ι : Type*} {q n M : ι → ℝ} 
     exact (shawValue_le_iff_core_bound (q := q i) (n := n i) (M := M i) (C := C)
       (hscale i)).mp (h i)
 
-
 /-- Prize-regime specialization of the uniform capstone.  If every family member lies in the thin
 subgroup size regime `q_i > n_i > 0`, then the uniform prize core bound is equivalent to a uniform
 bound on Shaw's value, with no separate scale hypothesis. -/
@@ -100,6 +101,34 @@ theorem uniformCoreBound_iff_uniformShawBound_of_pos_lt {ι : Type*} {q n M : ι
     (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
     UniformCoreBound q n M C ↔ UniformShawBound q n M C := by
   exact uniformCoreBound_iff_uniformShawBound (q := q) (n := n) (M := M) (C := C)
+    (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
+
+/-- `Sh(n)=O(1)` on an indexed family: one nonnegative absolute constant bounds Shaw value. -/
+def ShawOOneOn {ι : Type*} (q n M : ι → ℝ) : Prop :=
+  ∃ C : ℝ, 0 ≤ C ∧ UniformShawBound q n M C
+
+/-- Prize-style square-root cancellation with one nonnegative absolute constant. -/
+def CorePrizeBoundOn {ι : Type*} (q n M : ι → ℝ) : Prop :=
+  ∃ C : ℝ, 0 ≤ C ∧ UniformCoreBound q n M C
+
+/-- **Shaw-value essay slogan, formalized.**  On a positive-scale family, `Sh(n)=O(1)` is exactly
+the prize-scale square-root `CORE` bound, with the same absolute constant and no hidden loss. -/
+theorem shawOOneOn_iff_corePrizeBoundOn {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i)) :
+    ShawOOneOn q n M ↔ CorePrizeBoundOn q n M := by
+  constructor
+  · rintro ⟨C, hC, hSh⟩
+    exact ⟨C, hC, (uniformCoreBound_iff_uniformShawBound
+      (q := q) (n := n) (M := M) (C := C) hscale).2 hSh⟩
+  · rintro ⟨C, hC, hCore⟩
+    exact ⟨C, hC, (uniformCoreBound_iff_uniformShawBound
+      (q := q) (n := n) (M := M) (C := C) hscale).1 hCore⟩
+
+/-- Prize-regime version of the `O(1)` capstone, using only `q_i > n_i > 0` for scale positivity. -/
+theorem shawOOneOn_iff_corePrizeBoundOn_of_pos_lt {ι : Type*} {q n M : ι → ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    ShawOOneOn q n M ↔ CorePrizeBoundOn q n M :=
+  shawOOneOn_iff_corePrizeBoundOn (q := q) (n := n) (M := M)
     (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
 
 /-- Plancherel/Johnson-floor normalization: if `sqrt n ≤ M`, then Shaw's value is at least
@@ -126,5 +155,7 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.core_bound_iff_shawValue_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_sqrt_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_trivial_ceiling_of_le
