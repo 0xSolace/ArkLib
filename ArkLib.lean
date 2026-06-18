@@ -1308,6 +1308,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._Char0LeadingLogConcave
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferDecomposition
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferGeneralOrderForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPTransferW4OrderForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroBackboneSmallRRegime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCumulantBesselClosedForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCushionBracket
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharZeroCushionBracketHigh
