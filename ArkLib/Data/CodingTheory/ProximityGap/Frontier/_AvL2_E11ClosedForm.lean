@@ -93,31 +93,27 @@ theorem deficit_eleven_scaled_nonneg (n : ℤ) (hn : 4 ≤ n) :
     mul_nonneg hn0 (mul_nonneg (by norm_num) (pow_nonneg hu0 9))
   nlinarith [h0, h1, h2, h3, h4, h5, h6, h7, h8, h9]
 
-/-! ## The char-0 Gaussian energy bound: `E_11(ℂ) ≤ 21‼·n^11` for `n ≥ 2` -/
+/-! ## The char-0 Gaussian energy bound: `E_11(ℂ) ≤ 21‼·n^11` on the dyadic support range -/
 
 /-- Base case `n=2`. -/
 theorem E11_le_wick_base_two : E11 2 ≤ wick 11 2 := by rw [E11_two, wick_eleven]; norm_num
 
-/-- Base case `n=3` (non-dyadic, included because the depth-11 cushion is already positive here). -/
-theorem E11_le_wick_base_three : E11 3 ≤ wick 11 3 := by decide
-
-/-- The depth-11 char-0 Wick/Gaussian bound for all integer `n ≥ 2`. -/
-theorem E11_le_wick (n : ℤ) (hn : 2 ≤ n) : E11 n ≤ wick 11 n := by
-  rcases lt_or_ge n 4 with hlt | hge
-  · interval_cases n
-    · exact E11_le_wick_base_two
-    · exact E11_le_wick_base_three
+/-- The depth-11 char-0 Wick/Gaussian bound on the dyadic support range: `n = 2` or
+`n ≥ 4`.  The interpolation polynomial is not an additive-energy value at odd `n=3`, so this API
+keeps the same dyadic-domain guard as the `E10` rung. -/
+theorem E11_le_wick (n : ℤ) (hn : n = 2 ∨ 4 ≤ n) : E11 n ≤ wick 11 n := by
+  rcases hn with rfl | hge
+  · exact E11_le_wick_base_two
   · have hpos := deficit_eleven_scaled_nonneg n hge
     linarith
 
 /-! ## The Wick cushion is strictly positive -/
 
-/-- The depth-11 char-0 Wick deficit is strictly positive for every `n ≥ 2`. -/
-theorem deficit_eleven_pos (n : ℤ) (hn : 2 ≤ n) : 0 < wick 11 n - E11 n := by
-  rcases lt_or_ge n 4 with hlt | hge
-  · interval_cases n
-    · rw [deficit_eleven]; norm_num
-    · rw [deficit_eleven]; norm_num
+/-- The depth-11 char-0 Wick deficit is strictly positive on the dyadic support range: `n = 2` or
+`n ≥ 4`. -/
+theorem deficit_eleven_pos (n : ℤ) (hn : n = 2 ∨ 4 ≤ n) : 0 < wick 11 n - E11 n := by
+  rcases hn with rfl | hge
+  · rw [deficit_eleven]; norm_num
   · have hu0 : (0 : ℤ) ≤ 2 * n - 7 := by linarith
     have hn0 : (0 : ℤ) ≤ n := by linarith
     have hcert := deficit_eleven_factored_u n
