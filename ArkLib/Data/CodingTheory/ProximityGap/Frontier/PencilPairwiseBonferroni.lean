@@ -385,7 +385,7 @@ degradation of `_KelleyOwenDilationPencil` and the prize obstruction `M(S) ≥ n
 theorem headline_vacuous_of_two_le (r M : ℕ) (hM : 2 ≤ M) :
     r * (r - 1) ≤ r.choose 2 * M := by
   rw [Nat.choose_two_right]
-  -- r*(r-1)/2 * M ≥ r*(r-1)/2 * 2 = r*(r-1) (the half is exact since r*(r-1) is even).
+  -- r*(r-1)/2 * M ≥ r*(r-1)/2 * 2 = r*(r-1); the half is exact.
   have heven : 2 ∣ r * (r - 1) := Nat.even_mul_pred_self r |>.two_dvd
   obtain ⟨t, ht⟩ := heven
   rw [ht]
@@ -394,6 +394,15 @@ theorem headline_vacuous_of_two_le (r M : ℕ) (hM : 2 ≤ M) :
   calc 2 * t = t * 2 := by ring
     _ ≤ t * M := by apply Nat.mul_le_mul_left; omega
 
+/-- **Consumer form of the `M ≥ 2` vacuity.** The actual pairwise-Bonferroni headline has the
+extra nonnegative budget term `(n-1)`. Once `M ≥ 2`, even the overlap term alone dominates
+`r·(r-1)`, so the full headline inequality is automatic for every `n`.  This is the exact
+formal guard against reading a root-count bound out of the pencil inequality in the Johnson-collapse
+regime. -/
+theorem headline_with_budget_vacuous_of_two_le (r n M : ℕ) (hM : 2 ≤ M) :
+    r * (r - 1) ≤ r.choose 2 * M + (n - 1) := by
+  exact le_trans (headline_vacuous_of_two_le r M hM) (Nat.le_add_right _ _)
+
 end ProximityGap.Frontier.PencilPairwiseBonferroni
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
@@ -401,5 +410,6 @@ end ProximityGap.Frontier.PencilPairwiseBonferroni
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.sqrt_extract_disjoint
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.sqrt_extract_autocorr_one
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.headline_vacuous_of_two_le
+#print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.headline_with_budget_vacuous_of_two_le
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.pencil_pairwise_bonferroni
 #print axioms ProximityGap.Frontier.PencilPairwiseBonferroni.pencil_pairwise_bonferroni_disjoint
