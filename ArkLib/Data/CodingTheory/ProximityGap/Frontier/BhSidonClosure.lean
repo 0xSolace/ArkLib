@@ -127,4 +127,34 @@ theorem IsBhSidon.translate {h : ℕ} {S : Set G} (hS : IsBhSidon h S) (x : G) :
   rw [hid, Multiset.map_id, Multiset.map_id] at hpush
   exact hpush
 
+/-- **Downward monotonicity of the `B_h`-Sidon ladder.** If `S` is `B_h`-Sidon and
+`S` is nonempty (contains some `a`), then `S` is `B_{h-1}`-Sidon.
+
+Proof: pad each `(h-1)`-multiset with the fixed element `a` to get an `h`-multiset;
+equal `(h-1)`-sums give equal `h`-sums, so `B_h` forces the padded multisets equal,
+and cancelling `a` recovers the original equality.  (Nonemptiness is essential:
+it supplies the padding element.) -/
+theorem IsBhSidon.pred_of_mem {h : ℕ} {S : Set G} (hS : IsBhSidon (h + 1) S)
+    {a : G} (ha : a ∈ S) : IsBhSidon h S := by
+  intro s t hs ht hsS htS hsum
+  -- pad with `a`
+  have hcard_s : Multiset.card (a ::ₘ s) = h + 1 := by
+    rw [Multiset.card_cons, hs]
+  have hcard_t : Multiset.card (a ::ₘ t) = h + 1 := by
+    rw [Multiset.card_cons, ht]
+  have hmem_s : ∀ x ∈ a ::ₘ s, x ∈ S := by
+    intro x hx
+    rcases Multiset.mem_cons.mp hx with rfl | hx'
+    · exact ha
+    · exact hsS x hx'
+  have hmem_t : ∀ x ∈ a ::ₘ t, x ∈ S := by
+    intro x hx
+    rcases Multiset.mem_cons.mp hx with rfl | hx'
+    · exact ha
+    · exact htS x hx'
+  have hsum' : (a ::ₘ s).sum = (a ::ₘ t).sum := by
+    rw [Multiset.sum_cons, Multiset.sum_cons, hsum]
+  have hpad : a ::ₘ s = a ::ₘ t := hS _ _ hcard_s hcard_t hmem_s hmem_t hsum'
+  exact (Multiset.cons_inj_right a).mp hpad
+
 end ArkLib.ProximityGap.BhSidon
