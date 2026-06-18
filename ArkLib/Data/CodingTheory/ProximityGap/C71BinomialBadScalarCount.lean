@@ -77,6 +77,23 @@ theorem card_image_pow_eq (d : ℕ) :
     rw [← SetLike.coe_sort_coe]
   rw [hbridge, IsCyclic.card_powMonoidHom_range (G := G) d, Nat.card_eq_fintype_card, Nat.gcd_comm]
 
+/-- **Primitive/coprime directions hit every scalar.** If the exponent gap `d` is coprime to the
+cyclic-window size `n`, the power map `x ↦ x^d` is onto the whole dilation window: every scalar is
+bad, and each bad scalar has incidence `1` by the gcd dichotomy. This is the support-side companion
+to the coprime one-root incidence corollaries. -/
+theorem card_image_pow_eq_card_of_coprime (d : ℕ)
+    (hcop : Nat.Coprime d (Fintype.card G)) :
+    (univ.image (fun x : G => x ^ d)).card = Fintype.card G := by
+  rw [card_image_pow_eq (G := G) d, hcop.gcd_eq_one, Nat.div_one]
+
+/-- **The zero-gap direction has one support scalar.** For `d = 0`, the power map is constant, so
+only one dilation scalar carries the whole incidence mass. This is the opposite concentration edge
+from the coprime-support theorem. -/
+theorem card_image_pow_zero_eq_one :
+    (univ.image (fun x : G => x ^ (0 : ℕ))).card = 1 := by
+  have hpos : 0 < Fintype.card G := Fintype.card_pos
+  rw [card_image_pow_eq (G := G) 0, Nat.gcd_zero_left, Nat.div_self hpos]
+
 /-- **Support × per-scalar value = window total.** The support count `n / gcd(d,n)` times the
 per-scalar incidence `gcd(d,n)` (the nontrivial branch of the dichotomy) is exactly `n`. This
 recombines `card_image_pow_eq` and the rigidity dichotomy into the window total `Σ_c fiber = n`,
@@ -90,4 +107,6 @@ end ArkLib.ProximityGap.C71BinomialBadScalarCount
 
 /-! ## Axiom audit -/
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq
+#print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_eq_card_of_coprime
+#print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_image_pow_zero_eq_one
 #print axioms ArkLib.ProximityGap.C71BinomialBadScalarCount.card_distinct_pow_mul_gcd
