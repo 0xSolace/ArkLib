@@ -17,6 +17,7 @@ hereditary facts the depth-`ℓ` `B_h`-Sidon ladder (§0) leans on:
 * **`IsSidonSet.translate`** — Sidon is invariant under translation `G ↦ G + t` (the coincidence
   relation `a+b = c+d` is translation-equivariant).
 * **`IsSidonSet.scale`** — Sidon is invariant under nonzero dilation `G ↦ tG`.
+* **`IsSidonSet.affine`** — Sidon is invariant under affine maps `x ↦ u + t*x`, `t ≠ 0`.
 
 Axiom-clean (`propext, Classical.choice, Quot.sound`).  No CORE closure, no char-p transfer, no
 capacity / beyond-Johnson / growth-law claim.  Issues #444, #389.
@@ -93,9 +94,41 @@ theorem IsSidonSet.scale {G : Finset F} (hG : IsSidonSet G) {t : F} (ht : t ≠ 
   · exact Or.inl ⟨by rw [h1], by rw [h2]⟩
   · exact Or.inr ⟨by rw [h1], by rw [h2]⟩
 
+/-- The embedding `x ↦ u + t * x` for a nonzero scalar `t`. -/
+def affineEmbeddingOfNe (u t : F) (ht : t ≠ 0) : F ↪ F where
+  toFun := fun x => u + t * x
+  inj' := by
+    intro x y hxy
+    apply mul_left_cancel₀ ht
+    exact add_left_cancel hxy
+
+/-- **Affine invariance:** if `G` is Sidon then so is its affine image `u + tG`, for
+`t ≠ 0`.  This packages the translation and dilation closures into the exact affine closure
+needed by the `B₂`/Sidon structural toolkit; it is purely algebraic and makes no CORE or
+capacity claim. -/
+theorem IsSidonSet.affine {G : Finset F} (hG : IsSidonSet G) (u : F) {t : F} (ht : t ≠ 0) :
+    IsSidonSet (G.map (affineEmbeddingOfNe u t ht)) := by
+  intro a ha b hb c hc d hd hsum
+  simp only [Finset.mem_map] at ha hb hc hd
+  obtain ⟨a', ha', rfl⟩ := ha
+  obtain ⟨b', hb', rfl⟩ := hb
+  obtain ⟨c', hc', rfl⟩ := hc
+  obtain ⟨d', hd', rfl⟩ := hd
+  change u + t * a' + (u + t * b') = u + t * c' + (u + t * d') at hsum
+  have hsum' : a' + b' = c' + d' := by
+    apply mul_left_cancel₀ ht
+    calc
+      t * (a' + b') = (u + t * a' + (u + t * b')) - (u + u) := by ring
+      _ = (u + t * c' + (u + t * d')) - (u + u) := by rw [hsum]
+      _ = t * (c' + d') := by ring
+  rcases hG a' ha' b' hb' c' hc' d' hd' hsum' with ⟨h1, h2⟩ | ⟨h1, h2⟩
+  · exact Or.inl ⟨by rw [h1], by rw [h2]⟩
+  · exact Or.inr ⟨by rw [h1], by rw [h2]⟩
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only (no sorryAx).
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.subset
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.translate
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.scale
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet.affine
