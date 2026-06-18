@@ -62,6 +62,14 @@ namespace ArkLib.ProximityGap.C71BinomialIncidence
 
 variable {F : Type*} [Field F] [DecidableEq F]
 
+/-- A positive-order root of unity in a field is nonzero. This is the binomial-strata version of
+the puncturing guard: on `μ_n` with `n > 0`, the condition `x ≠ 0` is automatic. -/
+theorem ne_zero_of_pow_eq_one {n : ℕ} (hn : 0 < n) {x : F} (hx : x ^ n = 1) : x ≠ 0 := by
+  intro hx0
+  have hzero : x ^ n = 0 := by rw [hx0, zero_pow (Nat.ne_of_gt hn)]
+  rw [hx] at hzero
+  exact zero_ne_one hzero.symm
+
 /-- **The punctured-domain root reduction.** For a binomial direction `X^i - c * X^j` with `i >= j`,
 a nonzero point `x` is a root iff `x ^ (i - j) = c`. (Divide the vanishing `x^i = c * x^j` by the
 nonzero `x^j`.) -/
@@ -102,8 +110,39 @@ theorem binomial_incidence_card_le (S : Finset F) (c : F) {i j : ℕ} (hij : j <
     _ ≤ Multiset.card (nthRoots (i - j) c) := Multiset.toFinset_card_le _
     _ ≤ i - j := card_nthRoots (i - j) c
 
+/-- **Puncturing is exactly redundant for binomial strata on positive-order `μ_n`.** Over any
+finite `S ⊆ μ_n`, the explicit nonzero guard in the binomial vanishing-incidence filter is equal
+to the ordinary vanishing filter. -/
+theorem binomial_incidence_filter_punctured_eq_unpunctured {n : ℕ} (S : Finset F) (c : F)
+    {i j : ℕ} (hn : 0 < n) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    S.filter (fun x => x ≠ 0 ∧ x ^ i - c * x ^ j = 0)
+      = S.filter (fun x => x ^ i - c * x ^ j = 0) := by
+  ext x
+  simp only [mem_filter]
+  constructor
+  · intro hx
+    exact ⟨hx.1, hx.2.2⟩
+  · intro hx
+    exact ⟨hx.1, ne_zero_of_pow_eq_one hn (hSn x hx.1), hx.2⟩
+
+/-- **Caller-facing binomial incidence bound without a puncturing predicate.** If `n > 0`, every
+point of a finite `S ⊆ μ_n` is automatically nonzero, so the binomial non-orbit root count applies
+directly to the ordinary vanishing-incidence set. -/
+theorem binomial_incidence_card_le_unpunctured {n : ℕ} (S : Finset F) (c : F) {i j : ℕ}
+    (hn : 0 < n) (hij : j < i) (hSn : ∀ x ∈ S, x ^ n = 1) :
+    (S.filter (fun x => x ^ i - c * x ^ j = 0)).card ≤ i - j := by
+  rw [← binomial_incidence_filter_punctured_eq_unpunctured S c hn hSn]
+  exact binomial_incidence_card_le S c hij
+
 end ArkLib.ProximityGap.C71BinomialIncidence
 
 /-! ## Axiom audit -/
-#print axioms ArkLib.ProximityGap.C71BinomialIncidence.binomial_root_iff_pow_eq
-#print axioms ArkLib.ProximityGap.C71BinomialIncidence.binomial_incidence_card_le
+namespace ArkLib.ProximityGap.C71BinomialIncidence
+
+#print axioms ne_zero_of_pow_eq_one
+#print axioms binomial_root_iff_pow_eq
+#print axioms binomial_incidence_card_le
+#print axioms binomial_incidence_filter_punctured_eq_unpunctured
+#print axioms binomial_incidence_card_le_unpunctured
+
+end ArkLib.ProximityGap.C71BinomialIncidence
