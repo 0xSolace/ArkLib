@@ -189,6 +189,35 @@ theorem card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero {S : Finset F} 
   simp only [Nat.cast_zero, mul_zero, zero_sub, abs_neg] at h
   rwa [abs_of_nonneg (by positivity)] at h
 
+/-- **`q−1`-normalized M-lower consumer.** This is `max_pow_ge_abs_signed_div` rewritten with
+`#(AddChar F ℂ \ {0}) = q−1`, so downstream BGK statements can divide directly by the familiar
+nonzero-frequency count. Holds for every order `r`, including odd `r`. Honest scope: still an
+`M`-LOWER bound, not a CORE upper bound. -/
+theorem max_pow_ge_abs_signed_div_qsub_one {S : Finset F} (r : ℕ) {M : ℝ}
+    (hpos : 0 < ((Fintype.card F - 1 : ℕ) : ℝ))
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    |((Fintype.card F : ℝ)
+          * ((Fintype.piFinset (fun _ : Fin r => S)).filter
+              (fun t => ∑ i, t i = 0)).card
+        - (S.card : ℝ) ^ r)|
+        / ((Fintype.card F - 1 : ℕ) : ℝ)
+      ≤ M ^ r := by
+  rw [div_le_iff₀ hpos]
+  simpa [mul_comm] using signedPeriodPow_re_abs_le_qsub_one (S := S) r hM
+
+/-- **Vanishing-case M-lower floor in divided `q−1` form.** If `W_r=0`, the diagonal term alone
+forces `M^r ≥ |S|^r/(q−1)`. This is the divided consumer form of
+`card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero`, useful when the
+no-coincidence/Sidon-depth hypothesis is the input. Honest scope: a lower bound on `M`, not CORE. -/
+theorem max_pow_ge_card_pow_div_qsub_one_of_zeroSumCount_eq_zero {S : Finset F} (r : ℕ) {M : ℝ}
+    (hpos : 0 < ((Fintype.card F - 1 : ℕ) : ℝ))
+    (hW : ((Fintype.piFinset (fun _ : Fin r => S)).filter (fun t => ∑ i, t i = 0)).card = 0)
+    (hM : ∀ ψ ∈ (univ.erase (0 : AddChar F ℂ)), ‖∑ x ∈ S, ψ x‖ ≤ M) :
+    (S.card : ℝ) ^ r / ((Fintype.card F - 1 : ℕ) : ℝ) ≤ M ^ r := by
+  rw [div_le_iff₀ hpos]
+  simpa [mul_comm] using
+    card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero (S := S) r hW hM
+
 -- Axiom audit (full-env `lean` confirms ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms abs_period_pow_le_max_pow
 #print axioms abs_signedPeriodPow_le_card_mul_max_pow
@@ -197,5 +226,7 @@ theorem card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero {S : Finset F} 
 #print axioms card_erase_zero_addChar
 #print axioms signedPeriodPow_re_abs_le_qsub_one
 #print axioms card_pow_le_qsub_one_mul_max_pow_of_zeroSumCount_eq_zero
+#print axioms max_pow_ge_abs_signed_div_qsub_one
+#print axioms max_pow_ge_card_pow_div_qsub_one_of_zeroSumCount_eq_zero
 
 end ArkLib.ProximityGap.SignedPeriodPowerEvenFloor
