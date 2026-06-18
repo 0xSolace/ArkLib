@@ -17563,3 +17563,57 @@ floor anywhere in `[0,n]`), `prismatic_valuation_archimedean_blind` (Prong B: fi
 compatible with any complex magnitude), `sqrt_growth_escapes_constant` (a constant valuation
 functional cannot bound the growing sup), `wfJ3_obstruction` (packaged). The `√(log)` BGK/Paley wall
 is untouched and OPEN. NOT a closure. Survivor: NONE.
+---
+
+## J4 (#444) — homogeneous-dynamics / Ratner / EMV / Lindenstrauss equidistribution of the period orbit: REDUCES-TO-FENCE (F0 + F5)
+
+**Date:** 2026-06-17. **Lane:** J4 (Diophantine / model-theory / homogeneous dynamics).
+**Verdict:** REDUCES-TO-FENCE (F0 conservation law + F5 abelian-torus no-gap). NOT a closure, NOT a
+refutation of the prize floor.
+
+**The route.** The dilation orbit `b -> g^{(p-1)/n} b` permutes the `m=(p-1)/n` coset values
+`eta_b = Sum_{x in mu_n} e_p(b x)`; Ratner / Einsiedler-Margulis-Venkatesh (Invent. Math. 177, 2009,
+arXiv:0708.4040) / Lindenstrauss QUE / Bourgain-Lindenstrauss-Michel-Venkatesh (ETDS 29, 2009,
+1705-1722) give EFFECTIVE EQUIDISTRIBUTION of such orbits. Lane goal: does the effective rate force
+the SUP `M(n) = max_b |eta_b|` toward `avg + controlled deviation = sqrt(n log)`?
+
+**Three independent structural kills (each cited; one formalized).**
+
+1. **Equidistribution is weak-* / discrepancy = a FIXED smooth-test-functional (bulk/L^1) object;
+   the sup is L^infinity = a rare tail.** Einsiedler's survey *Effective equidistribution and
+   spectral gap* states the controlled quantity is `|(1/m) Sum_b phi(eta_b) - integral phi|` for
+   bounded-degree / Lipschitz / smooth `phi`. Detecting `max_b|eta_b|` needs `phi_T = 1_{|.|>T}` at
+   the extreme `T ~ M`, whose moment/Fourier degree must grow to resolve the rare window. EXACT-INT
+   probe `scripts/probes/rust/probe_wfH_J4_equidist_sup.rs` (beta=4): the normalized moment scale
+   `(E_r)^{1/2r}` stays well below `M` even at the deepest exact depth (`r=17..23`, `n=8..32`), and
+   the sup is hit on `<= 2` of the `m` cosets (single rare orbit point, not a density feature). =
+   fence **F0** made dynamical (sqrt(log) excess invisible to fixed-moment/2nd-order averages).
+
+2. **The abelian dilation torus has NO spectral gap; EMV needs SEMISIMPLE + finite centralizer.**
+   The dilation is a cyclic rotation on `Z/m` (diagonal/torus action). Einsiedler's survey:
+   "the torus does not possess a spectral gap ... rotation actions on tori are purely parabolic." =
+   fence **F5** (abelian torus -> zero gap), recurring verbatim on the dynamical side.
+
+3. **The only effective ABELIAN rate (Erdos-Turan-Koksma) is CIRCULAR.** ET-K bounds orbit
+   discrepancy BY a weighted sum of the very exponential sums `Sum_b e(k.eta_b)` / the `eta_b`
+   themselves. So "equidistribution => sup bound" needs a bound on those sums (i.e. on `M`) as INPUT.
+   The implication runs BACKWARDS (sup bound -> equidistribution, never the reverse). Confirmed by
+   BLMV and Venkatesh (*Sparse equidistribution problems, period bounds and subconvexity*, Ann.
+   Math. 172, 2010): there the exponential-sum/subconvexity bound DRIVES equidistribution, is never
+   an output. Adjacent: Katz's Sato-Tate equidistribution of Gauss/Gauss-period families
+   (*Convolution and Equidistribution*) is a LIMITING-DISTRIBUTION (q->inf) statement; the worst-`b`
+   at fixed `q` is outside its scope (gives density on `S^1`, never a uniform sup bound).
+
+**Brick (axiom-clean `[propext, Classical.choice, Quot.sound]`, no sorryAx, real lake build OK):**
+`Frontier/_wfHJ4_EquidistDiscrepancyBlind.lean` — the load-bearing inequality making (1)+(3) a
+genuine no-go: `powersum_le_card_mul_sup_pow` (`Sum |v|^k <= |S| M^k`), `normalized_moment_le_sup_pow`
+(normalized `k`-th moment `<= M^k` for every fixed `k`: the equidistribution-visible quantity caps at
+the AVERAGE scale, never the sup), `rare_spike_moment_diluted` (a single sup-spike contributes only
+`M^k/|S|` to the normalized `k`-moment, so a fixed `k` cannot lift it to `M` once `|S|=m` is huge —
+the prize situation the probe measures). Probe: `scripts/probes/rust/probe_wfH_J4_equidist_sup.rs`.
+
+**Why J4 is not a new escape.** Equidistribution / Ratner / EMV is a theorem about how the BULK of
+the orbit distributes (weak-* against fixed test functions); the prize is an L^infinity / worst-case
+rare-event statement. The abelian torus has no gap (F5), and its only effective discrepancy rate is
+fed by the exponential sums themselves (circular). The `sqrt(log)` BGK/Paley wall is untouched and
+OPEN. Survivor: NONE.
