@@ -1628,6 +1628,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawFallingCoeffLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawMatchingInjection
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawNegativeDependence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawTransferPrinciple
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawVanishingCoefficient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseCoeffZeros
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
