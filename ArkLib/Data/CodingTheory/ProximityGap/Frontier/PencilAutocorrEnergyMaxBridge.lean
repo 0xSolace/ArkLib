@@ -156,6 +156,19 @@ theorem sq_card_le_support_mul_maxAutocorr (S : Finset G) {M₀ : ℕ}
       exact hM₀ ρ
     _ = supp.card * M₀ := by rw [Finset.sum_const, smul_eq_mul]
 
+/-- **Consumer form of the support-aware autocorrelation pigeonhole.**  If a proposed uniform
+autocorrelation cap `M₀` is too small for the actual autocorrelation support, namely
+`#support · M₀ < |S|²`, then that cap cannot hold for every shift.  This is the direct contradiction
+form needed when a Sidon/incidence argument supplies an upper bound on support size: one must still
+pay enough maximum overlap mass to cover the first double-count. -/
+theorem not_all_autocorr_le_of_support_mul_lt_sq_card (S : Finset G) {M₀ : ℕ}
+    (hcap : (Finset.univ.filter (fun ρ : G => (S ∩ dilate ρ S).card ≠ 0)).card * M₀
+      < S.card ^ 2) :
+    ¬ ∀ ρ : G, (S ∩ dilate ρ S).card ≤ M₀ := by
+  intro hM₀
+  have hbound := sq_card_le_support_mul_maxAutocorr S hM₀
+  exact Nat.not_lt_of_ge hbound hcap
+
 /-- **Subgroup tightness of the Cauchy–Schwarz energy floor.**  For the prize object `S = H` (a
 multiplicative subgroup), the autocorrelation support is EXACTLY `H` (`subgroup_autocorr_support`),
 so `#support = |H|`, and the Cauchy–Schwarz floor `|H|⁴ ≤ #support · E_×(H)` becomes
@@ -223,6 +236,8 @@ open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms sq_card_pow_le_support_mul_mulEnergy
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms sq_card_le_support_mul_maxAutocorr
+open ProximityGap.Frontier.PencilAutocorrelation in
+#print axioms not_all_autocorr_le_of_support_mul_lt_sq_card
 open ProximityGap.Frontier.PencilAutocorrelation in
 #print axioms subgroup_maxAutocorr_ge_card_of_support
 open ProximityGap.Frontier.PencilAutocorrelation in
