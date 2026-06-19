@@ -25,10 +25,10 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 4 (domains 1–32) |
-| approaches invented | 40 |
-| REDUCES | 37 |
-| NOT_NOVEL | 0 |
+| batches run | 5 (domains 1–40) |
+| approaches invented | 47 (+1 failed: Drinfeld, server error) |
+| REDUCES | 43 |
+| NOT_NOVEL | 1 |
 | REFUTED | 3 |
 | **SURVIVES** | **0** |
 
@@ -77,5 +77,15 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 - `Ruelle resonances / thermodynamic` → REDUCES: the partition function `Σ|η_b|^{2r}` is a nonneg sum ⟹ its rate is a moment = moment-necessity.
 - `persistent homology / TDA` → **REFUTED**: persistence diagrams are distance-based (VR/Čech), provably blind to phase cancellation; machine countermodel.
 - `optimal transport / Wasserstein` → REDUCES: OT is a theory of non-negative mass; forming the measure collapses the n-unit-phase cancellation.
+
+### Batch 5 — domains 33–40 (6 REDUCES, 1 NOT_NOVEL, 1 failed, 0 survivors)
+- `quantum walk / amplitude amplification` → REDUCES: Szegedy correspondence `λ↦arccos(λ/n)` is an antitone bijection — the walk phase is the same period spectrum.
+- `online learning / regret minimax` → REDUCES: the "regret triangle" is just the triangle inequality maxed over b; clears neither obstruction.
+- `tensor network / MPS` → REDUCES: the discrete-log carry bond is volume-law ⟹ Schmidt rank = n across every cut (no low-bond-dimension bound).
+- `noncommutative geometry / spectral triple` → REDUCES: the heat trace equals η_b only at t=0 (spectrum drops out); damping only for t>0 where it ≠ η_b.
+- `p-adic Hodge / (φ,Γ)-modules / Sen weights` → REDUCES: Sen/Hodge–Tate weights are p-adic-valuation data, archimedean-blind (in-tree `_ValuationClassBarrier`); energy is an archimedean magnitude.
+- `crystalline / Newton-above-Hodge` → REDUCES: bounds the p-adic *slopes* (wrong column); the energy count is governed by archimedean magnitudes.
+- `Drinfeld modular / function-field` → FAILED (transient server error; not counted — re-roll candidate).
+- `Bourgain–Gamburd affine (deep)` → NOT_NOVEL: already in-tree (`_wfA11_affine_bg_gap`, `_wfT24_affine_koopman_density`).
 
 (batches appended below as they complete)
