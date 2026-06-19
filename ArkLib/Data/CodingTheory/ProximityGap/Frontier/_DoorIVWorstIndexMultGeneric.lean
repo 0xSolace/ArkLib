@@ -117,6 +117,19 @@ theorem not_power_coset_restricted {A : Type*} [CommGroup A] {s : Set A} {a b : 
     ∀ g : A, ¬ (∀ x ∈ s, inCoset (squares A) g x) :=
   not_subset_coset_of_ratio_not_mem ha hb hns
 
+/-- Finset-facing squares version.  This is the literal shape of the QR/non-QR probe certificate:
+a finite observed worst-index set containing one pair with non-square ratio is not confined to one
+quadratic-residue coset. -/
+theorem not_finset_power_coset_restricted {A : Type*} [CommGroup A]
+    {s : Finset A} {a b : A}
+    (ha : a ∈ s) (hb : b ∈ s) (hns : b⁻¹ * a ∉ squares A) :
+    ∀ g : A, ¬ (∀ x ∈ s, inCoset (squares A) g x) := by
+  intro g hsub
+  exact (not_power_coset_restricted (s := (s : Set A)) (a := a) (b := b)
+    (by simpa using ha) (by simpa using hb) hns) g (by
+      intro x hx
+      exact hsub x (by simpa using hx))
+
 /-!
 ### General `k`-th power cosets
 
@@ -175,6 +188,7 @@ end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_subset_coset_of_ratio_not_mem
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_power_coset_restricted
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_power_coset_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_kthPowers_of_subset_coset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_kth_power_coset_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_kth_power_coset_restricted

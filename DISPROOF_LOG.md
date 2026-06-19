@@ -7930,3 +7930,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstCoset
 new theorems `no_common_divisor_of_consecutive_gap_gcd_one` and
 `not_all_even_of_consecutive_gap_gcd_one`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-index-finite-qr-coset-obstruction] finite QR/non-QR witness forbids power-coset restriction (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1 multiplicative class-restriction refutation extending
+`_DoorIVWorstIndexMultGeneric`. The existing kernel proved the set-level squares obstruction and a
+finset-facing general `k`-th-power obstruction. This refinement adds the literal finite QR/non-QR probe
+interface: if an observed finite worst-index set contains a pair whose ratio is not a square, it is not
+contained in any single coset of the squares subgroup.
+
+VERDICT: the multiplicative half of the worst-`b` class-restriction map is now directly citable in the
+same finite shape returned by probes. A QR/non-QR escaping pair kills the quadratic-power-coset thinning
+lever without passing through moments, completion, or any CORE claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new
+theorem `not_finset_power_coset_restricted`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
