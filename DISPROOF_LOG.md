@@ -1,5 +1,13 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) recursive-ascent non-nesting follows directly from any transfer-ratio bound below one (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVWorstBNonNested`. Prior bricks recorded the boolean obstruction (`ratio < 1` gives non-nesting) and the quantitative missed-subargmax gap `(1-r)M₂`. This refinement packages the empirical certificate in the exact measured form: if `subMag b / subMag c ≤ r` with `r < 1` and `subMag c > 0`, then `b` is not a level-`(n/2)` maximizer.
+
+VERDICT: a recursive-ascent proof cannot cite a high-percentile transferred worst frequency plus a numerical ratio ceiling below one as if it were nested. Any explicit ratio bound `≤ r < 1` is already a formal witness of non-nesting. No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, axiom-clean. New theorem: `not_isSubMaximizer_of_ratio_le_lt_one`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) multiplicative coherence-slack factor still collapses to the baseline at a coherent argmax (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceSlackVacuousAtArgmax`. Prior bricks blocked vanishing, relaxed-baseline, and affine/additive coherence-slack certificates at a fully coherent prize-worst frequency. This refinement pins the ratio-style patch: a multiplicative certificate of the form

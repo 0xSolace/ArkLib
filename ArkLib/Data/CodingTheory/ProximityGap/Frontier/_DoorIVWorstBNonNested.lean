@@ -89,6 +89,18 @@ theorem witness_gap_ge_of_ratio_le {subMag : ι → ℝ} {b c : ι} {r : ℝ}
     exact (div_le_iff₀ hpos).mp hratio
   nlinarith
 
+/-- **Strict non-nesting from a bounded transfer ratio.**  The empirical form of the obstruction is
+often reported as `subMag b / subMag c ≤ r` for some explicit `r < 1` (for example `0.951`, `0.766`,
+`0.931`).  This theorem packages that certificate directly into the boolean failure of recursive
+ascent: a ratio bound below `1` forces a strictly better sub-frequency and hence `b` is not a
+level-`(n/2)` maximizer. -/
+theorem not_isSubMaximizer_of_ratio_le_lt_one {subMag : ι → ℝ} {b c : ι} {r : ℝ}
+    (hpos : 0 < subMag c) (hratio : subMag b / subMag c ≤ r) (hr : r < 1) :
+    ¬ IsSubMaximizer subMag b := by
+  have hratio' : subMag b / subMag c < 1 := lt_of_le_of_lt hratio hr
+  exact (worstB_not_nested_of_ratio_lt_one (subMag := subMag) (b := b) (c := c)
+    hpos hratio').2
+
 /-- **The witness gap is the obstruction.**  At the level-`n` worst frequency `b*`, the positive gap
 `M₂ − a* = subMag c − subMag b* > 0` (with `c` the level-`(n/2)` argmax) is exactly the amount by which
 a recursive-ascent argument that assumed `worst_n = worst_{n/2}` would be wrong: it certifies a strictly
@@ -113,4 +125,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_pos_of_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_ge_of_ratio_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.high_percentile_not_argmax
