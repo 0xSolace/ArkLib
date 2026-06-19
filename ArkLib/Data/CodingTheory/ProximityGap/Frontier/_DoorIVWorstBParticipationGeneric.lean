@@ -84,8 +84,31 @@ theorem coherence_sq_le_card_mul_sumSq
     {ι : Type*} (s : Finset ι) (w : ι → ℝ) {C : ℝ}
     (hC0 : 0 ≤ C) (hC : C ≤ ∑ j ∈ s, w j) :
     C ^ 2 ≤ (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2 := by
-  have hmono : C ^ 2 ≤ (∑ j ∈ s, w j) ^ 2 := pow_le_pow_left₀ hC0 hC 2
+  have hmono : C ^ 2 ≤ (∑ j ∈ s, w j) ^ 2 := by
+    exact pow_le_pow_left₀ hC0 hC 2
   exact le_trans hmono (sq_aligned_mass_le_card_mul_sumSq s w)
+
+/-- Floor form of the same obstruction: on a nonempty index set, the L² magnitude mass must be at
+least the squared aligned mass divided by the number of terms. Thus a large coherent
+worst-frequency sum cannot be certified without paying proportional L² mass; the
+participation/coherence route has
+not escaped the Plancherel object, it has merely rewritten it. -/
+theorem aligned_mass_sq_div_card_le_sumSq
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) :
+    (∑ j ∈ s, w j) ^ 2 / (s.card : ℝ) ≤ ∑ j ∈ s, (w j) ^ 2 := by
+  rw [div_le_iff₀ hcard]
+  simpa [mul_comm, mul_left_comm, mul_assoc] using sq_aligned_mass_le_card_mul_sumSq s w
+
+/-- Coherence-certificate floor form: if a nonnegative candidate coherent mass `C` sits below the
+aligned mass, then the L² magnitude mass is at least `C² / |s|`.  This is the contrapositive-facing
+interface used when a proposed door-(iv) anti-concentration proof tries to prove a large aligned
+participation certificate first: the certificate already forces the corresponding L² expenditure. -/
+theorem sumSq_ge_coherence_sq_div_card
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) {C : ℝ}
+    (hC0 : 0 ≤ C) (hC : C ≤ ∑ j ∈ s, w j) :
+    C ^ 2 / (s.card : ℝ) ≤ ∑ j ∈ s, (w j) ^ 2 := by
+  rw [div_le_iff₀ hcard]
+  simpa [mul_comm, mul_left_comm, mul_assoc] using coherence_sq_le_card_mul_sumSq s w hC0 hC
 
 end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
 
@@ -95,3 +118,7 @@ end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_one
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.coherence_sq_le_card_mul_sumSq
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.aligned_mass_sq_div_card_le_sumSq
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.sumSq_ge_coherence_sq_div_card

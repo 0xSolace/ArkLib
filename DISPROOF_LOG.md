@@ -7570,3 +7570,20 @@ Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstIndexMultGeneri
 VERDICT: a finite observed worst-index candidate set with one non-`k`-th-power pair ratio is already a kernel-checkable certificate against confinement to one `k`-th-power coset.  Future Lane-1 probes can cite the finite form directly instead of manually coercing probe output to `Set`.  No CORE, cancellation, completion, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new theorems `not_finset_subset_coset_of_ratio_not_mem` and `not_finset_kth_power_coset_restricted`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-participation-l2-floor] coherent participation forces proportional L² mass (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstBParticipationGeneric`. Prior kernel
+recorded the Cauchy-Schwarz upper control `(Σ w_j)^2 ≤ |s| · Σ w_j^2`, showing aligned worst-b mass is
+an L²/Plancherel object. This refinement packages the contrapositive-facing floor form:
+
+`(Σ w_j)^2 / |s| ≤ Σ w_j^2`, and more generally `C^2 / |s| ≤ Σ w_j^2` whenever `0≤C≤Σw_j`.
+
+VERDICT: a large coherent participation certificate already forces proportional L² magnitude mass.
+Thus a door-(iv) anti-concentration route based on aligned participation/coherence has not escaped the
+Plancherel object; it has merely rewritten the required L² expenditure. No CORE, cancellation,
+completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParticipationGeneric.lean`,
+new theorems `aligned_mass_sq_div_card_le_sumSq` and `sumSq_ge_coherence_sq_div_card`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.
