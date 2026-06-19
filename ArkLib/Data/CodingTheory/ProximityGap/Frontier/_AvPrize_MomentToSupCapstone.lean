@@ -53,6 +53,9 @@ with all open content isolated in the one hypothesis. **Not** a proof of the pri
 * `moment_to_sup_budget` — `M² ≤ e·(2rn)` from the budget `M^{2r} ≤ (p−1)·(2rn)ʳ`, `r ≥ log(p−1)`.
 * `prize_sup_sqrt` — the prize form `M ≤ 2√e·√(n·log p)` from the budget, `log(p−1) ≤ r ≤ 2 log p`.
 * `prize_sup_of_saddle` — the end-to-end conditional theorem with every chain link named.
+* `wickOdd_le_pow` — `(2r−1)‼ ≤ (2r)ʳ`, discharging the last elementary hypothesis.
+* `prize_sup_of_saddle_concrete` — the fully concrete capstone (`Wick = (2r−1)‼·nʳ`), bottoming
+  out on the SINGLE open input `hsaddle` = BGK at β=4.
 -/
 
 namespace ProximityGap.Frontier.MomentToSup
@@ -157,6 +160,46 @@ theorem prize_sup_of_saddle (M n p r S E Wick : ℝ)
       _ ≤ (p - 1) * (2 * r * n) ^ r := mul_le_mul_of_nonneg_left hwick hp1
   exact prize_sup_sqrt M n p r hM hn hp hr hrlo hrhi hbudget
 
+/-! ## Discharging the last elementary hypothesis: `(2r−1)‼ ≤ (2r)ʳ` -/
+
+/-- The odd double factorial `(2r−1)‼ = 1·3·5···(2r−1)` as a real product `∏_{i<r}(2i+1)`. This is
+the Gaussian/Wick factor: `Wick_r = (2r−1)‼·nʳ` is the proven char-0 backbone bound on `E_r(ℂ)`. -/
+noncomputable def wickOdd (r : ℕ) : ℝ := ∏ i ∈ Finset.range r, (2 * (i : ℝ) + 1)
+
+/-- **`(2r−1)‼ ≤ (2r)ʳ`** (real form). Each of the `r` odd factors `2i+1` (`i < r`) is `≤ 2r`, so
+the product is below `(2r)ʳ`. This discharges the `hwick` hypothesis of `prize_sup_of_saddle`,
+leaving `hsaddle` (= BGK at β=4) as the single open input. -/
+theorem wickOdd_le_pow (r : ℕ) : wickOdd r ≤ (2 * (r : ℝ)) ^ r := by
+  unfold wickOdd
+  calc ∏ i ∈ Finset.range r, (2 * (i : ℝ) + 1)
+      ≤ ∏ _i ∈ Finset.range r, (2 * (r : ℝ)) := by
+        refine Finset.prod_le_prod (fun i _ => by positivity) (fun i hi => ?_)
+        have : (i : ℝ) + 1 ≤ (r : ℝ) := by exact_mod_cast Nat.succ_le_of_lt (Finset.mem_range.mp hi)
+        linarith
+    _ = (2 * (r : ℝ)) ^ r := by rw [Finset.prod_const, Finset.card_range]
+
+/-- **Fully concrete end-to-end theorem — the single open input.** Same as `prize_sup_of_saddle` but
+with `Wick` instantiated as the genuine Gaussian moment `(2r−1)‼·nʳ` (`= wickOdd r * n^r`), and the
+former elementary hypothesis `hwick` now PROVEN via `wickOdd_le_pow`. So the only remaining input
+beyond the trivial `hsup` and the proven char-0 anchor `hbessel` is `hsaddle` = `SaddleEnergyBound`
+= BGK/Paley at β=4. Conclusion: the prize sup bound `M ≤ 2√e·√(n·log p)`. -/
+theorem prize_sup_of_saddle_concrete (M n p S E : ℝ) (r : ℕ)
+    (hM : 0 ≤ M) (hn : 0 ≤ n) (hp : 3 ≤ p) (hr : 1 ≤ r)
+    (hrlo : Real.log (p - 1) ≤ (r : ℝ)) (hrhi : (r : ℝ) ≤ 2 * Real.log p)
+    (hsup : (M ^ 2) ^ (r : ℝ) ≤ S) (hsaddle : S ≤ (p - 1) * E)
+    (hbessel : E ≤ wickOdd r * n ^ r) :
+    M ≤ 2 * Real.sqrt (Real.exp 1) * Real.sqrt (n * Real.log p) := by
+  have hrpos : (0 : ℝ) < (r : ℝ) := by exact_mod_cast hr
+  -- `Wick = (2r−1)‼·nʳ ≤ (2r)ʳ·nʳ = (2rn)ʳ`, now PROVEN (no longer a hypothesis)
+  have hwick : wickOdd r * n ^ r ≤ (2 * (r : ℝ) * n) ^ (r : ℝ) := by
+    have h1 : wickOdd r * n ^ r ≤ (2 * (r : ℝ)) ^ r * n ^ r :=
+      mul_le_mul_of_nonneg_right (wickOdd_le_pow r) (pow_nonneg hn r)
+    calc wickOdd r * n ^ r ≤ (2 * (r : ℝ)) ^ r * n ^ r := h1
+      _ = (2 * (r : ℝ) * n) ^ r := by rw [← mul_pow]
+      _ = (2 * (r : ℝ) * n) ^ (r : ℝ) := by rw [Real.rpow_natCast]
+  exact prize_sup_of_saddle M n p (r : ℝ) S E (wickOdd r * n ^ r)
+    hM hn hp hrpos hrlo hrhi hsup hsaddle hbessel hwick
+
 end ProximityGap.Frontier.MomentToSup
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -165,3 +208,5 @@ end ProximityGap.Frontier.MomentToSup
 #print axioms ProximityGap.Frontier.MomentToSup.moment_to_sup_budget
 #print axioms ProximityGap.Frontier.MomentToSup.prize_sup_sqrt
 #print axioms ProximityGap.Frontier.MomentToSup.prize_sup_of_saddle
+#print axioms ProximityGap.Frontier.MomentToSup.wickOdd_le_pow
+#print axioms ProximityGap.Frontier.MomentToSup.prize_sup_of_saddle_concrete
