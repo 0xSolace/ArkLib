@@ -6147,3 +6147,32 @@ dyadic-imbalance descent can thin the worst frequency or supply a `√`-cancella
 door-(iv) descent must act on a NON-negation-stable / non-magnitude statistic, not on a heavy/light
 half asymmetry. Refuted-lever brick only: no CORE cancellation, no completion, no moment, no capacity.
 Axioms: propext, Classical.choice, Quot.sound.
+
+## [door-iv-worstb-non-nested] level-n worst frequency is NOT the level-(n/2) argmax — recursive-ascent is dead (2026-06-19, sol)
+Lane: Door-(iv) localized object, Lane 3 constraint (refuted lever with mechanism).
+At the level-n worst b* (argmax ‖η_b‖), the subgroup half A_{b*}=Σ_{y∈μ_{n/2}} e_p(b*·y) is itself a
+period over μ_{n/2}. A recursive-ascent lever would BUILD the level-n worst from the level-(n/2) worst,
+assuming worst-b is NESTED (b* also maximizes the thinner sub-period ‖A_b‖).
+
+Probe `scripts/probes/probe_dooriv_worstb_nesting.py` (proper μ_n, p≫n³, structured primes, never
+n=q-1). The decisive evidence is the FULL F_p* scans (global argmax, no sampling): at n=16 β=4,
+n=16 β=4.3, n=32 β=3.5 the level-n worst b* lands at the 97.2–99.9th percentile of the level-(n/2)
+sub-period magnitudes (strongly cross-scale CORRELATED) BUT is strictly NOT the global sub-argmax:
+transfer ratio ‖A_{b*}‖/max_b‖A_b‖ = 0.951 / 0.766 / 0.931 (all < 1, never exact). The ratio is smaller
+at the deeper-β full scan (0.766 at β=4.3 vs 0.951 at β=4, same n=16), i.e. deeper β widens the gap.
+Deeper-β SAMPLED runs (flagged: best_b and sub-max both from the same random sample, NOT a global
+argmax claim) show the same high-percentile/ratio<1 pattern (ratio 0.89/0.74/0.70) as a consistency
+check only; the constraint rests on the full-scan global-argmax data, where ratio<1 is exact.
+
+Lean (axiom-clean, `Frontier/_DoorIVWorstBNonNested.lean`): high percentile ≠ argmax-identity. If the
+transferred sub-period a*=subMag b* is strictly below the level-(n/2) max M₂=subMag c at the true
+sub-argmax c (the probe: ratio<1), then `worstB_not_nested_of_ratio_lt_one`: b*≠c and b* is not a
+sub-maximizer; `witness_gap_pos_of_lt`: the gap M₂−a*>0 certifies a strictly better sub-frequency b*
+misses; `high_percentile_not_argmax`: even dominating every other sub-magnitude doesn't make b* a
+maximizer. The recursion needs argmax-identity; the probe gives only high percentile.
+
+VERDICT (does NOT close CORE): on the full-scan global-argmax data the dyadic tower's worst frequencies
+are correlated but genuinely DISTINCT (ratio<1 always, gap widening at deeper β), so no recursive-ascent
+that identifies worst_n with worst_{n/2} is sound. Refuted-lever brick only: no CORE cancellation, no
+completion, no moment, no capacity.
+Axioms: propext, Classical.choice, Quot.sound.
