@@ -5734,3 +5734,44 @@ subdivision.
 
 Lean: `exists_piece_rayProj_lt_of_complexPieceCoherence_le` in
 `Frontier/_DoorIVSectorCoherence.lean`, axiom-clean.  No CORE/capacity claim.
+## [door-iv-worstb-coset-index-unstructured] the worst-b COSET-INDEX set is arithmetically generic in the quotient Z_k — no 2-adic-depth / AP-sublattice / mod-d residue class-restriction lever for door-(iv) anti-concentration (2026-06-18, opus-4-8 subagent)
+
+Lane: door-(iv) Lane 1, the brief's VERBATIM open question "what arithmetic of b selects the worst
+coset alignment? is the worst-b set itself structured?". A door-(iv) anti-concentration bound could be
+NARROWED if the adversarial frequency b were forced into a thin distinguished class (a coset of a
+proper sublattice / arithmetic progression / fixed 2-adic-valuation / mod-d residue class) of the
+period quotient Z_k, k=(p-1)/n — restricting the sup to a sub-population. THIS probe is distinct from
+(a) the worst-b VALUE-side quotient arithmetic [1e22ed805] (gcd of worst-b values -> scattered) and
+(b) the worst-b INTERNAL complex geometry [78d1df596] (term participation -> generic EVT). Here the
+object is the COSET-INDEX arithmetic: 2-adic valuation, AP/gap structure, and mod-d residues of the
+argmax-coset index worst_j in Z_k.
+
+PROBE (scripts/probes/probe_dooriv_worstb_class_structure{,2}.py): EXACT integer phases, PROPER mu_n,
+p ~ n^4 >> n^3, multiple structured primes per n, never n=q-1. FULL coset scan at n=16,32; UNIFORM
+RANDOM sampling of 40k coset indices across the WHOLE quotient Z_k at n=64,128 (codex P2 fix: NOT a
+first-prefix scan, so the argmax estimate + residue statistics are unbiased; flagged as sampled).
+For the argmax-coset index worst_j over the cyclic quotient Z_k:
+  * 2-adic valuation v_2(worst_j) is NOT deep: mean v_2 over GENERIC primes ~= 0.2-1.8, fluctuating
+    around the Geometric(1/2) expectation 1.0 of a uniformly random integer. (The lone v_2=99 at the
+    Fermat prime p=65537, worst_j=0, is the known finite-size Fermat artifact and is EXCLUDED from the
+    aggregate per codex P2 fix; with it excluded n=16 mean-v2=0.50, fully consistent with random.)
+    Worst index is NOT 2-adically structured.
+  * NO arithmetic-progression / sublattice structure: the gcd of consecutive gaps of the top coset
+    indices is 1 for EVERY prime tested (full-scan at n=16,32; uniform-sampled at n=64,128). A set
+    whose consecutive-difference gcd is 1 is not contained in any proper residue class r + d*Z, d>=2.
+  * NO mod-d residue bias: the j mod 3 distribution of the top set is flat (~0.33).
+  * (A v1 artifact "chi2(worst_b)=+1 always" was self-caught + corrected: it was a SCAN ARTIFACT of
+    enumerating b=g^j with even j by construction, not a real QR-class bias.)
+
+VERDICT: the worst-b coset-index set is ARITHMETICALLY GENERIC in the quotient — no 2-adic depth, no
+AP/sublattice (gap-gcd=1), no mod-d residue lock. A door-(iv) anti-concentration bound CANNOT exploit
+a class-restriction of the worst-b set to thin the search: the adversarial b ranges over an
+arithmetically unstructured population. Another door-(iv) class-restriction lever mapped DEAD.
+
+Lean Frontier/_DoorIVWorstCosetIndexUnstructured.lean (4 thms, axiom-clean, axioms subset
+{propext,Classical.choice,Quot.sound}): dvd_sub_of_same_residue, dvd_diff_of_mem_progression,
+no_proper_progression_of_consecutive_gap_gcd_one (the enabling obstruction: consecutive-gap-gcd=1
+forbids ANY proper AP r0+d*Z, d>=2, over a worst-index triple — turns the probe's gap-gcd=1 into a
+genuine no-AP obstruction), worst_index_not_parity_restricted (the d=2 specialization matching the
+random v_2). Verification: pg-iterate OK, locked full build OK (3297 jobs), axioms clean, codex-review.
+No CORE/cancellation/capacity claim.
