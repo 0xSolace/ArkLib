@@ -1588,6 +1588,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegativeAssocMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NewANTInputBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NextDifferenceVariety
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoExcessOnsetThreshold
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OPDescentFromAntitoneOrbitCount
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_AgreementDepthMerge

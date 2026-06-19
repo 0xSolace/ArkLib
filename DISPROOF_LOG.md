@@ -6751,3 +6751,26 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawVal
 New theorems: `shawValue_nonneg`, `shawValue_sq_eq_flatnessRatio`,
 `shawValue_sq_le_of_secondMoment_le`, and `shawValue_sq_le_iff_secondMoment_le`.  Axioms are contained
 in `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
+## [no-fifth-door-tetrachotomy] doors (i)-(iii) overshoot the prize scale by √L; only door (iv) can certify M=O(√n) (2026-06-19, sol)
+Lane-3 tetrachotomy backbone for Shaw's "Shaw Value" essay (#444, 2026-06-18). The essay proves a
+tetrachotomy with NO FIFTH DOOR: every mechanism bounding the worst-frequency monomial-sup M(n) is
+door (i) moment/symmetric-function, (ii) √q-completion, (iii) extreme-value/equidistribution, or
+(iv) a genuinely new monomial-sum evaluation. Doors (i)-(iii) are proven dead. This locks the
+SEPARATION + EXCLUSION that makes "door (iv) is the only live door" kernel-checked, not prose.
+
+Quantitative core: every classical (i)/(ii)/(iii) mechanism certifies a bound no smaller than the
+BGK scale bgkScale n L = √(n·L), and in the thin prize regime L=log(p/n)>1 the BGK scale STRICTLY
+exceeds the prize scale prizeScale n = √n (ratio = √L). Hence a classical mechanism's certified scale
+is > √n and can NEVER witness M ≤ √n. The no-fifth-door capstone: any mechanism certifying a
+prize-scale bound (certScale ≤ √n) under classical-overshoot must have door = newEvaluation.
+
+Formal kernel: `Frontier/_NoFifthDoorTetrachotomy.lean` (axiom-clean, ⊆ {propext, Classical.choice,
+Quot.sound}; locked module build exit 0, 1971 jobs). Theorems: prizeScale_lt_bgkScale (√n < √(nL)
+for L>1), bgkScale_div_prizeScale (ratio = √L), certScale_gt_prizeScale_of_overshoot,
+not_certifies_prizeScale_of_overshoot (classical door CANNOT certify prize scale),
+forces_doorIV (the no-fifth-door capstone), prizeCertifying_subset_doorIV. NON-VACUITY verified
+in-kernel: hypotheses jointly satisfiable (door-(iv) mechanism at √n), strict inequality has real
+content (2 < √8), classical-at-BGK genuinely FAILS the prize certificate. NO CORE/cancellation/
+completion/moment-saving/capacity claim — this is the tetrachotomy exclusion backbone, with door (iv)
+itself (the worst-b coset-half coherence anti-concentration) left as the open wall.
