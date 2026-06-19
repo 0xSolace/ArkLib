@@ -230,6 +230,21 @@ theorem realizableStep_all_or_nothing [Fact (Nat.Prime p)] (val : T → ZMod p)
   rwa [hz] at hmem
 
 
+/-- **Nontrivial value-shift forces a flat histogram.** In a prime field, one nonzero realizable
+step makes every step realizable by `realizableStep_all_or_nothing`; applying histogram periodicity
+with the step `b - a` shows every two fibers have equal cardinality. Thus the only way the
+value-shift route can have a genuine free part is if the value map is perfectly equidistributed
+across residues. The prize probes exhibit non-flat histograms, so they sit in the trivial-shift case. -/
+theorem nontrivial_valueShift_forces_flat_histogram [Fact (Nat.Prime p)] (val : T → ZMod p)
+    {s : ZMod p} (hs : s ≠ 0) (hreal : ∃ vs : ValueShift val, vs.s = s) :
+    ∀ a b : ZMod p, fiberCard val a = fiberCard val b := by
+  intro a b
+  obtain ⟨vs, hvs⟩ := realizableStep_all_or_nothing val s hs hreal (b - a)
+  have hper := valueShift_histogram_periodic val vs a
+  rw [hvs] at hper
+  convert hper using 2
+  ring
+
 /-- **Single-witness collapse (contrapositive form).** In a prime field, because realizable steps are
 all-or-nothing, a single nonzero step with a non-periodic fiber histogram forces every value-shift to
 have trivial step `0`. This is stronger than requiring a separate histogram witness for every nonzero
@@ -264,6 +279,7 @@ open ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction
 #print axioms realizableStep_add
 #print axioms realizableStep_zero
 #print axioms realizableStep_all_or_nothing
+#print axioms nontrivial_valueShift_forces_flat_histogram
 #print axioms valueShift_step_zero_of_one_histogram_witness
 #print axioms valueShift_route_vacuous_of_one_histogram_witness
 end AxiomAudit

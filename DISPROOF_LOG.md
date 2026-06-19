@@ -7961,3 +7961,20 @@ No CORE, cancellation, completion, moment-saving, anti-concentration, or capacit
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new
 theorem `ratio_mem_squares_of_subset_coset`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-valueshift-flat-histogram-necessity] nontrivial value-shift free part forces perfect fiber equidistribution (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVValueShiftHistogramObstruction`. Prior kernel
+proved the realizable value-shift steps form an all-or-nothing additive subgroup in prime fields and that
+one histogram mismatch collapses the route to the trivial shift. This refinement states the positive-side
+necessity directly: if any nonzero value-shift step is realizable, then every two residues have equal
+fiber cardinality.
+
+VERDICT: a useful value-shift/free-part anti-concentration route requires a perfectly flat fiber
+histogram, not merely value-set invariance. The prize probes exhibit sharply non-flat fiber histograms,
+so the route remains in the trivial-shift/vacuous-spreading case. No CORE, cancellation, completion,
+moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVValueShiftHistogramObstruction.lean`,
+new theorem `nontrivial_valueShift_forces_flat_histogram`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
