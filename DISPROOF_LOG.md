@@ -5707,3 +5707,17 @@ for the adversarial pieces; an epsilon improvement cannot be obtained from bookk
 Lean: extended `Frontier/_DoorIVCommonRayCoherence.lean` with `norm_sum_le_sum_norm`,
 `complexPieceCoherence_le_one`, and `commonRay_not_complexPieceCoherence_le_one_sub`, axiom-clean.
 No CORE/capacity claim.
+
+## [door-iv-sector-coherence] constraint — near-ray sectors still block strict coherence drops (2026-06-18, g55 subagent)
+
+Lane: Door-(iv) Lane 3 constraint lemma, following the common-ray and two-piece same-ray
+obstructions.  Common-ray saturation (`ρ=1`) is not the only trap: if every complex piece has
+projection at least `c·‖z‖` along one unit direction, then the normalized piece coherence satisfies
+`c ≤ ρ`.  Therefore any claimed bound `ρ ≤ θ` must prove that the worst-frequency phase pieces escape
+every sector with projection floor `c > θ`; merely proving a decomposition is not exactly collinear,
+or subdividing it further, is insufficient.
+
+Machine-checked brick: `Frontier/_DoorIVSectorCoherence.lean` proves
+`sector_floor_le_complexPieceCoherence` and `not_complexPieceCoherence_le_of_sector_floor` by real
+projection and the complex norm bound.  This is a constraint theorem only, not a CORE/cancellation
+claim: it localizes the door-(iv) obligation to quantitative angular spread of the pieces.
