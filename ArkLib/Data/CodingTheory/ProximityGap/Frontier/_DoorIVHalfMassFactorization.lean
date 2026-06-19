@@ -127,6 +127,18 @@ theorem norm_ge_of_coherence_ge_of_halfMass_ge {A B : E} {rho H : ℝ}
   have hcoh0 : 0 ≤ coherence A B := le_trans hrho0 hcoh
   exact mul_le_mul hcoh hmass hH0 hcoh0
 
+/-- **Upper-bound transfer through the split.**  Conversely, an upper bound on coherence and an upper
+bound on half-mass transfer multiplicatively to an upper bound on the original period norm.  This names
+exactly what a successful coset-half route must prove: either a genuine coherence drop or a genuine
+half-mass upper bound (or both).  The algebra itself supplies no saving. -/
+theorem norm_le_of_coherence_le_of_halfMass_le {A B : E} {rho H : ℝ}
+    (h : 0 < halfMass A B) (hrho0 : 0 ≤ rho)
+    (hcoh : coherence A B ≤ rho) (hmass : halfMass A B ≤ H) :
+    ‖A + B‖ ≤ rho * H := by
+  rw [norm_eq_coherence_mul_halfMass h]
+  have hmass0 : 0 ≤ halfMass A B := halfMass_nonneg A B
+  exact mul_le_mul hcoh hmass hmass0 hrho0
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_nonneg
@@ -140,3 +152,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_lt_one_iff_norm_lt_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_ge_of_coherence_ge_of_halfMass_ge
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_le_of_coherence_le_of_halfMass_le
