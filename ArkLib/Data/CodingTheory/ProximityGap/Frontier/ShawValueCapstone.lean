@@ -127,6 +127,20 @@ theorem shawValue_le_of_trivial_ceiling {M n L : ℝ} (hs : 0 < prizeScale n L) 
   unfold shawValue
   exact div_le_div_of_nonneg_right hceil (le_of_lt hs)
 
+
+/-- Raw comparison survives Shaw-value normalization with the same constant.  In particular, when
+`M` is the prize supremum and `H` is the worst half-mass target, a pointwise comparison `H ≤ K·M`
+becomes `Sh(H) ≤ K·Sh(M)` after dividing by the positive prize scale.  This is only normalization
+bookkeeping; the analytic input remains the raw comparison itself. -/
+theorem shawValue_le_mul_shawValue_of_le_mul {M H K n L : ℝ}
+    (hs : 0 < prizeScale n L) (hHM : H ≤ K * M) :
+    shawValue H n L ≤ K * shawValue M n L := by
+  unfold shawValue
+  have h1 : H / prizeScale n L ≤ (K * M) / prizeScale n L :=
+    div_le_div_of_nonneg_right hHM (le_of_lt hs)
+  have h2 : (K * M) / prizeScale n L = K * (M / prizeScale n L) := by ring
+  exact h2 ▸ h1
+
 /-! ## The two-sided Shaw-value bracket: the citable framing of the open prize
 
 The prize asks to collapse the *width* of the bracket below to an absolute constant.  The two
@@ -225,6 +239,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_bracket
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
