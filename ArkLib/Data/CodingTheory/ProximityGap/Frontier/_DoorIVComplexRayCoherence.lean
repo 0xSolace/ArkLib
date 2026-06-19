@@ -40,7 +40,79 @@ theorem twoPieceNormCoherence_le_one {x y : E} (hden : 0 < ‖x‖ + ‖y‖) :
     div_le_div_of_nonneg_right htri (le_of_lt hden)
   simpa [div_self (ne_of_gt hden)] using hdiv
 
-variable [NormedSpace ℝ E] [StrictConvexSpace ℝ E]
+variable [NormedSpace ℝ E]
+
+/-! ## Finite-refinement same-ray obstruction
+
+The same triangle-equality obstruction persists for any finite refinement: if every vector piece is a
+nonnegative scalar multiple of one common vector, then the normalized multi-piece coherence is exactly
+`1`.  Thus a strict multi-piece phase-saving theorem must prove that the adversarial pieces are not all
+carried by a common nonnegative ray.
+-/
+
+/-- Normalized norm coherence of finitely many vector pieces. -/
+noncomputable def multiPieceNormCoherence {ι : Type*} (s : Finset ι) (A : ι → E) : ℝ :=
+  ‖∑ i ∈ s, A i‖ / (∑ i ∈ s, ‖A i‖)
+
+/-- If every piece lies on the same nonnegative ray `ℝ_{≥0} • u` and the scalar mass is
+positive, then multi-piece norm coherence is exactly `1`.  Subdivision alone supplies no phase
+cancellation while the pieces remain collinear on one nonnegative ray. -/
+theorem multiPieceNormCoherence_eq_one_of_common_nonneg_ray {ι : Type*}
+    (s : Finset ι) (A : ι → E) (u : E) (c : ι → ℝ)
+    (hA : ∀ i ∈ s, A i = c i • u)
+    (hc : ∀ i ∈ s, 0 ≤ c i)
+    (hsum_pos : 0 < ∑ i ∈ s, c i) (hu : u ≠ 0) :
+    multiPieceNormCoherence s A = 1 := by
+  have hsum_nonneg : 0 ≤ ∑ i ∈ s, c i := le_of_lt hsum_pos
+  have hnormu_pos : 0 < ‖u‖ := norm_pos_iff.mpr hu
+  have hsumA : (∑ i ∈ s, A i) = (∑ i ∈ s, c i) • u := by
+    calc
+      (∑ i ∈ s, A i) = ∑ i ∈ s, c i • u := by
+        exact Finset.sum_congr rfl (fun i hi => hA i hi)
+      _ = (∑ i ∈ s, c i) • u := by
+        rw [Finset.sum_smul]
+  have hnum : ‖∑ i ∈ s, A i‖ = (∑ i ∈ s, c i) * ‖u‖ := by
+    rw [hsumA, norm_smul, Real.norm_eq_abs, abs_of_nonneg hsum_nonneg]
+  have hden : (∑ i ∈ s, ‖A i‖) = (∑ i ∈ s, c i) * ‖u‖ := by
+    calc
+      (∑ i ∈ s, ‖A i‖) = ∑ i ∈ s, c i * ‖u‖ := by
+        refine Finset.sum_congr rfl ?_
+        intro i hi
+        rw [hA i hi, norm_smul, Real.norm_eq_abs, abs_of_nonneg (hc i hi)]
+      _ = (∑ i ∈ s, c i) * ‖u‖ := by
+        rw [Finset.sum_mul]
+  have hprod_ne : (∑ i ∈ s, c i) * ‖u‖ ≠ 0 := ne_of_gt (mul_pos hsum_pos hnormu_pos)
+  unfold multiPieceNormCoherence
+  rw [hnum, hden, div_self hprod_ne]
+
+/-- Threshold obstruction: any multi-piece coherence theorem proving a strict bound below `1` must
+rule out common nonnegative-ray alignment of all pieces. -/
+theorem not_common_nonneg_ray_of_multiPieceNormCoherence_le {ι : Type*}
+    (s : Finset ι) (A : ι → E) {θ : ℝ}
+    (hθ : θ < 1) (hcoh : multiPieceNormCoherence s A ≤ θ) :
+    ¬ ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ s, A i = c i • u) ∧
+      (∀ i ∈ s, 0 ≤ c i) ∧
+      0 < (∑ i ∈ s, c i) ∧ u ≠ 0 := by
+  rintro ⟨u, c, hA, hc, hsum_pos, hu⟩
+  have hone : multiPieceNormCoherence s A = 1 :=
+    multiPieceNormCoherence_eq_one_of_common_nonneg_ray s A u c hA hc hsum_pos hu
+  linarith
+
+/-- Epsilon-drop form: a positive `1 - ε` saving is impossible while all pieces may lie on one
+common nonnegative ray. -/
+theorem common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub {ι : Type*}
+    (s : Finset ι) (A : ι → E) {ε : ℝ}
+    (hε : 0 < ε)
+    (hray : ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ s, A i = c i • u) ∧
+      (∀ i ∈ s, 0 ≤ c i) ∧
+      0 < (∑ i ∈ s, c i) ∧ u ≠ 0) :
+    ¬ multiPieceNormCoherence s A ≤ 1 - ε := by
+  intro hcoh
+  exact not_common_nonneg_ray_of_multiPieceNormCoherence_le s A (sub_lt_self 1 hε) hcoh hray
+
+variable [StrictConvexSpace ℝ E]
 
 /-- Saturation of two-piece norm coherence is exactly triangle-equality saturation, hence the two
 pieces lie on the same nonnegative ray.  This is the complex/phase analogue of the real same-sign
@@ -98,3 +170,6 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_of_not_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_common_nonneg_ray_of_multiPieceNormCoherence_le
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub

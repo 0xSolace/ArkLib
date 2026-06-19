@@ -6318,3 +6318,21 @@ p≫n³): worst-b budget enrichment over random DECAYS to ~1 as n grows (1.39× 
 band-avoidance gap CLOSES at scale (n=128: ≈equal). ⇒ the bottom-level single-pair cancellation is
 b-BLIND AT SCALE — the worst-b cosine profile converges to the typical-b profile; the √-cancellation
 does NOT come from worst-b band-avoidance. Refuted-lever brick; no CORE/cancellation/capacity claim.
+
+## [door-iv-multipiece-common-ray] finite refinements do not create coherence slack while pieces stay on one nonnegative ray (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma, extending the two-piece same-ray obstruction
+(`_DoorIVComplexRayCoherence`) from a two-piece split to arbitrary finite refinements.
+
+Formalized axiom-clean in `_DoorIVComplexRayCoherence.lean`: for any finite index set of vector
+pieces in a real normed space, if every piece has the form `A_i = c_i • u` with `c_i ≥ 0`, total scalar
+mass `Σ c_i > 0`, and `u ≠ 0`, then normalized multi-piece norm coherence
+`‖Σ_i A_i‖ / Σ_i ‖A_i‖` is exactly `1`. Consequently any theorem claiming a strict coherence bound
+`≤ θ` with `θ < 1` must first rule out a common nonnegative-ray representation of the adversarial
+pieces; equivalently a positive `1-ε` saving is impossible while all pieces may remain collinear on
+one ray.
+
+Mechanism: the triangle inequality is saturated under common nonnegative-ray alignment, so subdivision
+alone supplies no phase cancellation. Door-(iv) multi-piece attacks must prove genuine non-collinearity
+or signed/two-sided mass, not merely refine the coset split. This is a constraint lemma only: no CORE
+bound, no moment/completion route, no capacity claim.
