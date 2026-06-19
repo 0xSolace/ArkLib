@@ -1488,6 +1488,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoEnergyValueEnv
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoNearSidonImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoSavingSensitivity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceReality
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceDiagonalExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DilationZeroEntropyNoGo

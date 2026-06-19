@@ -6531,3 +6531,32 @@ and `secondMoment_abs_re_le_iff_firstMoment_modulus_le`, axiom-clean with axioms
 `{propext, Classical.choice, Quot.sound}`.  This removes another bookkeeping ambiguity from the
 Katz/Lang-Weil attack surface.  No modulus estimate is proved; no CORE/cancellation/completion/moment
 saving/capacity claim is made.
+
+## [difftrace-diagonal-extraction] the variance-core off-diagonal trace = FULL point count − explicit #Rel main term (2026-06-19, sol)
+Door-(iv) variance-core frontier-movement extension of `_NextDifferenceVariety` / `_DiffTraceReality`.
+The named open core `FirstMomentDiffCancellation` bounds `(DiffTrace).re`, where `DiffTrace` is the
+PUNCTURED off-diagonal first moment `Σ_T Σ_{T'≠T} Jphase(diffTuple T T')`.  A Lang-Weil / Katz point
+count, however, naturally produces the UNPUNCTURED full sum `FullTrace = Σ_T Σ_{T'∈Rel} Jphase(diffTuple)`
+(including the diagonal `T=T'`).  This entry extracts the diagonal explicitly.
+
+Mechanism: for a unit additive character θ, every `Jphase θ x` is a unit (`Jphase_normSq_eq_one`), so
+by `pairCorr_eq_diff` specialized to `T'=T` each diagonal term `Jphase(diffTuple T T) = Jphase(T)·conj
+Jphase(T) = |Jphase(T)|² = 1` (`diffTuple_diag_eq_one`).  Hence the diagonal contributes exactly `#Rel`
+and the EXACT identity holds:
+    FullTrace θ Rel = #Rel + DiffTrace θ Rel,   i.e.   DiffTrace = FullTrace − #Rel.
+The `#Rel`-sized diagonal is the EXPLICIT MAIN TERM a Katz/Lang-Weil estimate on the full point count
+must subtract to recover the variance-core off-diagonal object.  Consumer `fullTrace_sub_card_modulus_to_core`:
+`‖FullTrace − #Rel‖ ≤ S ⟹ FirstMomentDiffCancellation θ Rel S` (combines diagonal extraction +
+`_DiffTraceReality` realness via `Complex.re_le_norm`).
+
+PROBE (`scripts/probes/probe_dooriv_difftrace_diagonal_extraction.py`; proper μ_n<F_p*, p≫n³, never
+n=q−1; n=16,32,64, β∈{4,4.5}, r∈{3,4,5}): diagonal term `Jphase(diffTuple T T) = 1` to ≤4e−15;
+factorization `Jphase(diffTuple)=Jphase(T)·conj Jphase(T')` to ≤5e−15; decomposition `FullTrace =
+#Rel + DiffTrace` to ≤8e−14.  Concretely `Full.re = #Rel²`, `Diff.re = #Rel² − #Rel`, diagonal = #Rel.
+
+Formal kernel: `Frontier/_DiffTraceDiagonalExtraction.lean` (6 thms): `Jphase_normSq_eq_one`,
+`diffTuple_diag_eq_one`, `FullTrace`/`fullDiagonal_eq_card`, `fullTrace_eq_card_add_diffTrace`,
+`diffTrace_eq_fullTrace_sub_card`, `fullTrace_sub_card_modulus_to_core`.  Axiom-clean (axioms ⊆
+{propext, Classical.choice, Quot.sound}); locked module build exit 0 (3312 jobs).  NO CORE/cancellation/
+completion/moment-saving/capacity claim — `FullTrace` is NOT bounded here; this is a structural
+diagonal-extraction identity + the consumer bridge naming the explicit main term.
