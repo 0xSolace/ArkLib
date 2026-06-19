@@ -25,12 +25,17 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 5 (domains 1–40) |
-| approaches invented | 47 (+1 failed: Drinfeld, server error) |
-| REDUCES | 43 |
+| batches run | 6 (domains 1–48 — POOL COMPLETE) |
+| approaches invented | 55 (+1 failed) |
+| REDUCES | 47 |
 | NOT_NOVEL | 1 |
-| REFUTED | 3 |
+| REFUTED | 7 |
 | **SURVIVES** | **0** |
+
+> POOL (48 domains) exhausted at batch 6, 0 survivors. Batch 7+ = extended fresh domains + cross-domain
+> hybrids. Also running in parallel: `ambitious-deep-assault` (meta-attack: break the obstructions
+> themselves, backward-construction, non-Fourier/Walsh, RG bootstrap, holonomic/WZ, info-theoretic, wild
+> leap; repair-before-refute).
 
 > Note: domains 1–8 were independently invented+refuted **twice** (an `args`-propagation bug re-ran batch 1
 > before being fixed); both runs gave 8/8 REDUCES with *different* inventions — strong independent confirmation.
@@ -87,5 +92,15 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 - `crystalline / Newton-above-Hodge` → REDUCES: bounds the p-adic *slopes* (wrong column); the energy count is governed by archimedean magnitudes.
 - `Drinfeld modular / function-field` → FAILED (transient server error; not counted — re-roll candidate).
 - `Bourgain–Gamburd affine (deep)` → NOT_NOVEL: already in-tree (`_wfA11_affine_bg_gap`, `_wfT24_affine_koopman_density`).
+
+### Batch 6 — domains 41–48 (4 REDUCES, 4 REFUTED, 0 survivors) — POOL COMPLETE
+- `large deviations / Gärtner–Ellis` → **REFUTED**: the GE rate is a Legendre–Fenchel transform, *always* convex — structurally blind to the multiplicative structure.
+- `free convolution / rectangular R-transform` → REDUCES (NOT_NOVEL core): already `_NovelFiniteFreeEdge`/`_wfA15`.
+- `Cohn–Elkies LP dual` → REDUCES: the dual magic-function certificate consumes the moment ladder = moment-necessity.
+- `cluster algebra / pentagon identity` → **REFUTED**: a pentagon constrains only 5 named terms' phases, modulus-locked at √p — can't improve the m-term sum.
+- `Kontsevich–Zagier period` → **REFUTED**: KZ is an *independence* statement (lower bound on transcendence degree) — the wrong direction (we need an upper bound).
+- `tropical / non-archimedean Monge–Ampère` → **REFUTED**: total MA mass = normalized Newton-polytope volume = a count (Chambert–Loir).
+- `continuous model theory / metric stability` → REDUCES: tame-counting controls the *cardinality* of distinct types, never the *magnitude* of one value.
+- `Host–Kra nilfactor (deep Gowers)` → REDUCES: the bottom Gowers rung `‖𝟙_{μ_n}‖_{U²}^4 = p^{-3}Σ_b|η_b|^4` IS the moment ladder.
 
 (batches appended below as they complete)
