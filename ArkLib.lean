@@ -1261,6 +1261,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalDyadicSymmetric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalEvenOddDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalInvariantWeightKernel
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalPlotkinHalfCap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntipodalTransversalFintypeFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntitoneCrossExcessDecomp
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ArcsineIIDFraming
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackAN2_TightFrameBTVacuous

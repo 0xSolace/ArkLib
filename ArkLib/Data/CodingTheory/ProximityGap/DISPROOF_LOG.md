@@ -18449,3 +18449,21 @@ records the barrier so future workers do not re-attempt the (impossible) direct 
 Scope: a precisely-mapped statement-level typeclass wall. No Lean theorem added (the target is
 unstatable as a composition). No CORE/cancellation/completion/moment-saving/capacity claim. The char-p
 side remains the actual open BGK wall (only `negSymCount G 6 ≤ rEnergy G 3` holds there, one-sided).
+
+## [doorIV-e3-defintype-transversal-rung] the antipodal transversal is Fintype-free (first de-Fintype rung) (2026-06-19, sol)
+
+Follow-up to `[doorIV-e3-char0-closedform-fintype-barrier]`. That wall showed the char-0 discharge of
+the rho-ladder's `E_3` NOTE needs DE-`Fintype`-ing the strata count. First concrete rung landed:
+`_AntipodalTransversalFintypeFree.exists_neg_transversal_of_no_fintype` proves the
+one-representative-per-antipodal-pair transversal exists (`T ⊆ G`, `T` and `T.image (−·)` disjoint +
+covering, `2·|T| = |G|`) for any negation-closed `G` with `0 ∉ G`, `(2:F) ≠ 0`, over any
+`[Field F] [DecidableEq F]` — **no `[Fintype F]`**. The in-tree `E3StrataCount.exists_neg_transversal`
+needed `[Fintype F]` only to get a `LinearOrder F` (via `Fintype.equivFin`); this version supplies the
+order from `Classical` well-ordering (`WellOrderingRel`), which exists for ANY type. Corollary
+`two_dvd_card_of_no_fintype` (|G| even). Axiom-clean `⊆ {propext, Classical.choice, Quot.sound}`,
+locked build exit 0 (3297 jobs), axiom_audit PASS, import-scan EMPTY.
+
+This removes the SOLE structural obstruction the wall identified for the TRANSVERSAL rung. Remaining to
+fully de-`Fintype` `negSymCount_eq_closed`: audit/remove any other `[Fintype F]` uses in the strata
+count chain (the per-stratum `twoValue_count` etc. use `Fintype.card (Fin r)`, which is finite-index,
+not ambient-field; likely portable). NOT done here. No CORE/cancellation/completion/capacity claim.
