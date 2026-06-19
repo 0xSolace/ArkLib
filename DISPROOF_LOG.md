@@ -7234,3 +7234,25 @@ capacity claim. Axiom-clean (subset {propext,Classical.choice,Quot.sound}); lock
 (8314 jobs); axiom_audit PASS. (codex review on r=3 was blocked on the shared .lake build lock held by
 a concurrent worker; the STRUCTURALLY-IDENTICAL r=2 collapse/triangle/card-product proofs in
 _ResonanceMomentRTwoBounds were codex-reviewed clean in this same session.)
+
+## [doorIV-resonance-general-ceiling] UNIFORM all-r trivial ceiling: |phaseSum u r c| <= (m-1)^(r-1), T(r) <= m(m-1)^(2(r-1)) for every r>=1, proven directly from the phaseSum filter card bound (2026-06-19, sol)
+
+Lane: door-(iv) Lane 2 — replace the per-rung (r=1,2,3) trivial ceilings with ONE uniform theorem
+subsuming all r (frontier-MOVEMENT: a general bound vs many point bounds). New file
+Frontier/_ResonanceMomentGeneralCeiling.lean (imports GaussPhaseResonance only). Theorems:
+ - card_phaseSum_filter_le: the phase-sum filter {X:Fin r->ZMod m | all X i!=0, sum=c} has card
+   <= (m-1)^(r-1) for r>=1. PROOF: X |-> Fin.init X (drop last coord) is INJECTIVE on the filter
+   (last coord = c - sum of inits is recovered from the sum constraint, via Fin.sum_univ_castSucc +
+   add_left_cancel; reconstruction via Fin.lastCases) and lands in piFinset (fun _ => {a!=0}) of card
+   (m-1)^(r-1) (Fintype.card_piFinset_const). card_le_card_of_injOn.
+ - phaseSum_norm_le_general: |phaseSum u r c| <= (m-1)^(r-1) (unit phases, r>=1; triangle ineq + card).
+ - resonanceMoment_le_general: T(r) <= m*(m-1)^(2(r-1)) (square + sum over m freqs).
+Specializes correctly: r=1 -> (m-1)^0=1 per-freq, T(1)<=m (tight, T1=m-1); r=2 -> matches
+resonanceMoment_two_le m(m-1)^2; r=3 -> matches resonanceMoment_three_le m(m-1)^4. PROBE
+(probe_general_r.py): the card bound and |phaseSum| bound hold for all tested (m,r). HONEST: these are
+the TRIVIAL (triangle/L1) ceilings; probe T(r)=Theta(m^r) sits FAR below for r>=2 (off-diagonal
+convolution cancellation the triangle bound cannot see = the open ResonanceConjecture content / the
+prize L2->L-infinity sup-norm wall). No CORE/cancellation/anti-concentration/capacity claim. CORE
+unchanged/open. Axiom-clean (subset {propext,Classical.choice,Quot.sound}); locked build exit 0
+(8314 jobs); axiom_audit PASS; missing-import scan empty; codex review clean ("theorems/proofs appear
+consistent with the definitions and stated scope; no actionable correctness issues").

@@ -1641,6 +1641,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSqrtNKRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentGeneralCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwoBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RingHomBadScalarMono
