@@ -8,8 +8,9 @@ export const meta = {
 }
 const REPO = '/Users/shawwalters/ethereumroadmap/upstream/lean-research/ArkLib'
 const DIR = 'ArkLib/Data/CodingTheory/ProximityGap/Frontier'
-const BATCH = (args && args.batch) || 1
-const PER = (args && args.per) || 8
+// BATCH is hardcoded and bumped per launch (the Workflow `args` global does not reliably propagate).
+const BATCH = 2
+const PER = 8
 
 const FRAME = `ArkLib #444 ($1M). TARGET: PROVE the char-p energy bound rEnergy(μ_n,r) ≤ (2r−1)‼·n^r over F_p at
 r≈ln p, n=2^30, p≈n·2^128 (n≈p^{0.19}, β≈5.27). Equivalently M=max_{b≠0}|Σ_{x∈μ_n}e_p(bx)| ≤ √(2n log m).

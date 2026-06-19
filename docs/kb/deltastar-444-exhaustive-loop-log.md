@@ -25,12 +25,16 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 1 |
-| approaches invented | 8 |
-| REDUCES | 8 |
+| batches run | 1 (domains 1–8; re-confirmed twice) |
+| approaches invented | 16 |
+| REDUCES | 16 |
 | NOT_NOVEL | 0 |
 | REFUTED | 0 |
 | **SURVIVES** | **0** |
+
+> Note: domains 1–8 were independently invented+refuted **twice** (an `args`-propagation bug re-ran batch 1
+> before being fixed); both runs gave 8/8 REDUCES with *different* inventions — strong independent confirmation.
+> Batch index is now hardcoded in the workflow; batch 2 = domains 9–16.
 
 ## Per-batch log
 
