@@ -7115,3 +7115,9 @@ with `normalized_variance_le_one_add_two_mul_of_delta_le_const_div`, axiom-clean
 in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction/normalization.  It proves no
 pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, and no capacity
 claim.
+
+## [doorIV-pair-discrepancy-normalized-two-sided] Exact normalized variance error is bounded by `δ(2m-1)` (2026-06-19, g55)
+Lane 2 continuation of `_PhasePairEquidistBudget` after the two-sided variance control in `_PhaseLinearFormDecoupling`.  The pair-discrepancy reduction is now symmetric in normalized Shaw/prize units: from `PairEquidistributed φ δ`,
+`1 - δ(2m-1) ≤ avg_B η²/(2m)` and therefore `|avg_B η²/(2m) - 1| ≤ δ(2m-1)`.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `one_sub_pairResidual_le_normalized_variance` and `abs_normalized_variance_sub_one_le_pairResidual`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction/normalization: it proves no pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, and no capacity claim.

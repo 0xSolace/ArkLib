@@ -60,6 +60,52 @@ theorem normalized_variance_le_one_add_pairResidual {m : ℕ} (hm : 0 < m)
       unfold prizeVarianceProxy
       field_simp [hm2]
 
+/-- **Pair-discrepancy budget, exact normalized lower form.**  The lower companion to
+`normalized_variance_le_one_add_pairResidual`: pair-equidistribution pins the normalized variance
+from below by `1 - δ(2m-1)`.
+
+Together with the upper bound this says the entire two-sided normalized error is controlled by the
+same door-(iv) residual.  This is only a reduction statement; it proves no pair-equidistribution or
+CORE cancellation. -/
+theorem one_sub_pairResidual_le_normalized_variance {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ : ℝ} (hδ : 0 ≤ δ) (hpair : PairEquidistributed φ δ) :
+    1 - δ * (2 * (m : ℝ) - 1)
+      ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m := by
+  have hbase := variance_ge_of_pairEquidist (B := B) φ δ hδ hpair
+  have hproxy_pos : 0 < prizeVarianceProxy m := by
+    unfold prizeVarianceProxy
+    positivity
+  calc
+    1 - δ * (2 * (m : ℝ) - 1)
+        = (2 * (m : ℝ) - 2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1))) /
+            prizeVarianceProxy m := by
+          have hm2 : (2 * (m : ℝ)) ≠ 0 := by positivity
+          unfold prizeVarianceProxy
+          field_simp [hm2]
+    _ ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m :=
+      div_le_div_of_nonneg_right hbase (le_of_lt hproxy_pos)
+
+/-- **Pair-discrepancy budget, exact normalized two-sided form.**  After dividing by the prize
+variance proxy `2m`, the averaged second moment lies in the symmetric interval
+
+`1 ± δ(2m-1)`.
+
+Equivalently, the normalized Shaw/prize variance error is bounded by the dimensionless pair residual
+`δ(2m-1)`.  This is the citable two-sided Lane-2 capstone for the pair-discrepancy reduction, not a
+proof that the residual has the required `O(1/m)` size in the prize regime. -/
+theorem abs_normalized_variance_sub_one_le_pairResidual {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ : ℝ} (hδ : 0 ≤ δ) (hpair : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m - 1|
+      ≤ δ * (2 * (m : ℝ) - 1) := by
+  rw [abs_le]
+  constructor
+  · have hlower := one_sub_pairResidual_le_normalized_variance (hm := hm) (φ := φ) (hδ := hδ)
+      (hpair := hpair)
+    linarith
+  · have hupper := normalized_variance_le_one_add_pairResidual (hm := hm) (φ := φ) (hδ := hδ)
+      (hpair := hpair)
+    linarith
+
 /-- **Pair-discrepancy budget, standard `C/m` form.**  If the residual is bounded by
 `C/m`, then the normalized variance is bounded by `1+2C`.
 
@@ -157,6 +203,8 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound; no `sorryAx`). -/
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.one_sub_pairResidual_le_normalized_variance
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div
