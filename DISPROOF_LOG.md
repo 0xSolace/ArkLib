@@ -5962,3 +5962,19 @@ Constraint verdict: door-(iv) `rho(b)` lives on cosets, not raw frequencies. Any
 multiplicative order, element-level small-ball data, or another intra-coset feature is ill-posed unless it
 survives this quotient collapse. This does not close CORE and makes no cancellation/capacity claim; it is
 a machine-checked guardrail for the localized coherence object.
+
+## [door-iv-phaseset-triplesum-b-blind] constraint — 3-fold small-ball fibers of `{b*x^m}` are frequency-blind (g55, 2026-06-19)
+
+Lane: door-(iv) Lane 1/3, extending the phase-set small-ball/Halász audit from pair-sum/pair-difference
+fibers and homogeneous 3AP counts to targeted three-sum fibers.  For every target `t` and nonzero
+frequency `b`, the number of triples in `(bS)^3` with sum `b*t` is exactly the number of triples in
+`S^3` with sum `t`.
+
+Constraint verdict: pure 3-fold additive small-ball multiplicity inputs cannot distinguish or select
+the adversarial frequency.  The frequency only rescales the target axis.  Any surviving door-(iv)
+anti-concentration theorem must use information beyond b-independent additive fiber profiles of the
+dilated subgroup.  No CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addTripleSumCount`,
+`addTripleSumCount_smul_eq`, and `addTripleSumCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
+subset `{propext, Classical.choice, Quot.sound}`.

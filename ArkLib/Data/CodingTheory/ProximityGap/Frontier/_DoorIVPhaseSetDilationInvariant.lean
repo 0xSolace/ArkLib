@@ -227,6 +227,64 @@ theorem addPairDiffCount_phaseSet_indep_of_scalar
 
 
 
+/-- Three-sum representation count at target `t`: `#{(a,b,c) in S^3 : a+b+c=t}`.
+This is the next small-ball fiber after pair-sum multiplicities; it probes whether a 3-fold
+Littlewood-Offord/Halász input can distinguish the adversarial frequency. -/
+def addTripleSumCount (S : Finset F) (t : F) : ℕ :=
+  ((S ×ˢ S ×ˢ S).filter (fun p => p.1 + p.2.1 + p.2.2 = t)).card
+
+/-- Nonzero dilation preserves every three-sum fiber after dilating the target.  Thus the 3-fold
+small-ball multiplicity profile of `{b*x^m}` is transported by `t ↦ b*t`; it is not a selector for
+worst `b`. -/
+theorem addTripleSumCount_smul_eq (S : Finset F) {lam t : F} (hlam : lam ≠ 0) :
+    addTripleSumCount (S.image (fun x => lam * x)) (lam * t) = addTripleSumCount S t := by
+  classical
+  unfold addTripleSumCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun p => (lam⁻¹ * p.1, lam⁻¹ * p.2.1, lam⁻¹ * p.2.2))
+    (fun p => (lam * p.1, lam * p.2.1, lam * p.2.2))
+    ?_ ?_ ?_ ?_
+  · rintro ⟨a, b, c⟩ hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨ha, hb, hc⟩, hsum⟩ := hp
+    obtain ⟨a', ha', rfl⟩ := ha
+    obtain ⟨b', hb', rfl⟩ := hb
+    obtain ⟨c', hc', rfl⟩ := hc
+    refine ⟨⟨?_, ?_, ?_⟩, ?_⟩
+    · simpa [hcdiv] using ha'
+    · simpa [hcdiv] using hb'
+    · simpa [hcdiv] using hc'
+    · have hbase : a' + b' + c' = t := by
+        apply mul_left_cancel₀ hlam
+        calc
+          lam * (a' + b' + c') = lam * a' + lam * b' + lam * c' := by ring
+          _ = lam * t := hsum
+      simpa [hcdiv] using hbase
+  · rintro ⟨a, b, c⟩ hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨ha, hb, hc⟩, hsum⟩ := hp
+    refine ⟨⟨⟨a, ha, rfl⟩, ⟨b, hb, rfl⟩, ⟨c, hc, rfl⟩⟩, ?_⟩
+    rw [← hsum]
+    ring
+  · rintro ⟨a, b, c⟩ _
+    simp [hcmul]
+  · rintro ⟨a, b, c⟩ _
+    simp [hcdiv]
+
+/-- The three-sum multiplicity profile of two nonzero frequency dilates is identical after the
+obvious target rescaling.  Pure 3-fold small-ball/Halász inputs therefore cannot distinguish or
+select the worst `b`. -/
+theorem addTripleSumCount_phaseSet_indep_of_scalar
+    (S : Finset F) {b₁ b₂ t : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addTripleSumCount (S.image (fun x => b₁ * x)) (b₁ * t) =
+      addTripleSumCount (S.image (fun x => b₂ * x)) (b₂ * t) := by
+  rw [addTripleSumCount_smul_eq S hb₁, addTripleSumCount_smul_eq S hb₂]
+
+
 /-- Three-term arithmetic-progression count in `S`: triples `(a,b,c) ∈ S^3` with `a+c=2b`.
 This is a basic homogeneous additive-linear pattern count, adjacent to small-ball/additive-structure
 inputs but not tied to a target fiber. -/
@@ -351,6 +409,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addTripleSumCount_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addTripleSumCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
