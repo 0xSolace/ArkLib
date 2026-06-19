@@ -7559,3 +7559,14 @@ Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstIndexMultGeneric`
 VERDICT: any multiplicative class-restriction proof must certify the all-pair-ratio condition. A single escaping ratio is not an implementation detail; it is the exact obstruction to containment in one power coset. No CORE/cancellation/completion/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new theorem `ratio_mem_kthPowers_of_subset_coset`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-index-finset-power-coset] finite observed worst-index sets inherit the escaping-ratio obstruction (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstIndexMultGeneric`.  Prior kernels state the multiplicative class-restriction obstruction for abstract `Set`s: if a candidate set contains two elements whose ratio escapes a subgroup, it is contained in no single coset of that subgroup; recently generalized to `k`-th-power cosets.  This refinement packages the probe-native finite-set interface:
+
+* `not_finset_subset_coset_of_ratio_not_mem` for an arbitrary subgroup `H`;
+* `not_finset_kth_power_coset_restricted` for the subgroup of `k`-th powers.
+
+VERDICT: a finite observed worst-index candidate set with one non-`k`-th-power pair ratio is already a kernel-checkable certificate against confinement to one `k`-th-power coset.  Future Lane-1 probes can cite the finite form directly instead of manually coercing probe output to `Set`.  No CORE, cancellation, completion, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new theorems `not_finset_subset_coset_of_ratio_not_mem` and `not_finset_kth_power_coset_restricted`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

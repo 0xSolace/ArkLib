@@ -70,6 +70,19 @@ theorem not_subset_coset_of_ratio_not_mem {H : Subgroup G} {s : Set G} {a b : G}
   intro g hsub
   exact hne (ratio_mem_of_inCoset (hsub a ha) (hsub b hb))
 
+/-- Finite-index-set interface for `not_subset_coset_of_ratio_not_mem`.  This is the shape used by
+worst-`b` probes, which return a finite candidate set of observed coset indices: one escaping pair
+ratio already certifies that the whole finite set is not contained in any single subgroup coset. -/
+theorem not_finset_subset_coset_of_ratio_not_mem
+    {H : Subgroup G} {s : Finset G} {a b : G}
+    (ha : a ∈ s) (hb : b ∈ s) (hne : b⁻¹ * a ∉ H) :
+    ∀ g : G, ¬ (∀ x ∈ s, inCoset H g x) := by
+  intro g hsub
+  exact (not_subset_coset_of_ratio_not_mem (H := H) (s := (s : Set G))
+    (a := a) (b := b) (by simpa using ha) (by simpa using hb) hne) g (by
+      intro x hx
+      exact hsub x (by simpa using hx))
+
 end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
 
 namespace ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
@@ -144,10 +157,24 @@ theorem not_kth_power_coset_restricted {A : Type*} [CommGroup A] {k : ℕ} {s : 
     ∀ g : A, ¬ (∀ x ∈ s, inCoset (kthPowers A k) g x) :=
   not_subset_coset_of_ratio_not_mem ha hb hnp
 
+/-- Finset-facing `k`-th-power version: if a finite observed worst-index set contains one pair whose
+ratio is not a `k`-th power, then it is not confined to a single `k`-th-power coset. -/
+theorem not_finset_kth_power_coset_restricted {A : Type*} [CommGroup A]
+    {k : ℕ} {s : Finset A} {a b : A}
+    (ha : a ∈ s) (hb : b ∈ s) (hnp : b⁻¹ * a ∉ kthPowers A k) :
+    ∀ g : A, ¬ (∀ x ∈ s, inCoset (kthPowers A k) g x) := by
+  intro g hsub
+  exact (not_kth_power_coset_restricted (s := (s : Set A)) (a := a) (b := b)
+    (by simpa using ha) (by simpa using hb) hnp) g (by
+      intro x hx
+      exact hsub x (by simpa using hx))
+
 end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
 
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_of_inCoset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_subset_coset_of_ratio_not_mem
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_power_coset_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_kthPowers_of_subset_coset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_kth_power_coset_restricted
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_kth_power_coset_restricted
