@@ -46,6 +46,14 @@ under** `SaddleEnergyBound` (= BGK/Paley at β=4, the recognized open input). So
 `prize_sup_of_saddle` is a genuine **conditional theorem** `SaddleEnergyBound ⟹ M ≤ 2√e·√(n log p)`,
 with all open content isolated in the one hypothesis. **Not** a proof of the prize. Issue #444.
 
+**Exact refutation of the K=1 form (this session, n=32 β=4 p=1048609, saddle r≈14):** the *sharp*
+`K=1` reading `E_r^{Fp} ≤ (2r−1)‼·n^r` is FALSE — the exact-integer ratio `E_r^{Fp}/((2r−1)‼·n^r)`
+crosses 1 at `r=9` (1.268) and diverges (2.64 at r=11), well below the saddle. So `SaddleEnergyBound`
+here is the **`K=O(1)` form** `S ≤ K^r·(p−1)·E` (the `rpow_root_bound` machinery is general-`K`,
+yielding `M ≤ √K·2√e·√(n log p)`); proving any *absolute* `K=O(1)` uniformly in `(n,p)` is exactly
+the open BGK/Paley square-root-cancellation wall at β=4. The char-p excess genuinely dominates the
+free energy at the saddle — that domination IS the wall.
+
 ## What this file proves (axiom-clean)
 
 * `rpow_root_bound` — the `r`-th-root step: `Vʳ ≤ K·cʳ ⟹ V ≤ K^{1/r}·c` (the optimization core).
