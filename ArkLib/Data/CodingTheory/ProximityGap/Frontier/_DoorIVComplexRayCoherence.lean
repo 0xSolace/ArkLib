@@ -40,8 +40,6 @@ theorem twoPieceNormCoherence_le_one {x y : E} (hden : 0 < ‖x‖ + ‖y‖) :
     div_le_div_of_nonneg_right htri (le_of_lt hden)
   simpa [div_self (ne_of_gt hden)] using hdiv
 
-variable [NormedSpace ℝ E]
-
 /-! ## Finite-refinement same-ray obstruction
 
 The same triangle-equality obstruction persists for any finite refinement: if every vector piece is a
@@ -53,6 +51,21 @@ carried by a common nonnegative ray.
 /-- Normalized norm coherence of finitely many vector pieces. -/
 noncomputable def multiPieceNormCoherence {ι : Type*} (s : Finset ι) (A : ι → E) : ℝ :=
   ‖∑ i ∈ s, A i‖ / (∑ i ∈ s, ‖A i‖)
+
+/-- Multi-piece norm coherence is always at most one when the denominator is positive.  This
+is the finite-refinement triangle-inequality ceiling; all nontrivial Door-IV work is in proving
+strict slack away from this ceiling at the adversarial frequency. -/
+theorem multiPieceNormCoherence_le_one {ι : Type*} (s : Finset ι) (A : ι → E)
+    (hden : 0 < ∑ i ∈ s, ‖A i‖) :
+    multiPieceNormCoherence s A ≤ 1 := by
+  unfold multiPieceNormCoherence
+  have htri : ‖∑ i ∈ s, A i‖ ≤ ∑ i ∈ s, ‖A i‖ := norm_sum_le _ _
+  have hdiv : ‖∑ i ∈ s, A i‖ / (∑ i ∈ s, ‖A i‖)
+      ≤ (∑ i ∈ s, ‖A i‖) / (∑ i ∈ s, ‖A i‖) :=
+    div_le_div_of_nonneg_right htri (le_of_lt hden)
+  simpa [div_self (ne_of_gt hden)] using hdiv
+
+variable [NormedSpace ℝ E]
 
 /-- If every piece lies on the same nonnegative ray `ℝ_{≥0} • u` and the scalar mass is
 positive, then multi-piece norm coherence is exactly `1`.  Subdivision alone supplies no phase
@@ -170,6 +183,7 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_of_not_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_le_one
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_common_nonneg_ray_of_multiPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub

@@ -6324,7 +6324,8 @@ does NOT come from worst-b band-avoidance. Refuted-lever brick; no CORE/cancella
 Lane: door-(iv) Lane 3 constraint lemma, extending the two-piece same-ray obstruction
 (`_DoorIVComplexRayCoherence`) from a two-piece split to arbitrary finite refinements.
 
-Formalized axiom-clean in `_DoorIVComplexRayCoherence.lean`: for any finite index set of vector
+Formalized axiom-clean in `_DoorIVComplexRayCoherence.lean`: multi-piece norm coherence is always
+`≤ 1` by the finite triangle inequality when the denominator is positive; and for any finite index set of vector
 pieces in a real normed space, if every piece has the form `A_i = c_i • u` with `c_i ≥ 0`, total scalar
 mass `Σ c_i > 0`, and `u ≠ 0`, then normalized multi-piece norm coherence
 `‖Σ_i A_i‖ / Σ_i ‖A_i‖` is exactly `1`. Consequently any theorem claiming a strict coherence bound
