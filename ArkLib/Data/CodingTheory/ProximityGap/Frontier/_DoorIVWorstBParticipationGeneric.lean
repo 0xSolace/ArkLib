@@ -110,6 +110,28 @@ theorem sumSq_ge_coherence_sq_div_card
   rw [div_le_iff₀ hcard]
   simpa [mul_comm, mul_left_comm, mul_assoc] using coherence_sq_le_card_mul_sumSq s w hC0 hC
 
+/-- Contrapositive certificate for failed participation attacks: if the available L² magnitude budget
+is strictly below `C² / |s|`, then the aligned mass cannot reach `C`. This packages the exact witness a
+probe can emit when a proposed worst-b participation/coherence lever claims a large coherent mass while
+also staying under a Plancherel-style L² budget. -/
+theorem not_coherence_le_aligned_mass_of_sumSq_lt
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) {C : ℝ}
+    (hC0 : 0 ≤ C) (hsmall : ∑ j ∈ s, (w j) ^ 2 < C ^ 2 / (s.card : ℝ)) :
+    ¬ C ≤ ∑ j ∈ s, w j := by
+  intro hC
+  exact not_lt_of_ge (sumSq_ge_coherence_sq_div_card s w hcard hC0 hC) hsmall
+
+/-- Budgeted contrapositive form: an explicit upper budget `B` for the L² mass rules out coherent mass
+`C` as soon as `B < C² / |s|`. Any door-(iv) participation proof must therefore either pay this L²
+budget or leave the coherent certificate below `C`; no extra arithmetic structure is gained by naming a
+participation variable. -/
+theorem not_coherence_le_aligned_mass_of_sumSq_le_budget
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) {B C : ℝ}
+    (hC0 : 0 ≤ C) (hbudget : ∑ j ∈ s, (w j) ^ 2 ≤ B)
+    (hB : B < C ^ 2 / (s.card : ℝ)) :
+    ¬ C ≤ ∑ j ∈ s, w j := by
+  exact not_coherence_le_aligned_mass_of_sumSq_lt s w hcard hC0 (lt_of_le_of_lt hbudget hB)
+
 end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
 
 #print axioms
@@ -122,3 +144,7 @@ end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.aligned_mass_sq_div_card_le_sumSq
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.sumSq_ge_coherence_sq_div_card
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_coherence_le_aligned_mass_of_sumSq_lt
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_coherence_le_aligned_mass_of_sumSq_le_budget

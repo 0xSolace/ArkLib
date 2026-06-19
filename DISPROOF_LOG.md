@@ -7792,3 +7792,21 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_WraparoundMarkov
 Theorems: `markov_count_le` (finite Markov `T·#{W≥T} ≤ ∑ W`), `markov_bound_vacuous_below_mean`
 (`0 < T ≤ mean ⟹ (∑W)/T ≥ |S|`), `average_control_does_not_bound_sup` (combined). Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-participation-budget-contrapositive] L² budgets exactly forbid aligned-mass certificates below the C²/|s| floor (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstBParticipationGeneric`. Prior kernel
+proved the Cauchy floor `C²/|s| ≤ Σ wⱼ²` for any nonnegative coherent-mass certificate `C ≤ Σ wⱼ`.
+This refinement packages the probe-facing contrapositive: if the available L² magnitude budget is
+strictly below `C²/|s|`, then the aligned mass cannot reach `C`; likewise an explicit budget `B` with
+`B < C²/|s|` rules out the certificate.
+
+VERDICT: a worst-b participation/coherence attack cannot simultaneously claim a large aligned mass and
+stay under the corresponding Plancherel/L² expenditure. Naming participation variables adds no hidden
+arithmetic anti-concentration lever; the obstruction is exactly the Cauchy L² floor. No CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParticipationGeneric.lean`,
+new theorems `not_coherence_le_aligned_mass_of_sumSq_lt` and
+`not_coherence_le_aligned_mass_of_sumSq_le_budget`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
