@@ -1599,6 +1599,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_UnionGrowthGenerat
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetNormDichotomyTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreCharPLighterReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreMonotoneReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoFirstTwoChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoStepOneExplicit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoStepTwoExplicit

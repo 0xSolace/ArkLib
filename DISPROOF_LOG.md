@@ -6999,3 +6999,9 @@ Lane 2 continuation of `_OpenCoreRhoStepTwoExplicit`.  The second monotonicity r
 `S_3 ≤ S_2·(15n³−45n²+40n)/(3n(n−1))`, and chains it back to the explicit `ρ(3)≤ρ(2)` statement.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoStepTwoExplicit.lean` with `charZeroEnergyThree_eq_factor`, `cross_two_iff_S3_target`, and `rho_step_two_target`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only algebraic normalization/reduction of rung 2.  It does not prove the normalized `S_3` target, does not prove the probe-verified `E_3` closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-rho-first-two-chain] the first two explicit ρ targets compose to ρ₃≤ρ₂≤ρ₁ (2026-06-19, g55)
+
+Lane 2 reduction-chain packaging.  The first rung is the finite target `S_2 ≤ 3n(n−1)(p−n)` and the second rung is the finite target `S_3 ≤ S_2·(15n³−45n²+40n)/(3n(n−1))`.  This commit packages the exact consumer: if those two targets are discharged elsewhere, then the normalized values obey `ρ_3 ≤ ρ_2 ≤ ρ_1`, and hence directly `ρ_3 ≤ ρ_1`.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoFirstTwoChain.lean`, axiom-clean.  Theorems: `first_two_rho_steps_of_targets` and `rho_three_le_rho_one_of_first_two_targets`, with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only transitive/reduction bookkeeping.  It proves neither finite char-p target, does not prove the probe-verified `E_3` closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
