@@ -71,6 +71,21 @@ theorem prize_halfMass_sandwich {M H K : ℝ} (hMH : M ≤ H) (hHM : H ≤ K * M
     M ≤ H ∧ H ≤ K * M :=
   ⟨hMH, hHM⟩
 
+
+/-- **Normalized half-mass corridor.**  At any positive prize scale, the pointwise sandwich
+`M ≤ H ≤ K·M` transfers unchanged to the normalized ratios: the half-mass Shaw-value ratio is between
+the prize ratio and `K` times the prize ratio.  Thus normalization by `√(n log(p/n))` does not create a
+new lever; it preserves exactly the same comparison constant. -/
+theorem normalized_prize_halfMass_sandwich {M H K scale : ℝ}
+    (hscale : 0 < scale) (hMH : M ≤ H) (hHM : H ≤ K * M) :
+    M / scale ≤ H / scale ∧ H / scale ≤ K * (M / scale) := by
+  constructor
+  · exact div_le_div_of_nonneg_right hMH (le_of_lt hscale)
+  · have h1 : H / scale ≤ (K * M) / scale :=
+      div_le_div_of_nonneg_right hHM (le_of_lt hscale)
+    have h2 : (K * M) / scale = K * (M / scale) := by ring
+    exact h2 ▸ h1
+
 /-! ## Uniform-family form: the genuine absolute-constant (Big-O) reduction
 
 The pointwise `prizeBound_iff_halfMassBound` above is, for a single positive scale, satisfiable by a
@@ -108,4 +123,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassBound_of_prizeBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_iff_halfMassBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prize_halfMass_sandwich
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalized_prize_halfMass_sandwich
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
