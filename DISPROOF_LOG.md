@@ -1,3 +1,19 @@
+## door-(iv) single-window occupancy cannot meet any strict sublinear budget (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTrivial`. Prior bricks proved that
+for any admissible window `W ⊆ s`, the in-window/out-of-window triangle RHS is exactly
+`|W| + |s\W| = |s|`. This refinement packages the strict-budget contradiction: if a proposed budget
+`B` is below `|s|`, then the occupancy split RHS cannot be `≤ B` for any window.
+
+VERDICT: a single-window small-ball certificate cannot by itself produce any sublinear or strict
+improvement over the trivial `n` ceiling. To beat `|s|`, the argument must prove actual phase
+cancellation inside/between pieces, not merely count how many residues fall in a chosen arc. No
+CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
+axiom-clean. New theorem: `no_window_split_rhs_le_strict_budget`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) a single isolated worst-b spike already forces second-moment spend (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVWorstBSpikeMomentBound`. Prior bricks proved the

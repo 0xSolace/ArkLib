@@ -165,11 +165,23 @@ theorem window_split_rhs_constant [DecidableEq ι]
     rw [add_comm]; exact Finset.card_sdiff_add_card_eq_card hW
   exact_mod_cast hnat
 
+/-- Strict-budget obstruction for single-window certificates: since the split right-hand side is
+identically `|s|`, no admissible window can make the triangle certificate fit under any strict budget
+`B < |s|`.  Thus a claimed single-window small-ball improvement must use information beyond the
+occupancy split itself. -/
+theorem no_window_split_rhs_le_strict_budget [DecidableEq ι]
+    {s W : Finset ι} (hW : W ⊆ s) {B : ℝ} (hB : B < (s.card : ℝ)) :
+    ¬ (W.card : ℝ) + ((s \ W).card : ℝ) ≤ B := by
+  intro hle
+  have hconst := window_split_rhs_constant (s := s) (W := W) hW
+  linarith
+
 end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.norm_sum_le_card_of_phase
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_bound_is_trivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_bound_is_trivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_split_rhs_constant
