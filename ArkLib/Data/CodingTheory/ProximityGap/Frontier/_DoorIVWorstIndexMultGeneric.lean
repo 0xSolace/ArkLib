@@ -127,6 +127,15 @@ def kthPowers (A : Type*) [CommGroup A] (k : ℕ) : Subgroup A where
 theorem mem_kthPowers_iff {A : Type*} [CommGroup A] {k : ℕ} {x : A} :
     x ∈ kthPowers A k ↔ ∃ y, y ^ k = x := Iff.rfl
 
+/-- Necessary pair-ratio condition for a `k`-th-power coset restriction.  If a set `s` is contained
+in one coset of `kthPowers A k`, then every ratio `b⁻¹ * a` of two elements of `s` is itself a
+`k`-th power.  This is the positive certificate whose contrapositive is the no-restriction lemma. -/
+theorem ratio_mem_kthPowers_of_subset_coset {A : Type*} [CommGroup A] {k : ℕ} {s : Set A}
+    {g a b : A} (hsub : ∀ x ∈ s, inCoset (kthPowers A k) g x)
+    (ha : a ∈ s) (hb : b ∈ s) :
+    b⁻¹ * a ∈ kthPowers A k :=
+  ratio_mem_of_inCoset (hsub a ha) (hsub b hb)
+
 /-- **General power-coset obstruction.**  If `s` contains two elements whose ratio is not a `k`-th
 power, then `s` is contained in no single coset of the `k`-th-power subgroup.  This packages the
 Lane-1 worst-index verdict for any multiplicative power-class restriction, not only QR/non-QR. -/
@@ -140,4 +149,5 @@ end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_of_inCoset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_power_coset_restricted
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_kthPowers_of_subset_coset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_kth_power_coset_restricted

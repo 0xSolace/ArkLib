@@ -7551,3 +7551,11 @@ cancellation, completion, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
 new theorems `multi_window_split_rhs_constant` and `multi_window_split_bound_is_trivial`, axiom-clean
 with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-index-kth-power-ratio-necessary] one kth-power coset forces every pair ratio to be kth-power (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstIndexMultGeneric`. This packages the positive necessary condition behind the power-coset no-go: if a candidate worst-index set is contained in a single coset of the `k`-th-power subgroup, then for every two elements `a,b` in the set, the ratio `b⁻¹*a` lies in the `k`-th-power subgroup.
+
+VERDICT: any multiplicative class-restriction proof must certify the all-pair-ratio condition. A single escaping ratio is not an implementation detail; it is the exact obstruction to containment in one power coset. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new theorem `ratio_mem_kthPowers_of_subset_coset`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
