@@ -88,4 +88,25 @@ theorem shawValue_worstPeriod_bracket {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive
           ≤ (G.card : ℝ) / prizeScale (G.card : ℝ) L :=
   ⟨shawValue_worstPeriod_rms_floor hψ G hne hq1 hs, shawValue_worstPeriod_le_of_card G hne hs⟩
 
+/-- **The concrete prize ⇔ bounded-Shaw equivalence on the REAL worst period.** Instantiates the
+abstract capstone equivalence `prizeBound_iff_shawValue_le` with `M := M(μ_n) = worstPeriod ψ G hne`:
+for a positive prize scale, the prize-shaped core bound on the actual character-sum worst period is
+exactly a bounded Shaw value. This is the headline `CORE ⇔ Sh(n)=O(1)` reduction stated over the real
+`η`, not an abstract `M`. -/
+theorem prizeBound_worstPeriod_iff_shawValue_le {ψ : AddChar F ℂ} (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) {C L : ℝ}
+    (hs : 0 < prizeScale (G.card : ℝ) L) :
+    worstPeriod ψ G hne ≤ C * prizeScale (G.card : ℝ) L
+      ↔ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L ≤ C :=
+  prizeBound_iff_shawValue_le hs
+
+/-- The same equivalence in expanded positivity hypotheses (`0 < n`, `0 < L`), so a caller need not
+construct `prizeScale` positivity by hand. -/
+theorem prizeBound_worstPeriod_iff_shawValue_le_of_pos {ψ : AddChar F ℂ} (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) {C L : ℝ}
+    (hn : 0 < (G.card : ℝ)) (hL : 0 < L) :
+    worstPeriod ψ G hne ≤ C * prizeScale (G.card : ℝ) L
+      ↔ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L ≤ C :=
+  prizeBound_iff_shawValue_le_of_pos hn hL
+
 end ProximityGap.Frontier.ConcreteShawValueBridge
