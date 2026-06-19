@@ -6702,3 +6702,18 @@ axiom-clean.  New theorems: `norm_Jphase_eq_one`, `linearPhase_norm_le_card`,
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/completion/moment-saving/capacity
 claim.
 
+
+## [difftrace-flatness-ratio] the variance route in dimensionless form: prize ⟺ aggregate Jacobi-phase L²-mass ratio ‖Σ Jphase‖²/#Rel ≤ 1 + o(1) (orthonormal floor) (2026-06-19, sol)
+Door-(iv) variance-route extension of [difftrace-variance-route-capstone].  The capstone reduced the
+route to ‖Σ_T Jphase θ T‖² ≤ #Rel + S; in the prize regime S=o(#Rel), so the natural normalization is
+the dimensionless flatness ratio ρ_flat := ‖Σ_T Jphase θ T‖²/#Rel.  Exact relationship:
+    ρ_flat ≤ 1 + S/#Rel   ⟺   (off-diag 2nd moment).re ≤ S   (#Rel>0)
+and ρ_flat ≥ 0 always (Plancherel).  The diagonal main term #Rel becomes the dimensionless 1; the
+ENTIRE prize content is the S/#Rel → 0 excess over the orthonormal floor.  I.e. the prize ⟺ "the #Rel
+iterated Jacobi phases sum with aggregate L²-mass at the orthonormal floor #Rel up to a 1+o(1) factor"
+(square-root cancellation in the aggregate phase).
+
+Formal kernel: `Frontier/_DiffTraceFlatnessRatio.lean` (4 thms): `flatnessRatio`, `flatnessRatio_nonneg`,
+`flatnessRatio_le_of_secondMoment_le`, `flatnessRatio_le_iff_secondMoment_le`.  Axiom-clean (axioms ⊆
+{propext, Classical.choice, Quot.sound}); locked module build exit 0 (3317 jobs).  NO CORE/cancellation/
+completion/moment-saving/capacity claim — dimensionless normalization of the open core, not a closure.
