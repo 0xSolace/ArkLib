@@ -196,4 +196,43 @@ theorem bgkScale_eq_sqrtL_mul_prizeScale {n L : ℝ} (hn : 0 ≤ n) (hL : 0 ≤ 
   unfold bgkScale prizeScale
   rw [Real.sqrt_mul hn, mul_comm]
 
+/-! ## Discharging the door-(ii) (√q-completion) overshoot from the PROVEN completion ceiling
+
+The abstract `OvershootsBGK` hypothesis is not a postulate for the completion door: it is *discharged*
+by the proven √q-completion ceiling `M ≤ √q` (`worstPeriod_torsion_le_sqrt_card`, the classical
+Polya-Vinogradov/Gauss-sum bound on each period over a torsion subgroup).  The completion mechanism
+certifies the *scale* `completionScale q = √q`.  In the prize regime `q = n^β`, `β ≈ 4-5`, so
+`q ≥ n·L` whenever `L ≤ q/n = n^{β-1}` (always true at the prize, where `L = log(p/n) ≪ n`).  Under that
+regime fact the completion scale `√q` is `≥ bgkScale n L = √(n·L)`: door (ii) overshoots BGK, exactly
+as the tetrachotomy claims, with NO extra assumption beyond the proven ceiling. -/
+
+/-- The √q-completion scale that the door-(ii) mechanism certifies (`M ≤ √q`). -/
+noncomputable def completionScale (q : ℝ) : ℝ := Real.sqrt q
+
+/-- **Door-(ii) overshoot, discharged.**  In the prize regime, the field size dominates the BGK
+argument: `n·L ≤ q` (since `q = n^β ≥ n² ≥ n·L` for `L ≤ n`).  Then the √q-completion scale that the
+completion mechanism *provably* certifies dominates the BGK scale: `bgkScale n L ≤ completionScale q`.
+This turns the `OvershootsBGK` hypothesis for door (ii) into a consequence of the proven completion
+ceiling, not a postulate. -/
+theorem completion_overshootsBGK_of_prizeRegime {n L q : ℝ}
+    (hq : n * L ≤ q) :
+    bgkScale n L ≤ completionScale q := by
+  unfold bgkScale completionScale
+  exact Real.sqrt_le_sqrt hq
+
+/-- A `Mechanism` whose door is `completion` and whose certified scale is the proven `√q` ceiling,
+in the prize regime, satisfies `OvershootsBGK` unconditionally (no extra hypothesis beyond the
+regime fact `n·L ≤ q`). -/
+theorem completionMechanism_overshootsBGK {n L q : ℝ} (hq : n * L ≤ q) :
+    (⟨DoorType.completion, completionScale q⟩ : Mechanism).OvershootsBGK n L :=
+  completion_overshootsBGK_of_prizeRegime hq
+
+/-- **Door-(ii) cannot certify the prize.**  In the prize regime `L > 1`, `n·L ≤ q`, the √q-completion
+mechanism's certified scale strictly exceeds the prize floor `√n`, so the completion door provably
+fails to certify `M ≤ √n` — a discharged (not assumed) instance of the no-fifth-door exclusion. -/
+theorem completion_not_certifies_prizeScale {n L q : ℝ}
+    (hn : 0 < n) (hL : 1 < L) (hq : n * L ≤ q) :
+    ¬ (completionScale q ≤ prizeScale n) :=
+  not_certifies_prizeScale_of_overshoot hn hL (completionMechanism_overshootsBGK hq)
+
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy

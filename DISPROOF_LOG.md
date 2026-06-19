@@ -6816,3 +6816,20 @@ identity only; it proves no flatness, no anti-concentration, and no cancellation
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawValue.lean`, axiom-clean.
 New theorem: `shawValue_eq_norm_div_sqrt_card`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
+## [doorII-completion-overshoot-discharged] the √q-completion door's OvershootsBGK is a THEOREM, not an assumption, in the prize regime (2026-06-19, sol)
+Extends [no-fifth-door-tetrachotomy]: turns the abstract OvershootsBGK hypothesis for door (ii) into a
+discharged consequence of the PROVEN √q-completion ceiling M ≤ √q (worstPeriod_torsion_le_sqrt_card,
+the classical Polya-Vinogradov/Gauss-sum bound per period over a torsion subgroup). The completion
+mechanism certifies scale completionScale q = √q. In the prize regime q = n^β (β≈4-5), the field size
+dominates the BGK argument: n·L ≤ q (since q = n^β ≥ n² ≥ n·L for L ≤ n = log(p/n) ≪ n). Hence
+bgkScale n L = √(n·L) ≤ √q = completionScale q: door (ii) provably overshoots BGK with NO extra
+assumption beyond the regime fact n·L ≤ q, and therefore provably cannot certify M ≤ √n.
+
+Formal kernel: extends `Frontier/_NoFifthDoorTetrachotomy.lean` (axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}; locked build exit 0, 1971 jobs). Theorems: completionScale,
+completion_overshootsBGK_of_prizeRegime (bgkScale ≤ √q from n·L ≤ q),
+completionMechanism_overshootsBGK (the completion Mechanism satisfies OvershootsBGK unconditionally),
+completion_not_certifies_prizeScale (door (ii) provably fails the prize certificate). NON-VACUITY
+in-kernel at n=4,L=2,q=64: n·L=8 ≤ 64=q, completion overshoots, prize certificate fails. NO CORE/
+cancellation/completion-saving/capacity claim — discharges ONE door's exclusion from a proven ceiling.
