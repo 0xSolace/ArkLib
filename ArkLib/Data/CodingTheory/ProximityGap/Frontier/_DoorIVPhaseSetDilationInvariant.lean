@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Card
 import Mathlib.Tactic
 
+set_option linter.style.longLine false
+
 /-!
 # Door IV (Lane 1, the brief's verbatim small-ball target): the worst-b phase set `{b·x : x∈μ_n}` has
 # DILATION-INVARIANT additive structure — the worst `b` cannot tune it, so any small-ball / Halász
@@ -464,6 +466,45 @@ theorem addLinearPatternFiberCounts_phaseSet_indep_of_scalar {k : ℕ}
     addLinearPatternFiberCounts_smul_eq S coeff hb₂]
 
 
+/-- The maximum target-fiber multiplicity of a fixed additive-linear pattern over all targets.  This
+is the canonical small-ball/Halász statistic: the largest number of `S`-valued `k`-tuples landing in
+one fiber of the linear form `∑ coeff_i v_i`. -/
+def addLinearPatternMaxFiber {k : ℕ} (S : Finset F) (coeff : Fin k → F) : ℕ :=
+  (addLinearPatternFiberCounts S coeff).max' (by
+    classical
+    simp [addLinearPatternFiberCounts])
+
+/-- Nonzero dilation preserves the maximum target-fiber multiplicity of a fixed additive-linear
+pattern.  This packages the most common Littlewood-Offord/Halász small-ball input directly: taking
+`max_t` over fibers does not recover any dependence on the adversarial frequency `b`; dilation merely
+renames the target attaining the maximum. -/
+theorem addLinearPatternMaxFiber_smul_eq {k : ℕ} (S : Finset F) (coeff : Fin k → F)
+    {lam : F} (hlam : lam ≠ 0) :
+    addLinearPatternMaxFiber (S.image (fun x => lam * x)) coeff =
+      addLinearPatternMaxFiber S coeff := by
+  classical
+  apply le_antisymm
+  · rw [addLinearPatternMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addLinearPatternMaxFiber]
+    apply Finset.le_max'
+    simpa [addLinearPatternFiberCounts_smul_eq S coeff hlam] using hy
+  · rw [addLinearPatternMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addLinearPatternMaxFiber]
+    apply Finset.le_max'
+    simpa [← addLinearPatternFiberCounts_smul_eq S coeff hlam] using hy
+
+/-- Two nonzero frequency dilates have the same maximum linear-pattern fiber.  Thus a worst-frequency
+anti-concentration attempt based on the usual `max_t` small-ball statistic is exactly `b`-blind. -/
+theorem addLinearPatternMaxFiber_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addLinearPatternMaxFiber (S.image (fun x => b₁ * x)) coeff =
+      addLinearPatternMaxFiber (S.image (fun x => b₂ * x)) coeff := by
+  rw [addLinearPatternMaxFiber_smul_eq S coeff hb₁,
+    addLinearPatternMaxFiber_smul_eq S coeff hb₂]
+
+
 /-- Histogram bin for target-fiber multiplicities of a fixed additive-linear pattern: the number of
 field targets `t` whose fiber has size exactly `N`.  Unlike `addLinearPatternFiberCounts`, this records
 how often each fiber size occurs. -/
@@ -593,6 +634,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternMaxFiber_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternMaxFiber_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar
