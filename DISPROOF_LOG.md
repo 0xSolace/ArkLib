@@ -5721,3 +5721,16 @@ Machine-checked brick: `Frontier/_DoorIVSectorCoherence.lean` proves
 `sector_floor_le_complexPieceCoherence` and `not_complexPieceCoherence_le_of_sector_floor` by real
 projection and the complex norm bound.  This is a constraint theorem only, not a CORE/cancellation
 claim: it localizes the door-(iv) obligation to quantitative angular spread of the pieces.
+
+## [door-iv-sector-escape-consumer] constraint — any rho drop forces a low-projection piece in every direction (2026-06-18, g55 subagent)
+
+Follow-up to `[door-iv-sector-coherence]`.  The sector obstruction is now packaged in the consumer
+form future door-(iv) claims need: if a piece decomposition has coherence `ρ ≤ θ`, then for every
+unit direction `u` and every `c > θ` there exists a piece whose projection onto `u` is `< c·‖z‖`.
+Equivalently, a strict coherence bound cannot coexist with all pieces remaining in a `c`-sector
+around any ray.  This converts the negative obstruction into a precise obligation: prove a genuine
+low-projection/sector-escape witness for the adversarial pieces, not just non-collinearity or a finer
+subdivision.
+
+Lean: `exists_piece_rayProj_lt_of_complexPieceCoherence_le` in
+`Frontier/_DoorIVSectorCoherence.lean`, axiom-clean.  No CORE/capacity claim.

@@ -95,6 +95,21 @@ theorem not_complexPieceCoherence_le_of_sector_floor {zs : List ℂ} {u : ℂ} {
     sector_floor_le_complexPieceCoherence (zs := zs) (u := u) (c := c) hu hden hproj
   linarith
 
+/-- Consumer form: a strict coherence bound `ρ ≤ θ` forces escape from every sector whose
+projection floor is `c > θ`.  In any unit direction `u`, some piece has projection below
+`c · ‖z‖`; otherwise the sector lower bound contradicts the claimed drop. -/
+theorem exists_piece_rayProj_lt_of_complexPieceCoherence_le {zs : List ℂ} {u : ℂ} {c θ : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hcoh : complexPieceCoherence zs ≤ θ) (hθ : θ < c) :
+    ∃ z ∈ zs, rayProj u z < c * ‖z‖ := by
+  by_contra hnone
+  push_neg at hnone
+  have hproj : ∀ z ∈ zs, c * ‖z‖ ≤ rayProj u z := by
+    intro z hz
+    exact hnone z hz
+  exact not_complexPieceCoherence_le_of_sector_floor
+    (zs := zs) (u := u) (c := c) (θ := θ) hu hden hproj hθ hcoh
+
 end ProximityGap.Frontier.DoorIVSectorCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_list_sum
@@ -104,3 +119,5 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
   ProximityGap.Frontier.DoorIVSectorCoherence.sector_floor_le_complexPieceCoherence
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.not_complexPieceCoherence_le_of_sector_floor
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_of_complexPieceCoherence_le
