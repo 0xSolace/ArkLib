@@ -148,6 +148,49 @@ theorem shawValue_trivial_ceiling_of_le {q n M : ℝ} (hscale : 0 < shawScale q 
   unfold shawValue
   exact div_le_div_of_nonneg_right hceil (le_of_lt hscale)
 
+/-- Two-sided Shaw-value corridor.  If a raw Gauss-period norm is trapped between a lower certificate
+`L` and an upper certificate `U`, then the normalized Shaw value is trapped between the same
+certificates divided by the prize scale.  This is pure normalization bookkeeping: it packages the
+Plancherel/Johnson floor and any available ceiling in the dimensionless units used by Shaw's
+`prize ↔ Sh(n)=O(1)` capstone, without asserting any new analytic bound. -/
+theorem shawValue_mem_corridor_of_mem_raw_corridor {q n M L U : ℝ} (hscale : 0 < shawScale q n)
+    (hlo : L ≤ M) (hhi : M ≤ U) :
+    L / shawScale q n ≤ shawValue q n M ∧ shawValue q n M ≤ U / shawScale q n := by
+  constructor
+  · unfold shawValue
+    exact div_le_div_of_nonneg_right hlo (le_of_lt hscale)
+  · unfold shawValue
+    exact div_le_div_of_nonneg_right hhi (le_of_lt hscale)
+
+/-- Prize-regime corridor specialization.  The usual thin-regime guard `q > n > 0` supplies the
+positive scale, so any raw interval `L ≤ M ≤ U` transfers directly to Shaw-normalized units. -/
+theorem shawValue_mem_corridor_of_mem_raw_corridor_of_pos_lt {q n M L U : ℝ}
+    (hn : 0 < n) (hnq : n < q) (hlo : L ≤ M) (hhi : M ≤ U) :
+    L / shawScale q n ≤ shawValue q n M ∧ shawValue q n M ≤ U / shawScale q n := by
+  exact shawValue_mem_corridor_of_mem_raw_corridor (q := q) (n := n) (M := M) (L := L) (U := U)
+    (shawScale_pos_of_pos_lt hn hnq) hlo hhi
+
+/-- The explicit Johnson-floor/trivial-ceiling corridor in Shaw units: from
+`sqrt n ≤ M ≤ n` one gets
+`sqrt n / sqrt(n log(q/n)) ≤ Sh(q,n) ≤ n / sqrt(n log(q/n))`.  This records exactly where the
+kernel-checked floor and elementary ceiling sit after Shaw normalization; it is not a cancellation
+estimate and makes no claim toward closing CORE. -/
+theorem shawValue_floor_ceiling_corridor {q n M : ℝ} (hscale : 0 < shawScale q n)
+    (hfloor : Real.sqrt n ≤ M) (hceil : M ≤ n) :
+    Real.sqrt n / shawScale q n ≤ shawValue q n M ∧
+      shawValue q n M ≤ n / shawScale q n := by
+  exact shawValue_mem_corridor_of_mem_raw_corridor (q := q) (n := n) (M := M)
+    (L := Real.sqrt n) (U := n) hscale hfloor hceil
+
+/-- Prize-regime form of the Johnson-floor/trivial-ceiling corridor, discharging scale positivity
+from `q > n > 0`. -/
+theorem shawValue_floor_ceiling_corridor_of_pos_lt {q n M : ℝ}
+    (hn : 0 < n) (hnq : n < q) (hfloor : Real.sqrt n ≤ M) (hceil : M ≤ n) :
+    Real.sqrt n / shawScale q n ≤ shawValue q n M ∧
+      shawValue q n M ≤ n / shawScale q n := by
+  exact shawValue_floor_ceiling_corridor (q := q) (n := n) (M := M)
+    (shawScale_pos_of_pos_lt hn hnq) hfloor hceil
+
 end ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawScale_pos_of_pos_lt
@@ -159,3 +202,7 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_sqrt_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_trivial_ceiling_of_le
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_corridor_of_mem_raw_corridor
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_corridor_of_mem_raw_corridor_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor_of_pos_lt
