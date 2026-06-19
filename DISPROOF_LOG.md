@@ -7912,3 +7912,21 @@ Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTri
 VERDICT: adding more coarse small-ball windows does not create a cancellation estimate. Any disjoint finite occupancy partition plus the outside complement still pays exactly the trivial linear budget `|s|`; therefore a strict improvement below `|s|` must prove phase cancellation within or between pieces, not merely count occupancy. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`, new theorems `no_two_window_split_rhs_le_strict_budget` and `no_multi_window_split_rhs_le_strict_budget`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-coset-common-divisor-obstruction] gap-gcd=1 forbids common-factor traps for worst-b indices (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1 class-restriction refutation extending `_DoorIVWorstCosetIndexUnstructured`.
+The existing kernel proved that a top-three worst-coset-index certificate with consecutive-gap gcd `1`
+cannot lie in a single proper arithmetic progression or residue class. This refinement packages the
+probe-facing divisor specializations: for any `d ≥ 2`, the same certificate forbids all three indices
+from lying in `dℤ`, and in particular forbids the all-even / positive-2-adic-valuation trap.
+
+VERDICT: a worst-`b` anti-concentration attack cannot thin the adversarial frequencies by claiming a
+hidden common arithmetic factor of the top worst-coset indices. The `gap-gcd=1` probe certificate kills
+that entire class-restriction lever directly. No CORE, cancellation, completion, moment-saving,
+anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstCosetIndexUnstructured.lean`,
+new theorems `no_common_divisor_of_consecutive_gap_gcd_one` and
+`not_all_even_of_consecutive_gap_gcd_one`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

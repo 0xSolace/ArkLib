@@ -137,6 +137,26 @@ theorem worst_index_not_parity_restricted
   intro r₀
   exact no_proper_progression_of_consecutive_gap_gcd_one hgcd 2 r₀ (le_refl 2)
 
+/-- **No common divisor specialization.**  The `gap-gcd = 1` certificate also rules out the
+stronger-looking but actually identical claim that the three observed worst-coset indices all lie in
+`dℤ` for any proper modulus `d ≥ 2`.  This is the probe-facing form for rejecting a hidden
+"all worst indices have a common arithmetic factor" lever. -/
+theorem no_common_divisor_of_consecutive_gap_gcd_one
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ∀ d : ℤ, 2 ≤ d → ¬ (d ∣ t₀ ∧ d ∣ t₁ ∧ d ∣ t₂) := by
+  intro d hd h
+  have hprogression : d ∣ (t₀ - 0) ∧ d ∣ (t₁ - 0) ∧ d ∣ (t₂ - 0) := by
+    simpa using h
+  exact no_proper_progression_of_consecutive_gap_gcd_one hgcd d 0 hd hprogression
+
+/-- **No all-even specialization.**  In particular, a `gap-gcd = 1` witness forbids the top-three
+worst-coset indices from all having positive 2-adic valuation.  This is the exact integer certificate
+behind the Lane-1 verdict that the worst-`b` indices are not trapped in the even sublattice. -/
+theorem not_all_even_of_consecutive_gap_gcd_one
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ¬ ((2 : ℤ) ∣ t₀ ∧ (2 : ℤ) ∣ t₁ ∧ (2 : ℤ) ∣ t₂) := by
+  exact no_common_divisor_of_consecutive_gap_gcd_one hgcd 2 (le_refl 2)
+
 end ProximityGap.Frontier.DoorIVWorstCosetIndex
 
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.dvd_sub_of_same_residue
@@ -144,3 +164,5 @@ end ProximityGap.Frontier.DoorIVWorstCosetIndex
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.no_proper_progression_of_consecutive_gap_gcd_one
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.worst_index_not_parity_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.no_common_residue_mod_of_consecutive_gap_gcd_one
+#print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.no_common_divisor_of_consecutive_gap_gcd_one
+#print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.not_all_even_of_consecutive_gap_gcd_one
