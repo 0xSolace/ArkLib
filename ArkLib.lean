@@ -1615,6 +1615,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodAutocovariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseAlignmentReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseHypercontractive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseLinearFormDecoupling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhasePairEquidistBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhaseMartingaleConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PhasePairwiseToSubGaussian
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PigeonholeWraparoundOnset

@@ -6889,3 +6889,10 @@ NON-VACUITY verified in-kernel: budget hypotheses jointly satisfiable at concret
 strict). Scope: consolidation of the NAMED classical-side refutation budget into one citation surface.
 Does NOT prove door (iv) achievable; does NOT discharge the abstract ∀-mechanism quantifier of
 forces_doorIV (only the four NAMED levers). NO CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-pair-discrepancy-budget] Pair-equidistribution residual must be `O(1/m)` after exact prize normalization (2026-06-19, g55)
+Lane 2 / door-(iv) reduction-chain continuation extending `_PhaseLinearFormDecoupling`.  The named open residual `PairEquidistributed φ δ` was already proven to imply the variance proxy
+`avg_B η² ≤ 2m + 2δ·m(2m−1)`.  This commit repackages that bound in the normalized prize-budget form:
+if `δ·(2m−1) ≤ ε`, then `avg_B η² ≤ (2m)(1+ε)`, and the correction divided by the prize proxy `2m` is exactly `δ·(2m−1)`.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`, axiom-clean.  Theorems: `variance_le_prizeProxy_mul_one_add_of_pairResidual`, `variance_le_prizeProxy_mul_one_add_of_delta_le_div`, and `correction_div_prizeProxy_eq_pairResidual`.  Axioms are contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only a reduction/constraint lemma: it proves no pair-equidistribution, no CORE cancellation, no completion/moment saving, and no capacity claim.  The live analytic wall is now explicitly the anti-concentration scale `δ = O(1/m)` for the door-(iv) pair discrepancies.
