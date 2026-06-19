@@ -67,7 +67,11 @@ the bridge `firstMoment_modulus_to_re` below.
 * `modulus_to_secondMoment_re_bound` — the same modulus estimate feeds the off-diagonal
   second-moment real-part bound directly;
 * `modulus_to_secondMoment_abs_re_bound` — the two-sided/absolute version of that direct
-  consumer bridge.
+  consumer bridge;
+* `firstMoment_modulus_le_iff_abs_re_le` and
+  `secondMoment_abs_re_le_iff_firstMoment_modulus_le` — exact equivalence forms showing that,
+  on this real trace, modulus bounds and absolute off-diagonal real-part bounds are the same
+  bookkeeping obligation.
 
 NO CORE / cancellation / completion / moment-saving / capacity claim: `DiffTrace` is NOT bounded
 here.  This is a structural reality lemma plus the consumer bridge from a modulus estimate.  #444.
@@ -202,6 +206,29 @@ theorem modulus_to_secondMoment_abs_re_bound (hmul : ∀ a b, θ (a + b) = θ a 
   rw [hEq]
   exact firstMoment_modulus_to_abs_re hmul hone hunit Rel S h
 
+/-- **`firstMoment_modulus_le_iff_abs_re_le`** — exact handoff equivalence: on the real
+`DiffTrace`, proving a modulus estimate is the same as proving an absolute real-part estimate. -/
+theorem firstMoment_modulus_le_iff_abs_re_le (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R))
+    (S : ℝ) :
+    ‖DiffTrace θ Rel‖ ≤ S ↔ |(DiffTrace θ Rel).re| ≤ S := by
+  rw [diffTrace_norm_eq_abs_re hmul hone hunit Rel]
+
+/-- **`secondMoment_abs_re_le_iff_firstMoment_modulus_le`** — exact end-to-end equivalence between
+an absolute real-part bound on the original off-diagonal second moment and a modulus bound on the
+single difference-variety first moment `DiffTrace`.  This is only a bookkeeping equivalence; the
+analytic estimate on either side remains open. -/
+theorem secondMoment_abs_re_le_iff_firstMoment_modulus_le (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R))
+    (S : ℝ) :
+    |(∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re| ≤ S
+      ↔ ‖DiffTrace θ Rel‖ ≤ S := by
+  have hEq :
+      (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re
+        = (DiffTrace θ Rel).re := by
+    exact congrArg Complex.re (diffTrace_eq_secondMoment hmul hone hunit Rel).symm
+  rw [hEq, diffTrace_norm_eq_abs_re hmul hone hunit Rel]
+
 end ArkLib.ProximityGap.Frontier.DiffTraceReality
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -215,3 +242,5 @@ end ArkLib.ProximityGap.Frontier.DiffTraceReality
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.firstMoment_modulus_to_abs_re
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.modulus_to_secondMoment_re_bound
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.modulus_to_secondMoment_abs_re_bound
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.firstMoment_modulus_le_iff_abs_re_le
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.secondMoment_abs_re_le_iff_firstMoment_modulus_le

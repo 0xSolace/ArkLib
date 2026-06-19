@@ -6518,3 +6518,16 @@ Formal kernel: extended `Frontier/_DiffTraceReality.lean` with `firstMoment_modu
 `{propext, Classical.choice, Quot.sound}`.  This is a structural handoff theorem only: the external
 Katz/Lang-Weil-type modulus estimate remains open; no CORE bound, cancellation estimate,
 completion/moment saving, or capacity claim is made.
+
+## [difftrace-modulus-absolute-equivalence] modulus and absolute off-diagonal real bounds are the same V_diff obligation (g55, 2026-06-19)
+
+Lane: Door-IV variance-core handoff surface.  After the one-sided and two-sided consumer bridges, this
+sweep locks the exact equivalence form: on the real trace `DiffTrace`, proving `‖DiffTrace‖ ≤ S` is
+identical to proving `|(DiffTrace).re| ≤ S`; via the exact `DiffTrace = offdiag` identity, this is also
+identical to proving `|offdiag.re| ≤ S` for the original off-diagonal second moment.
+
+Formal kernel: extended `Frontier/_DiffTraceReality.lean` with `firstMoment_modulus_le_iff_abs_re_le`
+and `secondMoment_abs_re_le_iff_firstMoment_modulus_le`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This removes another bookkeeping ambiguity from the
+Katz/Lang-Weil attack surface.  No modulus estimate is proved; no CORE/cancellation/completion/moment
+saving/capacity claim is made.
