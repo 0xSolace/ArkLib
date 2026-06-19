@@ -25,11 +25,11 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 3 (domains 1–24) |
-| approaches invented | 32 |
-| REDUCES | 31 |
+| batches run | 4 (domains 1–32) |
+| approaches invented | 40 |
+| REDUCES | 37 |
 | NOT_NOVEL | 0 |
-| REFUTED | 1 |
+| REFUTED | 3 |
 | **SURVIVES** | **0** |
 
 > Note: domains 1–8 were independently invented+refuted **twice** (an `args`-propagation bug re-ran batch 1
@@ -67,5 +67,15 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 - `incidence geometry / Guth–Katz` → REDUCES: `Σ_s I(s)²` is itself the additive-energy count; a partitioning bound on it is a nonneg count = moment-necessity.
 - `geometric complexity theory` → REDUCES: Kronecker/plethysm coefficients are dimensions ≥ 0 (positivity) — no cancellation.
 - `theta correspondence / Weil rep` → REDUCES: the Weil θ-kernel for e_p is the quadratic Gauss-sum kernel ⟹ √p-vacuity + tautological bridge.
+
+### Batch 4 — domains 25–32 (6 REDUCES, 2 REFUTED, 0 survivors)
+- `trace formula (Arthur–Selberg)` → REDUCES: μ_n is an abelian torus ⟹ elliptic term is the tautological bridge; escapes neither obstruction.
+- `Cohen–Lenstra (effective)` → **REFUTED**: Cohen–Lenstra controls the class group (unit-invariant) — the wrong object; false derivation, in-tree countermodel.
+- `heights / Bilu equidistribution` → REDUCES: weak-* convergence controls the bulk `∫f dμ`, not the sup (worst case).
+- `Baker linear forms in logs` → REDUCES: archimedean Baker attacks the wrong side; irrelevant to the upper-bound norm chain at deep r.
+- `Schmidt subspace theorem` → REDUCES: the height floor `p^{2/n} → 1+o(1)` at prize thinness — excludes nothing.
+- `Ruelle resonances / thermodynamic` → REDUCES: the partition function `Σ|η_b|^{2r}` is a nonneg sum ⟹ its rate is a moment = moment-necessity.
+- `persistent homology / TDA` → **REFUTED**: persistence diagrams are distance-based (VR/Čech), provably blind to phase cancellation; machine countermodel.
+- `optimal transport / Wasserstein` → REDUCES: OT is a theory of non-negative mass; forming the measure collapses the n-unit-phase cancellation.
 
 (batches appended below as they complete)

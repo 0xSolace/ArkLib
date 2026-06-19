@@ -9,7 +9,7 @@ export const meta = {
 const REPO = '/Users/shawwalters/ethereumroadmap/upstream/lean-research/ArkLib'
 const DIR = 'ArkLib/Data/CodingTheory/ProximityGap/Frontier'
 // BATCH is hardcoded and bumped per launch (the Workflow `args` global does not reliably propagate).
-const BATCH = 4
+const BATCH = 5
 const PER = 8
 
 const FRAME = `ArkLib #444 ($1M). TARGET: PROVE the char-p energy bound rEnergy(μ_n,r) ≤ (2r−1)‼·n^r over F_p at
