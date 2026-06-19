@@ -6645,3 +6645,24 @@ Formal kernel: extended `Frontier/_DiffTraceLinearSumReframe.lean` with
 and `not_firstMomentDiffCancellation_of_lt_neg_card`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  This is the exact shifted-square floor/guardrail only: it
 proves no upper cancellation, no CORE bound, no completion/moment saving, and no capacity claim.
+
+## [difftrace-variance-route-capstone] the variance route reduces (slack-free) to ONE L²-flatness inequality ‖Σ Jphase‖² ≤ #Rel + S; single citable end-to-end consumer (2026-06-19, sol)
+Door-(iv) variance-route CAPSTONE packaging the four-brick arc (_NextDifferenceVariety →
+_DiffTraceDiagonalExtraction → _DiffTracePlancherelFloor → _DiffTraceLinearSumReframe/
+_DiffTraceReframeCircularity) into ONE citable theorem + exact characterization.
+
+EXACT (slack-free) characterization: the off-diagonal second-moment real part equals
+    (Σ_T Σ_{T'≠T} Jphase θ T·conj Jphase θ T').re  =  ‖Σ_T Jphase θ T‖²  −  #Rel
+(secondMoment_re_eq_normSq_sub_card).  Hence the whole variance route's open core is, with NO slack
+lost anywhere, the single quantity ‖Σ_T Jphase θ T‖² − #Rel; bounding it ≤ S ⟺ ‖Σ Jphase‖² ≤ #Rel+S
+(secondMoment_re_le_iff_normSq_le).  Single end-to-end consumer linearSumFlatness_to_secondMoment:
+L²-flatness ‖Σ Jphase‖² ≤ #Rel+S ⟹ off-diagonal second-moment real part ≤ S.  Downstream can cite
+ONE statement instead of re-tracing the chain.  The √p is gone (units), the variety/pair structure
+collapsed (Plancherel); what remains is exactly an L²-flatness inequality on a single complex number.
+
+Formal kernel: `Frontier/_DiffTraceVarianceRouteCapstone.lean` (3 thms):
+`secondMoment_re_eq_normSq_sub_card`, `linearSumFlatness_to_secondMoment`,
+`secondMoment_re_le_iff_normSq_le`.  Axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound});
+locked module build exit 0 (3316 jobs).  NO CORE/cancellation/completion/moment-saving/capacity claim
+— the L²-flatness inequality is NOT proved; this is the citable end-to-end reduction of the variance
+route to a single L²-flatness statement on the aggregate iterated Jacobi phase.
