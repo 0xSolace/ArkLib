@@ -154,6 +154,22 @@ theorem shawValueFamilyBound_of_naiveIncidenceBound {ι : Type*}
     (M := M i) (C := C i) (n := n i) (m := m i) (L := L i)
     (hn i) (hm i) (hL i)).1 (hraw i)
 
+/-- Reversible family form of the index-factor bookkeeping.  Pointwise naive-incidence bounds at
+scale `sqrt(n*m*L)` are exactly pointwise Shaw-value bounds with the inflated constant `C_i sqrt(m_i)`.
+This is the family-level converse to `shawValueFamilyBound_of_naiveIncidenceBound`; it records that
+normalization introduces no hidden slack beyond the named index factor. -/
+theorem naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled {ι : Type*}
+    {M n m L C : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hm : ∀ i, 0 ≤ m i) (hL : ∀ i, 0 < L i) :
+    (∀ i, M i ≤ C i * naiveIncidenceScale (n i) (m i) (L i)) ↔
+      (∀ i, shawValue (M i) (n i) (L i) ≤ C i * Real.sqrt (m i)) := by
+  constructor
+  · exact shawValueFamilyBound_of_naiveIncidenceBound hn hm hL
+  · intro h i
+    exact (naiveIncidenceBound_iff_shawValue_le_scaled
+      (M := M i) (C := C i) (n := n i) (m := m i) (L := L i)
+      (hn i) (hm i) (hL i)).2 (h i)
+
 end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_sqrt_mul_prizeScale
@@ -168,3 +184,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled
