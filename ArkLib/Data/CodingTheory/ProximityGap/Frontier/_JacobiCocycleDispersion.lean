@@ -78,6 +78,16 @@ theorem avg_le_sup {m : ℕ} (hm : 0 < m) (S : Fin m → ℝ) (hS : ∀ i, 0 ≤
   calc ∑ i, S i ≤ (m : ℝ) * M := hsum
     _ = M * (m : ℝ) := by ring
 
+/-- **Geometric orthogonality for one frequency.** If the phase ratio `r` is an `n`-th root of unity but is
+not `1`, then its length-`n` Fourier fiber cancels exactly. This is the off-support half of the delta statement
+for the trivial-cocycle/projective-character baseline: all non-matching frequencies have zero mass, while the
+matching frequency below carries the full mass `n`. -/
+theorem geom_sum_zero_of_pow_eq_one_of_ne_one {n : ℕ} (r : ℂ)
+    (hrpow : r ^ n = 1) (hrne : r ≠ 1) :
+    ∑ g ∈ range n, r ^ g = 0 := by
+  refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne hrne.symm) ?_
+  rw [mul_neg_geom_sum, hrpow, sub_self]
+
 /-- **The cocycle-trivial baseline: a genuine character concentrates fully (sup = `n`).** If the projective
 character degenerates to a genuine additive character `f(g) = ζ^{c·g}` of `ℤ/n` (cocycle `j ≡ 1`), its discrete
 Fourier transform `b ↦ Σ_g ζ^{b·g} f(g)` is a delta supported at `b = −c` with value `n` (geometric-sum
@@ -88,6 +98,25 @@ theorem trivial_cocycle_full_concentration {n : ℕ} (hn : 0 < n) (ζ : ℂ) {k 
     (hζk : ζ ^ k = 1) :
     ∑ g ∈ range n, (ζ ^ k) ^ g = (n : ℂ) := by
   simp [hζk]
+
+/-- **The trivial-cocycle Fourier fiber is a literal delta.** For any ratio `r` with `r^n = 1`, the length-`n`
+geometric fiber is either the full mass `n` (on support, `r=1`) or zero (off support, `r≠1`). This packages the
+exact mechanism behind the `n`-spike: without a nontrivial Jacobi cocycle, the Fourier transform has no dispersion
+at all. -/
+theorem trivial_cocycle_delta_fiber {n : ℕ} (r : ℂ) (hrpow : r ^ n = 1) :
+    ∑ g ∈ range n, r ^ g = if r = 1 then (n : ℂ) else 0 := by
+  by_cases hr : r = 1
+  · simp [hr]
+  · simp [hr, geom_sum_zero_of_pow_eq_one_of_ne_one r hrpow hr]
+
+/-- **Off-support cancellation for the written trivial character.** Applying the delta fiber to
+`r = ζ^k`: if `ζ^k` is an `n`-th root of unity but not `1`, the corresponding trivial-cocycle Fourier fiber is
+zero. Thus the full-concentration theorem above is not just a lower-bound witness; it is the exact on/off support
+orthogonality pattern that a genuine Jacobi-cocycle dispersion theorem must destroy. -/
+theorem trivial_cocycle_offSupport_zero {n : ℕ} (ζ : ℂ) {k : ℕ}
+    (hpow : (ζ ^ k) ^ n = 1) (hoff : ζ ^ k ≠ 1) :
+    ∑ g ∈ range n, (ζ ^ k) ^ g = 0 :=
+  geom_sum_zero_of_pow_eq_one_of_ne_one (ζ ^ k) hpow hoff
 
 /-- **The named MISSING THEOREM — the Jacobi-cocycle dispersion (the prize, NOT proved).** The projective
 character of `ℤ/n` with the normalized-Jacobi-sum cocycle has projective-Fourier sup `≤ C·√(n·log m)`. This is
@@ -108,5 +137,8 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.avg_le_sup
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.geom_sum_zero_of_pow_eq_one_of_ne_one
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_full_concentration
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_delta_fiber
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_offSupport_zero
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.prize_floor_iff_dispersion
