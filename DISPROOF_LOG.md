@@ -1,5 +1,24 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) fixed-width coherence tower has a hard target floor (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceTowerCollapse`.  Previous tower-collapse
+bricks proved that if the upper tower is fully coherent and only a bottom segment of length at most
+`K` carries nontrivial slack, with every bottom factor at least `c ∈ [0,1]`, then the whole coherence
+product is bounded below by the fixed floor `c^K`.  This refinement packages the obstruction as a
+direct contradiction criterion: any proposed certificate forcing the whole tower product below a
+target `θ < c^K` is impossible.
+
+VERDICT: fixed-width bottom slack cannot deliver an `n`-dependent damping target below its constant
+floor.  A successful door-(iv) coherence-tower attack must prove either that the number of genuinely
+noncoherent levels grows with the tower or that the bottom factors themselves shrink with `n`.  Merely
+growing the fully coherent upper tower cannot beat the fixed floor.  No CORE/cancellation/capacity
+claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`,
+axiom-clean.  New theorem: `no_fixed_width_tower_damping_below_floor`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) upper coherent tower gives only bottom-width damping (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceTowerCollapse`.  Prior tower-collapse

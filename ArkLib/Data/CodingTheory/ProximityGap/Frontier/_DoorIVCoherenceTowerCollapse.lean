@@ -261,8 +261,26 @@ theorem tower_product_ge_fixed_width_floor (upper bottom : List ℝ) {c : ℝ} {
   have hpow : c ^ K ≤ c ^ bottom.length := pow_le_pow_of_le_one hc0 hc1 hlen
   exact hpow.trans (tower_product_ge_bottom_floor upper bottom hupper hc0 hbottom)
 
+/-- **Target-floor obstruction for fixed-width coherence damping.**  Under the same fixed-width
+bottom-slack hypotheses, no coherence-product certificate can force the full tower product below a
+threshold `θ < c^K`.  This packages the previous floor as a direct refutation criterion: if the upper
+tower is fully coherent and the only nontrivial segment has at most `K` factors bounded below by `c`,
+then any attempted `n`-dependent damping target below the fixed constant floor `c^K` is contradictory.
+Thus a successful door-(iv) coherence-tower attack must either increase the number of genuinely
+noncoherent levels or make the bottom floor shrink; it cannot get logarithmic-in-`n` damping from a
+fixed bottom slack zone. -/
+theorem no_fixed_width_tower_damping_below_floor (upper bottom : List ℝ) {c θ : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (hlen : bottom.length ≤ K) (hbottom : ∀ r ∈ bottom, c ≤ r)
+    (htarget : (upper ++ bottom).prod ≤ θ) (hbelow : θ < c ^ K) :
+    False := by
+  have hfloor : c ^ K ≤ (upper ++ bottom).prod :=
+    tower_product_ge_fixed_width_floor upper bottom hupper hc0 hc1 hlen hbottom
+  exact not_lt_of_ge (hfloor.trans htarget) hbelow
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.bottom_product_ge_pow_length
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_fixed_width_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.no_fixed_width_tower_damping_below_floor
