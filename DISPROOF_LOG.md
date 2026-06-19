@@ -6471,3 +6471,11 @@ serve as a bounded Shaw-value certificate in the prize regime.
 Scope: no-go bookkeeping only. This supplies no cancellation, anti-concentration, moment,
 completion-saving, or CORE bound; it only records that the elementary triangle ceiling leaves the
 Door-IV prize target genuinely open.
+
+## [difftrace-modulus-direct-consumer] a modulus estimate on V_diff feeds the off-diagonal second moment directly (2026-06-19, g55)
+
+Lane: door-(iv) variance-core frontier extension of `_NextDifferenceVariety` / `_DiffTraceReality`, not a new moment/completion claim.  The prior brick proved `DiffTrace` is real and that a modulus bound implies the named real-part open core.  This sweep packages the final consumer and norm bookkeeping.
+
+Formal kernel: extended `Frontier/_DiffTraceReality.lean` with `diffTrace_norm_eq_abs_re`, proving that because the difference-variety first moment is real, `‖DiffTrace θ Rel‖ = |(DiffTrace θ Rel).re|`; and `modulus_to_secondMoment_re_bound`, proving that any future estimate `‖DiffTrace θ Rel‖ ≤ S` immediately bounds the real part of the original off-diagonal second-moment sum by `S` via the exact second→first reduction.  This makes the Lang-Weil/Katz handoff one theorem-call wide: prove a modulus bound on the single first-moment trace over `V_diff`, get the variance-core off-diagonal real bound with no extra re/im or pair-sum bookkeeping.
+
+Scope: no CORE bound, no cancellation estimate, no completion/moment saving, no capacity claim.  This is a structural consumer bridge only; the external modulus estimate remains open.  Axioms subset `{propext, Classical.choice, Quot.sound}`.

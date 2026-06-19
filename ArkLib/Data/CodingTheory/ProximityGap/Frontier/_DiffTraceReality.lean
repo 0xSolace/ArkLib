@@ -58,8 +58,12 @@ the bridge `firstMoment_modulus_to_re` below.
 * `erase_swap_iff` — the off-diagonal index set is symmetric under the swap of summation variables;
 * `secondMoment_offdiag_conj_eq_self` — the off-diagonal second moment equals its own conjugate;
 * `diffTrace_conj_eq_self`, `diffTrace_im_eq_zero`, `diffTrace_ofReal_re` — `DiffTrace` is real;
+* `diffTrace_norm_eq_abs_re` — because the trace is real, its complex norm is exactly
+  `|(DiffTrace).re|`;
 * `firstMoment_modulus_to_re` — a modulus bound `|DiffTrace| ≤ S` gives the named-core real-part
-  bound `FirstMomentDiffCancellation θ Rel S`.
+  bound `FirstMomentDiffCancellation θ Rel S`;
+* `modulus_to_secondMoment_re_bound` — the same modulus estimate feeds the off-diagonal
+  second-moment real-part bound directly.
 
 NO CORE / cancellation / completion / moment-saving / capacity claim: `DiffTrace` is NOT bounded
 here.  This is a structural reality lemma plus the consumer bridge from a modulus estimate.  #444.
@@ -138,6 +142,15 @@ theorem diffTrace_ofReal_re (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : �
 
 /-! ## §5 The consumer bridge: a modulus bound gives the named-core real-part bound -/
 
+/-- **`diffTrace_norm_eq_abs_re`** — because the difference-variety first moment is real, its
+complex norm is exactly the absolute value of its real part.  This pins the bookkeeping at the
+Lang–Weil / Katz handoff: a modulus estimate on `DiffTrace` is not hiding any imaginary component. -/
+theorem diffTrace_norm_eq_abs_re (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) :
+    ‖DiffTrace θ Rel‖ = |(DiffTrace θ Rel).re| := by
+  rw [← diffTrace_ofReal_re hmul hone hunit Rel]
+  simp
+
 /-- **`firstMoment_modulus_to_re`** — a bound on the *modulus* of the first moment
 (`‖DiffTrace θ Rel‖ ≤ S`, the natural output of a Lang–Weil / Katz character-sum
 estimate) yields the named open core `FirstMomentDiffCancellation θ Rel S` (a `.re` bound), with the
@@ -148,6 +161,17 @@ theorem firstMoment_modulus_to_re (Rel : Finset (Fin r → R)) (S : ℝ)
     (DiffTrace θ Rel).re ≤ S :=
   le_trans (Complex.re_le_norm _) h
 
+/-- **`modulus_to_secondMoment_re_bound`** — end-to-end consumer: a future modulus estimate on the
+difference-variety first moment immediately bounds the real part of the original off-diagonal
+second-moment sum.  This packages `_NextDifferenceVariety.firstMoment_to_secondMoment_bound` with
+`firstMoment_modulus_to_re`, so later work can plug a Katz/Lang–Weil estimate into the variance core
+without redoing the trace/second-moment bookkeeping. -/
+theorem modulus_to_secondMoment_re_bound (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R))
+    (S : ℝ) (h : ‖DiffTrace θ Rel‖ ≤ S) :
+    (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re ≤ S :=
+  firstMoment_to_secondMoment_bound hmul hone hunit Rel S (firstMoment_modulus_to_re Rel S h)
+
 end ArkLib.ProximityGap.Frontier.DiffTraceReality
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -156,4 +180,6 @@ end ArkLib.ProximityGap.Frontier.DiffTraceReality
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.diffTrace_conj_eq_self
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.diffTrace_im_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.diffTrace_ofReal_re
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.diffTrace_norm_eq_abs_re
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.firstMoment_modulus_to_re
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReality.modulus_to_secondMoment_re_bound
