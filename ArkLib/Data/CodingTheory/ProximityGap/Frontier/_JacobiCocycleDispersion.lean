@@ -146,6 +146,40 @@ theorem jacobiCocycleDispersion_iff_shawValue_le {M C n m : ℝ}
     (ShawValueCapstone.prizeBound_iff_shawValue_le (M := M) (C := C)
       (n := n) (L := Real.log m) hs)
 
+/-- Uniform-family form of the Jacobi-cocycle dispersion target with one constant `C` across all
+admissible thin instances. This is only the arithmetic wrapper for the named missing theorem. -/
+def jacobiCocycleDispersionFamilyBound {ι : Type*} (M n m : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, JacobiCocycleDispersion (M i) C (n i) (m i)
+
+/-- **Uniform bridge to Shaw values.** A single constant bounding the Jacobi-cocycle dispersion target
+throughout a family is exactly a single constant bounding the corresponding Shaw values with `L_i = log m_i`.
+This is the family-level version of the Door-IV reduction: no cancellation estimate is hidden in the wrapper. -/
+theorem jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound {ι : Type*}
+    {M n m : ι → ℝ} {C : ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Real.log (m i))) :
+    jacobiCocycleDispersionFamilyBound M n m C ↔
+      ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C := by
+  constructor
+  · intro h i
+    exact (jacobiCocycleDispersion_iff_shawValue_le (M := M i) (C := C)
+      (n := n i) (m := m i) (hs i)).1 (h i)
+  · intro h i
+    exact (jacobiCocycleDispersion_iff_shawValue_le (M := M i) (C := C)
+      (n := n i) (m := m i) (hs i)).2 (h i)
+
+/-- Existential-constant form: proving the Jacobi-cocycle dispersion theorem with an absolute constant
+across a family is equivalent to proving the family of Shaw values is `O(1)`. -/
+theorem exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*}
+    {M n m : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Real.log (m i))) :
+    (∃ C, jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound hs).1 hC⟩
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -156,3 +190,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_offSupport_zero
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.prize_floor_iff_dispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
