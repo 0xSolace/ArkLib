@@ -99,18 +99,6 @@ Everything but `hEnergy` is a theorem (`_ProveAssemblyConcrete`, `_DeltaStarDefi
 act of deleting the `[CharZero]` hypothesis** from one formalized theorem. This is the cleanest statement of the
 problem we know, and it organizes the entire thesis.
 
-> **DC-subtraction correction (essential — the boxed `hEnergy` is the pre-correction shorthand).** The raw
-> char-`p` energy bound `rEnergy(μ_n,r) ≤ (2r·n)^r over F_p` written in the box is **provably FALSE at prize
-> scale**, so "delete `[CharZero]`" does not yield a provable statement — it yields a false one. The proven DC
-> lower bound `E_r ≥ n^{2r}/q` (`DCEnergyEssential.energy_ge_dc`) forces `E_r ≥ 2^{6442} ≫ (2r·n)^r = 2^{4156}`
-> at `n=2^30, p≈2^158, r≈110` (and already for every `r ≥ 8`) — i.e. `DCEnergyEssential.not_gaussianEnergyBound_of_deep`.
-> The genuine open input is the **DC-subtracted** moment `S_r = q·E_r − n^{2r} = Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick`
-> (= the `DC-drop` step the box annotates), carried axiom-clean by `_ProveAssemblyConcreteDC.period_le_prizeFloor_dc`
-> (via `DCSubtractedMoment.sum_nonzero_moment`; predicate `DCEnergyCorrection.DCEnergyBound`). Read the spine's
-> open input as `S_r ≤ (q−1)·Wick`, equivalently the char-`p` transfer of the (r-uniformly-proven, `_AvW0`) char-0
-> Wick bound on the **nontrivial-frequency** energy — not the raw full energy. (Canonical per the cone `CLAUDE.md`
-> and the companion `deltastar-444-state-of-the-prize` map.)
-
 ---
 
 ## Chapter 2 — The Six Equivalent Forms
@@ -217,8 +205,58 @@ fluctuation — genuinely new analytic number theory.
 
 ### 8.2 Anticipated defense questions
 
-*(integrated: the committee Q&A — "is the conditional real?", "why isn't the variance bound just BGK again?",
-"what is genuinely new vs. relabeling?", "what would a referee demand?")*
+**Q1. Is the conditional reduction real, or is the hypothesis secretly the prize (a vacuous "X ⟹ X")?**
+It is real, and the distinction is precise. The capstone (`prize_via_subPoisson_variance` **[Lean]**) takes as
+hypothesis a *second-moment* statement — `Var(W_r) ≤ E[W_r]` (sub-Poisson), a bound on the **variance of a
+count** over the prime randomization — and concludes the *first-moment, worst-case* sup-norm bound, via
+Chebyshev + the existence of a good prime. These are different logical types: a variance hypothesis is not the
+worst-case conclusion restated. They are *equivalent in truth value* (as everything here is — §2), but the
+reduction is a genuine theorem, not a tautology, because the Chebyshev passage from second moment to a pointwise
+bound is mathematical content. The honest caveat: equivalence-in-truth means proving the hypothesis is exactly
+as hard as the prize — the reduction buys a *better-shaped target* (a variance/equidistribution statement with
+its own toolkit), not a *weaker* one.
+
+**Q2. Why is the variance form not just "BGK relabeled"?** Two reasons. (i) *It is a different moment.* BGK/Paley
+is a **first-order** statement (the single sup `M`); the variance route's target is a **second-order** statement
+(the pair correlation `Σ PairCorr`, the variance of the wraparound). Via the √p-removal identity
+(`_JacobiMomentIdentity`) and the difference-variety reduction (`_NextDifferenceVariety`), this is the
+*second-moment equidistribution of Jacobi-sum pairs at growing order* — and Katz/Deligne proved only the
+**first-order, fixed-order** equidistribution. The pair statement at growing order is not in the literature; it
+is not a known theorem dressed up, because the relevant theorem does not exist. (ii) *It brings new machinery* —
+Chebyshev, the prime-randomization second moment, the difference variety, the exact `CrossCov_r = (−1)^r Var_r`
+identity — none of which appears in the BGK sum-product proof. The reformulation is genuine: it relocates the
+problem into second-moment / variance analysis, where the toolkit is different even if the difficulty is conserved.
+
+**Q3. What is genuinely new, versus relabeling?** The following are new theorems and identities, machine-checked:
+the **√p-removal identity** (the entire `2r`-th moment is a *signed unit-phase* Jacobi correlation — the √p
+literally cancels; this is the first object outside *both* obstruction hypotheses); the **wraparound onset law**
+`r_0 = Θ(p^{1/φ(n)})` with the **correction** that it lies *below* the saddle at prize scale (overturning the
+"no-wraparound-at-prize" framing); the **exact cross-level covariance** `CrossCov_r = (−1)^r·Var_r` (the antipodal
+tower bootstrap is parity-split — contracting at odd order, expanding at even); the **convergence** of four
+independent constructions on one target; the **difference-variety** exact `2nd→1st`-moment reduction; and the
+**Bridge** theorem (additive and multiplicative faces are one object in two Fourier-dual bases, so "bridging" is
+tautological — itself a structural theorem). Relabelings are honestly flagged as such (e.g. the geometry-of-numbers
+onset *reduces to* the Minkowski norm bound — and we *prove why* (the cyclotomic lattice is too round), which is
+itself a result).
+
+**Q4. What would a referee demand, and can the thesis supply it?** A referee of a *solution* would demand a proof
+of the open core (the growing-order pair equidistribution, or the sub-Poisson variance, or an effective
+growing-order Katz). The thesis **cannot** supply this and says so plainly; the core is a ~25-year-open problem.
+A referee of a *contribution* — which is what this thesis is — would demand: (a) that the reductions be correct
+(they are machine-checked); (b) that the new objects be genuinely new and not vacuous (they are axiom-clean and
+their named residuals are the honest open core, not silently discharged); (c) that the obstruction be characterized
+(it is — the two-jaw pincer, each jaw a theorem); (d) that the empirical claims be reproducible (the probes are
+committed and exact). On those grounds the thesis is defensible. We do **not** ask the committee to accept a
+closure; we ask them to accept that the boundary of knowledge has moved from "bound a worst-case character sum"
+to "prove a specific second-moment equidistribution," with the machinery to attack the latter supplied.
+
+**Q5. The numerics say the prize is true — why is that not enough?** `M/√(2n log m) = 0.77–0.85 < 1` across the
+computable range, the DC-moment ratio *decreases* with depth (`0.87→0.13`), and no counterexample survives over
+the most resonance-prone structured primes. This is strong evidence the prize is **true** — but evidence is not
+proof, and the prize regime (`n = 2^30`) is uncomputable: the small-`n` regime where we *can* compute has the
+wraparound *absent* (`W_r = 0`, onset above the computed depth), so it does not directly probe the
+wraparound-present prize regime. The honest status is "believed true, with the precise obstruction to a proof
+isolated" — which is the most a thesis on this problem can claim with integrity.
 
 ### 8.3 The contribution, stated plainly
 
