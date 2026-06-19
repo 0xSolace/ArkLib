@@ -390,6 +390,45 @@ refuted by the decisive arbiter). No path survived.
 
 ---
 
+## Chapter 8B — Two new dynamical/probabilistic lenses (invented and tested at the defense)
+
+Pressed to invent mathematics that is genuinely new and *not* a reframing, we built two original
+frameworks aimed directly at the **sup** (not the average). Both are new; both, tested to destruction,
+confirm the necessity theorems — one by *refutation*, one by *sharp reduction*. We record them because a
+defense must show the boundary was probed from new directions, not just re-described.
+
+### 8B.1 The renormalization-group / fixed-point lens (refuted, not reduced)
+The tower-doubling operator `T : η(μ_n) ↦ η(μ_{2n})`, `η_b(μ_{2n}) = η_b(μ_n) + η_{ξb}(μ_n)`, acts on the
+period family up the 2-power tower. The empirical near-stability of `M/√(n log p)` *suggested* a fixed
+point; if `T` were a `√2`-contraction in the normalized-sup norm, the fixed point would *be* the bound — a
+dynamical proof, no moments. **Direct computation refutes it.** Up the tower `M/√(n log m)` does not
+stabilize (it oscillates `0.4 → 2.07 → 1.15 → …`), and at the **worst `b`** the two coset-periods are
+near-*aligned*: `|A+B|/max(|A|,|B|) ≈ 1.73–1.82` (near 2), giving doubling ratio `M(2n)/M(n) ≈ 1.6–1.8 >
+√2`. The operator is *bounded* (= BGK) but **not a contraction** — and the worst `b` is exactly where it
+fails to contract. This is a clean refutation of the RG proof strategy, on its own terms.
+
+### 8B.2 The extreme-value / sub-iid lens (sharp reduction)
+The periods are exchangeable white-noise; is their maximum the maximum of `m` *independent* samples? Exact
+computation: `M = 0.79–0.89 × √(2·E|η|²·log m)`, the iid-Gumbel extreme value — the max is in fact
+**slightly *below* iid** (the periods are *more* concentrated than independent, matching their negative
+covariance `−σ²/(m−1)` and light tails, excess kurtosis `−3/n < 0`). The marginal `E|η|² = n` is **proven**
+(Parseval). So the framework **pins precisely what a proof needs**: a *deterministic* union bound — an
+"iid-ization" of the specific arithmetic family — upgrading "the periods look sub-iid" to "the deterministic
+max obeys the sub-iid extreme value." That union bound is the per-`b` sub-Gaussian tail at the worst `b` —
+**exactly `SaddleEnergyBound` (BGK)**. The lens does not reduce the problem to something *easier*; it
+reduces it to the *same* core, but it tells us the missing object's exact type: a deterministic negative-
+dependence / sub-iid certificate for Gauss periods, of which none is known.
+
+### 8B.3 Why both new lenses confirm the necessity theorems
+Each framework's *success condition* turns out to be the cancellation: RG-contraction ⟺ worst-`b` coset
+orthogonality; sub-iid union bound ⟺ worst-`b` sub-Gaussian tail. This is not a coincidence — it is the
+content of §5: the open quantity (worst-case cancellation) is **orthogonal to every structural invariant**,
+so *any* framework, however novel, meets it at the closing step. The new lenses are genuine new mathematics
+and they *explain* the empirical truth (the sup is the sub-iid extreme value, below the Gaussian-extreme
+`k_max < √(2 log m)`); they do not, and provably cannot from within, *prove* it.
+
+---
+
 ## Chapter 9 — Verdict and the irreducible core
 
 **What is proven (sturdy, machine-checked).** The unification of the six forms; the conditional
