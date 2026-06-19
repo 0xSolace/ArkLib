@@ -123,6 +123,33 @@ theorem exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le {zs
     (zs := zs) (u := u) (c := 1 - ε / 2) (θ := 1 - ε) hu hden hcoh ?_
   linarith
 
+/-- The list of ray-projection deficits sums to the total `L¹` mass minus the projection of the
+combined vector. -/
+theorem rayProj_deficit_sum (u : ℂ) (zs : List ℂ) :
+    (zs.map (fun z => ‖z‖ - rayProj u z)).sum =
+      (zs.map norm).sum - rayProj u zs.sum := by
+  rw [rayProj_list_sum]
+  induction zs with
+  | nil => simp
+  | cons z zs ih =>
+      simp [ih]
+      ring
+
+/-- **Aggregate sector-defect obligation.**  If the normalized piece coherence is at most `θ`, then
+in every unit direction the total projection deficit is at least `(1-θ)` times the `L¹` mass.  Thus a
+Door-IV phase split cannot certify a drop merely by naming sectors: it must prove a quantitatively
+large aggregate angular defect at the adversarial frequency. -/
+theorem aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le {zs : List ℂ} {u : ℂ} {θ : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hcoh : complexPieceCoherence zs ≤ θ) :
+    (1 - θ) * (zs.map norm).sum ≤ (zs.map (fun z => ‖z‖ - rayProj u z)).sum := by
+  have hnorm_le : ‖zs.sum‖ ≤ θ * (zs.map norm).sum := by
+    unfold complexPieceCoherence at hcoh
+    exact (div_le_iff₀ hden).1 hcoh
+  have hproj_le_norm : rayProj u zs.sum ≤ ‖zs.sum‖ := rayProj_le_norm_of_unit hu
+  rw [rayProj_deficit_sum]
+  nlinarith
+
 end ProximityGap.Frontier.DoorIVSectorCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_list_sum
@@ -136,3 +163,6 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
   ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_of_complexPieceCoherence_le
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le
+#print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_deficit_sum
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le

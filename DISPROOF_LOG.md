@@ -1,5 +1,22 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) sector split must pay aggregate ray-projection deficit (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVSectorCoherence`.  Prior sector lemmas showed that
+a strict coherence drop forces at least one piece to escape every too-thin sector.  This refinement
+pins the aggregate obligation: if the normalized complex-piece coherence is at most `θ`, then in every
+unit direction the sum of ray-projection deficits is at least `(1-θ)` times the total `L¹` mass.
+
+VERDICT: a sector/phase split cannot certify door-(iv) cancellation merely by naming a partition or a
+preferred ray.  To prove a coherence drop at the adversarial frequency it must prove a quantitatively
+large total angular defect, not just non-collinearity of a few pieces.  No CORE/cancellation/capacity
+claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSectorCoherence.lean`,
+axiom-clean.  New theorems: `rayProj_deficit_sum` and
+`aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) fixed-width coherence tower has a hard target floor (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceTowerCollapse`.  Previous tower-collapse
