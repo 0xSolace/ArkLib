@@ -6106,3 +6106,17 @@ Lane: Door-(iv) Lane 1, strengthening `[door-iv-phaseset-linear-pattern-b-blind]
 Formal kernel: `_DoorIVPhaseSetDilationInvariant.lean` now defines `addLinearPatternFiberCounts S coeff`, the finite set/range of all target-fiber multiplicities for the fixed linear form `∑ coeff_i v_i`.  The theorem `addLinearPatternFiberCounts_smul_eq` proves this range is invariant under nonzero dilation of `S`; `addLinearPatternFiberCounts_phaseSet_indep_of_scalar` proves any two nonzero frequency dilates have the same unlabeled support of fiber sizes.
 
 Verdict: the max-fiber value, and any target-label-free statistic depending only on which fixed linear fiber sizes occur, is `b`-blind.  Such small-ball support data cannot select the adversarial worst frequency; a surviving door-(iv) theorem must use information beyond fixed linear fiber-size ranges.  No CORE/cancellation/capacity claim.
+
+## [door-iv-phaseset-linear-pattern-histogram-b-blind] fixed additive-linear fiber histograms are frequency-blind (2026-06-19, g55)
+
+Lane: door-(iv) phase-set anti-concentration / Littlewood-Offord small-ball.
+
+Lean: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`
+adds `addLinearPatternFiberMultiplicity`, `addLinearPatternFiberMultiplicity_smul_eq`, and
+`addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar`.
+
+Result: for any fixed additive-linear form on `(bS)^k`, nonzero frequency dilation only relabels
+targets by `t ↦ b*t`; the full histogram of target-fiber sizes is invariant.  Thus histogram-level
+small-ball/Halász data, not merely support/range/max data, is a property of the undilated subgroup and
+cannot select the adversarial worst frequency `b`.  This is a constraint lemma/refuted-lever brick only:
+no CORE cancellation, no asymptotic capacity claim, and no moment/completion shortcut.

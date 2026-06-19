@@ -463,6 +463,57 @@ theorem addLinearPatternFiberCounts_phaseSet_indep_of_scalar {k : ℕ}
   rw [addLinearPatternFiberCounts_smul_eq S coeff hb₁,
     addLinearPatternFiberCounts_smul_eq S coeff hb₂]
 
+
+/-- Histogram bin for target-fiber multiplicities of a fixed additive-linear pattern: the number of
+field targets `t` whose fiber has size exactly `N`.  Unlike `addLinearPatternFiberCounts`, this records
+how often each fiber size occurs. -/
+def addLinearPatternFiberMultiplicity {k : ℕ} (S : Finset F) (coeff : Fin k → F) (N : ℕ) : ℕ :=
+  ((Finset.univ : Finset F).filter (fun t => addLinearPatternCount S coeff t = N)).card
+
+/-- Nonzero dilation preserves the full histogram of target-fiber sizes for a fixed additive-linear
+pattern.  The target relabeling `t ↦ λt` is a bijection, so not only the max/range but also the number
+of targets attaining each fiber size is independent of the frequency. -/
+theorem addLinearPatternFiberMultiplicity_smul_eq {k : ℕ} (S : Finset F) (coeff : Fin k → F)
+    (N : ℕ) {lam : F} (hlam : lam ≠ 0) :
+    addLinearPatternFiberMultiplicity (S.image (fun x => lam * x)) coeff N =
+      addLinearPatternFiberMultiplicity S coeff N := by
+  classical
+  unfold addLinearPatternFiberMultiplicity
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun t => lam⁻¹ * t)
+    (fun t => lam * t)
+    ?_ ?_ ?_ ?_
+  · intro t ht
+    have htN : addLinearPatternCount (S.image (fun x => lam * x)) coeff t = N := by
+      simpa using ht
+    have hcount := (addLinearPatternCount_smul_eq S coeff (t := lam⁻¹ * t) hlam).symm
+    have htN' : addLinearPatternCount (S.image (fun x => lam * x)) coeff (lam * (lam⁻¹ * t)) = N := by
+      simpa [hcmul] using htN
+    simpa using hcount.trans htN'
+  · intro t ht
+    have htN : addLinearPatternCount S coeff t = N := by
+      simpa using ht
+    have hcount := addLinearPatternCount_smul_eq S coeff (t := t) hlam
+    simpa using hcount.trans htN
+  · intro t _
+    exact hcmul t
+  · intro t _
+    exact hcdiv t
+
+/-- Two nonzero frequency dilates have the same full linear-pattern fiber histogram.  Therefore a
+Littlewood-Offord/Halász lever using the distribution of fixed linear-form fiber sizes, rather than
+just the maximum or support, still cannot select the adversarial worst frequency. -/
+theorem addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) (N : ℕ) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addLinearPatternFiberMultiplicity (S.image (fun x => b₁ * x)) coeff N =
+      addLinearPatternFiberMultiplicity (S.image (fun x => b₂ * x)) coeff N := by
+  rw [addLinearPatternFiberMultiplicity_smul_eq S coeff N hb₁,
+    addLinearPatternFiberMultiplicity_smul_eq S coeff N hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -542,6 +593,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
