@@ -1614,6 +1614,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._P3ParamFamilyConductorRan
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._P7HGGCrossCorrNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PIndependenceLangWeil
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PaleyCayleyEigenvalue
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PencilAutocorrLambdaRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PencilSunflowerCore
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PerCosetDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._PeriodAutocovariance

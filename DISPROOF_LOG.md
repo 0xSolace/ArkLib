@@ -7468,3 +7468,34 @@ missing-import scan empty; codex review clean. SCOPE: unsigned multiplicative au
 only, field- and thickness-universal. Does NOT prove BGK, CORE, cancellation, completion, signed-phase
 moment-saving, anti-concentration, or capacity claim — door (iv) anti-concentration remains the open
 $1M wall.
+
+## [pencil-autocorr-lambda-rootbound] general-λ (λ-design) autocorrelation root bound: M(S)≤λ ⟹ r(r−1)≤λ(n−1) (2026-06-19, sol)
+NON-MOMENT structural CORE lever (polynomial-method / incidence-geometry side), EXTENDING two proven
+theorems by wiring them together (frontier-MOVEMENT, not boundary re-mapping):
+- `PencilAutocorrRootBound.pencil_card_bound_of_autocorr_le_one` wired only the M=1 (trinomial/t=3)
+  EXTREME of the dilation pencil into autocorrelation/subgroup language (via pencil_card_core, the
+  exact-singleton Fisher count).
+- `PencilCauchySchwarzFisher.pencil_cs_fisher` proved the GENERAL-M Cauchy–Schwarz/Fisher count
+  r(r−1)≤(M+1)(N−1) but only in ABSTRACT block-family form, never wired to the autocorrelation
+  hypothesis M(S)≤λ over the order-n subgroup.
+This commit supplies that missing wiring, the λ-generalization of pencil_card_bound_of_autocorr_le_one:
+- `pencil_card_bound_of_autocorr_le`: M(S)≤λ at every nontrivial shift over order-n subgroup μ, S⊆μ,
+  |S|=r≥1 ⟹ the SHARP r·(r−1) ≤ λ·(n−1). Bridge: apex p=1∈every block; the punctured overlap
+  (B i).erase 1 ∩ (B j).erase 1 = (B i∩B j).erase 1 has card = (full card)−1 ≤ λ−1 (the full
+  intersection holds the apex), so pencil_cs_fisher with M=λ−1 gives r(r−1)≤((λ−1)+1)(n−1)=λ(n−1);
+  λ≥1 is automatic in the non-degenerate r≥2 case. At λ=1 this EXACTLY recovers the singleton
+  bound r(r−1)≤n−1 (no off-by-one slack — caught + fixed via codex P2).
+- `pencil_sqrt_bound_of_autocorr_le`: the √ extraction (r−1)² < (λ+1)·n, i.e. r ≤ 1+√((λ+1)n).
+PROBE (/tmp/probe_autocorr_lambda_rootbound.py + /tmp/probe_autocorr_lambda_sharp.py): over PROPER
+thin 2-power subgroups μ_n⊊F_p^* (n=4..32, p>n³, p≡1 mod n, NEVER n=q−1), root sets S⊆μ_n of every
+size 1..n (prefix+random variants), the SHARP r·(r−1)≤λ(n−1) and (r−1)²<(λ+1)·n held in 102/102
+configs, 0 failures.
+VERDICT: the pencil dilation root bound now holds at EVERY autocorrelation level λ (the λ-design
+generalization), not just the M=1 trinomial extreme. NON-moment, field-/thickness-universal set-system
+combinatorics on the polynomial-method side. At the prize core λ≍n/2 it gives only Johnson
+(√((n/2)n)≍n), NOT sub-Johnson — collapses to Johnson exactly as the cliff-at-n/2 guard demands.
+NO CORE/cancellation/completion/moment/anti-concentration/capacity claim — door (iv) anti-concentration
+remains the open $1M wall.
+Formal kernel: `Frontier/_PencilAutocorrLambdaRootBound.lean`, both theorems axiom-clean
+(⊆ {propext,Classical.choice,Quot.sound}; no sorryAx); locked build exit 0 (8318 jobs); axiom_audit
+PASS (17 flagship clean); missing-import scan empty; codex review clean (no actionable issues).
