@@ -6560,3 +6560,32 @@ Formal kernel: `Frontier/_DiffTraceDiagonalExtraction.lean` (6 thms): `Jphase_no
 {propext, Classical.choice, Quot.sound}); locked module build exit 0 (3312 jobs).  NO CORE/cancellation/
 completion/moment-saving/capacity claim — `FullTrace` is NOT bounded here; this is a structural
 diagonal-extraction identity + the consumer bridge naming the explicit main term.
+
+## [difftrace-plancherel-floor] the variance-core full trace is a PERFECT SQUARE modulus ‖Σ Jphase‖²; off-diagonal DiffTrace.re ≥ −#Rel (exact unconditional floor) (2026-06-19, sol)
+Door-(iv) variance-core frontier-movement extension of `_DiffTraceDiagonalExtraction`.  That entry
+proved `FullTrace = #Rel + DiffTrace`.  This entry pins that `FullTrace` is a PERFECT SQUARE MODULUS.
+
+Mechanism: by `pairCorr_eq_diff`, every full-double-sum term factors `Jphase(diffTuple T T') =
+Jphase(T)·conj Jphase(T')`; over the UNPUNCTURED product Rel×Rel the double sum factors
+(`Finset.sum_mul_sum`):
+    FullTrace θ Rel = (Σ_T Jphase θ T)·conj(Σ_T Jphase θ T) = ‖Σ_T Jphase θ T‖² ≥ 0
+(`fullTrace_eq_normSq_sum`) — the Plancherel/completeness identity for the variance core: the full
+point count IS the squared modulus of the linear phase sum, hence a NON-NEGATIVE REAL.
+
+Combined with the diagonal extraction `FullTrace = #Rel + DiffTrace`, taking real parts:
+    DiffTrace.re = ‖Σ Jphase‖² − #Rel ≥ −#Rel   (diffTrace_re_eq_normSq_sub_card, diffTrace_re_ge_neg_card)
+i.e. `DiffTrace.re + #Rel = ‖Σ Jphase‖² ≥ 0` (diffTrace_re_add_card_nonneg).  The off-diagonal first
+moment can drop AT MOST #Rel below zero — exact, explicit, unconditional.  This is the TRIVIAL/FLOOR
+side: it is NOT the open prize upper bound (DiffTrace.re ≤ sub-Poisson S stays OPEN); it shows the
+variance-core object is a SHIFTED NON-NEGATIVE square, so any future upper bound controls
+‖Σ Jphase‖² in [0, ?] with the lower end closed here.
+
+PROBE (`scripts/probes/probe_dooriv_fulltrace_perfect_square.py`; proper μ_n<F_p*, p≫n³, never
+n=q−1; n=16,32,64, β∈{4,4.5}, r∈{3,4,5}): |FullTrace − ‖Σ Jphase‖²| ≤ 3e−12, |Im FullTrace| ≤ 3e−12,
+DiffTrace.re + #Rel = ‖Σ Jphase‖² ≥ 0 on every config.
+
+Formal kernel: `Frontier/_DiffTracePlancherelFloor.lean` (6 thms): `fullTrace_eq_mul_conj_sum`,
+`fullTrace_eq_normSq_sum`, `fullTrace_re_nonneg`/`fullTrace_im_zero`, `diffTrace_re_eq_normSq_sub_card`,
+`diffTrace_re_ge_neg_card`, `diffTrace_re_add_card_nonneg`.  Axiom-clean (axioms ⊆ {propext,
+Classical.choice, Quot.sound}); locked module build exit 0 (3313 jobs).  NO CORE/cancellation/
+completion/moment-saving/capacity claim — this is the FLOOR side (prize needs the open UPPER bound).
