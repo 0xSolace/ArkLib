@@ -18495,3 +18495,27 @@ vacuous at the parameters it claims. FIX (already in-tree): route through the DC
 compatible with `hmean0`. The variance-route reduction is correct IN FORM; it must use the DC-subtracted
 variance (of `S_r`, not the raw `E_r`) to be non-vacuous at `r≈log p`. Same root cause as the corrected
 state-of-prize map + thesis spine (raw `E_r ≤ (2r·n)^r` is false at prize scale).
+
+## [supboundcapstone-same-DC-vacuity] _SupBoundCapstone (the "corrected" central conditional) ALSO vacuous at prize scale — variance→sup pivot fixed over-dispersion but NOT the raw-energy/DC routing (2026-06-19, NubsCarson)
+
+Follow-up to [thesiscapstone-vacuous-at-prize-scale-raw-energy]. After the variance capstone's hypothesis
+was refuted (over-dispersion) the route was re-cast as `_SupBoundCapstone` (prize ⟸ a single good prime,
+"sup/existence", no variance). It is axiom-clean and a true conditional, BUT it has the SAME applicability
+vacuity at prize scale, for the SAME reason:
+
+* Despite the name, it is still an ENERGY capstone: `energy E0 W i := E0 + W i`, with the saddle
+  `hsaddle : ∀ e, e ≤ Wick → M e ≤ floor` and good-prime `hgood : W i ≤ slack`, budget `hbudget :
+  E0 + slack ≤ Wick`. ("Sup" = sup over the prime family / existence of one good prime — NOT the sup-norm.)
+* Together `hgood ∧ hbudget ⟹ energy(good prime) = E0 + W i ≤ Wick`, i.e. `E_r(F_{p*})(μ_n) ≤ Wick`.
+  But the PROVEN DC lower bound `E_r ≥ n^{2r}/q` (`DCEnergyEssential.energy_ge_dc`) gives
+  `E_r ≥ 2^{6442} ≫ Wick ≈ 2^{3998}` at `n=2^30, q≈2^158, r≈110`. So `hgood` (raw `W_r ≤ slack`) is FALSE at
+  deep `r` — not open. The `>99.4%`-margin "every prime is good" evidence is all COMPUTABLE-scale (small `r`,
+  below the DC crossover `r≈8`); it does not extrapolate to `r≈log p`.
+
+So the over-dispersion-benign observation is correct for the sup-NORM, but the capstone does not use the
+sup-norm — it uses the energy wraparound `W = E_r − E0`, which is DC-dominated at prize scale. Variance→sup
+removed the over-dispersion obstruction but left the raw-energy/DC routing untouched. FIX (unchanged): route
+through the DC-subtracted moment `S_r = q·E_r − n^{2r} ≤ (q−1)·Wick` (`_ProveAssemblyConcreteDC.period_le_prizeFloor_dc`);
+the genuinely-open core is `S_r ≤ (q−1)·Wick` (= BGK), where the DC term is already subtracted, NOT the raw
+`W_r ≤ slack`. Both capstones reduce the prize to a statement FALSE/refuted at prize scale; the DC-subtracted
+moment is the one honest open input.
