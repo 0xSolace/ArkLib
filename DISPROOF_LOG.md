@@ -6120,3 +6120,30 @@ targets by `t ↦ b*t`; the full histogram of target-fiber sizes is invariant.  
 small-ball/Halász data, not merely support/range/max data, is a property of the undilated subgroup and
 cannot select the adversarial worst frequency `b`.  This is a constraint lemma/refuted-lever brick only:
 no CORE cancellation, no asymptotic capacity claim, and no moment/completion shortcut.
+
+## [door-iv-halfmass-balanced-at-argmax] worst-b half-mass is BALANCED — the "drop-a-half" dyadic descent is a dead lever (2026-06-19, sol)
+Lane: Door-(iv) localized object, Lane 3 constraint (refuted lever with mechanism).
+The prize is localized to bounding the worst-frequency half-mass `H(n) = max_b (‖A_b‖+‖B_b‖)` where
+`η_b = Σ_{y∈μ_n} e_p(b·y) = A_b + B_b` splits along the index-2 subgroup `μ_{n/2} < μ_n`. A natural
+dyadic-descent lever discards the *lighter* half-sum and reduces `H(n)` to a sum over the thinner
+`μ_{n/2}`; for a `√`-saving it needs the worst-`b` halves to be IMBALANCED.
+
+Probe `scripts/probes/probe_dooriv_halfmass_balance{,2}.py` (proper `μ_n`, `p ≫ n³`, structured primes,
+never `n=q-1`; FULL `F_p*` scan at `n=16` over two distinct primes, sampled for larger `n`): the balance
+ratio `r(b) = min(‖A_b‖,‖B_b‖)/max(‖A_b‖,‖B_b‖)` averages `r̄ ≈ 0.44` over all `b`, but at the worst
+frequency `r(b*) ≈ 0.78–0.80` (full scans; `~1.75–1.80×` enrichment toward balance) and `0.93–0.9996`
+in the deeper-`β` sampled regime — the worst-`b` orbit is systematically BALANCE-ENRICHED.
+
+Lean (axiom-clean, `Frontier/_DoorIVHalfMassBalanceAtArgmax.lean`): at the worst `b` the halves are
+collinear (`‖A+B‖=‖A‖+‖B‖`, the proven same-ray fact) AND balanced (`‖A‖=‖B‖`), so
+`norm_eq_two_mul_of_coherent_balanced`: `‖A+B‖ = 2‖A‖`. Consequently
+`single_half_bound_pays_full_at_balanced`: any bound `‖A+B‖ ≤ g(max‖A‖‖B‖)` is FORCED to satisfy
+`g(max) ≥ 2·max` — it must already pay the doubled mass; and `descent_loss_le_two`: in the collinear
+regime `‖A+B‖ = max·(1+balance) ≤ 2·max`, so dropping a half loses at most the CONSTANT factor `2`
+(exactly `2` at the balanced worst-`b`), never a factor growing with `n`.
+
+VERDICT (does NOT close CORE): the worst-`b` two coset-halves carry comparable mass, so no
+dyadic-imbalance descent can thin the worst frequency or supply a `√`-cancellation. Any surviving
+door-(iv) descent must act on a NON-negation-stable / non-magnitude statistic, not on a heavy/light
+half asymmetry. Refuted-lever brick only: no CORE cancellation, no completion, no moment, no capacity.
+Axioms: propext, Classical.choice, Quot.sound.
