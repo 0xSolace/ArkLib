@@ -6589,3 +6589,24 @@ Formal kernel: `Frontier/_DiffTracePlancherelFloor.lean` (6 thms): `fullTrace_eq
 `diffTrace_re_ge_neg_card`, `diffTrace_re_add_card_nonneg`.  Axiom-clean (axioms ⊆ {propext,
 Classical.choice, Quot.sound}); locked module build exit 0 (3313 jobs).  NO CORE/cancellation/
 completion/moment-saving/capacity claim — this is the FLOOR side (prize needs the open UPPER bound).
+
+## [difftrace-linearsum-reframe] the variance-core open core ⟺ an L² mass bound ‖Σ_T Jphase θ T‖² ≤ #Rel + S on the SINGLE aggregate linear phase sum (2026-06-19, sol)
+Door-(iv) variance-core frontier-movement extension of `_DiffTracePlancherelFloor`.  Using the
+Plancherel value `DiffTrace.re = ‖Σ Jphase‖² − #Rel`, the named open core
+`FirstMomentDiffCancellation θ Rel S := (DiffTrace).re ≤ S` is reframed EXACTLY as an L² mass bound
+on the single aggregate linear phase sum:
+    FirstMomentDiffCancellation θ Rel S  ⟺  ‖Σ_T Jphase θ T‖² ≤ #Rel + S
+                                          ⟺  ‖Σ_T Jphase θ T‖ ≤ √(#Rel + S)   (for 0 ≤ #Rel+S).
+This is one rung cleaner than the difference-variety first moment: a bound on the NORM of a SINGLE
+complex number `Σ_T Jphase θ T`, not a double sum over a variety.  The fully-explicit exact chain is
+now prize ⟺ OffDiagonalPairCancellation ⟺ (DiffTrace).re ≤ S ⟺ ‖Σ Jphase‖² ≤ #Rel + S, every rung
+kernel-checked.  The remaining OPEN content is the single inequality ‖Σ_T Jphase θ T‖² ≤ #Rel + S at
+r≈log p, S sub-Poisson — an L²-flatness statement for the aggregate iterated Jacobi phase.  NOT proved.
+
+Formal kernel: `Frontier/_DiffTraceLinearSumReframe.lean` (4 thms):
+`firstMomentDiffCancellation_iff_normSq_le`, `firstMomentDiffCancellation_of_normSq_le`,
+`normSq_le_of_firstMomentDiffCancellation`, `firstMomentDiffCancellation_iff_norm_le_sqrt`.
+Axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}); locked module build exit 0 (3314
+jobs).  NO CORE/cancellation/completion/moment-saving/capacity claim — exact reframing (equivalence)
+of the open core onto the L² mass of the aggregate linear phase sum, a citable variance-route capstone,
+not a closure.
