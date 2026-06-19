@@ -7607,3 +7607,38 @@ new theorems `no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax`
 `no_affineCoherenceSlackBound_of_small_baseline_finsetArgmax`, and
 `no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax`, axiom-clean with axioms contained
 in `{propext, Classical.choice, Quot.sound}`.
+
+
+## [doorIV-valueshift-histogram-obstruction] the anti-concentration value-shift route needs a `+s`-periodic fiber histogram, which the prize value map refutes (2026-06-19, sol)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_NovelAntiConcentration`. The file
+`_NovelAntiConcentration.charP_energy_of_shift` is the genuine `L^∞` anti-concentration mechanism that
+ESCAPES the moment obstruction: a `ValueShift` of additive step-order `m` forces the wraparound fiber
+`≤ #T/m`, prize-strength at `m ≈ p`. Its own docstring isolates the SINGLE open input: "does the shift
+action have a large free part for `μ_n`'s value map?" This entry LOCKS that input.
+
+PROBE (probe-first, reproducible — `/tmp/probe_valueshift.py`, `probe_valueshift_tuple.py`,
+`probe_valueshift_realize.py`, prize regime: thin 2-power subgroup `μ_n ⊊ F_p^*`, `n=2^a`, `p≡1 mod n`,
+`p≫n³`, NEVER `n=q−1`):
+* The single-variable phase set `V = μ_n` has additive stabilizer of order EXACTLY 1 at every tested
+  `(p,n)` (n=8,16,32; p up to 65537): a proper subgroup value-set carries no nontrivial additive shift.
+* The energy value-set `V_r = Σ_r μ_n − Σ_r μ_n` FILLS the field `ZMod p` for `r≥2`, so the value-SET's
+  additive stabilizer becomes the full field (`p` prime ⟹ stabilizer is `{0}` or all of `ZMod p`).
+* BUT the fiber-CARDINALITY histogram `a ↦ fiberCard val a` is NEVER `+s`-periodic for any nonzero `s`:
+  it is sharply non-flat and non-periodic (e.g. `p=97,n=8,r=3`: fiber masses range min=1505..max=5600;
+  the largest `+s`-period is 1 at every tested `(p,n,r)`). A value-shift needs the strictly STRONGER
+  fiber-cardinality periodicity, not merely value-set invariance, and that fails.
+
+VERDICT: although `V_r` is `+s`-symmetric for `s` of full order, that symmetry does NOT lift to a
+tuple-permutation realizing a fixed shift. The only `ValueShift` of the prize value map is the trivial
+one (`s=0`, order 1), and the spreading mechanism then gives `≤ #T/1 = #T` — no bound. The value-shift /
+free-part route of `charP_energy_of_shift` therefore does NOT escape to a useful wraparound bound for
+the prize value map; to use spreading at order `>1` one must first exhibit a `+s`-periodic fiber
+histogram, which the prize geometry refutes. No CORE, cancellation, completion, moment-saving, or
+capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVValueShiftHistogramObstruction.lean`,
+new theorems `valueShift_histogram_periodic`, `no_valueShift_of_histogram_witness`,
+`valueShift_step_zero_of_no_periodicity`, `shift_spreading_trivial_of_step_zero`, and
+`valueShift_route_vacuous_of_no_periodicity`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
