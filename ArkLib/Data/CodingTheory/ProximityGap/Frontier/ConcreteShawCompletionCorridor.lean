@@ -84,8 +84,40 @@ theorem shawValue_worstPeriod_torsion_completion_corridor {d : ℕ}
     (by rwa [hcard]) (by rwa [hcard]) hs
   exact hfloor
 
+/-- Closed form for the normalized completion endpoint:
+`sqrt q / sqrt(nL) = sqrt(q/(nL))`.  This is the exact Shaw-unit size of the classical √q
+completion ceiling, before any door-(iv) anti-concentration input is added. -/
+theorem completion_ceiling_bracket_eq {q n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    Real.sqrt q / prizeScale n L = Real.sqrt (q / (n * L)) := by
+  unfold prizeScale
+  rw [Real.sqrt_div' q (mul_nonneg (le_of_lt hn) (le_of_lt hL))]
+
+/-- The torsion completion corridor with the upper endpoint in closed Shaw form.  The unconditional
+completion ceiling gives `Sh(M(μ_d)) ≤ sqrt(q/(|μ_d| L))`; the prize asks for an absolute constant
+instead. -/
+theorem shawValue_worstPeriod_torsion_completion_corridor_closed {d : ℕ}
+    (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (hne : (nonzeroFreqs F).Nonempty)
+    (hd1 : 1 ≤ (d : ℝ))
+    (hq2d : 2 * (d : ℝ) ≤ (Fintype.card F : ℝ)) {L : ℝ} (hL : 0 < L)
+    (hs : 0 < prizeScale ((torsion F d).card : ℝ) L) :
+    1 / Real.sqrt (2 * L)
+        ≤ shawValue (worstPeriod ψ (torsion F d) hne) ((torsion F d).card : ℝ) L
+      ∧ shawValue (worstPeriod ψ (torsion F d) hne) ((torsion F d).card : ℝ) L
+        ≤ Real.sqrt ((Fintype.card F : ℝ) / (((torsion F d).card : ℝ) * L)) := by
+  have hn : 0 < ((torsion F d).card : ℝ) := by
+    have hcard : ((torsion F d).card : ℝ) = (d : ℝ) := by
+      rw [card_torsion hd hd0]
+    rw [hcard]
+    exact_mod_cast hd0
+  have hcorr := shawValue_worstPeriod_torsion_completion_corridor hd hd0 hψ hne hd1 hq2d hs
+  refine ⟨hcorr.1, ?_⟩
+  simpa [completion_ceiling_bracket_eq hn hL] using hcorr.2
+
 end ProximityGap.Frontier.ConcreteShawCompletionCorridor
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.shawValue_worstPeriod_torsion_le_sqrt_card
 #print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.shawValue_worstPeriod_torsion_completion_corridor
+#print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.completion_ceiling_bracket_eq
+#print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.shawValue_worstPeriod_torsion_completion_corridor_closed
