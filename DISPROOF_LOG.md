@@ -6680,3 +6680,25 @@ Formal kernel: extended `Frontier/_DiffTraceReframeCircularity.lean` with
 and `firstMomentDiffCancellation_of_fullTrace_re_le_card_add`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  This is an exact consumer/equivalence only: no bound on
 `FullTrace`, no CORE bound, no cancellation estimate, no completion/moment saving, and no capacity claim.
+## door-(iv) variance-core linear-sum triangle envelope is only square slack (2026-06-19)
+
+Lens: Door-IV variance-core continuation after the exact reframe
+`FirstMomentDiffCancellation θ Rel S ↔ ‖Σ_T Jphase θ T‖² ≤ #Rel + S`.  Since every `Jphase θ T`
+is a unit, triangle inequality gives only `‖Σ_T Jphase θ T‖ ≤ #Rel`, hence
+`‖Σ_T Jphase θ T‖² ≤ #Rel²` and `(DiffTrace θ Rel).re ≤ #Rel² - #Rel`.
+
+VERDICT: the variance-core linear-sum reframe alone does not produce cancellation.  It supplies only
+the square/trivial slack `S = #Rel² - #Rel`; any useful Door-IV attack must prove genuine
+anti-concentration/flatness of the aggregate phase sum beyond triangle inequality.
+
+Probe: `scripts/probes/probe_dooriv_difftrace_trivial_envelope.py`, proper thin `μ_n < F_p^*`,
+`p ≫ n³`, never full group, `n=16,32,64`, `β∈{4,4.5}`, `r∈{3,4,5}`.  The unit phase and triangle
+ceiling checks pass in every sampled instance.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceTrivialEnvelope.lean`,
+axiom-clean.  New theorems: `norm_Jphase_eq_one`, `linearPhase_norm_le_card`,
+`linearPhase_normSq_le_card_sq`, `diffTrace_re_le_card_sq_sub_card`, and
+`firstMomentDiffCancellation_trivial_ceiling`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/completion/moment-saving/capacity
+claim.
+
