@@ -5878,3 +5878,37 @@ first force a genuine sign split. No CORE/cancellation/capacity claim; no moment
 
 Lean: `positive_sign_masses_of_coherence_lt_one_threshold`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-worstb-multiplicatively-generic] worst-b coset index has NO power-coset / QR restriction (sol, 2026-06-19)
+
+Door-(iv) Lane 1. Completes the worst-b coset-index class-restriction map alongside `a2ad4130b`
+(additive genericity: no 2-adic/AP/mod-d residue structure). Tests the MULTIPLICATIVE half: is the
+worst-b (argmax|S|) coset index `I in Z_m`, `m=(p-1)/n`, confined to a proper d-th-power coset /
+subfield-like multiplicative thin set?
+
+Probe `probe_dooriv_worstb_subfield2.py` (EXACT, proper mu_n, p>>n^3, never n=q-1): high-power QR-rate
+of `I` mod lpf(m) over ~200-300 structured primes per n = 0.5051 (z=+0.17), 0.4595 (z=-1.39), 0.4949
+(z=-0.14) for n=16,32,64 — all within ~2 se of 0.5 => MULTIPLICATIVELY GENERIC (both QRs and non-QRs
+present). So no class-restriction lever (additive OR multiplicative) thins the door-(iv) worst-b search.
+
+Lean `_DoorIVWorstIndexMultGeneric.lean` (push `4444b7fe0`, axioms subset {propext, Classical.choice,
+Quot.sound}): a set containing two elements whose ratio lies outside a subgroup H is in no single coset
+of H (multiplicative analogue of `a2ad4130b`'s `no_proper_progression`), specialized to the squares
+subgroup. No CORE/cancellation/capacity claim.
+
+## [door-iv-coherence-order-blind] rho(b) does not depend on the multiplicative order of b (sol, 2026-06-19)
+
+Door-(iv) Lane 1, NEW axis. Tests whether the index-2 coset-half coherence `rho(b)` (the brief's
+localized object) correlates with the MULTIPLICATIVE ORDER of b in F_p* (a lever targeting special-
+order frequencies). Distinct from the coset-INDEX residue probes above.
+
+Probe `probe_dooriv_rho_vs_order.py` (n=16 REP-INDEPENDENT FULL F_p* scan, every b bucketed by its
+TRUE order): mean rho flat = 0.7204 / 0.7188 / 0.7190 across tiny/small/large order classes over 65616
+elements; rho@worst-b = 1.0000 with generic order. => ORDER-BLIND; worst-b is not of special order.
+Mechanism: coset-half period sums constant on mu_n-cosets (`_EtaCosetInvariance`) => rho factors
+through F_p*/mu_n; order varies within a coset while rho is constant.
+
+Lean `_DoorIVCoherenceOrderBlind.lean` (push `1f681e790`, axioms subset {propext, Classical.choice,
+Quot.sound}): a coset-invariant statistic is equal on same-coset elements regardless of differing
+multiplicative order; contrapositive packages any genuine rho-difference as a coset-level (not
+order-level) phenomenon. No CORE/cancellation/capacity claim.
