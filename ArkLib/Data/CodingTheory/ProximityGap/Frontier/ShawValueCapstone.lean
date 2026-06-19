@@ -272,6 +272,44 @@ theorem shawValue_le_mul_shawValue_of_le_mul {M H K n L : ℝ}
   have h2 : (K * M) / prizeScale n L = K * (M / prizeScale n L) := by ring
   exact h2 ▸ h1
 
+/-- Pointwise comparison equivalence after Shaw-value normalization.  Because the prize scale is
+positive, a raw door-(iv) comparison `H ≤ K*M` is exactly the same as the normalized comparison
+`Sh(H) ≤ K*Sh(M)`.  This packages both directions so reductions can move between raw worst-period
+targets and Shaw-value targets without reopening division-by-scale algebra. -/
+theorem rawComparison_iff_shawValueComparison {M H K n L : ℝ}
+    (hs : 0 < prizeScale n L) :
+    H ≤ K * M ↔ shawValue H n L ≤ K * shawValue M n L := by
+  constructor
+  · exact shawValue_le_mul_shawValue_of_le_mul hs
+  · intro h
+    unfold shawValue at h
+    have hs_nonneg : 0 ≤ prizeScale n L := le_of_lt hs
+    have hmul : (H / prizeScale n L) * prizeScale n L ≤
+        (K * (M / prizeScale n L)) * prizeScale n L :=
+      mul_le_mul_of_nonneg_right h hs_nonneg
+    calc
+      H = (H / prizeScale n L) * prizeScale n L := by
+        field_simp [ne_of_gt hs]
+      _ ≤ (K * (M / prizeScale n L)) * prizeScale n L := hmul
+      _ = K * M := by
+        field_simp [ne_of_gt hs]
+
+/-- Uniform-family comparison equivalence: under pointwise positive prize scale, a pointwise raw
+comparison between two door-(iv) targets is equivalent to the pointwise comparison of their
+normalized Shaw values with the same multiplicative constant.  No cancellation estimate is present;
+this is only the reversible normalization wrapper for comparison hypotheses. -/
+theorem rawComparisonFamily_iff_shawValueComparisonFamily {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∀ i, H i ≤ K * M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) ≤ K * shawValue (M i) (n i) (L i)) := by
+  constructor
+  · intro h i
+    exact (rawComparison_iff_shawValueComparison (M := M i) (H := H i) (K := K)
+      (n := n i) (L := L i) (hs i)).1 (h i)
+  · intro h i
+    exact (rawComparison_iff_shawValueComparison (M := M i) (H := H i) (K := K)
+      (n := n i) (L := L i) (hs i)).2 (h i)
+
 /-! ## The two-sided Shaw-value bracket: the citable framing of the open prize
 
 The prize asks to collapse the *width* of the bracket below to an absolute constant.  The two
@@ -381,6 +419,8 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparison_iff_shawValueComparison
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparisonFamily_iff_shawValueComparisonFamily
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_bracket
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
