@@ -7842,3 +7842,11 @@ capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new theorem
 `ratio_lt_one_iff_witness_gap_pos`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-multiwindow-strict-budget] multi-window occupancy splits cannot fit below the trivial cardinality budget (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTrivial`. The prior kernel proved that a single-window occupancy split has right-hand side exactly `|s|`, so it cannot certify any strict budget `B < |s|`. This refinement packages the same obstruction for two disjoint windows and arbitrary finite disjoint multi-window families.
+
+VERDICT: adding more coarse small-ball windows does not create a cancellation estimate. Any disjoint finite occupancy partition plus the outside complement still pays exactly the trivial linear budget `|s|`; therefore a strict improvement below `|s|` must prove phase cancellation within or between pieces, not merely count occupancy. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`, new theorems `no_two_window_split_rhs_le_strict_budget` and `no_multi_window_split_rhs_le_strict_budget`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

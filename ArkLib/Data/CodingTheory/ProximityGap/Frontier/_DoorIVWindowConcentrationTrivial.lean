@@ -176,12 +176,38 @@ theorem no_window_split_rhs_le_strict_budget [DecidableEq ι]
   have hconst := window_split_rhs_constant (s := s) (W := W) hW
   linarith
 
+/-- Strict-budget obstruction for two-window certificates: even two disjoint coarse arcs plus the
+outside complement have split right-hand side exactly `|s|`, so they cannot fit under any budget
+strictly below `|s|` without extra phase-cancellation information. -/
+theorem no_two_window_split_rhs_le_strict_budget [DecidableEq ι]
+    {s W₁ W₂ : Finset ι} (h₁ : W₁ ⊆ s) (h₂ : W₂ ⊆ s) (hdis : Disjoint W₁ W₂)
+    {B : ℝ} (hB : B < (s.card : ℝ)) :
+    ¬ (W₁.card : ℝ) + (W₂.card : ℝ) + ((s \ (W₁ ∪ W₂)).card : ℝ) ≤ B := by
+  intro hle
+  have hconst := two_window_split_rhs_constant (s := s) (W₁ := W₁) (W₂ := W₂) h₁ h₂ hdis
+  linarith
+
+/-- Strict-budget obstruction for finite multi-window certificates: any disjoint finite family of
+occupancy windows plus the outside complement still has right-hand side exactly `|s|`.  Therefore
+no purely occupancy-based multi-window small-ball certificate can beat the trivial linear ceiling;
+a strict improvement must prove cancellation within or between pieces. -/
+theorem no_multi_window_split_rhs_le_strict_budget [DecidableEq ι]
+    {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s) (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id)
+    {B : ℝ} (hB : B < (s.card : ℝ)) :
+    ¬ (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) ≤ B := by
+  intro hle
+  have hconst := multi_window_split_rhs_constant (s := s) (Ω := Ω) hsub hdis
+  linarith
+
 end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.norm_sum_le_card_of_phase
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_bound_is_trivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_window_split_rhs_le_strict_budget
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_two_window_split_rhs_le_strict_budget
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_bound_is_trivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_split_rhs_constant
