@@ -1,3 +1,23 @@
+## door-(iv) Lane-2 capstone — COMPLETE concrete Shaw completion corridor `1/√(2L) ≤ Sh(M(μ_d)) ≤ √(q/(d·L))` (2026-06-19)
+
+Lens: Lane-2 citable capstone rung — tightest concrete normalized corridor, both endpoints, on the real
+torsion-subgroup worst period `M(μ_d)=worstPeriod ψ (torsion F d)`. Two existing Shaw-value rungs each gave
+ONE side but on different objects (the clean thin floor `1/√(2L)≤Sh` on a generic G; the tight SOTA √q-completion
+ceiling `Sh≤√q/scale` on torsion μ_d) and were never combined into the two-sided concrete corridor on μ_d.
+New file `Frontier/ConcreteShawCompletionCorridorFull.lean`, 3 axiom-clean theorems:
+- `ceiling_sqrt_card_eq` — closed form `√q/scale = √(q/(d·L))` (SOTA endpoint, = d^((β-1)/2)/√L at q=d^β).
+- `shawValue_worstPeriod_torsion_clean_floor` — clean floor `1/√(2L) ≤ Sh(M(μ_d))` on μ_d (thin regime q≥2d).
+- `shawValue_worstPeriod_torsion_full_corridor` — COMPLETE corridor `1/√(2L) ≤ Sh(M(μ_d)) ≤ √(q/(d·L))`.
+
+VERDICT: the tightest concrete normalized starting line the campaign has on the real object — lower endpoint
+the n-independent Plancherel floor 1/√(2L), upper endpoint the SOTA √q-completion baseline √(q/(d·L)). The prize
+Sh(M(μ_d))=O(1) lives strictly inside; collapsing the SOTA upper endpoint to a constant IS the prize. Pure
+assembly of two proven Shaw bounds + one closed form. No anti-concentration/cancellation/moment/capacity claim.
+CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteShawCompletionCorridorFull.lean`, axiom-clean.
+All three theorems' axioms ⊆ `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) Lane-2 capstone — concrete completion corridor `√(d/2) ≤ M(μ_d) ≤ √q` on the real period (2026-06-19)
 
 Lens: Lane-2 citable capstone rung. Two CONCRETE bounds on the actual torsion-subgroup worst period
