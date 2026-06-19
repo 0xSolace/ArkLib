@@ -6852,3 +6852,17 @@ threshold). NON-VACUITY in-kernel: real threshold exists for SOTA n^{0.989} domi
 With this, ALL THREE classical doors (i)/(ii)/(iii) now have their OvershootsBGK exclusion DISCHARGED
 from proven scale facts — the no-fifth-door tetrachotomy is unconditional on the classical side, leaving
 only door (iv) live. NO CORE/cancellation/capacity claim.
+
+## [classical-side-closed] one citable theorem: ALL THREE classical doors fail the prize certificate at their proven scales (2026-06-19, sol)
+Capstone bundling the three door discharges ([doorII-completion-overshoot-discharged] +
+[doorI-III-momentEVT-overshoot-discharged]) into ONE statement: in the prize regime L>1, the √q-
+completion door (ii) (any field with n·L≤q) AND the moment/extreme-value doors (i)/(iii) (SOTA scale
+C·n^{1-δ}, δ<1/2, past the SOTA threshold) BOTH fail the prize certificate certScale ≤ √n. No classical
+door reaches the prize floor; only door (iv) remains. This makes the hclassicalOvershoots hypothesis of
+forces_doorIV a discharged THEOREM for the concrete completion / moment-EVT mechanisms, not a postulate.
+
+Formal kernel: `Frontier/_NoFifthDoorTetrachotomy.lean` theorem classicalSide_closed (axiom-clean ⊆
+{propext, Classical.choice, Quot.sound}; locked build exit 0, 1975 jobs). NON-VACUITY in-kernel at
+n=4,L=2,q=64,C=1,δ=0.011: both conjuncts hold with real content. The no-fifth-door tetrachotomy is now
+UNCONDITIONAL on the classical side, packaged in a single citable statement. NO CORE/cancellation/
+capacity claim — door (iv) (worst-b coset-half coherence anti-concentration) remains the sole open wall.

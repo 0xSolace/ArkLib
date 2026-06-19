@@ -287,4 +287,34 @@ theorem momentEVT_mechanism_overshootsBGK_eventually
   obtain ⟨N₀, hN₀⟩ := momentEVT_scale_eventually_ge_bgkScale hC hL hδ
   exact ⟨N₀, fun n hn => hN₀ n hn⟩
 
+/-! ## Classical side closed: doors (i)/(ii)/(iii) all FAIL the prize certificate at their proven scales
+
+The three discharges above (`completion_not_certifies_prizeScale` for door (ii);
+`momentEVT_mechanism_overshootsBGK_eventually` + the scale separation for doors (i)/(iii)) are bundled
+here into a single citable statement: at the concrete proven certScales, NO classical door certifies a
+prize-scale bound in the prize regime.  This is the unconditional classical side of the no-fifth-door
+tetrachotomy — the `hclassicalOvershoots` hypothesis of `forces_doorIV` is no longer a postulate for
+the completion / moment-EVT mechanisms, it is a theorem. -/
+
+/-- **Classical side closed (concrete scales).**  In the prize regime `L > 1`:
+
+* the √q-completion door (ii), at any field size with `n·L ≤ q`, fails the prize certificate; and
+* the moment / extreme-value doors (i)/(iii), at the SOTA scale `C·n^{1−δ}` (`δ < 1/2`), fail the
+  prize certificate for all `n` past the SOTA threshold.
+
+No classical door reaches the prize floor `√n`; only door (iv) remains. -/
+theorem classicalSide_closed
+    {n L q C δ : ℝ} (hn : 0 < n) (hL : 1 < L)
+    (hq : n * L ≤ q) (hC : 0 < C) (hLnn : 0 ≤ L) (hδ : δ < 1 / 2) :
+    (¬ (completionScale q ≤ prizeScale n)) ∧
+    (∃ N₀ : ℝ, ∀ m : ℝ, N₀ ≤ m →
+        ¬ ((⟨DoorType.moment, C * m ^ (1 - δ)⟩ : Mechanism).certScale ≤ prizeScale m)) := by
+  refine ⟨completion_not_certifies_prizeScale hn hL hq, ?_⟩
+  obtain ⟨N₀, hN₀⟩ := momentEVT_mechanism_overshootsBGK_eventually hC hLnn hδ
+  refine ⟨max N₀ 2, fun m hm => ?_⟩
+  have hmN₀ : N₀ ≤ m := le_trans (le_max_left _ _) hm
+  have hm2 : (2 : ℝ) ≤ m := le_trans (le_max_right _ _) hm
+  have hmpos : 0 < m := by linarith
+  exact not_certifies_prizeScale_of_overshoot hmpos hL (hN₀ m hmN₀)
+
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy
