@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic
 
@@ -61,6 +62,8 @@ open scoped BigOperators
 
 namespace ProximityGap.Frontier.DoorIVMultShiftCollinear
 
+open ProximityGap.Frontier.DoorIVRealSignMassSlack
+
 /-- Normalized coherence of finitely many real pieces (same statistic as
 `DoorIVMultiPieceSignCoherence.multiPieceCoherence`). -/
 noncomputable def coherence {ι : Type*} (s : Finset ι) (A : ι → ℝ) : ℝ :=
@@ -109,6 +112,22 @@ theorem coherence_eq_signMass_imbalance {ι : Type*} (s : Finset ι) (A : ι →
   unfold coherence
   rw [sum_eq_posMass_sub_negMass, sum_abs_eq_posMass_add_negMass]
 
+/-- Compatibility with the reusable two-mass sign-coherence statistic. -/
+theorem coherence_eq_signMassCoherence {ι : Type*} (s : Finset ι) (A : ι → ℝ) :
+    coherence s A = signMassCoherence (posMass s A) (negMass s A) := by
+  rw [coherence_eq_signMass_imbalance]
+  rfl
+
+/-- Threshold consumer: for real-collinear pieces, proving a target `ρ ≤ θ` is exactly proving the
+minority-sign-mass lower bound.  This packages the multiplicative-refinement wall in the form future
+Door-IV anti-concentration claims must discharge. -/
+theorem coherence_le_iff_minority_mass_ge {ι : Type*} (s : Finset ι) (A : ι → ℝ) {theta : ℝ}
+    (hden : 0 < posMass s A + negMass s A) :
+    coherence s A ≤ theta ↔
+      (1 - theta) * (posMass s A + negMass s A) / 2 ≤ min (posMass s A) (negMass s A) := by
+  rw [coherence_eq_signMassCoherence]
+  exact signMassCoherence_le_iff_minority_mass_ge hden
+
 /-- If all pieces are same-signed (one of the masses vanishes) and the total mass is positive, the
 coherence is exactly `1` — recovering the saturation obstruction at the sign-mass level. -/
 theorem coherence_eq_one_of_oneMass_zero {ι : Type*} (s : Finset ι) (A : ι → ℝ)
@@ -151,3 +170,12 @@ theorem one_sub_coherence_eq {ι : Type*} (s : Finset ι) (A : ι → ℝ)
     ring
 
 end ProximityGap.Frontier.DoorIVMultShiftCollinear
+
+open ProximityGap.Frontier.DoorIVMultShiftCollinear
+
+#print axioms coherence_eq_signMass_imbalance
+#print axioms coherence_eq_signMassCoherence
+#print axioms coherence_le_iff_minority_mass_ge
+#print axioms coherence_eq_one_of_oneMass_zero
+#print axioms coherence_lt_one_of_signsplit
+#print axioms one_sub_coherence_eq
