@@ -5775,3 +5775,21 @@ forbids ANY proper AP r0+d*Z, d>=2, over a worst-index triple — turns the prob
 genuine no-AP obstruction), worst_index_not_parity_restricted (the d=2 specialization matching the
 random v_2). Verification: pg-iterate OK, locked full build OK (3297 jobs), axioms clean, codex-review.
 No CORE/cancellation/capacity claim.
+
+## [door-iv-phaseset-doubling-b-blind] constraint — additive doubling of {b*x^m} is invariant under the adversarial frequency (2026-06-18, g55 subagent)
+
+Lane: door-(iv) Lane 1, the brief's small-ball / Halasz anti-concentration question for the phase
+residue set `{b*x^m}`.  Previous formalization locked additive-energy invariance under nonzero
+frequency dilation.  This follow-up locks the adjacent additive-doubling input: the sumset cardinal
+`|bS + bS|` is exactly `|S + S|` for every nonzero `b`.
+
+Constraint verdict: any door-(iv) lever that tries to exploit the observed Sidon-like spread / large
+sumset of `{b*x^m}` cannot be tuned by the worst frequency.  The adversarial `b` changes the embedding
+by a field dilation, but it does not change additive doubling.  Thus additive-doubling / sumset-size
+small-ball data is a property of the subgroup itself, not a selector for the worst-b coherence.  No
+CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addSumset`,
+`addSumset_smul_eq_image`, `addSumset_card_smul_eq`, and
+`addSumset_card_phaseSet_indep_of_scalar`, all axiom-clean with axioms subset
+{propext, Classical.choice, Quot.sound}.

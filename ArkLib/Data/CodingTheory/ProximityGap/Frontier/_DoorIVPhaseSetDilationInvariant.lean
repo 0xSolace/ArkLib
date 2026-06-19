@@ -62,6 +62,39 @@ def addQuadruples (S : Finset F) : Finset (F × F × F × F) :=
 /-- Additive energy `E⁺(S) = #{(a,b,c,d) ∈ S⁴ : a+b=c+d}`. -/
 def addEnergy (S : Finset F) : ℕ := (addQuadruples S).card
 
+
+/-- Additive sumset `S + S`, used by the small-ball/doubling probe. -/
+def addSumset (S : Finset F) : Finset F :=
+  (S ×ˢ S).image (fun p => p.1 + p.2)
+
+/-- Dilation commutes exactly with the additive sumset: `(λS)+(λS)=λ(S+S)`. -/
+theorem addSumset_smul_eq_image (S : Finset F) (lam : F) :
+    addSumset (S.image (fun x => lam * x)) = (addSumset S).image (fun x => lam * x) := by
+  classical
+  ext y
+  simp [addSumset, mul_add]
+  aesop
+
+/-- Nonzero dilation preserves additive doubling cardinality.  Thus the observed `|bS+bS|/|S|`
+small-ball input is also worst-frequency-blind: changing `b` cannot improve or worsen the sumset
+size of the phase residue set. -/
+theorem addSumset_card_smul_eq (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    (addSumset (S.image (fun x => lam * x))).card = (addSumset S).card := by
+  classical
+  rw [addSumset_smul_eq_image]
+  exact Finset.card_image_of_injOn (s := addSumset S) (f := fun x => lam * x) (by
+    intro x _ y _ hxy
+    exact mul_left_cancel₀ hlam hxy)
+
+/-- Two nonzero frequency dilates have the same additive sumset cardinal.  This is the exact formal
+counterpart of the probe verdict: additive-doubling/arc-small-ball data of `{b*x^m}` is a property
+of the subgroup, not of the adversarial worst `b`. -/
+theorem addSumset_card_phaseSet_indep_of_scalar
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    (addSumset (S.image (fun x => b₁ * x))).card =
+      (addSumset (S.image (fun x => b₂ * x))).card := by
+  rw [addSumset_card_smul_eq S hb₁, addSumset_card_smul_eq S hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -120,6 +153,9 @@ theorem addEnergy_phaseSet_indep_of_scalar
 
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_card_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_card_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
