@@ -175,9 +175,18 @@ theorem resonanceMoment_three_le (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u
     _ = (m : ℝ) * ((m : ℝ) - 1) ^ 4 := by
         rw [Finset.card_univ, ZMod.card]; ring
 
+/-- **Trivial `r = 3` bracket.**  The odd third resonance rung is a nonnegative quadratic form and
+is bounded above by the triangle-count ceiling.  This deliberately records only the bookkeeping
+bracket: the measured `Θ(m³)` cancellation and the conjectural `(2m log m)³` scale remain open and
+are not claimed here. -/
+theorem resonanceMoment_three_bracket (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) :
+    0 ≤ resonanceMoment u 3 ∧ resonanceMoment u 3 ≤ (m : ℝ) * ((m : ℝ) - 1) ^ 4 :=
+  ⟨resonanceMoment_nonneg u 3, resonanceMoment_three_le u hu⟩
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `[propext, Classical.choice, Quot.sound]` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSum_three
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSum_three_norm_le
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_three_le
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_three_bracket
