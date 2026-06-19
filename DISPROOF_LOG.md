@@ -7311,3 +7311,20 @@ no sorryAx); locked build exit 0 (3299 jobs); axiom_audit PASS (17 flagship clea
 empty. SCOPE: algebraic tower substrate / structural recursion-step locator only. Does NOT prove the
 integer parity criterion at general depth, any char-p transfer, BGK, CORE, cancellation, completion,
 moment-saving, or capacity/growth-law claim — door (iv) anti-concentration remains the open $1M wall.
+
+## door-(iv) coset-hitting selectors cannot strictly improve a coset-invariant worst value (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceOrderBlind`.  Prior quotient-collapse bricks
+proved that a coset-invariant statistic, such as the localized coherence rho(b), factors through the
+left coset quotient and that upper bounds on any selector meeting every coset are equivalent to global
+bounds.  This refinement packages the direct no-go form: if a restricted class T hits every mu_n-coset,
+it cannot satisfy a threshold C below any actual global value f(b).
+
+VERDICT: an order bucket, selector, or element-level frequency filter cannot lower worst door-(iv)
+coherence unless it omits an entire multiplicative coset.  Any successful restriction must be a
+quotient-level exclusion, not a multiplicative-order or representative-level anti-concentration
+lever.  No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`,
+axiom-clean.  New theorem: `no_strict_bound_on_cosetHitting_set_below_global_value`.  Axioms are
+contained in `{propext, Classical.choice, Quot.sound}`.

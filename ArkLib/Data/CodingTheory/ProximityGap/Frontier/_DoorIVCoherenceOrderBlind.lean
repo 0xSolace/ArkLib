@@ -7,6 +7,8 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic
 
+set_option linter.style.longLine false
+
 /-!
 # Door IV coherence is multiplicative-order-blind
 
@@ -177,6 +179,21 @@ theorem bound_on_cosetHitting_set_iff_global {H : Subgroup G} {β : Type*} [LE �
   · intro h t _
     exact h t
 
+
+
+/-- **No strict selector improvement without missing a coset.**  Direct impossibility form of
+`bound_on_cosetHitting_set_iff_global`: if a restricted class `T` meets every left `H`-coset, then it
+cannot satisfy a bound below any actual global value of a coset-invariant statistic.  Therefore an
+order bucket, selector, or element-level filter can improve the door-(iv) worst coherence only by
+omitting an entire `μₙ`-coset; otherwise the global obstruction is still present inside `T`. -/
+theorem no_strict_bound_on_cosetHitting_set_below_global_value {H : Subgroup G} {β : Type*}
+    [Preorder β] {f : G → β} (hf : CosetInvariant H f) {T : Set G} {C : β} {b : G}
+    (hT : ∀ x : G, ∃ t ∈ T, t * x⁻¹ ∈ H) (hbound : ∀ t ∈ T, f t ≤ C)
+    (hb : C < f b) : False := by
+  have hglobal : ∀ x : G, f x ≤ C :=
+    (bound_on_cosetHitting_set_iff_global (H := H) (f := f) (C := C) hf hT).1 hbound
+  exact not_lt_of_ge (hglobal b) hb
+
 end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
 
 #print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.eq_of_cosetInvariant_of_sameCoset
@@ -191,3 +208,5 @@ end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.values_on_cosetHitting_set_cover_global
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.bound_on_cosetHitting_set_iff_global
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.no_strict_bound_on_cosetHitting_set_below_global_value
