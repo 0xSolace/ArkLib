@@ -144,21 +144,56 @@ structure (no analytic input survives β-uniformly).
 
 ---
 
-## §6. The central new conjecture
+## §6. The central new conjecture — and the frontier attack (corrected)
 
-Unifying §3–§5, the frontier crystallizes into one statement, strictly implied by — and we conjecture
-equivalent to — BGK at β=4, but *phrased in the new language*:
+Unifying §3–§5, the frontier crystallizes into one statement, strictly implied by BGK at β=4 and phrased
+in the new language:
 
-> **Conjecture 6.1 (Deterministic Recursive Flatness).** For `μ_n` (`n=2^μ`, `p ≡ 1 mod n`, β=4), the
-> multiplicative-tower recursion `Φ_{2n} = 𝒯[Φ_n]` (where `𝒯` lifts a flatness majorant via the coset
-> doubling) has a fixed point `Φ_*` that is a sub-Gaussian certificate (Def 3.1). Equivalently: the
-> spectral zeta `ζ_η` continues with a functional equation pinning its edge to `{E_1,E_2,E_3}`;
-> equivalently: the bootstrap `𝔅` flows `B_4 → B_{log p}`.
+> **Conjecture 6.1 (Deterministic Recursive Flatness).** For `μ_n` (`n=2^μ`, `p ≡ 1 mod n`, β=4): the
+> multiplicative-tower recursion `Φ_{2n} = 𝒯[Φ_n]` has a fixed point `Φ_*` that is a sub-Gaussian
+> certificate (Def 3.1) ⟹ the bootstrap `𝔅` flows `B_4 → B_{log p}` ⟹ the spectral edge of `ζ_η` is
+> `O(√(n log p))` (= BGK).
 
-The three formulations are designed to be attacked by **three different fields**: §3 by additive
-combinatorics / recursive majorants; §4 by analytic continuation / Tauberian theory; §5 by the arithmetic
-of generalized-Fermat primitive divisors. Each evades the barrier by being infinite-order *by
-construction* — this is the new content.
+> **Correction (machine-checked).** An earlier draft conjectured the three guises *equivalent*. Direct
+> attack **refutes the equivalence**: they form a **strict chain `C ⟹ A ⟹ B`** (certificate ⟹ bootstrap
+> ⟹ edge bound) with **both converses false** — three distinct strengths. The weakest, `B` (the edge
+> bound), *is* the BGK kernel. So Conjecture 6.1 is a *hierarchy*, and only its top, the certificate `C`,
+> is genuinely stronger; the kernel `B` is necessary-and-sufficient on its own.
+
+### §6.1 What the attack found (all six angles)
+
+The four conjectures and two novel constructions were each built to destruction. **0 cross the barrier**;
+the results sharpen the frontier:
+* **Conj 4.3 (`ζ_η` functional equation): REFUTED.** The period spectrum has no reciprocal symmetry
+  (reciprocal-diff `11.8–134`); `ζ_η` is an entire finite Dirichlet polynomial with no classical
+  functional equation. The Hadamard/char-polynomial variant reduces to the moments exactly.
+* **Conj 5.3 (bootstrap): REFUTED.** The smoothness exponent `c(r)` *rises* with depth (`c(2)≈1.8,
+  c(3)≈2.8` at n=8) and crosses `4` at constant `r ≈ 4–5`; the depth-increment stalls at `O(1)` depth,
+  not `log p` (machine-checked, onset drops below `n^4` at `n ≥ 32`).
+* **Conj 3.3 (certificate recursion): reduces, via an exact equivalence.** The tower recursion `𝒯` was
+  derived explicitly; the new theorem `recursion_reduces_to_crossMoment` (axiom-clean) proves it
+  *closes iff* the signed cross-moment is controlled uniformly in `K ≤ log p` — which the exact data
+  shows **is** the aligned worst-`b` cancellation (the barrier). The naive sup-recursion is not a
+  contraction (`naive_recursion_not_contraction_REFUTED`).
+
+### §6.2 New Object IV — the Jacobi spectral-edge operator `𝒥` (the furthest any object reaches)
+
+The genuinely-new construction that gets *closest*: let `ν = (1/(p−1)) Σ_{b≠0} δ_{|η_b|²}` be the period
+spectral measure (its moments are the energies `E_K`). Let `𝒥` be the **Jacobi (tridiagonal) operator** of
+the orthonormal polynomials for `ν` — diagonal `α_k`, off-diagonal `√β_k`, the exact Hankel-determinant
+ratios of `{E_K}`. Then `M² = sup(spec 𝒥) = sup_k(α_k + √β_k + √β_{k+1})`.
+
+> **The one genuine evasion (and its limit).** `𝒥` **evades the barrier's *extremality***: Hankel
+> positive-definiteness *forbids* the single-spike configuration that makes the `K`-th moment bound
+> `(pE_K)^{1/2K}` sharp, so `sup_k(α_k+√β_k+√β_{k+1})` is a **strictly better** functional than the moment
+> bound. This is the first object to beat the moment method's *extremal* obstruction. **But it still
+> reduces**: the recurrence coefficients `α_k, β_k` are Hankel ratios of *all* the `E_K`, so computing the
+> edge requires the same high-order (depth-`log p`) energy data. `𝒥` is a *better tool with the same
+> infinite-order input* — a genuine new functional, not a new source of information.
+
+`𝒥` is the sharpest frontier object: it shows the barrier's *extremality* is not the true obstruction —
+the *information* requirement (depth `log p`) is. A frontier proof must supply that information (the
+high-order char-`p` energy), and `𝒥` would then convert it to the edge bound losslessly.
 
 ---
 
@@ -173,11 +208,21 @@ Thinness Bootstrap `𝔅`. **Conjectured (open frontier):** their construction/c
 on the ~36-framework reduced list (because each is infinite-order by design, the one property the barrier
 *requires* and every prior framework lacked).
 
-**What is honestly claimed.** New mathematics is *defined* (three objects + four conjectures), new theorems
-are *proven* (the barrier, the sufficiency, the exact structure), and the kernel is *not* proven — it is
-re-cast into three new problems, each in a different field, each evading the proven barrier by being
-infinite-order. That is the frontier: not a solution, but the first map of the country on the far side of
-a wall we have now proven is real and load-bearing. The honest next step is to attack Conjecture 6.1 in
-one of its three guises — or to recognize, as the barrier suggests, that it requires an analytic
-breakthrough (a `ζ_η` functional equation, or a recursive flatness certificate) genuinely beyond current
-analytic number theory.
+**The frontier attack (this paper, §6.1).** All four conjectures + two novel constructions were built to
+destruction: **0 cross the barrier.** Conj 4.3 (functional equation) and Conj 5.3 (bootstrap) are
+**refuted**; Conj 3.3 (certificate) **reduces via an exact equivalence** to the cross-moment cancellation;
+Conj 6.1's claimed equivalence is **corrected** to a strict chain. The sharpest object, the Jacobi operator
+`𝒥` (§6.2), is the **one genuine partial advance**: it evades the barrier's *extremality* (a strictly
+better functional than the moment method) — but reduces, because the true obstruction is *information*
+(depth `log p`), not extremality.
+
+**What is honestly claimed.** New mathematics is *defined* (four objects: `𝒞, ζ_η, 𝔅, 𝒥`), new theorems are
+*proven* (the barrier; the sufficiency; the certificate-reduction equivalence; the strict-chain
+correction; the `𝒥` extremality-evasion; the exact structure), and the kernel is *not* proven. The frontier
+attack **eliminated** two of the four routes and **sharpened** the diagnosis: the obstruction is precisely
+the *information at depth `log p`* (the high-order char-`p` energy), which `𝒥` would convert to the bound
+losslessly if supplied. That is the genuine frontier verdict — not a solution, but a *map with two roads
+closed, one reduced, and one (𝒥) that reaches the edge of the wall and shows exactly what must come over
+it*: the depth-`log p` char-`p` energy bound, i.e. BGK at β=4, which remains a genuine open problem in
+analytic number theory. The honest next step is external: supply that information, by an advance on the
+thin-subgroup high-moment energy that no current method delivers — and feed it to `𝒥`.
