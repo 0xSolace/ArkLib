@@ -419,6 +419,27 @@ max obeys the sub-iid extreme value." That union bound is the per-`b` sub-Gaussi
 reduces it to the *same* core, but it tells us the missing object's exact type: a deterministic negative-
 dependence / sub-iid certificate for Gauss periods, of which none is known.
 
+### 8B.3b The eight-framework grind (determinantal, thermodynamic, syzygy, Croot–Sisask, hyperbolic, heat-kernel, motivic, holonomy)
+
+To probe the boundary from every remaining direction, eight further frameworks were built to destruction:
+**1 refuted on its own mechanism, 7 reduce to the cancellation**, none escapes.
+* **Determinantal point process** (REFUTED, like RG): the periods are *not* negatively dependent at the
+  pair level — their correlations have the **wrong sign** (positive association on ~half the separations;
+  exact witness `μ_8, p=4129`: `N₂·L = 10320 > N₁² = 2704`, a 3.8× violation of `ρ₂ ≤ ρ₁²`). So the
+  global "M < iid" concentration is *not* uniform pairwise negative dependence; the DPP/negative-association
+  proof strategy is dead. (A genuinely new exact structural fact.)
+* **Thermodynamic / Ruelle transfer operator**: the dynamics `x↦gx` is a single zero-entropy `n`-cycle, so
+  the pressure = the period itself — reduces.
+* **Syzygy / Castelnuovo–Mumford regularity**: the wraparound relation module's homological invariants =
+  the relation count — reduces.
+* **Croot–Sisask almost-periodicity**: an `L^p` (average) statement; the near-maximal additive doubling
+  blocks any sup upgrade — reduces.
+* **Hyperbolic polynomial**: real-rooted ⟹ Newton automatic (content-free), Samuelson vacuous — reduces.
+* **Heat-kernel / mixing**: mixing time `= 1/(n − M)`, circular with `M` — reduces.
+* **Motivic / mixed-Hodge weight filtration**: `dim V_r = 0` ⟹ `H⁰` is the count, pure weight 0 — reduces.
+* **Period-holonomy / discrete connection curvature** (the novel-invent slot): a genuinely new geometric
+  mechanism with an exact covariant-curvature identity — but content-free against the cancellation.
+
 ### 8B.3 Why both new lenses confirm the necessity theorems
 Each framework's *success condition* turns out to be the cancellation: RG-contraction ⟺ worst-`b` coset
 orthogonality; sub-iid union bound ⟺ worst-`b` sub-Gaussian tail. This is not a coincidence — it is the
