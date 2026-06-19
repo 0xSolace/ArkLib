@@ -6717,3 +6717,21 @@ Formal kernel: `Frontier/_DiffTraceFlatnessRatio.lean` (4 thms): `flatnessRatio`
 `flatnessRatio_le_of_secondMoment_le`, `flatnessRatio_le_iff_secondMoment_le`.  Axiom-clean (axioms ⊆
 {propext, Classical.choice, Quot.sound}); locked module build exit 0 (3317 jobs).  NO CORE/cancellation/
 completion/moment-saving/capacity claim — dimensionless normalization of the open core, not a closure.
+## door-(iv) variance-core original second moment has only the triangle corridor (2026-06-19)
+
+Lens: Door-IV variance-core follow-up to the linear-sum triangle envelope.  The exact capstone pins
+the original off-diagonal second-moment real part as `‖Σ_T Jphase θ T‖² - #Rel`.  Combining the
+Plancherel floor with the triangle ceiling gives the full unconditional corridor
+`-#Rel ≤ offdiag₂.re ≤ #Rel² - #Rel`.
+
+VERDICT: restating the variance route on the original pair-correlation expression does not add any
+saving; without a genuine flatness theorem for `Σ_T Jphase θ T`, the original second moment has only
+the trivial square upper endpoint.  The prior thin-subgroup probe for `_DiffTraceTrivialEnvelope`
+checks the same unit-phase and triangle envelope in proper prize-regime instances.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceTriangleSecondMoment.lean`,
+axiom-clean.  New theorems: `secondMoment_re_ge_neg_card`,
+`secondMoment_re_le_card_sq_sub_card`, and `secondMoment_triangle_corridor`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/completion/moment-saving/capacity
+claim.
+

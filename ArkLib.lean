@@ -1495,6 +1495,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceTrivialEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceReframeCircularity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceVarianceRouteCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessRatio
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceTriangleSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DilationZeroEntropyNoGo
