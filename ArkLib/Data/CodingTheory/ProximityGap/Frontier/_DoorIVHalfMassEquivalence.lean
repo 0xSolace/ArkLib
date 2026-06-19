@@ -136,6 +136,42 @@ theorem exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBou
       (normalized_prize_halfMass_sandwich (hscale i) (hMH i) (hHM i)).1
     exact le_trans h1 (hC i)
 
+/-- Raw prize-family bounds are equivalent to normalized prize-ratio bounds under positive scales,
+with the same constant.  This is the scale-generic analogue of the Shaw-value normalization. -/
+theorem prizeFamilyBound_iff_normalizedPrizeFamilyBound {ι : Type*} {M scale : ι → ℝ} {C : ℝ}
+    (hscale : ∀ i, 0 < scale i) :
+    prizeFamilyBound M scale C ↔ normalizedPrizeFamilyBound M scale C := by
+  constructor
+  · intro h i
+    have hdiv : M i / scale i ≤ (C * scale i) / scale i :=
+      div_le_div_of_nonneg_right (h i) (le_of_lt (hscale i))
+    have hrewrite : (C * scale i) / scale i = C := by
+      rw [mul_div_cancel_right₀ C (ne_of_gt (hscale i))]
+    exact hrewrite ▸ hdiv
+  · intro h i
+    calc
+      M i = (M i / scale i) * scale i := by
+        rw [div_mul_cancel₀ (M i) (ne_of_gt (hscale i))]
+      _ ≤ C * scale i := mul_le_mul_of_nonneg_right (h i) (le_of_lt (hscale i))
+
+/-- Raw half-mass-family bounds are equivalent to normalized half-mass-ratio bounds under positive
+scales, with the same constant. -/
+theorem halfMassFamilyBound_iff_normalizedHalfMassFamilyBound {ι : Type*} {H scale : ι → ℝ} {C : ℝ}
+    (hscale : ∀ i, 0 < scale i) :
+    halfMassFamilyBound H scale C ↔ normalizedHalfMassFamilyBound H scale C := by
+  constructor
+  · intro h i
+    have hdiv : H i / scale i ≤ (C * scale i) / scale i :=
+      div_le_div_of_nonneg_right (h i) (le_of_lt (hscale i))
+    have hrewrite : (C * scale i) / scale i = C := by
+      rw [mul_div_cancel_right₀ C (ne_of_gt (hscale i))]
+    exact hrewrite ▸ hdiv
+  · intro h i
+    calc
+      H i = (H i / scale i) * scale i := by
+        rw [div_mul_cancel₀ (H i) (ne_of_gt (hscale i))]
+      _ ≤ C * scale i := mul_le_mul_of_nonneg_right (h i) (le_of_lt (hscale i))
+
 /-- **Uniform-family door-(iv) reduction (the Big-O statement).**  Given, over the whole index family,
 the always-true `M i ≤ H i` and the probed reverse `H i ≤ K · M i` with a SINGLE constant `K ≥ 0`, the
 existence of an absolute prize constant is equivalent to the existence of an absolute half-mass
@@ -159,5 +195,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_iff_halfMassBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prize_halfMass_sandwich
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalized_prize_halfMass_sandwich
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_normalizedPrizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
