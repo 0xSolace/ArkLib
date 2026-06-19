@@ -6991,3 +6991,11 @@ axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Theorems:
 Scope: REDUCTION/instantiation of rung 2. Does NOT prove the cross inequality (rung-2 open content),
 does NOT prove E_3's closed form (probe-verified only), does NOT prove the antitone chain, makes NO
 CORE/cancellation/completion/moment-saving/capacity claim. Prize remains the open wall.
+
+## [doorIV-rho-step-two-normalized-target] the second ρ-rung is exactly one normalized S₃ inequality (2026-06-19, g55)
+
+Lane 2 continuation of `_OpenCoreRhoStepTwoExplicit`.  The second monotonicity rung had already been reduced to the explicit cross inequality
+`S_3·(3n(n−1)) ≤ S_2·(15n³−45n²+40n)` using the proven `E_2=3n(n−1)` and the probe-verified `E_3=15n³−45n²+40n`.  This follow-up solves that cross inequality for the single next char-p unknown:
+`S_3 ≤ S_2·(15n³−45n²+40n)/(3n(n−1))`, and chains it back to the explicit `ρ(3)≤ρ(2)` statement.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoStepTwoExplicit.lean` with `charZeroEnergyThree_eq_factor`, `cross_two_iff_S3_target`, and `rho_step_two_target`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only algebraic normalization/reduction of rung 2.  It does not prove the normalized `S_3` target, does not prove the probe-verified `E_3` closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
