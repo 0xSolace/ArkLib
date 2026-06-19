@@ -7051,3 +7051,16 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEq
 Lane 2 normalization capstone extending `_DoorIVHalfMassEquivalence`. This packages the pure prize-side Shaw-value conversion: under positive scales, the raw family statement `∃ C, M i ≤ C·scale i` is equivalent to the normalized statement `∃ C, M i / scale i ≤ C`, with the same constant carried through the pointwise equivalence.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`, theorem `exists_prizeFamilyBound_iff_exists_normalizedPrizeFamilyBound`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`. Scope is only normalization/reduction bookkeeping for the door-(iv) prize target. It proves no half-mass bound, no reverse comparison, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-halfmass-four-way-capstone] raw half-mass bounds are equivalent to normalized prize Shaw value (2026-06-19, g55)
+Lane 2 reduction-chain cleanup extending `_DoorIVHalfMassEquivalence`.  Prior commits had three
+faces of the four-way surface: raw prize, raw half-mass, normalized prize, normalized half-mass.  This
+commit adds the remaining mixed face: under a family-wide comparison `M ≤ H ≤ K·M` with `K ≥ 0` and
+positive scales, a raw uniform half-mass Big-O bound is equivalent to a bounded normalized prize Shaw
+value.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`,
+axiom-clean.  New theorem: `exists_halfMassFamilyBound_iff_exists_normalizedPrizeFamilyBound`.
+Axioms are contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction and
+renormalization: it proves no half-mass comparison theorem, no anti-concentration, no CORE
+cancellation, no completion/moment saving, and no capacity claim.
