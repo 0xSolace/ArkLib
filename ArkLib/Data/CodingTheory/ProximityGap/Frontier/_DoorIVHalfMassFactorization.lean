@@ -115,6 +115,18 @@ theorem not_coherence_lt_one_of_norm_eq_halfMass {A B : E} (h : 0 < halfMass A B
   rw [coherence_lt_one_iff_norm_lt_halfMass h, heq]
   exact not_lt_of_ge le_rfl
 
+/-- **Coherence floor times half-mass floor gives a period floor.**  In the split formulation, any
+lower bound on the coherence and any lower bound on the half-mass transfer multiplicatively to a lower
+bound on the original period norm.  This is only bookkeeping: it says a successful half-split route must
+pay both factors, not that either factor has been bounded in the prize regime. -/
+theorem norm_ge_of_coherence_ge_of_halfMass_ge {A B : E} {rho H : ℝ}
+    (h : 0 < halfMass A B) (hrho0 : 0 ≤ rho) (hH0 : 0 ≤ H)
+    (hcoh : rho ≤ coherence A B) (hmass : H ≤ halfMass A B) :
+    rho * H ≤ ‖A + B‖ := by
+  rw [norm_eq_coherence_mul_halfMass h]
+  have hcoh0 : 0 ≤ coherence A B := le_trans hrho0 hcoh
+  exact mul_le_mul hcoh hmass hH0 hcoh0
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_nonneg
@@ -127,3 +139,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_one_iff_norm_eq_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_lt_one_iff_norm_lt_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_ge_of_coherence_ge_of_halfMass_ge
