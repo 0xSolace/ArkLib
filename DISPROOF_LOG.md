@@ -6896,3 +6896,8 @@ Lane 2 / door-(iv) reduction-chain continuation extending `_PhaseLinearFormDecou
 if `δ·(2m−1) ≤ ε`, then `avg_B η² ≤ (2m)(1+ε)`, and the correction divided by the prize proxy `2m` is exactly `δ·(2m−1)`.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`, axiom-clean.  Theorems: `variance_le_prizeProxy_mul_one_add_of_pairResidual`, `variance_le_prizeProxy_mul_one_add_of_delta_le_div`, and `correction_div_prizeProxy_eq_pairResidual`.  Axioms are contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only a reduction/constraint lemma: it proves no pair-equidistribution, no CORE cancellation, no completion/moment saving, and no capacity claim.  The live analytic wall is now explicitly the anti-concentration scale `δ = O(1/m)` for the door-(iv) pair discrepancies.
+
+## [doorIV-pair-discrepancy-ideal-endpoint] Exact pair-equidistribution lands directly on the prize variance proxy (2026-06-19, g55)
+Follow-up to [doorIV-pair-discrepancy-budget].  The normalized budget now includes the endpoint corollary: `PairEquidistributed φ 0` implies `avg_B η² ≤ 2m`, i.e. the period variance proxy is at the prize floor, and the pair-residual correction is zero at `δ=0`.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `variance_le_prizeProxy_of_ideal_pairEquidist` and `pairResidualCorrection_zero`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only an endpoint specialization/reduction; it does not prove prize-regime pair-equidistribution, anti-concentration, CORE cancellation, or capacity.

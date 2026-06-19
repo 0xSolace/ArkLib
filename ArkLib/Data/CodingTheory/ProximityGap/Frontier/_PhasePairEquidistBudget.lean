@@ -80,6 +80,16 @@ theorem variance_le_prizeProxy_mul_one_add_of_delta_le_div {m : ℕ} (hm : 0 < m
     _ = ε := by
       exact div_mul_cancel₀ ε (ne_of_gt hden_pos)
 
+/-- **The ideal pair-equidistribution endpoint.**  At exact residual `δ = 0`, the variance proxy is
+bounded directly by the prize variance proxy `2m`.  This is only the endpoint specialization of the
+already-proven decoupling theorem; the hard analytic content is proving that a prize-regime phase set
+actually reaches this endpoint or an `O(1/m)` neighborhood of it. -/
+theorem variance_le_prizeProxy_of_ideal_pairEquidist {m : ℕ} (φ : Fin m → B → ℝ)
+    (hpair : PairEquidistributed φ 0) :
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) ≤ prizeVarianceProxy m := by
+  have hbase := variance_le_of_pairEquidist (B := B) φ 0 (by norm_num) hpair
+  simpa [prizeVarianceProxy] using hbase
+
 /-- **The normalized correction is exactly `δ(2m-1)`.**  This pins the anti-concentration target with
 no asymptotic handwaving: after division by the prize variance proxy `2m`, the pair-discrepancy
 correction from `_PhaseLinearFormDecoupling` is precisely `δ(2m-1)`. -/
@@ -89,9 +99,16 @@ theorem correction_div_prizeProxy_eq_pairResidual {m : ℕ} (hm : 0 < m) (δ : �
   unfold pairResidualCorrection prizeVarianceProxy
   field_simp [hm2]
 
+/-- The pair-discrepancy correction itself vanishes at the ideal residual `δ = 0`. -/
+theorem pairResidualCorrection_zero (m : ℕ) : pairResidualCorrection m 0 = 0 := by
+  unfold pairResidualCorrection
+  ring
+
 end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound; no `sorryAx`). -/
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_div_prizeProxy_eq_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.pairResidualCorrection_zero
