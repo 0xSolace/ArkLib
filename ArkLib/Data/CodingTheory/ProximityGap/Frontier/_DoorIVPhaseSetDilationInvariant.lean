@@ -95,6 +95,38 @@ theorem addSumset_card_phaseSet_indep_of_scalar
       (addSumset (S.image (fun x => b₂ * x))).card := by
   rw [addSumset_card_smul_eq S hb₁, addSumset_card_smul_eq S hb₂]
 
+
+/-- Additive difference set `S - S`, the pair-spacing support seen by pair-collision and
+Littlewood-Offord small-ball arguments. -/
+def addDiffset (S : Finset F) : Finset F :=
+  (S ×ˢ S).image (fun p => p.1 - p.2)
+
+/-- Dilation commutes exactly with the additive difference set: `λS - λS = λ(S - S)`. -/
+theorem addDiffset_smul_eq_image (S : Finset F) (lam : F) :
+    addDiffset (S.image (fun x => lam * x)) = (addDiffset S).image (fun x => lam * x) := by
+  classical
+  ext y
+  simp [addDiffset, mul_sub]
+  aesop
+
+/-- Nonzero dilation preserves additive difference-set cardinality.  Thus pair-spacing support of
+`{b*x^m}` is also independent of the adversarial frequency. -/
+theorem addDiffset_card_smul_eq (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    (addDiffset (S.image (fun x => lam * x))).card = (addDiffset S).card := by
+  classical
+  rw [addDiffset_smul_eq_image]
+  exact Finset.card_image_of_injOn (s := addDiffset S) (f := fun x => lam * x) (by
+    intro x _ y _ hxy
+    exact mul_left_cancel₀ hlam hxy)
+
+/-- Two nonzero frequency dilates have the same additive difference-set cardinal.  This rules out a
+worst-b selector based purely on pair-spacing support or difference-set expansion. -/
+theorem addDiffset_card_phaseSet_indep_of_scalar
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    (addDiffset (S.image (fun x => b₁ * x))).card =
+      (addDiffset (S.image (fun x => b₂ * x))).card := by
+  rw [addDiffset_card_smul_eq S hb₁, addDiffset_card_smul_eq S hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -156,6 +188,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_card_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_card_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset_smul_eq_image
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset_card_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset_card_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar

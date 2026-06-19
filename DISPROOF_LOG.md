@@ -5793,3 +5793,19 @@ Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addSumset`
 `addSumset_smul_eq_image`, `addSumset_card_smul_eq`, and
 `addSumset_card_phaseSet_indep_of_scalar`, all axiom-clean with axioms subset
 {propext, Classical.choice, Quot.sound}.
+
+## [door-iv-phaseset-difference-b-blind] constraint — pair-spacing support of {b*x^m} is invariant under the adversarial frequency (2026-06-18, g55 subagent)
+
+Lane: door-(iv) Lane 1, continuing the phase-set small-ball/Halasz audit after the sumset-cardinality
+invariance brick.  The pair-spacing support `bS - bS` is exactly the dilation `b*(S-S)`, so its
+cardinality is identical for every nonzero frequency `b`.
+
+Constraint verdict: a door-(iv) anti-concentration proof cannot select or exclude the worst frequency
+using only difference-set expansion, pair-spacing support, or collision-support size of `{b*x^m}`.
+Those inputs are frequency-blind under nonzero dilation.  Any real lever must use structure beyond
+pure additive support counts.  No CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addDiffset`,
+`addDiffset_smul_eq_image`, `addDiffset_card_smul_eq`, and
+`addDiffset_card_phaseSet_indep_of_scalar`, all axiom-clean with axioms subset
+{propext, Classical.choice, Quot.sound}.
