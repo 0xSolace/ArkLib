@@ -72,6 +72,46 @@ theorem prizeBound_iff_shawValue_le_of_pos {M C n L : ℝ} (hn : 0 < n) (hL : 0 
     M ≤ C * prizeScale n L ↔ shawValue M n L ≤ C :=
   prizeBound_iff_shawValue_le (prizeScale_pos hn hL)
 
+
+
+/-! ## Uniform-family capstone: the arithmetic form of `prize ⇔ Sh(n)=O(1)` -/
+
+/-- A raw prize-family bound by the same constant `C` across a parameter family.  The parameters may
+encode fields, subgroup sizes, or admissible thin instances; this definition is intentionally only the
+arithmetic wrapper. -/
+def rawPrizeFamilyBound {ι : Type*} (M n L : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, M i ≤ C * prizeScale (n i) (L i)
+
+/-- A uniform Shaw-value bound by the same constant `C` across a parameter family. -/
+def shawValueFamilyBound {ι : Type*} (M n L : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, shawValue (M i) (n i) (L i) ≤ C
+
+/-- **Uniform-family Lane-2 capstone.**  Under pointwise positivity of the prize scale, a uniform raw
+prize-family bound by `C` is exactly a uniform Shaw-value bound by `C`.
+
+This is the machine-checked arithmetic core of the prose reduction `prize ⇔ Sh(n)=O(1)`: after
+normalization, proving the prize with an absolute constant is the same as proving that the normalized
+Shaw values are bounded by that absolute constant.  No cancellation estimate is hidden here. -/
+theorem rawPrizeFamilyBound_iff_shawValueFamilyBound {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    rawPrizeFamilyBound M n L C ↔ shawValueFamilyBound M n L C := by
+  constructor
+  · intro h i
+    exact (prizeBound_iff_shawValue_le (hs i)).1 (h i)
+  · intro h i
+    exact (prizeBound_iff_shawValue_le (hs i)).2 (h i)
+
+/-- Existential constant form of the uniform-family capstone: there is an absolute raw prize constant
+iff there is an absolute normalized Shaw-value constant, with the same witness. -/
+theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∃ C, rawPrizeFamilyBound M n L C) ↔ (∃ C, shawValueFamilyBound M n L C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (rawPrizeFamilyBound_iff_shawValueFamilyBound hs).1 hC⟩
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (rawPrizeFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
+
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
 theorem shawValue_floor_of_plancherel_floor {M n L : ℝ} (hs : 0 < prizeScale n L)
@@ -92,5 +132,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
