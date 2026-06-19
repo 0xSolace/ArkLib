@@ -148,6 +148,35 @@ theorem cosetInvariant_iff_exists_factorThroughLeftCosets {H : Subgroup G} {β :
         simpa [hkey] using hc
       _ = f b := hF b
 
+/-- **Coset-hitting selectors preserve all coset-invariant values.**  If a proposed restricted
+frequency class `T` intersects every left `H`-coset, then every global value of a coset-invariant
+statistic already occurs on `T`.  Thus an order/selector-based door-(iv) restriction cannot lower
+worst coherence unless it actually misses an entire `μₙ`-coset. -/
+theorem values_on_cosetHitting_set_cover_global {H : Subgroup G} {β : Type*}
+    {f : G → β} (hf : CosetInvariant H f) {T : Set G}
+    (hT : ∀ b : G, ∃ t ∈ T, t * b⁻¹ ∈ H) :
+    ∀ b : G, ∃ t ∈ T, f t = f b := by
+  intro b
+  rcases hT b with ⟨t, ht, htb⟩
+  exact ⟨t, ht, eq_of_cosetInvariant_of_sameCoset hf htb⟩
+
+/-- **Restricted bounds are global exactly when the restriction hits every coset.**  For a
+coset-invariant door-(iv) statistic, any upper bound checked on a set `T` meeting every `H`-coset is
+already the global bound, and conversely the global bound trivially restricts to `T`.
+This formalizes why order buckets or element-level filters cannot be a new anti-concentration lever
+unless they remove whole cosets, which is quotient-level rather than multiplicative-order data. -/
+theorem bound_on_cosetHitting_set_iff_global {H : Subgroup G} {β : Type*} [LE β]
+    {f : G → β} {C : β} (hf : CosetInvariant H f) {T : Set G}
+    (hT : ∀ b : G, ∃ t ∈ T, t * b⁻¹ ∈ H) :
+    (∀ t ∈ T, f t ≤ C) ↔ ∀ b : G, f b ≤ C := by
+  constructor
+  · intro h b
+    rcases hT b with ⟨t, ht, htb⟩
+    rw [← eq_of_cosetInvariant_of_sameCoset hf htb]
+    exact h t ht
+  · intro h t _
+    exact h t
+
 end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
 
 #print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.eq_of_cosetInvariant_of_sameCoset
@@ -158,3 +187,7 @@ end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_of_factorThroughLeftCosets
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_iff_exists_factorThroughLeftCosets
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.values_on_cosetHitting_set_cover_global
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.bound_on_cosetHitting_set_iff_global

@@ -6920,6 +6920,7 @@ itself shrinks with `n`.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`,
 axiom-clean.  New theorem: `tower_product_ge_fixed_width_floor`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
 ## [open-core-rho-step-one-explicit] First ρ-monotonicity rung pinned to ONE explicit char-p inequality via the EXACT char-0 energies (2026-06-19, sol)
 Lane 2 / door-(iv) reduction-chain extension of `_OpenCoreRhoMonotone` (the campaign's sharpest
 reduction: prize ⟺ ρ antitone, base ρ(1)<1 PROVEN, abstract cross-inequality S_{r+1}·E_r ≤ S_r·E_{r+1}).
@@ -6944,3 +6945,24 @@ Scope: REDUCTION/instantiation of the FIRST rung only, using proven exact char-0
 prove S_2 ≤ 3n(n−1)(p−n) (that char-p 4th-energy bound is the open content of rung 1), does NOT prove
 the full antitone chain, makes NO CORE/cancellation/completion/moment-saving/capacity claim. The prize
 remains the open wall; rung 1's exact target is now one concrete finite inequality.
+
+
+## door-(iv) coset-hitting frequency selectors cannot lower a coset-invariant coherence peak (2026-06-19)
+
+Lens: Lane 1/3 constraint lemma extending `_DoorIVCoherenceOrderBlind`.  Prior order-blind bricks
+proved that a door-(iv) coherence statistic such as `ρ(b)` factors through the multiplicative coset
+quotient `b·μ_n`, hence is blind to movement inside a coset.  This refinement pins the selector
+escape: if a proposed restricted frequency class `T` intersects every `μ_n`-coset, then every value of
+any coset-invariant statistic already appears on `T`; consequently an upper bound checked on `T` is
+equivalent to the global upper bound.
+
+VERDICT: order buckets, element-level filters, or other frequency selectors cannot produce new
+anti-concentration merely by restricting the adversarial `b` unless the restriction deletes entire
+cosets.  If it hits every coset, it preserves the worst coset-invariant coherence value exactly; if it
+misses cosets, the remaining information is quotient-level structure rather than multiplicative-order
+structure.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`,
+axiom-clean.  New theorems: `values_on_cosetHitting_set_cover_global` and
+`bound_on_cosetHitting_set_iff_global`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
