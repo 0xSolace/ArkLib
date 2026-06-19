@@ -7032,3 +7032,10 @@ Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCore
 with `rho_prefix_three_lt_one_of_targets`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`. Scope is reduction bookkeeping only: no proof of either
 finite char-p target, no proof of E3's closed form, no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-halfmass-normalized-capstone] raw prize Big-O is equivalent to bounded normalized half-mass Shaw value (2026-06-19, g55)
+
+Lane 2 reduction-chain capstone extending `_DoorIVHalfMassEquivalence`. The half-mass reduction already had two separate citable equivalences: raw family prize bounds are equivalent to normalized prize ratios under positive scales, and normalized prize ratios are equivalent to normalized half-mass ratios under the family-wide comparison `M i ≤ H i ≤ K·M i`. This commit composes them into the direct mixed Shaw-value statement:
+`∃ C, M i ≤ C·scale i` for all indices iff `∃ C, H i / scale i ≤ C` for all indices.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`, theorem `exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`. Scope is only the abstract Door-IV half-mass reduction. It does not prove the reverse comparison `H≤K·M`, does not bound the half-mass itself, and makes no CORE/cancellation/completion/moment-saving/capacity claim.

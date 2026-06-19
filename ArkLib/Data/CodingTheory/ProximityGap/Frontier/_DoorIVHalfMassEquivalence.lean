@@ -57,7 +57,7 @@ each other up to the factor `K`.  (Pointwise rung: for a single positive scale a
 trivially, so the genuine Big-O statement is the uniform-family form
 `exists_prizeFamilyBound_iff_exists_halfMassFamilyBound` below, which fixes one constant across all `n`.) -/
 theorem prizeBound_iff_halfMassBound {M H K scale : ℝ}
-    (hMH : M ≤ H) (hHM : H ≤ K * M) (hK : 0 ≤ K) (hscale : 0 < scale) :
+    (hMH : M ≤ H) (hHM : H ≤ K * M) (hK : 0 ≤ K) (_hscale : 0 < scale) :
     (∃ C, M ≤ C * scale) ↔ (∃ C, H ≤ C * scale) := by
   constructor
   · rintro ⟨C, hC⟩
@@ -188,6 +188,28 @@ theorem exists_prizeFamilyBound_iff_exists_halfMassFamilyBound {ι : Type*}
     refine ⟨C, fun i => ?_⟩
     exact prizeBound_of_halfMassBound (hMH i) (hC i)
 
+/-- **Mixed Shaw-value capstone.**  Under the same family-wide half-mass comparison and positive prize
+scale, a raw uniform prize Big-O bound is equivalent to a bounded normalized half-mass Shaw-value.
+This is the directly citable form `prize bound ⇔ Sh_H(n)=O(1)`: the left side is the original
+`M ≤ C·scale`, while the right side is the normalized door-(iv) half-mass ratio `H/scale ≤ C`. -/
+theorem exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, prizeFamilyBound M scale C) ↔
+      (∃ C, normalizedHalfMassFamilyBound H scale C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    have hNormM : normalizedPrizeFamilyBound M scale C :=
+      (prizeFamilyBound_iff_normalizedPrizeFamilyBound (M := M) (scale := scale) hscale).1 hC
+    exact (exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+      (M := M) (H := H) (scale := scale) hK hscale hMH hHM).1 ⟨C, hNormM⟩
+  · intro hNormH
+    rcases (exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+      (M := M) (H := H) (scale := scale) hK hscale hMH hHM).2 hNormH with ⟨C, hNormM⟩
+    exact ⟨C, (prizeFamilyBound_iff_normalizedPrizeFamilyBound
+      (M := M) (scale := scale) hscale).2 hNormM⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_of_halfMassBound
@@ -199,3 +221,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
