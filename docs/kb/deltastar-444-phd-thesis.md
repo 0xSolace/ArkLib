@@ -28,8 +28,9 @@ variance hypothesis is **false** (the wraparound is over-dispersed) yet **benign
 variance bound but to a **sup / existence wraparound bound** `W_r(p*) ≤ slack` at a single admissible prime. We
 record this corrected reduction axiom-clean (`_SupBoundCapstone`, `_RhoDecomposition`: the exact identity
 `ρ_r ≤ 1 ⟺ W_r ≤ slack` with a *proven, growing* char-0 component), and marshal the empirical evidence — the
-correctly-normalized DC-subtracted moment `ρ_r ∈ [0.36, 0.67]` (margin *improving* with depth, including at the
-worst structured prime), `M/√(2n log m) = 0.77–0.85 < 1`, and the absence of any counterexample — that the prize is
+correctly-normalized DC-subtracted moment `ρ_r ∈ [0.36, 0.67]` at every computable thin prime including the worst
+structured one (its depth-decreasing trend is a small-`n` finite-size artifact, not a prize-scale advantage —
+§7.6(iv)), `M/√(2n log m) = 0.77–0.85 < 1`, and the absence of any counterexample — that the prize is
 **true**. We do not claim to close the open problem; we delineate it more sharply than any prior treatment and
 identify the single new analytic theorem that would resolve it.
 
@@ -63,15 +64,19 @@ The thesis advances three claims, in decreasing order of certainty:
    ensemble) are equivalent, and the prize reduces — formalized end to end — to a single characteristic-`p`
    energy inequality. *(Chapters 2, 3; `_ProveAssemblyConcrete`, `_BridgeOneWall`.)*
 
-2. **[Lean, conditional] The variance reduction.** The prize floor follows, axiom-clean, from one new
-   hypothesis — the **sub-Poisson variance of the wraparound fluctuation**, equivalently the **second-moment
-   equidistribution of Jacobi-sum pairs at growing order** — together with results we prove unconditionally.
-   *(Chapters 6, 7; `_CreateWraparoundVariance`, `_JacobiMomentIdentity`, `_NextDifferenceVariety`.)*
+2. **[Lean, conditional] The sup reduction.** The prize floor follows, axiom-clean (`_SupBoundCapstone`), from
+   one new hypothesis — a uniform/existence **sup bound** `W_r(p*) ≤ slack` at a thin above-onset prime
+   (equivalently `ρ_r ≤ 1`, `_RhoDecomposition`) — strictly weaker than the **sub-Poisson variance** an earlier
+   draft demanded, which §7.6 shows is *false* (the wraparound is over-dispersed) yet *benign*. The variance route
+   (`_CreateWraparoundVariance`, `_JacobiMomentIdentity`) is what *led* to this corrected reduction; the open
+   analytic target is the second-moment equidistribution of Jacobi-sum pairs at growing order. *(Chapters 6, 7.)*
 
 3. **[open, evidenced] The truth of the prize.** The remaining hypothesis is believed true on the strength of
-   exact computation (`M/√(2n log m) = 0.77–0.85`; the onset law; the DC-moment ratio `0.87→0.13` decreasing in
-   depth; the absence of any counterexample) and is the *only* obstruction; it is the open core common to all
-   six forms. *(Chapters 4, 5, 8.)*
+   exact computation (`M/√(2n log m) = 0.77–0.85`, a depth-stable signal; the onset law; the absence of any
+   counterexample) and is the *only* obstruction; it is the open core common to all six forms. *(The
+   DC-subtracted moment `ρ_r` and DC-moment ratio also fall below 1 in the computable window, but their
+   depth-decreasing trend is a small-`n` finite-size artifact — §7.6(iv) — not a prize-scale signal.)*
+   *(Chapters 4, 5, 8.)*
 
 We are scrupulous about the boundary between (1)–(2), which are theorems, and (3), which is a conjecture
 supported by evidence. **A doctoral thesis on a famous open problem is defensible precisely when it advances the
@@ -161,7 +166,7 @@ This form is developed in `_JacobiCocycleDispersion`. The degenerate baseline is
 
 equivalently `Var_family(W_r) ≤ slack² · (#family)` with the family mean cancelled.
 
-This is the variance route of `_CreateWraparoundVariance`. The correction is centered automatically: `probe_wraparound_correction` shows the DC family-mean of `W_r` over centered wraparound tends to `0`, so the second central moment `WrapVariance` (`wrapVariance_eq`, the König–Huygens shift) is the *leading* statistic. Expanding `W_r = Σ_{T ∈ Rel} φ_ω(T)` over relations and applying Fubini (`secondMoment_pairs`) splits the second moment into a diagonal Poisson term `#Rel` (each unit-modulus phase contributes `1`, `diag_pairCorr_eq_one`, `diagonal_sum_eq_card`) plus an off-diagonal pair-correlation sum (`secondMoment_diag_offdiag`). The mechanism `subPoisson_of_offdiag_nonpos` is the heart: if the off-diagonal pair correlations are non-positive in aggregate, the variance is sub-Poisson; then Chebyshev (`chebyshev_bad_fraction`) yields a good prime (`good_prime_exists`), and `prize_via_subPoisson_variance` / `prize_via_offdiag_cancellation` discharge the floor. The named open core is `OffDiagonalPairCancellation`, and `prize_from_named_open` is the cleanest end-to-end chain.
+This is the variance route of `_CreateWraparoundVariance`. The correction is centered automatically: `probe_wraparound_correction` shows the DC family-mean of `W_r` over centered wraparound tends to `0`, so the second central moment `WrapVariance` (`wrapVariance_eq`, the König–Huygens shift) is the *leading* statistic. Expanding `W_r = Σ_{T ∈ Rel} φ_ω(T)` over relations and applying Fubini (`secondMoment_pairs`) splits the second moment into a diagonal Poisson term `#Rel` (each unit-modulus phase contributes `1`, `diag_pairCorr_eq_one`, `diagonal_sum_eq_card`) plus an off-diagonal pair-correlation sum (`secondMoment_diag_offdiag`). The mechanism `subPoisson_of_offdiag_nonpos` is the heart: if the off-diagonal pair correlations are non-positive in aggregate, the variance is sub-Poisson; then Chebyshev (`chebyshev_bad_fraction`) yields a good prime (`good_prime_exists`), and `prize_via_subPoisson_variance` / `prize_via_offdiag_cancellation` discharge the floor. The named open core is `OffDiagonalPairCancellation`, and `prize_from_named_open` is the cleanest end-to-end chain. **NB (§7.6, important correction):** the sub-Poisson hypothesis is in fact **false** — `W_r` is over-dispersed (`Var/mean = 14…407000`, `_OverdispersionObstructsVariance`) — but *benignly* so; the credible I⟺VI reduction is the **sup/existence** form `prizeFloor_of_exists_good_prime` (`_SupBoundCapstone`), `W_r(p*) ≤ slack` at one admissible thin prime, strictly weaker than the variance bound and robust to over-dispersion (`prizeFloor_robust_to_overdispersion`). Read this Form VI through that correction.
 
 **Equivalence I ⟺ VI.** Since `E_r = E_r^{char-0} + W_r` and the char-0 term is *exactly* the Wick ceiling `(2r−1)‼·n^r`, the inequality `E_r ≤ Wick` is *identically* `W_r ≤ 0`—more precisely `W_r ≤ slack` once the finite-`n` boundary terms are absorbed into the slack. Form VI is therefore Form I with the trivial char-0 mass subtracted, re-expressing the prize as the second-moment equidistribution of the wraparound correction across the prime family. This is the same DC-subtraction that powers Forms II and III, now applied across primes rather than across frequencies.
 
@@ -322,7 +327,7 @@ The per-frequency moment evidence comes from the DC-subtracted sup-bound. Planch
 $$
 \|\eta_b\|^{2r} \;\le\; q\,E_r(G) - |G|^{2r}, \qquad b \neq 0,
 $$
-proven in `DCMomentSupBound.eta_pow_le_dc` (and under the energy hypothesis, `eta_pow_le_dc_of_energyBound`: $\|\eta_b\|^{2r} \le q\,(2r-1)!!\,|G|^r - |G|^{2r}$, strictly sharper than the undeducted form). The measured ratio of the DC-subtracted moment to the raw moment falls from $0.87$ at shallow depth to $0.13$ at the prize depth — i.e. *deeper into the moment ladder the DC subtraction removes a larger fraction of the mass*, and the ratio stays strictly below $1$ throughout, improving monotonically. This is favourable evidence: the dominant contribution to the high moment is the DC term that the sup-norm legitimately discards, leaving the off-DC mass — the quantity the conjecture must control — a shrinking fraction of the whole.
+proven in `DCMomentSupBound.eta_pow_le_dc` (and under the energy hypothesis, `eta_pow_le_dc_of_energyBound`: $\|\eta_b\|^{2r} \le q\,(2r-1)!!\,|G|^r - |G|^{2r}$, strictly sharper than the undeducted form). The measured ratio of the DC-subtracted moment to the raw moment falls from $0.87$ at shallow depth to $0.13$ across the *computable* window, and stays strictly below $1$ throughout. The dominant contribution to the high moment is the DC term that the sup-norm legitimately discards, leaving the off-DC mass — the quantity the conjecture must control — a smaller fraction of the whole. **Caveat (§7.6(iv)):** the *monotone improvement with depth* is a finite-size artifact of the computable regime $r \lesssim \sqrt n$; at prize scale $r \approx \log p \ll \sqrt n = 2^{15}$ the char-0 ratio $R_r \approx 1$ ($1 - R_r \approx r^2/2n \approx 5.6\cdot10^{-6}$), so this trend does **not** extrapolate to the saddle and is not evidence of a uniform-in-$r$ bound. It remains favourable *where computed*, no more.
 
 ### Wraparound sub-randomness, and no disproof found
 
@@ -342,7 +347,7 @@ $$
 
 ### Summary
 
-Taken together, the evidence is uniformly consistent with the conjecture and exhibits no countertrend: a sub-Gaussian envelope $\widehat{C}\le 0.85 < 1$, a genuine $3.87\times$ analytic improvement on the published subgroup-sum exponent (to $23/24$, machine-verified), a below-saddle onset law fixing the prize as quantitative, a DC-subtracted moment fraction decaying with depth, demonstrable wraparound sub-randomness, no disproof at adversarial scales, and exact $\delta^\star$ pins anchoring the bracket. This is the honest empirical case *for* the truth of the bound; it is not, and does not claim to be, a proof of the open analytic core, which remains the second-moment equidistribution of Jacobi sums at depth $r \approx \log p$.
+Taken together, the evidence is uniformly consistent with the conjecture and exhibits no countertrend: a sub-Gaussian envelope $\widehat{C}\le 0.85 < 1$, a below-saddle onset law fixing the prize as quantitative, demonstrable wraparound sub-randomness, no disproof at adversarial scales, and exact $\delta^\star$ pins anchoring the bracket. (The di Benedetto $23/24$ exponent and the depth-decaying DC-moment fraction are *not* listed here: the former drops the $p^{1/72}$ prefactor and is not a prize-scale bound — §5 retraction — and the latter's depth-improvement is a small-$n$ artifact — §7.6(iv). The genuine arithmetic sub-lemmas $T_2 = 3n^2-3n$, $E_3 < 15n^3$ stand on their own.) This is the honest empirical case *for* the truth of the bound; it is not, and does not claim to be, a proof of the open analytic core, which remains the second-moment equidistribution of Jacobi sums at depth $r \approx \log p$.
 
 
 ---
@@ -395,7 +400,7 @@ The campaign manufactured roughly twenty-eight new formal objects to try to sati
 - **Modern harmonic-analysis transplants** (decoupling, VMVT, restriction, tight frames `_AttackAN2`): **fail (2)** — wrong scale, need curvature $\mu_n$ lacks. Eliminated.
 - **Geometric / lattice** (Geometry-of-Numbers, `_CyclotomicLatticeWrapOnset`, `_OnsetShortestVector`): GoN closed — the cyclotomic lattice is "too round," no short vector isolates the wraparound. Fails (3).
 - **Cohomological** (`_JacobiFermatCohomology`, `_CreateFermatHodgeDecomp`, `_JacobiKatzEquidist`): satisfies (1) (signed, an Euler-characteristic/trace) and is the *right venue*, but **fails (3) as currently instantiated** — `prize_order_katz_error_not_negligible` is exactly the proof that the conductor/Betti factor is not yet controlled at growing order. This family *frames* the missing theorem correctly; it does not yet *prove* it. It is where new mathematics must live.
-- **Variance / second-moment family** (`_CreateJacobiGrowingOrder`, `_JacobiCocycleDispersion`, `_DyadicJacobiCocycleNonContraction`, `_AvSM_WrapSecondMomentSpreads`, the cross-covariance identity $\mathrm{CrossCov}_r=(-1)^r\,\mathrm{Var}_r$): **this is the closest object.** It is *signed* (the parity-alternating cross-covariance carries the $(-1)^r$ that satisfies (1)); it is *subgroup-scale* (the slice-energy bound `offdiag_le_of_sliceEnergy_le` in `_CreateJacobiGrowingOrder` reduces the off-diagonal to a $\sqrt n$-normalized discrepancy, satisfying (2)); and it is *the only family articulated directly at growing order* — `_CreateJacobiGrowingOrder` is literally the frontier file `F1-jacobi-growing-order`, building the iterated-convolution discrepancy whose effective control *is* property (3). The wraparound-variance route's empirical signal — the DC-moment ratio descending $0.87\to0.13$ below $1$ and improving with $r$, and the parity-split $\mathrm{CrossCov}_r=(-1)^r\mathrm{Var}_r$ bootstrap — is the only data in the campaign pointing *toward* a uniform-in-$r$ bound rather than away from it.
+- **Variance / second-moment family** (`_CreateJacobiGrowingOrder`, `_JacobiCocycleDispersion`, `_DyadicJacobiCocycleNonContraction`, `_AvSM_WrapSecondMomentSpreads`, the cross-covariance identity $\mathrm{CrossCov}_r=(-1)^r\,\mathrm{Var}_r$): **the right venue and machinery, feeding the corrected sup criterion.** It is *signed* (the parity-alternating cross-covariance carries the $(-1)^r$ that satisfies (1)); it is *subgroup-scale* (the slice-energy bound `offdiag_le_of_sliceEnergy_le` in `_CreateJacobiGrowingOrder` reduces the off-diagonal to a $\sqrt n$-normalized discrepancy, satisfying (2)); and it is *the only family articulated directly at growing order* — `_CreateJacobiGrowingOrder` is literally the frontier file `F1-jacobi-growing-order`, building the iterated-convolution discrepancy whose effective control *is* property (3). **But §7.6 corrects its central use:** the *variance* statistic it controls is the wrong one (over-dispersed and benign), so the machinery should feed the **sup** criterion $\rho_r \le 1$ / `W_r(p^*) \le \text{slack}` (`_SupBoundCapstone`), not a variance bound. And the empirical "DC-moment ratio $0.87\to0.13$ improving with $r$" signal is a finite-size artifact (§7.6(iv)) that does **not** extrapolate to the saddle — it is favourable where computed but is *not* prize-scale evidence of a uniform-in-$r$ bound.
 
 The precise residual, then, is sharp: prove that the **second moment (variance) of the deep-$r$ Jacobi-sum slice equidistributes with error effective uniformly in $r=\log p$**, via the cocycle/convolution discrepancy of `_CreateJacobiGrowingOrder`, with the signed cross-covariance supplying the cancellation that `moment_ladder_exceeds_prize` proves is mandatory, and the slice-energy normalization supplying the $\sqrt n$ scale that defeats $\sqrt p$-vacuity. What is *missing* — the genuinely new mathematics — is an effective bound on the middle cohomology of the order-$r$ Fermat correlation variety that is *polynomial in $r$ rather than exponential* (i.e. a $\mathrm{poly}(r)$ rather than $n^{\Theta(r)}$ control of `corrMiddleWeight`-class count), or, dually, a pair-equidistribution law for Jacobi sums of growing order whose discrepancy does not inherit the conductor's growth. No such theorem exists in the literature; the cohomological and variance families locate it exactly; closing the gap between them — turning `prize_order_katz_error_not_negligible` from an obstruction into a controlled error — is what a proof of the proximity prize would, in the end, be.
 
@@ -511,11 +516,12 @@ margin, because `E_0` (the char-0 energy) is itself smaller than the Wick bound;
 *correct* prize criterion is the **DC-subtracted moment** `ρ_r(p) = (p·E_r − n^{2r})/((p−1)·(2r−1)‼·n^r) =
 avg_{b≠0}‖η_b‖^{2r}/Wick`, which must be `≤ 1` (it yields `M ≤ √e·√(2rn)` at the saddle, the prize floor).
 Computed at the same thin primes (`probe_dc_criterion`), the worst-case `ρ_r` is `0.667, 0.505, 0.356` at
-`r = 4, 5, 6` — comfortably below 1, with the **margin *improving* as depth grows** (the Fermat prime `p = 65537`
-is the worst at `r = 4, 5`, still only `ρ ≈ 0.5–0.67`). So the true margin is `33–64 %`, not `> 99 %`; the bound
-holds with room, and — the genuinely reassuring signal — that room *increases* toward the saddle `r ≈ ln p`, exactly
-as a true sub-Gaussian transfer predicts. The misleading `W/E_0` framing is recorded as a correction rather than
-left to flatter the result.
+`r = 4, 5, 6` — comfortably below 1 (the Fermat prime `p = 65537` is the worst at `r = 4, 5`, still only
+`ρ ≈ 0.5–0.67`). So the true margin is `33–64 %`, not `> 99 %`; the bound holds with room *in the computable
+window*. **The depth-decreasing trend here does *not* license a prize-scale claim** — per (iv) below, the
+`ρ_r`/`R_r` decay lives only in the regime `r ≳ √n`, and at the saddle `r ≈ ln p ≪ √n` the char-0 ratio `R_r ≈ 1`,
+so the "room increases toward the saddle" reading is a finite-size artifact, not a sub-Gaussian-transfer prediction.
+The misleading `W/E_0` framing is recorded as a correction rather than left to flatter the result.
 
 **(iii) The corrected central result** **[Lean, `_SupBoundCapstone`]**. The credible reduction is therefore to a
 **uniform sup bound** — *every* thin above-onset prime is good — not to sub-Poisson variance. This is strictly
@@ -620,8 +626,9 @@ closure; we ask them to accept that the boundary of knowledge has moved from "bo
 to "prove a specific second-moment equidistribution," with the machinery to attack the latter supplied.
 
 **Q5. The numerics say the prize is true — why is that not enough?** `M/√(2n log m) = 0.77–0.85 < 1` across the
-computable range, the DC-moment ratio *decreases* with depth (`0.87→0.13`), and no counterexample survives over
-the most resonance-prone structured primes. This is strong evidence the prize is **true** — but evidence is not
+computable range, the DC-moment ratio is `< 1` throughout (its decrease with depth `0.87→0.13` is a small-`n`
+artifact, §7.6(iv), not a prize-scale trend), and no counterexample survives over the most resonance-prone
+structured primes. This is strong evidence the prize is **true** — but evidence is not
 proof, and the prize regime (`n = 2^30`) is uncomputable: the small-`n` regime where we *can* compute has the
 wraparound *absent* (`W_r = 0`, onset above the computed depth), so it does not directly probe the
 wraparound-present prize regime. The honest status is "believed true, with the precise obstruction to a proof
@@ -644,10 +651,11 @@ The campaign's negative results are not merely a list of failures; together they
 eventual proof, and that constraint is the thesis's most useful prediction. A proof of the char-`p` transfer
 must:
 
-1. **Be a second-moment (variance) argument, not a first-moment one.** First-order control of `M` is the BGK
-   wall itself; every first-moment route reduces. The sub-Poisson variance of the wraparound fluctuation is the
-   first formulation in which the *believed* sub-randomness (the DC-moment ratio decreasing with depth) is the
-   *object of proof* rather than a hoped-for output.
+1. **Be a second-moment / sup-control argument, not a first-moment one.** First-order control of `M` is the BGK
+   wall itself; every first-moment route reduces. The credible target (per §7.6) is the worst-case **sup** wraparound
+   bound `W_r(p*) ≤ slack` at a chosen prime (`_SupBoundCapstone`) — the natural sub-Poisson *variance* form is
+   over-dispersed (false) but benign, so the object of proof is the **supremum**, not the family variance. Either
+   way it is a second-order object: first-order control of `M` is the wall itself.
 
 2. **Live on the difference variety, at growing order.** `_NextDifferenceVariety` shows the second moment is a
    first moment of `Jphase` over `V_diff = append(T, −T')`. A proof is therefore an *effective, growing-order*
