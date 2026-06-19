@@ -6065,3 +6065,12 @@ Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
 _DoorIVHalfMassFactorization.lean — halfMass, coherence, norm_eq_coherence_mul_halfMass (|A+B| =
 coherence·halfMass), norm_eq_halfMass_of_coherence_one, prize_localizes_onto_halfMass, norm_le_halfMass
 (coherence ≤ 1 ⇒ half-mass is an upper envelope). No CORE/cancellation/capacity claim.
+
+## [door-iv-phaseset-linear-pattern-b-blind] fixed additive-linear pattern counts of `{b*x^m}` are frequency-blind (2026-06-19, g55)
+
+Lane: Door-(iv) worst-frequency coset-half coherence / Littlewood-Offord-Halász anti-concentration probes.  Recent one-off bricks showed pair-sum fibers, pair-difference fibers, three-sum fibers, and 3-term AP counts are transported by nonzero dilation.  This entry locks the general mechanism instead of continuing a redundant pattern-by-pattern sweep.
+
+Formal kernel: `_DoorIVPhaseSetDilationInvariant.lean` now defines `addLinearPatternCount S coeff t`, the number of vectors `v : Fin k → F` with all coordinates in `S` and `∑ i, coeff i * v i = t`.  The theorem `addLinearPatternCount_smul_eq` proves for every nonzero `λ`:
+`addLinearPatternCount (λS) coeff (λt) = addLinearPatternCount S coeff t`; the consumer `addLinearPatternCount_phaseSet_indep_of_scalar` proves the same profile equality between any two nonzero frequencies after target rescaling.
+
+Verdict: any proposed door-(iv) anti-concentration lever that only counts solutions to a fixed finite additive-linear equation in the phase set `{b*x^m}` is `b`-blind.  It cannot select the adversarial worst frequency or explain worst-b coherence; a surviving theorem must use information beyond fixed linear-pattern counts.  This is a constraint lemma only, not a CORE/cancellation/capacity claim.

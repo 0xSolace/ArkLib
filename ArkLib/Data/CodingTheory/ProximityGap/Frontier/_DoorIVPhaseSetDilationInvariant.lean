@@ -341,6 +341,83 @@ theorem addThreeAPCount_phaseSet_indep_of_scalar
       addThreeAPCount (S.image (fun x => b₂ * x)) := by
   rw [addThreeAPCount_smul_eq S hb₁, addThreeAPCount_smul_eq S hb₂]
 
+
+
+/-- General finite linear-pattern/fiber count on `S^k`: the number of functions `v : Fin k → F`
+whose coordinates all lie in `S` and whose weighted additive linear form is the target `t`.
+This packages the one-off pair-sum, pair-difference, three-sum, and homogeneous AP counts into the
+actual Littlewood-Offord/Halász template: a fixed linear equation in finitely many phase residues. -/
+def addLinearPatternCount {k : ℕ} (S : Finset F) (coeff : Fin k → F) (t : F) : ℕ :=
+  ((Finset.univ : Finset (Fin k → F)).filter
+    (fun v => (∀ i : Fin k, v i ∈ S) ∧ (∑ i : Fin k, coeff i * v i) = t)).card
+
+/-- Nonzero dilation preserves every fixed additive-linear pattern fiber after dilating the target.
+Equivalently, multiplication by `λ` transports the solution set for `S` and target `t` bijectively
+onto the solution set for `λS` and target `λt`.  Thus any small-ball / Halász input that only counts
+solutions to a fixed linear equation in the phase set `{b*x^m}` is frequency-blind, not a selector for
+the adversarial worst `b`. -/
+theorem addLinearPatternCount_smul_eq {k : ℕ} (S : Finset F) (coeff : Fin k → F)
+    {lam t : F} (hlam : lam ≠ 0) :
+    addLinearPatternCount (S.image (fun x => lam * x)) coeff (lam * t) =
+      addLinearPatternCount S coeff t := by
+  classical
+  unfold addLinearPatternCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun v i => lam⁻¹ * v i)
+    (fun v i => lam * v i)
+    ?_ ?_ ?_ ?_
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hlin⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i
+      obtain ⟨x, hx, hvx⟩ := Finset.mem_image.mp (hmem i)
+      simpa [← hvx, hcdiv] using hx
+    · have hscaled : lam * (∑ i : Fin k, coeff i * (lam⁻¹ * v i)) = lam * t := by
+        calc
+          lam * (∑ i : Fin k, coeff i * (lam⁻¹ * v i))
+              = ∑ i : Fin k, coeff i * v i := by
+                rw [Finset.mul_sum]
+                apply Finset.sum_congr rfl
+                intro i _
+                field_simp [hlam]
+          _ = lam * t := hlin
+      exact mul_left_cancel₀ hlam hscaled
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hlin⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i
+      exact Finset.mem_image.mpr ⟨v i, hmem i, rfl⟩
+    · calc
+        ∑ i : Fin k, coeff i * (lam * v i)
+            = lam * (∑ i : Fin k, coeff i * v i) := by
+              rw [Finset.mul_sum]
+              apply Finset.sum_congr rfl
+              intro i _
+              ring
+        _ = lam * t := by rw [hlin]
+  · intro v _
+    ext i
+    simp [hcmul]
+  · intro v _
+    ext i
+    simp [hcdiv]
+
+/-- Two nonzero frequency dilates have identical fixed additive-linear pattern profiles after the
+obvious target rescaling.  This is the broad b-blindness constraint behind the finite
+Littlewood-Offord/Halász linear-pattern family: such data lives on the undilated subgroup and cannot
+single out the worst frequency. -/
+theorem addLinearPatternCount_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) {b₁ b₂ t : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addLinearPatternCount (S.image (fun x => b₁ * x)) coeff (b₁ * t) =
+      addLinearPatternCount (S.image (fun x => b₂ * x)) coeff (b₂ * t) := by
+  rw [addLinearPatternCount_smul_eq S coeff hb₁, addLinearPatternCount_smul_eq S coeff hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -414,6 +491,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addTripleSumCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternCount_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
