@@ -26,10 +26,12 @@ target bound `M ≤ C√(n log p)` is **a full half-power beyond the state of th
 
 We contribute: (i) a complete **unification** of the six forms, with the equivalences either proven
 in-tree or reduced to a single inequality; (ii) a **machine-checked conditional resolution** — the prize
-sup-bound follows, end-to-end and axiom-clean, from **one** named open hypothesis (`SaddleEnergyBound`,
-= BGK at β=4); (iii) **necessity theorems** that constrain any proof — the moment ceiling
-(`α(k) = ½ + β/(2k)`, reaching ½ only as `k→∞`), the proof of **thinness-essentiality** (a β-uniform
-method is impossible), and the moment-order stratification isolating the open content to the high-order
+sup-bound follows, end-to-end and axiom-clean, from the single genuinely-**open** hypothesis
+(`SaddleEnergyBound`, = BGK at β=4) plus a classical char-0 Wick bound (fully formalized for r≤5,
+carried as a believed char-0 fact at `r≈log p`); (iii) **necessity theorems** that constrain any proof —
+the moment ceiling (`α(k) = ½ + β/(2k)`, reaching ½ only as `k→∞`), the proof of
+**thinness-essentiality** (a β-uniform *moment/energy-law* proof is impossible), and the moment-order
+stratification isolating the open content to the high-order
 moments; (iv) **five genuinely new structural theorems** (two graded filtrations, an exact signed-moment
 identity, a sparse-polynomial reformulation of the wraparound, a regime-gating countermodel); and (v) an
 **exhaustive attack record** — ~25 distinct proof strategies across analytic number theory, additive
@@ -60,8 +62,8 @@ The conjectured truth (the **Paley/BGK conjecture at β=4**) is
 ```
         M ≤ C √(n log p),     C = O(1)        (TARGET).
 ```
-The state of the art is the additive-combinatorial bound `M ≤ n^{1-o(1)}` (Bourgain–Glibichuk–Konyagin;
-di Benedetto et al., `n^{1-31/2880} ≈ n^{0.9892}` at the boundary `β=4`). The gap between `n^{1-o(1)}`
+The state of the art: Bourgain–Glibichuk–Konyagin give `M ≤ n^{1-o(1)}`; di Benedetto et al. the refined
+explicit `n^{1-31/2880} ≈ n^{0.9892}` at the boundary `β=4` (edge-total convention). The gap between `n^{1-o(1)}`
 and `n^{1/2+o(1)}` is **a full half-power** — the central difficulty of this thesis.
 
 ### 1.3 Why it is the prize
@@ -94,8 +96,9 @@ The target is the **Burgess/Paley character-sum conjecture**; SOTA is `n^{1-o(1)
 ### Form III — RS mutual-correlated-agreement threshold `δ*` (coding theory)
 [ABF26 §4.5] `mcaConjecture`. The MCA bad-event count is a far-line incidence against a syndrome ball;
 through `epsMCA_ge_far_incidence` and the granularity ladder, the threshold `δ*` is controlled by the same
-character sum (the far-coset spectrum is the period spectrum). Pinning `δ*` in the window `(1−√ρ, 1−ρ−…)`
-⟺ `M ≤ C√(n log p)`.
+character sum (the far-coset spectrum is the period spectrum). Pinning `δ*` in the window `(1−√ρ, 1−ρ−…)` **reduces to /
+is controlled by** `M ≤ C√(n log p)` (landed: `ε_mca ≥ incidence/q`, one direction; the full
+biconditional is the [ABF26 §4.5] conjecture, not claimed proven here).
 
 ### Form IV — Gauss-period additive energy (additive combinatorics)
 The `2r`-th moment is the **additive energy**: with `E_r(𝔽_p) = #{(x,y) ∈ μ_n^{2r} : Σx_i ≡ Σy_i}`,
@@ -183,7 +186,8 @@ table records the *nameable reason* each fails — the thesis's claim is not "we
   `k=(p-1)/n ≈ p^{3/4}` lands in the trivial range. **Thinness-incompatible.**
 - **Ostafe–Shparlinski–Voloch (Weil over small subgroups)**: requires `deg f ≥ 2`; the period is the
   *linear* case `f(x)=bx`; the monomial `x^m` has `deg = m ≈ p^{3/4}`, Weil gives `(m−1)√p ≈ p^{5/4}`
-  (vacuous). **AG structurally excludes the period.**
+  (vacuous); and even the curve-blend variant is nontrivial only for `β ≤ 3`. **AG structurally excludes
+  the linear period and is thin-incompatible at β=4.**
 - **What was said next** (Randomstrasse101 2025; Shparlinski open problems): the Paley/subgroup-sum
   bound is open; the flagged frontier is "explicit degree-4 SOS certificates" — already barriered.
 
@@ -242,7 +246,10 @@ The sub-Gaussian 4th-moment law `S_4 = p·E_2 − n^4 ≤ (p−1)·3n²` is **no
 ```
         subGaussianFourthMoment_not_universal : ¬ ∀ n p E₂, SubGaussianFourthMoment n p E₂.
 ```
-**A β-uniform proof is impossible** — it would establish this false thick case. Any proof must use β=4
+**A β-uniform proof via the moment/energy (Wick) law is impossible** — it would establish this false
+thick case. (The countermodel is to the *moment law* `μ_{2r}≤Wick`; combined with §5.1/5.3 it constrains
+any energy-based proof; a hypothetical non-moment sup argument is not directly excluded, but no such tool
+is known.) Any proof must use β=4
 thinness and *break* for β<4. Concretely, `μ_n` is a **`B_β`-set** (Sidon to depth β; `W_r = 0` for
 `r ≤ β` via the norm-onset), and the prize is the **bootstrap `B_β → B_{log p}`**, which must break at β<4.
 
@@ -304,9 +311,11 @@ The last mile, proven **unconditionally** (real analysis): from the moment budge
 ```
         M ≤ 2√e · √(n log p)        (prize_sup_sqrt; C = 2√e ≈ 3.30).
 ```
-Assembled with the proven char-0 Bessel anchor and `(2r−1)‼ ≤ (2r)^r` into the **end-to-end conditional
-theorem** `prize_sup_of_saddle_concrete`: the prize sup-bound follows from the **single** open input
-`hsaddle = SaddleEnergyBound`. Everything else is proven.
+Assembled with the char-0 Bessel anchor (classical; envelope + r≤5 landed, all-`r` carried as a believed
+char-0 hypothesis) and the proven `(2r−1)‼ ≤ (2r)^r` into the **end-to-end conditional
+theorem** `prize_sup_of_saddle_concrete`: the prize sup-bound follows from the **single genuinely-open**
+input `hsaddle = SaddleEnergyBound` (plus the classical char-0 Wick bound, formalized for r≤5). Everything
+else is proven.
 
 ### 6.5 The regime-gating countermodel (`_AvLaw_RegimeGatingCountermodel`)
 §5.2 — the thinness-essentiality, machine-checked.
@@ -322,21 +331,32 @@ theorem** `prize_sup_of_saddle_concrete`: the prize sup-bound follows from the *
 > **Theorem (machine-checked, axiom-clean).** Let `M = max_{b≠0}|η_b|`, `n ≥ 1`, `p ≥ 3`, and let `r` be
 > a positive integer with `log(p−1) ≤ r ≤ 2 log p`. Suppose
 > `SaddleEnergyBound`: `Σ_{b≠0}|η_b|^{2r} ≤ (p−1) · E_r(ℂ)`,
-> and the proven char-0 anchor `E_r(ℂ) ≤ (2r−1)‼ n^r`. Then
+> and the char-0 anchor `E_r(ℂ) ≤ (2r−1)‼ n^r` (classical Lam–Leung/Bessel; envelope + r≤5 landed,
+> all-`r` extraction at `r≈log p` carried as a believed char-0 hypothesis — see the note below). Then
 > ```
 >         M ≤ 2√e · √(n · log p).
 > ```
 
-This is `prize_sup_of_saddle_concrete`, depending only on `{propext, Classical.choice, Quot.sound}`, no
-`sorryAx`. Every hypothesis other than `SaddleEnergyBound` is proven in-tree:
+Formally, `prize_sup_of_saddle(_concrete)` is an **abstract-real optimization** over free reals
+`M, n, p, S, E, r` — no `η_b` appears in its statement; the periods enter only through the named
+hypotheses (`hsup` = sup ≤ moment, `hsaddle` = SaddleEnergyBound, `hbessel` = char-0 Wick, `hwick` =
+elementary), which are the period-level bricks. This is `prize_sup_of_saddle_concrete`, depending only on
+`{propext, Classical.choice, Quot.sound}`, no `sorryAx`. Every hypothesis other than `SaddleEnergyBound` is proven in-tree:
 - `M^{2r} ≤ Σ_{b≠0}|η_b|^{2r}` (sup ≤ moment) — trivial;
-- `E_r(ℂ) ≤ (2r−1)‼ n^r` — the Bessel/Wick char-0 backbone (`_CharZeroMGFBesselBound`);
+- `E_r(ℂ) ≤ (2r−1)‼ n^r` — a **classical char-0 fact** (Lam–Leung/Bessel): the generating-function
+  envelope `I₀(2y)^{n/2} ≤ exp((n/2)y²)` is landed (`_CharZeroMGFBesselBound`) and the exact energy
+  coefficients + the Wick recursion `E_{r+1} ≤ (2r+1)n·E_r` are landed **for r≤5** (`BesselCentralBinom`,
+  `_AvGER LadderRecursion`); the all-`r` coefficient-extraction at `r≈log p` is a *believed/known char-0
+  fact carried as an in-tree hypothesis*, **not yet fully formalized** (it is char-0, hence not the open
+  difficulty — that is `hsaddle` — but for strict honesty it is not a discharged all-`r` theorem);
 - `(2r−1)‼ ≤ (2r)^r` — `wickOdd_le_pow`;
 - the `r`-th-root optimization and the `(p−1)^{1/r} ≤ e` saddle choice — `_AvPrize_MomentToSupCapstone`.
 
-**Unconditional corollary (the thin range).** Below the wraparound onset (`p > (2r)^{n/2}`), `W_r = 0`
-exactly, so `SaddleEnergyBound` holds and the prize bound is **unconditional** — this proves the prize
-for thin enough `n` (`n ≲ 2 log p / log(2 log p)`).
+**Unconditional corollary (the degenerate small-`n` range).** Below the wraparound onset
+(`p > (2r)^{n/2}`), `W_r = 0` exactly, so `SaddleEnergyBound` holds and the sup-bound is **unconditional**
+— but ONLY for the degenerate regime `n ≲ 2 log p / log(2 log p)` (e.g. `n ≤ 32` at `p = 2^128`). This is
+**not** the prize regime (the prize fixes `β=4`, `n = p^{1/4} ≈ 2^30`, far above the onset); it is the
+unconditional *thin-enough* corner, a sanity check, not a partial prize.
 
 `SaddleEnergyBound` at `r ≈ log p`, β=4, is **exactly** the BGK/Paley conjecture (Forms I–VI). The
 conditional theorem is the maximal *unconditional* statement: the entire $1M gap is isolated in one named,
@@ -415,9 +435,13 @@ moment) · `_AvLaw_RegimeGatingCountermodel` (thinness-essential) · `_AvCP_WrEq
 
 `M/√(n log m) ≈ 1.2`, `k_max = M/RMS < √(2 log m)` (sup at the Gaussian extreme) · `E_2=3n²−3n`,
 `E_3=15n³−45n²+40n` (char-0 exact) · `|μ_n+μ_n| = n²/2+1` · max weight-4 norm `= 2^{3n/4}` (prize-inert
-pure 2-power) · smoothness threshold `c(2)≈4.87` · di Benedetto `n^{0.9892}` (general) / `n^{0.9583}`
-(near-Sidon, conditional), both nontrivial at β=4 · bad-prime witnesses `3^{16}+1=2·21523361`,
-`Φ_32(3)=43046722`.
+pure 2-power) · smoothness threshold `c(2)≈4.87` · di Benedetto `n^{0.9892}` (general) / `n^{0.9583}` (near-Sidon,
+conditional), both nontrivial at β=4 **under the edge-total convention** (the saving `(10−2t₃−t₂/2)/72`
+already folds in the `p^{1/72}` factor at `|H|=p^{1/4}`; re-adding `p^{1/72}` separately is the `73/72`
+double-count). NOTE: the in-tree `_AvJ_UnconditionalBeat` docstring states the separate-`p` form and a
+'β<7' nontriviality claim that is convention-inconsistent — its four theorems are axiom-clean and true,
+but that docstring claim should be read under the edge-total convention used here · bad-prime witness `21523361` (prime `≡1 mod 32`, `β≈4.87`), the nontrivial factor of
+`Φ_32(3)=3^{16}+1=43046722=2·21523361` (one number, not two).
 
 ## Appendix C — Honesty ledger
 
