@@ -38,6 +38,28 @@ def prizeVarianceProxy (m : ℕ) : ℝ := 2 * (m : ℝ)
 /-- The pair-discrepancy correction in `_PhaseLinearFormDecoupling.variance_le_of_pairEquidist`. -/
 def pairResidualCorrection (m : ℕ) (δ : ℝ) : ℝ := 2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1))
 
+/-- **Pair-discrepancy budget, exact normalized form.**  Dividing by the prize proxy `2m`,
+the decoupling theorem gives the dimensionless bound `1 + δ(2m-1)`.
+
+This states the door-(iv) residual without hiding any scale factor: keeping the normalized variance
+`O(1)` is exactly the requirement that `δ(2m-1)` stay `O(1)`. -/
+theorem normalized_variance_le_one_add_pairResidual {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ : ℝ} (hδ : 0 ≤ δ) (hpair : PairEquidistributed φ δ) :
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m
+      ≤ 1 + δ * (2 * (m : ℝ) - 1) := by
+  have hbase := variance_le_of_pairEquidist (B := B) φ δ hδ hpair
+  have hproxy_pos : 0 < prizeVarianceProxy m := by
+    unfold prizeVarianceProxy
+    positivity
+  calc
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m
+        ≤ (2 * (m : ℝ) + 2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1))) / prizeVarianceProxy m :=
+      div_le_div_of_nonneg_right hbase (le_of_lt hproxy_pos)
+    _ = 1 + δ * (2 * (m : ℝ) - 1) := by
+      have hm2 : (2 * (m : ℝ)) ≠ 0 := by positivity
+      unfold prizeVarianceProxy
+      field_simp [hm2]
+
 /-- **Pair-discrepancy budget, multiplicative form.**  If the dimensionless residual obeys
 `δ(2m-1) ≤ ε`, then the variance is bounded by the prize proxy times `1+ε`.
 
@@ -107,6 +129,7 @@ theorem pairResidualCorrection_zero (m : ℕ) : pairResidualCorrection m 0 = 0 :
 end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound; no `sorryAx`). -/
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_of_ideal_pairEquidist

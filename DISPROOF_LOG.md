@@ -7090,3 +7090,16 @@ Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_Antipoda
 Lane 2 follow-up to `[doorIV-e3-subset-count-fintype-free]`.  The generic Fintype-free subset-count theorem is now exposed at the three E3 stratum sizes directly: negation-closed `2`-, `4`-, and `6`-subsets of `G` are counted by `|G|/2`, `choose(|G|/2,2)`, and `choose(|G|/2,3)` respectively, all over arbitrary `[Field F] [DecidableEq F]` with `(2:F)≠0`, `0∉G`, and `G=-G`.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AntipodalTransversalFintypeFree.lean` with `negClosed_two_subset_count_of_no_fintype`, `negClosed_four_subset_count_of_no_fintype`, and `negClosed_six_subset_count_of_no_fintype`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is still subset-multiplicity packaging only: it does not prove the full `negSymCount` closed form Fintype-free, does not prove CORE cancellation/completion, and makes no capacity claim.
+
+## [doorIV-pair-discrepancy-normalized-budget] Exact normalized variance budget is `1 + δ(2m-1)` (2026-06-19, g55)
+Lane 2 continuation of `_PhasePairEquidistBudget`.  The pair-discrepancy reduction is now stated in
+literal normalized Shaw/prize units: from `PairEquidistributed φ δ`,
+`avg_B η² / (2m) ≤ 1 + δ(2m-1)`.  This exposes the open door-(iv) anti-concentration requirement
+before choosing an external epsilon budget: the dimensionless residual `δ(2m-1)` is the whole gap above
+the prize variance floor.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`
+with `normalized_variance_le_one_add_pairResidual`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.  Scope is only a reduction/normalization theorem.  It proves
+no pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, no completion
+or moment saving, and no capacity claim.
