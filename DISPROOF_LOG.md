@@ -1,3 +1,24 @@
+## door-(iv) Lane-2 capstone — concrete completion corridor `√(d/2) ≤ M(μ_d) ≤ √q` on the real period (2026-06-19)
+
+Lens: Lane-2 citable capstone rung. Two CONCRETE bounds on the actual torsion-subgroup worst period
+`M(μ_d) = worstPeriod ψ (torsion F d)` (`d ∣ q−1`) — the clean Plancherel floor `√(d/2) ≤ M(μ_d)`
+(`worstPeriod_ge_sqrt_half_n`, thin regime q≥2d) and the classical √q-completion ceiling `M(μ_d) ≤ √q`
+(`worstPeriod_torsion_le_sqrt_card`, the door-(ii) mechanism scale) — were never COMBINED into the
+concrete door-(ii) corridor on the same real object, nor wired to the no-fifth-door tetrachotomy's
+quantitative "shave the √L factor" statement (`_NoFifthDoorTetrachotomy` reasons on an abstract M).
+New file `Frontier/ConcreteBGKCompletionCorridor.lean`, 3 axiom-clean theorems:
+- `worstPeriod_torsion_completion_corridor` — `√(d/2) ≤ M(μ_d) ≤ √q` (clean floor + proven completion ceiling).
+- `bgkScale_le_completionCeiling` — in the prize regime `d·L ≤ q` ⟹ `√(d·L) ≤ √q` (door (ii) overshoots BGK).
+- `doorIV_shave_obligation` — `bgkScale d L = √L · prizeScale d`: the door-(iv) obligation on the real
+  period is to bring `√q` down across the BGK scale `√L·√d` to the floor `√d`, shaving the `√L=√(log(p/d))` factor.
+
+VERDICT: states the open door-(iv) gap QUANTITATIVELY on the actual character sum — the proven completion
+ceiling `√q` must be shaved past BGK `√(d·L)` to the prize floor `√d`. Pure assembly of two proven concrete
+bounds + the tetrachotomy scale identity. No anti-concentration/cancellation/moment/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteBGKCompletionCorridor.lean`, axiom-clean.
+All three theorems' axioms ⊆ `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) Lane-2 capstone — the CLEAN thin-regime Shaw-value floor `1/√(2L) ≤ Sh(M(μ_n))` (2026-06-19)
 
 Lens: Lane-2 citable capstone rung (the SAFE, certain, citable lane). `WorstPeriodSqrtNFloor.worstPeriod_ge_sqrt_half_n`
