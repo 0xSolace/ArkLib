@@ -224,6 +224,30 @@ theorem abs_signedMass_ratio_eq_one_iff_one_side_zero {posMass negMass : ℝ}
       rw [hzero, sub_zero, abs_of_nonneg hposMass, add_zero]
       exact div_self hpospos
 
+/-- Bridged sharp form for the actual multi-piece statistic: after compression to aggregate positive
+and negative masses, strict multi-piece coherence slack is exactly two-sided aggregate sign mass. -/
+theorem multiPieceCoherence_lt_one_iff_two_sided {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A < 1 ↔ 0 < posMass ∧ 0 < negMass := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  exact abs_signedMass_ratio_lt_one_iff_two_sided hposMass hnegMass htotal
+
+/-- Bridged saturation form for the actual multi-piece statistic: after compression, coherence equals
+`1` exactly when one aggregate sign mass vanishes. -/
+theorem multiPieceCoherence_eq_one_iff_one_side_zero {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A = 1 ↔ posMass = 0 ∨ negMass = 0 := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  exact abs_signedMass_ratio_eq_one_iff_one_side_zero hposMass hnegMass htotal
+
 /-- If the positive mass is at least the negative mass, coherence is just the normalized excess
 `(posMass - negMass)/(posMass + negMass)`. -/
 theorem multiPieceCoherence_eq_posExcess_ratio {ι : Type*} [DecidableEq ι]
@@ -262,5 +286,7 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms negMass_pos_of_strict_signedMass_balance
 #print axioms abs_signedMass_ratio_lt_one_iff_two_sided
 #print axioms abs_signedMass_ratio_eq_one_iff_one_side_zero
+#print axioms multiPieceCoherence_lt_one_iff_two_sided
+#print axioms multiPieceCoherence_eq_one_iff_one_side_zero
 #print axioms multiPieceCoherence_eq_posExcess_ratio
 #print axioms multiPieceCoherence_eq_negExcess_ratio

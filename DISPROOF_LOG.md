@@ -14,8 +14,9 @@ signed-mass theorem at the worst frequency.  Subdivision alone is powerless; it 
 exactly when both aggregate signs carry positive mass.  No CORE/cancellation/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
-axiom-clean.  New theorems: `abs_signedMass_ratio_lt_one_iff_two_sided` and
-`abs_signedMass_ratio_eq_one_iff_one_side_zero`.  Axioms are contained in
+axiom-clean.  New theorems: `abs_signedMass_ratio_lt_one_iff_two_sided`,
+`abs_signedMass_ratio_eq_one_iff_one_side_zero`, `multiPieceCoherence_lt_one_iff_two_sided`,
+and `multiPieceCoherence_eq_one_iff_one_side_zero`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
 
 ## door-(iv) coherence-slack with nonzero baseline must already pay the coherent peak (2026-06-18)
