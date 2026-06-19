@@ -138,6 +138,16 @@ theorem twoPieceCoherence_pos_neg_le_one_sub_iff {P N ε : ℝ}
   rw [twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio hP hN htotal]
   constructor <;> intro h <;> linarith
 
+/-- Denominator-cleared quantitative obstruction.  Since `P+N` is the total absolute mass of the
+two half-sums in the opposite-sign case, a saving `ε` is equivalent to the concrete minority-mass
+inequality `ε*(P+N) ≤ 2*min(P,N)`.  This is the form useful for probes: the raw coset-half split can
+only beat `1` when the smaller signed half carries a proportional share of the mass. -/
+theorem twoPieceCoherence_pos_neg_le_one_sub_iff_min_mass {P N ε : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) ≤ 1 - ε ↔ ε * (P + N) ≤ 2 * min P N := by
+  rw [twoPieceCoherence_pos_neg_le_one_sub_iff hP hN htotal]
+  exact le_div_iff₀ htotal
+
 /-- Strict quantitative form of the same constraint: strict coherence saving is exactly strict
 minority-mass participation. -/
 theorem twoPieceCoherence_pos_neg_lt_one_sub_iff {P N ε : ℝ}
@@ -172,4 +182,5 @@ end ProximityGap.Frontier.DoorIVCosetHalfCoherence
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.abs_diff_ratio_eq_one_sub_two_mul_min_ratio
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff_min_mass
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_lt_one_sub_iff
