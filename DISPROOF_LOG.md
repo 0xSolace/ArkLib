@@ -1,5 +1,18 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) multi-piece coherence slack equals twice minority sign mass (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`. Prior bricks compressed any real multi-piece refinement to the aggregate signed-mass ratio `|P-N|/(P+N)` and pinned strict slack/saturation by whether both sign masses are present. This refinement gives the quantitative identity
+
+`|P-N|/(P+N) = 1 - 2*min(P,N)/(P+N)`
+
+(and the bridged statement for `multiPieceCoherence`).
+
+VERDICT: subdivision into many real pieces creates no hidden phase anti-concentration. The exact slack below coherence `1` is twice the minority-sign mass fraction. Any successful door-(iv) multi-piece attack must prove a lower bound on the minority aggregate sign mass at the adversarial frequency; piece count or refinement alone contributes nothing. No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`, axiom-clean. New theorems: `abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio` and `multiPieceCoherence_eq_one_sub_two_mul_min_ratio`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+
 ## door-(iv) sector split must pay aggregate ray-projection deficit (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVSectorCoherence`.  Prior sector lemmas showed that

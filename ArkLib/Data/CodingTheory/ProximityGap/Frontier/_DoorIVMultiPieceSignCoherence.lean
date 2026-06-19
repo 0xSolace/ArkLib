@@ -272,6 +272,36 @@ theorem multiPieceCoherence_eq_negExcess_ratio {ι : Type*} [DecidableEq ι]
   rw [abs_of_nonpos hnonpos]
   ring
 
+/-- Signed-mass coherence is exactly `1` minus twice the minority-sign mass fraction.  This pins the
+quantitative obligation of a multi-piece real-refinement attack: slack below `1` is not created by
+having many pieces; it is exactly paid for by aggregate mass on the minority sign. -/
+theorem abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio {posMass negMass : ℝ}
+    (htotal : 0 < posMass + negMass) :
+    |posMass - negMass| / (posMass + negMass) =
+      1 - (2 * min posMass negMass) / (posMass + negMass) := by
+  by_cases hle : posMass ≤ negMass
+  · have hnonpos : posMass - negMass ≤ 0 := sub_nonpos.mpr hle
+    rw [abs_of_nonpos hnonpos, min_eq_left hle]
+    field_simp [ne_of_gt htotal]
+    ring
+  · have hge : negMass ≤ posMass := le_of_not_ge hle
+    have hnonneg : 0 ≤ posMass - negMass := sub_nonneg.mpr hge
+    rw [abs_of_nonneg hnonneg, min_eq_right hge]
+    field_simp [ne_of_gt htotal]
+    ring
+
+/-- Bridged quantitative form for the actual multi-piece statistic: after compression to aggregate
+positive/negative masses, the coherence slack is exactly twice the minority-sign mass divided by the
+total `L¹` mass. -/
+theorem multiPieceCoherence_eq_one_sub_two_mul_min_ratio {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A = 1 - (2 * min posMass negMass) / (posMass + negMass) := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  exact abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio htotal
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -290,3 +320,5 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_one_iff_one_side_zero
 #print axioms multiPieceCoherence_eq_posExcess_ratio
 #print axioms multiPieceCoherence_eq_negExcess_ratio
+#print axioms abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio
+#print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
