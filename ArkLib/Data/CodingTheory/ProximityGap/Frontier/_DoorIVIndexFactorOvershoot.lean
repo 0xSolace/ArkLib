@@ -103,6 +103,30 @@ theorem constant_le_scaled_constant_of_one_le_m {C m : ℝ} (hC : 0 ≤ C) (hm :
     exact Real.sqrt_le_sqrt hm
   nlinarith
 
+/-- Strict scale form: once the index is genuinely nontrivial (`m > 1`), the naive incidence scale is
+strictly larger than the prize scale.  Equality of the two scales is therefore exactly the degenerate
+index-one case, not the thin prize regime. -/
+theorem prizeScale_lt_naiveIncidenceScale_of_one_lt_m {n m L : ℝ}
+    (hn : 0 < n) (hm : 1 < m) (hL : 0 < L) :
+    prizeScale n L < naiveIncidenceScale n m L := by
+  rw [naiveIncidenceScale_eq_sqrt_mul_prizeScale (n := n) (m := m) (L := L)
+      (le_trans zero_le_one (le_of_lt hm))]
+  have hps : 0 < prizeScale n L := prizeScale_pos hn hL
+  have hsqrt_one : (1 : ℝ) < Real.sqrt m := by
+    rw [← Real.sqrt_one]
+    exact Real.sqrt_lt_sqrt zero_le_one hm
+  nlinarith
+
+/-- Strict normalized-constant form: with a positive raw constant and a genuinely nontrivial index,
+the normalized naive Shaw constant is strictly larger than the desired constant.  Thus the index
+factor is a real loss, not just a weak inequality, throughout the thin indexed regime. -/
+theorem constant_lt_scaled_constant_of_one_lt_m {C m : ℝ} (hC : 0 < C) (hm : 1 < m) :
+    C < C * Real.sqrt m := by
+  have hsqrt_one : (1 : ℝ) < Real.sqrt m := by
+    rw [← Real.sqrt_one]
+    exact Real.sqrt_lt_sqrt zero_le_one hm
+  nlinarith
+
 /-- Uniform-family form of the same obstruction: pointwise naive incidence bounds normalize to a
 Shaw-value family bound whose pointwise constant is multiplied by `sqrt(m i)`.  This is only scale
 bookkeeping; the analytic loss remains in the hypotheses. -/
@@ -125,4 +149,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_ge_linear_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound

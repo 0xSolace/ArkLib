@@ -1,3 +1,19 @@
+## door-(iv) naive index factor is strict in every nontrivial indexed regime (2026-06-19)
+
+Lens: Lane 2/3 constraint lemma extending `_DoorIVIndexFactorOvershoot`. Prior bricks recorded the exact
+`√m` overshoot and its monotone `m ≥ 1` consequence. This refinement pins the strict form: if `m > 1`,
+then the naive incidence scale `sqrt(n*m*L)` is strictly larger than the prize scale `sqrt(n*L)`, and for
+any positive raw constant `C`, the normalized naive constant strictly inflates from `C` to `C*sqrt(m)`.
+
+VERDICT: equality between the naive bridge and the Shaw/prize scale occurs only at the degenerate index-one
+case. In the thin prize regime, where the index is genuinely nontrivial, the bridge carries a real strict
+loss. Any door-(iv) proof using this bridge must remove the index factor by a new argument rather than
+hoping it is bookkeeping slack. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`,
+axiom-clean. New theorems: `prizeScale_lt_naiveIncidenceScale_of_one_lt_m` and
+`constant_lt_scaled_constant_of_one_lt_m`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
 ## door-(iv) recursive-ascent non-nesting follows directly from any transfer-ratio bound below one (2026-06-19)
