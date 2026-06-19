@@ -53,7 +53,10 @@ flatness statement for the aggregate iterated Jacobi phase over the relation set
 * `firstMomentDiffCancellation_of_normSq_le` / `normSq_le_of_firstMomentDiffCancellation` — the two
   directions as standalone consumers;
 * `firstMomentDiffCancellation_iff_norm_le_sqrt` — the modulus form
-  `‖Σ Jphase‖ ≤ √(#Rel + S)` (for `0 ≤ #Rel + S`).
+  `‖Σ Jphase‖ ≤ √(#Rel + S)` (for `0 ≤ #Rel + S`);
+* `nonneg_budget_of_firstMomentDiffCancellation` / `not_firstMomentDiffCancellation_of_budget_negative`
+  — the exact lower-budget guard: the open core is impossible unless `0 ≤ #Rel + S`, equivalently
+  no bound with `S < -#Rel` can hold.
 
 NO CORE / cancellation / completion / moment-saving / capacity claim: the inequality
 `‖Σ Jphase‖² ≤ #Rel + S` is NOT proved.  This is an exact reframing (equivalence) of the named open
@@ -129,6 +132,38 @@ theorem firstMomentDiffCancellation_iff_norm_le_sqrt (hmul : ∀ a b, θ (a + b)
     nlinarith [Real.mul_self_sqrt hS, Real.sqrt_nonneg ((Rel.card : ℝ) + S),
       mul_le_mul h h hn (Real.sqrt_nonneg ((Rel.card : ℝ) + S))]
 
+/-! ## §3 The exact lower-budget guard -/
+
+/-- **`nonneg_budget_of_firstMomentDiffCancellation`** — any successful variance-core budget must
+satisfy `0 ≤ #Rel + S`.  This is the shifted-square floor in the reframe language: the right-hand
+side of the equivalent L² mass bound cannot be negative. -/
+theorem nonneg_budget_of_firstMomentDiffCancellation (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (h : FirstMomentDiffCancellation θ Rel S) :
+    0 ≤ (Rel.card : ℝ) + S := by
+  have hmass := normSq_le_of_firstMomentDiffCancellation hmul hone hunit Rel S h
+  exact le_trans (Complex.normSq_nonneg (∑ T ∈ Rel, Jphase θ T)) hmass
+
+/-- **`not_firstMomentDiffCancellation_of_budget_negative`** — exact lower-budget obstruction.  If
+`#Rel + S < 0` (equivalently `S < -#Rel`), the named open core cannot hold.  This does not prove any
+upper cancellation; it only pins the unavoidable floor for the shifted non-negative square. -/
+theorem not_firstMomentDiffCancellation_of_budget_negative (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (hneg : (Rel.card : ℝ) + S < 0) :
+    ¬ FirstMomentDiffCancellation θ Rel S := by
+  intro h
+  have hnonneg := nonneg_budget_of_firstMomentDiffCancellation hmul hone hunit Rel S h
+  linarith
+
+/-- **`not_firstMomentDiffCancellation_of_lt_neg_card`** — the same obstruction stated in the
+more human budget form: no first-moment cancellation bound can demand `S < -#Rel`. -/
+theorem not_firstMomentDiffCancellation_of_lt_neg_card (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (hS : S < -(Rel.card : ℝ)) :
+    ¬ FirstMomentDiffCancellation θ Rel S := by
+  apply not_firstMomentDiffCancellation_of_budget_negative hmul hone hunit Rel S
+  linarith
+
 end ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -136,3 +171,6 @@ end ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.firstMomentDiffCancellation_of_normSq_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.normSq_le_of_firstMomentDiffCancellation
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.firstMomentDiffCancellation_iff_norm_le_sqrt
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.nonneg_budget_of_firstMomentDiffCancellation
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.not_firstMomentDiffCancellation_of_budget_negative
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceLinearSumReframe.not_firstMomentDiffCancellation_of_lt_neg_card

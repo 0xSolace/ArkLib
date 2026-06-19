@@ -6631,3 +6631,17 @@ Formal kernel: `Frontier/_DiffTraceReframeCircularity.lean` (3 thms): `normSq_su
 Classical.choice, Quot.sound}); locked module build exit 0 (3315 jobs).  NO CORE/cancellation/
 completion/moment-saving/capacity claim — Lane-3 constraint pinning that the reframe does not escape
 the pair-correlation second-moment wall.
+
+## [difftrace-linear-sum-budget-floor] variance-core L² reframe forces `#Rel + S ≥ 0` (g55, 2026-06-19)
+
+Lane: Door-IV variance-core capstone/constraint extension of `_DiffTraceLinearSumReframe`.  The
+linear-sum reframe proved the exact equivalence
+`FirstMomentDiffCancellation θ Rel S ↔ ‖Σ_T Jphase θ T‖² ≤ #Rel + S`.  Since the left side of the
+right-hand inequality is a non-negative squared modulus, any successful first-moment budget must satisfy
+`0 ≤ #Rel + S`.  Equivalently, the named open core is impossible for any requested budget `S < -#Rel`.
+
+Formal kernel: extended `Frontier/_DiffTraceLinearSumReframe.lean` with
+`nonneg_budget_of_firstMomentDiffCancellation`, `not_firstMomentDiffCancellation_of_budget_negative`,
+and `not_firstMomentDiffCancellation_of_lt_neg_card`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is the exact shifted-square floor/guardrail only: it
+proves no upper cancellation, no CORE bound, no completion/moment saving, and no capacity claim.
