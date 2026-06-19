@@ -18411,3 +18411,41 @@ Formal kernel: extended `Frontier/_DiffTraceReframeCircularity.lean` with
 and `firstMomentDiffCancellation_of_fullTrace_re_le_card_add`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  This is an exact consumer/equivalence only: no bound on
 `FullTrace`, no CORE bound, no cancellation estimate, no completion/moment saving, and no capacity claim.
+
+## [doorIV-e3-char0-closedform-fintype-barrier] the rho-ladder's probe-only E_3 cannot be discharged by composition — a statement-level Fintype/CharZero wall (2026-06-19, sol)
+
+Door-IV Lane 2. The open ρ-ladder rung 2 (`_OpenCoreRhoStepTwoExplicit`) consumes the third char-0
+energy `E_3 = 15n³ − 45n² + 40n` as its explicit RHS but flags it PROBE-VERIFIED ONLY, NOT
+kernel-proven. The two halves needed to discharge that NOTE in characteristic 0 already exist
+axiom-clean upstream:
+
+* `REnergyThreeCharZero.rEnergy_three_eq_balancedCensus` — EXACT equality `rEnergy G 3 =
+  #{count-balanced 6-tuples}` for a negation-closed set `G` of `2^k`-th roots of unity, requires
+  `[CharZero L]` (forward + reverse Lam–Leung for the prime 2). The census filter is written INLINE.
+* `E3Assembly.negSymCount_eq_closed` — `negSymCount G 6 = 15|G|³ − 45|G|² + 40|G|`, requires
+  `[Fintype F]` (`exists_neg_transversal` selects one representative per antipodal pair via a
+  `Fintype.equivFin F`-derived `LinearOrder F`).
+
+CONSTRAINT (kernel-verified at the statement level, not merely the proof level): the natural
+composition `rEnergy G 3 = negSymCount G 6` (then substitute the closed form) is UNSTATABLE over a
+characteristic-0 field. The symbol `negSymCount` is defined under `[Fintype F]`, so writing
+`negSymCount G 6` forces `Fintype L`; but `rEnergy_three_eq_balancedCensus` requires `CharZero L`, and
+no field is both finite and characteristic 0. Verified: `example : rEnergy G 3 = rEnergy G 3 := rfl`
+typechecks over `[Field L] [DecidableEq L] [CharZero L]`, but appending `= negSymCount G 6` fails with
+`synthInstanceFailed: Fintype L`. Hence the char-0 closed-form discharge CANNOT be obtained by
+composing the existing axiom-clean pieces.
+
+MECHANISM / what it would take: the strata count `negSymCount G 6 = 15|G|³ − 45|G|² + 40|G|` is
+*morally* `Fintype`-free — it is a finite statement about the `Finset G`, and the antipodal map `x ↦ −x`
+is a fixed-point-free involution on `G` (using `0 ∉ G`, `(2:F) ≠ 0`), so `|G|` is even and a transversal
+exists without an ambient field order. Probes confirm the closed form is the true full char-0 energy
+(`rEnergy μ_n 3 = 15n³−45n²+40n` exact at n=2,4,8,16) and that the forward Lam–Leung holds (every
+vanishing 6-multiset of 2-power roots decomposes into antipodal pairs, 0 counterexamples n=2..16).
+Discharging the NOTE therefore requires DE-`Fintype`-ING `negSymCount` + `negSymCount_eq_closed` (replace
+the `Fintype.equivFin`-derived `LinearOrder F` transversal with a `Classical`/involution-based one over
+the Finset), a separate refactor of the actively-imported strata file — NOT a composition. This entry
+records the barrier so future workers do not re-attempt the (impossible) direct composition.
+
+Scope: a precisely-mapped statement-level typeclass wall. No Lean theorem added (the target is
+unstatable as a composition). No CORE/cancellation/completion/moment-saving/capacity claim. The char-p
+side remains the actual open BGK wall (only `negSymCount G 6 ≤ rEnergy G 3` holds there, one-sided).
