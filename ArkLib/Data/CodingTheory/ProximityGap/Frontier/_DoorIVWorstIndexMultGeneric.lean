@@ -108,6 +108,15 @@ def squares (A : Type*) [CommGroup A] : Subgroup A where
 theorem mem_squares_iff {A : Type*} [CommGroup A] {x : A} :
     x ∈ squares A ↔ ∃ y, y * y = x := Iff.rfl
 
+/-- Necessary pair-ratio condition for a quadratic-power-coset restriction.  If a set is contained
+in one coset of the squares subgroup, then every ratio of two selected elements is a square.  This is
+the positive certificate whose contrapositive is exactly the QR/non-QR obstruction below. -/
+theorem ratio_mem_squares_of_subset_coset {A : Type*} [CommGroup A] {s : Set A}
+    {g a b : A} (hsub : ∀ x ∈ s, inCoset (squares A) g x)
+    (ha : a ∈ s) (hb : b ∈ s) :
+    b⁻¹ * a ∈ squares A :=
+  ratio_mem_of_inCoset (hsub a ha) (hsub b hb)
+
 /-- **Worst-index multiplicative genericity ⟹ no power-coset restriction.**  If the worst-index
 set `s` (inside an abelian group `A`) contains elements `a, b` such that `b⁻¹ · a` is *not* a square
 (the QR/non-QR coexistence the probe finds), then `s` is contained in no single coset of the squares
@@ -187,6 +196,7 @@ end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_of_inCoset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_subset_coset_of_ratio_not_mem
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_squares_of_subset_coset
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_power_coset_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_power_coset_restricted
 #print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_kthPowers_of_subset_coset

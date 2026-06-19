@@ -7946,3 +7946,18 @@ lever without passing through moments, completion, or any CORE claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new
 theorem `not_finset_power_coset_restricted`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-square-coset-ratio-necessity] quadratic coset restriction forces square pair-ratios (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1 multiplicative class-restriction bookkeeping in `_DoorIVWorstIndexMultGeneric`.
+This adds the positive certificate paired with the QR/non-QR obstruction: if an observed worst-index set
+is contained in a single coset of the squares subgroup, then every pair-ratio inside the selected set is
+itself a square.
+
+VERDICT: the finite QR/non-QR probe has an exact kernel interface in both directions: a proposed
+quadratic-coset restriction must pass the square-ratio test, and one nonsquare pair-ratio refutes it.
+No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new
+theorem `ratio_mem_squares_of_subset_coset`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
