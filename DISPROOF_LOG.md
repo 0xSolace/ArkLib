@@ -5864,3 +5864,17 @@ sign-mass wall. No CORE/cancellation/capacity claim; no moment/completion route.
 Lean: extended `Frontier/_DoorIVMultShiftCollinear.lean` with `coherence_eq_signMassCoherence` and
 `coherence_le_iff_minority_mass_ge`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-multshift-strict-drop-forces-both-signs] one-sign real-collinear multshift refinements cannot drop coherence (g55, 2026-06-19)
+
+Follow-up Door-(iv) Lane 3 consumer for multiplicative-coset collinearity. Extends the landed
+`_DoorIVMultShiftCollinear.lean` threshold package with the operational strict-drop form: if a
+real-collinear multshift refinement has `coherence <= theta` for some `theta < 1`, then both concrete
+sign masses are positive, `0 < posMass` and `0 < negMass`.
+
+Constraint verdict: a real/antipodal multiplicative refinement with only one sign, or zero minority
+mass, cannot be the source of a Door-IV coherence improvement. Future anti-concentration claims must
+first force a genuine sign split. No CORE/cancellation/capacity claim; no moment/completion route.
+
+Lean: `positive_sign_masses_of_coherence_lt_one_threshold`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.

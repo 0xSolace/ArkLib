@@ -128,6 +128,15 @@ theorem coherence_le_iff_minority_mass_ge {ι : Type*} (s : Finset ι) (A : ι �
   rw [coherence_eq_signMassCoherence]
   exact signMassCoherence_le_iff_minority_mass_ge hden
 
+/-- Strict real-collinear multshift coherence improvement below `1` forces both sign masses to be
+positive.  A one-sign real refinement cannot yield any nontrivial Door-IV coherence drop. -/
+theorem positive_sign_masses_of_coherence_lt_one_threshold {ι : Type*} (s : Finset ι) (A : ι → ℝ)
+    {theta : ℝ} (hden : 0 < posMass s A + negMass s A) (htheta : theta < 1)
+    (hcoh : coherence s A ≤ theta) :
+    0 < posMass s A ∧ 0 < negMass s A := by
+  rw [coherence_eq_signMassCoherence] at hcoh
+  exact DoorIVRealSignMassSlack.positive_sign_masses_of_coherence_lt_one_threshold hden htheta hcoh
+
 /-- If all pieces are same-signed (one of the masses vanishes) and the total mass is positive, the
 coherence is exactly `1` — recovering the saturation obstruction at the sign-mass level. -/
 theorem coherence_eq_one_of_oneMass_zero {ι : Type*} (s : Finset ι) (A : ι → ℝ)
@@ -176,6 +185,7 @@ open ProximityGap.Frontier.DoorIVMultShiftCollinear
 #print axioms coherence_eq_signMass_imbalance
 #print axioms coherence_eq_signMassCoherence
 #print axioms coherence_le_iff_minority_mass_ge
+#print axioms positive_sign_masses_of_coherence_lt_one_threshold
 #print axioms coherence_eq_one_of_oneMass_zero
 #print axioms coherence_lt_one_of_signsplit
 #print axioms one_sub_coherence_eq
