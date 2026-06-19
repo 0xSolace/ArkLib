@@ -6610,3 +6610,24 @@ Axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}); locked module 
 jobs).  NO CORE/cancellation/completion/moment-saving/capacity claim — exact reframing (equivalence)
 of the open core onto the L² mass of the aggregate linear phase sum, a citable variance-route capstone,
 not a closure.
+
+## [difftrace-reframe-circularity] the L² reframe ‖Σ Jphase‖² does NOT escape the pair-sum wall — re-squaring is circular, returns to #Rel + DiffTrace (2026-06-19, sol)
+Door-(iv) Lane 3 constraint lemma (refutation-with-mechanism) on the variance route.  The reframe
+[difftrace-linearsum-reframe] re-expressed the open core as a bound on the L² mass of a SINGLE
+number `Σ_T Jphase θ T`.  HONESTY GUARD: any attempt to "attack" `‖Σ Jphase‖²` by an energy method
+that simply RE-EXPANDS the square `‖Σ Jphase‖² = (Σ Jphase)·conj(Σ Jphase)` lands EXACTLY back on
+`FullTrace = #Rel + DiffTrace` — the original pair-correlation object (`OffDiagonalPairCancellation`).
+The reframe simplifies the STATEMENT but does NOT manufacture a new attackable energy quantity by
+re-squaring; its moment face IS the second-moment wall.  Consistent with §6 of #444 (additive-
+moment/energy proven non-proving) and the door-(i) moment=BGK cap.
+
+Mechanism: `(‖Σ Jphase‖² : ℂ) = FullTrace` (Plancherel, normSq_sum_eq_fullTrace) = `#Rel + DiffTrace`
+(diagonal extraction, normSq_sum_eq_card_add_diffTrace); real parts ⟹ `‖Σ Jphase‖² = #Rel +
+(DiffTrace).re` (reframe_reexpansion_circular).  Bounding the reframed object by re-expansion is
+verbatim bounding `(DiffTrace).re`, the original open core.
+
+Formal kernel: `Frontier/_DiffTraceReframeCircularity.lean` (3 thms): `normSq_sum_eq_fullTrace`,
+`normSq_sum_eq_card_add_diffTrace`, `reframe_reexpansion_circular`.  Axiom-clean (axioms ⊆ {propext,
+Classical.choice, Quot.sound}); locked module build exit 0 (3315 jobs).  NO CORE/cancellation/
+completion/moment-saving/capacity claim — Lane-3 constraint pinning that the reframe does not escape
+the pair-correlation second-moment wall.
