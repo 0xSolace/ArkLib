@@ -127,6 +127,56 @@ theorem shawValue_le_of_trivial_ceiling {M n L : ℝ} (hs : 0 < prizeScale n L) 
   unfold shawValue
   exact div_le_div_of_nonneg_right hceil (le_of_lt hs)
 
+/-! ## The two-sided Shaw-value bracket: the citable framing of the open prize
+
+The prize asks to collapse the *width* of the bracket below to an absolute constant.  The two
+easy rungs above are combined here into a single two-sided statement, and the bracket endpoints
+are identified in closed form, so the entire open problem reads as "tighten a `sqrt n`-wide
+bracket to `O(1)`".  All content here is harmless normalization arithmetic — no anti-concentration
+or cancellation estimate is hidden. -/
+
+/-- **Two-sided Shaw-value bracket.**  Whenever the Plancherel/RMS floor `sqrt n ≤ M` and the
+trivial ceiling `M ≤ n` both hold, the normalized Shaw value is sandwiched between the two
+normalized brackets.  This bundles `shawValue_floor_of_plancherel_floor` and
+`shawValue_le_of_trivial_ceiling` into the single citable bracket the prize must collapse. -/
+theorem shawValue_bracket {M n L : ℝ} (hs : 0 < prizeScale n L)
+    (hfloor : Real.sqrt n ≤ M) (hceil : M ≤ n) :
+    Real.sqrt n / prizeScale n L ≤ shawValue M n L ∧
+      shawValue M n L ≤ n / prizeScale n L :=
+  ⟨shawValue_floor_of_plancherel_floor hs hfloor,
+   shawValue_le_of_trivial_ceiling hs hceil⟩
+
+/-- Closed form of the **lower** bracket endpoint: `sqrt n / prizeScale n L = 1 / sqrt L`.
+The Plancherel floor lands the normalized Shaw value at `1/sqrt(log(p/n))`, independent of `n`. -/
+theorem floor_bracket_eq {n L : ℝ} (hn : 0 < n) :
+    Real.sqrt n / prizeScale n L = 1 / Real.sqrt L := by
+  unfold prizeScale
+  rw [Real.sqrt_mul (le_of_lt hn), div_mul_eq_div_div,
+    div_self (ne_of_gt (Real.sqrt_pos.2 hn))]
+
+/-- Closed form of the **upper** bracket endpoint: `n / prizeScale n L = sqrt (n / L)`.
+The trivial ceiling lands the normalized Shaw value at `sqrt(n / log(p/n))`, the SOTA-shaped scale. -/
+theorem ceiling_bracket_eq {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    n / prizeScale n L = Real.sqrt (n / L) := by
+  have hnL : (0 : ℝ) < n * L := mul_pos hn hL
+  have hsnL : Real.sqrt (n * L) ≠ 0 := ne_of_gt (Real.sqrt_pos.2 hnL)
+  unfold prizeScale
+  rw [div_eq_iff hsnL, ← Real.sqrt_mul (by positivity : (0 : ℝ) ≤ n / L)]
+  have h2 : (n / L) * (n * L) = n ^ 2 := by field_simp
+  rw [h2, Real.sqrt_sq (le_of_lt hn)]
+
+/-- **Bracket width is `sqrt n`.**  The ratio of the upper to the lower bracket endpoint equals
+`sqrt n`: the open prize is exactly the demand to collapse this `sqrt n`-wide normalized bracket
+to an absolute constant.  (Probe `probe_shaw_bracket_arith.py`: ratio = 4,5.66,8,11.3,16 at
+n=16..256 = `sqrt n`, non-vacuous.) -/
+theorem bracket_width_eq_sqrt {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n := by
+  have hps : prizeScale n L ≠ 0 := ne_of_gt (prizeScale_pos hn hL)
+  have hsn : Real.sqrt n ≠ 0 := ne_of_gt (Real.sqrt_pos.2 hn)
+  rw [div_div_div_cancel_right₀]
+  · rw [div_eq_iff hsn, Real.mul_self_sqrt (le_of_lt hn)]
+  all_goals try exact hps
+
 end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
@@ -136,3 +186,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_bracket
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.bracket_width_eq_sqrt
