@@ -5825,3 +5825,17 @@ CORE/cancellation/capacity claim.
 Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addPairSumCount`,
 `addPairSumCount_smul_eq`, and `addPairSumCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
 subset {propext, Classical.choice, Quot.sound}.
+
+## [door-iv-real-piece-compression] real/collinear refinements have no angular degree of freedom (g55, 2026-06-18)
+Door-(iv) Lane 3 constraint following the multiplicative-coset refinement probes: when a finer
+localized decomposition remains collinear on the real axis, the entire coherence statistic compresses
+to two numbers only: total positive mass P and total negative mass N. Formalized axiom-clean in
+`Frontier/_DoorIVRealPieceCompression.lean`:
+`realPieceCoherence_eq_signMassCoherence_of_compression`,
+`realPieceCoherence_le_iff_minority_mass_ge_of_compression`, and
+`not_realPieceCoherence_le_one_sub_of_minority_mass_lt_of_compression`.
+Consequence: a real/collinear refinement cannot supply a new Door-IV anti-concentration lever by
+subdivision. Any target `rho <= theta` is exactly equivalent to proving the minority sign-mass lower
+bound `(1-theta)(P+N)/2 <= min P N`; if that minority mass is too small, every positive epsilon drop is
+impossible. Thus the only saving in real pieces is a balanced sign split, not hidden angular spread.
+NOT CORE, not a moment/completion route, and no capacity/beyond-Johnson claim.
