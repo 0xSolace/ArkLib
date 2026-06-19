@@ -216,6 +216,30 @@ Conj 6.1's claimed equivalence is **corrected** to a strict chain. The sharpest 
 better functional than the moment method) — but reduces, because the true obstruction is *information*
 (depth `log p`), not extremality.
 
+### §7.1 The depth-`log p` energy attack (settled)
+
+Direct attack on the energy bound `E_K(𝔽_p) ≤ Wick_K` at `K ≈ log p` (which `𝒥` would convert
+losslessly to the kernel) settled the two halves:
+
+* **Char-0 side — reduced to one geometric input.** The all-`K` char-0 Wick bound `E_K(ℂ) ≤ (2K−1)‼·n^K`
+  is landed (`besselWick_allR`); this round closed the **combinatorial half of its last named identity**
+  (`_AvW0c_BesselMfoldSymbolic.bessel_identity_on_energy`, axiom-clean): the `m`-fold antipodal
+  decoupling iterated to symbolic `m` on the genuine `Finset` energy, `Z_r(μ_{2m}) = (2r)!·[x^{2r}]I₀^m`.
+  The char-0 side is now reduced to *exactly* the **geometric Lam–Leung decoupling** (`HeadDecoupled` for
+  `μ_n`'s `m=n/2` antipodal directions — a named hypothesis connectable to the landed
+  `AntipodalBalanceBounded`). The provable half is essentially complete.
+* **Char-`p` side — the gap is FUNDAMENTAL (not constant-factor).** The provable-`W_K=0` range
+  (worst-case over prize primes, where the largest prime factor of weight-`2K` norms stays below `n^4`)
+  is `O(1)`, **n-independent** (`≈ β`), capped by the *true* cyclotomic onset (Lam–Leung minimal weight
+  `~2 log_n p`), not the loose Hadamard bound. It is `o(log p)`: the saddle `K ≈ log p` is never reached.
+  So the char-`p` excess at deep `K` is a genuine **order-gap** — the hoped constant-factor reading is
+  *refuted*. (A new infinite-order object — the whole-ladder EGF `Σ_K E_K t^{2K}/(2K)! = I₀(2t)^m`,
+  entire — was derived but reduces: its deep-`K` growth is the char-`p` content.)
+
+This is the sharpest the open direction gets: the char-0 half is one geometric lemma from complete, and
+the char-`p` half is provably an order-gap at depth `log p` — the information `𝒥` needs, which no
+finite-order method (proven barrier) supplies.
+
 **What is honestly claimed.** New mathematics is *defined* (four objects: `𝒞, ζ_η, 𝔅, 𝒥`), new theorems are
 *proven* (the barrier; the sufficiency; the certificate-reduction equivalence; the strict-chain
 correction; the `𝒥` extremality-evasion; the exact structure), and the kernel is *not* proven. The frontier
