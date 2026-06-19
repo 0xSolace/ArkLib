@@ -7972,7 +7972,7 @@ alignment cannot claim strict coherence saving. No CORE/cancellation/completion/
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
 axiom-clean. New theorem: `twoPieceNormCoherence_lt_one_iff_not_sameRay`. Axioms are contained in
-`{propext, Classical.choice, Quot.sound}`..
+`{propext, Classical.choice, Quot.sound}`.
 ## [doorIV-multiwindow-budget-forces-linear-card] occupancy budgets must already pay `|s|` (2026-06-19, g55)
 
 Lane: door-(iv) Lane 3 constraint extension in `_DoorIVWindowConcentrationTrivial`. The exact multi-window
@@ -7988,3 +7988,13 @@ cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
 new theorem `multi_window_budget_forces_card_le`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) real-collinear multiplicative-shift strict slack is exactly both sign masses present (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVMultShiftCollinear`. Prior kernel proved that real-collinear multiplicative-coset pieces collapse to the sign-mass imbalance, that both positive and negative sign masses imply `ρ < 1`, and that any strict threshold improvement forces both masses positive. This refinement packages the exact iff:
+
+`coherence s A < 1 ↔ 0 < posMass s A ∧ 0 < negMass s A` under nonzero total mass.
+
+VERDICT: in the collinear multiplicative-shift regime, strict coherence saving is precisely a sign-cancellation event. There is no additional angular anti-concentration mechanism hiding in the refinement; to beat the wall it must either prove both sign masses quantitatively or leave the real-collinear regime. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultShiftCollinear.lean`, new theorem `coherence_lt_one_iff_both_sign_masses_pos`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

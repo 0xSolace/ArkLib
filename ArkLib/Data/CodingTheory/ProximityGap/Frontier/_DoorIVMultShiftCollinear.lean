@@ -161,6 +161,19 @@ theorem coherence_lt_one_of_signsplit {ι : Type*} (s : Finset ι) (A : ι → �
   rw [div_lt_one hden, abs_lt]
   constructor <;> linarith
 
+/-- Exact strict-slack criterion for real-collinear multiplicative-shift refinements.  Once the
+total real mass is nonzero, coherence drops below `1` if and only if both sign masses are present.
+Thus any strict saving in this collinear regime is precisely a sign-cancellation event, not a new
+angular anti-concentration mechanism. -/
+theorem coherence_lt_one_iff_both_sign_masses_pos {ι : Type*} (s : Finset ι) (A : ι → ℝ)
+    (hden : 0 < posMass s A + negMass s A) :
+    coherence s A < 1 ↔ 0 < posMass s A ∧ 0 < negMass s A := by
+  constructor
+  · intro hcoh
+    exact positive_sign_masses_of_coherence_lt_one_threshold s A hden hcoh le_rfl
+  · intro h
+    exact coherence_lt_one_of_signsplit s A h.1 h.2
+
 /-- The exact deficit identity: with both masses strictly positive, `1 − ρ` equals the
 doubled smaller sign-mass over the total — a one-parameter scalar, no angular content. -/
 theorem one_sub_coherence_eq {ι : Type*} (s : Finset ι) (A : ι → ℝ)
@@ -188,4 +201,5 @@ open ProximityGap.Frontier.DoorIVMultShiftCollinear
 #print axioms positive_sign_masses_of_coherence_lt_one_threshold
 #print axioms coherence_eq_one_of_oneMass_zero
 #print axioms coherence_lt_one_of_signsplit
+#print axioms coherence_lt_one_iff_both_sign_masses_pos
 #print axioms one_sub_coherence_eq
