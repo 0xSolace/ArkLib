@@ -25,9 +25,9 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 2 (domains 1–16) |
-| approaches invented | 24 |
-| REDUCES | 23 |
+| batches run | 3 (domains 1–24) |
+| approaches invented | 32 |
+| REDUCES | 31 |
 | NOT_NOVEL | 0 |
 | REFUTED | 1 |
 | **SURVIVES** | **0** |
@@ -57,5 +57,15 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 - `property (τ) / Lindenstrauss–Margulis` → **REFUTED**: the named spectral-gap datum is false/vacuous (the averaging operator's eigenvalues ARE the periods — circular; explicit countermodel).
 - `unipotent / effective Ratner` → REDUCES: the generator-type hypothesis is violated — the dilation orbit is abelian/degenerate, all effective-Ratner refinements vacuous.
 - `heat-kernel / spectral-zeta` → NOT_NOVEL+REDUCES: already catalogued (DISPROOF_LOG D8-1); heat trace is a moment of the spectrum.
+
+### Batch 3 — domains 17–24 (8/8 REDUCES, 0 survivors)
+- `quantum ergodicity / QUE` → REDUCES: QUE equidistributes only above Planck scale ℏ=1/p ⟹ √p-vacuity floor.
+- `property (T) / Kazhdan` → REDUCES: category error — the acting group (translations) is abelian ⟹ no property (T).
+- `Delsarte LP / SOS hierarchy` → REDUCES: exact Lasserre/Putinar SOS↔moment duality — the degree-r SOS cone IS the degree-r moment hierarchy = moment-necessity.
+- `Nullstellensatz / polynomial calculus` → REDUCES: algebraic-proof-system dual of the Bezout no-go; an NS/PC certificate is a count = moment-necessity.
+- `slice rank / Croot–Lev–Pach` → REDUCES: the wraparound excess tensor has an EMPTY diagonal ⟹ CLP/slice-rank is vacuous.
+- `incidence geometry / Guth–Katz` → REDUCES: `Σ_s I(s)²` is itself the additive-energy count; a partitioning bound on it is a nonneg count = moment-necessity.
+- `geometric complexity theory` → REDUCES: Kronecker/plethysm coefficients are dimensions ≥ 0 (positivity) — no cancellation.
+- `theta correspondence / Weil rep` → REDUCES: the Weil θ-kernel for e_p is the quadratic Gauss-sum kernel ⟹ √p-vacuity + tautological bridge.
 
 (batches appended below as they complete)
