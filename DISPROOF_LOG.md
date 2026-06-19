@@ -1,5 +1,22 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) coherence-slack with nonzero baseline must already pay the coherent peak (2026-06-18)
+
+Lens: door-(iv) Lane 3 follow-up to the coherent-argmax slack refutation.  The first lemma rules out
+slack certificates whose penalty vanishes at zero slack.  This extension handles the attempted escape
+"add a nonzero baseline": for any bound of the shape `mass b ≤ g(1 - ρ(b))`, if the prize-worst
+frequency `b*` is fully coherent (`ρ(b*) = 1`), then the certificate immediately forces
+`mass b* ≤ g(0)`.  Therefore a valid slack certificate must set its zero-slack baseline at least as
+large as the peak mass itself.  If `g(0)` is below the target peak, no such certificate can hold; if
+`g(0)` is that large, the hard bound has been hidden in the baseline rather than extracted from
+coherence slack.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSlackVacuousAtArgmax.lean`,
+axiom-clean.  New theorems: `slack_bound_withBaseline_at_coherent`,
+`baseline_ge_mass_of_coherent_argmax`, and
+`no_coherenceSlackBoundWithBaseline_of_small_baseline`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
 ## door-(iv) TWO-PIECE PHASE COHERENCE saturates iff same-ray — subdivision alone cannot produce anti-concentration (2026-06-18)
 
 Lens: door-(iv) Lane 3 constraint lemma, deconflicted from the already-landed real sign-mass and

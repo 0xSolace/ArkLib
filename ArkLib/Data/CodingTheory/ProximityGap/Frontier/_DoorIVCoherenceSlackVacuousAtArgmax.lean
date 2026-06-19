@@ -68,7 +68,7 @@ Mechanistically: a slack lever can only ever constrain the *light* frequencies (
 never the heavy prize-worst frequency, whose coherence is pinned at `1`.  Hence the index-2
 coset-half coherence cannot be turned into a door-(iv) anti-concentration bound on `M(n)`. -/
 theorem no_coherenceSlackBound_of_coherent_argmax {mass coh : ι → ℝ} {g : ℝ → ℝ}
-    {bstar : ι} (hmax : ∀ i, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
+    {bstar : ι} (_hmax : ∀ i, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
     (hcoh : coh bstar = 1) :
     ¬ CoherenceSlackBound mass coh g := by
   intro hb
@@ -78,15 +78,55 @@ theorem no_coherenceSlackBound_of_coherent_argmax {mass coh : ι → ℝ} {g : �
 coherent and carries positive mass, the same impossibility holds.  This is the form matching the
 probe: `bstar = argmax_{b∈F} |η_b|`, `mass = |η|`, `coh = ρ`, with `ρ(bstar) = 1`. -/
 theorem no_coherenceSlackBound_of_coherent_finsetArgmax {mass coh : ι → ℝ} {g : ℝ → ℝ}
-    {s : Finset ι} {bstar : ι} (hbs : bstar ∈ s)
-    (hmax : ∀ i ∈ s, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
+    {s : Finset ι} {bstar : ι} (_hbs : bstar ∈ s)
+    (_hmax : ∀ i ∈ s, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
     (hcoh : coh bstar = 1) :
     ¬ (CoherenceSlackBound mass coh g) := by
   intro hb
   exact absurd (slack_bound_trivial_at_coherent hb hcoh) (not_le.2 hpos)
+
+/-- A relaxed coherence-slack bound with an arbitrary zero-slack baseline.  This covers proposals of
+the form `mass i ≤ g (1 - coh i)` even when `g 0` is not forced to vanish.  The theorem below says
+that such a lever can only be valid at a fully coherent prize peak if its zero-slack baseline already
+pays for the peak itself. -/
+structure CoherenceSlackBoundWithBaseline (mass coh : ι → ℝ) (g : ℝ → ℝ) : Prop where
+  /-- The slack bound holds pointwise: each mass is at most the penalty of its slack `1 - coh i`. -/
+  bound : ∀ i, mass i ≤ g (1 - coh i)
+
+/-- Any relaxed coherence-slack bound evaluated at a full-coherence index reduces to the zero-slack
+baseline `g 0`.  Thus `g 0` is not a harmless additive constant: it is exactly the amount of mass the
+lever must already concede at a coherent frequency. -/
+theorem slack_bound_withBaseline_at_coherent {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    (hb : CoherenceSlackBoundWithBaseline mass coh g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ g 0 := by
+  have := hb.bound i
+  rwa [hcoh, sub_self] at this
+
+/-- **Baseline lower bound at a coherent argmax.**  If the prize-worst frequency is fully coherent,
+then every relaxed coherence-slack certificate must have zero-slack baseline at least the peak mass.
+Consequently, any such certificate whose `g 0` is below the target peak is impossible; if it is valid,
+the entire hard bound has already been hidden in the baseline rather than extracted from slack. -/
+theorem baseline_ge_mass_of_coherent_argmax {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (_hmax : ∀ i, mass i ≤ mass bstar) (hcoh : coh bstar = 1)
+    (hb : CoherenceSlackBoundWithBaseline mass coh g) :
+    mass bstar ≤ g 0 :=
+  slack_bound_withBaseline_at_coherent hb hcoh
+
+/-- Impossibility form of `baseline_ge_mass_of_coherent_argmax`: a relaxed coherence-slack bound
+with zero-slack baseline strictly below the fully coherent prize peak cannot hold.  This is the
+nonzero-baseline version of the vacuity obstruction. -/
+theorem no_coherenceSlackBoundWithBaseline_of_small_baseline {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (hmax : ∀ i, mass i ≤ mass bstar) (hcoh : coh bstar = 1)
+    (hsmall : g 0 < mass bstar) :
+    ¬ CoherenceSlackBoundWithBaseline mass coh g := by
+  intro hb
+  exact not_le.2 hsmall (baseline_ge_mass_of_coherent_argmax hmax hcoh hb)
 
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_trivial_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBound_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBound_of_coherent_finsetArgmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_withBaseline_at_coherent
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.baseline_ge_mass_of_coherent_argmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBoundWithBaseline_of_small_baseline
