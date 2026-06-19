@@ -7158,3 +7158,20 @@ are conjecture-compatible); does NOT bound M(n). NO CORE/cancellation/completion
 anti-concentration/capacity claim. CORE M(mu_n) <= C sqrt(n log m) UNCHANGED/OPEN. Axiom-clean
 (subset {propext, Classical.choice, Quot.sound}); locked build exit 0 (8315 jobs); axiom_audit PASS;
 codex review clean. File Frontier/_ResonanceMomentRTwoBounds.lean.
+
+## [doorIV-resonance-r2-conjecture-discharge-regime] the triangle/L1 route discharges ResonanceConjecture u 2 ONLY in the small-m regime (m(m-1)^2 <= (2m log m)^2 FAILS for m >~ 100; ratio -> infinity) (2026-06-19, sol)
+
+Lane: door-(iv) Lane 2/3. Follow-up to [doorIV-resonance-r2-bracket] (5a7fe9d6b). Adds the conditional
+conjecture discharge resonanceConjecture_two_of_trivCeil_le: for unit phases, if the trivial ceiling
+m*(m-1)^2 (the proven resonanceMoment_two_le) fits under the ResonanceConjecture ceiling (2 m log m)^2,
+then ResonanceConjecture u 2 holds UNCONDITIONALLY. PROBE (probe_overshoot.py): the hypothesis
+m(m-1)^2 <= (2m log m)^2 HOLDS for small m (<~ 80: ratio 0.28 at m=3, 0.78 at m=50) and FAILS for
+m >= 100 (ratio 1.16 at m=100, 5.2 at m=1000, 188 at m=1e5; triv/conj ~ m/(4 ln^2 m) -> infinity).
+CONSTRAINT: the triangle/L1 route to T(2) reaches the conjecture ONLY in the small-m regime; for the
+prize regime (large m=(p-1)/n ~ n^3) the trivial bound OVERSHOOTS and the conjecture needs the
+off-diagonal sqrt(m)-cancellation (the prize sup-norm wall), NOT the triangle bound. This is the
+resonance-moment-level analogue of "L1/triangle is phase-blind" (door-(i) meta-theorem). Real citable
+implication theorem feeding resonanceMoment_two_le into ResonanceConjecture; honest regime-limit stated.
+Does NOT prove the conjecture for large m; no CORE/cancellation/capacity claim. Axiom-clean
+(subset {propext,Classical.choice,Quot.sound}); locked build exit 0 (8315 jobs); axiom_audit PASS;
+codex review clean. File Frontier/_ResonanceMomentRTwoBounds.lean.

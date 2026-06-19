@@ -109,6 +109,20 @@ theorem resonanceMoment_two_le (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l
     _ = (m : ℝ) * ((m : ℝ) - 1) ^ 2 := by
         rw [Finset.card_univ, ZMod.card]
 
+/-- **Conditional `r = 2` conjecture discharge from the trivial ceiling.** If the trivial upper bound
+`m·(m-1)²` already fits under the `ResonanceConjecture` ceiling `(2 m log m)²` — i.e. when
+`m·(m-1)² ≤ (2 m log m)²` — then `ResonanceConjecture u 2` holds UNCONDITIONALLY for unit phases.
+Probe truth: the hypothesis holds for small `m` (≲ 80) and FAILS for large `m` (the trivial ceiling
+overshoots the conjecture by a factor `~ m / (4 log² m) → ∞`). So this is an HONEST regime-limited
+discharge: the triangle/L¹ route reaches the conjecture ONLY in the small-`m` regime; closing it for
+large `m` requires the off-diagonal `√m`-cancellation (the prize sup-norm wall), NOT the triangle
+bound. A door-(i)-style "L¹/triangle is insufficient asymptotically" constraint at the resonance level. -/
+theorem resonanceConjecture_two_of_trivCeil_le (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hfit : (m : ℝ) * ((m : ℝ) - 1) ^ 2 ≤ (2 * (m : ℝ) * Real.log m) ^ 2) :
+    ResonanceConjecture u 2 := by
+  unfold ResonanceConjecture
+  exact le_trans (resonanceMoment_two_le u hu) hfit
+
 /-- **The `r = 2` two-sided bracket** (conjugate-symmetric unit phases):
 `(m-1)² ≤ T 2 ≤ m·(m-1)²`. The lower bound is the diagonal mass; the upper bound is the trivial
 per-frequency ceiling summed. The probe truth `T 2 = Θ(m²)` sits at the LOWER end (`√m`-cancellation
@@ -125,3 +139,4 @@ end ArkLib.ProximityGap.GaussPhaseResonance
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSum_two_norm_le
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_two_le
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_two_bracket
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceConjecture_two_of_trivCeil_le
