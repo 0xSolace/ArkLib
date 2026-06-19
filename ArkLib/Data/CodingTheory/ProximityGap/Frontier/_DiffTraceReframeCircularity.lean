@@ -44,7 +44,9 @@ sum).  Any "new" energy bound obtained by expanding the square is the OLD pair-c
   pair sum);
 * `reframe_reexpansion_circular` — the explicit circularity statement: the reframed L² object's real
   part equals `#Rel + (DiffTrace).re`, so bounding it by re-expansion is bounding `DiffTrace.re`
-  (the original open core) — no new content.
+  (the original open core) — no new content;
+* `firstMomentDiffCancellation_iff_fullTrace_re_le_card_add` — the equivalent unpunctured full-trace
+  upper-bound form: `FirstMomentDiffCancellation θ Rel S ↔ (FullTrace θ Rel).re ≤ #Rel + S`.
 
 NO CORE / cancellation / completion / moment-saving / capacity claim: this is a Lane-3 constraint
 lemma pinning that the L² reframe does not escape the pair-correlation second-moment wall by
@@ -91,9 +93,40 @@ theorem reframe_reexpansion_circular (hmul : ∀ a b, θ (a + b) = θ a * θ b) 
   have hre := congrArg Complex.re h
   simpa [Complex.add_re, Complex.natCast_re, Complex.ofReal_re] using hre
 
+/-- **`fullTrace_re_eq_card_add_diffTrace_re`** — the unpunctured full trace has real part equal to
+`#Rel + (DiffTrace).re`.  This is the diagonal-extraction identity after taking real parts. -/
+theorem fullTrace_re_eq_card_add_diffTrace_re (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) :
+    (FullTrace θ Rel).re = (Rel.card : ℝ) + (DiffTrace θ Rel).re := by
+  have h := fullTrace_eq_card_add_diffTrace hmul hone hunit Rel
+  have hre := congrArg Complex.re h
+  simpa [Complex.add_re, Complex.natCast_re, Complex.ofReal_re] using hre
+
+/-- **`firstMomentDiffCancellation_iff_fullTrace_re_le_card_add`** — exact unpunctured-trace form of
+the named open core.  Bounding the real part of the full trace by `#Rel + S` is equivalent to bounding
+the off-diagonal first moment by `S`, because the diagonal contributes exactly `#Rel`. -/
+theorem firstMomentDiffCancellation_iff_fullTrace_re_le_card_add
+    (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ) :
+    FirstMomentDiffCancellation θ Rel S ↔ (FullTrace θ Rel).re ≤ (Rel.card : ℝ) + S := by
+  unfold FirstMomentDiffCancellation
+  rw [fullTrace_re_eq_card_add_diffTrace_re hmul hone hunit Rel]
+  constructor <;> intro h <;> linarith
+
+/-- Producer direction for the unpunctured full-trace form. -/
+theorem firstMomentDiffCancellation_of_fullTrace_re_le_card_add
+    (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (h : (FullTrace θ Rel).re ≤ (Rel.card : ℝ) + S) :
+    FirstMomentDiffCancellation θ Rel S :=
+  (firstMomentDiffCancellation_iff_fullTrace_re_le_card_add hmul hone hunit Rel S).mpr h
+
 end ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.normSq_sum_eq_fullTrace
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.normSq_sum_eq_card_add_diffTrace
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.reframe_reexpansion_circular
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.fullTrace_re_eq_card_add_diffTrace_re
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.firstMomentDiffCancellation_iff_fullTrace_re_le_card_add
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceReframeCircularity.firstMomentDiffCancellation_of_fullTrace_re_le_card_add

@@ -18383,3 +18383,31 @@ small-ball certificate equals the typical-b one). Axioms ⊆ {propext,Classical.
 No CORE/cancellation claim; asymptotic-claim guard untouched.
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## [difftrace-linear-sum-budget-floor] variance-core L² reframe forces `#Rel + S ≥ 0` (g55, 2026-06-19)
+
+Lane: Door-IV variance-core capstone/constraint extension of `_DiffTraceLinearSumReframe`.  The
+linear-sum reframe proved the exact equivalence
+`FirstMomentDiffCancellation θ Rel S ↔ ‖Σ_T Jphase θ T‖² ≤ #Rel + S`.  Since the left side of the
+right-hand inequality is a non-negative squared modulus, any successful first-moment budget must satisfy
+`0 ≤ #Rel + S`.  Equivalently, the named open core is impossible for any requested budget `S < -#Rel`.
+
+Formal kernel: extended `Frontier/_DiffTraceLinearSumReframe.lean` with
+`nonneg_budget_of_firstMomentDiffCancellation`, `not_firstMomentDiffCancellation_of_budget_negative`,
+and `not_firstMomentDiffCancellation_of_lt_neg_card`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is the exact shifted-square floor/guardrail only: it
+proves no upper cancellation, no CORE bound, no completion/moment saving, and no capacity claim.
+
+## [difftrace-fulltrace-real-budget-equivalence] full unpunctured trace bound is exactly the off-diagonal core plus `#Rel` (g55, 2026-06-19)
+
+Lane: Door-IV variance-core capstone/constraint extension of `_DiffTraceReframeCircularity`.  The
+unpunctured full trace is what point-count methods naturally see, while `FirstMomentDiffCancellation`
+is stated on the punctured off-diagonal `DiffTrace`.  This sweep pins the exact real-part equivalence:
+`FirstMomentDiffCancellation θ Rel S ↔ (FullTrace θ Rel).re ≤ #Rel + S`.  The diagonal contributes
+exactly `#Rel`; subtracting it is not optional bookkeeping, it is precisely the off-diagonal core.
+
+Formal kernel: extended `Frontier/_DiffTraceReframeCircularity.lean` with
+`fullTrace_re_eq_card_add_diffTrace_re`, `firstMomentDiffCancellation_iff_fullTrace_re_le_card_add`,
+and `firstMomentDiffCancellation_of_fullTrace_re_le_card_add`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is an exact consumer/equivalence only: no bound on
+`FullTrace`, no CORE bound, no cancellation estimate, no completion/moment saving, and no capacity claim.

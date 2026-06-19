@@ -6666,3 +6666,17 @@ Formal kernel: `Frontier/_DiffTraceVarianceRouteCapstone.lean` (3 thms):
 locked module build exit 0 (3316 jobs).  NO CORE/cancellation/completion/moment-saving/capacity claim
 — the L²-flatness inequality is NOT proved; this is the citable end-to-end reduction of the variance
 route to a single L²-flatness statement on the aggregate iterated Jacobi phase.
+
+## [difftrace-fulltrace-real-budget-equivalence] full unpunctured trace bound is exactly the off-diagonal core plus `#Rel` (g55, 2026-06-19)
+
+Lane: Door-IV variance-core capstone/constraint extension of `_DiffTraceReframeCircularity`.  The
+unpunctured full trace is what point-count methods naturally see, while `FirstMomentDiffCancellation`
+is stated on the punctured off-diagonal `DiffTrace`.  This sweep pins the exact real-part equivalence:
+`FirstMomentDiffCancellation θ Rel S ↔ (FullTrace θ Rel).re ≤ #Rel + S`.  The diagonal contributes
+exactly `#Rel`; subtracting it is not optional bookkeeping, it is precisely the off-diagonal core.
+
+Formal kernel: extended `Frontier/_DiffTraceReframeCircularity.lean` with
+`fullTrace_re_eq_card_add_diffTrace_re`, `firstMomentDiffCancellation_iff_fullTrace_re_le_card_add`,
+and `firstMomentDiffCancellation_of_fullTrace_re_le_card_add`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is an exact consumer/equivalence only: no bound on
+`FullTrace`, no CORE bound, no cancellation estimate, no completion/moment saving, and no capacity claim.
