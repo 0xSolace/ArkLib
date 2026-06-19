@@ -94,6 +94,29 @@ theorem not_trivial_ceiling_certifies_in_thin_regime {C n L : ℝ} (hC : 0 ≤ C
   have hgap : C < Real.sqrt (n / L) := trivial_ceiling_insufficient hC hL hthin
   linarith
 
+/-- Even taking the better of the two unconditional classical ceilings does not certify a bounded
+Shaw value in the simultaneous thin regime.  If both the completion ceiling and triangle ceiling
+exceed `C`, then their pointwise minimum also exceeds `C`. -/
+theorem classical_min_baseline_insufficient {C n L q : ℝ} (hC : 0 ≤ C) (hn : 0 < n)
+    (hL : 0 < L) (hcompletion : C ^ 2 * (n * L) < q) (htriangle : C ^ 2 * L < n) :
+    C < min (Real.sqrt (q / (n * L))) (Real.sqrt (n / L)) := by
+  have hcomp : C < Real.sqrt (q / (n * L)) :=
+    baseline_insufficient hC hn hL hcompletion
+  have htri : C < Real.sqrt (n / L) := trivial_ceiling_insufficient hC hL htriangle
+  exact lt_min hcomp htri
+
+/-- Contradiction form for the combined classical corridor: in the simultaneous thin regime, neither
+`√q` completion nor the trivial triangle ceiling, nor the better of the two, supplies a certificate
+`≤ C`.  Any bounded Shaw-value proof must use new cancellation beyond these classical rungs. -/
+theorem not_classical_min_baseline_certifies_in_thin_regime {C n L q : ℝ} (hC : 0 ≤ C)
+    (hn : 0 < n) (hL : 0 < L) (hcompletion : C ^ 2 * (n * L) < q)
+    (htriangle : C ^ 2 * L < n) :
+    ¬ min (Real.sqrt (q / (n * L))) (Real.sqrt (n / L)) ≤ C := by
+  intro hcert
+  have hgap : C < min (Real.sqrt (q / (n * L))) (Real.sqrt (n / L)) :=
+    classical_min_baseline_insufficient hC hn hL hcompletion htriangle
+  linarith
+
 end ProximityGap.Frontier.ConcreteBaselineInsufficiency
 
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.sqrt_ratio_gt_of_lt
@@ -101,3 +124,5 @@ end ProximityGap.Frontier.ConcreteBaselineInsufficiency
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.trivial_ceiling_insufficient
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_completion_baseline_certifies_in_thin_regime
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_trivial_ceiling_certifies_in_thin_regime
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.classical_min_baseline_insufficient
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_classical_min_baseline_certifies_in_thin_regime

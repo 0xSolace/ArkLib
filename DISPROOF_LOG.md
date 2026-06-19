@@ -6472,6 +6472,7 @@ Scope: no-go bookkeeping only. This supplies no cancellation, anti-concentration
 completion-saving, or CORE bound; it only records that the elementary triangle ceiling leaves the
 Door-IV prize target genuinely open.
 
+<<<<<<< Updated upstream
 ## [difftrace-modulus-direct-consumer] a modulus estimate on V_diff feeds the off-diagonal second moment directly (2026-06-19, g55)
 
 Lane: door-(iv) variance-core frontier extension of `_NextDifferenceVariety` / `_DiffTraceReality`, not a new moment/completion claim.  The prior brick proved `DiffTrace` is real and that a modulus bound implies the named real-part open core.  This sweep packages the final consumer and norm bookkeeping.
@@ -6479,3 +6480,20 @@ Lane: door-(iv) variance-core frontier extension of `_NextDifferenceVariety` / `
 Formal kernel: extended `Frontier/_DiffTraceReality.lean` with `diffTrace_norm_eq_abs_re`, proving that because the difference-variety first moment is real, `‖DiffTrace θ Rel‖ = |(DiffTrace θ Rel).re|`; and `modulus_to_secondMoment_re_bound`, proving that any future estimate `‖DiffTrace θ Rel‖ ≤ S` immediately bounds the real part of the original off-diagonal second-moment sum by `S` via the exact second→first reduction.  This makes the Lang-Weil/Katz handoff one theorem-call wide: prove a modulus bound on the single first-moment trace over `V_diff`, get the variance-core off-diagonal real bound with no extra re/im or pair-sum bookkeeping.
 
 Scope: no CORE bound, no cancellation estimate, no completion/moment saving, no capacity claim.  This is a structural consumer bridge only; the external modulus estimate remains open.  Axioms subset `{propext, Classical.choice, Quot.sound}`.
+=======
+## [door-iv-classical-min-baseline-no-certificate] the better of completion and triangle ceilings still cannot certify bounded Shaw value (g55, 2026-06-19)
+
+Lane: Door-(iv) Lane 2 no-go consumer. After pinning the two individual classical ceilings, this
+locks the combined corridor: even if one takes the pointwise better of `√(q/(nL))` completion and
+`√(n/L)` triangle normalization, the resulting minimum is still above any fixed target `C` in the
+simultaneous thin regime.
+
+Formal kernel: `classical_min_baseline_insufficient` and
+`not_classical_min_baseline_certifies_in_thin_regime` in
+`Frontier/ConcreteBaselineInsufficiency.lean`. From `C²·(nL)<q` and `C²·L<n`, it proves
+`C < min (sqrt(q/(nL))) (sqrt(n/L))`, hence `¬ min (sqrt(q/(nL))) (sqrt(n/L)) ≤ C`.
+
+Scope: no-go bookkeeping only. The classical unconditional upper rungs, individually or combined by
+minimum, leave the Door-IV prize target open; no cancellation, anti-concentration, moment,
+completion-saving, or CORE bound is claimed.
+>>>>>>> Stashed changes
