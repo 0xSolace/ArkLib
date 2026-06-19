@@ -188,6 +188,22 @@ theorem exists_prizeFamilyBound_iff_exists_halfMassFamilyBound {ι : Type*}
     refine ⟨C, fun i => ?_⟩
     exact prizeBound_of_halfMassBound (hMH i) (hC i)
 
+/-- **Half-mass Shaw-value normalization.**  With positive scales, the raw half-mass Big-O statement
+`H ≤ C·scale` is equivalent to bounded normalized half-mass Shaw value `H/scale ≤ C`, with the same
+constant.  This is the pure half-mass `H(n)=O(scale) ⇔ Sh_H(n)=O(1)` conversion used by the mixed
+capstone below. -/
+theorem exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (∃ C, halfMassFamilyBound H scale C) ↔
+      (∃ C, normalizedHalfMassFamilyBound H scale C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
+      (H := H) (scale := scale) hscale).1 hC⟩
+  · rintro ⟨C, hC⟩
+    exact ⟨C, (halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
+      (H := H) (scale := scale) hscale).2 hC⟩
+
 /-- **Mixed Shaw-value capstone.**  Under the same family-wide half-mass comparison and positive prize
 scale, a raw uniform prize Big-O bound is equivalent to a bounded normalized half-mass Shaw-value.
 This is the directly citable form `prize bound ⇔ Sh_H(n)=O(1)`: the left side is the original
@@ -220,5 +236,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound

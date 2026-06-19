@@ -7039,3 +7039,9 @@ Lane 2 reduction-chain capstone extending `_DoorIVHalfMassEquivalence`. The half
 `∃ C, M i ≤ C·scale i` for all indices iff `∃ C, H i / scale i ≤ C` for all indices.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`, theorem `exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`. Scope is only the abstract Door-IV half-mass reduction. It does not prove the reverse comparison `H≤K·M`, does not bound the half-mass itself, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-halfmass-shaw-normalization] half-mass Big-O equals bounded normalized half-mass Shaw value (2026-06-19, g55)
+
+Lane 2 normalization capstone extending `_DoorIVHalfMassEquivalence`. This isolates the pure half-mass Shaw-value conversion: under positive scales, the raw family statement `∃ C, H i ≤ C·scale i` is equivalent to the normalized statement `∃ C, H i / scale i ≤ C`, with the same constant carried through the pointwise equivalence.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`, theorem `exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`. Scope is only normalization/reduction bookkeeping for the door-(iv) half-mass target. It proves no half-mass bound, no reverse comparison to the prize max, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
