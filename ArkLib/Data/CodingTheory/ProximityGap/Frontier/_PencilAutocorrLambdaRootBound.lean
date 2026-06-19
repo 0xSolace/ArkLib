@@ -22,24 +22,26 @@ pencil into the multiplicative-autocorrelation / subgroup language:
 It does so through `pencil_card_core` (the **exact-singleton** Fisher count), which only consumes the
 `M = 0` punctured / `M = 1` full extreme — distinct blocks meeting in *exactly* `{1}`.
 
-`PencilCauchySchwarzFisher.lean` independently proved the **general-`M`** Cauchy-Schwarz / Fisher
-double-count *in abstract block-family form* (any apex `p`, punctured pairwise overlap `≤ M`):
+`PencilCauchySchwarzAutocorr.lean` already wired the general-`M` Cauchy-Schwarz / Fisher double-count
+(`PencilCauchySchwarzFisher.pencil_cs_fisher`) into the autocorrelation / subgroup language:
 
-> `pencil_cs_fisher` :  `r·(r−1) ≤ (M+1)·(|univ|−1)`,  and  `pencil_cs_sqrt_bound` :
-> `(r−1)² < (M+1)·|univ|`.
+> `pencil_cs_autocorr_bound` :  `M(S) ≤ M` over the order-`n` subgroup `μ`, `S ⊆ μ`, `|S| = r ≥ 1`,
+> ⟹ `r·(r−1) ≤ (M+1)·(n−1)`,  and  `pencil_cs_autocorr_sqrt_bound` : `(r−1)² < (M+1)·n`.
 
-But `pencil_cs_fisher` was **never wired into the autocorrelation / subgroup language** — it is
-stated over an arbitrary indexed block family, not over the order-`n` multiplicative subgroup with
-the autocorrelation hypothesis `M(S) ≤ λ`. This file supplies exactly that missing wiring, the
-**λ-generalization of `pencil_card_bound_of_autocorr_le_one`**:
+But that wiring passes the FULL pencil overlap (`≤ λ`) as the *punctured* pairwise hypothesis, which
+loses one: every distinct-root full overlap already contains the common apex `1`, so the punctured
+overlap is actually `≤ λ − 1`, not `≤ λ`. This file lands the **SHARPENED** form (the apex correction),
+strictly improving `pencil_cs_autocorr_bound`'s factor `λ+1` to `λ`:
 
 1. `pencil_card_bound_of_autocorr_le` :  if the multiplicative autocorrelation of `S ⊆ μ`
-   (order-`n` subgroup) is `≤ λ` at every nontrivial shift, then the **sharp** `r·(r−1) ≤ λ·(n−1)`.
+   (order-`n` subgroup) is `≤ λ` at every nontrivial shift, then the **sharp** `r·(r−1) ≤ λ·(n−1)`
+   (strictly sharper than `PencilCauchySchwarzAutocorr.pencil_cs_autocorr_bound`'s `(λ+1)(n−1)`).
 2. `pencil_sqrt_bound_of_autocorr_le` :  the `√` extraction `(r−1)² < (λ+1)·n`, i.e.
    `r ≤ 1 + √((λ+1)·n)`.
 
 At `λ = 1` the sharp count `r(r−1) ≤ n−1` **exactly recovers**
-`pencil_card_bound_of_autocorr_le_one`'s singleton bound (no off-by-one slack). The **sharp** factor
+`pencil_card_bound_of_autocorr_le_one`'s singleton bound (no off-by-one slack), which the
+`(λ+1)(n−1)` form does NOT (it gives the loose `2(n−1)` there). The **sharp** factor
 `λ` (not `λ+1`) comes from the apex: erasing the common apex `1` from each block drops the punctured
 overlap to `|S ∩ ρ·S| − 1 ≤ λ − 1` (the full intersection holds `1`, so the punctured one equals
 `(B i ∩ B j).erase 1`), and `pencil_cs_fisher` with `M = λ−1`, apex `p = 1`, universe `μ` then gives
@@ -84,8 +86,10 @@ multiplicative autocorrelation of `S` is `≤ λ` at every nontrivial shift, the
 
   `r·(r−1) ≤ λ·(n − 1)`.
 
-This is the `λ`-generalization of `PencilAutocorrRootBound.pencil_card_bound_of_autocorr_le_one`,
-and at `λ = 1` it **exactly recovers** that file's singleton bound `r(r−1) ≤ n−1`. We enumerate `S`
+This **sharpens** `PencilCauchySchwarzAutocorr.pencil_cs_autocorr_bound` (which proves the looser
+`(λ+1)(n−1)` by passing the full overlap as the punctured hypothesis) via the apex correction, and at
+`λ = 1` it **exactly recovers** `PencilAutocorrRootBound.pencil_card_bound_of_autocorr_le_one`'s
+singleton bound `r(r−1) ≤ n−1`. We enumerate `S`
 by the canonical equiv `S ≃ Fin r`, take apex `p = 1` (in every block since each `e i ∈ S`), bound the
 **punctured** pairwise overlap by `λ − 1` (the punctured intersection equals `(B i ∩ B j).erase 1`,
 whose card is `(full card) − 1 ≤ λ − 1`, since `1` lies in the full overlap), and feed

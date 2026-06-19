@@ -7469,16 +7469,18 @@ only, field- and thickness-universal. Does NOT prove BGK, CORE, cancellation, co
 moment-saving, anti-concentration, or capacity claim — door (iv) anti-concentration remains the open
 $1M wall.
 
-## [pencil-autocorr-lambda-rootbound] general-λ (λ-design) autocorrelation root bound: M(S)≤λ ⟹ r(r−1)≤λ(n−1) (2026-06-19, sol)
-NON-MOMENT structural CORE lever (polynomial-method / incidence-geometry side), EXTENDING two proven
-theorems by wiring them together (frontier-MOVEMENT, not boundary re-mapping):
-- `PencilAutocorrRootBound.pencil_card_bound_of_autocorr_le_one` wired only the M=1 (trinomial/t=3)
-  EXTREME of the dilation pencil into autocorrelation/subgroup language (via pencil_card_core, the
-  exact-singleton Fisher count).
-- `PencilCauchySchwarzFisher.pencil_cs_fisher` proved the GENERAL-M Cauchy–Schwarz/Fisher count
-  r(r−1)≤(M+1)(N−1) but only in ABSTRACT block-family form, never wired to the autocorrelation
-  hypothesis M(S)≤λ over the order-n subgroup.
-This commit supplies that missing wiring, the λ-generalization of pencil_card_bound_of_autocorr_le_one:
+## [pencil-autocorr-lambda-rootbound] SHARPENED general-λ autocorrelation root bound: M(S)≤λ ⟹ r(r−1)≤λ(n−1) (2026-06-19, sol)
+HONESTY CORRECTION (appended after landing): the general-M autocorrelation wiring was ALREADY in-tree as
+`PencilCauchySchwarzAutocorr.pencil_cs_autocorr_bound` (r(r−1)≤(M+1)(n−1)) — my initial framing "never
+wired" was WRONG (missed that file in deconfliction). The REAL contribution here is a strict SHARPENING
+of that existing theorem, NON-MOMENT structural CORE lever (polynomial-method / incidence-geometry side):
+- `PencilCauchySchwarzAutocorr.pencil_cs_autocorr_bound` proves the LOOSER r(r−1)≤(λ+1)(n−1) by passing
+  the FULL pencil overlap (≤λ) as the punctured-pairwise hypothesis.
+- THIS file sharpens it to r(r−1)≤λ(n−1) via the apex correction: every distinct-root full overlap
+  contains the common apex 1, so the punctured overlap is ≤λ−1, not ≤λ (codex P2 caught the analogous
+  off-by-one in my own first draft). At λ=1 the sharp λ(n−1)=n−1 exactly recovers
+  pencil_card_bound_of_autocorr_le_one's singleton bound; the (λ+1)(n−1) form gives the loose 2(n−1).
+The sharpened theorem:
 - `pencil_card_bound_of_autocorr_le`: M(S)≤λ at every nontrivial shift over order-n subgroup μ, S⊆μ,
   |S|=r≥1 ⟹ the SHARP r·(r−1) ≤ λ·(n−1). Bridge: apex p=1∈every block; the punctured overlap
   (B i).erase 1 ∩ (B j).erase 1 = (B i∩B j).erase 1 has card = (full card)−1 ≤ λ−1 (the full
