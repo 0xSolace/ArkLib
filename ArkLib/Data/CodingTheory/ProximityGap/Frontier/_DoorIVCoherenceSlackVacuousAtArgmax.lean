@@ -1,0 +1,92 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors (#444)
+-/
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Real.Basic
+import Mathlib.Order.Bounds.Basic
+
+set_option autoImplicit false
+set_option linter.style.longLine false
+
+/-!
+# Door-(iv) constraint: coherence-slack is vacuous at the prize-worst frequency (#444)
+
+Lane-1 probes `probe_dooriv_coherent_set_size{,2,3}.py` (proper `μ_n`, `p ≫ n³`, structured primes,
+never `n = q-1`) measured the index-2 coset-half coherence `ρ(b)` of `η_b = Σ_{y∈μ_n} e_p(b·y)`
+jointly with the normalized mass `|η_b|/√n` over the whole group:
+
+* `corr(ρ, |η|) ≈ +0.63`, **positive and stable** across `n = 16, 32, 64`;
+* the near-coherent frequencies carry **more** mass (`mean|η|/√n ≈ 1.14` vs `0.80` typical);
+* at the prize-worst frequency `b* = argmax_b |η_b|` (the **global** argmax over the full group
+  `F_p*` for `n = 16`; sampled lower-bound proxy for larger `n`), the coherence is `ρ(b*) = 1`
+  (confirmed numerically to 60 digits, `1 - ρ(b*) = 0`).  This is the separately **proven** same-ray
+  fact (`_DoorIVCosetHalfCoherence`, `_DoorIVMultShiftCollinear`), not a floating-point assertion.
+
+The consequence for door (iv): a "coherence-slack" anti-concentration lever — any bound of the shape
+`mass b ≤ g(1 - ρ b)` that is only informative when `ρ b < 1` — **gives no information at the
+prize-worst frequency**, because there `ρ = 1` so `1 - ρ = 0` and the slack term vanishes.  The slack
+lever can only constrain the *light* frequencies (where `ρ < 1`), which are exactly the ones the prize
+does not care about.  This file records that obstruction abstractly and axiom-cleanly.
+
+This is a **refutation with mechanism** (a DEAD lever, precisely mapped), not a CORE/cancellation
+claim: it does not bound `M(n)`; it shows one specific lever shape cannot.
+-/
+
+namespace ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
+
+open Finset
+
+variable {ι : Type*}
+
+/-- A *coherence-slack bound* for a `mass` function with `coh` ∈ \[0,1\]: the mass at each index is
+controlled by a nonnegative, monotone-in-slack penalty `g` applied to the slack `1 - coh i`.  By
+"informative only off the coherent locus" we mean `g 0 = 0`, i.e. the bound degenerates to `mass ≤ 0`
+exactly where coherence is full.  This is the abstract shape of every door-(iv) "exploit the
+`1 - ρ(b)` slack" proposal. -/
+structure CoherenceSlackBound (mass coh : ι → ℝ) (g : ℝ → ℝ) : Prop where
+  /-- The penalty vanishes at zero slack: a full-coherence index gets the trivial bound `mass ≤ 0`. -/
+  penalty_zero : g 0 = 0
+  /-- The slack bound holds pointwise: each mass is at most the penalty of its slack `1 - coh i`. -/
+  bound : ∀ i, mass i ≤ g (1 - coh i)
+
+/-- **The slack bound is vacuous at any full-coherence index.**  If `coh i = 1`, the slack `1 - coh i`
+is `0`, so the coherence-slack bound only yields `mass i ≤ 0`. -/
+theorem slack_bound_trivial_at_coherent {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    (hb : CoherenceSlackBound mass coh g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ 0 := by
+  have := hb.bound i
+  rwa [hcoh, sub_self, hb.penalty_zero] at this
+
+/-- **Coherence-slack is vacuous at the prize-worst frequency.**  Suppose `b*` is a frequency whose
+mass is maximal (`∀ b, mass b ≤ mass b*`), its mass is positive (it is the genuine peak the prize is
+about), and it is fully coherent (`coh b* = 1`, the probed fact `ρ(b*) = 1`).  Then **no**
+coherence-slack bound can hold: the bound forces `mass b* ≤ 0`, contradicting `0 < mass b*`.
+
+Mechanistically: a slack lever can only ever constrain the *light* frequencies (those with `coh < 1`),
+never the heavy prize-worst frequency, whose coherence is pinned at `1`.  Hence the index-2
+coset-half coherence cannot be turned into a door-(iv) anti-concentration bound on `M(n)`. -/
+theorem no_coherenceSlackBound_of_coherent_argmax {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (hmax : ∀ i, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
+    (hcoh : coh bstar = 1) :
+    ¬ CoherenceSlackBound mass coh g := by
+  intro hb
+  exact absurd (slack_bound_trivial_at_coherent hb hcoh) (not_le.2 hpos)
+
+/-- Finite-support form: over a nonempty finite index set, if the `Finset`-argmax of `mass` is fully
+coherent and carries positive mass, the same impossibility holds.  This is the form matching the
+probe: `bstar = argmax_{b∈F} |η_b|`, `mass = |η|`, `coh = ρ`, with `ρ(bstar) = 1`. -/
+theorem no_coherenceSlackBound_of_coherent_finsetArgmax {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    {s : Finset ι} {bstar : ι} (hbs : bstar ∈ s)
+    (hmax : ∀ i ∈ s, mass i ≤ mass bstar) (hpos : 0 < mass bstar)
+    (hcoh : coh bstar = 1) :
+    ¬ (CoherenceSlackBound mass coh g) := by
+  intro hb
+  exact absurd (slack_bound_trivial_at_coherent hb hcoh) (not_le.2 hpos)
+
+end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_trivial_at_coherent
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBound_of_coherent_argmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBound_of_coherent_finsetArgmax

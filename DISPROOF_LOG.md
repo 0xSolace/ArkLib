@@ -5990,3 +5990,38 @@ Constraint verdict: any proposed door-(iv) anti-concentration lever for `rho(b)`
 invariant of the coset `b*mu_n`.  Element-level features that vary inside a coset, including order-like
 or representative-dependent data, cannot govern `rho` unless they descend to the quotient.  No CORE,
 no cancellation, no capacity claim.
+
+## [door-iv-coherence-slack-vacuous-at-argmax] index-2 coset-half coherence ρ(b) cannot supply anti-concentration: ρ POSITIVELY orders with mass and ρ(b*)=1 at the prize-worst frequency (2026-06-19, sol)
+
+Lane-1 probe (scripts/probes/probe_dooriv_coherent_set_size.py, _2.py, _3.py; PROPER μ_n, p≫n³,
+structured primes, never n=q-1) measured the index-2 coset-half coherence ρ(b) = |A+B|/(|A|+|B|)
+(A,B = half-period sums of η_b over the two cosets of μ_{n/2}<μ_n) JOINTLY with the normalized mass
+|η_b|/√n over the whole group F_p*.
+
+HONESTY-HARDENED (v3, after codex P2 x2): for n=16 the prize-worst frequency b*=argmax_b|η_b| is the
+GLOBAL argmax over the ENTIRE group F_p* (full p=65537 scan, NOT sampled), and ρ(b*) is re-evaluated at
+60-digit mpmath precision. n=32,64 worst-b are SAMPLED lower-bound proxies (labelled as such). ρ(b*)=1
+is a STRUCTURALLY PROVEN fact (_DoorIVCosetHalfCoherence / _DoorIVMultShiftCollinear: deep-thin worst-b
+coset-halves are same-ray); the probe CONFIRMS it (1-ρ(b*) = 0 at 60 dps), NOT an exact-arith claim.
+
+DATA:
+ - mean ρ flat ≈ 0.71; fraction with ρ≥0.99 ≈ 0.50, NOT shrinking with n (coherence is TYPICAL, not
+   rare — so there is no rare-structured coherent set to grip).
+ - corr(ρ, |η|/√n) = +0.65/+0.63/+0.63 — POSITIVE and stable: high coherence DRIVES large mass.
+ - near-coherent b carry MORE mass (mean|η|/√n ≈ 1.14 vs 0.80 typical).
+ - ρ at the GLOBAL prize-worst b* (n=16, full F_p* scan): ρ(b*) = 1 to 60 dps (1-ρ = 0); |η|/√n at b*
+   ≈ 3.3–3.5 (the genuine peak). n=32,64 sampled proxies agree.
+
+CONSTRAINT (refutation with mechanism): a "coherence-slack" anti-concentration lever — any bound of the
+shape mass b ≤ g(1−ρ(b)) informative only when ρ(b)<1 (g(0)=0) — is VACUOUS at the prize-worst
+frequency, because ρ(b*)=1 (proven same-ray, confirmed at 60 dps) ⟹ slack 1−ρ(b*)=0 ⟹ the bound degenerates to |η_{b*}| ≤ 0, false. Such a
+lever can constrain only the LIGHT frequencies (ρ<1), exactly the ones the prize does not care about;
+it never reaches the heavy worst-b. So the index-2 coset-half coherence is DEAD as a door-(iv)
+anti-concentration source. Consistent with _DoorIVCosetHalfCoherence / _DoorIVMultShiftCollinear
+(ρ=1 ⟺ same-ray, no new cancellation) and EXTENDS them with the joint (ρ,|η|) ordering + argmax pinning.
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+_DoorIVCoherenceSlackVacuousAtArgmax.lean — CoherenceSlackBound structure (g 0 = 0, mass ≤ g(1−coh)),
+slack_bound_trivial_at_coherent (coh i=1 ⟹ mass i ≤ 0), no_coherenceSlackBound_of_coherent_argmax and
+the Finset-argmax form (a positive-mass full-coherence argmax admits NO coherence-slack bound). No CORE,
+no cancellation, no capacity claim.
