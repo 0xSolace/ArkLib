@@ -62,6 +62,23 @@ theorem naiveIncidenceBound_iff_shawValue_le_scaled {M C n m L : ℝ}
   simpa [mul_comm, mul_left_comm, mul_assoc] using
     (prizeBound_iff_shawValue_le (M := M) (C := C * Real.sqrt m) (n := n) (L := L) hs)
 
+/-- If the index factor has size at least `R^2`, then the normalized naive constant is already
+at least `C * R`.  Thus in a family with unbounded `m`, the naive bridge cannot supply a uniform
+constant unless some separate argument removes the index factor. -/
+theorem scaledConstant_ge_linear_floor {C m R : ℝ}
+    (hC : 0 ≤ C) (hm : R ^ 2 ≤ m) :
+    C * R ≤ C * Real.sqrt m := by
+  have hRsqrt : R ≤ Real.sqrt m := Real.le_sqrt_of_sq_le hm
+  exact mul_le_mul_of_nonneg_left hRsqrt hC
+
+/-- Family form of the lower-floor obstruction: a pointwise lower bound `R i ^ 2 ≤ m i` forces
+the normalized naive constant `C i * sqrt(m i)` to dominate the growing floor `C i * R i`. -/
+theorem scaledConstantFamily_ge_linear_floor {ι : Type*} {C m R : ι → ℝ}
+    (hC : ∀ i, 0 ≤ C i) (hm : ∀ i, R i ^ 2 ≤ m i) :
+    ∀ i, C i * R i ≤ C i * Real.sqrt (m i) := by
+  intro i
+  exact scaledConstant_ge_linear_floor (hC i) (hm i)
+
 /-- Uniform-family form of the same obstruction: pointwise naive incidence bounds normalize to a
 Shaw-value family bound whose pointwise constant is multiplied by `sqrt(m i)`.  This is only scale
 bookkeeping; the analytic loss remains in the hypotheses. -/
@@ -80,4 +97,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_sqrt_mul_prizeScale
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_div_prizeScale_eq_sqrt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceBound_iff_shawValue_le_scaled
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_ge_linear_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_ge_linear_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound

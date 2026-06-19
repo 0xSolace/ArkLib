@@ -7687,3 +7687,19 @@ VERDICT: the char-0 and DC sides of Shaw's rho decomposition are now separately 
 Lane 3 constraint extension in `_DoorIVValueShiftHistogramObstruction.lean`. The upstream all-or-nothing theorem showed that if any nonzero value-shift step is realizable over prime `ZMod p`, then every step is realizable. This refinement packages the contrapositive interface used by probes: a single nonzero step `s` with one residue witness `fiberCard a != fiberCard (a+s)` forces every `ValueShift` to have step `0`, and the spreading route gives only the trivial `fiberCard val 0 <= #T` ceiling.
 
 VERDICT: value-shift anti-concentration does not need a full scan of every nonzero step once the subgroup dichotomy is known. One nonzero histogram mismatch is enough to rule out the all-free-part case and collapse the route to trivial spreading. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+## door-(iv) index-factor normalized constant has a linear lower floor (2026-06-19)
+
+Lens: Lane 2/3 extension of `_DoorIVIndexFactorOvershoot`. The prior brick proved the naive
+incidence bridge normalizes with an exact `sqrt(m)` factor. This refinement packages the family-scale
+consequence: whenever `R^2 ≤ m`, the normalized naive constant `C*sqrt(m)` is at least `C*R`; pointwise
+families inherit the same floor.
+
+VERDICT: an unbounded index `m` forces an unbounded normalized constant for any route that only reaches
+the naive incidence scale. A uniform Shaw/prize constant therefore requires a genuinely new door-(iv)
+argument removing the index factor, not just rephrasing the naive bridge. No CORE, cancellation,
+completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`,
+axiom-clean. New theorems: `scaledConstant_ge_linear_floor` and
+`scaledConstantFamily_ge_linear_floor`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
