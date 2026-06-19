@@ -5927,3 +5927,18 @@ dilated subgroup.  No CORE/cancellation/capacity claim.
 Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addPairDiffCount`,
 `addPairDiffCount_smul_eq`, and `addPairDiffCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
 subset `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-phaseset-three-ap-b-blind] constraint — homogeneous 3-term additive-pattern counts of `{b*x^m}` are frequency-blind (g55, 2026-06-19)
+
+Lane: door-(iv) Lane 1, extending the phase-set small-ball/Halász audit from pair support/fibers to a
+basic higher additive-linear pattern.  The three-term arithmetic-progression count of the dilated phase
+set `bS` equals that of `S` for every nonzero `b`.
+
+Constraint verdict: any pure homogeneous additive-pattern statistic of this type is transported by the
+same field dilation and cannot distinguish or select the adversarial frequency.  A surviving door-(iv)
+anti-concentration theorem must use information beyond b-independent additive pattern counts.  No
+CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addThreeAPCount`,
+`addThreeAPCount_smul_eq`, and `addThreeAPCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
+subset `{propext, Classical.choice, Quot.sound}`.

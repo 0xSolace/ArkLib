@@ -225,6 +225,64 @@ theorem addPairDiffCount_phaseSet_indep_of_scalar
       addPairDiffCount (S.image (fun x => b₂ * x)) (b₂ * t) := by
   rw [addPairDiffCount_smul_eq S hb₁, addPairDiffCount_smul_eq S hb₂]
 
+
+
+/-- Three-term arithmetic-progression count in `S`: triples `(a,b,c) ∈ S^3` with `a+c=2b`.
+This is a basic homogeneous additive-linear pattern count, adjacent to small-ball/additive-structure
+inputs but not tied to a target fiber. -/
+def addThreeAPCount (S : Finset F) : ℕ :=
+  ((S ×ˢ S ×ˢ S).filter (fun p => p.1 + p.2.2 = (2 : F) * p.2.1)).card
+
+/-- Nonzero dilation preserves the three-term AP count.  Homogeneous additive-linear pattern counts
+of the phase set are therefore frequency-blind: `bS` has exactly as many 3APs as `S`. -/
+theorem addThreeAPCount_smul_eq (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    addThreeAPCount (S.image (fun x => lam * x)) = addThreeAPCount S := by
+  classical
+  unfold addThreeAPCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun p => (lam⁻¹ * p.1, lam⁻¹ * p.2.1, lam⁻¹ * p.2.2))
+    (fun p => (lam * p.1, lam * p.2.1, lam * p.2.2))
+    ?_ ?_ ?_ ?_
+  · rintro ⟨a, b, c⟩ hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨ha, hb, hc⟩, hap⟩ := hp
+    obtain ⟨a', ha', rfl⟩ := ha
+    obtain ⟨b', hb', rfl⟩ := hb
+    obtain ⟨c', hc', rfl⟩ := hc
+    refine ⟨⟨?_, ?_, ?_⟩, ?_⟩
+    · simpa [hcdiv] using ha'
+    · simpa [hcdiv] using hb'
+    · simpa [hcdiv] using hc'
+    · have hbase : a' + c' = (2 : F) * b' := by
+        apply mul_left_cancel₀ hlam
+        calc
+          lam * (a' + c') = lam * a' + lam * c' := by rw [mul_add]
+          _ = (2 : F) * (lam * b') := hap
+          _ = lam * ((2 : F) * b') := by ring
+      simpa [hcdiv] using hbase
+  · rintro ⟨a, b, c⟩ hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨ha, hb, hc⟩, hap⟩ := hp
+    refine ⟨⟨⟨a, ha, rfl⟩, ⟨b, hb, rfl⟩, ⟨c, hc, rfl⟩⟩, ?_⟩
+    rw [← mul_add, hap]
+    ring
+  · rintro ⟨a, b, c⟩ _
+    simp [hcmul]
+  · rintro ⟨a, b, c⟩ _
+    simp [hcdiv]
+
+/-- Two nonzero frequency dilates have the same three-term AP count.  A door-(iv) anti-concentration
+argument cannot select the worst frequency using this homogeneous additive-pattern statistic. -/
+theorem addThreeAPCount_phaseSet_indep_of_scalar
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addThreeAPCount (S.image (fun x => b₁ * x)) =
+      addThreeAPCount (S.image (fun x => b₂ * x)) := by
+  rw [addThreeAPCount_smul_eq S hb₁, addThreeAPCount_smul_eq S hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -293,6 +351,8 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addThreeAPCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
