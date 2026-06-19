@@ -530,7 +530,8 @@ variance hypothesis whatsoever**; `prizeFloor_of_uniform_sup` is the uniform for
 `subPoisson_variance_implies_prizeFloor` remains valid and axiom-clean as an implication; but the honest version of
 the thesis's central positive claim is now: *the prize reduces to the worst-case (sup) wraparound bound
 `W_r ≤ slack` at deep `r ≈ log p` in the thin regime — equivalently `ρ_r ≤ 1` — for which the worst computable prime
-sits at `ρ_r ≈ 0.36–0.67` with the margin improving toward the saddle.* The wall is unchanged — proving the sup bound at uncomputable
+sits at `ρ_r ≈ 0.36–0.67` (the depth-decreasing trend there is a small-`n` artifact, §7.6(iv) — not a claim about the
+saddle).* The wall is unchanged — proving the sup bound at uncomputable
 depth `r ≈ log p` is the growing-order equidistribution of §7.3 — but it is now correctly framed, and the framing
 error (demanding control of the variance when the prize only needs control of the supremum) is *recorded* rather
 than buried. This is the difference between a thesis that maps its problem and one that flatters it.
@@ -541,17 +542,22 @@ the brick `_RhoDecomposition.rho_le_one_iff_wraparound_le_slack` proves (axiom-c
 > `ρ_r ≤ 1  ⟺  W_r ≤ slack`,  with  `slack = (Wick − E_char0) + (n^{2r} − Wick)/p`.
 
 The first summand `Wick − E_char0 = (1 − R_r)·Wick` is the **char-0 slack** — nonnegative by the *proven* char-0
-energy bound (`gaussianEnergyBound_dyadic`, `R_r ≤ 1`) and, crucially, **growing with depth**: the measured char-0
-ratio `R_r = E_char0/Wick` decays to 0 *super-geometrically* (`probe_rho_asymptotic`: the step ratio `R_r/R_{r-1}`
-itself falls `0.76 → 0.41` for `n=8`, `0.88 → 0.72` for `n=16`), so the dyadic period is *strictly* sub-Gaussian with
-a gap that widens as `r → log p`. The second summand is the DC term, which at prize scale (`n^{2r}/p ≫ Wick`)
-dominates. The open core is therefore *exactly* `W_r ≤ slack` against an explicit budget that **grows** with depth,
-and `wraparound_within_char0_slack_suffices` shows that the wraparound staying within the char-0 slack alone already
-closes the criterion. Empirically `ρ_r ≈ R_r` to four places (the wraparound contributes `≈ +0.0007`, the DC
-subtraction `≈ −0.0095`), so the char-`p` moment *tracks* the proven char-0 decay and the wraparound is a vanishing
-perturbation at every computable depth. This is the sharpest exact statement of the prize the campaign has produced:
-the proven sub-Gaussian half and the open wraparound half, separated by an identity, against a budget that is on the
-data's side and widening.
+energy bound (`gaussianEnergyBound_dyadic`, `R_r ≤ 1`). An earlier draft called this slack "growing with depth"
+because the measured `R_r = E_char0/Wick` decays to 0 super-geometrically in the computable data (`R_r/R_{r-1}` falls
+`0.76 → 0.41` for `n=8`). **That reading is corrected here** (`_Char0RatioScaling`, `probe_Rr_scaling`): the decay to
+0 happens only in the regime `r ≳ √n`, which small-`n` data reaches but the **prize does not**. The rigorous scaling
+is `R_2 = 1 − 1/n` *exactly* (Sidon-floor `E_2 = 3n² − 3n`), extending to the leading law `1 − R_r ≈ r(r−1)/(2n)` for
+`r ≪ √n`. At prize scale `n = 2^{30}` the saddle `r ≈ 110 ≪ √n = 32768`, so `1 − R_r ≈ r²/(2n) ≈ 5.6·10⁻⁶` and
+**`R_r ≈ 1`, not `→ 0`**: the char-0 slack component is a *tiny* `r²/n` fraction of `Wick`, not a widening budget.
+What actually dominates the slack at prize scale is the **DC term** `(n^{2r} − Wick)/p` (with `n^{2r}/p ≫ Wick`).
+So the honest statement is: the open core is *exactly* `W_r ≤ slack`, the slack is dominated by the DC term, and the
+char-0 component is a small (but proven-nonnegative) `r²/n` contribution; `wraparound_within_char0_slack_suffices`
+shows the wraparound staying within even that small char-0 slack would close the criterion. Empirically `ρ_r ≈ R_r`
+to four places, so the char-`p` moment *tracks* the char-0 value and the wraparound is a vanishing perturbation at
+every computable depth — but the favorable "margin widening with depth" seen in small-`n` data is a finite-size
+artifact and is **not** claimed to extrapolate to the saddle. This is the sharpest exact statement of the prize the
+campaign has produced: the proven char-0 half and the open wraparound half, separated by an identity — with the
+honest caveat that the budget's depth-scaling is a small-`n` artifact, not a prize-scale advantage.
 
 ---
 
