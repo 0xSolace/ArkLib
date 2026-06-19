@@ -7523,3 +7523,11 @@ remains the open $1M wall.
 Formal kernel: Frontier/_PencilAutocorrLambdaRootBound.lean, exists_shift_autocorr_gt_of_card,
 axiom-clean (⊆ {propext,Classical.choice,Quot.sound}; no sorryAx); locked build exit 0 (8318 jobs);
 axiom_audit PASS; missing-import scan empty; codex review clean.
+
+## [doorIV-worst-index-kth-power-coset] one non-kth-power ratio forbids any single kth-power coset restriction (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstIndexMultGeneric`. Prior kernel packaged the QR/non-QR obstruction via the subgroup of squares. This refinement generalizes the same mechanism to every `k`-th-power subgroup in an abelian group: if a worst-index candidate set contains `a,b` with `b⁻¹*a` not a `k`-th power, then the set is contained in no single coset of the `k`-th-power subgroup.
+
+VERDICT: multiplicative class-restriction attacks cannot be rescued by replacing quadratic residues with another fixed power class. Any successful worst-b thinning must prove a genuine quotient-level exclusion, not confinement to one power coset after observing an escaping pair ratio. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new definitions/theorems `kthPowers`, `mem_kthPowers_iff`, and `not_kth_power_coset_restricted`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

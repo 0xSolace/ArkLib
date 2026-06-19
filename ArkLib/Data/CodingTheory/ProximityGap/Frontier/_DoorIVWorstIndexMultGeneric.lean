@@ -104,4 +104,40 @@ theorem not_power_coset_restricted {A : Type*} [CommGroup A] {s : Set A} {a b : 
     ∀ g : A, ¬ (∀ x ∈ s, inCoset (squares A) g x) :=
   not_subset_coset_of_ratio_not_mem ha hb hns
 
+/-!
+### General `k`-th power cosets
+
+The same obstruction is not special to quadratic residues.  If a proposed worst-index selector is
+confined to one coset of `k`-th powers, every pairwise ratio must be a `k`-th power.  Thus one
+observed ratio outside the `k`-th-power subgroup is a kernel-checkable certificate that the selector
+is not a single power-coset restriction.
+-/
+
+/-- The subgroup of `k`-th powers in an abelian group. -/
+def kthPowers (A : Type*) [CommGroup A] (k : ℕ) : Subgroup A where
+  carrier := {x | ∃ y, y ^ k = x}
+  one_mem' := ⟨1, by simp⟩
+  mul_mem' := by
+    rintro x z ⟨a, rfl⟩ ⟨b, rfl⟩
+    exact ⟨a * b, by rw [mul_pow]⟩
+  inv_mem' := by
+    rintro x ⟨a, rfl⟩
+    exact ⟨a⁻¹, by simp⟩
+
+theorem mem_kthPowers_iff {A : Type*} [CommGroup A] {k : ℕ} {x : A} :
+    x ∈ kthPowers A k ↔ ∃ y, y ^ k = x := Iff.rfl
+
+/-- **General power-coset obstruction.**  If `s` contains two elements whose ratio is not a `k`-th
+power, then `s` is contained in no single coset of the `k`-th-power subgroup.  This packages the
+Lane-1 worst-index verdict for any multiplicative power-class restriction, not only QR/non-QR. -/
+theorem not_kth_power_coset_restricted {A : Type*} [CommGroup A] {k : ℕ} {s : Set A} {a b : A}
+    (ha : a ∈ s) (hb : b ∈ s) (hnp : b⁻¹ * a ∉ kthPowers A k) :
+    ∀ g : A, ¬ (∀ x ∈ s, inCoset (kthPowers A k) g x) :=
+  not_subset_coset_of_ratio_not_mem ha hb hnp
+
 end ProximityGap.Frontier.DoorIVWorstIndexMultGeneric
+
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.ratio_mem_of_inCoset
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_power_coset_restricted
+#print axioms ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_kth_power_coset_restricted
