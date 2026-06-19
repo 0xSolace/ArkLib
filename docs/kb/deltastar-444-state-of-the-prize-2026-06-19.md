@@ -17,11 +17,24 @@ The char-0 version is PROVEN in Lean (`gaussianEnergyBound_dyadic`, requires `[C
 (energy ⟹ sup-norm floor ⟹ δ* window interior, + the necessity half, + the unconditional bracket) is formalized
 axiom-clean (`_DeltaStarDefinitive`, `bgkFloor_interior_reach`, `moment_route_insufficient`, `deltaStar_bracket`).
 
+> **DC-subtraction correction (read this before attacking §0/§1 — supersedes the raw form above).** The
+> hypothesis `hEnergy : E_r(μ_n;F_p) ≤ (2r·n)^r` as written is on the **DC-included** raw energy `E_r`, and that
+> exact bound is **provably FALSE at prize scale**: the proven DC lower bound `E_r ≥ n^{2r}/q`
+> (`DCEnergyEssential.energy_ge_dc`) gives `E_r ≥ 2^{6442} ≫ (2r·n)^r = 2^{4156}` at `n=2^30, p≈2^158, r≈110`
+> (and already for every `r ≥ 8`) — formalized as `DCEnergyEssential.not_gaussianEnergyBound_of_deep`. The genuine
+> open core is the **DC-subtracted** moment `S_r = q·E_r − n^{2r} = Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick`, which IS
+> satisfiable/open. `period_le_prizeFloor`'s proof already uses only this (it drops the DC term `n^{2r} ≥ 0`); only
+> its *stated* hypothesis is the too-strong raw form. The corrected residual is carried axiom-clean by
+> `_ProveAssemblyConcreteDC.period_le_prizeFloor_dc` (via `DCSubtractedMoment.sum_nonzero_moment`; predicate
+> `DCEnergyCorrection.DCEnergyBound`). Read every "char-p energy `E_r ≤ Wick`" below (incl. §1 row 1) as the
+> DC-subtracted `S_r ≤ (q−1)·Wick`. (This is the canonical form per the cone `CLAUDE.md`; the raw `(2r·n)^r`
+> framing above is the pre-correction shorthand.)
+
 ## 1. The single open core (all of these are EQUIVALENT — proven or argued so)
 
 | form | statement | where shown equivalent |
 |---|---|---|
-| **char-p energy** | `E_r(μ_n;F_p) ≤ (2r−1)‼·n^r` at `r≈log p` | the core; `_OpenCoreMonotoneReduction` |
+| **char-p energy** (DC-subtracted, see §0 correction) | `S_r = q·E_r − n^{2r} ≤ (q−1)·(2r−1)‼·n^r` at `r≈log p` | the core; `_OpenCoreMonotoneReduction`, `_ProveAssemblyConcreteDC` |
 | **BGK / Paley** | `M = max_{b≠0}‖η_b‖ ≤ C√(n log m)`, exponent 1/2 | `_MomentSaddleValue`, generalized-Paley eigenvalue |
 | **Λ(q) set** | `μ_n` is Λ(q) with bounded const at `q≈log m` | `_LambdaQMeanZeroEnergy` (even-q Λ(q)=energy); Pisier iff = Sidon |
 | **sub-Gaussian** | the n/2 antipodal phases are sub-Gaussian, proxy n | `_ArcsineIIDFraming` |
