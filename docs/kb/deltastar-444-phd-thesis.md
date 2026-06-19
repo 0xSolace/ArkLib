@@ -99,6 +99,18 @@ Everything but `hEnergy` is a theorem (`_ProveAssemblyConcrete`, `_DeltaStarDefi
 act of deleting the `[CharZero]` hypothesis** from one formalized theorem. This is the cleanest statement of the
 problem we know, and it organizes the entire thesis.
 
+> **DC-subtraction correction (essential — the boxed `hEnergy` is the pre-correction shorthand).** The raw
+> char-`p` energy bound `rEnergy(μ_n,r) ≤ (2r·n)^r over F_p` written in the box is **provably FALSE at prize
+> scale**, so "delete `[CharZero]`" does not yield a provable statement — it yields a false one. The proven DC
+> lower bound `E_r ≥ n^{2r}/q` (`DCEnergyEssential.energy_ge_dc`) forces `E_r ≥ 2^{6442} ≫ (2r·n)^r = 2^{4156}`
+> at `n=2^30, p≈2^158, r≈110` (and already for every `r ≥ 8`) — i.e. `DCEnergyEssential.not_gaussianEnergyBound_of_deep`.
+> The genuine open input is the **DC-subtracted** moment `S_r = q·E_r − n^{2r} = Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick`
+> (= the `DC-drop` step the box annotates), carried axiom-clean by `_ProveAssemblyConcreteDC.period_le_prizeFloor_dc`
+> (via `DCSubtractedMoment.sum_nonzero_moment`; predicate `DCEnergyCorrection.DCEnergyBound`). Read the spine's
+> open input as `S_r ≤ (q−1)·Wick`, equivalently the char-`p` transfer of the (r-uniformly-proven, `_AvW0`) char-0
+> Wick bound on the **nontrivial-frequency** energy — not the raw full energy. (Canonical per the cone `CLAUDE.md`
+> and the companion `deltastar-444-state-of-the-prize` map.)
+
 ---
 
 ## Chapter 2 — The Six Equivalent Forms
