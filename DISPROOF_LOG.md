@@ -5912,3 +5912,18 @@ Lean `_DoorIVCoherenceOrderBlind.lean` (push `1f681e790`, axioms subset {propext
 Quot.sound}): a coset-invariant statistic is equal on same-coset elements regardless of differing
 multiplicative order; contrapositive packages any genuine rho-difference as a coset-level (not
 order-level) phenomenon. No CORE/cancellation/capacity claim.
+
+## [door-iv-phaseset-pairdiff-fiber-b-blind] constraint — pair-spacing multiplicity profile of `{b*x^m}` is just rescaled by b (g55, 2026-06-19)
+
+Lane: door-(iv) Lane 1, continuing the phase-set small-ball/Halász audit after sumset, difference-set,
+and pair-sum fiber invariance.  For every target `t` and nonzero frequency `b`, the number of pairs in
+`(bS)^2` with difference `b*t` is exactly the number of pairs in `S^2` with difference `t`.
+
+Constraint verdict: pure spacing-multiplicity/autocorrelation inputs cannot distinguish or select the
+worst frequency.  The adversarial `b` only rescales the target axis.  Any real door-(iv)
+anti-concentration lever must use information beyond the additive pair-difference fiber profile of the
+dilated subgroup.  No CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addPairDiffCount`,
+`addPairDiffCount_smul_eq`, and `addPairDiffCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
+subset `{propext, Classical.choice, Quot.sound}`.

@@ -175,6 +175,56 @@ theorem addPairSumCount_phaseSet_indep_of_scalar
       addPairSumCount (S.image (fun x => b₂ * x)) (b₂ * t) := by
   rw [addPairSumCount_smul_eq S hb₁, addPairSumCount_smul_eq S hb₂]
 
+
+
+/-- Pair-difference representation count at target `t`: `#{(a,b) in S^2 : a-b=t}`.  This is the
+multiplicity-level pair-spacing profile behind difference-set small-ball inputs. -/
+def addPairDiffCount (S : Finset F) (t : F) : ℕ :=
+  ((S ×ˢ S).filter (fun p => p.1 - p.2 = t)).card
+
+/-- Nonzero dilation preserves each pair-difference fiber, after dilating the target.  Thus not only
+the support `S-S`, but every pair-spacing multiplicity is transported by `t ↦ λt`. -/
+theorem addPairDiffCount_smul_eq (S : Finset F) {lam t : F} (hlam : lam ≠ 0) :
+    addPairDiffCount (S.image (fun x => lam * x)) (lam * t) = addPairDiffCount S t := by
+  classical
+  unfold addPairDiffCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun p => (lam⁻¹ * p.1, lam⁻¹ * p.2))
+    (fun p => (lam * p.1, lam * p.2))
+    ?_ ?_ ?_ ?_
+  · intro p hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨hp₁, hp₂⟩, hdiff⟩ := hp
+    obtain ⟨a, ha, hpa⟩ := hp₁
+    obtain ⟨b, hb, hpb⟩ := hp₂
+    refine ⟨⟨?_, ?_⟩, ?_⟩
+    · simpa [← hpa, hcdiv] using ha
+    · simpa [← hpb, hcdiv] using hb
+    · apply mul_left_cancel₀ hlam
+      simpa [mul_sub, ← hpa, ← hpb, hcmul] using hdiff
+  · intro p hp
+    simp only [coe_filter, Set.mem_setOf_eq, mem_product, mem_image] at hp ⊢
+    obtain ⟨⟨hp₁, hp₂⟩, hdiff⟩ := hp
+    refine ⟨⟨⟨p.1, hp₁, rfl⟩, ⟨p.2, hp₂, rfl⟩⟩, ?_⟩
+    rw [← mul_sub, hdiff]
+  · intro p _
+    simp [hcmul]
+  · intro p _
+    simp [hcdiv]
+
+/-- The pair-difference multiplicity profile of two nonzero frequency dilates is identical after the
+obvious target rescaling.  Pure spacing-multiplicity / autocorrelation inputs therefore cannot select
+or distinguish the worst `b`. -/
+theorem addPairDiffCount_phaseSet_indep_of_scalar
+    (S : Finset F) {b₁ b₂ t : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addPairDiffCount (S.image (fun x => b₁ * x)) (b₁ * t) =
+      addPairDiffCount (S.image (fun x => b₂ * x)) (b₂ * t) := by
+  rw [addPairDiffCount_smul_eq S hb₁, addPairDiffCount_smul_eq S hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -241,6 +291,8 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset_card_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount_smul_eq
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
