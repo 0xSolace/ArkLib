@@ -18467,3 +18467,31 @@ This removes the SOLE structural obstruction the wall identified for the TRANSVE
 fully de-`Fintype` `negSymCount_eq_closed`: audit/remove any other `[Fintype F]` uses in the strata
 count chain (the per-stratum `twoValue_count` etc. use `Fintype.card (Fin r)`, which is finite-index,
 not ambient-field; likely portable). NOT done here. No CORE/cancellation/completion/capacity claim.
+
+## [thesiscapstone-vacuous-at-prize-scale-raw-energy] ThesisCapstone `subPoisson_variance_implies_prizeFloor` is a true axiom-clean conditional but VACUOUS at prize scale (raw-energy routing) — use the DC-subtracted moment (2026-06-19, NubsCarson)
+
+Lane: verification of `_ThesisCapstone.lean` (the flagship "sub-Poisson variance ⟹ prize floor" capstone).
+The headline `subPoisson_variance_implies_prizeFloor` is genuinely axiom-clean `[propext, Classical.choice,
+Quot.sound]` and a logically-valid conditional. BUT its energy bridge routes through §1
+`period_le_prizeFloor`, whose requirement is the RAW (DC-included) bound `rEnergy G r ≤ (2r·|G|)^r`. Combined
+with the two "discharged" hypotheses, the hypothesis set is JOINTLY UNSATISFIABLE for the actual `μ_n` at
+prize scale (`n=2^30`, `q≈2^158`, `r≈110`):
+
+* `hmean0 : WrapMean s Wr = 0` and `hwrap : rEnergy(G_ω) = E0 + Wr(ω)` together FORCE
+  `E0 = 𝔼_ω[rEnergy(G_ω)] = 𝔼[E_r]`. For the real subgroup `E_r ≥ n^{2r}/q ≈ 2^{6442}` (the PROVEN DC lower
+  bound `DCEnergyEssential.energy_ge_dc` / `not_gaussianEnergyBound_of_deep`), so `E0 ≈ 2^{6442}`.
+* `hanchor : E0 + slack ≤ (2r·n)^r ≈ 2^{4156}` then demands `2^{6442} ≤ 2^{4156}` — FALSE (2286-bit gap).
+
+Equivalently the good prime needs (via `hEbound`) `rEnergy(μ_n) ≤ (2r·n)^r`, which the DC lower bound makes
+impossible at prize scale. So the capstone — billed as "reduces the Prize to ONE hypothesis (sub-Poisson
+variance), everything else proven" — does NOT reduce the actual prize there; the "discharged" budgets
+(`hmean0 ∧ hwrap ∧ hanchor`) cannot co-hold. (`hmean0` centers the DC-SUBTRACTED fluctuation, but `hwrap`
+ties `Wr` to the RAW wraparound `E_r − E0`, which has mean `≈ n^{2r}/q`, not 0 — the inconsistency.)
+
+NOT a fabrication (axiom-clean, true conditional, `isPrizeClosure=false`); the defect is APPLICABILITY:
+vacuous at the parameters it claims. FIX (already in-tree): route through the DC-subtracted moment
+`_ProveAssemblyConcreteDC.period_le_prizeFloor_dc` — the open input becomes `S_r = q·E_r − n^{2r} =
+Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick`, the budget is `(q−1)·Wick`, and the centered DC-subtracted fluctuation is
+compatible with `hmean0`. The variance-route reduction is correct IN FORM; it must use the DC-subtracted
+variance (of `S_r`, not the raw `E_r`) to be non-vacuous at `r≈log p`. Same root cause as the corrected
+state-of-prize map + thesis spine (raw `E_r ≤ (2r·n)^r` is false at prize scale).
