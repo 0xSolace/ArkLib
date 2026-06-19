@@ -7681,3 +7681,9 @@ Lane 2/3 capstone constraint extending `_RhoDecomposition.lean`. The exact crite
 
 VERDICT: the char-0 and DC sides of Shaw's rho decomposition are now separately kernel-checkable nonnegative budgets. The only remaining open content in this reduction is still the wraparound bound `W <= slack`; no CORE, cancellation, completion, anti-concentration, or capacity claim.
 
+
+## 2026-06-19 — one nonzero histogram mismatch collapses all value-shifts in prime fields (g55)
+
+Lane 3 constraint extension in `_DoorIVValueShiftHistogramObstruction.lean`. The upstream all-or-nothing theorem showed that if any nonzero value-shift step is realizable over prime `ZMod p`, then every step is realizable. This refinement packages the contrapositive interface used by probes: a single nonzero step `s` with one residue witness `fiberCard a != fiberCard (a+s)` forces every `ValueShift` to have step `0`, and the spreading route gives only the trivial `fiberCard val 0 <= #T` ceiling.
+
+VERDICT: value-shift anti-concentration does not need a full scan of every nonzero step once the subgroup dichotomy is known. One nonzero histogram mismatch is enough to rule out the all-free-part case and collapse the route to trivial spreading. No CORE, cancellation, completion, moment-saving, or capacity claim.

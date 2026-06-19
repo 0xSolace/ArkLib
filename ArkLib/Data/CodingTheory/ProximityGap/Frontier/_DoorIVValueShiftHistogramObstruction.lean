@@ -67,6 +67,11 @@ moment-saving, or capacity claim.
 -/
 
 set_option linter.unusedSectionVars false
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
+set_option linter.unusedDecidableInType false
+set_option linter.unusedFintypeInType false
+set_option linter.style.show false
 
 namespace ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction
 
@@ -224,6 +229,27 @@ theorem realizableStep_all_or_nothing [Fact (Nat.Prime p)] (val : T → ZMod p)
   have hmem : z • s ∈ H := AddSubgroup.zsmul_mem H hsH z
   rwa [hz] at hmem
 
+
+/-- **Single-witness collapse (contrapositive form).** In a prime field, because realizable steps are
+all-or-nothing, a single nonzero step with a non-periodic fiber histogram forces every value-shift to
+have trivial step `0`. This is stronger than requiring a separate histogram witness for every nonzero
+step: one failed nonzero step rules out the all-steps case. -/
+theorem valueShift_step_zero_of_one_histogram_witness [Fact (Nat.Prime p)] (val : T → ZMod p)
+    {s a : ZMod p} (hne : fiberCard val a ≠ fiberCard val (a + s)) (vs : ValueShift val) :
+    vs.s = 0 := by
+  by_contra hvs
+  have hall : ∀ t : ZMod p, ∃ vs' : ValueShift val, vs'.s = t :=
+    realizableStep_all_or_nothing val vs.s hvs ⟨vs, rfl⟩
+  exact (no_valueShift_of_histogram_witness val s a hne) (hall s)
+
+/-- **Single-witness vacuity.** In a prime field, one nonzero histogram mismatch already collapses the
+value-shift spreading mechanism to the trivial ceiling. -/
+theorem valueShift_route_vacuous_of_one_histogram_witness [Fact (Nat.Prime p)] (val : T → ZMod p)
+    {s a : ZMod p} (hne : fiberCard val a ≠ fiberCard val (a + s)) (vs : ValueShift val) :
+    vs.s = 0 ∧ fiberCard val 0 ≤ Fintype.card T :=
+  ⟨valueShift_step_zero_of_one_histogram_witness val hne vs,
+    shift_spreading_trivial_of_step_zero val⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -238,4 +264,6 @@ open ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction
 #print axioms realizableStep_add
 #print axioms realizableStep_zero
 #print axioms realizableStep_all_or_nothing
+#print axioms valueShift_step_zero_of_one_histogram_witness
+#print axioms valueShift_route_vacuous_of_one_histogram_witness
 end AxiomAudit
