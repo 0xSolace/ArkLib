@@ -79,4 +79,58 @@ theorem distinct_value_forces_distinct_coset {H : Subgroup G} {β : Type*} {f : 
   intro hab
   exact hne (eq_of_cosetInvariant_of_sameCoset hf hab)
 
+/-- The left-coset equivalence relation attached to `H`, written in the multiplicative form used
+above: `a` and `b` are equivalent iff `a * b⁻¹ ∈ H`.  This is the exact quotient on which any
+coset-invariant door-(iv) statistic (such as `ρ`) lives. -/
+def LeftCosetSetoid (H : Subgroup G) : Setoid G where
+  r a b := a * b⁻¹ ∈ H
+  iseqv := by
+    constructor
+    · intro a
+      simp
+    · intro a b hab
+      have hinv : (a * b⁻¹)⁻¹ ∈ H := H.inv_mem hab
+      simpa [mul_inv_rev] using hinv
+    · intro a b c hab hbc
+      have hmul : (a * b⁻¹) * (b * c⁻¹) ∈ H := H.mul_mem hab hbc
+      have hkey : (a * b⁻¹) * (b * c⁻¹) = a * c⁻¹ := by group
+      simpa [hkey] using hmul
+
+/-- **Exact quotient-factorization.**  Any `H`-coset-invariant statistic factors through the left
+coset quotient `G / H` (represented by `LeftCosetSetoid H`).  In door-(iv) language: the localized
+coherence `ρ(b)` is not a function of the raw frequency `b`, and in particular not of `orderOf b`;
+it is a well-defined statistic on the multiplicative coset `b·μₙ`.  Therefore any proposed
+order-level or element-level anti-concentration lever must first survive this quotient collapse. -/
+noncomputable def factorThroughLeftCosets {H : Subgroup G} {β : Type*} {f : G → β}
+    (hf : CosetInvariant H f) : Quot (LeftCosetSetoid H) → β :=
+  Quot.lift f (by
+    intro a b hab
+    exact eq_of_cosetInvariant_of_sameCoset hf hab)
+
+/-- Evaluating the quotient factor on the class of `b` recovers the original statistic. -/
+theorem factorThroughLeftCosets_mk {H : Subgroup G} {β : Type*} {f : G → β}
+    (hf : CosetInvariant H f) (b : G) :
+    factorThroughLeftCosets (H := H) (f := f) hf (Quot.mk (LeftCosetSetoid H) b) = f b :=
+  rfl
+
+/-- Conversely, any statistic presented as a function of the left-coset quotient is automatically
+`H`-coset-invariant.  This packages the door-(iv) mechanism as an iff-ready consumer: quotient-level
+statistics are exactly blind to motion inside a coset. -/
+theorem cosetInvariant_of_factorThroughLeftCosets {H : Subgroup G} {β : Type*}
+    (F : Quot (LeftCosetSetoid H) → β) :
+    CosetInvariant H (fun b : G => F (Quot.mk (LeftCosetSetoid H) b)) := by
+  intro c hc b
+  apply congrArg F
+  apply Quot.sound
+  change (c * b) * b⁻¹ ∈ H
+  have hkey : (c * b) * b⁻¹ = c := by group
+  simpa [hkey] using hc
+
 end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
+
+#print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.eq_of_cosetInvariant_of_sameCoset
+#print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_blind_to_order
+#print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.distinct_value_forces_distinct_coset
+#print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.factorThroughLeftCosets_mk
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_of_factorThroughLeftCosets

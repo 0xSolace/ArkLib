@@ -5942,3 +5942,23 @@ CORE/cancellation/capacity claim.
 Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addThreeAPCount`,
 `addThreeAPCount_smul_eq`, and `addThreeAPCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
 subset `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-coherence-quotient-factorization] rho is exactly a quotient-coset statistic (g55, 2026-06-19)
+
+Door-(iv) Lane 3 constraint consumer extending `[door-iv-coherence-order-blind]`. The previous brick
+proved equality on same-coset elements and the contrapositive; this sweep packages the exact structural
+mechanism future anti-concentration claims must respect: any `mu_n`-coset-invariant coherence statistic
+factors through the left-coset quotient `F_p*/mu_n`.
+
+Formal kernel: `Frontier/_DoorIVCoherenceOrderBlind.lean` now defines the left-coset setoid
+`a ~ b iff a*b^{-1} in H` and proves:
+- `factorThroughLeftCosets`: a coset-invariant statistic has a well-defined quotient factor.
+- `factorThroughLeftCosets_mk`: evaluating that quotient factor on the class of `b` recovers the
+  original statistic.
+- `cosetInvariant_of_factorThroughLeftCosets`: conversely, any quotient-level statistic is automatically
+  invariant under multiplying the frequency by an element of `H`.
+
+Constraint verdict: door-(iv) `rho(b)` lives on cosets, not raw frequencies. Any claimed lever based on
+multiplicative order, element-level small-ball data, or another intra-coset feature is ill-posed unless it
+survives this quotient collapse. This does not close CORE and makes no cancellation/capacity claim; it is
+a machine-checked guardrail for the localized coherence object.
