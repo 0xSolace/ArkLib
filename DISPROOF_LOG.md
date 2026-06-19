@@ -1,3 +1,19 @@
+## door-(iv) a single isolated worst-b spike already forces second-moment spend (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVWorstBSpikeMomentBound`. Prior bricks proved the
+Chebyshev/count form: above-threshold `b`-side mass obeys `count · d² ≤ Σ(xᵢ-μ)²`. This refinement pins
+the one-spike floor used by worst-frequency probes: if even one index reaches `μ+d`, then the centered
+second moment is already at least `d²`.
+
+VERDICT: isolating the adversarial worst-`b` spike, or proving it is rare, does not create a new
+door-(iv) anti-concentration lever. The first spike itself pays a second-moment cost, and multiplicity
+only strengthens that same moment route. Any b-side spike-count/sup strategy remains moment-equivalent
+and routes back to the BGK/Plancherel wall. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBSpikeMomentBound.lean`,
+axiom-clean. New theorem: `sndMoment_ge_sq_of_exists_threshold`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) strict selector gains must miss an entire coset (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceOrderBlind`. Prior bricks proved that a

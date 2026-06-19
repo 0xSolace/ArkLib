@@ -99,7 +99,31 @@ theorem threshold_count_le_sndMoment_div
   rw [le_div_iff₀ hsq]
   exact threshold_count_mul_sq_le_centered_sndMoment x s μ d hd
 
+/-- Spike-floor form of the same obstruction: the moment cost is already paid once a single index
+reaches the threshold `μ + d`.  Thus a proof strategy that first finds or isolates one adversarial
+worst-`b` spike has not escaped moments: the mere existence of that spike forces the centered second
+moment to be at least `d²`.  Count information can only strengthen this by the integer multiplicity
+factor in `threshold_count_mul_sq_le_centered_sndMoment`. -/
+theorem sndMoment_ge_sq_of_exists_threshold
+    (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d)
+    (hex : ∃ i ∈ s, μ + d ≤ x i) :
+    d ^ 2 ≤ ∑ i ∈ s, (x i - μ) ^ 2 := by
+  classical
+  let T := s.filter (fun i => μ + d ≤ x i)
+  have hTpos : 0 < T.card := by
+    rcases hex with ⟨i, his, hix⟩
+    exact Finset.card_pos.mpr ⟨i, Finset.mem_filter.mpr ⟨his, hix⟩⟩
+  have hcard : (1 : ℝ) ≤ (T.card : ℝ) := by
+    exact_mod_cast Nat.succ_le_of_lt hTpos
+  have hsq_nonneg : 0 ≤ d ^ 2 := by positivity
+  have hmul : d ^ 2 ≤ (T.card : ℝ) * d ^ 2 := by
+    nlinarith
+  have hcheb : (T.card : ℝ) * d ^ 2 ≤ ∑ i ∈ s, (x i - μ) ^ 2 := by
+    simpa [T] using threshold_count_mul_sq_le_centered_sndMoment x s μ d hd
+  exact le_trans hmul hcheb
+
 end ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound
 
 #print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_mul_sq_le_centered_sndMoment
 #print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_le_sndMoment_div
+#print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.sndMoment_ge_sq_of_exists_threshold
