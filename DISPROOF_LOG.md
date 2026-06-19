@@ -7648,3 +7648,28 @@ new theorems `valueShift_histogram_periodic`, `no_valueShift_of_histogram_witnes
 
 Lane 2/3 capstone constraint. Added `Frontier/_DoorIVIndexFactorOvershoot.lean`, formalizing the arithmetic loss behind the `PrizeConditionalPinCapstone` hfloor note: the naive incidence scale `sqrt(n*m*L)` equals `sqrt(m) * sqrt(n*L)`, so a raw naive-incidence bound normalizes to a Shaw-value bound with the constant multiplied by `sqrt(m)`. This locks the reason the available `M -> epsMCA` bridge is insufficient for the realized-incidence floor when `m` grows. Scope: scale/no-go bookkeeping only; no CORE, cancellation, completion, anti-concentration, or capacity claim.
 
+
+
+## [doorIV-valueshift-all-or-nothing] the value-shift free part is an additive subgroup, hence all-or-nothing in a prime field (2026-06-19, sol)
+
+Lane: door-(iv) Lane 3 constraint lemma, structural sharpening of `_DoorIVValueShiftHistogramObstruction`.
+Extends the value-shift-histogram refutation with its group structure.
+
+The set of realizable steps `{s : ∃ ValueShift of step s}` of a value map `val : T → ZMod p` is closed
+under `0` (identity permutation), negation (inverse permutation), and addition (composition of
+permutations), hence is the carrier of an `AddSubgroup (ZMod p)`. For `p` PRIME, a nonzero element has
+additive order `p` (`= card (ZMod p)`), so `AddSubgroup.zmultiples s = ⊤`: the realizable-step subgroup
+is either `{0}` or all of `ZMod p`.
+
+VERDICT: the value-shift free part is ALL-OR-NOTHING. There is no "partial" free part to harvest: either
+ONLY `s = 0` is realizable (no spreading), or EVERY step is realizable (full order-`p` free part). Via
+the histogram obstruction (`no_valueShift_of_histogram_witness`), a SINGLE residue with unequal fiber
+mass (`fiberCard a ≠ fiberCard (a+s)`, some `s ≠ 0`) kills step `s`, and since the realizable set is a
+subgroup, it cannot then be all of `ZMod p`, so it is `{0}`: the prize value map sits wholesale in the
+no-free-part case. This closes the "is there a large free part" question to a binary the prize loses. No
+CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVValueShiftHistogramObstruction.lean`,
+new defs `ValueShift.comp`, `ValueShift.inv` and theorems `realizableStep_neg`, `realizableStep_add`,
+`realizableStep_zero`, `realizableStep_all_or_nothing`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
