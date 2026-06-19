@@ -79,6 +79,20 @@ theorem scaledConstantFamily_ge_linear_floor {ι : Type*} {C m R : ι → ℝ}
   intro i
   exact scaledConstant_ge_linear_floor (hC i) (hm i)
 
+/-- Degenerate index-one endpoint: if the index factor is absent, the naive incidence scale is
+exactly the prize scale.  This identifies the only endpoint where the bridge has no scale loss;
+the thin prize regime has `m` growing, not `m = 1`. -/
+theorem naiveIncidenceScale_eq_prizeScale_of_m_eq_one {n L : ℝ} :
+    naiveIncidenceScale n 1 L = prizeScale n L := by
+  rw [naiveIncidenceScale_eq_sqrt_mul_prizeScale (n := n) (m := 1) (L := L) zero_le_one]
+  simp
+
+/-- Constant endpoint for the same degenerate case: the normalized naive constant `C√m` equals `C`
+only at the index-one scale-loss-free endpoint. -/
+theorem scaled_constant_eq_constant_of_m_eq_one {C : ℝ} :
+    C * Real.sqrt (1 : ℝ) = C := by
+  simp
+
 /-- In the actual indexed regime `1 ≤ m`, the naive incidence scale is never smaller than the
 prize scale.  Thus the bridge cannot secretly improve the Shaw normalization by the index step; it
 only preserves scale at `m = 1` and overshoots afterwards. -/
@@ -147,6 +161,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceBound_iff_shawValue_le_scaled
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_ge_linear_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_ge_linear_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
