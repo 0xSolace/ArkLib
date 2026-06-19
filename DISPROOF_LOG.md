@@ -6901,3 +6901,22 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidis
 Follow-up to [doorIV-pair-discrepancy-budget].  The normalized budget now includes the endpoint corollary: `PairEquidistributed φ 0` implies `avg_B η² ≤ 2m`, i.e. the period variance proxy is at the prize floor, and the pair-residual correction is zero at `δ=0`.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `variance_le_prizeProxy_of_ideal_pairEquidist` and `pairResidualCorrection_zero`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only an endpoint specialization/reduction; it does not prove prize-regime pair-equidistribution, anti-concentration, CORE cancellation, or capacity.
+
+## door-(iv) fixed-width bottom slack gives only fixed-width damping (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceTowerCollapse`.  Prior tower-collapse
+bricks proved that fully coherent upper levels drop out and that if every bottom factor is at least
+`c`, the whole product is at least `c^bottom.length`.  This refinement packages the fixed-width
+version needed by the 2-adic phase-alignment recursion: if the bottom slack segment has length at most
+`K` and every bottom coherence factor is at least `c ∈ [0,1]`, then the whole tower product is at least
+`c^K`, independent of the number of upper coherent levels.
+
+VERDICT: a dyadic coherence-product route cannot obtain logarithmic-in-`n` damping merely by growing
+upper levels whose coherence is pinned at `1`.  With fixed bottom width and a constant positive floor,
+the damping is bounded below by a constant `c^K`.  Any successful door-(iv) tower attack must prove
+that the number of genuinely noncoherent levels grows with the tower height, or that the bottom floor
+itself shrinks with `n`.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`,
+axiom-clean.  New theorem: `tower_product_ge_fixed_width_floor`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.

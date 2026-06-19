@@ -248,7 +248,21 @@ theorem tower_product_ge_bottom_floor (upper bottom : List ℝ) {c : ℝ}
   rw [product_collapses_to_bottom upper bottom hupper]
   exact bottom_product_ge_pow_length bottom hc hbottom
 
+/-- **Fixed-width bottom slack gives only fixed-width damping.**  Suppose the upper tower is fully
+coherent, all bottom factors are bounded below by `c ∈ [0,1]`, and the entire nontrivial bottom segment
+has length at most a fixed budget `K`.  Then the full tower product is still bounded below by `c^K`,
+independently of `upper.length`.  Thus growing the coherent upper tower cannot turn a fixed bottom slack
+zone into a logarithmic-in-`n` damping factor; any successful coherence-tower attack must make the number
+of genuinely noncoherent levels grow with the tower, or force the bottom floor `c` itself to shrink. -/
+theorem tower_product_ge_fixed_width_floor (upper bottom : List ℝ) {c : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (hlen : bottom.length ≤ K) (hbottom : ∀ r ∈ bottom, c ≤ r) :
+    c ^ K ≤ (upper ++ bottom).prod := by
+  have hpow : c ^ K ≤ c ^ bottom.length := pow_le_pow_of_le_one hc0 hc1 hlen
+  exact hpow.trans (tower_product_ge_bottom_floor upper bottom hupper hc0 hbottom)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.bottom_product_ge_pow_length
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_fixed_width_floor
