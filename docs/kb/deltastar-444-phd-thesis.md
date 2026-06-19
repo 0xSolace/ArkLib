@@ -499,13 +499,19 @@ free to pick `p` — which is a *different statistic* from the family variance.
 `W = [B, 0]` is over-dispersed (`Var > mean` for `B > 2`) yet uniformly `≤ B`. Over-dispersion never forces a prime
 past the slack.
 
-**(iii) The corrected central result.** The credible reduction is therefore to a **uniform sup bound** — *every*
-thin above-onset prime is good — not to sub-Poisson variance. This is strictly *weaker* than what the variance route
-demanded (which was both harder and, as stated, false), and it is exactly what the data shows, with a `> 99.4 %`
-margin including at the worst structured prime. The capstone `subPoisson_variance_implies_prizeFloor` remains valid
-and axiom-clean as an implication; but the honest version of the thesis's central positive claim is now: *the prize
-reduces to the worst-case (sup) wraparound bound `W_r ≤ slack` at deep `r ≈ log p` in the thin regime, for which the
-worst computable prime clears the bar by `> 99 %`.* The wall is unchanged — proving the sup bound at uncomputable
+**(iii) The corrected central result** **[Lean, `_SupBoundCapstone`]**. The credible reduction is therefore to a
+**uniform sup bound** — *every* thin above-onset prime is good — not to sub-Poisson variance. This is strictly
+*weaker* than what the variance route demanded (which was both harder and, as stated, false), and it is exactly what
+the data shows, with a `> 99.4 %` margin including at the worst structured prime. The corrected capstone is recorded
+axiom-clean as `_SupBoundCapstone`: `prizeFloor_of_exists_good_prime` proves a **single** good prime
+(`W_r(p*) ≤ slack`, existence — which the prize's freedom to choose `p` permits) discharges the floor, with **no
+variance hypothesis whatsoever**; `prizeFloor_of_uniform_sup` is the uniform form; and
+`prizeFloor_robust_to_overdispersion` proves the conclusion survives the maximally over-dispersed family
+`W = [slack, 0]` verbatim — over-dispersion is *irrelevant* to the prize. The old capstone
+`subPoisson_variance_implies_prizeFloor` remains valid and axiom-clean as an implication; but the honest version of
+the thesis's central positive claim is now: *the prize reduces to the worst-case (sup) wraparound bound
+`W_r ≤ slack` at deep `r ≈ log p` in the thin regime, for which the worst computable prime clears the bar by
+`> 99 %`.* The wall is unchanged — proving the sup bound at uncomputable
 depth `r ≈ log p` is the growing-order equidistribution of §7.3 — but it is now correctly framed, and the framing
 error (demanding control of the variance when the prize only needs control of the supremum) is *recorded* rather
 than buried. This is the difference between a thesis that maps its problem and one that flatters it.
