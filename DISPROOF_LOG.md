@@ -7420,3 +7420,31 @@ claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstCosetIndexUnstructured.lean`,
 new theorem `no_common_residue_mod_of_consecutive_gap_gcd_one`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+## [pencil-autocorr-rmoment] UNIFORM r-th unsigned subgroup autocorrelation moment = |H|^(r+1) (2026-06-19, sol)
+NON-MOMENT structural CORE lever (sign-free additive combinatorics), extending the proven r=2 energy
+theorem to a uniform all-r closed form (frontier-MOVEMENT, not boundary re-mapping). The pencil file's
+`subgroup_multiplicativeEnergy_eq_card_cube` pinned the r=2 (multiplicative-energy) case
+∑_ρ|H∩ρH|² = |H|³, and the double-count file the r=1 case ∑_ρ|H∩ρH| = |H|². Both are the same
+all-or-nothing autocorrelation read at a fixed exponent. This commit locks the SINGLE uniform theorem
+subsuming every exponent r≥1:
+- `subgroup_autocorr_rmoment`: ∑_{ρ∈G} (H∩dilate ρ H).card^r = H.card^(r+1) for a multiplicative
+  subgroup H and every r≥1. Direct corollary of `subgroup_autocorr_exact`: each summand is
+  (if ρ∈H then |H| else 0)^r = if ρ∈H then |H|^r else 0 (uses 0^r=0 via 1≤r), so the sum is
+  |H|·|H|^r = |H|^(r+1). No r-specific argument — the all-or-nothing profile delivers every moment.
+- `subgroup_autocorr_first_moment` / `_second_moment`: r=1 (=|H|²) and r=2 (=|H|³) specialisations.
+- `subgroup_autocorr_zeroth_moment_eq_card_univ`: the HONEST r=0 value ∑_ρ 1 = |G| (NOT |H|),
+  recording that the uniform law is FALSE at r=0 (it would force |G|=|H|). The 1≤r hypothesis is
+  essential, not cosmetic — logged so no one mis-instantiates the law below its valid range.
+PROBE (/tmp/probe_autocorr_rmom.py): ∑_ρ|H∩ρH|^r = |H|^(r+1) verified EXACT in 96/96 configs,
+r=1..6, over structured primes (incl. p>n³ and Fermat p=257), proper thin μ_n (n=2^a), p≡1 mod n,
+NEVER n=q−1.
+VERDICT: the UNSIGNED subgroup autocorrelation collapses to an exact closed form at EVERY order r≥1
+(maximally rigid, no √(log) cancellation in the unsigned count) — precisely why the prize cancellation
+must live in the SIGNED phase. Unsigned multiplicative moments cannot supply the wall's cancellation
+at any moment order.
+Formal kernel: `Frontier/_PencilAutocorrRMoment.lean`, axiom-clean (⊆ {propext,Classical.choice,
+Quot.sound}; no sorryAx); locked build exit 0 (8315 jobs); axiom_audit PASS (17 flagship clean);
+missing-import scan empty; codex review clean. SCOPE: unsigned multiplicative autocorrelation moments
+only, field- and thickness-universal. Does NOT prove BGK, CORE, cancellation, completion, signed-phase
+moment-saving, anti-concentration, or capacity claim — door (iv) anti-concentration remains the open
+$1M wall.
