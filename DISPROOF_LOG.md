@@ -6966,3 +6966,28 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceO
 axiom-clean.  New theorems: `values_on_cosetHitting_set_cover_global` and
 `bound_on_cosetHitting_set_iff_global`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
+## [open-core-rho-step-two-explicit] Second ρ-monotonicity rung + the next char-0 energy E_3=15n³−45n²+40n (2026-06-19, sol)
+Lane 2 / door-(iv) reduction-chain ladder extension of `_OpenCoreRhoStepOneExplicit` (which pinned
+rung 1: ρ(2)≤ρ(1) ⟺ S_2 ≤ 3n(n−1)(p−n) via E_1=n, E_2=3n(n−1)). This commit extends the explicit-
+energy ladder to rung 2.
+
+NEW probe discovery: the char-0 6th-moment energy E_3(ℂ) = #{6-tuples of μ_n with equal triple-sums}
+= 15n³−45n²+40n = 5n(3n²−9n+8), confirmed EXACT at n=4,8,16,32 (cubic fit through 8,16,32 reproduces
+n=4). 3n²−9n+8 has negative discriminant (81−96<0) so E_3>0 for all n>0. Probe-verified that the r=2
+cross-inequality S_3·E_2 ≤ S_2·E_3 holds on proper μ_n, p≈n⁴≫n³, structured primes (ratio 0.993–0.998).
+
+HONESTY NOTE: E_2=3n(n−1) is PROVEN in-tree (RootsOfUnityEnergyExact); E_3=15n³−45n²+40n is so far
+PROBE-VERIFIED ONLY, NOT kernel-proven. It is used ONLY as the explicit RHS of a reduction; nothing
+asserts it as a theorem. The triple-sum coincidence count is left open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoStepTwoExplicit.lean`,
+axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Theorems:
+- `charZeroEnergyThree_pos` — 15n³−45n²+40n > 0 for n>0 (neg-discriminant quadratic factor).
+- `charZeroEnergyTwo_pos` — 3n(n−1) > 0 for n>1.
+- `rho_step_two_iff_cross_explicit` — r=2 antitone step ρ(3)≤ρ(2) with E_2=3n(n−1), E_3=15n³−45n²+40n
+  (n>1) ⟺ S_3·(3n(n−1)) ≤ S_2·(15n³−45n²+40n).
+
+Scope: REDUCTION/instantiation of rung 2. Does NOT prove the cross inequality (rung-2 open content),
+does NOT prove E_3's closed form (probe-verified only), does NOT prove the antitone chain, makes NO
+CORE/cancellation/completion/moment-saving/capacity claim. Prize remains the open wall.
