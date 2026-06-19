@@ -5809,3 +5809,19 @@ Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addDiffset
 `addDiffset_smul_eq_image`, `addDiffset_card_smul_eq`, and
 `addDiffset_card_phaseSet_indep_of_scalar`, all axiom-clean with axioms subset
 {propext, Classical.choice, Quot.sound}.
+
+## [door-iv-phaseset-pairsum-fiber-b-blind] constraint — pair-sum multiplicity profile of {b*x^m} is just rescaled by b (2026-06-18, g55 subagent)
+
+Lane: door-(iv) Lane 1, strengthening the phase-set small-ball audit from support/cardinality to
+multiplicity.  For every target `t` and nonzero frequency `b`, the number of pairs in `(bS)^2` with
+sum `b*t` is exactly the number of pairs in `S^2` with sum `t`.
+
+Constraint verdict: pure pair-sum representation counts, including the multiplicity profile behind
+additive energy and many Littlewood-Offord/Halasz inputs, cannot distinguish or select the worst
+frequency.  The adversarial `b` only rescales the target axis.  Any real door-(iv) anti-concentration
+lever must use information beyond the additive pair-sum fiber profile of the dilated subgroup.  No
+CORE/cancellation/capacity claim.
+
+Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addPairSumCount`,
+`addPairSumCount_smul_eq`, and `addPairSumCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
+subset {propext, Classical.choice, Quot.sound}.
