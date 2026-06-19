@@ -6214,3 +6214,36 @@ CONSTRAINT: subdivision into many negation-stable real pieces is not enough; a s
 refinement theorem must prove a worst-b two-sided sign-balance statement.  Same-sign fibers saturate
 `ρ=1`, and one-sided mass cannot satisfy any strict subunit coherence target.  No CORE cancellation,
 completion, moment, or capacity claim.  Axioms subset `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-worstb-coset-closed] the worst-b near-max SET is COSET-CLOSED + sign-symmetric but additively SPREAD — the worst-b selector is coset-blind (2026-06-19, sol subagent)
+
+Lane: door-(iv) Lane 1 — the brief's explicit UN-ANSWERED question "what arithmetic of b selects the
+worst coset alignment? is the worst-b SET itself structured?" (Shaw-value essay 2026-06-18).
+
+PROBE (scripts/probes/probe_444_worstb_set_arithmetic.py; proper μ_n < F_p*, p≫n³, structured ODD-m
+primes, n=8..32, β≈4–4.5, never n=q-1): the near-max set W(τ) = {b≠0 : |η_b| ≥ (1-τ)·M(n)} is, in
+EVERY row:
+ - muOrbit = True: a UNION OF FULL μ_n-COSETS (|W| an exact multiple of n; #cosets = |W|/n ∈ ℕ).
+ - negSym = True: sign-symmetric (b∈W ⟺ -b∈W; -b* always near-max).
+ - BUT additively SPREAD: |W+W|/|W| GROWS with n (7→16→43…), longestAP ≤ 4, sq=False, mulg=False —
+   NOT a single multiplicative coset, NOT an AP, NOT a square-class.
+
+MECHANISM: |η_b| = |Σ_{y∈μ_n} e_p(b·y)| is invariant under b↦b·u (u∈μ_n permutes itself) and under
+b↦-b (μ_n neg-closed ⟹ η_{-b}=conj(η_b)). So every super-level set of |η_b| is a union of
+(μ_n ∪ -μ_n)-orbits — and the probe shows there is NO finer additive structure to exploit.
+
+WHAT IS NOW PROVEN (axiom-clean, in-tree, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+ ArkLib/.../Frontier/_DoorIVWorstBCosetClosed.lean (7 thms). For ANY orbit-constant f : β → ℝ under
+ a group action G ↷ β (here G=μ_n by multiplication) plus an f-respecting involution σ (here σ=-·):
+ - smul_mem_superLevel_of_orbitConstant / superLevel_eq_smul_superLevel / orbit_subset_superLevel:
+   every super-level set {b : f b ≥ c} is a UNION OF FULL ORBITS (coset-closure).
+ - smul_eq_of_isArgmax: the worst-b is never an isolated point — its entire coset attains the max.
+ - sigma_mem_superLevel / image_sigma_superLevel: super-level set is involution-closed (σ '' W = W).
+ - superLevel_smul_and_sigma_closed: the combined coset-AND-sign symmetry group of the worst-b set.
+
+VERDICT: refutation-with-mechanism / RESOLUTION-LIMIT brick. Does NOT close CORE, does NOT bound M(n),
+makes NO cancellation/anti-concentration/capacity claim. It bounds the RESOLVING POWER of the entire
+door-(iv) Lane-1 "exploit the arithmetic of the worst b" family: any b-arithmetic lever sees the worst
+frequency ONLY through its μ_n-coset and its sign (the symmetries f already carries), and the probe
+shows nothing finer survives (W is additively spread). The worst-b selector is coset-and-sign-blind
+below coset granularity. Asymptotic guard untouched.
