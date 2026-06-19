@@ -7126,3 +7126,35 @@ Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePai
 Lane 2 endpoint corollary of the normalized two-sided pair-discrepancy budget.  At ideal residual `δ=0`, `PairEquidistributed φ 0` implies `avg_B η²/(2m)=1`, the exact normalized Shaw/prize variance floor.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `normalized_variance_eq_one_of_ideal_pairEquidist`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only the ideal endpoint of the reduction; it proves no prize-regime pair-equidistribution, no anti-concentration, no CORE cancellation, and no capacity claim.
+
+## [doorIV-resonance-r2-bracket] the r=2 resonance rung T(2) is BRACKETED (m-1)^2 <= T(2) <= m(m-1)^2; probe truth Theta(m^2) sits at the LOWER end (off-diagonal sqrt(m)-cancellation) (2026-06-19, sol)
+
+Lane: door-(iv) Lane 2 (citable reduction) + Lane 1 probe. Extends the proven r=2 file
+`_ResonanceMomentRTwo` (phaseSum_two convolution collapse + phaseSum_two_zero=m-1 diagonal peak +
+resonanceMoment_two_ge_of_conjSymm LOWER bound (m-1)^2). The named open object is the
+ResonanceConjecture T(r) <= (2 m log m)^r (binding depth r ~ log m); r=1 is pinned (T_1=m-1), r=2 had
+ONLY a lower bound. This commit supplies the matching UPPER companions for a unit-phase vector
+(|u l|=1, the Gauss-sum normalization u_l = tau(chi^l)/sqrt p):
+ - phaseSum_two_norm_le: per-frequency L-infinity ceiling |phaseSum u 2 c| <= m-1 for ALL c (triangle
+   inequality on the off-diagonal convolution of <= m-1 unit terms). TIGHT: attained at c=0 (diagonal).
+ - resonanceMoment_two_le: aggregate L2 ceiling T(2) <= m*(m-1)^2 (square the per-freq ceiling, sum
+   over m frequencies).
+ - resonanceMoment_two_bracket: the two-sided statement (m-1)^2 <= T(2) <= m*(m-1)^2.
+
+PROBE (genuine Gauss-sum phases u_l=tau(chi^l)/sqrt p, chi of order m, p=km+1 structured primes,
+m=3..211; scripts in /tmp/rt2probe/): T(2) = Theta(m^2), measured T(2)/(m-1)^2 ~ 2.4 stable (slight
+drift to ~2.8 at large m). The CONVOLUTION-PARSELVAL identity T(2) = (1/m) sum_k |vhat(k)|^4 holds to
+machine precision (v(a)=u(a)*[a!=0]; verified match=True all rows), with sum_a|v(a)|^4 = m-1 exact.
+Diagonal c=0 carries EXACTLY (m-1)^2 (diag/(m-1)^2 = 1.00000 all rows); the worst OFF-diagonal
+|phaseSum u 2 c| (c!=0) is ~ sqrt(m)*O(1) (worstoff/sqrt(m) ~ 1.5-3.8, with the SAME slow upward
+creep as the prize M/prize sup-norm), NOT the trivial m-1.
+
+VERDICT: BRACKET, not closure. T(2) sits at the LOWER (diagonal-dominated) end of the proven bracket
+because the off-diagonal phase sums exhibit sqrt(m)-cancellation. The multiplicative gap m between the
+two proven bounds is exactly the open resolution: closing the per-frequency sqrt(m)-vs-(m-1) gap is the
+SAME L2->L-infinity deviation question as the prize sup-norm wall (the worst-off-diagonal carries the
+identical sqrt(log)-ish creep). Does NOT prove the (2 m log m)^2 conjecture ceiling (both bracket ends
+are conjecture-compatible); does NOT bound M(n). NO CORE/cancellation/completion/moment-saving/
+anti-concentration/capacity claim. CORE M(mu_n) <= C sqrt(n log m) UNCHANGED/OPEN. Axiom-clean
+(subset {propext, Classical.choice, Quot.sound}); locked build exit 0 (8315 jobs); axiom_audit PASS;
+codex review clean. File Frontier/_ResonanceMomentRTwoBounds.lean.
