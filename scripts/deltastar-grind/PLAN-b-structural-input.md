@@ -1,13 +1,21 @@
 # Plan (b) — the real structural input (the breakthrough; low odds, fully honest)
 
 **Goal.** Make progress on the *actual* prize: the one structural input no elementary angle supplies
-— **uniform per-rung orbit-count decay up the 2-power tower**, equivalently the cryptographic-`p`
-sup-norm bound
+— the **per-frequency `√q·B` INCIDENCE cancellation** over the annihilator hyperplane:
 
-    M(μ_n) = max_{b≠0} | Σ_{x∈μ_n} e_p(b·x) |  ≤  C · √( n · log(p/n) ).
+    I(δ) ≤ |G| + √q · B,   B = max_{b≠0} ‖η_b‖,   η_b = Σ_{x∈μ_n} e_p(b·x).
 
-This is **BCHKS Conjecture 1.12 = the BGK / Burgess-endpoint (α=¼) / Paley-graph wall**, open ~25
-years. This plan does **not** promise a proof. It promises the sharpest *honest* progress possible
+This is `ShawOperator.MCAShawConjecture` = **BCHKS Conjecture 1.12** (the generalized-Paley-graph /
+Ramanujan bound at cancellation exponent **½**), open ~25 years.
+
+> **The two-input correction (verified in-tree — don't re-trip it).** The bare sup-norm bound
+> `M(μ_n) = max_{b≠0}‖η_b‖ ≤ C√(n·log(p/n))` is *necessary context but **provably insufficient** by
+> itself* — it feeds only the additive-energy lane, and its sole route to incidence pays the **naive
+> `q·B`** triangle (`I ≤ |G| + q·B`), which at the prize budget `q·ε* ≈ n ≈ |G|` forces `B ≈ 0`
+> (vacuous). In-tree: `Frontier/_PrizeFloorOfBGK.lean`, `CharSumBudgetVacuity.lean`. The prize-bearing
+> input is the **`√q`** (not `q`) incidence upgrade. (B1 resolved: a weaker bound gives no shortcut.)
+
+This plan does **not** promise a proof. It promises the sharpest *honest* progress possible
 without new mathematics: a crisper reduction and a precisely-named missing fact.
 
 ## Why this is the real thing (and why grinding can't reach it)
@@ -20,18 +28,25 @@ direction). So this is hard analytic NT, not compute.
 
 ## Steps (deliverables that are real even though the core stays open)
 
-1. **State the missing lemma as one clean `def : Prop`** in Lean — the per-rung orbit-count decay /
-   the sup-norm bound — and prove the **conditional** `that Prop ⟹ prize` axiom-clean. A real,
-   landable brick (an honest reduction), independent of whether the Prop is ever proven.
+1. **Use the in-tree named `def : Prop`** — `ShawOperator.MCAShawConjecture S B` (equivalently
+   `OpenCoreConditionalPin.WorstCaseIncidenceBounded`), the per-frequency `√q·B` incidence bound —
+   **NOT** the sup-norm Prop (proven insufficient). The conditional `that Prop ⟹ prize` is *already*
+   landed axiom-clean (`Frontier/_PrizeFloorOfBGK.lean` `prizeFloor_window_of_BGK_and_incidence`,
+   `_PrizeReducesToBCHKS.lean`). The deliverable is to **sharpen/minimize** that reduction — not
+   re-derive a (vacuous) `sup-norm ⟹ prize` conditional.
 
 2. **Minimize the reduction.** Reduce the open core to the *smallest* named statement that closes
    it, so the dossier presents **one crisp conjecture**, not a family. (Much of this is done: the
    walled-set audit already collapsed ~15 routes onto this one object.)
 
-3. **Quantify the literature gap.** di Benedetto et al. give `M(μ_n) = O(n^{1−31/2880})`, whose
-   power-saving **vanishes exactly at `β = 4`** (the prize regime `n ~ p^{1/4}`). Pin, exactly, how
-   much of `0.989 → 0.5` that and its 2024–26 successors cover, and what residual remains. Update
-   `PAPERS_NEEDED.md`.
+3. **Record the literature gap (settled, not open).** di Benedetto et al. give the PROVEN
+   power-saving `M(μ_n) = O(n^{1−31/2880})`; the tree records this as **NOT prize-closing**
+   (`CharSumDeltaStarBridge.lean`, `CharSumBudgetVacuity.lean`) — it sits *below* cancellation
+   exponent ½, and a weaker provable bound gives **no shortcut** (B1 resolved). The residual is the
+   gap from `~0.989` down to **exactly ½ at the `√q`-incidence level** (not the sup-norm level); no
+   sub-½ successor closes the window. The char-0 face is **CLOSED** in exact closed form
+   (Bessel `g(t)=½·log I₀(2t)`); the genuine open gap is the **char-`p` departure** from that closed
+   char-0 shadow at depth `r ≈ ln q`. Update `PAPERS_NEEDED.md`.
 
 4. **Probe for structure, honestly.** The 2-power/antipodal/Frobenius/Lam–Leung structure is fully
    characterized (O183/O184) and provably accounts for *everything except* the residual orbit count.

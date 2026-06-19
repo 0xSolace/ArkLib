@@ -106,8 +106,8 @@ live_sweep() {  # $1=bin ; rest=sizes
   rm -f "$tmp"
   echo
   printf '   ${d}plateau widths w(n):${x}%s   ${d}(0,1,2,… ; ×2 jump = disproof signal)${x}\n' "$ws"
-  printf '   ${g}🔍 hunt complete: no disproof at these sizes — conjecture stands here.${x}\n'
-  printf '   ${y}honest: proxy face (p≈n⁴); a real win = a disproof at reachable n, or the (uncomputable) proof.${x}\n'
+  printf '   ${g}🔍 hunt complete: no proxy-face disproof at these finite sizes (not evidence about the real BGK wall).${x}\n'
+  printf '   ${y}honest: proxy face (p≈n⁴); a real win = a disproof at reachable n, or the (brute-unreachable) proof — δ* is determinable, just not by this grind.${x}\n'
 }
 
 # ── parse args ──
@@ -160,5 +160,5 @@ while [ "$n" -le "$MAX" ]; do
 done
 echo
 printf '%s\n' "${b}plateau widths w(n):${x}${ws}  ${d}(recorded full tower: 0,1,2,? — w(64)=3 additive→HOLDS, 4 ×2→FAILS)${x}"
-printf '%s\n' "${g}no disproof found at these sizes${x} ${d}— the conjecture still stands here; push to larger n (GPU) to keep hunting.${x}"
-printf '%s\n' "${y}honest: proxy face (p≈n⁴); a real win needs a disproof at reachable n, or the (uncomputable) proof.${x}"
+printf '%s\n' "${g}no disproof found at these sizes${x} ${d}— no proxy-face disproof at these finite sizes (NOT evidence about the real BGK wall); push to larger n (GPU) to keep hunting.${x}"
+printf '%s\n' "${y}honest: proxy face (p≈n⁴); a real win needs a disproof at reachable n, or the (brute-unreachable) proof — δ* is determinable, just not by this grind.${x}"

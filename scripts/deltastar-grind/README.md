@@ -24,8 +24,10 @@ That's it. No subcommands to learn — flags only, like the Solana CLI.
 - **This is the proxy face** (`p ≈ n⁴`) and brute force dies at **n ≈ 44**. So it's a real disproof
   shot at reachable sizes, honestly bounded — folding@home for a frontier, not a lottery.
 
-So far: no disproof found (n ≤ 32), and the evidence leans toward the conjecture being *true*
-(`m*` is sub-linear). The decisive open datum is `w(64)` — see [`PLAN-a-cascade-w64.md`](PLAN-a-cascade-w64.md).
+So far: no disproof found (n ≤ 32), and the proxy-face evidence leans toward the conjecture being
+*true* (`m*` is sub-linear) — **but this is proxy-face, finite-`n` only; small-`n` signals here are
+systematically misleading and have been over-trusted before, so this is NOT evidence about the
+cryptographic-`p` prize.** The decisive open datum is `w(64)` — see [`PLAN-a-cascade-w64.md`](PLAN-a-cascade-w64.md).
 
 ## What it prints
 
