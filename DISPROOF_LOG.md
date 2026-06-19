@@ -7077,3 +7077,10 @@ axiom-clean.  New theorem: `prizeFamilyBound_iff_all_halfMassShaw_forms`.  Axiom
 `{propext, Classical.choice, Quot.sound}`.  This is a citation/packaging theorem only: it proves no
 comparison `M≤H≤K·M`, no anti-concentration, no CORE cancellation, no moment/completion saving, and
 no capacity claim.
+
+## [doorIV-e3-subset-count-fintype-free] negation-closed subset multiplicities no longer need ambient Fintype (2026-06-19, g55)
+
+Lane 2 de-Fintype continuation from `_AntipodalTransversalFintypeFree`.  The existing E3 stratum subset-count theorem counted negation-closed `2i`-subsets of a negation-closed finite set `G` under an ambient `[Fintype F]`, solely because the old transversal selector used a finite ambient order.  This commit ports that bijection through the Fintype-free antipodal transversal: over any `[Field F] [DecidableEq F]`, if `(2:F)≠0`, `0∉G`, and `G` is closed under negation, then
+`#{S⊆G : (∀z∈S, -z∈S) ∧ |S|=2i} = Nat.choose (|G|/2) i`.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AntipodalTransversalFintypeFree.lean` with theorem `negClosed_subset_count_of_no_fintype`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is finite subset combinatorics only: it does not prove the full `negSymCount` closed form Fintype-free, does not prove CORE cancellation/completion, and makes no capacity claim.  This is the next concrete rung toward a characteristic-zero-applicable E3 closed form.
