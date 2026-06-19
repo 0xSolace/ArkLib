@@ -6299,3 +6299,22 @@ coherent_iff_coh_one; root_step_slackfree (coherent root split ⇒ ‖root‖=�
 ⇒ Σ mass-defect = 0); coherence_product_eq_one + product_bound_undamped (all-coherent upper chain ⇒
 ∏ρ_j=1, so P·S=S: the product bound equals the un-damped mass bound). Verdict: refuted-lever /
 recursion-cannot-start brick. Does NOT bound M(n); no CORE/cancellation/anti-concentration/capacity claim.
+
+## [door-iv-tower-collapse-quantitative] only the bottom O(1) tower levels carry coherence damping (quantitative lock) + bottom-level band-avoidance is b-blind at scale (2026-06-19, sol)
+
+Lane: door-(iv) Lane 1 probe + Lane 3, strengthening [door-iv-coherence-tower-collapse] (1acd54023).
+
+(A) QUANTITATIVE LOCK (_DoorIVCoherenceTowerCollapse.lean, new lemmas, axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}): product_collapses_to_bottom / whole_tower_product_eq_bottom — splitting
+the per-level coherence list as upper++bottom with every upper factor =1, the WHOLE-tower product equals
+bottom.prod; tower_product_le_one — with bottom factors in [0,1], the product is ≤1 (no amplification).
+Consequence: a coherence-product bound's damping uses ONLY the bottom k levels; the upper a−k =
+log₂n−O(1) forced-coherent levels contribute factor exactly 1. The probe localizes k=O(1).
+
+(B) PROBE-ONLY (probe_dooriv_bottomlevel_cancel_budget.py, NOT separately formalized — verdict in the
+same b-blind FAMILY as DISPROOF 6069/6102/6110): the bottom-level (μ_1-pair) cancellation budget
+Σ_y|cos(2π b y/p)| and cancellation-band [p/4,3p/4]-avoidance at worst-b vs random-b (n=16..128, β4/4.5,
+p≫n³): worst-b budget enrichment over random DECAYS to ~1 as n grows (1.39× @n=16 → 1.04× @n=128);
+band-avoidance gap CLOSES at scale (n=128: ≈equal). ⇒ the bottom-level single-pair cancellation is
+b-BLIND AT SCALE — the worst-b cosine profile converges to the typical-b profile; the √-cancellation
+does NOT come from worst-b band-avoidance. Refuted-lever brick; no CORE/cancellation/capacity claim.

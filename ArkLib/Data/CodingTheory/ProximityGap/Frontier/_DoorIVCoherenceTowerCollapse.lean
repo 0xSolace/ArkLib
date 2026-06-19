@@ -163,4 +163,54 @@ the probe localizes to the BOTTOM levels.) -/
 theorem coherent_collinear_no_cancel {a b : E} (h : Coherent a b) :
     ‖a + b‖ = ‖a‖ + ‖b‖ := h
 
+/-! ## Quantitative collapse: only the BOTTOM `O(1)` levels carry damping
+
+The probe localizes ALL coherence slack to the bottom levels: in a tower of `a = log₂ n` levels, the
+upper `a − k` levels are forced to coherence `1`, and only the bottom `k = O(1)` levels carry slack.
+The coherence product over the WHOLE tower therefore equals the product over just the bottom `k`
+factors.  Formally: split the level-coherence list as `upper ++ bottom`; if every `upper` factor is
+`1`, the full product collapses onto `bottom.prod`. -/
+
+/-- **Upper-tower factors drop out of the product.**  If every coherence ratio in the upper segment is
+`1`, the product over the concatenated tower equals the product over the bottom segment alone. -/
+theorem product_collapses_to_bottom (upper bottom : List ℝ)
+    (hupper : ∀ r ∈ upper, r = 1) :
+    (upper ++ bottom).prod = bottom.prod := by
+  rw [List.prod_append, coherence_product_eq_one upper hupper, one_mul]
+
+/-- **The achievable damping is controlled by the bottom segment only.**  Since each bottom coherence
+is in `[0,1]`, the product over the bottom `k` factors is at most `1`, and the whole-tower product
+equals it: the upper `a − k` (forced-coherent) levels contribute factor exactly `1`.  A coherence
+product method can multiply at most the `k` bottom factors — and the probe shows `k = O(1)`,
+independent of `a = log₂ n`. -/
+theorem whole_tower_product_eq_bottom (upper bottom : List ℝ)
+    (hupper : ∀ r ∈ upper, r = 1) :
+    (upper ++ bottom).prod = bottom.prod :=
+  product_collapses_to_bottom upper bottom hupper
+
+/-- **The whole-tower coherence product is `≤ 1` and equals the bottom-segment product.**  With every
+upper factor forced to `1` and every bottom factor in `[0,1]`, the full product equals `bottom.prod`
+(`product_collapses_to_bottom`) and is `≤ 1` (no amplification).  Hence a coherence-product bound is
+`‖root‖ ≤ (bottom.prod)·S` whose damping uses ONLY the bottom `k = O(1)` levels; the upper `a − k`
+forced-coherent levels contribute factor exactly `1`. -/
+theorem tower_product_le_one (upper bottom : List ℝ)
+    (hupper : ∀ r ∈ upper, r = 1)
+    (hbottom : ∀ r ∈ bottom, 0 ≤ r ∧ r ≤ 1) :
+    (upper ++ bottom).prod ≤ 1 := by
+  rw [product_collapses_to_bottom upper bottom hupper]
+  induction bottom with
+  | nil => simp
+  | cons r rs ih =>
+    rw [List.prod_cons]
+    have hr := hbottom r (by simp)
+    have hrs : ∀ x ∈ rs, 0 ≤ x ∧ x ≤ 1 := fun x hx => hbottom x (by simp [hx])
+    have hprod_nonneg : 0 ≤ rs.prod := by
+      apply List.prod_nonneg
+      intro x hx; exact (hrs x hx).1
+    have hprod_le : rs.prod ≤ 1 := ih hrs
+    calc r * rs.prod ≤ 1 * rs.prod := by
+            apply mul_le_mul_of_nonneg_right hr.2 hprod_nonneg
+      _ = rs.prod := one_mul _
+      _ ≤ 1 := hprod_le
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse
