@@ -7289,3 +7289,25 @@ axiom-clean.  New theorems: `twoPieceCoherence_pos_neg_eq_abs_diff_ratio`,
 `abs_diff_ratio_eq_one_sub_two_mul_min_ratio`, and
 `twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [twoadic-stall-locator] The 2-adic graded tower stalls one graded coordinate at a time (2026-06-19, sol)
+NON-MOMENT structural CORE lever (the brief's 2-adic phase-alignment recursion), extending the proven
+depth-ℓ gate biconditional `signedSum_mem_idealPow_iff_gradedTower` (`D ∈ I^ℓ ⟺ G_ℓ ∈ I^ℓ`, where
+`D = Σ_i c_i(1+t)^{a_i}` is the signed cyclotomic wraparound and `G_ℓ = Σ_{j<ℓ} σ_j t^j` its depth-ℓ
+graded Taylor vector, `σ_j = Σ_i c_i C(a_i,j)`). The forward consumer `..._of_moments_zero` only gives
+`(∀j<ℓ, σ_j=0) ⟹ D∈I^ℓ`; this commit locks the two STRUCTURAL corollaries it does not:
+- `signedSum_notMem_idealPow_of_gradedTower_notMem` — all-depth CONTRAPOSITIVE: `G_ℓ ∉ I^ℓ ⟹ D ∉ I^ℓ`
+  (generalizes the ℓ=1 parity-gate `signedSum_notMem_of_weight_notMem` to every depth; the obstruction
+  to depth-ℓ divisibility is detectable purely in the low binomial moments).
+- `signedSum_mem_idealPow_succ_iff_newGraded_of_lower_clears` — INCREMENTAL STALL-LOCATOR: if the
+  depth-ℓ graded vector already clears the next level (`G_ℓ ∈ I^{ℓ+1}`), then advancing the wraparound
+  from `I^ℓ` to `I^{ℓ+1}` is governed by the SINGLE new graded coordinate: `D ∈ I^{ℓ+1} ⟺ σ_ℓ·t^ℓ ∈
+  I^{ℓ+1}`. This is the exact recursion step of the 2-adic tower: each extra unit of λ-valuation costs
+  exactly one graded coordinate. (`gradedTower_succ_eq` = the `Finset.sum_range_succ` split feeding it.)
+Probe-verified (R=ℤ, I=(2), t=2, 1+t=3): biconditional held over 120k random instances (0 failures);
+the incremental stall form held over ~60k instances where the lower-vector premise fires (0 failures).
+Formal kernel: `Frontier/_TwoAdicStallLocator.lean`, axiom-clean (⊆ {propext,Classical.choice,Quot.sound};
+no sorryAx); locked build exit 0 (3299 jobs); axiom_audit PASS (17 flagship clean); missing-import scan
+empty. SCOPE: algebraic tower substrate / structural recursion-step locator only. Does NOT prove the
+integer parity criterion at general depth, any char-p transfer, BGK, CORE, cancellation, completion,
+moment-saving, or capacity/growth-law claim — door (iv) anti-concentration remains the open $1M wall.

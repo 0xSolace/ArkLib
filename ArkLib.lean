@@ -1714,6 +1714,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwiseIndependenceFramewor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedDepth2
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedTower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicMomentAnnihilation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicStallLocator
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoPowerRootDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._UnconditionalWrapRungR3
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._UnconditionalWrapRungR4Onset
