@@ -201,8 +201,41 @@ theorem pencil_sqrt_bound_of_autocorr_le {μ S : Finset G} {n r lam : ℕ}
     (Nat.mul_lt_mul_left (by omega : 0 < lam + 1)).mpr (by omega)
   omega
 
+/-- **The Fisher LOWER bound on the nontrivial-shift autocorrelation (Lane-3 obstruction).** The
+contrapositive of `pencil_card_bound_of_autocorr_le`: if a root set `S ⊆ μ` in the order-`n` subgroup
+is large enough that `r·(r−1) > L·(n−1)`, then NO uniform nontrivial-shift autocorrelation bound `L`
+can hold — there is a shift `ρ ≠ 1` with `|S ∩ ρ·S| > L`. Equivalently the worst nontrivial-shift
+autocorrelation `M(S) = max_{ρ≠1} |S ∩ ρ·S|` satisfies the **sharp Fisher floor**
+`M(S) ≥ ⌈r·(r−1)/(n−1)⌉`.
+
+This is the citable no-go for the pencil double-count route: any autocorrelation upper bound feeding
+a Kelley-3.2 / Fisher argument is bounded BELOW by the Fisher floor, so it cannot be driven below the
+coset-core scale `≈ |coset|`. Distinct from the energy/all-shift route
+(`PencilAutocorrEnergyMaxBridge.sq_card_le_support_mul_maxAutocorr`), which bounds the all-shift max
+`M₀` (including the trivial `ρ = 1` overlap `= |S|`); this floor is on the genuinely NONTRIVIAL-shift
+max and is sharp (uses the apex-corrected `λ(n−1)`, not `(λ+1)(n−1)`).
+Probe (`/tmp/probe_pencil_autocorr_lower.py`): `r(r−1) > L(n−1) ⇒ M(S) > L` over PROPER thin 2-power
+`μ_n`, `p > n³`, `p ≡ 1 mod n`, NEVER `n = q−1`, `486/486` checks, `0` failures. NO
+CORE/cancellation/completion/moment/capacity claim. -/
+theorem exists_shift_autocorr_gt_of_card {μ S : Finset G} {n r lam : ℕ}
+    (hμcard : μ.card = n)
+    (hSμ : S ⊆ μ)
+    (hμmul : ∀ a ∈ μ, ∀ b ∈ μ, a * b ∈ μ)
+    (hμinv : ∀ a ∈ μ, a⁻¹ ∈ μ)
+    (hr : S.card = r) (hr1 : 1 ≤ r)
+    (hbig : lam * (n - 1) < r * (r - 1)) :
+    ∃ ρ : G, ρ ≠ 1 ∧ lam < (S ∩ dilate ρ S).card := by
+  by_contra hcon
+  push Not at hcon
+  -- hcon : ∀ ρ, ρ ≠ 1 → (S ∩ dilate ρ S).card ≤ lam
+  have hM : ∀ ρ : G, ρ ≠ 1 → (S ∩ dilate ρ S).card ≤ lam := hcon
+  have hcount : r * (r - 1) ≤ lam * (n - 1) :=
+    pencil_card_bound_of_autocorr_le hμcard hSμ hμmul hμinv hr hr1 hM
+  omega
+
 end ProximityGap.Frontier.PencilAutocorrLambdaRootBound
 
 -- Axiom audit (expected: propext, Classical.choice, Quot.sound only)
 #print axioms ProximityGap.Frontier.PencilAutocorrLambdaRootBound.pencil_card_bound_of_autocorr_le
 #print axioms ProximityGap.Frontier.PencilAutocorrLambdaRootBound.pencil_sqrt_bound_of_autocorr_le
+#print axioms ProximityGap.Frontier.PencilAutocorrLambdaRootBound.exists_shift_autocorr_gt_of_card

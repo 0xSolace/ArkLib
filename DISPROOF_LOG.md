@@ -7501,3 +7501,25 @@ remains the open $1M wall.
 Formal kernel: `Frontier/_PencilAutocorrLambdaRootBound.lean`, both theorems axiom-clean
 (⊆ {propext,Classical.choice,Quot.sound}; no sorryAx); locked build exit 0 (8318 jobs); axiom_audit
 PASS (17 flagship clean); missing-import scan empty; codex review clean (no actionable issues).
+
+## [pencil-autocorr-fisher-floor] sharp Fisher LOWER bound on nontrivial-shift autocorrelation (2026-06-19, sol)
+Lane-3 citable obstruction, contrapositive of the sharpened λ-root-bound (same file):
+- `exists_shift_autocorr_gt_of_card`: for S⊆μ in the order-n subgroup with |S|=r≥1, if
+  λ·(n−1) < r·(r−1) then ∃ρ≠1, λ < |S∩ρS|. Equivalently the worst NONTRIVIAL-shift autocorrelation
+  M(S)=max_{ρ≠1}|S∩ρS| satisfies the SHARP Fisher floor M(S) ≥ ⌈r(r−1)/(n−1)⌉.
+This is the no-go for the pencil double-count route: any autocorrelation upper bound feeding a
+Kelley-3.2 / Fisher argument is bounded BELOW by the Fisher floor, so it cannot be driven below the
+coset-core scale ≈|coset|. DISTINCT from the energy/all-shift route
+(PencilAutocorrEnergyMaxBridge.sq_card_le_support_mul_maxAutocorr), which bounds the ALL-shift max M₀
+(including the trivial ρ=1 overlap =|S|); this floor is on the genuinely NONTRIVIAL-shift max and is
+sharp (uses the apex-corrected λ(n−1), not (λ+1)(n−1)).
+PROBE (/tmp/probe_pencil_autocorr_lower.py): r(r−1)>L(n−1) ⇒ M(S)>L over PROPER thin 2-power μ_n
+(n=4..32, p>n³, p≡1 mod n, NEVER n=q−1), 486/486 checks, 0 failures.
+VERDICT: locks the Fisher floor as the lower bound the pencil/Kelley double-count autocorrelation
+hypothesis can never breach — confirming the pencil route is Johnson-capped at the prize core (where
+the floor ≈ coset-core scale ≈ n/2). NON-moment, field-/thickness-universal. NO
+CORE/cancellation/completion/moment/anti-concentration/capacity claim — door (iv) anti-concentration
+remains the open $1M wall.
+Formal kernel: Frontier/_PencilAutocorrLambdaRootBound.lean, exists_shift_autocorr_gt_of_card,
+axiom-clean (⊆ {propext,Classical.choice,Quot.sound}; no sorryAx); locked build exit 0 (8318 jobs);
+axiom_audit PASS; missing-import scan empty; codex review clean.
