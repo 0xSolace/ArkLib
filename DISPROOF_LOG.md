@@ -1,5 +1,17 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) multiplicative coherence-slack factor still collapses to the baseline at a coherent argmax (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceSlackVacuousAtArgmax`. Prior bricks blocked vanishing, relaxed-baseline, and affine/additive coherence-slack certificates at a fully coherent prize-worst frequency. This refinement pins the ratio-style patch: a multiplicative certificate of the form
+
+`mass b ≤ B * g(1 - ρ(b))`, with `g(0)=1`,
+
+collapses at any fully coherent frequency `ρ(b*)=1` to `mass b* ≤ B`. Therefore if the baseline `B` is strictly below the coherent peak, no such certificate can hold; if it is valid, the baseline already pays the hard `L∞` peak and the multiplicative slack factor contributes no anti-concentration at the adversarial frequency.
+
+VERDICT: replacing an additive slack penalty by a multiplicative/ratio slack factor does not evade the coherent-argmax obstruction. Any door-(iv) coherence-slack attack must prove the hard peak bound in the baseline itself or prove the worst frequency is not fully coherent. No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSlackVacuousAtArgmax.lean`, axiom-clean. New theorems: `multiplicativeSlack_bound_at_coherent`, `multiplicativeBaseline_ge_mass_of_coherent_argmax`, and `no_multiplicativeCoherenceSlackBound_of_small_baseline`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) multi-piece coherence slack equals twice minority sign mass (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`. Prior bricks compressed any real multi-piece refinement to the aggregate signed-mass ratio `|P-N|/(P+N)` and pinned strict slack/saturation by whether both sign masses are present. This refinement gives the quantitative identity

@@ -160,6 +160,44 @@ theorem no_affineCoherenceSlackBound_of_small_baseline {mass coh : ι → ℝ} {
   intro hb
   exact not_le.2 hsmall (affineBaseline_ge_mass_of_coherent_argmax hmax hcoh hb)
 
+/-- A *multiplicative* coherence-slack certificate: the claimed control is a baseline `B` times a
+slack factor `g (1 - coh i)`.  This covers ratio-style patches of the failed slack lever, where the
+coherence deficit is supposed to damp a baseline budget rather than add to it. -/
+structure MultiplicativeCoherenceSlackBound (mass coh : ι → ℝ) (B : ℝ) (g : ℝ → ℝ) : Prop where
+  /-- The full-coherence factor is normalized to one, so a fully coherent frequency receives exactly
+  the baseline bound `B`. -/
+  factor_zero : g 0 = 1
+  /-- Pointwise multiplicative slack control. -/
+  bound : ∀ i, mass i ≤ B * g (1 - coh i)
+
+/-- At a fully coherent frequency, a multiplicative coherence-slack certificate collapses to its
+baseline `B`.  The multiplicative slack factor contributes no damping at `ρ = 1`. -/
+theorem multiplicativeSlack_bound_at_coherent {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    (hb : MultiplicativeCoherenceSlackBound mass coh B g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ B := by
+  have := hb.bound i
+  rwa [hcoh, sub_self, hb.factor_zero, mul_one] at this
+
+/-- **Multiplicative baseline necessity at a coherent argmax.**  If the prize-worst frequency is
+fully coherent, every multiplicative coherence-slack certificate must put the entire peak mass into
+its baseline.  A ratio-style `1 - ρ` factor cannot reduce the adversarial frequency. -/
+theorem multiplicativeBaseline_ge_mass_of_coherent_argmax {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (_hmax : ∀ i, mass i ≤ mass bstar) (hcoh : coh bstar = 1)
+    (hb : MultiplicativeCoherenceSlackBound mass coh B g) :
+    mass bstar ≤ B :=
+  multiplicativeSlack_bound_at_coherent hb hcoh
+
+/-- Impossibility form: a multiplicative coherence-slack certificate with baseline strictly below the
+fully coherent prize peak cannot hold.  Thus replacing an additive slack term by a ratio-style slack
+factor does not evade the coherent-argmax obstruction; the baseline must already pay the hard `L∞`
+peak. -/
+theorem no_multiplicativeCoherenceSlackBound_of_small_baseline {mass coh : ι → ℝ}
+    {B : ℝ} {g : ℝ → ℝ} {bstar : ι} (hmax : ∀ i, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : B < mass bstar) :
+    ¬ MultiplicativeCoherenceSlackBound mass coh B g := by
+  intro hb
+  exact not_le.2 hsmall (multiplicativeBaseline_ge_mass_of_coherent_argmax hmax hcoh hb)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_trivial_at_coherent
@@ -171,3 +209,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineSlack_bound_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineBaseline_ge_mass_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_affineCoherenceSlackBound_of_small_baseline
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.multiplicativeSlack_bound_at_coherent
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.multiplicativeBaseline_ge_mass_of_coherent_argmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_multiplicativeCoherenceSlackBound_of_small_baseline
