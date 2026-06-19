@@ -6920,3 +6920,27 @@ itself shrinks with `n`.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`,
 axiom-clean.  New theorem: `tower_product_ge_fixed_width_floor`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+## [open-core-rho-step-one-explicit] First ρ-monotonicity rung pinned to ONE explicit char-p inequality via the EXACT char-0 energies (2026-06-19, sol)
+Lane 2 / door-(iv) reduction-chain extension of `_OpenCoreRhoMonotone` (the campaign's sharpest
+reduction: prize ⟺ ρ antitone, base ρ(1)<1 PROVEN, abstract cross-inequality S_{r+1}·E_r ≤ S_r·E_{r+1}).
+That file left the char-0 energies E_r(ℂ) ABSTRACT. This commit makes the FIRST rung r=1 fully
+explicit using two already-proven exact char-0 energies: E_1(ℂ)=n and E_2(ℂ)=3n(n−1) (the latter
+proven axiom-clean in `RootsOfUnityEnergyExact.lean::rootsOfUnity_additiveEnergy_eq`). Plugging these
+plus the Parseval value S_1=p·n−n² into the abstract cross-inequality collapses the r=1 antitone step
+ρ(2)≤ρ(1) to the SINGLE explicit, finite, computable char-p target `S_2 ≤ 3·n·(n−1)·(p−n)` on the
+b≠0 4th-moment period energy S_2=Σ_{t≠0}|η_t|⁴.
+
+Probe-first: `probe_E2_closedform.py` re-confirmed E_2=3n(n−1) EXACTLY at n=4,8,16,32,64 (Type-A
+multiset-equal 2n²−n + Type-B nontrivial-coincidence n(n−2) = 3n²−3n); `probe_cross_r1.py` re-confirmed
+S_2·E_1 ≤ S_1·E_2 on PROPER μ_n, p≈n⁴≫n³, multiple structured primes incl. non-Fermat (ratio 0.996–0.9997).
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoStepOneExplicit.lean`,
+axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Theorems:
+- `rho_step_one_iff_cross_explicit` — r=1 antitone step with E_1=n, E_2=3n(n−1) (n>1) ⟺ S_2·n ≤ S_1·(3n(n−1)).
+- `cross_one_iff_S2_target` — substitute S_1=p·n−n² (Parseval) ⟺ S_2 ≤ 3n(n−1)(p−n) (n>0, cancel n).
+- `rho_step_one_target` — chained: explicit r=1 step ρ(2)≤ρ(1) ⟺ S_2 ≤ 3n(n−1)(p−n).
+
+Scope: REDUCTION/instantiation of the FIRST rung only, using proven exact char-0 energies. Does NOT
+prove S_2 ≤ 3n(n−1)(p−n) (that char-p 4th-energy bound is the open content of rung 1), does NOT prove
+the full antitone chain, makes NO CORE/cancellation/completion/moment-saving/capacity claim. The prize
+remains the open wall; rung 1's exact target is now one concrete finite inequality.
