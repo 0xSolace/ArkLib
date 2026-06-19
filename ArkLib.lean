@@ -1012,6 +1012,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteParsevalLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTrivialCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteCompletionCeiling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawCompletionCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTwoSidedBracket
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.CongruenceSizeBlindNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConstantIndexGaussBarrier
