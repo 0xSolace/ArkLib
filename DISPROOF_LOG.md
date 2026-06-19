@@ -6338,7 +6338,6 @@ alone supplies no phase cancellation. Door-(iv) multi-piece attacks must prove g
 or signed/two-sided mass, not merely refine the coset split. This is a constraint lemma only: no CORE
 bound, no moment/completion route, no capacity claim.
 
-<<<<<<< Updated upstream
 ## [door-iv-sector-epsilon-escape] strict finite-refinement coherence saving forces quantitative angular escape from every ray (g55, 2026-06-19)
 
 Lane: Door-(iv) Lane 3 constraint consumer for finite-refinement phase-spread claims.  Existing
@@ -6356,7 +6355,7 @@ pieces stay inside a sector of aperture corresponding to projection floor `1 - �
 Formal kernel: extended `Frontier/_DoorIVSectorCoherence.lean` with
 `exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  Constraint lemma only: no CORE, no cancellation, no capacity claim.
-=======
+
 ## [door-iv-trivial-ceiling-insufficient] the normalized triangle ceiling diverges in the prize regime (2026-06-19, g55)
 
 Lane: Door-(iv) Lane 2 capstone/no-go bookkeeping, extending the concrete baseline-insufficiency file.
@@ -6372,4 +6371,16 @@ ceiling is parametrically above the prize target.
 
 Lean: extended `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteBaselineInsufficiency.lean`.
 Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
->>>>>>> Stashed changes
+
+## [door-iv-completion-baseline-no-certificate] thin-regime completion ceiling cannot certify bounded Shaw value (g55, 2026-06-19)
+
+Lane: Door-(iv) Lane 2 no-go consumer for the completed Shaw-value reduction layer.  The previous
+`ConcreteBaselineInsufficiency` brick quantified that the normalized √q-completion corridor
+`√(q/(nL))` exceeds any fixed target `C` once `C²(nL) < q`.  This sweep adds the contradiction form:
+in that thin regime, it is impossible for the completion baseline itself to certify
+`√(q/(nL)) ≤ C`.
+
+Formal kernel: `not_completion_baseline_certifies_in_thin_regime` in
+`Frontier/ConcreteBaselineInsufficiency.lean`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is only a no-go bookkeeping guardrail: it proves the
+classical completion ceiling leaves the exact prize gap open; it supplies no cancellation or CORE bound.

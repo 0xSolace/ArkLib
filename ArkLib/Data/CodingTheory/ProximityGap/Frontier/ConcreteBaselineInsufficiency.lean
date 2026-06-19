@@ -74,8 +74,19 @@ theorem trivial_ceiling_insufficient {C n L : ℝ} (hC : 0 ≤ C) (hL : 0 < L)
     exact hthin
   exact sqrt_ratio_gt_of_lt hC hratio
 
+/-- Contradiction form: in the thin regime, the completion baseline cannot simultaneously be below
+`C`.  This is the exact no-go consumer for attempts to close the prize using only the proven
+`√(q/(n·L))` normalized corridor. -/
+theorem not_completion_baseline_certifies_in_thin_regime {C n L q : ℝ} (hC : 0 ≤ C)
+    (hn : 0 < n) (hL : 0 < L) (hthin : C ^ 2 * (n * L) < q) :
+    ¬ Real.sqrt (q / (n * L)) ≤ C := by
+  intro hcert
+  have hgap : C < Real.sqrt (q / (n * L)) := baseline_insufficient hC hn hL hthin
+  linarith
+
 end ProximityGap.Frontier.ConcreteBaselineInsufficiency
 
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.sqrt_ratio_gt_of_lt
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.baseline_insufficient
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.trivial_ceiling_insufficient
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_completion_baseline_certifies_in_thin_regime
