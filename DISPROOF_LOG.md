@@ -7103,3 +7103,15 @@ with `normalized_variance_le_one_add_pairResidual`, axiom-clean with axioms cont
 `{propext, Classical.choice, Quot.sound}`.  Scope is only a reduction/normalization theorem.  It proves
 no pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, no completion
 or moment saving, and no capacity claim.
+
+## [doorIV-pair-discrepancy-C-over-m-interface] A `C/m` pair residual gives normalized variance `≤1+2C` (2026-06-19, g55)
+Lane 2 follow-up to `[doorIV-pair-discrepancy-normalized-budget]`.  The exact normalized budget now has
+the standard asymptotic interface: if the pair-discrepancy residual satisfies `δ ≤ C/m`, then
+`avg_B η²/(2m) ≤ 1+2C`.  Thus the phrase "pair residual is `O(1/m)`" is kernel-checked to be exactly
+strong enough for an `O(1)` normalized variance/Shaw budget.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`
+with `normalized_variance_le_one_add_two_mul_of_delta_le_const_div`, axiom-clean with axioms contained
+in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction/normalization.  It proves no
+pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, and no capacity
+claim.
