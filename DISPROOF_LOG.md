@@ -6789,3 +6789,17 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawVal
 New theorems: `shawValue_le_sqrt_of_secondMoment_le` and
 `shawValue_le_sqrt_iff_secondMoment_le`.  Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
+## [doorIV-target-corridor] the door-(iv) shave is exactly the √L factor between the prize floor √n and the BGK ceiling √(n·L) (2026-06-19, sol)
+Extends [no-fifth-door-tetrachotomy]. The exclusion half pinned doors (i)-(iii) at the BGK ceiling
+bgkScale n L = √(n·L); the Plancherel/RMS floor pins √n ≤ M. So the worst-frequency sup M lives in
+the corridor [√n, √(n·L)], and the ENTIRE remaining door-(iv) content is to shave the multiplicative
+√L = √(log(p/n)) factor from the BGK ceiling down to the prize floor. Distinct from the trivial [√n, n]
+Shaw-value bracket: here the ceiling is the BGK scale (what doors (i)-(iii) actually deliver), not n.
+
+Formal kernel: extends `Frontier/_NoFifthDoorTetrachotomy.lean` (axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}; locked build exit 0, 1971 jobs). Theorems: mem_doorIV_corridor
+(M ∈ [prizeScale, bgkScale]), doorIV_corridor_width_pos (floor < ceiling for L>1, positive-width real
+gap), bgkScale_eq_sqrtL_mul_prizeScale (bgkScale = √L · prizeScale — the door-(iv) obligation is
+precisely removing √L). NON-VACUITY in-kernel: positive-width corridor + concrete √L identity.
+NO CORE/cancellation/completion/capacity claim — pins the open door-(iv) target quantitatively.

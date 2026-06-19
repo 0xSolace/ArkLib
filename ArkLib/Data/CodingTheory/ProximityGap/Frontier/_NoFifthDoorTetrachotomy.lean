@@ -164,4 +164,36 @@ theorem prizeCertifying_subset_doorIV {n L : ℝ}
     ∀ m : Mechanism, m.certScale ≤ prizeScale n → m.door = DoorType.newEvaluation :=
   fun _ hcert => forces_doorIV hn hL hclassicalOvershoots hcert
 
+/-! ## The door-(iv) target corridor `[√n, √(n·L)]`
+
+The exclusion above says doors (i)-(iii) bottom out at the BGK ceiling `bgkScale n L = √(n·L)`, while
+the Plancherel/RMS lower bound pins `prizeScale n = √n ≤ M` from below.  Hence the worst-frequency sup
+`M` lives in the corridor `[√n, √(n·L)]`, and the *entire remaining door-(iv) content* is to shave the
+multiplicative `√L` factor from the BGK ceiling down to the prize floor.  This differs from the trivial
+`[√n, n]` Shaw-value bracket: here the ceiling is the BGK scale (what doors (i)-(iii) actually deliver),
+not the trivial `n`. -/
+
+/-- **Door-(iv) target corridor.**  Given the Plancherel floor `√n ≤ M` and any classical door's BGK
+ceiling `M ≤ √(n·L)`, the worst-frequency sup `M` lies in the corridor `[prizeScale n, bgkScale n L]`.
+The prize is exactly the lower endpoint; doors (i)-(iii) only reach the upper endpoint. -/
+theorem mem_doorIV_corridor {M n L : ℝ}
+    (hfloor : prizeScale n ≤ M) (hceil : M ≤ bgkScale n L) :
+    prizeScale n ≤ M ∧ M ≤ bgkScale n L :=
+  ⟨hfloor, hceil⟩
+
+/-- **The corridor is genuinely nonempty with positive width** in the prize regime `L > 1`: the floor
+is strictly below the ceiling (`√n < √(n·L)`), so the door-(iv) shave is a real `√L`-factor gap, not a
+degenerate point. -/
+theorem doorIV_corridor_width_pos {n L : ℝ} (hn : 0 < n) (hL : 1 < L) :
+    prizeScale n < bgkScale n L :=
+  prizeScale_lt_bgkScale hn hL
+
+/-- **The BGK ceiling is exactly the prize floor scaled by `√L`.**  Pins the door-(iv) obligation
+quantitatively: door (iv) must remove precisely the factor `√L = √(log(p/n))` separating the BGK
+ceiling that doors (i)-(iii) deliver from the prize floor.  (`bgkScale n L = √L · prizeScale n`.) -/
+theorem bgkScale_eq_sqrtL_mul_prizeScale {n L : ℝ} (hn : 0 ≤ n) (hL : 0 ≤ L) :
+    bgkScale n L = Real.sqrt L * prizeScale n := by
+  unfold bgkScale prizeScale
+  rw [Real.sqrt_mul hn, mul_comm]
+
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy
