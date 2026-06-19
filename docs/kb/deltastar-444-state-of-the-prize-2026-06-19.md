@@ -104,6 +104,16 @@ pair correlation at `r≈log p` is un-attempted). The next layer mapped its exac
   `0.87→0.13` (below 1, improving) — the prize HOLDS comfortably where computable; the core is the variance of the
   fluctuation at the uncomputable prize scale.
 
+**UPDATE (over-dispersion — the variance route is closed as a *closure path*).** Direct computation of
+`Var_P(W_r)` vs `mean_P(W_r)` over the prime family (`probe_wraparound_overdispersion`) refutes the capstone's
+sub-Poisson hypothesis everywhere computable: var/mean = **14 … 407555**, heavily **over-dispersed** — a sparse set
+of structured primes (high `v₂(p-1)`, Fermat-like) carries the second-moment mass. `_OverdispersionObstructsVariance`
+(axiom-clean) proves this is *fatal*: a single prime with `(W_j-mean)² > total` forces `Var > mean`, so Chebyshev
+over the family can never select a good prime. The capstone (`subPoisson_variance_implies_prizeFloor`) is therefore
+a **true implication with a false hypothesis**. The honest residual shifts from "bound the family variance" to
+"**the specific prize prime is round**" (its cyclotomic ideal `𝔭` has no anomalously short vector) — a *per-prime*
+lattice-point-equidistribution statement, the same wall, but now correctly located off the family-averaging route.
+
 **Verdict on the variance route:** fully mapped; exact structure known axiom-clean, bottoms out on the SAME
 growing-order Jacobi equidistribution as every other route. Genuinely-new objects, no closure.
 (See `issue444-create-open-frontiers`.)
