@@ -126,6 +126,26 @@ theorem twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio {P N : ℝ}
   rw [twoPieceCoherence_pos_neg_eq_abs_diff_ratio hP hN htotal,
     abs_diff_ratio_eq_one_sub_two_mul_min_ratio hP hN htotal]
 
+
+/-- Quantitative form of the exact index-2 slack identity.  For opposite-sign halves, obtaining a
+uniform coherence saving `ε` is **equivalent** to proving that the minority half-mass contributes at
+least an `ε/2` fraction of the total absolute half-mass.  This pins the remaining arithmetic content
+of any raw coset-half door-(iv) lever to a minority-mass lower bound, rather than to the formal
+index-2 decomposition itself. -/
+theorem twoPieceCoherence_pos_neg_le_one_sub_iff {P N ε : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) ≤ 1 - ε ↔ ε ≤ 2 * min P N / (P + N) := by
+  rw [twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio hP hN htotal]
+  constructor <;> intro h <;> linarith
+
+/-- Strict quantitative form of the same constraint: strict coherence saving is exactly strict
+minority-mass participation. -/
+theorem twoPieceCoherence_pos_neg_lt_one_sub_iff {P N ε : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) < 1 - ε ↔ ε < 2 * min P N / (P + N) := by
+  rw [twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio hP hN htotal]
+  constructor <;> intro h <;> linarith
+
 /-- Symmetric opposite-sign slack. -/
 theorem twoPieceCoherence_lt_one_of_neg_pos {A B : ℝ}
     (hA : A < 0) (hB : 0 < B) :
@@ -151,3 +171,5 @@ end ProximityGap.Frontier.DoorIVCosetHalfCoherence
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_eq_abs_diff_ratio
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.abs_diff_ratio_eq_one_sub_two_mul_min_ratio
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_lt_one_sub_iff
