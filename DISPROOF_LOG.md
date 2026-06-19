@@ -1,3 +1,18 @@
+## door-(iv) strict selector gains must miss an entire coset (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceOrderBlind`. Prior bricks proved that a
+coset-invariant statistic cannot satisfy a strict restricted bound on any selector `T` that hits every
+left `H`-coset. This refinement packages the positive converse used by probes: if `T` proves a bound
+below some actual global coset-invariant value, then there exists a whole left `H`-coset missed by `T`.
+
+VERDICT: order buckets, element-level filters, or other selectors cannot be a door-(iv) anti-concentration
+lever unless they remove entire `μ_n`-cosets. Any real selector improvement must be quotient-level, not a
+property that still samples every coset. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`,
+axiom-clean. New theorem: `exists_coset_missed_of_strict_selector_bound`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) naive index factor is strict in every nontrivial indexed regime (2026-06-19)
 
 Lens: Lane 2/3 constraint lemma extending `_DoorIVIndexFactorOvershoot`. Prior bricks recorded the exact

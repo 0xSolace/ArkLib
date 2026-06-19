@@ -194,6 +194,20 @@ theorem no_strict_bound_on_cosetHitting_set_below_global_value {H : Subgroup G} 
     (bound_on_cosetHitting_set_iff_global (H := H) (f := f) (C := C) hf hT).1 hbound
   exact not_lt_of_ge (hglobal b) hb
 
+/-- **Positive form of the selector obstruction.**  If a restricted class `T` satisfies a strict
+bound below some global value of a coset-invariant statistic, then `T` must miss an entire left
+`H`-coset.  Thus any genuine selector improvement is forced to be quotient-level: it cannot come from
+an element-level property (such as multiplicative order) that still hits every `μₙ`-coset. -/
+theorem exists_coset_missed_of_strict_selector_bound {H : Subgroup G} {β : Type*}
+    [Preorder β] {f : G → β} (hf : CosetInvariant H f) {T : Set G} {C : β}
+    (hbound : ∀ t ∈ T, f t ≤ C) (hstrict : ∃ b : G, C < f b) :
+    ∃ x : G, ∀ t ∈ T, t * x⁻¹ ∉ H := by
+  by_contra hmiss
+  push Not at hmiss
+  rcases hstrict with ⟨b, hb⟩
+  exact no_strict_bound_on_cosetHitting_set_below_global_value
+    (H := H) (f := f) (C := C) hf hmiss hbound hb
+
 end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
 
 #print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.eq_of_cosetInvariant_of_sameCoset
@@ -210,3 +224,5 @@ end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.bound_on_cosetHitting_set_iff_global
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.no_strict_bound_on_cosetHitting_set_below_global_value
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.exists_coset_missed_of_strict_selector_bound
