@@ -185,6 +185,18 @@ theorem shawValueFamilyBound_of_rawComparison {ι : Type*} {M H n L : ι → ℝ
     mul_le_mul_of_nonneg_left (hM i) hK
   exact le_trans h1 h2
 
+/-- Raw-prize comparison transfers a raw family bound with the same multiplicative constant.  This
+is the unnormalized companion to `shawValueFamilyBound_of_rawComparison`: a pointwise comparison
+`H ≤ K*M` turns a raw prize bound `M ≤ C*scale` into `H ≤ (K*C)*scale`. -/
+theorem rawPrizeFamilyBound_of_rawComparison {ι : Type*} {M H n L : ι → ℝ} {K C : ℝ}
+    (hK : 0 ≤ K) (hHM : ∀ i, H i ≤ K * M i) (hM : rawPrizeFamilyBound M n L C) :
+    rawPrizeFamilyBound H n L (K * C) := by
+  intro i
+  calc
+    H i ≤ K * M i := hHM i
+    _ ≤ K * (C * prizeScale (n i) (L i)) := mul_le_mul_of_nonneg_left (hM i) hK
+    _ = (K * C) * prizeScale (n i) (L i) := by ring
+
 /-- **Shaw-value sandwich equivalence.**  If two raw door-(iv) targets are uniformly sandwiched
 `M ≤ H ≤ K*M` with one `K`, then boundedness of their Shaw values is equivalent, up to constants.
 For the current campaign, instantiate `M` as the prize supremum and `H` as worst half-mass. -/
@@ -362,6 +374,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_of_rawComparison
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_of_rawComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
