@@ -79,6 +79,20 @@ theorem scaledConstantFamily_ge_linear_floor {ι : Type*} {C m R : ι → ℝ}
   intro i
   exact scaledConstant_ge_linear_floor (hC i) (hm i)
 
+/-- A bounded normalized naive constant forces the index itself to be bounded.  This is the
+contrapositive-facing form of the `sqrt(m)` obstruction: with a fixed positive raw constant `C`, any
+uniform cap `D` on `C sqrt(m)` implies `m ≤ (D/C)^2`.  Hence an unbounded-index family cannot have a
+uniform Shaw constant through the naive bridge. -/
+theorem index_le_sq_of_scaledConstant_le {C m D : ℝ}
+    (hC : 0 < C) (hm : 0 ≤ m) (hbound : C * Real.sqrt m ≤ D) :
+    m ≤ (D / C) ^ 2 := by
+  have hsqrt_le : Real.sqrt m ≤ D / C := by
+    rw [le_div_iff₀ hC]
+    nlinarith
+  have hsq : (Real.sqrt m) ^ 2 ≤ (D / C) ^ 2 := by
+    exact pow_le_pow_left₀ (Real.sqrt_nonneg m) hsqrt_le 2
+  rwa [Real.sq_sqrt hm] at hsq
+
 /-- Degenerate index-one endpoint: if the index factor is absent, the naive incidence scale is
 exactly the prize scale.  This identifies the only endpoint where the bridge has no scale loss;
 the thin prize regime has `m` growing, not `m = 1`. -/
@@ -177,6 +191,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceBound_iff_shawValue_le_scaled
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_ge_linear_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_ge_linear_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
