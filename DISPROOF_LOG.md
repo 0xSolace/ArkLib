@@ -7175,3 +7175,26 @@ implication theorem feeding resonanceMoment_two_le into ResonanceConjecture; hon
 Does NOT prove the conjecture for large m; no CORE/cancellation/capacity claim. Axiom-clean
 (subset {propext,Classical.choice,Quot.sound}); locked build exit 0 (8315 jobs); axiom_audit PASS;
 codex review clean. File Frontier/_ResonanceMomentRTwoBounds.lean.
+
+## [doorIV-resonance-r3-rung] the r=3 resonance rung: phaseSum_three triple-convolution collapse + trivial bounds |phaseSum u 3 c| <= (m-1)^2, T(3) <= m(m-1)^4; probe T(3)=Theta(m^3) far below ceiling (odd r has NO clean diagonal) (2026-06-19, sol)
+
+Lane: door-(iv) Lane 2, extend the proven r=1/r=2 resonance-rung pattern to r=3 (a NEW rung of the
+named ResonanceConjecture chain; phaseSum_three was grep-confirmed MISSING). New file
+Frontier/_ResonanceMomentRThree.lean (imports GaussPhaseResonance only). Theorems:
+ - mem_phaseSum_three_filter: the Fin 3 filter membership criterion.
+ - phaseSum_three: phaseSum u 3 c = sum_{a!=0,b!=0,c-a-b!=0} u(a)u(b)u(c-a-b) (off-diagonal TRIPLE
+   convolution; reindex Fin 3 -> ZMod m by first two coords; r=3 analogue of phaseSum_two).
+ - phaseSum_three_norm_le: per-frequency L-infinity ceiling |phaseSum u 3 c| <= (m-1)^2 (triangle
+   inequality on <= (m-1)^2 unit triples; the pair (a,b) ranges in a subset of {a!=0}x{b!=0}).
+ - resonanceMoment_three_le: aggregate L2 ceiling T(3) <= m*(m-1)^4.
+PROBE (probe_r3.py, genuine Gauss-sum phases, structured primes, m=7..31): T(3) = Theta(m^3)
+(T3/m^3 ~ 3.4-8.1 with the same slow creep), and T(3)/(2m log m)^3 ~ 0.02-0.06 DECREASING (well under
+the conjecture ceiling). The trivial m(m-1)^4 ceiling is LOOSE by a large factor (off-diagonal triple
+cancellation). CRUCIAL ASYMMETRY vs r=2: r=3 is ODD, so phaseSum u 3 0 has NO clean conjugate-symmetric
+diagonal value (probe: ps3(0) fluctuates in sign/magnitude, no m-1-type law) -> NO matching lower bound
+this rung (only the upper trivial bounds shipped). VERDICT: frontier extension (new rung), upper-only;
+the off-diagonal cancellation gap is the same L2->L-infinity sup-norm wall. No CORE/cancellation/
+capacity claim. Axiom-clean (subset {propext,Classical.choice,Quot.sound}); locked build exit 0
+(8314 jobs); axiom_audit PASS. (codex review on r=3 was blocked on the shared .lake build lock held by
+a concurrent worker; the STRUCTURALLY-IDENTICAL r=2 collapse/triangle/card-product proofs in
+_ResonanceMomentRTwoBounds were codex-reviewed clean in this same session.)
