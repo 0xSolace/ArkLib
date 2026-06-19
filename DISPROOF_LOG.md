@@ -6338,6 +6338,7 @@ alone supplies no phase cancellation. Door-(iv) multi-piece attacks must prove g
 or signed/two-sided mass, not merely refine the coset split. This is a constraint lemma only: no CORE
 bound, no moment/completion route, no capacity claim.
 
+<<<<<<< Updated upstream
 ## [door-iv-sector-epsilon-escape] strict finite-refinement coherence saving forces quantitative angular escape from every ray (g55, 2026-06-19)
 
 Lane: Door-(iv) Lane 3 constraint consumer for finite-refinement phase-spread claims.  Existing
@@ -6355,3 +6356,20 @@ pieces stay inside a sector of aperture corresponding to projection floor `1 - �
 Formal kernel: extended `Frontier/_DoorIVSectorCoherence.lean` with
 `exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  Constraint lemma only: no CORE, no cancellation, no capacity claim.
+=======
+## [door-iv-trivial-ceiling-insufficient] the normalized triangle ceiling diverges in the prize regime (2026-06-19, g55)
+
+Lane: Door-(iv) Lane 2 capstone/no-go bookkeeping, extending the concrete baseline-insufficiency file.
+
+Result: `trivial_ceiling_insufficient` proves the arithmetic gap for the elementary triangle bound in
+Shaw units: if `C² · L < n`, then `C < √(n/L)`.  Since the normalized form of `M ≤ n` is
+`√(n/L)`, the trivial ceiling cannot certify `Sh ≤ C` for fixed `C` once `n/L` is large.  This is the
+triangle-bound analogue of the existing √q-completion insufficiency theorem.
+
+Scope: pure arithmetic of the normalization.  It does not improve any bound and makes no cancellation,
+anti-concentration, moment, completion-saving, or CORE claim; it only records that the known triangle
+ceiling is parametrically above the prize target.
+
+Lean: extended `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteBaselineInsufficiency.lean`.
+Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+>>>>>>> Stashed changes

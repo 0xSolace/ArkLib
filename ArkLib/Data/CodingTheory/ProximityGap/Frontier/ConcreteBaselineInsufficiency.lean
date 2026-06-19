@@ -21,6 +21,8 @@ bound `√(q/(n·L))` is itself `> C`, so it cannot certify the prize.
 > `sqrt_ratio_gt_of_lt`         : `C² < q/(n·L) → C < √(q/(n·L))`  (the baseline exceeds the target),
 > `baseline_insufficient`       : in the thin regime `C² · (n·L) < q`, the proven ceiling
 >                                 `√(q/(n·L))` does NOT imply `Sh ≤ C` — the gap is real.
+> `trivial_ceiling_insufficient`: in the even weaker triangle regime `C² · L < n`, the trivial
+>                                 normalized ceiling `√(n/L)` also exceeds `C`.
 
 In the prize regime `n = 2^a`, `q = n^β` (`β ≈ 4-5`), `L = log(p/n) = Θ(log q)`, the ratio is
 `q/(n·L) = n^{β−1}/Θ(log q) → ∞`, so for every fixed `C` the hypothesis `C²·(n·L) < q` holds for all
@@ -60,4 +62,20 @@ theorem baseline_insufficient {C n L q : ℝ} (hC : 0 ≤ C) (hn : 0 < n) (hL : 
     rw [lt_div_iff₀ hnL]; exact hthin
   exact sqrt_ratio_gt_of_lt hC hratio
 
+/-- **The triangle/trivial ceiling is also insufficient in the prize normalization.** The normalized
+form of `M ≤ n` is `√(n/L)`.  If `C² · L < n` (true for every fixed `C` at large `n` when
+`L = Θ(log n)`), then this trivial normalized ceiling strictly exceeds the target `C`; therefore the
+plain triangle bound carries no `O(1)` Shaw-value certificate. -/
+theorem trivial_ceiling_insufficient {C n L : ℝ} (hC : 0 ≤ C) (hL : 0 < L)
+    (hthin : C ^ 2 * L < n) :
+    C < Real.sqrt (n / L) := by
+  have hratio : C ^ 2 < n / L := by
+    rw [lt_div_iff₀ hL]
+    exact hthin
+  exact sqrt_ratio_gt_of_lt hC hratio
+
 end ProximityGap.Frontier.ConcreteBaselineInsufficiency
+
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.sqrt_ratio_gt_of_lt
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.baseline_insufficient
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.trivial_ceiling_insufficient
