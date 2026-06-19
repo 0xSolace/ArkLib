@@ -75,6 +75,30 @@ upper envelope for the period.) -/
 theorem norm_le_halfMass (A B : E) : ‖A + B‖ ≤ halfMass A B :=
   norm_add_le A B
 
+/-- Coherence is nonnegative, since it is a norm divided by a nonnegative half-mass. -/
+theorem coherence_nonneg (A B : E) : 0 ≤ coherence A B := by
+  unfold coherence
+  exact div_nonneg (norm_nonneg _) (halfMass_nonneg A B)
+
+/-- If the half-mass is positive, coherence is at most `1`.  Thus a door-(iv) coherence lever has no
+room above the triangle-inequality envelope; it can only try to prove quantitative slack below `1`. -/
+theorem coherence_le_one_of_halfMass_pos {A B : E} (h : 0 < halfMass A B) :
+    coherence A B ≤ 1 := by
+  unfold coherence
+  rw [div_le_iff₀ h]
+  simpa [one_mul] using norm_le_halfMass A B
+
+/-- At positive half-mass, full coherence is equivalent to equality in the half-mass envelope.  This
+packages the exact obstruction: proving `coherence < 1` is exactly proving strict loss in
+`‖A+B‖ ≤ ‖A‖+‖B‖`, while at the prize-worst coherent frequency there is no such loss. -/
+theorem coherence_eq_one_iff_norm_eq_halfMass {A B : E} (h : 0 < halfMass A B) :
+    coherence A B = 1 ↔ ‖A + B‖ = halfMass A B := by
+  constructor
+  · exact norm_eq_halfMass_of_coherence_one h
+  · intro heq
+    unfold coherence
+    rw [heq, div_self (ne_of_gt h)]
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_nonneg
@@ -82,3 +106,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_halfMass_of_coherence_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.prize_localizes_onto_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_le_halfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_nonneg
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_le_one_of_halfMass_pos
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_one_iff_norm_eq_halfMass
