@@ -99,6 +99,22 @@ theorem coherence_eq_one_iff_norm_eq_halfMass {A B : E} (h : 0 < halfMass A B) :
     unfold coherence
     rw [heq, div_self (ne_of_gt h)]
 
+/-- At positive half-mass, a strict coherence drop is exactly strict loss in the triangle-inequality
+half-mass envelope.  Thus a door-(iv) split does not gain anything from the act of splitting alone:
+it must prove genuine strict triangle slack for the adversarial pieces. -/
+theorem coherence_lt_one_iff_norm_lt_halfMass {A B : E} (h : 0 < halfMass A B) :
+    coherence A B < 1 ↔ ‖A + B‖ < halfMass A B := by
+  unfold coherence
+  rw [div_lt_iff₀ h]
+  simp
+
+/-- If the period norm already saturates the half-mass envelope, there is no strict coherence drop. -/
+theorem not_coherence_lt_one_of_norm_eq_halfMass {A B : E} (h : 0 < halfMass A B)
+    (heq : ‖A + B‖ = halfMass A B) :
+    ¬ coherence A B < 1 := by
+  rw [coherence_lt_one_iff_norm_lt_halfMass h, heq]
+  exact not_lt_of_ge le_rfl
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_nonneg
@@ -109,3 +125,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_nonneg
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_le_one_of_halfMass_pos
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_one_iff_norm_eq_halfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_lt_one_iff_norm_lt_halfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass

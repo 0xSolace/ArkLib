@@ -7703,3 +7703,19 @@ completion, anti-concentration, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`,
 axiom-clean. New theorems: `scaledConstant_ge_linear_floor` and
 `scaledConstantFamily_ge_linear_floor`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) half-mass coherence drop is exactly strict triangle slack (2026-06-19)
+
+Lens: Lane 3 extension of `_DoorIVHalfMassFactorization`. The existing brick proved the period norm
+factors as `coherence * halfMass` and that full coherence is equality in the half-mass envelope. This
+refinement packages the strict version: at positive half-mass, `coherence A B < 1` iff
+`‖A+B‖ < halfMass A B`, and if the envelope is saturated then no strict coherence drop exists.
+
+VERDICT: splitting into coset halves is not itself an anti-concentration argument. Any successful
+half-split door-(iv) attack must prove genuine strict triangle slack for the adversarial pieces; if
+the worst frequency saturates the envelope, the coherence lever has zero room. No CORE, cancellation,
+completion, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`,
+axiom-clean. New theorems: `coherence_lt_one_iff_norm_lt_halfMass` and
+`not_coherence_lt_one_of_norm_eq_halfMass`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
