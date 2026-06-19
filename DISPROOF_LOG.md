@@ -6025,3 +6025,26 @@ _DoorIVCoherenceSlackVacuousAtArgmax.lean — CoherenceSlackBound structure (g 0
 slack_bound_trivial_at_coherent (coh i=1 ⟹ mass i ≤ 0), no_coherenceSlackBound_of_coherent_argmax and
 the Finset-argmax form (a positive-mass full-coherence argmax admits NO coherence-slack bound). No CORE,
 no cancellation, no capacity claim.
+
+## [door-iv-halfmass-factorization] prize size = coherence × half-mass; with ρ(b*)=1 pinned, the prize burden relocates onto the half-mass L¹ ‖A‖+‖B‖ (NO escape) (2026-06-19, sol)
+
+By definition of the index-2 coset-half coherence ρ(b)=‖A+B‖/(‖A‖+‖B‖) (A,B = half-period sums over the
+two cosets of μ_{n/2}<μ_n, A+B=η_b), the EXACT identity holds: |η_b| = ρ(b)·(‖A‖+‖B‖) = coherence ×
+half-mass. Probe scripts/probes/probe_dooriv_halfmass_factorization.py (PROPER μ_n, p≫n³, n=16 FULL F_p*
+scan, n=32,64 sampled; never n=q-1) confirms identity residual ~1e-16 and:
+ - at the prize-worst b* (where ρ=1, proven same-ray + my [door-iv-coherence-slack-vacuous-at-argmax]):
+   halfmass(b*)/√n = |η(b*)|/√n EXACTLY (3.459 at n=16 full scan) — the peak is the FULL, UNDAMPED
+   half-mass.
+ - max_b (‖A‖+‖B‖)/√n ≈ max_b |η_b|/√n (identical at n=16 full scan): the half-mass L¹ carries the SAME
+   √(n·log) burden as the period.
+
+CONSEQUENCE (no-escape reformulation): coherence is pinned at 1 at b*, so the prize size |η_{b*}| equals
+the half-mass ‖A‖+‖B‖ with no coherence damping; and the half-mass L¹ is NOT smaller than the period
+(it has the same √n-scale max). So the index-2 factorization RELOCATES the wall onto the half-mass L¹,
+it does not shrink it — a faithful reformulation, NOT an escape (consistent with the campaign meta-thm:
+the burden survives any definitional re-split into two coset halves).
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+_DoorIVHalfMassFactorization.lean — halfMass, coherence, norm_eq_coherence_mul_halfMass (|A+B| =
+coherence·halfMass), norm_eq_halfMass_of_coherence_one, prize_localizes_onto_halfMass, norm_le_halfMass
+(coherence ≤ 1 ⇒ half-mass is an upper envelope). No CORE/cancellation/capacity claim.
