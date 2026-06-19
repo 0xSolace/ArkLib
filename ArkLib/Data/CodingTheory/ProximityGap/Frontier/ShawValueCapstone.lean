@@ -112,6 +112,43 @@ theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} 
   · rintro ⟨C, hC⟩
     exact ⟨C, (rawPrizeFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
 
+/-- Uniform raw comparison transfers to a uniform Shaw-value bound with the same comparison constant.
+If `H i ≤ K * M i` throughout a family and `M` has Shaw-value bound `C`, then `H` has Shaw-value
+bound `K*C`.  The analytic input is only the raw comparison; this theorem is normalization
+bookkeeping. -/
+theorem shawValueFamilyBound_of_rawComparison {ι : Type*} {M H n L : ι → ℝ} {K C : ℝ}
+    (hK : 0 ≤ K) (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hHM : ∀ i, H i ≤ K * M i) (hM : shawValueFamilyBound M n L C) :
+    shawValueFamilyBound H n L (K * C) := by
+  intro i
+  have h1 : shawValue (H i) (n i) (L i) ≤ K * shawValue (M i) (n i) (L i) := by
+    unfold shawValue
+    have hdiv : H i / prizeScale (n i) (L i) ≤ (K * M i) / prizeScale (n i) (L i) :=
+      div_le_div_of_nonneg_right (hHM i) (le_of_lt (hs i))
+    have hrewrite : (K * M i) / prizeScale (n i) (L i) = K * (M i / prizeScale (n i) (L i)) := by
+      ring
+    exact hrewrite ▸ hdiv
+  have h2 : K * shawValue (M i) (n i) (L i) ≤ K * C :=
+    mul_le_mul_of_nonneg_left (hM i) hK
+  exact le_trans h1 h2
+
+/-- **Shaw-value sandwich equivalence.**  If two raw door-(iv) targets are uniformly sandwiched
+`M ≤ H ≤ K*M` with one `K`, then boundedness of their Shaw values is equivalent, up to constants.
+For the current campaign, instantiate `M` as the prize supremum and `H` as worst half-mass. -/
+theorem exists_shawValueFamilyBound_iff_of_rawSandwich {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, shawValueFamilyBound M n L C) ↔ (∃ C, shawValueFamilyBound H n L C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    exact ⟨K * C, shawValueFamilyBound_of_rawComparison hK hs hHM hC⟩
+  · rintro ⟨C, hC⟩
+    refine ⟨C, fun i => ?_⟩
+    have h1 : shawValue (M i) (n i) (L i) ≤ shawValue (H i) (n i) (L i) := by
+      unfold shawValue
+      exact div_le_div_of_nonneg_right (hMH i) (le_of_lt (hs i))
+    exact le_trans h1 (hC i)
+
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
 theorem shawValue_floor_of_plancherel_floor {M n L : ℝ} (hs : 0 < prizeScale n L)
@@ -237,6 +274,8 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_of_rawComparison
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
