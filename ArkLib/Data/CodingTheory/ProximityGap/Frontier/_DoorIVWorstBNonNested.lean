@@ -108,6 +108,21 @@ better sub-frequency the level-`n` worst frequency misses. -/
 theorem witness_gap_pos_of_lt {subMag : ι → ℝ} {b c : ι} (h : subMag b < subMag c) :
     0 < subMag c - subMag b := by linarith
 
+/-- **Ratio gap and additive witness gap are equivalent certificates.**  With positive true
+level-`(n/2)` maximum, saying the transfer ratio is strictly below `1` is exactly saying the missed
+subargmax gap `M₂ - a*` is positive.  This lets probes record either the normalized ratio or the raw
+magnitude gap without changing the obstruction certificate. -/
+theorem ratio_lt_one_iff_witness_gap_pos {subMag : ι → ℝ} {b c : ι}
+    (hpos : 0 < subMag c) :
+    subMag b / subMag c < 1 ↔ 0 < subMag c - subMag b := by
+  constructor
+  · intro hratio
+    have hlt : subMag b < subMag c := (div_lt_one hpos).mp hratio
+    linarith
+  · intro hgap
+    have hlt : subMag b < subMag c := by linarith
+    exact (div_lt_one hpos).mpr hlt
+
 /-- **Percentile-domination does NOT give argmax-identity.**  Even if the transferred value `a*` upper-
 bounds *every* sub-period magnitude *except* at the true argmax `c` (`∀ d ≠ c, subMag d ≤ a*`, the
 "99.9th percentile" content) — as long as `a* < subMag c` at the single witness `c`, `b*` is still not a
@@ -124,6 +139,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.worstB_not_nested_of_ratio_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_pos_of_lt
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_lt_one_iff_witness_gap_pos
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_ge_of_ratio_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.high_percentile_not_argmax

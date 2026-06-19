@@ -7826,3 +7826,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorems `not_coherence_le_aligned_mass_of_sumSq_lt` and
 `not_coherence_le_aligned_mass_of_sumSq_le_budget`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-ratio-gap-equivalence] transfer ratio < 1 is exactly positive missed-subargmax gap (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstBNonNested`. Prior kernel turned a
+sub-level transfer ratio below one into non-nesting and a quantitative witness gap. This refinement
+packages the exact probe-interface equivalence: for positive true sub-level maximum `M₂`, the normalized
+certificate `a*/M₂ < 1` is equivalent to the raw missed-subargmax gap `0 < M₂ - a*`.
+
+VERDICT: the recursive-ascent obstruction can be certified either by the reported transfer ratio or by
+the additive witness gap; they are the same failure mode. High percentile / near-top behavior still does
+not give argmax identity. No CORE, cancellation, completion, moment-saving, anti-concentration, or
+capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new theorem
+`ratio_lt_one_iff_witness_gap_pos`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
