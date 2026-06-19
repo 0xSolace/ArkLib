@@ -18553,3 +18553,41 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFacto
 theorems `prizeScale_le_naiveIncidenceScale_of_one_le_m` and
 `constant_le_scaled_constant_of_one_le_m`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [adversarial-audit-2026-06-19] 19-agent adversarial audit of 13 load-bearing #444 claims — all axiom-clean (no fabrication), 7 clean, 6 concerns (vacuity-at-prize ×3, prose-overclaim/def-encoding ×3) (2026-06-19, NubsCarson)
+
+Ran an independent adversarial audit (one skeptic per load-bearing file + a second agent independently
+double-checking every flagged concern). NET: EVERY file is genuinely axiom-clean
+(`[propext, Classical.choice, Quot.sound]`, no `sorry`/`native_decide`/fake axiom) and NO file falsely
+claims the prize is closed/advanced — the campaign is honest at the meta level. 7 clean; 6 concerns, each
+CONFIRMED by the independent second pass:
+
+VACUITY-AT-PRIZE (true Lean conditionals, but vacuous when instantiated at the real `μ_n`, `n=2^30`,
+`q≈2^158`, `r≈110` — the DC trap; `E_r ≥ |G|^{2r}/q` exceeds `(2rn)^r`/`Wick` by ~2286 bits):
+* `_ThesisCapstone.subPoisson_variance_implies_prizeFloor` — confirmed vacuous (`hwrap ∧ hanchor ∧ hVar`
+  force raw `E_r ≤ (2rn)^r` at the good prime). SHARPER than prior log entry: the docstring's "the ONLY
+  undischarged premise is `hVar`" MISSTATES the signature — `hwrap`/`hanchor`/`hdepth`/`hprim` are also
+  open, and the prize-scale-FALSE raw-energy object is smuggled in via `hwrap+hVar`, not surfaced as open.
+* `_SupBoundCapstone` — confirmed vacuous (anchored to raw DC-included energy via `_ProveAssemblyConcrete`;
+  the sibling `_ProveAssemblyConcreteDC` is the fix; the capstone doesn't adopt it). + finite-size prop
+  (>99.4% margin is an n=16 probe).
+* `_RhoDecomposition.wraparound_within_char0_slack_suffices` (the sub-theorem, NOT the main iff) — NEW:
+  gives `ρ≤1` from `hwrap : W ≤ Wick−E0`, which under the file's own reading (`W=E_r−E_char0`, `E0=E_char0`)
+  IS raw `E_r ≤ Wick`, machine-proven false at prize depth (`not_gaussianEnergyBound_of_deep`). The main
+  identity `rho_le_one_iff_wraparound_le_slack` is genuine + correct; only this rung is vacuous-at-prize.
+
+PROSE-OVERCLAIM / DEFINITIONAL-ENCODING (Lean honest/trivial-but-true; framing oversells):
+* `_AvFrontier_KMomentBarrier` — the four decls are trivial (`single_pow_le_sum_pow` = `Finset.single_le_sum`;
+  `kMomentExp := 1/2 + β/(2K)` a bare def; `kMomentExp_gt_half` a one-line positivity). The "barrier" lives
+  in the DEFINITION (the K-moment exponent IS `1/2+β/(2K)`), asserted not proven — no `η_b`/spectral object
+  is formalized. The math reasoning (finite-K overshoots `1/2`) is correct; the Lean doesn't formalize it.
+* `_AvRem_Sidon0958Crystallized` — Lean is an honest modus-ponens re-export of `diBenedetto_beat`
+  (conditional); the "crystallized 0.9583" prose oversells; finite-size support.
+* `_OverdispersionObstructsVariance` — Lean is correct non-vacuous arithmetic; prose embellishment only.
+
+COMMON THREAD + FIX: no defects, no fabrications anywhere. But the capstone family + the one
+`_RhoDecomposition` rung route through the RAW (DC-included) energy and are vacuous at prize scale; the
+honest open object is the DC-subtracted moment `S_r = q·E_r − n^{2r} ≤ (q−1)·Wick`
+(`_ProveAssemblyConcreteDC.period_le_prizeFloor_dc`). Recommend: (1) restate the capstones/rung on `S_r`;
+(2) correct the `_ThesisCapstone` premise-isolation docstring; (3) downgrade `_AvFrontier_KMomentBarrier`'s
+"proven barrier" prose to "the Lean records the exponent algebra; the barrier is the modeling def."
