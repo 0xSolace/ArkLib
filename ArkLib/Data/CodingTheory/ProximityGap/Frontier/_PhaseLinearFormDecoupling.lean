@@ -387,6 +387,87 @@ theorem variance_le_of_pairEquidist {m : ℕ} (φ : Fin m → B → ℝ) (δ : �
   rw [hsimp] at hbound
   exact hbound
 
+/-- **The matching LOWER companion to `variance_le_of_pairEquidist` (two-sided variance control).**
+The same pair-equidistribution residual `PairEquidistributed φ δ` that caps the variance proxy from
+ABOVE also pins it from BELOW: the second moment cannot drop more than the same `O(m²δ)` correction
+below the prize proxy `2m = n`:
+
+> `avg_B(η²) ≥ 2m − 2δ·m·(2m−1)`.
+
+Proof mirrors the upper bound: the decoupling identity is an EQUALITY, the diagonal proxy is
+`2 + 2D(2x_k) ≥ 2 − 2δ` (using the lower half of `|D|≤δ`), and each off-diagonal pair term is
+`2D(x_j−x_k)+2D(x_j+x_k) ≥ −4δ`. Together with the upper bound this gives the two-sided statement
+`|avg_B(η²) − 2m| ≤ 2δ·m·(2m−1)`, i.e. **the variance proxy equals the prize floor `n` up to the
+exact summed pair-discrepancy correction** — so `δ → 0` forces `avg_B(η²) = 2m = n` from BOTH sides,
+not merely `≤`. (This matters for any application that needs a variance LOWER bound — e.g. a
+Plancherel/anti-concentration floor on the typical frequency — which the one-sided
+`variance_le_of_pairEquidist` cannot supply.) NO CORE/cancellation/capacity claim: this is the
+symmetric arithmetic of the same named residual, not a discharge of it. -/
+theorem variance_ge_of_pairEquidist {m : ℕ} (φ : Fin m → B → ℝ) (δ : ℝ) (hδ : 0 ≤ δ)
+    (h : PairEquidistributed φ δ) :
+    2 * m - 2 * δ * (m * (2 * m - 1))
+      ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) := by
+  obtain ⟨hdiff, hsum, hdbl⟩ := h
+  rw [secondMoment_decoupling (fun k b => 2 * Real.cos (φ k b))]
+  -- diagonal ≥ ∑_k (2 − 2δ) = 2m − 2mδ ;  off-diag ≥ ∑_j ∑_{k≠j} (−2δ−2δ) = −4δ·m(m−1)
+  have hdiag : (∑ _k : Fin m, (2 - 2 * δ : ℝ))
+      ≤ ∑ k : Fin m, avg (fun b => (2 * Real.cos (φ k b)) ^ 2) := by
+    apply Finset.sum_le_sum; intro k _
+    rw [diagonal_eq_proxy_plus_discrepancy (φ k)]
+    have := hdbl k
+    have hge : -δ ≤ discrepancy (fun b => 2 * φ k b) := (abs_le.mp this).1
+    linarith
+  have hoff : (∑ j : Fin m, ∑ _k ∈ Finset.univ.erase j, (-(4 * δ) : ℝ))
+      ≤ ∑ j : Fin m, ∑ k ∈ Finset.univ.erase j,
+          avg (fun b => (2 * Real.cos (φ j b)) * (2 * Real.cos (φ k b))) := by
+    apply Finset.sum_le_sum; intro j _
+    apply Finset.sum_le_sum; intro k _
+    rw [offDiagonal_eq_pair_discrepancy (φ j) (φ k)]
+    have h1 : -δ ≤ discrepancy (fun b => φ j b - φ k b) := (abs_le.mp (hdiff j k)).1
+    have h2 : -δ ≤ discrepancy (fun b => φ j b + φ k b) := (abs_le.mp (hsum j k)).1
+    linarith
+  -- evaluate the constant sums
+  have hdiag_eval : (∑ _k : Fin m, (2 - 2 * δ : ℝ)) = m * (2 - 2 * δ) := by
+    rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+  have hoff_eval : (∑ j : Fin m, ∑ _k ∈ Finset.univ.erase j, (-(4 * δ) : ℝ))
+      = m * (m - 1) * (-(4 * δ)) := by
+    have hinner : ∀ j : Fin m, (∑ _k ∈ Finset.univ.erase j, (-(4 * δ) : ℝ))
+        = (m - 1) * (-(4 * δ)) := by
+      intro j
+      rw [Finset.sum_const, nsmul_eq_mul]
+      congr 1
+      rw [Finset.card_erase_of_mem (Finset.mem_univ j), Finset.card_univ, Fintype.card_fin]
+      cases m with
+      | zero => exact absurd j.2 (by simp)
+      | succ p => push_cast [Nat.succ_sub_one]; ring
+    rw [Finset.sum_congr rfl (fun j _ => hinner j), Finset.sum_const, Finset.card_univ,
+      Fintype.card_fin, nsmul_eq_mul]
+    ring
+  -- assemble
+  have hbound : (m : ℝ) * (2 - 2 * δ) + m * (m - 1) * (-(4 * δ))
+      ≤ (∑ k : Fin m, avg (fun b => (2 * Real.cos (φ k b)) ^ 2))
+        + (∑ j : Fin m, ∑ k ∈ Finset.univ.erase j,
+            avg (fun b => (2 * Real.cos (φ j b)) * (2 * Real.cos (φ k b)))) := by
+    have := add_le_add hdiag hoff
+    rwa [hdiag_eval, hoff_eval] at this
+  have hsimp : (m : ℝ) * (2 - 2 * δ) + m * (m - 1) * (-(4 * δ))
+      = 2 * m - 2 * δ * (m * (2 * m - 1)) := by ring
+  rw [hsimp] at hbound
+  exact hbound
+
+/-- **Two-sided variance control from pair-equidistribution** (`variance_le_` ∧ `variance_ge_`).
+The averaged second moment is within `2δ·m·(2m−1)` of the exact prize proxy `2m = n`:
+`|avg_B(η²) − 2m| ≤ 2δ·m·(2m−1)`. So at `δ = 0` the variance proxy is EXACTLY `2m` (not merely
+bounded by it). This is the precise two-sided sense in which pair-equidistribution pins the variance. -/
+theorem abs_variance_sub_prizeProxy_le_of_pairEquidist {m : ℕ} (φ : Fin m → B → ℝ) (δ : ℝ)
+    (hδ : 0 ≤ δ) (h : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) - 2 * m|
+      ≤ 2 * δ * (m * (2 * m - 1)) := by
+  rw [abs_le]
+  constructor
+  · have := variance_ge_of_pairEquidist φ δ hδ h; linarith
+  · have := variance_le_of_pairEquidist φ δ hδ h; linarith
+
 /-- **The decoupling capstone: the sub-Gaussian sup-norm from pair-equidistribution.** Under the
 pair-equidistribution residual `PairEquidistributed φ δ` and the per-phase Bessel MGF (proven, no
 independence), the period's symmetric MGF is dominated by the sub-Gaussian envelope with the
@@ -461,6 +542,10 @@ open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms offDiagonal_eq_pair_discrepancy
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms variance_le_of_pairEquidist
+open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
+#print axioms variance_ge_of_pairEquidist
+open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
+#print axioms abs_variance_sub_prizeProxy_le_of_pairEquidist
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms subGaussian_supNorm_of_pairEquidist
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
