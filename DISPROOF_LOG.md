@@ -1,3 +1,33 @@
+## door-(iv) Jacobi-cocycle gap — PRECISELY MAPPED WALL: size + mechanism + exclusion, dispersion stays open (2026-06-19, sol/cocyclegap)
+
+Lens: door-(iv) Lane-2/3 — the localized Jacobi-cocycle gap (Shaw's tetrachotomy door iv) characterized
+from three complementary kernel-checked faces, leaving the deep dispersion estimate as a PRECISELY-MAPPED
+open wall (Rule 4: a wall mapped precisely is a WIN). The cocycle phase sum `P = Σ_j γ_j` over `Fin M`
+(unit phases, `M = (p−1)/n ≈ index`) has trivial-cocycle baseline `‖P‖ = M` (zero cancellation) and prize
+target `‖P‖ ≤ C·√(M·log M)`. The three faces:
+- SIZE (`_JacobiCocycleCancellationGap.baseline_div_target_eq_factor`): the cocycle must induce cancellation
+  factor `n/(C√(n log m)) = (1/C)√(n/log m)` off baseline `n` — the FULL √n Paley/BGK cancellation up to
+  the √(log m) thinness factor. EXACT identity, probe-verified n=16..1024, m=n³..n⁴.
+- MECHANISM (`_JacobiCocycleAlignmentMechanism.flat_target_forces_non_alignment` +
+  `_JacobiCocycleSingleDefectDeficit.single_defect_phaseSum_lt`): aligned ⟺ saturated, so any prize-meeting
+  configuration has NO common unit phase (forced dispersion); and even a SINGLE off-aligned unit phase
+  `w ≠ 1` forces `‖P‖ < M` strictly (saturation is fragile, needs EXACT alignment, deficit source `Re w < 1`).
+- EXCLUSION (`_JacobiCocycleFermatCornerExclusion.prizeRegime_not_fermat_corner`): the prize regime
+  (`p−1 = n·m`, `n = 2^a`, odd prime `r ∣ m`) makes `p−1` not a 2-power ⟹ `p` not Fermat ⟹ no closed-form
+  2-power Gauss-sum evaluation. The explicit route is structurally unavailable; consistent with §6/c.146.
+
+VERDICT: door (iv) is precisely localized — the EXACT cancellation magnitude required, the QUALITATIVE +
+sharp minimal-defect quantitative dispersion mechanism, and the unavailability of the closed-form corner are
+all kernel-checked. What stays OPEN is exactly the deep quantitative dispersion (`JacobiCocycleDispersion`,
+not in the literature): a lower bound is NOT proved, an upper bound at the √(M log M) scale is NOT proved.
+This is a mapped wall, not a closure. No CORE/cancellation/completion/anti-concentration/moment/capacity
+claim. Prize CORE stays OPEN.
+
+Formal kernel: `Frontier/_JacobiCocycleCancellationGap.lean`, `_JacobiCocycleAlignmentMechanism.lean`,
+`_JacobiCocycleFermatCornerExclusion.lean`, `_JacobiCocycleSingleDefectDeficit.lean`, unified in
+`_JacobiCocycleDoorIVCapstone.lean` (theorem `jacobiCocycle_doorIV_characterization`). 18 theorems, all
+axiom-clean with axioms ⊆ `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) Lane-2 capstone — COMPLETE concrete Shaw completion corridor `1/√(2L) ≤ Sh(M(μ_d)) ≤ √(q/(d·L))` (2026-06-19)
 
 Lens: Lane-2 citable capstone rung — tightest concrete normalized corridor, both endpoints, on the real
