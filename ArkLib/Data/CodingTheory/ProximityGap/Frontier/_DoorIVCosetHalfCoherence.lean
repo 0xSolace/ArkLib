@@ -156,6 +156,16 @@ theorem twoPieceCoherence_pos_neg_lt_one_sub_iff {P N ε : ℝ}
   rw [twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio hP hN htotal]
   constructor <;> intro h <;> linarith
 
+/-- Strict denominator-cleared obstruction.  A strict saving by `ε` is exactly the strict
+minority-mass inequality `ε*(P+N) < 2*min(P,N)`.  This is the probe-facing strict counterpart to
+the non-strict cleared form: below this mass threshold, the raw index-2 split cannot certify a
+strict door-(iv) coherence drop. -/
+theorem twoPieceCoherence_pos_neg_lt_one_sub_iff_min_mass {P N ε : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) < 1 - ε ↔ ε * (P + N) < 2 * min P N := by
+  rw [twoPieceCoherence_pos_neg_lt_one_sub_iff hP hN htotal]
+  exact lt_div_iff₀ htotal
+
 /-- Symmetric opposite-sign slack. -/
 theorem twoPieceCoherence_lt_one_of_neg_pos {A B : ℝ}
     (hA : A < 0) (hB : 0 < B) :
@@ -184,3 +194,4 @@ end ProximityGap.Frontier.DoorIVCosetHalfCoherence
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff_min_mass
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_lt_one_sub_iff
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_lt_one_sub_iff_min_mass
