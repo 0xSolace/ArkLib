@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoMonotone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoStepOneExplicit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoStepTwoExplicit
 
@@ -28,6 +29,7 @@ SCOPE: consumer/reduction only. It proves neither finite target, does not prove 
 
 namespace ProximityGap.Frontier.OpenCoreRhoFirstTwo
 
+open ProximityGap.Frontier.OpenCoreRho
 open ProximityGap.Frontier.OpenCoreRhoStepOne
 open ProximityGap.Frontier.OpenCoreRhoStepTwo
 
@@ -58,8 +60,27 @@ theorem rho_three_le_rho_one_of_first_two_targets (S2 S3 p n : ℝ)
   rcases first_two_rho_steps_of_targets S2 S3 p n hp1 hn hS2 hS3 with ⟨h32, h21⟩
   exact le_trans h32 h21
 
+/-- The first two explicit finite targets plus the proven Parseval base `ρ_1 < 1` put both
+normalized finite rungs below `1`. This is the exact two-rung consumer surface: all hard
+analytic content remains in the two target inequalities `hS2` and `hS3`; this theorem only
+chains them to the already-proven base case. -/
+theorem first_two_rho_lt_one_of_targets (S2 S3 p n : ℝ)
+    (hp : n < p) (hn : 1 < n)
+    (hS2 : S2 ≤ 3 * n * (n - 1) * (p - n))
+    (hS3 : S3 ≤ S2 * (15 * n ^ 3 - 45 * n ^ 2 + 40 * n) / (3 * n * (n - 1))) :
+    (S2 / ((p - 1) * (3 * n * (n - 1))) < 1) ∧
+      (S3 / ((p - 1) * (15 * n ^ 3 - 45 * n ^ 2 + 40 * n)) < 1) := by
+  have hp1 : 0 < p - 1 := by linarith
+  have hbase : (p * n - n ^ 2) / ((p - 1) * n) < 1 :=
+    rho_base_lt_one n p hn hp
+  rcases first_two_rho_steps_of_targets S2 S3 p n hp1 hn hS2 hS3 with ⟨h32, h21⟩
+  constructor
+  · exact lt_of_le_of_lt h21 hbase
+  · exact lt_of_le_of_lt (le_trans h32 h21) hbase
+
 end ProximityGap.Frontier.OpenCoreRhoFirstTwo
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.first_two_rho_steps_of_targets
 #print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.rho_three_le_rho_one_of_first_two_targets
+#print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.first_two_rho_lt_one_of_targets

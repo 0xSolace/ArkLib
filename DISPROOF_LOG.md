@@ -7005,3 +7005,18 @@ Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCore
 Lane 2 reduction-chain packaging.  The first rung is the finite target `S_2 ≤ 3n(n−1)(p−n)` and the second rung is the finite target `S_3 ≤ S_2·(15n³−45n²+40n)/(3n(n−1))`.  This commit packages the exact consumer: if those two targets are discharged elsewhere, then the normalized values obey `ρ_3 ≤ ρ_2 ≤ ρ_1`, and hence directly `ρ_3 ≤ ρ_1`.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoFirstTwoChain.lean`, axiom-clean.  Theorems: `first_two_rho_steps_of_targets` and `rho_three_le_rho_one_of_first_two_targets`, with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only transitive/reduction bookkeeping.  It proves neither finite char-p target, does not prove the probe-verified `E_3` closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-rho-first-two-subunit] first two explicit ρ targets land below the proven Parseval base (2026-06-19, g55)
+
+Lane 2 reduction-chain continuation. `_OpenCoreRhoFirstTwoChain` already packaged the first two explicit
+finite targets into `ρ_3≤ρ_2≤ρ_1`. This follow-up chains that consumer to the proven Parseval base
+`ρ_1<1` from `_OpenCoreRhoMonotone`: under `1<n<p`, if the rung-1 target
+`S_2 ≤ 3n(n−1)(p−n)` and the rung-2 target
+`S_3 ≤ S_2·(15n³−45n²+40n)/(3n(n−1))` both hold, then the normalized rung values satisfy
+`ρ_2<1` and `ρ_3<1`.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoFirstTwoChain.lean`
+with `first_two_rho_lt_one_of_targets`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`. Scope is only transitive/reduction bookkeeping from the two
+finite targets to the already-proven base; it proves neither finite char-p target, does not prove the
+probe-verified E3 closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
