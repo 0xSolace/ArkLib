@@ -187,6 +187,19 @@ theorem no_two_window_split_rhs_le_strict_budget [DecidableEq ι]
   have hconst := two_window_split_rhs_constant (s := s) (W₁ := W₁) (W₂ := W₂) h₁ h₂ hdis
   linarith
 
+/-- Budget-forcing form for finite multi-window certificates: if the purely occupancy-based split
+fits under some budget `B`, then the total number of summands already satisfies `|s| ≤ B`.  Thus
+any such certificate below the linear budget would contradict the exact split identity; occupancy
+bookkeeping alone cannot be the missing door-(iv) anti-concentration input. -/
+theorem multi_window_budget_forces_card_le [DecidableEq ι]
+    {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s) (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id)
+    {B : ℝ}
+    (hbudget : (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B := by
+  have hconst := multi_window_split_rhs_constant (s := s) (Ω := Ω) hsub hdis
+  linarith
+
 /-- Strict-budget obstruction for finite multi-window certificates: any disjoint finite family of
 occupancy windows plus the outside complement still has right-hand side exactly `|s|`.  Therefore
 no purely occupancy-based multi-window small-ball certificate can beat the trivial linear ceiling;
@@ -207,6 +220,7 @@ end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_two_window_split_rhs_le_strict_budget
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_budget_forces_card_le
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_bound_is_trivial
