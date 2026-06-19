@@ -213,4 +213,42 @@ theorem tower_product_le_one (upper bottom : List ℝ)
       _ = rs.prod := one_mul _
       _ ≤ 1 := hprod_le
 
+/-- **Bottom-floor lower bound.**  If every bottom coherence factor is at least `c ≥ 0`, then the
+bottom product is at least `c^k`, where `k = bottom.length`.  This is the quantitative obstruction
+behind the tower-collapse probe: when only a fixed bottom segment carries slack and each such factor is
+bounded below by a constant, the whole coherence product has only constant damping. -/
+theorem bottom_product_ge_pow_length (bottom : List ℝ) {c : ℝ}
+    (hc : 0 ≤ c) (hbottom : ∀ r ∈ bottom, c ≤ r) :
+    c ^ bottom.length ≤ bottom.prod := by
+  induction bottom with
+  | nil => simp
+  | cons r rs ih =>
+    rw [List.length_cons, List.prod_cons, pow_succ]
+    have hr : c ≤ r := hbottom r (by simp)
+    have hrs : ∀ x ∈ rs, c ≤ x := fun x hx => hbottom x (by simp [hx])
+    have ih' : c ^ rs.length ≤ rs.prod := ih hrs
+    have hpow_nonneg : 0 ≤ c ^ rs.length := pow_nonneg hc _
+    have hprod_nonneg : 0 ≤ rs.prod := le_trans hpow_nonneg ih'
+    calc
+      c ^ rs.length * c ≤ rs.prod * c := by
+        exact mul_le_mul_of_nonneg_right ih' hc
+      _ ≤ rs.prod * r := by
+        exact mul_le_mul_of_nonneg_left hr hprod_nonneg
+      _ = r * rs.prod := by ring
+
+/-- **Upper coherent levels cannot improve a bottom-floor lower bound.**  If the upper tower is fully
+coherent and every bottom factor is at least `c`, the full tower product is still at least `c^k` with
+`k = bottom.length`.  Thus a fixed-width bottom slack zone cannot yield a damping factor that decays
+with the full tower height `log₂ n`; all `n`-dependent damping would have to come from proving that the
+number of nontrivial bottom levels grows or that their factors shrink with `n`. -/
+theorem tower_product_ge_bottom_floor (upper bottom : List ℝ) {c : ℝ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc : 0 ≤ c)
+    (hbottom : ∀ r ∈ bottom, c ≤ r) :
+    c ^ bottom.length ≤ (upper ++ bottom).prod := by
+  rw [product_collapses_to_bottom upper bottom hupper]
+  exact bottom_product_ge_pow_length bottom hc hbottom
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.bottom_product_ge_pow_length
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor

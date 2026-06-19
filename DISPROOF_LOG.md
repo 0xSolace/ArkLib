@@ -1,5 +1,24 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) upper coherent tower gives only bottom-width damping (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceTowerCollapse`.  Prior tower-collapse
+bricks proved that fully coherent upper levels have product `1` and drop out, so the whole tower
+product equals the product of the bottom slack segment.  This refinement pins the quantitative floor:
+if every bottom factor is at least `c ≥ 0`, then the whole product is at least `c^k`, where
+`k = bottom.length`.
+
+VERDICT: a dyadic coherence-product route cannot get a damping factor that decays with the full tower
+height `log₂ n` from upper levels pinned at coherence `1`.  With only a fixed-width bottom slack zone
+and bottom factors bounded below by a constant, the damping is at best constant.  Any successful
+version must prove that the number of nontrivial levels grows with `n` or that the bottom factors
+themselves shrink with `n`.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`,
+axiom-clean.  New theorems: `bottom_product_ge_pow_length` and
+`tower_product_ge_bottom_floor`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
 ## door-(iv) affine coherence-slack baseline must already pay the coherent peak (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceSlackVacuousAtArgmax`.  The prior
