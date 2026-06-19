@@ -84,6 +84,30 @@ tropical/cont-model-theory/Host-Kra (all reduce — see `deltastar-444-exhaustiv
 one to obstruction (i) or (ii)); the ambitious meta-assault (break-the-obstruction, backward-construct, Walsh,
 RG, holonomic, info-theoretic — all reduce); geometry of numbers (cyclotomic lattice too round).
 
+## 4b. The variance route — FULLY MAPPED (this session's creation arc, ~28 new axiom-clean objects)
+
+The "rule-in / create" mandate produced 10 frontier objects + 3 next-layer + supporting bricks, all axiom-clean,
+all genuinely new. The four variance-core frontiers (F1 growing-order Jacobi discrepancy, F2 wraparound variance
++ `PairCorr`, F3 Stickelberger clustering, F4 tower-variance bootstrap) **converge** on one new open core: the
+**second-moment / pair equidistribution of Jacobi sums at growing order** (Katz did first-order, fixed order; the
+pair correlation at `r≈log p` is un-attempted). The next layer mapped its exact structure:
+- **2nd→1st moment reduction is EXACT** (`_NextDifferenceVariety`): the off-diagonal 2nd moment = a FIRST moment of
+  the Jacobi phase over the difference variety `V_diff = append(T, −T')`. Residual = `FirstMomentDiffCancellation` =
+  the off-diagonal wraparound, MEASURED non-√-cancelling (`W/√offdiag = 19`, growing) ⟹ V_diff re-enters the wall.
+- **Cross-level covariance is EXACTLY `(−1)^r·Var_r`** (`_NextAntipodalAntiCorr`, exact closed form): the antipodal
+  tower doubling gives `Var(2n) = ((1−γ_r)²+δ)·Var(n)`, `γ_r=(−1)^{r+1}` ⟹ **maximal contraction at ODD r
+  (annihilates), EXPANSION (×4) at EVEN r**. F4's bootstrap is NOT a uniform contraction (dead as a uniform
+  mechanism); residual = `OddOrderBridge`.
+- **Relation norms are NOT 2-power-smooth** (`_NextNormFactorizationClustering`): largest prime factor grows
+  (5→194977 by n=32) ⟹ no smoothness handle.
+- **Wraparound is sub-random; random mean DC-cancelled** (`probe_wraparound_correction`): DC-moment ratio
+  `0.87→0.13` (below 1, improving) — the prize HOLDS comfortably where computable; the core is the variance of the
+  fluctuation at the uncomputable prize scale.
+
+**Verdict on the variance route:** fully mapped; exact structure known axiom-clean, bottoms out on the SAME
+growing-order Jacobi equidistribution as every other route. Genuinely-new objects, no closure.
+(See `issue444-create-open-frontiers`.)
+
 ## 5. Honest verdict
 
 **Open. Believed true** (numerics `M/√(2n log m) = 0.77–0.85 < 1`; F1 disproof search found no counterexample;
