@@ -528,6 +528,24 @@ depth `r ≈ log p` is the growing-order equidistribution of §7.3 — but it is
 error (demanding control of the variance when the prize only needs control of the supremum) is *recorded* rather
 than buried. This is the difference between a thesis that maps its problem and one that flatters it.
 
+**(iv) The exact ρ-decomposition** **[Lean, `_RhoDecomposition`]**. The corrected criterion admits a clean exact
+split that quarantines the proven half from the open half. Writing `E_r = E_char0 + W_r` and `Wick = (2r−1)‼·n^r`,
+the brick `_RhoDecomposition.rho_le_one_iff_wraparound_le_slack` proves (axiom-clean) the *identity*
+> `ρ_r ≤ 1  ⟺  W_r ≤ slack`,  with  `slack = (Wick − E_char0) + (n^{2r} − Wick)/p`.
+
+The first summand `Wick − E_char0 = (1 − R_r)·Wick` is the **char-0 slack** — nonnegative by the *proven* char-0
+energy bound (`gaussianEnergyBound_dyadic`, `R_r ≤ 1`) and, crucially, **growing with depth**: the measured char-0
+ratio `R_r = E_char0/Wick` decays to 0 *super-geometrically* (`probe_rho_asymptotic`: the step ratio `R_r/R_{r-1}`
+itself falls `0.76 → 0.41` for `n=8`, `0.88 → 0.72` for `n=16`), so the dyadic period is *strictly* sub-Gaussian with
+a gap that widens as `r → log p`. The second summand is the DC term, which at prize scale (`n^{2r}/p ≫ Wick`)
+dominates. The open core is therefore *exactly* `W_r ≤ slack` against an explicit budget that **grows** with depth,
+and `wraparound_within_char0_slack_suffices` shows that the wraparound staying within the char-0 slack alone already
+closes the criterion. Empirically `ρ_r ≈ R_r` to four places (the wraparound contributes `≈ +0.0007`, the DC
+subtraction `≈ −0.0095`), so the char-`p` moment *tracks* the proven char-0 decay and the wraparound is a vanishing
+perturbation at every computable depth. This is the sharpest exact statement of the prize the campaign has produced:
+the proven sub-Gaussian half and the open wraparound half, separated by an identity, against a budget that is on the
+data's side and widening.
+
 ---
 
 ## Chapter 8 — Resolution and Defense
