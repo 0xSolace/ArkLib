@@ -7403,3 +7403,20 @@ No CORE/cancellation/completion/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new theorem
 `witness_gap_ge_of_ratio_le`, axiom-clean with axioms contained in `{propext, Classical.choice,
 Quot.sound}`.
+
+## [doorIV-worst-coset-index-no-common-residue] gap-gcd one forbids every proper mod-d residue class (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstCosetIndexUnstructured`.  Prior kernel
+turned the probe's top-index consecutive-gap gcd `1` into a no-proper-AP and no-parity obstruction.  This
+refinement gives the direct modular interface: if `Int.gcd (t₁-t₀) (t₂-t₁)=1`, then for every modulus
+`d≥2` and residue `r`, the three indices cannot all satisfy `tᵢ % d = r`.
+
+VERDICT: the probe's "no mod-d residue bias" is now kernel-checkable in its native form.  Common residue
+would force `d` to divide both consecutive gaps, hence to divide their gcd `1`, contradicting `d≥2`.
+Thus a door-(iv) anti-concentration attack cannot thin the adversarial worst-b set by a proper modular
+class restriction when the observed gap-gcd witness is `1`.  No CORE/cancellation/completion/capacity
+claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstCosetIndexUnstructured.lean`,
+new theorem `no_common_residue_mod_of_consecutive_gap_gcd_one`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

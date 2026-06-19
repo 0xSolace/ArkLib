@@ -105,6 +105,28 @@ theorem no_proper_progression_of_consecutive_gap_gcd_one
   have hle : d ≤ 1 := Int.le_of_dvd (by norm_num) this
   omega
 
+
+/-- **Direct modular-residue obstruction.**  The same `gap-gcd = 1` witness also forbids putting the
+three worst coset indices in one residue class modulo any proper modulus `d ≥ 2`.  This is the exact
+formal interface for the probe's "no mod-`d` residue bias" verdict: common residue would force `d` to
+divide both consecutive gaps, hence to divide their gcd `1`. -/
+theorem no_common_residue_mod_of_consecutive_gap_gcd_one
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ∀ d r : ℤ, 2 ≤ d → ¬ (t₀ % d = r ∧ t₁ % d = r ∧ t₂ % d = r) := by
+  rintro d r hd ⟨h0, h1, h2⟩
+  have hg1 : d ∣ (t₁ - t₀) := dvd_sub_of_same_residue h1 h0
+  have hg2 : d ∣ (t₂ - t₁) := dvd_sub_of_same_residue h2 h1
+  have hdvd_gcd : d ∣ (Int.gcd (t₁ - t₀) (t₂ - t₁) : ℤ) := by
+    have hn : (d.natAbs) ∣ Int.gcd (t₁ - t₀) (t₂ - t₁) :=
+      Nat.dvd_gcd (Int.natAbs_dvd_natAbs.mpr hg1) (Int.natAbs_dvd_natAbs.mpr hg2)
+    have : (d.natAbs : ℤ) ∣ (Int.gcd (t₁ - t₀) (t₂ - t₁) : ℤ) :=
+      Int.natCast_dvd_natCast.mpr hn
+    exact Int.natAbs_dvd.mp this
+  rw [hgcd] at hdvd_gcd
+  have hone : d ∣ (1 : ℤ) := by simpa using hdvd_gcd
+  have hle : d ≤ 1 := Int.le_of_dvd (by norm_num) hone
+  omega
+
 /-- **Specialization corollary (no 2-adic class-restriction).** The probe's `d = 2` instance: a
 worst-coset-index triple with consecutive-gap-gcd `1` cannot all share a common parity (mod-2 class).
 So the worst-`b` set is not parity/2-adically restricted at the index level — matching the measured
@@ -121,3 +143,4 @@ end ProximityGap.Frontier.DoorIVWorstCosetIndex
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.dvd_diff_of_mem_progression
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.no_proper_progression_of_consecutive_gap_gcd_one
 #print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.worst_index_not_parity_restricted
+#print axioms ProximityGap.Frontier.DoorIVWorstCosetIndex.no_common_residue_mod_of_consecutive_gap_gcd_one
