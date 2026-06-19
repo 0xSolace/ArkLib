@@ -6774,3 +6774,18 @@ in-kernel: hypotheses jointly satisfiable (door-(iv) mechanism at √n), strict 
 content (2 < √8), classical-at-BGK genuinely FAILS the prize certificate. NO CORE/cancellation/
 completion/moment-saving/capacity claim — this is the tetrachotomy exclusion backbone, with door (iv)
 itself (the worst-b coset-half coherence anti-concentration) left as the open wall.
+
+## door-(iv) linear Shaw-value bound is equivalent to variance-core budget (2026-06-19)
+
+Lens: Lane 2 continuation of `_DiffTraceShawValue`.  The square-normalized statement has now been
+packaged in the literal Shaw-value form: under the necessary nonnegative normalized budget condition,
+`Sh(Rel) ≤ sqrt(1 + S/#Rel)` iff the off-diagonal second-moment real part is `≤ S`.
+
+VERDICT: this is the direct `Sh(n)=O(1)` normalization interface for downstream citation.  It is still
+only an exact reduction/renormalization of the open variance-core bound; the analytic cancellation
+estimate itself remains unproved.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawValue.lean`, axiom-clean.
+New theorems: `shawValue_le_sqrt_of_secondMoment_le` and
+`shawValue_le_sqrt_iff_secondMoment_le`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.

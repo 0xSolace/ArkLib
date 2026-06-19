@@ -79,6 +79,30 @@ theorem shawValue_sq_le_iff_secondMoment_le (hmul : ∀ a b, θ (a + b) = θ a *
   rw [shawValue_sq_eq_flatnessRatio]
   exact flatnessRatio_le_iff_secondMoment_le hmul hone hunit Rel S hne
 
+
+/-- **`shawValue_le_sqrt_of_secondMoment_le`** — the linear Shaw-value form: if the normalized
+right side is nonnegative, the same variance-core bound gives `Sh(Rel) ≤ sqrt(1 + S/#Rel)`. -/
+theorem shawValue_le_sqrt_of_secondMoment_le (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) (hrhs : 0 ≤ 1 + S / (Rel.card : ℝ))
+    (h : (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re ≤ S) :
+    shawValue θ Rel ≤ Real.sqrt (1 + S / (Rel.card : ℝ)) := by
+  unfold shawValue
+  rw [Real.sqrt_le_sqrt_iff hrhs]
+  exact flatnessRatio_le_of_secondMoment_le hmul hone hunit Rel S hne h
+
+/-- **`shawValue_le_sqrt_iff_secondMoment_le`** — the fully linear citable form of the Shaw-value
+capstone: for nonempty `Rel` and nonnegative normalized budget, `Sh(Rel) ≤ sqrt(1 + S/#Rel)` is EXACTLY
+the variance-core off-diagonal second-moment bound. -/
+theorem shawValue_le_sqrt_iff_secondMoment_le (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel : Finset (Fin r → R)) (S : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) (hrhs : 0 ≤ 1 + S / (Rel.card : ℝ)) :
+    shawValue θ Rel ≤ Real.sqrt (1 + S / (Rel.card : ℝ))
+      ↔ (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re ≤ S := by
+  unfold shawValue
+  rw [Real.sqrt_le_sqrt_iff hrhs]
+  exact flatnessRatio_le_iff_secondMoment_le hmul hone hunit Rel S hne
+
 end ArkLib.ProximityGap.Frontier.DiffTraceShawValue
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -86,3 +110,5 @@ end ArkLib.ProximityGap.Frontier.DiffTraceShawValue
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_eq_flatnessRatio
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_le_of_secondMoment_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_le_iff_secondMoment_le
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_le_sqrt_of_secondMoment_le
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_le_sqrt_iff_secondMoment_le
