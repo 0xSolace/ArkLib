@@ -122,6 +122,18 @@ theorem no_coherenceSlackBoundWithBaseline_of_small_baseline {mass coh : ι → 
   intro hb
   exact not_le.2 hsmall (baseline_ge_mass_of_coherent_argmax hmax hcoh hb)
 
+/-- Finite-support baseline form matching probe output: if the observed finite argmax is fully
+coherent and its zero-slack baseline is below the peak mass, the relaxed slack certificate cannot
+hold.  The finite argmax hypotheses record provenance of `bstar`; the contradiction is local at the
+coherent peak. -/
+theorem no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax
+    {mass coh : ι → ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (_hbs : bstar ∈ s) (_hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : g 0 < mass bstar) :
+    ¬ CoherenceSlackBoundWithBaseline mass coh g := by
+  intro hb
+  exact not_le.2 hsmall (slack_bound_withBaseline_at_coherent hb hcoh)
+
 /-- An *affine* coherence-slack certificate: the claimed control is a baseline `B` plus a penalty
 from the slack `1 - coh i`.  This is the natural patched version of a failed vanishing-slack lever:
 allow an additive budget, but keep the anti-concentration content in the slack term. -/
@@ -159,6 +171,16 @@ theorem no_affineCoherenceSlackBound_of_small_baseline {mass coh : ι → ℝ} {
     ¬ AffineCoherenceSlackBound mass coh B g := by
   intro hb
   exact not_le.2 hsmall (affineBaseline_ge_mass_of_coherent_argmax hmax hcoh hb)
+
+/-- Finite-support affine form matching probe output: a below-peak additive baseline cannot be rescued
+by a slack penalty when the finite argmax itself has full coherence. -/
+theorem no_affineCoherenceSlackBound_of_small_baseline_finsetArgmax
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (_hbs : bstar ∈ s) (_hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : B < mass bstar) :
+    ¬ AffineCoherenceSlackBound mass coh B g := by
+  intro hb
+  exact not_le.2 hsmall (affineSlack_bound_at_coherent hb hcoh)
 
 /-- A *multiplicative* coherence-slack certificate: the claimed control is a baseline `B` times a
 slack factor `g (1 - coh i)`.  This covers ratio-style patches of the failed slack lever, where the
@@ -198,6 +220,16 @@ theorem no_multiplicativeCoherenceSlackBound_of_small_baseline {mass coh : ι �
   intro hb
   exact not_le.2 hsmall (multiplicativeBaseline_ge_mass_of_coherent_argmax hmax hcoh hb)
 
+/-- Finite-support multiplicative form matching probe output: a below-peak baseline times a normalized
+slack factor cannot hold when the finite argmax itself has full coherence. -/
+theorem no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (_hbs : bstar ∈ s) (_hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : B < mass bstar) :
+    ¬ MultiplicativeCoherenceSlackBound mass coh B g := by
+  intro hb
+  exact not_le.2 hsmall (multiplicativeSlack_bound_at_coherent hb hcoh)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_trivial_at_coherent
@@ -206,9 +238,12 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_withBaseline_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.baseline_ge_mass_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBoundWithBaseline_of_small_baseline
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineSlack_bound_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineBaseline_ge_mass_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_affineCoherenceSlackBound_of_small_baseline
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_affineCoherenceSlackBound_of_small_baseline_finsetArgmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.multiplicativeSlack_bound_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.multiplicativeBaseline_ge_mass_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_multiplicativeCoherenceSlackBound_of_small_baseline
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax

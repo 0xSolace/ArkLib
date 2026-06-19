@@ -7587,3 +7587,23 @@ completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParticipationGeneric.lean`,
 new theorems `aligned_mass_sq_div_card_le_sumSq` and `sumSq_ge_coherence_sq_div_card`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+
+## [doorIV-coherence-slack-finset-baseline] finite argmax wrappers for slack-baseline collapse (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVCoherenceSlackVacuousAtArgmax`. The global
+baseline/affine/multiplicative slack impossibility lemmas already showed that a fully coherent peak
+collapses any slack certificate to its zero-slack baseline. This refinement packages the probe-native
+finite-support form: if the observed finite argmax `bstar ∈ s` is fully coherent and the proposed
+baseline is below `mass bstar`, then the corresponding relaxed, affine, or multiplicative slack
+certificate cannot hold.
+
+VERDICT: finite worst-b probe output can cite the coherent-argmax obstruction directly. Slack-based
+anti-concentration is still local-vacuous at the adversarial coherent peak; adding a baseline only
+works if the baseline already pays the peak. No CORE, cancellation, completion, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSlackVacuousAtArgmax.lean`,
+new theorems `no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax`,
+`no_affineCoherenceSlackBound_of_small_baseline_finsetArgmax`, and
+`no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax`, axiom-clean with axioms contained
+in `{propext, Classical.choice, Quot.sound}`.
