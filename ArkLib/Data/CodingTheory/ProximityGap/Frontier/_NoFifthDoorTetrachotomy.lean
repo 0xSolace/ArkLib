@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors (#444)
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 set_option autoImplicit false
 set_option linter.style.longLine false
@@ -234,5 +235,56 @@ theorem completion_not_certifies_prizeScale {n L q : ℝ}
     (hn : 0 < n) (hL : 1 < L) (hq : n * L ≤ q) :
     ¬ (completionScale q ≤ prizeScale n) :=
   not_certifies_prizeScale_of_overshoot hn hL (completionMechanism_overshootsBGK hq)
+
+/-! ## Discharging the door-(i)/(iii) (moment / extreme-value) overshoot from the SOTA exponent wall
+
+Doors (i) (moment / symmetric-function) and (iii) (extreme-value / equidistribution) both bottom out
+at the BGK state of the art: a *guaranteed* per-frequency value `C·n^{1−δ}` with sub-prize exponent
+`δ < 1/2` (the in-tree SOTA has `δ ≈ 0.011`, i.e. `n^{0.989}`).  This SOTA scale eventually DOMINATES
+the BGK argument scale `bgkScale n L = √(n·L) = (√L)·n^{1/2}`, because the gap exponent `1/2 − δ > 0`
+drives `n^{1/2−δ} → ∞` past the constant `√L`.  So any moment/EVT mechanism certifies a scale that
+eventually exceeds `bgkScale`, i.e. it `OvershootsBGK` for all large `n` — a discharged consequence of
+the SOTA exponent being `< 1/2`, not a postulate.  (This re-proves, self-contained, the eventual
+domination at the heart of `_BGKSOTAInsufficiency.bgk_value_exceeds_prizeTarget_eventually`.) -/
+
+open Filter Topology in
+/-- **Moment/EVT SOTA scale eventually dominates BGK.**  For any SOTA constant `C > 0` and sub-prize
+exponent `δ < 1/2`, and any thinness index `L ≥ 0`, there is a threshold `N₀` past which the SOTA
+guaranteed value `C·n^{1−δ}` exceeds the BGK scale `√(n·L)`.  Hence the moment/extreme-value door's
+certified scale `OvershootsBGK` for all large subgroups. -/
+theorem momentEVT_scale_eventually_ge_bgkScale
+    {C L δ : ℝ} (hC : 0 < C) (hL : 0 ≤ L) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n → bgkScale n L ≤ C * n ^ (1 - δ) := by
+  have hgap : 0 < 1 / 2 - δ := by linarith
+  have htend : Tendsto (fun n : ℝ => C * n ^ (1 / 2 - δ)) atTop atTop :=
+    Tendsto.const_mul_atTop hC (tendsto_rpow_atTop hgap)
+  have hev : ∀ᶠ n : ℝ in atTop,
+      Real.sqrt L < C * n ^ (1 / 2 - δ) ∧ (1 : ℝ) ≤ n :=
+    (htend.eventually_gt_atTop (Real.sqrt L)).and (eventually_ge_atTop 1)
+  obtain ⟨N₀, hN₀⟩ := hev.exists_forall_of_atTop
+  refine ⟨N₀, fun n hn => ?_⟩
+  obtain ⟨hgt, hn1⟩ := hN₀ n hn
+  have hnpos : (0 : ℝ) < n := lt_of_lt_of_le one_pos hn1
+  have hsqrtn_pos : 0 < Real.sqrt n := Real.sqrt_pos.mpr hnpos
+  -- bgkScale n L = (√L)·√n  and  C·n^{1−δ} = (C·n^{1/2−δ})·√n, compare coefficients.
+  have hLHS : bgkScale n L = Real.sqrt L * Real.sqrt n := by
+    unfold bgkScale; rw [Real.sqrt_mul hnpos.le]; ring
+  have hrpow : n ^ (1 - δ) = n ^ (1 / 2 - δ) * Real.sqrt n := by
+    rw [Real.sqrt_eq_rpow, ← Real.rpow_add hnpos]; congr 1; ring
+  have hRHS : C * n ^ (1 - δ) = (C * n ^ (1 / 2 - δ)) * Real.sqrt n := by
+    rw [hrpow]; ring
+  rw [hLHS, hRHS]
+  exact le_of_lt (mul_lt_mul_of_pos_right hgt hsqrtn_pos)
+
+/-- **Door-(i)/(iii) overshoot, discharged for large `n`.**  A moment/extreme-value mechanism whose
+certified scale is the SOTA value `C·n^{1−δ}` (`δ < 1/2`) satisfies `OvershootsBGK` for every `n` past
+the SOTA threshold `N₀`.  Combined with the strict scale separation, such a mechanism provably cannot
+certify a prize-scale bound at those `n`. -/
+theorem momentEVT_mechanism_overshootsBGK_eventually
+    {C L δ : ℝ} (hC : 0 < C) (hL : 0 ≤ L) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n →
+      (⟨DoorType.moment, C * n ^ (1 - δ)⟩ : Mechanism).OvershootsBGK n L := by
+  obtain ⟨N₀, hN₀⟩ := momentEVT_scale_eventually_ge_bgkScale hC hL hδ
+  exact ⟨N₀, fun n hn => hN₀ n hn⟩
 
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy

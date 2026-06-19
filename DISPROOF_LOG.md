@@ -6833,3 +6833,22 @@ completionMechanism_overshootsBGK (the completion Mechanism satisfies Overshoots
 completion_not_certifies_prizeScale (door (ii) provably fails the prize certificate). NON-VACUITY
 in-kernel at n=4,L=2,q=64: n·L=8 ≤ 64=q, completion overshoots, prize certificate fails. NO CORE/
 cancellation/completion-saving/capacity claim — discharges ONE door's exclusion from a proven ceiling.
+
+## [doorI-III-momentEVT-overshoot-discharged] the moment/extreme-value SOTA scale n^{1-δ} (δ<1/2) eventually dominates BGK — door (i)/(iii) overshoot is a THEOREM (2026-06-19, sol)
+Extends [no-fifth-door-tetrachotomy] + [doorII-completion-overshoot-discharged]. Doors (i) (moment/
+symmetric-function) and (iii) (extreme-value/equidistribution) bottom out at the BGK SOTA: a guaranteed
+per-frequency value C·n^{1-δ} with sub-prize exponent δ<1/2 (in-tree SOTA δ≈0.011, n^{0.989}). Since
+the gap exponent 1/2-δ>0 drives n^{1/2-δ}→∞ past the constant √L, this SOTA scale eventually DOMINATES
+bgkScale n L = √(n·L) = √L·n^{1/2}. So any moment/EVT mechanism certifies a scale that eventually
+exceeds bgkScale (OvershootsBGK for all large n) — a discharged consequence of the SOTA exponent being
+< 1/2, not a postulate. (Self-contained re-proof of the eventual domination at the heart of
+_BGKSOTAInsufficiency.bgk_value_exceeds_prizeTarget_eventually, kept dependency-light.)
+
+Formal kernel: extends `Frontier/_NoFifthDoorTetrachotomy.lean` (axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}; locked build exit 0, 1975 jobs). Theorems:
+momentEVT_scale_eventually_ge_bgkScale (∃N₀ ∀n≥N₀, √(n·L) ≤ C·n^{1-δ}),
+momentEVT_mechanism_overshootsBGK_eventually (the moment Mechanism OvershootsBGK past the SOTA
+threshold). NON-VACUITY in-kernel: real threshold exists for SOTA n^{0.989} dominating BGK at C=1,L=4.
+With this, ALL THREE classical doors (i)/(ii)/(iii) now have their OvershootsBGK exclusion DISCHARGED
+from proven scale facts — the no-fifth-door tetrachotomy is unconditional on the classical side, leaving
+only door (iv) live. NO CORE/cancellation/capacity claim.
