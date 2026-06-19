@@ -7385,3 +7385,21 @@ or between pieces, not just coarse occupancy counts.  No CORE/cancellation/compl
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
 new theorems `two_window_split_rhs_constant` and `two_window_split_bound_is_trivial`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-nonnested-quant-gap] transfer-ratio failure gives a quantitative nesting gap (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWorstBNonNested`.  Prior kernel showed that
+if the level-`n` worst frequency transfers to the level-`n/2` subperiod with ratio `<1`, then it is not
+the true sublevel maximizer, so recursive worst-frequency nesting fails.  This refinement packages the
+quantitative margin: if `subMag b / subMag c ≤ r` with `subMag c > 0`, then
+
+`(1-r) * subMag c ≤ subMag c - subMag b`.
+
+VERDICT: the probed ratios below `1` are not merely boolean non-nesting witnesses; they certify an
+explicit positive missed-subargmax gap.  Any recursive-ascent proof that identifies the two worst
+frequencies must absorb that gap, rather than treating high percentile rank as exact argmax identity.
+No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new theorem
+`witness_gap_ge_of_ratio_le`, axiom-clean with axioms contained in `{propext, Classical.choice,
+Quot.sound}`.
