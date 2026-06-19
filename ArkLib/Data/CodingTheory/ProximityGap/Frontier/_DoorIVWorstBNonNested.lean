@@ -147,6 +147,22 @@ theorem high_percentile_not_argmax {subMag : ι → ℝ} {b c : ι}
     ¬ IsSubMaximizer subMag b :=
   not_isSubMaximizer_of_lt hgap
 
+/-- **Exact witness form of non-maximality.**  Failure of sub-argmax identity is equivalent to the
+existence of a strictly better sub-frequency.  This is the probe-native certificate: a recursive-ascent
+claim is refuted by one explicit witness `c` with `subMag b < subMag c`, and there is no weaker hidden
+condition behind the boolean `¬ IsSubMaximizer`. -/
+theorem not_isSubMaximizer_iff_exists_lt {subMag : ι → ℝ} {b : ι} :
+    ¬ IsSubMaximizer subMag b ↔ ∃ c, subMag b < subMag c := by
+  constructor
+  · intro hnot
+    by_contra hno
+    apply hnot
+    intro c
+    by_contra hlt
+    exact hno ⟨c, lt_of_not_ge hlt⟩
+  · rintro ⟨c, hlt⟩
+    exact not_isSubMaximizer_of_lt hlt
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
@@ -158,3 +174,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_le_iff_witness_gap_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.high_percentile_not_argmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_lt
