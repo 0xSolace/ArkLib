@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteCompletionCeiling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueCapstone
 
 set_option linter.style.longLine false
@@ -39,6 +40,7 @@ open ArkLib.ProximityGap.I031DilationOrbitReduction
 open ArkLib.ProximityGap.Frontier.ShawValueCapstone
 open ProximityGap.Frontier.ConcreteMomentAssembly
 open ProximityGap.Frontier.ConcreteCompletionCeiling
+open ProximityGap.Frontier.ConcreteShawValueThinFloor
 
 namespace ProximityGap.Frontier.ConcreteShawCompletionCorridor
 
@@ -58,4 +60,32 @@ theorem shawValue_worstPeriod_torsion_le_sqrt_card {d : ℕ} (hd : d ∣ Fintype
   exact div_le_div_of_nonneg_right
     (worstPeriod_torsion_le_sqrt_card hd hd0 hψ hne) (le_of_lt hs)
 
+/-- **The normalized concrete completion corridor on the real torsion-subgroup period.**  In the
+thin regime `q ≥ 2d`, the clean Plancherel floor and classical completion ceiling combine in Shaw
+units as
+`1 / sqrt (2L) ≤ Sh(M(μ_d)) ≤ sqrt q / sqrt(|μ_d| L)`.
+This is the concrete door-(iv) starting corridor: the lower endpoint is the normalized RMS floor,
+while the upper endpoint is the normalized door-(ii) completion scale.  No cancellation or
+anti-concentration estimate is asserted. -/
+theorem shawValue_worstPeriod_torsion_completion_corridor {d : ℕ}
+    (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (hne : (nonzeroFreqs F).Nonempty)
+    (hd1 : 1 ≤ (d : ℝ))
+    (hq2d : 2 * (d : ℝ) ≤ (Fintype.card F : ℝ)) {L : ℝ}
+    (hs : 0 < prizeScale ((torsion F d).card : ℝ) L) :
+    1 / Real.sqrt (2 * L)
+        ≤ shawValue (worstPeriod ψ (torsion F d) hne) ((torsion F d).card : ℝ) L
+      ∧ shawValue (worstPeriod ψ (torsion F d) hne) ((torsion F d).card : ℝ) L
+        ≤ Real.sqrt (Fintype.card F) / prizeScale ((torsion F d).card : ℝ) L := by
+  have hcard : ((torsion F d).card : ℝ) = (d : ℝ) := by
+    rw [card_torsion hd hd0]
+  refine ⟨?_, shawValue_worstPeriod_torsion_le_sqrt_card hd hd0 hψ hne hs⟩
+  have hfloor := shawValue_worstPeriod_floor_clean (ψ := ψ) hψ (torsion F d) hne
+    (by rwa [hcard]) (by rwa [hcard]) hs
+  exact hfloor
+
 end ProximityGap.Frontier.ConcreteShawCompletionCorridor
+
+/-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.shawValue_worstPeriod_torsion_le_sqrt_card
+#print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridor.shawValue_worstPeriod_torsion_completion_corridor
