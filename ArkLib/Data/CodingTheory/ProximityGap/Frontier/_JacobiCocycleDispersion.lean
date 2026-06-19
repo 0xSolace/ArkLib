@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueCapstone
 import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Tactic
@@ -133,6 +134,18 @@ been relocated into `JacobiCocycleDispersion`, the cocycle property, and nothing
 theorem prize_floor_iff_dispersion {M C n m : ℝ} :
     JacobiCocycleDispersion M C n m ↔ M ≤ C * Real.sqrt (n * Real.log m) := Iff.rfl
 
+/-- **Bridge to the Shaw-value capstone.** With logarithmic thinness parameter `L = log m`, the named
+Jacobi-cocycle dispersion predicate is exactly boundedness of the normalized Shaw value. This ties the new
+Door-IV cocycle object back into the existing Lane-2 `prize ⇔ Sh(n)=O(1)` normalization API; the hard content
+remains entirely inside the dispersion predicate. -/
+theorem jacobiCocycleDispersion_iff_shawValue_le {M C n m : ℝ}
+    (hs : 0 < ShawValueCapstone.prizeScale n (Real.log m)) :
+    JacobiCocycleDispersion M C n m ↔
+      ShawValueCapstone.shawValue M n (Real.log m) ≤ C := by
+  simpa [JacobiCocycleDispersion, ShawValueCapstone.prizeScale] using
+    (ShawValueCapstone.prizeBound_iff_shawValue_le (M := M) (C := C)
+      (n := n) (L := Real.log m) hs)
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -142,3 +155,4 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_delta_fiber
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_offSupport_zero
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.prize_floor_iff_dispersion
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
