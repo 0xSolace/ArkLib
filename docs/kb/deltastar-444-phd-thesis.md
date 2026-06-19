@@ -499,10 +499,22 @@ free to pick `p` — which is a *different statistic* from the family variance.
 `W = [B, 0]` is over-dispersed (`Var > mean` for `B > 2`) yet uniformly `≤ B`. Over-dispersion never forces a prime
 past the slack.
 
+*A normalization correction (honesty about the margin).* The ratio `W_r/E_0 ≈ 0.6 %` above **overstates** the safety
+margin, because `E_0` (the char-0 energy) is itself smaller than the Wick bound; it is the wrong denominator. The
+*correct* prize criterion is the **DC-subtracted moment** `ρ_r(p) = (p·E_r − n^{2r})/((p−1)·(2r−1)‼·n^r) =
+avg_{b≠0}‖η_b‖^{2r}/Wick`, which must be `≤ 1` (it yields `M ≤ √e·√(2rn)` at the saddle, the prize floor).
+Computed at the same thin primes (`probe_dc_criterion`), the worst-case `ρ_r` is `0.667, 0.505, 0.356` at
+`r = 4, 5, 6` — comfortably below 1, with the **margin *improving* as depth grows** (the Fermat prime `p = 65537`
+is the worst at `r = 4, 5`, still only `ρ ≈ 0.5–0.67`). So the true margin is `33–64 %`, not `> 99 %`; the bound
+holds with room, and — the genuinely reassuring signal — that room *increases* toward the saddle `r ≈ ln p`, exactly
+as a true sub-Gaussian transfer predicts. The misleading `W/E_0` framing is recorded as a correction rather than
+left to flatter the result.
+
 **(iii) The corrected central result** **[Lean, `_SupBoundCapstone`]**. The credible reduction is therefore to a
 **uniform sup bound** — *every* thin above-onset prime is good — not to sub-Poisson variance. This is strictly
 *weaker* than what the variance route demanded (which was both harder and, as stated, false), and it is exactly what
-the data shows, with a `> 99.4 %` margin including at the worst structured prime. The corrected capstone is recorded
+the data shows: the correctly-normalized DC-subtracted moment `ρ_r ≤ 0.36–0.67` at every computable thin prime
+(margin `33–64 %`, *improving* with depth), including at the worst structured prime. The corrected capstone is recorded
 axiom-clean as `_SupBoundCapstone`: `prizeFloor_of_exists_good_prime` proves a **single** good prime
 (`W_r(p*) ≤ slack`, existence — which the prize's freedom to choose `p` permits) discharges the floor, with **no
 variance hypothesis whatsoever**; `prizeFloor_of_uniform_sup` is the uniform form; and
@@ -510,8 +522,8 @@ variance hypothesis whatsoever**; `prizeFloor_of_uniform_sup` is the uniform for
 `W = [slack, 0]` verbatim — over-dispersion is *irrelevant* to the prize. The old capstone
 `subPoisson_variance_implies_prizeFloor` remains valid and axiom-clean as an implication; but the honest version of
 the thesis's central positive claim is now: *the prize reduces to the worst-case (sup) wraparound bound
-`W_r ≤ slack` at deep `r ≈ log p` in the thin regime, for which the worst computable prime clears the bar by
-`> 99 %`.* The wall is unchanged — proving the sup bound at uncomputable
+`W_r ≤ slack` at deep `r ≈ log p` in the thin regime — equivalently `ρ_r ≤ 1` — for which the worst computable prime
+sits at `ρ_r ≈ 0.36–0.67` with the margin improving toward the saddle.* The wall is unchanged — proving the sup bound at uncomputable
 depth `r ≈ log p` is the growing-order equidistribution of §7.3 — but it is now correctly framed, and the framing
 error (demanding control of the variance when the prize only needs control of the supremum) is *recorded* rather
 than buried. This is the difference between a thesis that maps its problem and one that flatters it.
