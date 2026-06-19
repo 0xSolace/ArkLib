@@ -177,6 +177,45 @@ theorem bracket_width_eq_sqrt {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
   · rw [div_eq_iff hsn, Real.mul_self_sqrt (le_of_lt hn)]
   all_goals try exact hps
 
+/-! ## Uniform-family bracket corridor
+
+The pointwise bracket above is often used over an admissible family of thin instances.  The next
+rungs package exactly that use case: pointwise Plancherel floors and trivial ceilings produce a
+uniform pointwise corridor for the normalized Shaw values, with the same `sqrt n` width at every
+instance. -/
+
+/-- Family version of the two-sided Shaw-value bracket.  If every instance has positive prize scale,
+a Plancherel/RMS floor, and the trivial ceiling, then every normalized Shaw value lies in the
+corresponding pointwise bracket.  This is still only normalization bookkeeping: no cancellation or
+anti-concentration estimate is asserted. -/
+theorem shawValueFamily_bracket {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hfloor : ∀ i, Real.sqrt (n i) ≤ M i) (hceil : ∀ i, M i ≤ n i) :
+    ∀ i, Real.sqrt (n i) / prizeScale (n i) (L i) ≤ shawValue (M i) (n i) (L i) ∧
+      shawValue (M i) (n i) (L i) ≤ n i / prizeScale (n i) (L i) := by
+  intro i
+  exact shawValue_bracket (hs i) (hfloor i) (hceil i)
+
+/-- Family closed-form bracket endpoints.  Under positive `n` and `L`, the pointwise family
+bracket from `shawValueFamily_bracket` has lower endpoint `1 / sqrt L` and upper endpoint
+`sqrt (n / L)` at every instance. -/
+theorem shawValueFamily_bracket_endpoints {ι : Type*} {n L : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    ∀ i, Real.sqrt (n i) / prizeScale (n i) (L i) = 1 / Real.sqrt (L i) ∧
+      n i / prizeScale (n i) (L i) = Real.sqrt (n i / L i) := by
+  intro i
+  exact ⟨floor_bracket_eq (hn i), ceiling_bracket_eq (hn i) (hL i)⟩
+
+/-- Family form of the width statement: at every admissible instance, the trivial-ceiling endpoint
+divided by the Plancherel-floor endpoint equals `sqrt n`.  Thus a uniform Shaw-value bound is exactly
+the demand to collapse a pointwise `sqrt n`-wide bracket throughout the family. -/
+theorem shawValueFamily_bracket_width_eq_sqrt {ι : Type*} {n L : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    ∀ i, (n i / prizeScale (n i) (L i)) /
+      (Real.sqrt (n i) / prizeScale (n i) (L i)) = Real.sqrt (n i) := by
+  intro i
+  exact bracket_width_eq_sqrt (hn i) (hL i)
+
 end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
@@ -190,3 +229,6 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.bracket_width_eq_sqrt
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_endpoints
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_width_eq_sqrt
