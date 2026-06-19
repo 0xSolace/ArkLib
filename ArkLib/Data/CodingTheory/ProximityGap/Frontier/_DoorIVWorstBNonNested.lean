@@ -163,6 +163,31 @@ theorem not_isSubMaximizer_iff_exists_lt {subMag : ι → ℝ} {b : ι} :
   · rintro ⟨c, hlt⟩
     exact not_isSubMaximizer_of_lt hlt
 
+/-- The maximizer condition is equivalently the statement that every additive witness gap is nonpositive.
+This is the raw-gap form of the recursive-ascent predicate. -/
+theorem isSubMaximizer_iff_forall_gap_nonpos {subMag : ι → ℝ} {b : ι} :
+    IsSubMaximizer subMag b ↔ ∀ c, subMag c - subMag b ≤ 0 := by
+  constructor
+  · intro hmax c
+    linarith [hmax c]
+  · intro hgap c
+    linarith [hgap c]
+
+/-- Two true sub-maximizers have equal sub-period magnitude.  Therefore a strict witness gap is not a
+harmless tie-breaking artifact: it proves at least one of the two frequencies is not a sub-maximizer. -/
+theorem eq_of_isSubMaximizer_of_isSubMaximizer {subMag : ι → ℝ} {b c : ι}
+    (hb : IsSubMaximizer subMag b) (hc : IsSubMaximizer subMag c) :
+    subMag b = subMag c := by
+  exact le_antisymm (hc b) (hb c)
+
+/-- If `b` is a sub-maximizer and `c` is strictly above it, contradiction.  This is the direct
+certificate check used by recursive-ascent probes: a positive raw gap rules out the claimed nesting. -/
+theorem not_isSubMaximizer_of_witness_gap_pos {subMag : ι → ℝ} {b c : ι}
+    (hgap : 0 < subMag c - subMag b) :
+    ¬ IsSubMaximizer subMag b := by
+  have hlt : subMag b < subMag c := by linarith
+  exact not_isSubMaximizer_of_lt hlt
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
@@ -175,3 +200,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.high_percentile_not_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_lt
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.isSubMaximizer_iff_forall_gap_nonpos
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.eq_of_isSubMaximizer_of_isSubMaximizer
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_witness_gap_pos
