@@ -443,6 +443,27 @@ off-diagonal `PairCorr`), the capstone reduces the prize to **one** named hypoth
 type: a variance bound. This is the sharpest statement of the prize the thesis offers, and — per the defense
 (§8.2, Q1) — the reduction is a genuine theorem (the Chebyshev passage is real content), not a tautology.
 
+### 7.6 The sub-Poisson hypothesis is over-dispersed — the variance route's honest correction **[probe]**
+
+Continuing the attack *past* the thesis's first draft produced a decisive empirical correction to its own central
+conditional (§7.4). The capstone consumes the hypothesis `Var_P(W_r) ≤ E_P[W_r]` (sub-Poisson variance over the
+prime family). Direct computation (`probe_wraparound_overdispersion`) **refutes this hypothesis in the entire
+computable range**: the variance-to-mean ratio of the wraparound `W_r` over the prime family is not `≤ 1` but
+ranges from **14 to over 400,000** — the wraparound is *heavily over-dispersed*. A small set of **structured
+primes** (Fermat-like, high 2-adic valuation `v_2(p−1)`) carry anomalously large `W_r`, and they dominate the
+second moment; the typical prime has `W_r` small or zero.
+
+The consequence is twofold and honest. (i) The capstone (`subPoisson_variance_implies_prizeFloor`) remains a
+*true implication*, axiom-clean — but its hypothesis is **false** in the computable regime, so it does not, by
+itself, deliver the prize via a family-variance argument. (ii) The over-dispersion **sharpens the target**: the
+obstruction is not the typical prime (where `W_r` is small — consistent with the prize being true) but the
+*structured outliers*. Since the prize is free to **choose** `p = Θ(n^β)` with `n | p−1`, the route is no longer
+"bound the variance" but "**avoid the structured bad primes**" — a statement about a sparse, arithmetically
+characterized exceptional set (high `v_2(p−1)`), much closer to the original per-prime BGK form than to a
+second-moment bound. This is where the attack now continues: not the variance of the family, but the structure
+and density of its bad set. We record the refutation rather than bury it — the variance route, as the capstone
+stated it, does not close the prize, and saying so is the thesis's job.
+
 ### 7.5 A cautionary result: the equivariant descent, and why it does *not* move the wall **[Lean, refuted]**
 
 Honesty about a near-miss is part of a defensible thesis. One proof attempt produced what *appeared* to be the
