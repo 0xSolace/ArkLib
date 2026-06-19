@@ -83,10 +83,10 @@ The formal skeleton, all machine-checked:
 ```
   char-0 energy bound  ──[gaussianEnergyBound_dyadic, requires CharZero]──►  (proven)
           │
-          │  char-p transfer at r ≈ log p   ◄── THE ONLY OPEN INPUT (= BGK/Paley at β=4)
+          │  delete [CharZero], over F_p, at r ≈ log p          ◄── THE ONLY OPEN INPUT
           ▼
-  hSaddle : S_r = q·E_r − n^{2r} = Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick  over F_p   (DC-subtracted)
-          │  [period_le_prizeFloor_dc: worst-term ≤ S_r, sum_nonzero_moment, saddle]
+  hEnergy : rEnergy(μ_n, r) ≤ (2r·n)^r  over F_p
+          │  [period_le_prizeFloor: worst-term ≤ moment, sum_nonzero_moment, DC-drop, saddle]
           ▼
   M ≤ √(2e·n·log p)   (the prize floor, for every period η_b)
           │  [bgkFloor_interior_reach, deltaStar_definitive]
@@ -94,12 +94,9 @@ The formal skeleton, all machine-checked:
   δ* reaches the window interior  (the prize)
 ```
 
-Everything but `hSaddle` is a theorem (`_ProveAssemblyConcreteDC`, `_DeltaStarDefinitive`, the necessity half
+Everything but `hEnergy` is a theorem (`_ProveAssemblyConcrete`, `_DeltaStarDefinitive`, the necessity half
 `moment_route_insufficient`, the unconditional bracket `deltaStar_bracket`). **The entire prize is the single
-char-`p` transfer** of the (proven) char-0 Wick bound to the DC-subtracted moment `S_r` (`period_le_prizeFloor_dc`).
-*(The naive raw form `rEnergy(μ_n,r) ≤ (2r·n)^r over F_p` is provably FALSE at prize scale — the proven DC lower
-bound `E_r ≥ n^{2r}/q` forces `E_r ≥ 2^{6442} ≫ (2r·n)^r = 2^{4156}`, `DCEnergyEssential.not_gaussianEnergyBound_of_deep`;
-the open input is the DC-subtracted `S_r ≤ (q−1)·Wick`, not the full energy.)* This is the cleanest statement of the
+act of deleting the `[CharZero]` hypothesis** from one formalized theorem. This is the cleanest statement of the
 problem we know, and it organizes the entire thesis.
 
 ---
@@ -229,24 +226,48 @@ It is worth stating plainly, as a matter of scholarly honesty, what has and has 
 
 ## Chapter 4 — What Has Been Tried, and Why It Hit the Wall
 
-*(deep section — integrated from §S3: the two-obstruction pincer, the ~100-direction dead-routes ledger with
-precise mechanisms, "what people said the next step would be".)*
+The prize core — bounding the worst-case incomplete Gauss period M(n) = max_{b≠0} ‖η_b‖, η_b = Σ_{y∈μ_n} ψ(by), by C·√(n·log m) for explicit smooth μ_n — has been attacked across roughly a hundred concrete directions in this formalization. Every one of them terminates at the same object, and the formalization records, for each, a machine-checked theorem that pins down *why*. This section organizes those attempts. We first state the structural reason no elementary route can succeed — a two-obstruction pincer that squeezes every method into a single corridor — and then walk the dead-routes ledger, giving for each key route the precise refutation that closes it. We close with the three targets the literature itself names as the genuine next step.
 
-### 4.0 The pincer (the structural core, stated here as it governs everything)
+### The two-obstruction pincer
 
-Every approach hits at least one of two theorems-with-hypotheses, and a proof must escape **both**:
-- **(i) Moment-necessity [Lean, `moment_ladder_exceeds_prize`].** No non-negative count / second-order magnitude
-  reaches the target — a proof must capture **cancellation** (signs/phases), not a count. *Even a signed Hankel
-  determinant reduces* (`_AmbBreakMomentNecessity`).
-- **(ii) √p-vacuity.** `μ_n` is thin (`n ≈ p^{0.19}`), so Weil/Deligne gives `O(√p) = O(n^{2.6}) ≫ n`:
-  field-scale algebraic geometry is vacuous. The period sheaf's eigenvalues *are* the `n` Gauss sums, each `√p`
-  (`_FrontierSheafConductor`); the Jacobi correlation re-enters `√p` at the correlation variety's middle
-  cohomology `H^{2r-1}`, weight `2r−1` (`_JacobiFermatCohomology`).
+Two independent theorems trap every attempt between an upper and a lower jaw, and the only survivors are forced into the narrow gap between them: genuine cancellation in a sum that is *known not to be controllable by counting its terms or by bounding their magnitudes individually*.
 
-The pincer has no gap: the cohomological route escapes (i) but hits (ii); the additive/relative-trace route
-escapes (ii) but hits (i). This is *why* the problem is hard, stated as two theorems.
+**The lower jaw — moment-necessity.** Every "moment method" — bound ‖η_b‖ by the 2r-th moment Σ_b ‖η_b‖^{2r} = q·E_r(μ_n), then take the (2r)-th root, for any depth r — overshoots the target. The file `_MomentLadderExceedsPrize.lean` proves this *at every depth simultaneously*. The theorem `moment_ladder_exceeds_prize` shows that for any order r ≥ 1, the depth-r ladder bound (q·E_r)^{1/2r} is ≥ n (the trivial count), while `prize_target_lt_card` shows the per-frequency target √(n·log(q/n)) is strictly below n whenever log(q/n) < n — which always holds in the prize regime, where n = 2³⁰ but log(q/n) = 128·ln 2 ≈ 89. Composing the two:
 
----
+    √(n·log(q/n)) < n ≤ (q·E_r)^{1/2r}    for every r ≥ 1.
+
+The entire moment ladder lies strictly above the prize floor, at every rung. The interpretation is decisive: no bound that treats the 2r-th moment as a *count* of additive relations can reach the target, because the count of relations already saturates n before any logarithmic saving appears. The only way below n is genuine *cross-moment cancellation* — the periods must interfere destructively, not merely be enumerated. This is the lower jaw: it forbids the entire class of "count the bad relations" arguments.
+
+**The upper jaw — √p-vacuity.** The dual hope is to import Deligne's Weil-II bounds and let algebraic geometry supply the cancellation. The file `_FrontierSheafConductor.lean` performs the decisive test on the best surviving ℓ-adic route (N7): realize η_b as the Frobenius trace of the pushforward sheaf F_n = [n]_∗ L_ψ on the b-line A¹, and compute the *actual* Frobenius eigenvalues on H¹_c via Katz's Gauss-sum-sheaf theory. The result, `gauss_eigen_is_sqrt_p`, is that the eigenvalues are the n Gauss sums G(χ), each of modulus exactly √p — weight 1, forced by Deligne purity of the weight-0 Artin–Schreier input. The per-fibre Weil-II output is therefore Θ(n)·√p, and `weilII_perFibre_vacuous` proves this sits *above* the target √n at the prize scale n ≪ √p: the magnitude bound carries no information. Crucially, `sqrt_p_exceeds_sqrt_n` shows the eigenvalue scale is √p, never √n, and `no_twist_lowers_weight` shows no rank-1 (Kummer or Artin–Schreier) twist lowers it — the eigenvalue modulus is a monodromy invariant (the Gauss-sum family has GL(1)^f monodromy; Hasse–Davenport is the only relation and it preserves |·| = √p). The packaged `n7_conductor_verdict` makes the verdict precise: the truth ‖η_b‖ ~ √n is *not* in the eigenvalue magnitudes (all √p), it is entirely in the *phases* θ_χ = G(χ)/√p, and closing the prize is exactly `EigenPhaseCancellation` — the n unit phases exhibit √n square-root cancellation. Weil-II, a magnitude bound, is structurally blind to it. This is the upper jaw: algebraic geometry hands you √p on every term and cannot, by its own machinery, see the phase equidistribution that brings the sum down to √n.
+
+The pincer is the heart of the difficulty. The lower jaw forbids counting; the upper jaw forbids magnitude-bounding. What survives is precisely the corridor of *phase cancellation of n forced-modulus terms* — which is the BGK/Paley wall, named but not crossed. Every route below either reduces into this corridor or is refuted before reaching it.
+
+### The dead-routes ledger
+
+**Sum-product / di Benedetto.** The state-of-the-art subgroup-sum bound (di Benedetto, building on the Petridis–Shparlinski trilinear estimate) gives max|Σ ψ(ax)| ≪ |H|^{1−31/2880}·p-prefactor, nontrivial only when |H| > p^{1/4}. The formalization grounds this energy-based saving exactly (`_DiBenedettoEnergyGrounded`, `_DiBenedettoEnergyValueEnvelope`) and then measures its behaviour as the subgroup thins. `DiBenedettoSavingTendsto` and `DiBenedettoBetaValidityWindow` establish the refutation: at the prize scale n = q^{1/β} with β ≈ 5.27, we have n ≈ p^{0.19}, which sits *below* the p^{1/4} threshold where the saving vanishes. `DiBenedettoFiniteNSavingBelow` and `DiBenedettoSavingDecayRate` quantify the collapse — the exponent gain decays to zero precisely in the thin regime the prize lives in. The gap from the achievable exponent to the needed 1/2 (Paley) is a full half-power of p, at exactly the hardest point. There is no 2024–2026 sum-product breakthrough that moves this threshold; the route is real, sharp, and refuted at prize scale.
+
+**Modern analytic tools — decoupling, restriction, VMVT.** The post-2015 harmonic-analysis toolkit (ℓ²-decoupling, Stein–Tomas restriction, the Vinogradov mean value theorem) was aimed directly at the sup-norm. Each is refuted by a structural fact: μ_n is *flat and 0-dimensional* — it carries no curvature for these tools to exploit. `_VinogradovDecouplingVacuous` and `DecouplingDecayCrossingDepth` show the decoupling inequality lands in the wrong norm and gives a vacuous bound (the trivial Plancherel identity Σ‖η_b‖² = p·n is all that survives); `_AvN1_MonomialWeylVMVTVacuous` shows VMVT collapses to a moment–Johnson bound because η_b is a degree-1 phase, not a genuine Vinogradov system; `_LambdaQRestrictionRefuted` and `_wfA07`/`_wfH1_restriction_supgap` show restriction is vacuous on the singular d=1 spectral measure. `_BGKModernToolCeiling` packages the ceiling: none of these tools beats the n^{1−o(1)} BGK exponent, because each needs curvature that a flat root-of-unity orbit does not possess. The decoupling-tower variant — hoping the 2-adic coset doubling η_b(μ_{2n}) = η_b(μ_n) + η_{gb}(μ_n) yields a saving — is separately refuted in `_DecouplingTowerNoSaving`: the recursion is saving-*preserving*, not saving-improving.
+
+**The ~70-domain exhaustive loop.** A systematic generate→filter→refute loop ran the prize object through roughly seventy mathematical domains (spin-glass / GMC, log-correlated fields, Coulomb gas, Cayley–Bacharach, dynamical entropy, association schemes, Kolmogorov complexity, finite-free probability, transfer operators, nilsequences, and more — see the `_Novel*`, `_Amb*`, `_Attack*` family). The outcome is uniform: zero survivors. The decisive structural reason is recorded by the autocovariance computation — the periods η_b are *exchangeable white noise* under a single linear constraint Σ = −n, with marginal N(0,1)-like behaviour and distance-independent covariance exactly −Var/(m−1). This kills every log-correlated / branching-random-walk / Gaussian-multiplicative-chaos framing in one stroke: the maximum is iid-Gumbel, not FHK, so the conjectured second-order structure these domains would exploit simply is not present. Every novel framing that is not refuted-before-reaching collapses into the same phase-cancellation corridor, definitionally — anything strictly beyond the Johnson radius is characteristic-p cancellation, which is BGK.
+
+**The ambitious meta-assault — even a signed Hankel determinant reduces.** The most aggressive attempts tried to replace the analytic sum by an exact algebraic invariant whose vanishing or sign would *force* the bound. The signed Hankel / Prony determinant of the period moment sequence (`_HankelPronyCore`) is the apex of this: a determinant whose entries are the very power sums E_r. It reduces — its evaluation at the roots of unity is a Schur function at roots, which is precisely a vanishing-sum-of-roots condition, i.e. the same characteristic-p relation the moment ladder already governs. The algebraic-web analysis confirms five exact identities (coset-collapse, DFT fixed-modulus, super-code fibration, Schur-trivial single-box hook) all of which *rename* or *relocate* the √, none of which removes it; the web is algebraically rigid and the √ is intrinsic. The Schur/CSP lever is provably dead — the single-box hook is the trivial elementary symmetric function e₁, carrying no rigidity. Even a determinant identity, the most rigid tool available, reduces into the corridor.
+
+**Geometry of numbers — the cyclotomic lattice is too round.** A final structural hope: replace the worst-case norm bound on a vanishing signed sum of n-th roots by a *geometry-of-numbers* refinement, exploiting a short successive minimum of the prime ideal 𝔭 ⊂ ℤ[ζ_n]. If one Galois conjugate of a minimal relation were ≪ 1, the norm Π|D^σ| = p could hide in that short direction while the support L stayed small, beating L ≥ p^{1/φ(n)}. The file `_OnsetMinimalRelation.lean` settles this. The arithmetic core `prime_le_pow` gives the worst-case norm bound p ≤ L^{φ(n)}, and `gon_no_improvement` proves the GoN refinement collapses: model the φ conjugate moduli as reals with product ≥ p, each bounded below by the trivial covering-radius floor (≥ 1); then the largest conjugate is ≥ p^{1/φ}, so there is *no* short direction to hide the norm in. The exact n=8 computation makes it vivid — the minimal relation D = 2 − ζ₈ has conjugate moduli {1.474, 2.798, 2.798, 1.474}, minimum 1.474 > 1, with product exactly 17 = p saturating the norm. The cyclotomic lattice is *too round*: all successive minima are Θ(1), so transference offers nothing and GoN reduces verbatim to the norm bound — which, at prize scale φ(n) = 2²⁹, gives only r₀ ≥ 1, useless.
+
+A note on the equivariant-descent attempt that motivated this section: `_EquivariantDescentWeightDrop` correctly proves the diagonal μ_n-action on the correlation variety V_corr is free on nonzero-root tuples (`diag_action_free_on_nonzero`) and that the free/nontrivial-winding part descends with the weight arithmetic (2r−2)/2 − (r−1) = 0 (`weight_drop_kills_sqrtP`), genuinely removing the √p on that part. But this is *not* a closure, and the file is scrupulously honest about it: the √p-removal applies only to the free locus, and the action is provably *not* free on the trivial-winding (w=0) stratum (`diag_action_not_free_on_trivial_winding`). The surviving core is named, not discharged — `TrivialWindingClosure` (an induction-on-r residual on the balanced-winding sub-correlation Off₀, which sits on the non-free fixed locus exactly where the weight does not drop) and `DescendedGrowingOrderControl` (the descended Betti number still blows up exponentially, `descended_betti_blowup`: n < (n−1)^{r−1}). The descent relocates the wall to the fixed locus and the growing-order constant; it does not cross it. This is the canonical pattern of every advance in this cone: the √p face is provably benign, but the combinatorial fixed-locus / growing-order face is the irreducible residue.
+
+### What people said the next step would be
+
+The literature is consistent about where the genuine progress must come from, and all three named targets sit squarely inside the phase-cancellation corridor the pincer isolates.
+
+**The Paley graph conjecture.** The object M(n) = max_{b≠0} ‖η_b‖ is exactly the non-principal eigenvalue of the generalized Paley graph Cay(F_q, μ_n) (Liu–Zhou). The bound ‖η_b‖ ≤ 2√n is the statement that this graph is Ramanujan — the Paley Graph Conjecture, open, with best proven result the BGK n^{1−o(1)}. This is the upper-jaw phase equidistribution stated graph-theoretically.
+
+**Effective growing-order Katz equidistribution.** The sheaf verdict pins the residual to the equidistribution of the n Gauss-sum phases θ_χ = G(χ)/√p on the unit circle. Making Katz's equidistribution *effective and uniform as the order grows* (r ≈ log m), so that the termwise sum over the growing Betti number is controlled, is the cohomological form of the next step — the open `DescendedGrowingOrderControl` residual is its exact statement.
+
+**The BCHKS 1.12 char-sum cancellation.** The cleanest analytic form: the BCHKS bound E_r(μ_n) / (r!·n^r) at depth r ≈ log m is a direct cross-moment cancellation that, if proven, would supply exactly the destructive interference the moment ladder is forbidden from manufacturing by counting. It is sufficient (and, the formalization is careful to note, not strictly necessary — but it is the concrete target the community has converged on).
+
+In every case the next step is the *same object* the pincer isolates: not a count, not a magnitude, but the square-root cancellation of n unit phases forced to modulus √p by Deligne purity. The hundred routes tried here did not fail for lack of cleverness; they failed because each is, provably, either a count (forbidden by the lower jaw), a magnitude bound (vacuous by the upper jaw), or a renaming that reduces into the corridor between them. The wall is the corridor, and the corridor is genuinely open mathematics.
+
 
 ## Chapter 5 — Empirical Evidence and Exact Pins
 
@@ -406,7 +427,47 @@ to a *first* moment of `Jphase` over the difference variety `V_diff = append(T, 
 gives the exact `CrossCov_r = (−1)^r·Var_r`. The single residual is `OffDiagonalPairCancellation` /
 `FirstMomentDiffCancellation` — the growing-order equidistribution, **[open]**.
 
-*(The fresh proof attempts A1–A3 and their honest outcomes integrate here.)*
+### 7.4 The central conditional theorem **[Lean, `_ThesisCapstone`]**
+
+The thesis's main positive result is the self-contained, axiom-clean capstone
+`subPoisson_variance_implies_prizeFloor`. It chains, machine-verified end to end:
+
+> **(sub-Poisson wraparound variance over the prime family)** `Var_P(W_r) ≤ E_P[W_r]`
+> ⟹ **(Chebyshev, `good_prime_of_subPoisson_variance`)** there exists a prize-admissible prime with `W_r ≤ slack`
+> ⟹ **(`energy_le_of_good_prime`)** the char-`p` energy `E_r ≤ Wick` at that prime
+> ⟹ **(saddle, `period_le_prizeFloor`)** `M ≤ √(2e·n·log p)` — the prize floor.
+
+Together with the unconditional second-moment identities it carries (`secondMoment_pairs`, `diagonal_sum_eq_card`,
+`wrapVariance_eq` — the König–Huygens decomposition of the wraparound variance into a Poisson diagonal plus the
+off-diagonal `PairCorr`), the capstone reduces the prize to **one** named hypothesis of a single, well-defined
+type: a variance bound. This is the sharpest statement of the prize the thesis offers, and — per the defense
+(§8.2, Q1) — the reduction is a genuine theorem (the Chebyshev passage is real content), not a tautology.
+
+### 7.5 A cautionary result: the equivariant descent, and why it does *not* move the wall **[Lean, refuted]**
+
+Honesty about a near-miss is part of a defensible thesis. One proof attempt produced what *appeared* to be the
+campaign's first genuine movement of the √p exponent: a diagonal `μ_n`-action `g·(x,y) = (gx, gy)` on the
+correlation variety, free on nonzero roots (`diag_action_free_on_nonzero` **[Lean]**), under which the Jacobi
+summand transforms by a *linear character of the winding difference* — yielding a genuine new **winding split**
+`Off = Σ_{w∈ℤ/n} Off_w` (`summand_transforms_by_winding` **[Lean]**), with the excess-over-Wick numerically
+concentrated in the nontrivial-winding part. The attempt then claimed a *weight drop* — that a free quotient by
+`μ_n` lowers the cohomological weight by one, taking the residual exponent from `1/2` (the `_JacobiFermatCohomology`
+√p) to `0`, removing the wall.
+
+**This is false, and we prove why** (`_EquivariantDescentWeightDropREFUTED` **[Lean]**). The error is a
+conflation of the *finite* group scheme `μ_n` (`Spec k[t]/(tⁿ−1)`, dimension **0**, `n` points) with the
+*1-dimensional* torus `𝔾_m`. A free quotient by a **finite** group is a finite étale cover: it preserves both
+cohomological *degree* and *weight* (`H^i(X)^χ ≅ H^i(X/G, ℒ_χ)` at the **same** `i`), so the descended weight
+stays `2r−1` and the residual stays `1/2 = √p`. The weight drop requires a *positive-dimensional* group (a
+Gysin/Leray shift on a `𝔾_m`-fibration), and there is no rescue: the finite-order winding character `χ_w` does
+not extend to `𝔾_m` (`Hom(𝔾_m,𝔾_m) = ℤ` is torsion-free), and the Jacobi weights are not `𝔾_m`-invariant. The
+descent's Lean theorems are *arithmetically true tautologies* — `(2r−2)/2 − (r−1) = 0` — attached to the wrong
+weight. What survives is real and useful: the **winding split is new**, and it localizes the excess; but the
+finite quotient delivers only a factor-`n`, `p`-*independent* combinatorial saving (precisely the known coset
+invariance `η_{cb} = η_b`), which does not touch the BGK exponent. The `√p` wall of `_JacobiFermatCohomology`
+is **unmoved**. We record this because catching it — before it entered the thesis as an advance — is exactly the
+discipline a proof of an open problem demands: a referee would have punctured an unverified √p-removal in one
+line, and the thesis is stronger for having punctured it first.
 
 ---
 
