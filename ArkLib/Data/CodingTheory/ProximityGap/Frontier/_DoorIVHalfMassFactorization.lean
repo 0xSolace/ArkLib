@@ -139,6 +139,25 @@ theorem norm_le_of_coherence_le_of_halfMass_le {A B : E} {rho H : ℝ}
   have hmass0 : 0 ≤ halfMass A B := halfMass_nonneg A B
   exact mul_le_mul hcoh hmass hmass0 hrho0
 
+/-- If the half-mass envelope is zero, the original period norm is zero too.  Thus any nonzero period
+certificate must live in the positive-half-mass branch where the coherence factorization is meaningful;
+the zero branch cannot hide a prize-sized peak. -/
+theorem norm_eq_zero_of_halfMass_eq_zero {A B : E} (h : halfMass A B = 0) : ‖A + B‖ = 0 := by
+  have hle : ‖A + B‖ ≤ 0 := by simpa [h] using norm_le_halfMass A B
+  exact le_antisymm hle (norm_nonneg _)
+
+/-- Under zero half-mass, Lean's totalized division gives coherence `0` (the numerator is already zero).
+This records that the split has no separate zero-denominator escape hatch. -/
+theorem coherence_eq_zero_of_halfMass_eq_zero {A B : E} (h : halfMass A B = 0) :
+    coherence A B = 0 := by
+  unfold coherence
+  rw [h, norm_eq_zero_of_halfMass_eq_zero h, zero_div]
+
+/-- Contrapositive form: a nonzero original period forces positive half-mass.  This is the anti-vacuity
+branch guard for any coset-half coherence certificate. -/
+theorem halfMass_pos_of_norm_pos {A B : E} (h : 0 < ‖A + B‖) : 0 < halfMass A B := by
+  exact lt_of_lt_of_le h (norm_le_halfMass A B)
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_nonneg
@@ -153,3 +172,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_ge_of_coherence_ge_of_halfMass_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_le_of_coherence_le_of_halfMass_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_zero_of_halfMass_eq_zero
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_pos_of_norm_pos
