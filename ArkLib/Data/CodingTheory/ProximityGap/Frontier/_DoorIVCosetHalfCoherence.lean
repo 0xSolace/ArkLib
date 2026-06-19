@@ -6,6 +6,8 @@ Authors: ArkLib Contributors
 import Mathlib.Data.Real.Basic
 import Mathlib.Tactic
 
+set_option linter.style.longLine false
+
 /-!
 # Door IV coset-half coherence: the index-2 split has a sign-degeneracy
 
@@ -82,6 +84,48 @@ theorem twoPieceCoherence_lt_one_of_pos_neg {A B : ℝ}
       div_lt_div_of_pos_right hnum_lt hden
     _ = 1 := div_self (ne_of_gt hden)
 
+
+/-- Opposite-sign half-period sums compress exactly to the absolute imbalance ratio.  Writing the
+positive half-mass as `P` and the negative half-mass as `N`, the raw index-2 coherence is
+`|P-N|/(P+N)`. -/
+theorem twoPieceCoherence_pos_neg_eq_abs_diff_ratio {P N : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (_htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) = |P - N| / (P + N) := by
+  unfold twoPieceCoherence
+  rw [abs_of_nonneg hP, abs_of_nonpos (neg_nonpos.mpr hN)]
+  ring_nf
+
+/-- Exact opposite-sign slack for the raw coset-half split: the coherence is one minus twice the
+minority half-mass fraction.  Thus an index-2 door-(iv) anti-concentration theorem must prove a
+quantitative lower bound on the smaller of the positive and negative half-masses at the adversarial
+frequency; opposite signs alone are not enough. -/
+theorem abs_diff_ratio_eq_one_sub_two_mul_min_ratio {P N : ℝ}
+    (_hP : 0 ≤ P) (_hN : 0 ≤ N) (htotal : 0 < P + N) :
+    |P - N| / (P + N) = 1 - 2 * min P N / (P + N) := by
+  have hden_ne : P + N ≠ 0 := ne_of_gt htotal
+  by_cases hPN : P ≤ N
+  · have hmin : min P N = P := min_eq_left hPN
+    have habs : |P - N| = N - P := by
+      rw [abs_of_nonpos (sub_nonpos.mpr hPN)]
+      ring
+    rw [hmin, habs]
+    field_simp [hden_ne]
+    ring
+  · have hNP : N ≤ P := le_of_not_ge hPN
+    have hmin : min P N = N := min_eq_right hNP
+    have habs : |P - N| = P - N := by
+      rw [abs_of_nonneg (sub_nonneg.mpr hNP)]
+    rw [hmin, habs]
+    field_simp [hden_ne]
+    ring
+
+/-- Bridged form of the exact index-2 slack identity for half-period sums `P` and `-N`. -/
+theorem twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio {P N : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    twoPieceCoherence P (-N) = 1 - 2 * min P N / (P + N) := by
+  rw [twoPieceCoherence_pos_neg_eq_abs_diff_ratio hP hN htotal,
+    abs_diff_ratio_eq_one_sub_two_mul_min_ratio hP hN htotal]
+
 /-- Symmetric opposite-sign slack. -/
 theorem twoPieceCoherence_lt_one_of_neg_pos {A B : ℝ}
     (hA : A < 0) (hB : 0 < B) :
@@ -104,3 +148,6 @@ end ProximityGap.Frontier.DoorIVCosetHalfCoherence
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_sameSign
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_lt_one_of_pos_neg
 #print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_lt_one_of_neg_pos
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_eq_abs_diff_ratio
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.abs_diff_ratio_eq_one_sub_two_mul_min_ratio
+#print axioms ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio

@@ -7269,3 +7269,23 @@ prize L2->L-infinity sup-norm wall). No CORE/cancellation/anti-concentration/cap
 unchanged/open. Axiom-clean (subset {propext,Classical.choice,Quot.sound}); locked build exit 0
 (8314 jobs); axiom_audit PASS; missing-import scan empty; codex review clean ("theorems/proofs appear
 consistent with the definitions and stated scope; no actionable correctness issues").
+
+## door-(iv) raw coset-half opposite-sign slack is exactly minority half-mass (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCosetHalfCoherence`.  Prior bricks showed that the
+index-2 coset-half split saturates coherence at `1` on same-sign real half sums, and gives strict
+slack on opposite signs.  This refinement pins the exact opposite-sign slack: for half sums `P` and
+`-N` with `P,N ≥ 0` and `P+N>0`,
+
+`ρ(P,-N) = |P-N|/(P+N) = 1 - 2*min(P,N)/(P+N)`.
+
+VERDICT: the raw coset-half split has no hidden arithmetic saving after sign separation.  A successful
+index-2 door-(iv) attack must prove a quantitative lower bound on the minority half-mass fraction at
+the adversarial frequency; merely proving opposite signs, or refining the notation around the split,
+does not give a uniform cancellation theorem.  No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCosetHalfCoherence.lean`,
+axiom-clean.  New theorems: `twoPieceCoherence_pos_neg_eq_abs_diff_ratio`,
+`abs_diff_ratio_eq_one_sub_two_mul_min_ratio`, and
+`twoPieceCoherence_pos_neg_eq_one_sub_two_mul_min_ratio`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
