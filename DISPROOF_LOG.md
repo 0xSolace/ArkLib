@@ -7531,3 +7531,23 @@ Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstIndexMultGeneri
 VERDICT: multiplicative class-restriction attacks cannot be rescued by replacing quadratic residues with another fixed power class. Any successful worst-b thinning must prove a genuine quotient-level exclusion, not confinement to one power coset after observing an escaping pair ratio. No CORE/cancellation/completion/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`, new definitions/theorems `kthPowers`, `mem_kthPowers_iff`, and `not_kth_power_coset_restricted`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-multi-window-smallball-trivial] any finite disjoint coarse-window split is still triangle-blind (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTrivial`.  The one-window
+and two-window kernels showed that coarse small-ball occupancy splits recover only the trivial linear
+ceiling.  This commit closes the finite-partition version: for any finite pairwise-disjoint family `Ω`
+of windows with every `W ∈ Ω` contained in the summation set `s`,
+
+`Σ_{W∈Ω} |W| + |s \ ⋃Ω| = |s|`,
+
+and therefore the corresponding unit-phase triangle bound for `‖Σ_{i∈s} f_i‖` is again exactly `|s|`.
+
+VERDICT: adding finitely many coarse arcs/windows cannot by itself certify door-(iv) cancellation.  A
+successful anti-concentration route must prove genuine phase cancellation within windows or destructive
+interference between windows, not merely occupancy counts of a finite disjoint partition.  No CORE,
+cancellation, completion, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
+new theorems `multi_window_split_rhs_constant` and `multi_window_split_bound_is_trivial`, axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`.

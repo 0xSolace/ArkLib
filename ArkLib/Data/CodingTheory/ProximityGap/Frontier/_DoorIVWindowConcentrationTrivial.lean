@@ -119,6 +119,41 @@ theorem two_window_split_bound_is_trivial [DecidableEq ι]
   rw [two_window_split_rhs_constant h₁ h₂ hdis]
   exact norm_sum_le_card_of_phase hf
 
+/-- Arbitrarily many disjoint coarse windows are still triangle-blind: if a finite family `Ω` of
+windows is pairwise disjoint and every window lies inside `s`, then the total split into all windows
+plus the outside complement has cardinality exactly `|s|`.  This is the finite-partition version of
+the small-ball no-go: adding more coarse arcs cannot by itself improve the linear ceiling. -/
+theorem multi_window_split_rhs_constant [DecidableEq ι]
+    {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s)
+    (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id) :
+    (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) = (s.card : ℝ) := by
+  have hU : Ω.biUnion id ⊆ s := by
+    intro x hx
+    rcases Finset.mem_biUnion.mp hx with ⟨W, hW, hxW⟩
+    exact hsub W hW hxW
+  have hcardU : (Ω.biUnion id).card = ∑ W ∈ Ω, W.card := by
+    simpa using (Finset.card_biUnion hdis : (Ω.biUnion id).card = ∑ W ∈ Ω, (id W).card)
+  have hnatS : (s \ Ω.biUnion id).card + (Ω.biUnion id).card = s.card := by
+    exact Finset.card_sdiff_add_card_eq_card hU
+  have hnat : (∑ W ∈ Ω, W.card) + (s \ Ω.biUnion id).card = s.card := by
+    rw [← hcardU]
+    exact Nat.add_comm _ _ ▸ hnatS
+  exact_mod_cast hnat
+
+/-- Multi-window version of `window_split_bound_is_trivial`: a disjoint finite partition of the
+summands into any number of coarse windows plus the complement still yields only `|s|` under the
+unit-modulus triangle inequality.  Thus a door-(iv) certificate based solely on finitely many
+occupancy counts remains trivial unless it proves cancellation within or between pieces. -/
+theorem multi_window_split_bound_is_trivial [DecidableEq ι]
+    {f : ι → ℂ} {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s)
+    (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id) (hf : IsPhaseVector f s) :
+    ‖∑ i ∈ s, f i‖ ≤
+      (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) := by
+  rw [multi_window_split_rhs_constant hsub hdis]
+  exact norm_sum_le_card_of_phase hf
+
 /-- Sharper statement of "the window count is irrelevant": the right-hand side of the window split
 equals `|s|` for *every* admissible window `W`, so it carries no information about the concentration
 `|W|`. This is the formal content of the probe's `C/√n → 0` + Spearman→0 degeneracy: a single window
@@ -137,3 +172,5 @@ end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_bound_is_trivial
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_split_rhs_constant
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_split_bound_is_trivial
