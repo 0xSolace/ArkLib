@@ -25,13 +25,23 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 0 |
-| approaches invented | 0 |
-| REDUCES | 0 |
+| batches run | 1 |
+| approaches invented | 8 |
+| REDUCES | 8 |
 | NOT_NOVEL | 0 |
 | REFUTED | 0 |
 | **SURVIVES** | **0** |
 
 ## Per-batch log
+
+### Batch 1 — domains 1–8 (8/8 REDUCES, 0 survivors)
+- `condensed/pyknotic` → REDUCES: condensed math handles topological completions of non-discrete objects; the energy is finite/discrete — no purchase.
+- `prismatic / q-de Rham` → REDUCES: Frobenius diagonal on the monomial basis; μ_n is 0-dim étale ⟹ q-de Rham in degree 0, no higher cohomology for the excess.
+- `topological cyclic homology / TC` → REDUCES: the Verschiebung splitting is the already-refuted tower-2 coset-doubling (tautological bridge).
+- `motivic / A¹-homotopy` → REDUCES: a motivic measure is a ring hom; energy-as-point-count fails; variety 0-dim (Weil-vacuous).
+- `free entropy dimension` → REDUCES: a regularity/dimension invariant, insensitive to the spectral edge.
+- `subfactors / planar algebras` → REDUCES: planar-algebra trace is a positive tracial state ⟹ τ(T^{2r}) is a genuine 2r-th moment = moment-necessity.
+- `quantum groups / Hecke at roots of unity` → REDUCES: R-matrix/Yang–Baxter/skein relations live in ℚ(ζ_n) ⊂ ℂ = char-0 ⟹ √p-vacuity (cyclotomic door).
+- `modular tensor categories / TQFT` → REDUCES: MTC S-matrix is a one-sided Fourier with quadratic-form phases; √p-vacuity worse, not escaped.
 
 (batches appended below as they complete)
