@@ -83,10 +83,10 @@ The formal skeleton, all machine-checked:
 ```
   char-0 energy bound  ──[gaussianEnergyBound_dyadic, requires CharZero]──►  (proven)
           │
-          │  delete [CharZero], over F_p, at r ≈ log p          ◄── THE ONLY OPEN INPUT
+          │  char-p transfer at r ≈ log p   ◄── THE ONLY OPEN INPUT (= BGK/Paley at β=4)
           ▼
-  hEnergy : rEnergy(μ_n, r) ≤ (2r·n)^r  over F_p
-          │  [period_le_prizeFloor: worst-term ≤ moment, sum_nonzero_moment, DC-drop, saddle]
+  hSaddle : S_r = q·E_r − n^{2r} = Σ_{b≠0}‖η_b‖^{2r} ≤ (q−1)·Wick  over F_p   (DC-subtracted)
+          │  [period_le_prizeFloor_dc: worst-term ≤ S_r, sum_nonzero_moment, saddle]
           ▼
   M ≤ √(2e·n·log p)   (the prize floor, for every period η_b)
           │  [bgkFloor_interior_reach, deltaStar_definitive]
@@ -94,9 +94,12 @@ The formal skeleton, all machine-checked:
   δ* reaches the window interior  (the prize)
 ```
 
-Everything but `hEnergy` is a theorem (`_ProveAssemblyConcrete`, `_DeltaStarDefinitive`, the necessity half
+Everything but `hSaddle` is a theorem (`_ProveAssemblyConcreteDC`, `_DeltaStarDefinitive`, the necessity half
 `moment_route_insufficient`, the unconditional bracket `deltaStar_bracket`). **The entire prize is the single
-act of deleting the `[CharZero]` hypothesis** from one formalized theorem. This is the cleanest statement of the
+char-`p` transfer** of the (proven) char-0 Wick bound to the DC-subtracted moment `S_r` (`period_le_prizeFloor_dc`).
+*(The naive raw form `rEnergy(μ_n,r) ≤ (2r·n)^r over F_p` is provably FALSE at prize scale — the proven DC lower
+bound `E_r ≥ n^{2r}/q` forces `E_r ≥ 2^{6442} ≫ (2r·n)^r = 2^{4156}`, `DCEnergyEssential.not_gaussianEnergyBound_of_deep`;
+the open input is the DC-subtracted `S_r ≤ (q−1)·Wick`, not the full energy.)* This is the cleanest statement of the
 problem we know, and it organizes the entire thesis.
 
 ---
