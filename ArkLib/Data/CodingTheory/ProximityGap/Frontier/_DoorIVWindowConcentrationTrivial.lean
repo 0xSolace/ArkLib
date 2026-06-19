@@ -87,6 +87,38 @@ theorem window_split_bound_is_trivial [DecidableEq ι]
   rw [hcard]
   exact norm_sum_le_card_of_phase hf
 
+
+/-- Even splitting into **two** disjoint windows is still energy-blind: the triangle decomposition into
+`W₁`, `W₂`, and the complement of their union recovers exactly the same trivial ceiling `|s|`.
+Thus replacing a single coarse arc by two coarse arcs does not create a cancellation bound; only
+additional phase information inside the pieces could improve the estimate. -/
+theorem two_window_split_rhs_constant [DecidableEq ι]
+    {s W₁ W₂ : Finset ι} (h₁ : W₁ ⊆ s) (h₂ : W₂ ⊆ s) (hdis : Disjoint W₁ W₂) :
+    (W₁.card : ℝ) + (W₂.card : ℝ) + ((s \ (W₁ ∪ W₂)).card : ℝ) = (s.card : ℝ) := by
+  have hU : W₁ ∪ W₂ ⊆ s := by
+    intro x hx
+    rcases Finset.mem_union.mp hx with hx₁ | hx₂
+    · exact h₁ hx₁
+    · exact h₂ hx₂
+  have hnatU : (W₁ ∪ W₂).card = W₁.card + W₂.card := by
+    exact Finset.card_union_of_disjoint hdis
+  have hnatS : (s \ (W₁ ∪ W₂)).card + (W₁ ∪ W₂).card = s.card := by
+    exact Finset.card_sdiff_add_card_eq_card hU
+  have hnat : W₁.card + W₂.card + (s \ (W₁ ∪ W₂)).card = s.card := by
+    rw [← hnatU, add_comm, hnatS]
+  exact_mod_cast hnat
+
+/-- Two-window version of `window_split_bound_is_trivial`: after splitting a unit-modulus sum into two
+chosen windows and the outside remainder, the triangle bound is still just `|s|`. This is the formal
+no-go for a two-window small-ball certificate of door-(iv) cancellation. -/
+theorem two_window_split_bound_is_trivial [DecidableEq ι]
+    {f : ι → ℂ} {s W₁ W₂ : Finset ι}
+    (h₁ : W₁ ⊆ s) (h₂ : W₂ ⊆ s) (hdis : Disjoint W₁ W₂) (hf : IsPhaseVector f s) :
+    ‖∑ i ∈ s, f i‖ ≤
+      (W₁.card : ℝ) + (W₂.card : ℝ) + ((s \ (W₁ ∪ W₂)).card : ℝ) := by
+  rw [two_window_split_rhs_constant h₁ h₂ hdis]
+  exact norm_sum_le_card_of_phase hf
+
 /-- Sharper statement of "the window count is irrelevant": the right-hand side of the window split
 equals `|s|` for *every* admissible window `W`, so it carries no information about the concentration
 `|W|`. This is the formal content of the probe's `C/√n → 0` + Spearman→0 degeneracy: a single window
@@ -103,3 +135,5 @@ end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.norm_sum_le_card_of_phase
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_bound_is_trivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_bound_is_trivial

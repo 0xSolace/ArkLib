@@ -7367,3 +7367,21 @@ Quot.sound}; no sorryAx); locked build exit 0 (3301 jobs); axiom_audit PASS (17 
 scan empty. SCOPE: algebraic tower substrate / floor-tightness only. Does NOT prove the integer parity
 criterion at general depth, char-p transfer, BGK, CORE, cancellation-saving, completion, moment, or
 capacity claim — door (iv) anti-concentration remains the open $1M wall.
+
+## [doorIV-two-window-smallball-trivial] two coarse windows are still triangle-blind (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTrivial`.  The existing
+single-window small-ball no-go showed that splitting a unit-modulus period sum into an in-window block
+and its complement gives only the trivial linear ceiling `|s|`.  This refinement pins the next natural
+coarse anti-concentration attempt: for two disjoint windows `W₁,W₂⊆s`,
+
+`|W₁| + |W₂| + |s \ (W₁ ∪ W₂)| = |s|`,
+
+and therefore the corresponding triangle split bound for `‖Σ_{i∈s} f_i‖` is again exactly the trivial
+linear ceiling.  VERDICT: replacing one coarse arc by two coarse arcs still cannot certify door-(iv)
+cancellation.  A successful small-ball/phase-set route must prove genuine phase cancellation inside
+or between pieces, not just coarse occupancy counts.  No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWindowConcentrationTrivial.lean`,
+new theorems `two_window_split_rhs_constant` and `two_window_split_bound_is_trivial`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.
