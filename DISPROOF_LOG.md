@@ -6803,3 +6803,16 @@ Classical.choice, Quot.sound}; locked build exit 0, 1971 jobs). Theorems: mem_do
 gap), bgkScale_eq_sqrtL_mul_prizeScale (bgkScale = √L · prizeScale — the door-(iv) obligation is
 precisely removing √L). NON-VACUITY in-kernel: positive-width corridor + concrete √L identity.
 NO CORE/cancellation/completion/capacity claim — pins the open door-(iv) target quantitatively.
+
+## door-(iv) Shaw value is literally the normalized aggregate phase norm (2026-06-19)
+
+Lens: Lane 2 reduction-chain cleanup for `_DiffTraceShawValue`.  The square-root normalized object is
+now identified with the literal normalized aggregate phase magnitude:
+`Sh(Rel)=‖Σ_T Jphase θ T‖/sqrt(#Rel)`.
+
+VERDICT: this removes a possible notational gap in the citable `Sh(n)=O(1)` chain.  The theorem is an
+identity only; it proves no flatness, no anti-concentration, and no cancellation estimate.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawValue.lean`, axiom-clean.
+New theorem: `shawValue_eq_norm_div_sqrt_card`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.

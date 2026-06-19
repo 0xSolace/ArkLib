@@ -57,6 +57,18 @@ theorem shawValue_sq_eq_flatnessRatio (Rel : Finset (Fin r → R)) :
   unfold shawValue
   rw [Real.sq_sqrt (flatnessRatio_nonneg Rel)]
 
+
+/-- **`shawValue_eq_norm_div_sqrt_card`** — the literal aggregate-normalized form promised by the
+notation: for nonempty `Rel`, `Sh(Rel) = ‖Σ_T Jphase θ T‖ / sqrt(#Rel)`.  This exposes the Shaw value
+as the normalized size of the single aggregate phase sum, not a new analytic estimate. -/
+theorem shawValue_eq_norm_div_sqrt_card (Rel : Finset (Fin r → R)) :
+    shawValue θ Rel = ‖(∑ T ∈ Rel, Jphase θ T)‖ / Real.sqrt (Rel.card : ℝ) := by
+  unfold shawValue flatnessRatio
+  rw [Complex.normSq_eq_norm_sq]
+  rw [Real.sqrt_div (sq_nonneg ‖(∑ T ∈ Rel, Jphase θ T)‖)]
+  rw [Real.sqrt_sq_eq_abs]
+  rw [abs_of_nonneg (norm_nonneg _)]
+
 /-- **`shawValue_sq_le_of_secondMoment_le`** — a variance-core off-diagonal second-moment bound gives
 the Shaw-value squared bound `Sh(Rel)^2 ≤ 1 + S/#Rel`.  This is the same open flatness estimate in the
 square-root normalization. -/
@@ -108,6 +120,7 @@ end ArkLib.ProximityGap.Frontier.DiffTraceShawValue
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_nonneg
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_eq_flatnessRatio
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_eq_norm_div_sqrt_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_le_of_secondMoment_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_sq_le_iff_secondMoment_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceShawValue.shawValue_le_sqrt_of_secondMoment_le
