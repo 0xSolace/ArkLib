@@ -78,9 +78,31 @@ theorem first_two_rho_lt_one_of_targets (S2 S3 p n : ℝ)
   · exact lt_of_le_of_lt h21 hbase
   · exact lt_of_le_of_lt (le_trans h32 h21) hbase
 
+/-- Finite-prefix consumer form through the first two explicit rungs. For any named sequence `ρ`
+whose first three values are the Parseval base and the two normalized explicit rungs, the two finite
+target inequalities imply the open-core bound `ρ r < 1` for every `1 ≤ r ≤ 3`. This is only a
+three-point packaging of the two target reductions plus the proven base. -/
+theorem rho_prefix_three_lt_one_of_targets (ρ : ℕ → ℝ) (S2 S3 p n : ℝ)
+    (hp : n < p) (hn : 1 < n)
+    (hρ1 : ρ 1 = (p * n - n ^ 2) / ((p - 1) * n))
+    (hρ2 : ρ 2 = S2 / ((p - 1) * (3 * n * (n - 1))))
+    (hρ3 : ρ 3 = S3 / ((p - 1) * (15 * n ^ 3 - 45 * n ^ 2 + 40 * n)))
+    (hS2 : S2 ≤ 3 * n * (n - 1) * (p - n))
+    (hS3 : S3 ≤ S2 * (15 * n ^ 3 - 45 * n ^ 2 + 40 * n) / (3 * n * (n - 1))) :
+    ∀ r : ℕ, 1 ≤ r → r ≤ 3 → ρ r < 1 := by
+  intro r hr1 hr3
+  have hbase : (p * n - n ^ 2) / ((p - 1) * n) < 1 :=
+    rho_base_lt_one n p hn hp
+  have hlt := first_two_rho_lt_one_of_targets S2 S3 p n hp hn hS2 hS3
+  interval_cases r
+  · simpa [hρ1] using hbase
+  · simpa [hρ2] using hlt.1
+  · simpa [hρ3] using hlt.2
+
 end ProximityGap.Frontier.OpenCoreRhoFirstTwo
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.first_two_rho_steps_of_targets
 #print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.rho_three_le_rho_one_of_first_two_targets
 #print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.first_two_rho_lt_one_of_targets
+#print axioms ProximityGap.Frontier.OpenCoreRhoFirstTwo.rho_prefix_three_lt_one_of_targets

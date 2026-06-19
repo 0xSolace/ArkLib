@@ -7020,3 +7020,15 @@ with `first_two_rho_lt_one_of_targets`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`. Scope is only transitive/reduction bookkeeping from the two
 finite targets to the already-proven base; it proves neither finite char-p target, does not prove the
 probe-verified E3 closed form, and makes no CORE/cancellation/completion/moment-saving/capacity claim.
+
+## [doorIV-rho-prefix-three] first two explicit targets give the finite open-core prefix through r=3 (2026-06-19, g55)
+
+Lane 2 finite-prefix capstone. Building on [doorIV-rho-first-two-subunit], this packages the exact
+consumer for any named `ρ : ℕ → ℝ`: if `ρ 1` is the Parseval base, `ρ 2` and `ρ 3` are the two normalized
+explicit rungs, and the rung-1/rung-2 finite targets hold, then every prefix value `ρ r` with `1≤r≤3`
+is `<1`. This is the three-point finite-prefix version of the open-core reduction chain.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OpenCoreRhoFirstTwoChain.lean`
+with `rho_prefix_three_lt_one_of_targets`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`. Scope is reduction bookkeeping only: no proof of either
+finite char-p target, no proof of E3's closed form, no CORE/cancellation/completion/moment-saving/capacity claim.
