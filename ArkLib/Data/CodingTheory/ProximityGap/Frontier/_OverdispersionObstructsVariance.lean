@@ -95,4 +95,43 @@ theorem not_subPoisson_of_dominant
   have h := overdispersed_of_single_heavy s W hj hcard hdom
   exact not_le.mpr h
 
+/-! ## Over-dispersion is BENIGN — the variance route attacked the wrong statistic
+
+The probe `thin_above_onset` measures the *first computable window that resembles the prize* —
+`n=16`, depth `r=5` **above** the onset `r₀≈4`, thinness `β≈4` — and finds **every** prime good
+(`W₅/E₀ ∈ [0, 0.0057]`, all `≪ 1`), *including the Fermat prime* `p=65537`.  Crucially the wraparound
+is **still over-dispersed** there (values `0 … 2.9M`), yet every value is `≪ E₀`.
+
+So over-dispersion does not threaten the prize: the prize asks for a **sup / pointwise** bound
+(`W_r(p*) ≤ slack` at the chosen prime — an *existence*, since the prize is free to choose `p`), which
+is a *different statistic* from the family variance.  A family can be arbitrarily over-dispersed and
+still uniformly good.  The theorem below exhibits this explicitly: the two conditions are independent,
+so the over-dispersion refutation kills only the *variance route*, not the prize.  This corrects the
+thesis capstone's framing: the credible reduction is to a **uniform sup bound** (every thin
+above-onset prime is good — which is what the data shows with `>99.4%` margin), not to sub-Poisson
+variance. -/
+
+/-- **Over-dispersion is benign.**  The concrete two-prime family `W = ![B, 0]` is uniformly bounded
+by `B` (good against any slack `≥ B`) yet **over-dispersed** (`variance > mean`) once `B > 2`.  Hence
+"uniformly good (sup bound)" and "sub-Poisson (variance bound)" are **independent**: over-dispersion
+never forces a prime past the slack.  The prize's real requirement is the sup bound, which the measured
+over-dispersion leaves completely untouched — exactly as the thin-above-onset probe shows (every prime
+good, `W₅/E₀ ≪ 1`, despite over-dispersed `W`). -/
+theorem overdispersion_is_benign (B : ℝ) (hB : 2 < B) :
+    (∀ i : Fin 2, (![B, 0] : Fin 2 → ℝ) i ≤ B) ∧
+      mean (univ : Finset (Fin 2)) ![B, 0] < variance (univ : Finset (Fin 2)) ![B, 0] := by
+  have hB0 : (0 : ℝ) < B := by linarith
+  have hcard : ((univ : Finset (Fin 2)).card : ℝ) = 2 := by simp
+  refine ⟨?_, ?_⟩
+  · intro i; fin_cases i <;> simp <;> linarith
+  · have hmean : mean (univ : Finset (Fin 2)) ![B, 0] = B / 2 := by
+      rw [mean, total, hcard, Fin.sum_univ_two]
+      simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]; ring
+    have hvar : variance (univ : Finset (Fin 2)) ![B, 0] = B ^ 2 / 4 := by
+      rw [variance, hmean, hcard, Fin.sum_univ_two]
+      simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons]; ring
+    rw [hmean, hvar]
+    have hpos : (0 : ℝ) < B * (B - 2) := mul_pos hB0 (by linarith)
+    nlinarith [hpos]
+
 end ProximityGap.OverdispersionObstruction

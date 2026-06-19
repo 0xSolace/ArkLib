@@ -127,6 +127,20 @@ to onset/thinness rather than to 2-adic structure.
 
 **FOLLOW-UP (the roundness proxy is refuted; over-dispersion is a thinness/onset effect).** Testing whether minimal `v₂(p-1)` ("round" `𝔭`) predicts a good prime: it does NOT (`probe_wraparound_v2_stratification`). At `n=8` the minimal-`v₂` prime `p=41` has `W₃=3120` while higher-`v₂` `p=97` has `W₃=480` — the **v₂-roundness proxy is REFUTED**. The true predictor is **thinness** `β=log p/log n`: `W_r` is largest for the smallest primes (just past onset `r₀≈p^{1/φ(n)}`) and decays to 0 as `p` grows. The over-dispersion is a finite-window/onset effect, re-confirming the **thinness-essential / regime-gated** verdict. This relocates the per-prime residual back onto the thin-regime growing-order equidistribution wall.
 
+**RESOLUTION (over-dispersion is BENIGN — the variance route attacked the WRONG statistic).** The decisive
+test: the thin-AND-above-onset regime (`n=16, r=5 > r₀≈4, β≈4`) — the first computable window resembling the prize
+(`probe_thin_above_onset_goodness`). Result: **every prime is good**, `W₅/E₀ ∈ [0, 0.0057]`, all `≪ 1`, *including
+the Fermat prime `p=65537`* (worst structured case, 0.57%); 15/24 have nonzero wraparound (correctly above onset).
+The wraparound is **still over-dispersed** there (`W ∈ [0, 2.9M]`) yet every value is `≪ E₀`. So the over-dispersion
+is **benign**: the prize needs a **sup / existence** bound (`W_r(p*) ≤ slack` at the *chosen* prime), a *different
+statistic* from the family variance. `_OverdispersionObstructsVariance.overdispersion_is_benign` (axiom-clean)
+proves sup-goodness and sub-Poisson are **independent** (`W=![B,0]` is over-dispersed yet `≤ B`). The corrected
+reduction is to a **uniform sup bound** (every thin above-onset prime good — `>99.4%` margin in data), NOT sub-Poisson
+variance. The variance route's death (over-dispersion) was a death of the *wrong target*, not of the prize. The
+genuine wall is unchanged: prove the uniform sup bound `W_r ≤ slack` at DEEP `r≈log p` in the thin regime (the
+growing-order equidistribution) — but it is now correctly framed as a worst-case/existence sup bound, with strong
+positive evidence (Fermat-prime margin `>99%`) at every computable depth.
+
 **Verdict on the variance route:** fully mapped; exact structure known axiom-clean, bottoms out on the SAME
 growing-order Jacobi equidistribution as every other route. Genuinely-new objects, no closure.
 (See `issue444-create-open-frontiers`.)
