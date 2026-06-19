@@ -7735,3 +7735,29 @@ completion, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`,
 axiom-clean. New theorems: `coherence_lt_one_iff_norm_lt_halfMass` and
 `not_coherence_lt_one_of_norm_eq_halfMass`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane 3 — wraparound union/Markov bad-prime bound is vacuous below the average (2026-06-19, sol)
+
+Lens: the constraint rung linking the PROVEN average-control of the wraparound
+(`_WraparoundNormDivisibility`: per-relation prime-divisor count is bounded INDEPENDENTLY of `p`, so the
+AVERAGE wraparound is `O(n^{2r}·φ(n)·log r / #primes)`) to its FAILURE to control the SUP
+(`_OverdispersionObstructsVariance`). The only tool turning the summed incidence into a per-prime
+exclusion is the union/Markov bound `#{p : W_p ≥ T} ≤ (∑ W)/T`.
+
+PROBE (`scripts/probes/probe_markov_vacuity.py`, prize regime β=4, depth r=2, thin 2-power μ_n,
+p=k·n+1, p≫n³): the average wraparound exceeds the prize-scale threshold `W_prize ~ n·log(p/n)` by
+ratios avg/Wprize ≈ 21, 262, 3360, 44800 for n = 8,16,32,64 — the gap GROWING in n. So the Markov
+threshold needed for a nonvacuous exclusion sits orders of magnitude above the prize threshold at every
+tested point.
+
+VERDICT: the union/Markov bad-prime bound is vacuous (cannot exclude even one prime) for EVERY threshold
+`T ≤ mean = (∑ W)/|S|`, because then `(∑ W)/T ≥ |S|`. A controlled AVERAGE therefore certifies nothing
+about the SUPREMUM at any prize-scale threshold below the average. This is exactly why average-control
+does not transfer to sup-control through the union route; isolating the worst prime needs a genuinely
+finer (over-dispersion-aware) argument, not the per-relation norm-divisibility incidence. No CORE,
+cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_WraparoundMarkovVacuity.lean`, axiom-clean.
+Theorems: `markov_count_le` (finite Markov `T·#{W≥T} ≤ ∑ W`), `markov_bound_vacuous_below_mean`
+(`0 < T ≤ mean ⟹ (∑W)/T ≥ |S|`), `average_control_does_not_bound_sup` (combined). Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
