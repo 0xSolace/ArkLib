@@ -442,27 +442,9 @@ Together with the unconditional second-moment identities it carries (`secondMome
 off-diagonal `PairCorr`), the capstone reduces the prize to **one** named hypothesis of a single, well-defined
 type: a variance bound. This is the sharpest statement of the prize the thesis offers, and — per the defense
 (§8.2, Q1) — the reduction is a genuine theorem (the Chebyshev passage is real content), not a tautology.
-
-### 7.6 The sub-Poisson hypothesis is over-dispersed — the variance route's honest correction **[probe]**
-
-Continuing the attack *past* the thesis's first draft produced a decisive empirical correction to its own central
-conditional (§7.4). The capstone consumes the hypothesis `Var_P(W_r) ≤ E_P[W_r]` (sub-Poisson variance over the
-prime family). Direct computation (`probe_wraparound_overdispersion`) **refutes this hypothesis in the entire
-computable range**: the variance-to-mean ratio of the wraparound `W_r` over the prime family is not `≤ 1` but
-ranges from **14 to over 400,000** — the wraparound is *heavily over-dispersed*. A small set of **structured
-primes** (Fermat-like, high 2-adic valuation `v_2(p−1)`) carry anomalously large `W_r`, and they dominate the
-second moment; the typical prime has `W_r` small or zero.
-
-The consequence is twofold and honest. (i) The capstone (`subPoisson_variance_implies_prizeFloor`) remains a
-*true implication*, axiom-clean — but its hypothesis is **false** in the computable regime, so it does not, by
-itself, deliver the prize via a family-variance argument. (ii) The over-dispersion **sharpens the target**: the
-obstruction is not the typical prime (where `W_r` is small — consistent with the prize being true) but the
-*structured outliers*. Since the prize is free to **choose** `p = Θ(n^β)` with `n | p−1`, the route is no longer
-"bound the variance" but "**avoid the structured bad primes**" — a statement about a sparse, arithmetically
-characterized exceptional set (high `v_2(p−1)`), much closer to the original per-prime BGK form than to a
-second-moment bound. This is where the attack now continues: not the variance of the family, but the structure
-and density of its bad set. We record the refutation rather than bury it — the variance route, as the capstone
-stated it, does not close the prize, and saying so is the thesis's job.
+**§7.6 corrects this framing decisively: the capstone's variance hypothesis is empirically *false* (the wraparound
+is over-dispersed), yet that over-dispersion turns out *benign* — the credible reduction is to a *sup* bound, not a
+variance bound.**
 
 ### 7.5 A cautionary result: the equivariant descent, and why it does *not* move the wall **[Lean, refuted]**
 
@@ -489,6 +471,44 @@ invariance `η_{cb} = η_b`), which does not touch the BGK exponent. The `√p` 
 is **unmoved**. We record this because catching it — before it entered the thesis as an advance — is exactly the
 discipline a proof of an open problem demands: a referee would have punctured an unverified √p-removal in one
 line, and the thesis is stronger for having punctured it first.
+
+### 7.6 The variance route's honest correction: over-dispersed, but *benign* — the central result is a *sup* bound **[Lean + probe]**
+
+Continuing the attack past the thesis's first draft produced a decisive correction to its own central conditional
+(§7.4), in three machine-checked steps. It is the most important self-correction of the campaign.
+
+**(i) The sub-Poisson hypothesis is false.** The capstone consumes `Var_P(W_r) ≤ E_P[W_r]`. Direct computation
+(`probe_wraparound_overdispersion`) refutes it across the entire computable range: the variance-to-mean ratio of
+`W_r` over the prime family is not `≤ 1` but `14 … 407000` — the wraparound is *heavily over-dispersed*, a sparse
+set of structured primes (Fermat-like, high `v_2(p−1)`) carrying almost all the second-moment mass.
+`_OverdispersionObstructsVariance.overdispersed_of_single_heavy` (axiom-clean) proves this is structural, not a
+sampling artifact: a single prime with `(W_j − mean)² > total` *forces* `Var > mean`. So the capstone is a *true
+implication with a false hypothesis* — no averaging over the family can select a good prime. A follow-up
+(`probe_wraparound_v2_stratification`) also refutes the natural fix "choose a round prime (minimal `v_2`)": `v_2`
+does **not** predict goodness; the true predictor is *thinness* `β`, and the over-dispersion is an onset/finite-window
+effect (the smallest primes, just past the onset `r_0`, dominate).
+
+**(ii) But the over-dispersion is benign — it killed the wrong statistic.** The decisive test is the one computable
+window that resembles the prize: thin *and* above onset (`n = 16`, depth `r = 5 > r_0 ≈ 4`, `β ≈ 4`). There
+(`probe_thin_above_onset_goodness`) **every prime is good** — `W_5/E_0 ∈ [0, 0.0057]`, all `≪ 1`, *including the
+Fermat prime* `p = 65537` (the worst structured case, at `0.57 %`), with `15/24` primes carrying nonzero wraparound
+(correctly above onset). The wraparound is *still over-dispersed* there (`W ∈ [0, 2.9·10⁶]`), yet every value is
+`≪ E_0`. The prize needs a **sup / existence** bound — `W_r(p*) ≤ slack` at the *chosen* prime, since the prize is
+free to pick `p` — which is a *different statistic* from the family variance.
+`_OverdispersionObstructsVariance.overdispersion_is_benign` (axiom-clean) proves the two are independent: the family
+`W = [B, 0]` is over-dispersed (`Var > mean` for `B > 2`) yet uniformly `≤ B`. Over-dispersion never forces a prime
+past the slack.
+
+**(iii) The corrected central result.** The credible reduction is therefore to a **uniform sup bound** — *every*
+thin above-onset prime is good — not to sub-Poisson variance. This is strictly *weaker* than what the variance route
+demanded (which was both harder and, as stated, false), and it is exactly what the data shows, with a `> 99.4 %`
+margin including at the worst structured prime. The capstone `subPoisson_variance_implies_prizeFloor` remains valid
+and axiom-clean as an implication; but the honest version of the thesis's central positive claim is now: *the prize
+reduces to the worst-case (sup) wraparound bound `W_r ≤ slack` at deep `r ≈ log p` in the thin regime, for which the
+worst computable prime clears the bar by `> 99 %`.* The wall is unchanged — proving the sup bound at uncomputable
+depth `r ≈ log p` is the growing-order equidistribution of §7.3 — but it is now correctly framed, and the framing
+error (demanding control of the variance when the prize only needs control of the supremum) is *recorded* rather
+than buried. This is the difference between a thesis that maps its problem and one that flatters it.
 
 ---
 
