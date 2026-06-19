@@ -131,6 +131,49 @@ theorem multiPieceCoherence_le_of_abs_signedMass_le {ι : Type*} [DecidableEq ι
   rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
   exact (div_le_iff₀ hpos).mpr hbal
 
+/-- A strict coherence slack `c < 1` forces genuine positive mass.  If all real pieces were
+nonpositive (`posMass = 0`), the signed-mass ratio would be exactly `1`, contradicting a strict
+subunit balance bound. -/
+theorem posMass_pos_of_strict_signedMass_balance {posMass negMass c : ℝ}
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) (hc : c < 1)
+    (hbal : |posMass - negMass| ≤ c * (posMass + negMass)) :
+    0 < posMass := by
+  by_contra hnot
+  have hzero : posMass = 0 := le_antisymm (le_of_not_gt hnot) hposMass
+  have hnegpos : 0 < negMass := by linarith
+  have habs : |posMass - negMass| = negMass := by
+    rw [hzero, zero_sub, abs_neg]
+    exact abs_of_nonneg hnegMass
+  have hle_abs : |negMass| ≤ c * negMass := by
+    simpa [hzero, habs] using hbal
+  have hle : negMass ≤ c * negMass := by
+    rwa [abs_of_nonneg hnegMass] at hle_abs
+  have hlt : c * negMass < negMass := by
+    simpa using (mul_lt_mul_of_pos_right hc hnegpos)
+  linarith
+
+/-- A strict coherence slack `c < 1` also forces genuine negative mass.  A multi-piece real
+refinement can beat coherence `1` only when both signs occur with nonzero aggregate mass. -/
+theorem negMass_pos_of_strict_signedMass_balance {posMass negMass c : ℝ}
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) (hc : c < 1)
+    (hbal : |posMass - negMass| ≤ c * (posMass + negMass)) :
+    0 < negMass := by
+  by_contra hnot
+  have hzero : negMass = 0 := le_antisymm (le_of_not_gt hnot) hnegMass
+  have hpospos : 0 < posMass := by linarith
+  have habs : |posMass - negMass| = posMass := by
+    rw [hzero, sub_zero]
+    exact abs_of_nonneg hposMass
+  have hle_abs : |posMass| ≤ c * posMass := by
+    simpa [hzero, habs] using hbal
+  have hle : posMass ≤ c * posMass := by
+    rwa [abs_of_nonneg hposMass] at hle_abs
+  have hlt : c * posMass < posMass := by
+    simpa using (mul_lt_mul_of_pos_right hc hpospos)
+  linarith
+
 /-- If the positive mass is at least the negative mass, coherence is just the normalized excess
 `(posMass - negMass)/(posMass + negMass)`. -/
 theorem multiPieceCoherence_eq_posExcess_ratio {ι : Type*} [DecidableEq ι]
@@ -165,5 +208,7 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_abs_signedMass_ratio
 #print axioms abs_signedMass_le_of_multiPieceCoherence_le
 #print axioms multiPieceCoherence_le_of_abs_signedMass_le
+#print axioms posMass_pos_of_strict_signedMass_balance
+#print axioms negMass_pos_of_strict_signedMass_balance
 #print axioms multiPieceCoherence_eq_posExcess_ratio
 #print axioms multiPieceCoherence_eq_negExcess_ratio

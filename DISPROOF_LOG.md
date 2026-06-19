@@ -6201,3 +6201,16 @@ negative mass.  Therefore a door-(iv) anti-concentration theorem cannot be obtai
 into more real coset pieces.  It must prove a genuine worst-b signed-mass balance statement.  This is a
 refuted-lever brick only: no CORE cancellation, no completion, no moment, no capacity claim.  Axioms:
 `propext` only (subset of allowed `{propext, Classical.choice, Quot.sound}`).
+
+## [door-iv-strict-coherence-slack-forces-both-signs] multi-piece real coherence < 1 requires genuine two-sided signed mass (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint, continuing the signed-mass compression brick.  The exact compression
+`ρ = |P-N|/(P+N)` has a sharp corollary now kernel-checked in `_DoorIVMultiPieceSignCoherence.lean`:
+if `P,N ≥ 0`, `P+N>0`, and `|P-N| ≤ c(P+N)` with `c<1`, then both `P>0` and `N>0`.  In words: a real
+multi-piece refinement gets any strict coherence slack below 1 only if both aggregate signs occur with
+nonzero mass at the adversarial frequency.
+
+CONSTRAINT: subdivision into many negation-stable real pieces is not enough; a surviving door-(iv)
+refinement theorem must prove a worst-b two-sided sign-balance statement.  Same-sign fibers saturate
+`ρ=1`, and one-sided mass cannot satisfy any strict subunit coherence target.  No CORE cancellation,
+completion, moment, or capacity claim.  Axioms subset `{propext, Classical.choice, Quot.sound}`.
