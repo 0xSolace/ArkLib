@@ -126,6 +126,28 @@ theorem cosetInvariant_of_factorThroughLeftCosets {H : Subgroup G} {β : Type*}
   have hkey : (c * b) * b⁻¹ = c := by group
   simpa [hkey] using hc
 
+/-- **Quotient-collapse iff.**  A statistic on frequencies is `H`-coset-invariant exactly when it is
+pulled back from a function on the left-coset quotient.  For door-(iv), this is the clean reusable
+form of the guardrail: any proposed coherence lever for `ρ(b)` must be a quotient-level invariant of
+`b·μₙ`; if it changes inside a coset, it cannot govern `ρ`. -/
+theorem cosetInvariant_iff_exists_factorThroughLeftCosets {H : Subgroup G} {β : Type*} {f : G → β} :
+    CosetInvariant H f ↔
+      ∃ F : Quot (LeftCosetSetoid H) → β, ∀ b : G, F (Quot.mk (LeftCosetSetoid H) b) = f b := by
+  constructor
+  · intro hf
+    exact ⟨factorThroughLeftCosets (H := H) (f := f) hf,
+      factorThroughLeftCosets_mk (H := H) (f := f) hf⟩
+  · rintro ⟨F, hF⟩ c hc b
+    calc
+      f (c * b) = F (Quot.mk (LeftCosetSetoid H) (c * b)) := (hF (c * b)).symm
+      _ = F (Quot.mk (LeftCosetSetoid H) b) := by
+        apply congrArg F
+        apply Quot.sound
+        change (c * b) * b⁻¹ ∈ H
+        have hkey : (c * b) * b⁻¹ = c := by group
+        simpa [hkey] using hc
+      _ = f b := hF b
+
 end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
 
 #print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.eq_of_cosetInvariant_of_sameCoset
@@ -134,3 +156,5 @@ end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
 #print axioms ProximityGap.Frontier.DoorIVCoherenceOrderBlind.factorThroughLeftCosets_mk
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_of_factorThroughLeftCosets
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_iff_exists_factorThroughLeftCosets

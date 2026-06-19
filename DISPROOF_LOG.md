@@ -5978,3 +5978,15 @@ dilated subgroup.  No CORE/cancellation/capacity claim.
 Lean: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addTripleSumCount`,
 `addTripleSumCount_smul_eq`, and `addTripleSumCount_phaseSet_indep_of_scalar`, axiom-clean with axioms
 subset `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv-coherence-quotient-collapse-iff] coset-invariant coherence is exactly quotient-level (g55, 2026-06-19)
+
+Door-(iv) Lane 3 extension of the quotient-factorization guardrail.  The localized coherence `rho(b)`
+was already shown to factor through `F_p^*/mu_n` when it is `mu_n`-coset-invariant.  This sweep locks
+the exact iff: a frequency statistic is coset-invariant iff it is the pullback of a function on the
+left-coset quotient.
+
+Constraint verdict: any proposed door-(iv) anti-concentration lever for `rho(b)` must be a quotient-level
+invariant of the coset `b*mu_n`.  Element-level features that vary inside a coset, including order-like
+or representative-dependent data, cannot govern `rho` unless they descend to the quotient.  No CORE,
+no cancellation, no capacity claim.
