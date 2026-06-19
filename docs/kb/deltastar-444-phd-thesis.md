@@ -268,3 +268,47 @@ routes with mechanisms); (d) **creates** ~28 new axiom-clean objects and a seque
 would resolve the prize, and supplies the machinery (the √p-removal identity, the difference-variety reduction,
 the Chebyshev capstone) that makes it a concrete, attackable target rather than a famous slogan. That the wall
 still stands is not a failure of the thesis; it is the honest report of a real wall, mapped as never before.
+
+### 8.4 Coda — the shape the eventual proof must take
+
+The campaign's negative results are not merely a list of failures; together they *constrain the form* of any
+eventual proof, and that constraint is the thesis's most useful prediction. A proof of the char-`p` transfer
+must:
+
+1. **Be a second-moment (variance) argument, not a first-moment one.** First-order control of `M` is the BGK
+   wall itself; every first-moment route reduces. The sub-Poisson variance of the wraparound fluctuation is the
+   first formulation in which the *believed* sub-randomness (the DC-moment ratio decreasing with depth) is the
+   *object of proof* rather than a hoped-for output.
+
+2. **Live on the difference variety, at growing order.** `_NextDifferenceVariety` shows the second moment is a
+   first moment of `Jphase` over `V_diff = append(T, −T')`. A proof is therefore an *effective, growing-order*
+   equidistribution on `V_diff` — precisely the gap Katz's fixed-order theorem leaves open. The Betti number of
+   the relevant Fermat correlation variety grows like `n^r`; the proof must extract cancellation *from* this
+   large cohomology (a decomposition / a sign-isotype of lower weight, `_CreateFermatHodgeDecomp`), not be
+   defeated by it. This is the single most concrete open problem the thesis bequeaths.
+
+3. **Respect the exact parity structure.** `CrossCov_r = (−1)^r·Var_r` is exact: any tower/recursive argument
+   must handle the even-order expansion, e.g. by a two-step (`n → 4n`) recursion or a parity-graded amplifier.
+   This rules out naïve renormalization and points to the specific combinatorial object an argument must build.
+
+4. **Use the arithmetic of the prime family, not a single prime.** The Chebyshev capstone needs only *one* good
+   prime in the family `{p : n | p−1}`; the variance is over the family. The proof is thus an *averaged* /
+   second-moment statement over primes — a softer, more attackable object than a per-prime worst-case bound, and
+   the one place the prize's freedom to *choose* `p` is genuinely usable (the refuted "cross-prime sieve" failed
+   because it used a tautological bridge; the variance route uses the family non-tautologically, via Chebyshev).
+
+If the eventual proof comes from elsewhere — say an effective growing-order Sato–Tate for Jacobi sums proved by
+`ℓ`-adic monodromy, or a hypercontractive variance inequality on the Fermat motive — these four constraints say
+it will, when specialized, *factor through* the variance route's objects. The thesis therefore offers not only a
+map of where the wall is, but a blueprint for the shape of the door through it. The remaining work — proving the
+growing-order pair equidistribution — is left, honestly, as the open problem it is; the contribution is to have
+made it the *only* remaining work, and to have built the tools that make it concrete.
+
+---
+
+*Formal artifacts: ~28 axiom-clean Lean bricks under `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_Create*`,
+`_Next*`, `_Jacobi*`, `_Onset*`, `_Bridge*`, `_ProveAssembly*`; the state-of-the-prize map
+`docs/kb/deltastar-444-state-of-the-prize-2026-06-19.md`; the empirical probes
+`scripts/probes/probe_{onset_growth_law,wraparound_correction,jacobi_*}.py`; the exhaustive-search ledger
+`docs/kb/deltastar-444-exhaustive-loop-log.md`. Every theorem cited as [Lean] is machine-verified
+`#print axioms ⊆ {propext, Classical.choice, Quot.sound}`, no `sorryAx`.*
