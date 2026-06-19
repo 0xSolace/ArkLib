@@ -82,6 +82,79 @@ theorem multiPieceCoherence_eq_one_of_sameSign {ι : Type*} [DecidableEq ι]
   · exact multiPieceCoherence_eq_one_of_nonpos s A hnonpos
       (lt_of_le_of_ne (Finset.sum_nonpos hnonpos) hsum)
 
+/-! ## Signed-mass compression
+
+For real, negation-stable refinements, subdividing the period into more pieces does not by itself
+create a new phase statistic.  Once the pieces are real, the normalized multi-piece coherence is
+controlled entirely by the imbalance between the aggregate positive `L¹` mass and the aggregate
+negative `L¹` mass.  Thus a nontrivial coherence-slack theorem for a refined split must prove a real
+signed-mass balance statement; it cannot come merely from the existence of many pieces.
+-/
+
+/-- If the total real sum is `posMass - negMass` and the total `L¹` mass is `posMass + negMass`,
+then the multi-piece coherence compresses exactly to the signed-mass ratio
+`|posMass - negMass| / (posMass + negMass)`.  This abstracts the door-(iv) obstruction: after a
+negation-stable refinement has made every piece real, all phase information has collapsed to the two
+numbers `posMass` and `negMass`. -/
+theorem multiPieceCoherence_eq_abs_signedMass_ratio {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass) :
+    multiPieceCoherence s A = |posMass - negMass| / (posMass + negMass) := by
+  unfold multiPieceCoherence
+  rw [hsum, hden]
+
+/-- A coherence upper bound below `c` is exactly a signed-mass-balance demand: the absolute
+positive/negative imbalance must be at most `c` times the total `L¹` mass.  This is the formal
+constraint behind the probe verdict: to get slack from a multi-piece real refinement, one must prove
+aggregate sign balance at the worst frequency, not merely refine the coset split. -/
+theorem abs_signedMass_le_of_multiPieceCoherence_le {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hpos : 0 < posMass + negMass)
+    (hle : multiPieceCoherence s A ≤ c) :
+    |posMass - negMass| ≤ c * (posMass + negMass) := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden] at hle
+  exact (div_le_iff₀ hpos).mp hle
+
+/-- Conversely, a signed-mass-balance inequality is precisely a coherence bound for the refined
+real pieces.  The door-(iv) multi-piece route is therefore equivalent to proving this balance at the
+adversarial `b`; refinement alone supplies no cancellation. -/
+theorem multiPieceCoherence_le_of_abs_signedMass_le {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hpos : 0 < posMass + negMass)
+    (hbal : |posMass - negMass| ≤ c * (posMass + negMass)) :
+    multiPieceCoherence s A ≤ c := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  exact (div_le_iff₀ hpos).mpr hbal
+
+/-- If the positive mass is at least the negative mass, coherence is just the normalized excess
+`(posMass - negMass)/(posMass + negMass)`. -/
+theorem multiPieceCoherence_eq_posExcess_ratio {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hge : negMass ≤ posMass) :
+    multiPieceCoherence s A = (posMass - negMass) / (posMass + negMass) := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  rw [abs_of_nonneg (sub_nonneg.mpr hge)]
+
+/-- If the negative mass is at least the positive mass, coherence is the opposite normalized excess
+`(negMass - posMass)/(posMass + negMass)`. -/
+theorem multiPieceCoherence_eq_negExcess_ratio {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hge : posMass ≤ negMass) :
+    multiPieceCoherence s A = (negMass - posMass) / (posMass + negMass) := by
+  rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
+  have hnonpos : posMass - negMass ≤ 0 := sub_nonpos.mpr hge
+  rw [abs_of_nonpos hnonpos]
+  ring
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -89,3 +162,8 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_one_of_nonneg
 #print axioms multiPieceCoherence_eq_one_of_nonpos
 #print axioms multiPieceCoherence_eq_one_of_sameSign
+#print axioms multiPieceCoherence_eq_abs_signedMass_ratio
+#print axioms abs_signedMass_le_of_multiPieceCoherence_le
+#print axioms multiPieceCoherence_le_of_abs_signedMass_le
+#print axioms multiPieceCoherence_eq_posExcess_ratio
+#print axioms multiPieceCoherence_eq_negExcess_ratio

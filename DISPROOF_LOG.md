@@ -6176,3 +6176,28 @@ are correlated but genuinely DISTINCT (ratio<1 always, gap widening at deeper β
 that identifies worst_n with worst_{n/2} is sound. Refuted-lever brick only: no CORE cancellation, no
 completion, no moment, no capacity.
 Axioms: propext, Classical.choice, Quot.sound.
+
+## [door-iv-multipiece-signed-mass-compression] real negation-stable refinements reduce exactly to positive-vs-negative L1 mass balance (2026-06-19, g55)
+
+Lane: door-(iv) localized coherence, Lane 3 constraint lemma.  The natural response to index-2
+coset-half coherence saturating is to refine `μ_n` into more negation-stable coset pieces and hope the
+extra pieces create phase spread.  The existing probe `scripts/probes/probe_dooriv_multipiece_sign_coherence.py`
+was rerun in the proper thin prize regime (`n=16,32,64` full scans; `n=128` sampled by the script): for
+d=4, all-same-sign real pieces occur at ~12.4-12.5% of coset representatives and include the best
+`|η_b|` in the scanned rows; for d=8, all-same-sign occurs at ~0.75-0.79%, and the top rows still often
+have `ρ_d=1` or near-1.  So refinement does not automatically supply phase cancellation at the worst
+frequency.
+
+Formal mechanism: `_DoorIVMultiPieceSignCoherence.lean` now proves an exact signed-mass compression.
+If the real piece sum is `posMass - negMass` and the total piece `L¹` mass is `posMass + negMass`, then
+`multiPieceCoherence = |posMass - negMass| / (posMass + negMass)`.  Equivalently, any desired coherence
+upper bound `≤ c` is exactly the signed-mass balance inequality
+`|posMass - negMass| ≤ c * (posMass + negMass)`, and conversely.  The positive-excess and negative-excess
+forms are also pinned.
+
+CONSTRAINT / WALL: once a refinement is negation-stable enough to make all pieces real, the multi-piece
+coherence statistic has no remaining phase geometry; it is just aggregate positive mass vs aggregate
+negative mass.  Therefore a door-(iv) anti-concentration theorem cannot be obtained merely by subdividing
+into more real coset pieces.  It must prove a genuine worst-b signed-mass balance statement.  This is a
+refuted-lever brick only: no CORE cancellation, no completion, no moment, no capacity claim.  Axioms:
+`propext` only (subset of allowed `{propext, Classical.choice, Quot.sound}`).
