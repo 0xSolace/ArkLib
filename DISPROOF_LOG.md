@@ -6503,3 +6503,18 @@ Lane: Door-(iv) Lane 1/Lane 3 constraint, strengthening `[door-iv-phaseset-linea
 Formal kernel: extended `Frontier/_DoorIVPhaseSetDilationInvariant.lean` with `addLinearPatternMaxFiber`, `addLinearPatternMaxFiber_smul_eq`, and `addLinearPatternMaxFiber_phaseSet_indep_of_scalar`.  For any fixed coefficient vector and any nonzero frequency `b`, replacing `S` by `bS` merely relabels the target attaining the maximum, so the max-fiber small-ball input is exactly independent of the adversarial frequency.
 
 Constraint verdict: a Door-IV anti-concentration lever based on the usual `max_t` additive-linear small-ball statistic cannot select or explain the worst `b`; it is b-blind.  No CORE bound, no cancellation estimate, no completion/moment saving, no capacity claim.  Axioms subset `{propext, Classical.choice, Quot.sound}`.
+
+## [difftrace-modulus-absolute-consumer] a V_diff modulus estimate gives two-sided off-diagonal real control (g55, 2026-06-19)
+
+Lane: Door-IV variance-core frontier extension of `_NextDifferenceVariety` / `_DiffTraceReality`.  The
+previous consumer bridge routed a future modulus estimate `‖DiffTrace‖ ≤ S` to the one-sided real-part
+bound needed by `FirstMomentDiffCancellation`.  This sweep packages the symmetric form used by variance
+error terms: because `DiffTrace` is real, the same hypothesis gives `|(DiffTrace).re| ≤ S`, and via the
+exact second-moment-to-first-moment identity gives `|offdiag.re| ≤ S` for the original off-diagonal
+second moment.
+
+Formal kernel: extended `Frontier/_DiffTraceReality.lean` with `firstMoment_modulus_to_abs_re` and
+`modulus_to_secondMoment_abs_re_bound`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  This is a structural handoff theorem only: the external
+Katz/Lang-Weil-type modulus estimate remains open; no CORE bound, cancellation estimate,
+completion/moment saving, or capacity claim is made.
