@@ -6735,3 +6735,19 @@ axiom-clean.  New theorems: `secondMoment_re_ge_neg_card`,
 `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/completion/moment-saving/capacity
 claim.
 
+
+## door-(iv) Shaw-value square normalization is exactly the variance-core bound (2026-06-19)
+
+Lens: Lane 2 citable reduction-chain capstone following `_DiffTraceFlatnessRatio`.  The aggregate
+Jacobi-phase flatness ratio `ρ_flat(Rel)=‖Σ_T Jphase θ T‖²/#Rel` now has the square-root normalization
+`Sh(Rel)=sqrt(ρ_flat(Rel))`.  For nonempty `Rel`, the kernel-checked statement is exact:
+`Sh(Rel)^2 ≤ 1 + S/#Rel` iff the original off-diagonal second-moment real part is `≤ S`.
+
+VERDICT: this is a normalization/reduction theorem only.  It packages the prize-side door-(iv)
+obligation as a single Shaw-value flatness statement above the orthonormal floor `1`; it proves no
+new cancellation estimate and leaves the analytic flatness inequality open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DiffTraceShawValue.lean`, axiom-clean.
+New theorems: `shawValue_nonneg`, `shawValue_sq_eq_flatnessRatio`,
+`shawValue_sq_le_of_secondMoment_le`, and `shawValue_sq_le_iff_secondMoment_le`.  Axioms are contained
+in `{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
