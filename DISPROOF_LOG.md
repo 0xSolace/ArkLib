@@ -1,5 +1,21 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) affine coherence-slack baseline must already pay the coherent peak (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVCoherenceSlackVacuousAtArgmax`.  The prior
+nonzero-baseline lemma handled certificates of the form `mass b ≤ g(1 - ρ(b))`.  This pins the
+more common patched shape `mass b ≤ B + g(1 - ρ(b))` with a vanishing slack penalty `g(0)=0`.
+At a fully coherent prize-worst frequency `b*` (`ρ(b*) = 1`), the slack term is zero, so the
+certificate collapses to `mass b* ≤ B`.  Therefore any affine slack certificate whose baseline
+`B` is strictly below the coherent peak is impossible; if it is valid, the baseline already carries
+the hard `L∞` peak and the coherence slack contributes nothing at the adversarial frequency.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSlackVacuousAtArgmax.lean`,
+axiom-clean.  New theorems: `affineSlack_bound_at_coherent`,
+`affineBaseline_ge_mass_of_coherent_argmax`, and
+`no_affineCoherenceSlackBound_of_small_baseline`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  No CORE/cancellation/capacity claim.
+
 ## door-(iv) multi-piece signed-mass slack is EXACTLY two-sided sign mass (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`.  Prior bricks showed that

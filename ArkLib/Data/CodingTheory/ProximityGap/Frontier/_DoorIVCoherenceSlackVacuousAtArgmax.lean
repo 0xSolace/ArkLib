@@ -122,6 +122,44 @@ theorem no_coherenceSlackBoundWithBaseline_of_small_baseline {mass coh : ι → 
   intro hb
   exact not_le.2 hsmall (baseline_ge_mass_of_coherent_argmax hmax hcoh hb)
 
+/-- An *affine* coherence-slack certificate: the claimed control is a baseline `B` plus a penalty
+from the slack `1 - coh i`.  This is the natural patched version of a failed vanishing-slack lever:
+allow an additive budget, but keep the anti-concentration content in the slack term. -/
+structure AffineCoherenceSlackBound (mass coh : ι → ℝ) (B : ℝ) (g : ℝ → ℝ) : Prop where
+  /-- The slack penalty still vanishes at full coherence. -/
+  penalty_zero : g 0 = 0
+  /-- Pointwise affine slack control. -/
+  bound : ∀ i, mass i ≤ B + g (1 - coh i)
+
+/-- At a fully coherent frequency, an affine coherence-slack certificate collapses to its baseline
+`B`.  Thus the baseline itself must pay for any full-coherence peak; the slack term contributes
+nothing at that frequency. -/
+theorem affineSlack_bound_at_coherent {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    (hb : AffineCoherenceSlackBound mass coh B g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ B := by
+  have := hb.bound i
+  rwa [hcoh, sub_self, hb.penalty_zero, add_zero] at this
+
+/-- **Affine baseline necessity at a coherent argmax.**  If the prize-worst frequency is fully
+coherent, every affine coherence-slack certificate must put the entire peak mass into the baseline.
+So any useful anti-concentration would have to prove `B` is already a prize-quality bound; the
+coherence slack does not help at the adversarial frequency. -/
+theorem affineBaseline_ge_mass_of_coherent_argmax {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (_hmax : ∀ i, mass i ≤ mass bstar) (hcoh : coh bstar = 1)
+    (hb : AffineCoherenceSlackBound mass coh B g) :
+    mass bstar ≤ B :=
+  affineSlack_bound_at_coherent hb hcoh
+
+/-- Impossibility form: an affine coherence-slack certificate with baseline strictly below the
+fully coherent prize peak cannot hold.  This permanently blocks the common patch "add a small
+baseline and use `1 - ρ` for the rest" unless the baseline already covers the hard `L∞` peak. -/
+theorem no_affineCoherenceSlackBound_of_small_baseline {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    {bstar : ι} (hmax : ∀ i, mass i ≤ mass bstar) (hcoh : coh bstar = 1)
+    (hsmall : B < mass bstar) :
+    ¬ AffineCoherenceSlackBound mass coh B g := by
+  intro hb
+  exact not_le.2 hsmall (affineBaseline_ge_mass_of_coherent_argmax hmax hcoh hb)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_trivial_at_coherent
@@ -130,3 +168,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.slack_bound_withBaseline_at_coherent
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.baseline_ge_mass_of_coherent_argmax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_coherenceSlackBoundWithBaseline_of_small_baseline
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineSlack_bound_at_coherent
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.affineBaseline_ge_mass_of_coherent_argmax
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax.no_affineCoherenceSlackBound_of_small_baseline
