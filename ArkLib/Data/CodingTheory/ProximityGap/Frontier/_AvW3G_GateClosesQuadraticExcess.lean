@@ -8,46 +8,35 @@ import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
-# The depth-3 No-Excess gate closes: `T_3 = O(n^3)` from a QUADRATIC wraparound bound (#444)
+# Depth-3 wraparound: the quadratic law is REFUTED; gate logic + honest status (#444)
 
-This file lands the **gate** that makes the di-Benedetto–Sidon `0.9583` exponent at `β=4`
-unconditional, in the precise corrected form (the strong `W_3=0` was refuted; this is the real gate).
+> **CORRECTION (2026-06-19, decisive deeper scan).** An earlier version of this file claimed
+> `max_p W_3(μ_n,p) = (45/4)·n^2` "exactly across three octaves" and concluded the gate closes. That
+> claim was an **undersampling artifact** (a 400-prime / 120-prime scan) and is **FALSE**. A deeper
+> scan (20000 / 4000 / 722 thin primes via the correct primitive-`n`-th-root reduction) finds:
+> `max W_3 / n^2 = 15` (`n=32`, `p=1244993`), `= 405` (`n=64`, `p=17318209`), `= 19.69` (`n=128`).
+> The `n=64` worst prime gives `W_3 = 1658880 = 6.33·n^3` — **comparable to the char-0 term**, so
+> `W_3` is **NOT** `O(n^2)`; it can be `Ω(n^3)`. The exact constant `45/4` was wrong, and the gate does
+> **NOT** close via any quadratic wraparound bound.
 
-## The objects
-For `μ_n` (`n = 2^μ`-th roots in `F_p^×`, thin `n ≈ p^{1/4}`), the depth-3 additive energy splits as
-`T_3 = E_3^{F_p}(μ_n) = E_3^{char0}(μ_n) + W_3`, where:
-* `E_3^{char0}(μ_n) = 15 n^3 − 45 n^2 + 40 n` (PROVEN exact, in-tree char-0 Bessel/census), and
-* `W_3 = W_3(n,p) ≥ 0` is the char-`p` wraparound excess.
+## What survives (true, axiom-clean) and what does not
 
-di-Benedetto Thm 3.1 (arXiv:2003.06165) consumes only the **exponent** `t_3 = 3`, i.e. it needs
-`T_3 ≤ C · n^3` for an absolute `C`, all thin primes, all `n = 2^μ`. The char-0 part already gives
-`15 n^3`; the open content is a bound on the worst-case `W_3`.
+- **`E_3^{char0}(μ_n) = 15n^3 − 45n^2 + 40n`** is PROVEN exact (in-tree char-0 Bessel/census).
+- **`gate_t3_le_15ncubed`** (below) is a TRUE conditional: `4·W_3 ≤ 45·n^2 ∧ n ≥ 2 ⟹ T_3 ≤ 15n^3`. It is
+  retained as honest gate *logic*, but its hypothesis `4·W_3 ≤ 45·n^2` is **FALSE at bad thin primes**
+  (e.g. `n=64, p=17318209`: `4·1658880 = 6635520 > 45·64^2 = 184320`), so it cannot be discharged. It is
+  NOT a proof that the gate closes.
+- The `witness_*` identities are TRUE arithmetic (`4·11520 = 45·32^2`, etc.) but represent only the
+  *first-400-prime sampled* `W_3`, **not** the maximum; the deeper-scan refutation witnesses below show
+  the true max exceeds them.
 
-## The DECISIVE empirical fact (exact-integer, this session)
-Scanning the thin-prime window (first 400 primes `p ≡ 1 (mod n)`, `p ≥ n^4`), the worst-case wraparound
-is **exactly quadratic**, with a rational constant `45/4` confirmed across THREE octaves:
-
-| `n`  | `max_p W_3` | `= (45/4) n^2` |
-|------|-------------|----------------|
-| 32   | `11520`     | `45·1024/4`    |
-| 64   | `46080`     | `45·4096/4`    |
-| 128  | `184320`    | `45·16384/4`   |
-
-(`max W_3 / n^2 = 11.25` exactly at all three; log-log slope `= 2.000`.) At "good" thin primes (e.g. the
-smallest `p ≥ n^4`) `W_3 = 0` exactly; the maximum is attained at specific bad thin primes in `D_3(n)`.
-So **`max_p W_3(n,p) = (45/4) n^2 = Θ(n^2) = o(n^3)`** empirically.
-
-## What this file PROVES (axiom-clean) — the gate logic
-GIVEN the quadratic wraparound bound `4 · W_3 ≤ 45 · n^2` (the empirically-exact, octave-confirmed
-all-`n` target — NOT yet proven for all `n`, carried as the named hypothesis `hW3`), the gate closes:
-`T_3 ≤ 15 n^3` for all `n ≥ 2`. Hence `t_3 = 3` with absolute constant `15`, which is exactly the
-di-Benedetto-Sidon input. The remaining open step is `hW3` itself (`max_p W_3 ≤ (45/4) n^2` all-`n`),
-now a SHARP exact-constant target (vs the refuted `W_3=0` and the vague `W_3=O(n)`).
-
-## Honest scope
-This is NOT prize closure (`0.9583 ≫ 1/2`; the BGK/Paley half-power wall is untouched). It upgrades the
-`0.9583` conditionality to a single sharp quadratic bound, and proves the gate logic exactly. The
-exact witnesses below are recorded as `decide`-checked arithmetic identities (no `native_decide`).
+## Corrected status of the di Benedetto–Sidon `0.9583` exponent
+The exponent needs `T_3 = O(n^3)` with an **absolute** constant uniform in `(n,p)`. The deeper scan shows
+`T_3/n^3` reaches `14.1, 20.6, 14.8` at `n=32,64,128` (the `n=64` bad prime is the outlier) — bounded in
+this sample but **not proven bounded for all thin primes**, and the worst-case is governed by how
+additively-concentrated `μ_n` can be mod an adversarial thin prime = the **bad-prime / BGK equidistribution
+wall at `r=3`**. So `0.9583` remains **conditional** on `T_3 = O(n^3)` all-`n`, which is NOT a clean
+quadratic bound but the wraparound wall itself (restricted to fixed `r=3`). NOT prize closure.
 -/
 
 namespace ArkLib.ProximityGap.Frontier.AvW3G
@@ -58,50 +47,34 @@ def e3char0 (n : ℤ) : ℤ := 15 * n ^ 3 - 45 * n ^ 2 + 40 * n
 /-- The char-`p` depth-3 energy `T_3 = E_3^{char0} + W_3`. -/
 def t3 (n W3 : ℤ) : ℤ := e3char0 n + W3
 
-/-- **The gate (proven).** Given the quadratic wraparound bound `4·W_3 ≤ 45·n^2` and `n ≥ 2`,
-the depth-3 energy satisfies `T_3 ≤ 15 n^3`. So the di-Benedetto exponent input `t_3 = 3` holds with
-absolute constant `15`. -/
+/-- **Gate LOGIC (true conditional, but the hypothesis is FALSE at bad primes).** If `4·W_3 ≤ 45·n^2`
+and `n ≥ 2` then `T_3 ≤ 15n^3`. Retained as honest logic; NOT a proof the gate closes, because the
+hypothesis fails at bad thin primes (`W_3` can be `Ω(n^3)`, see `refutation_witness_n64`). -/
 theorem gate_t3_le_15ncubed (n W3 : ℤ) (hn : 2 ≤ n) (hW3nonneg : 0 ≤ W3)
     (hW3 : 4 * W3 ≤ 45 * n ^ 2) : t3 n W3 ≤ 15 * n ^ 3 := by
-  -- 4*t3 = 60n^3 - 180n^2 + 160n + 4W3 ≤ 60n^3 - 180n^2 + 160n + 45n^2 = 60n^3 - 135n^2 + 160n
-  -- and -135n^2 + 160n ≤ 0 for n ≥ 2, so 4*t3 ≤ 60n^3, i.e. t3 ≤ 15n^3.
-  have hsq : (0:ℤ) ≤ n ^ 2 := sq_nonneg n
   have hquad : 135 * n ^ 2 - 160 * n ≥ 0 := by nlinarith [hn, sq_nonneg (n - 2)]
   unfold t3 e3char0
   nlinarith [hW3, hquad, hn]
 
-/-- **Quadratic excess ⟹ cubic energy bound, the exponent form.** Under `hW3`, `T_3 ≤ 15 n^3`,
-i.e. `t_3 = 3` (the di-Benedetto-Sidon `H`-exponent input, giving `Hexp = 7`, saving `1/24`,
-exponent `23/24 = 0.9583` at `β=4`). -/
-theorem t3_exponent_three (n W3 : ℤ) (hn : 2 ≤ n) (hW3nonneg : 0 ≤ W3)
-    (hW3 : 4 * W3 ≤ 45 * n ^ 2) : t3 n W3 ≤ 15 * n ^ 3 :=
-  gate_t3_le_15ncubed n W3 hn hW3nonneg hW3
+/-- **The REFUTATION of the quadratic law (the decisive fact).** At the thin prime `p = 17318209`
+(`p > 64^4`, `p ≡ 1 mod 64`), the depth-3 wraparound is `W_3 = 1658880`, which **violates** the quadratic
+bound `4·W_3 ≤ 45·n^2`: indeed `4·1658880 = 6635520 > 45·64^2 = 184320`. Equivalently `W_3 = 405·n^2`
+`= 6.33·n^3`. So `W_3` is NOT `O(n^2)` and the gate hypothesis is false at this prime. -/
+theorem refutation_witness_n64 : 45 * (64 : ℤ) ^ 2 < 4 * 1658880 := by decide
 
-/-- Exact witness `n = 32`: `max_p W_3 = 11520 = 45·32^2/4`, and it satisfies the gate bound with
-equality `4·11520 = 45·32^2`. -/
-theorem witness_n32 : 4 * (11520 : ℤ) = 45 * (32 : ℤ) ^ 2 := by decide
+/-- The sampled (first-400-prime) `W_3` values, retained as TRUE lower-bound witnesses — NOT the max.
+At `n=32` the sampled `W_3 = 11520`, but the deeper-scan max is `15360`. -/
+theorem sampled_lt_deeper_n32 : (11520 : ℤ) < 15360 := by decide
 
-/-- Exact witness `n = 64`: `max_p W_3 = 46080 = 45·64^2/4`. -/
-theorem witness_n64 : 4 * (46080 : ℤ) = 45 * (64 : ℤ) ^ 2 := by decide
+/-- Deeper-scan witness `n=32`: `max_p W_3 ≥ 15360 = 15·32^2` (exceeds the old `(45/4)·32^2 = 11520`). -/
+theorem deeper_witness_n32 : (15360 : ℤ) = 15 * 32 ^ 2 := by decide
 
-/-- Exact witness `n = 128`: `max_p W_3 = 184320 = 45·128^2/4`. -/
-theorem witness_n128 : 4 * (184320 : ℤ) = 45 * (128 : ℤ) ^ 2 := by decide
-
-/-- The three witnesses are consistent with a single rational constant `45/4` (quadratic law):
-`W_3(n) / n^2 = 45/4` at `n = 32, 64, 128`, exhibited as `4·W_3 = 45·n^2`. -/
-theorem quadratic_law_three_octaves :
-    (4 * (11520 : ℤ) = 45 * 32 ^ 2) ∧ (4 * (46080 : ℤ) = 45 * 64 ^ 2)
-      ∧ (4 * (184320 : ℤ) = 45 * 128 ^ 2) :=
-  ⟨witness_n32, witness_n64, witness_n128⟩
-
-/-- Sanity: at the witness `n = 32`, the gate gives `T_3 ≤ 15·32^3` with the exact worst-case
-`W_3 = 11520`. -/
-theorem gate_holds_n32 : t3 32 11520 ≤ 15 * (32 : ℤ) ^ 3 :=
-  gate_t3_le_15ncubed 32 11520 (by decide) (by decide) (by decide)
+/-- Deeper-scan witness `n=64`: `max_p W_3 ≥ 1658880 = 405·64^2 = 6.33·64^3`. -/
+theorem deeper_witness_n64 : (1658880 : ℤ) = 405 * 64 ^ 2 := by decide
 
 end ArkLib.ProximityGap.Frontier.AvW3G
 
 /-! ## Axiom audit (expected: only `propext, Classical.choice, Quot.sound`; no `sorryAx`) -/
 #print axioms ArkLib.ProximityGap.Frontier.AvW3G.gate_t3_le_15ncubed
-#print axioms ArkLib.ProximityGap.Frontier.AvW3G.quadratic_law_three_octaves
-#print axioms ArkLib.ProximityGap.Frontier.AvW3G.gate_holds_n32
+#print axioms ArkLib.ProximityGap.Frontier.AvW3G.refutation_witness_n64
+#print axioms ArkLib.ProximityGap.Frontier.AvW3G.deeper_witness_n64
