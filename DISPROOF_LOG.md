@@ -6866,3 +6866,26 @@ Formal kernel: `Frontier/_NoFifthDoorTetrachotomy.lean` theorem classicalSide_cl
 n=4,L=2,q=64,C=1,δ=0.011: both conjuncts hold with real content. The no-fifth-door tetrachotomy is now
 UNCONDITIONAL on the classical side, packaged in a single citable statement. NO CORE/cancellation/
 capacity claim — door (iv) (worst-b coset-half coherence anti-concentration) remains the sole open wall.
+
+## [named-lever-refutation-capstone] the four named classical-side levers (G2 resonance / G3 coeff / G4 roughness / cumulant-sign) bundled as ONE kernel-checked refutation budget (2026-06-19, sol)
+Lane-3 consolidation backing the no-fifth-door tetrachotomy. `_NoFifthDoorTetrachotomy.forces_doorIV`
+takes `hclassicalOvershoots` as a hypothesis and defers its CONTENT to prose ("the proven Lever A-D
+refutations; see the per-lever obstruction theorems in CampaignProvenIndex"). Those named obstructions
+are proven + axiom-clean upstream but were SCATTERED across CampaignProvenIndex with no single citation
+surface. This locks them into ONE kernel-checked conjunction tied to the tetrachotomy's scale language.
+
+Formal kernel: `Frontier/_NamedLeverRefutationCapstone.lean` (axiom-clean ⊆ {propext, Classical.choice,
+Quot.sound}; locked module build exit 0, 3354 jobs). Theorems:
+- `namedLeverRefutationBudget` — ONE conjunction bundling the FOUR verbatim upstream obstructions:
+  (G2) resonance certificate `c·√n < √(n·L)` for `c²<L`; (G3) cyclotomy coeff route loose
+  (`∃m, fujiwaraAtTwo > C·prizeScale`); (G4) roughness `{p∣N∧rough}⊆{p∣N}`; (cumulant) `¬(∀r≥2, κr≤0)`
+  for `κ₂<0<κ₄`. All four conjuncts are the EXACT proven exports — no re-proof, no vacuity.
+- `resonanceLever_le_prizeFloor` — the resonance (door-(i) Parseval) lever is floor-incapable for `c≤1`:
+  `c·√n ≤ √n = prizeScale n`.
+- `resonanceLever_lt_bgkScale` — G2 re-expressed in the tetrachotomy `bgkScale`: `c·√n < bgkScale n L`,
+  confirming the moment/Parseval lever lands inside the door-(iv) corridor's lower part.
+NON-VACUITY verified in-kernel: budget hypotheses jointly satisfiable at concrete witnesses
+(c=1,n=4,L=2,C=1,N=12, κ with κ₂=-1<0<κ₄=1); resonance lemmas have real content (√4≤√4 tight, √4<√8
+strict). Scope: consolidation of the NAMED classical-side refutation budget into one citation surface.
+Does NOT prove door (iv) achievable; does NOT discharge the abstract ∀-mechanism quantifier of
+forces_doorIV (only the four NAMED levers). NO CORE/cancellation/completion/moment-saving/capacity claim.

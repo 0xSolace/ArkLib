@@ -1583,6 +1583,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialNormTransport
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialWeylBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._N3MomentNotDeadDCEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NTStrat_HDMagnitudeInvariant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NamedLeverRefutationCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegativeAssocMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NewANTInputBridge
