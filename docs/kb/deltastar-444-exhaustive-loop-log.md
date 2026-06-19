@@ -25,11 +25,11 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 
 | metric | value |
 |---|---|
-| batches run | 1 (domains 1–8; re-confirmed twice) |
-| approaches invented | 16 |
-| REDUCES | 16 |
+| batches run | 2 (domains 1–16) |
+| approaches invented | 24 |
+| REDUCES | 23 |
 | NOT_NOVEL | 0 |
-| REFUTED | 0 |
+| REFUTED | 1 |
 | **SURVIVES** | **0** |
 
 > Note: domains 1–8 were independently invented+refuted **twice** (an `args`-propagation bug re-ran batch 1
@@ -47,5 +47,15 @@ expander-mixing, eigenvalue-interlacing, NA-moment, good-prime-density.
 - `subfactors / planar algebras` → REDUCES: planar-algebra trace is a positive tracial state ⟹ τ(T^{2r}) is a genuine 2r-th moment = moment-necessity.
 - `quantum groups / Hecke at roots of unity` → REDUCES: R-matrix/Yang–Baxter/skein relations live in ℚ(ζ_n) ⊂ ℂ = char-0 ⟹ √p-vacuity (cyclotomic door).
 - `modular tensor categories / TQFT` → REDUCES: MTC S-matrix is a one-sided Fourier with quadratic-form phases; √p-vacuity worse, not escaped.
+
+### Batch 2 — domains 9–16 (7 REDUCES, 1 REFUTED, 0 survivors)
+- `vertex operator algebras / conformal blocks` → REDUCES: the tautological bridge in modular language; modular-coefficient bound is √p-vacuity.
+- `Bethe ansatz / Yang–Baxter` → REDUCES: μ_n is abelian ⟹ lands on the FREE (zero-scattering) integrable point; every R-matrix lever is vacuous.
+- `RMT loop equations / Tracy–Widom` → REDUCES: loop-equation edge power comes entirely from ensemble self-averaging (1/N expansion); a deterministic matrix has none.
+- `determinantal point process` → REDUCES: √p re-entry as a coefficient; subgroup-scale DPP variance can't reach the worst-case sup.
+- `matroid / Lorentzian DEEP` → REDUCES: the energy is a square `E_r=Σ_c c(c)²` (a 2nd moment of rep-counts); the per-element form is literally the moment.
+- `property (τ) / Lindenstrauss–Margulis` → **REFUTED**: the named spectral-gap datum is false/vacuous (the averaging operator's eigenvalues ARE the periods — circular; explicit countermodel).
+- `unipotent / effective Ratner` → REDUCES: the generator-type hypothesis is violated — the dilation orbit is abelian/degenerate, all effective-Ratner refinements vacuous.
+- `heat-kernel / spectral-zeta` → NOT_NOVEL+REDUCES: already catalogued (DISPROOF_LOG D8-1); heat trace is a moment of the spectrum.
 
 (batches appended below as they complete)
