@@ -1504,6 +1504,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DilationZeroEntropyNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DividedDifferenceDilation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicJacobiCocycleNonContraction

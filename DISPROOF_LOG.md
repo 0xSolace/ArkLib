@@ -7609,6 +7609,7 @@ new theorems `no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax`
 in `{propext, Classical.choice, Quot.sound}`.
 
 
+
 ## [doorIV-valueshift-histogram-obstruction] the anti-concentration value-shift route needs a `+s`-periodic fiber histogram, which the prize value map refutes (2026-06-19, sol)
 
 Lane: door-(iv) Lane 3 constraint lemma extending `_NovelAntiConcentration`. The file
@@ -7642,3 +7643,8 @@ new theorems `valueShift_histogram_periodic`, `no_valueShift_of_histogram_witnes
 `valueShift_step_zero_of_no_periodicity`, `shift_spreading_trivial_of_step_zero`, and
 `valueShift_route_vacuous_of_no_periodicity`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## 2026-06-19 — door-(iv) index-factor overshoot is exactly `sqrt(m)` (g55)
+
+Lane 2/3 capstone constraint. Added `Frontier/_DoorIVIndexFactorOvershoot.lean`, formalizing the arithmetic loss behind the `PrizeConditionalPinCapstone` hfloor note: the naive incidence scale `sqrt(n*m*L)` equals `sqrt(m) * sqrt(n*L)`, so a raw naive-incidence bound normalizes to a Shaw-value bound with the constant multiplied by `sqrt(m)`. This locks the reason the available `M -> epsMCA` bridge is insufficient for the realized-incidence floor when `m` grows. Scope: scale/no-go bookkeeping only; no CORE, cancellation, completion, anti-concentration, or capacity claim.
+
