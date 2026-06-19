@@ -89,20 +89,31 @@ jobs:
       - name: Fetch dependency cache
         run: lake exe cache get
 
-      - name: Time clean build
-        run: |
-          bash scripts/build_timing_report.sh run clean_build "$BUILD_TIMING_RESULTS" -- \
-            bash -eo pipefail -c 'rm -rf .lake/build && lake build'
-
-      - name: Time warm rebuild
-        run: |
-          bash scripts/build_timing_report.sh run warm_rebuild "$BUILD_TIMING_RESULTS" -- \
-            bash -eo pipefail -c 'lake build'
-
+      # THE REAL GATE (merge-blocking), runs FIRST on the warm restored cache so
+      # it is fast: validate.sh = lake build + forbidden_tokens + sorry_census
+      # --fail-on-holes + axiom_audit + check-imports + docs-integrity. This
+      # compiles every module AND enforces the honesty contract.
       - name: Time validation wrapper
         run: |
           bash scripts/build_timing_report.sh run test_path "$BUILD_TIMING_RESULTS" -- \
             bash -eo pipefail -c './scripts/validate.sh'
+
+      # Benchmarks only (NON-GATING), run LAST so they never block the gate above.
+      # A from-scratch clean build is a TIMING measurement, not a correctness
+      # check. At the current library scale (~4.3k modules) it exceeds the runner
+      # budget (~70min) and gets killed; a slow/OOM clean build must NOT red CI
+      # (the gate already verified correctness + honesty on the warm cache).
+      - name: Time clean build (benchmark, non-gating)
+        continue-on-error: true
+        run: |
+          bash scripts/build_timing_report.sh run clean_build "$BUILD_TIMING_RESULTS" -- \
+            bash -eo pipefail -c 'rm -rf .lake/build && lake build'
+
+      - name: Time warm rebuild (benchmark, non-gating)
+        continue-on-error: true
+        run: |
+          bash scripts/build_timing_report.sh run warm_rebuild "$BUILD_TIMING_RESULTS" -- \
+            bash -eo pipefail -c 'lake build'
 
       - name: Save Lean cache
         if: success() && steps.lake-cache.outputs.cache-hit != 'true'
