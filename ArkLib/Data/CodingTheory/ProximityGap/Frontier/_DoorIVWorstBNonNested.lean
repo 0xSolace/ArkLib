@@ -89,6 +89,20 @@ theorem witness_gap_ge_of_ratio_le {subMag : ι → ℝ} {b c : ι} {r : ℝ}
     exact (div_le_iff₀ hpos).mp hratio
   nlinarith
 
+/-- **The transfer ratio bound is exactly the quantitative witness gap bound.**  With a positive true
+level-`(n/2)` maximum `M₂ = subMag c`, the normalized certificate `subMag b / M₂ ≤ r` is equivalent to
+the raw additive gap certificate `(1-r)M₂ ≤ M₂-subMag b`.  Thus the ratios emitted by full worst-b
+probes can be stored without losing the exact scale of the missed-subargmax gap. -/
+theorem ratio_le_iff_witness_gap_ge {subMag : ι → ℝ} {b c : ι} {r : ℝ}
+    (hpos : 0 < subMag c) :
+    subMag b / subMag c ≤ r ↔ (1 - r) * subMag c ≤ subMag c - subMag b := by
+  constructor
+  · intro hratio
+    exact witness_gap_ge_of_ratio_le (subMag := subMag) (b := b) (c := c) hpos hratio
+  · intro hgap
+    rw [div_le_iff₀ hpos]
+    linarith
+
 /-- **Strict non-nesting from a bounded transfer ratio.**  The empirical form of the obstruction is
 often reported as `subMag b / subMag c ≤ r` for some explicit `r < 1` (for example `0.951`, `0.766`,
 `0.931`).  This theorem packages that certificate directly into the boolean failure of recursive
@@ -141,5 +155,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_pos_of_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_lt_one_iff_witness_gap_pos
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.witness_gap_ge_of_ratio_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_le_iff_witness_gap_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.high_percentile_not_argmax
