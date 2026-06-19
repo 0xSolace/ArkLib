@@ -187,6 +187,31 @@ theorem negClosed_subset_count_of_no_fintype (G : Finset F) (h2 : (2 : F) ≠ 0)
       exact Finset.disjoint_of_subset_left (Finset.image_subset_image hUT) hdisj.symm
     rw [h1, h2, Finset.union_empty]
 
+
+/-- Size-two specialization of `negClosed_subset_count_of_no_fintype`: there is one antipodal
+pair for each transversal element, so the count is `|G|/2`, with no ambient `[Fintype F]`. -/
+theorem negClosed_two_subset_count_of_no_fintype (G : Finset F) (h2 : (2 : F) ≠ 0)
+    (h0 : (0 : F) ∉ G) (hneg : ∀ z ∈ G, -z ∈ G) :
+    (G.powerset.filter (fun S => (∀ z ∈ S, -z ∈ S) ∧ S.card = 2)).card = G.card / 2 := by
+  simpa using negClosed_subset_count_of_no_fintype G h2 h0 hneg 1
+
+/-- Size-four specialization of `negClosed_subset_count_of_no_fintype`: the count is
+`choose(|G|/2,2)`, with no ambient `[Fintype F]`. -/
+theorem negClosed_four_subset_count_of_no_fintype (G : Finset F) (h2 : (2 : F) ≠ 0)
+    (h0 : (0 : F) ∉ G) (hneg : ∀ z ∈ G, -z ∈ G) :
+    (G.powerset.filter (fun S => (∀ z ∈ S, -z ∈ S) ∧ S.card = 4)).card
+      = Nat.choose (G.card / 2) 2 := by
+  simpa using negClosed_subset_count_of_no_fintype G h2 h0 hneg 2
+
+/-- Size-six specialization of `negClosed_subset_count_of_no_fintype`: the count is
+`choose(|G|/2,3)`, with no ambient `[Fintype F]`.  This is the exact subset-multiplicity
+specialization used by the E3 top stratum. -/
+theorem negClosed_six_subset_count_of_no_fintype (G : Finset F) (h2 : (2 : F) ≠ 0)
+    (h0 : (0 : F) ∉ G) (hneg : ∀ z ∈ G, -z ∈ G) :
+    (G.powerset.filter (fun S => (∀ z ∈ S, -z ∈ S) ∧ S.card = 6)).card
+      = Nat.choose (G.card / 2) 3 := by
+  simpa using negClosed_subset_count_of_no_fintype G h2 h0 hneg 3
+
 /-- Corollary: `|G|` is even (`2 ∣ |G|`) for a negation-closed `G` with `0 ∉ G` over a field of
 characteristic `≠ 2`, with **no `[Fintype F]`**. -/
 theorem two_dvd_card_of_no_fintype (G : Finset F) (h2 : (2 : F) ≠ 0) (h0 : (0 : F) ∉ G)
@@ -202,3 +227,5 @@ end ArkLib.ProximityGap.Frontier.AntipodalTransversalFintypeFree
   ArkLib.ProximityGap.Frontier.AntipodalTransversalFintypeFree.exists_neg_transversal_of_no_fintype
 #print axioms
   ArkLib.ProximityGap.Frontier.AntipodalTransversalFintypeFree.negClosed_subset_count_of_no_fintype
+#print axioms
+  ArkLib.ProximityGap.Frontier.AntipodalTransversalFintypeFree.negClosed_six_subset_count_of_no_fintype

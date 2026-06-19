@@ -7084,3 +7084,9 @@ Lane 2 de-Fintype continuation from `_AntipodalTransversalFintypeFree`.  The exi
 `#{S⊆G : (∀z∈S, -z∈S) ∧ |S|=2i} = Nat.choose (|G|/2) i`.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AntipodalTransversalFintypeFree.lean` with theorem `negClosed_subset_count_of_no_fintype`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is finite subset combinatorics only: it does not prove the full `negSymCount` closed form Fintype-free, does not prove CORE cancellation/completion, and makes no capacity claim.  This is the next concrete rung toward a characteristic-zero-applicable E3 closed form.
+
+## [doorIV-e3-subset-count-fintype-free-specializations] E3 size 2/4/6 stratum multiplicities exposed without ambient Fintype (2026-06-19, g55)
+
+Lane 2 follow-up to `[doorIV-e3-subset-count-fintype-free]`.  The generic Fintype-free subset-count theorem is now exposed at the three E3 stratum sizes directly: negation-closed `2`-, `4`-, and `6`-subsets of `G` are counted by `|G|/2`, `choose(|G|/2,2)`, and `choose(|G|/2,3)` respectively, all over arbitrary `[Field F] [DecidableEq F]` with `(2:F)≠0`, `0∉G`, and `G=-G`.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AntipodalTransversalFintypeFree.lean` with `negClosed_two_subset_count_of_no_fintype`, `negClosed_four_subset_count_of_no_fintype`, and `negClosed_six_subset_count_of_no_fintype`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is still subset-multiplicity packaging only: it does not prove the full `negSymCount` closed form Fintype-free, does not prove CORE cancellation/completion, and makes no capacity claim.
