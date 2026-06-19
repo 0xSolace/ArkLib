@@ -216,6 +216,21 @@ theorem exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
     exists_nonneg_shawValueFamilyBound_iff_exists_shawValueFamilyBound]
   exact exists_shawValueFamilyBound_iff_of_rawSandwich hK hs hMH hHM
 
+/-- Raw-prize, nonnegative-constant version of the sandwich capstone.  Under positive prize scale,
+if a door-(iv) target `H` is uniformly sandwiched between the raw prize supremum `M` and `K*M`, then
+having an absolute nonnegative raw prize constant for `M` is equivalent to having one for `H`.
+This states the same reduction entirely on the unnormalized prize side, so downstream statements can
+cite the raw target without reopening the Shaw-value wrapper. -/
+theorem exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, 0 ≤ C ∧ rawPrizeFamilyBound M n L C) ↔
+      (∃ C, 0 ≤ C ∧ rawPrizeFamilyBound H n L C) := by
+  rw [exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs,
+    exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs]
+  exact exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich hK hs hMH hHM
+
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
 theorem shawValue_floor_of_plancherel_floor {M n L : ℝ} (hs : 0 < prizeScale n L)
@@ -349,6 +364,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_of_rawComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
