@@ -1335,6 +1335,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF1e_LeadingExpGapPos
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF3_RetargetedReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF3_SumsetFloorFieldCoupling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF4_GoodPrimeLinnik
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF5CharPAnomalyRungThree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF5_CharPAnomalyExpZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF6_CrossingFoldMonotonicity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BchksF6_ExplicitDeltaStarLower
