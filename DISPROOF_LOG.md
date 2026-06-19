@@ -5840,7 +5840,6 @@ bound `(1-theta)(P+N)/2 <= min P N`; if that minority mass is too small, every p
 impossible. Thus the only saving in real pieces is a balanced sign split, not hidden angular spread.
 NOT CORE, not a moment/completion route, and no capacity/beyond-Johnson claim.
 
-<<<<<<< Updated upstream
 ## [door-iv-real-piece-positive-minority] strict real-piece coherence drops require both signs (g55, 2026-06-18)
 Follow-up Door-(iv) Lane 3 consumer for real/collinear refinements. Extended
 `_DoorIVRealSignMassSlack.lean` and `_DoorIVRealPieceCompression.lean` with the positive-minority
@@ -5849,7 +5848,7 @@ are positive (`0 < P ∧ 0 < N`). Hence a real/collinear refinement with only on
 minority mass, cannot produce any strict coherence drop. This is the operational form future
 Door-IV claims can cite before trying to extract cancellation from a real subdivision. NOT CORE,
 not a moment/completion route, and no capacity/beyond-Johnson claim.
-=======
+
 ## [door-iv-multshift-threshold-consumer] real-collinear multiplicative refinements reduce target rho≤theta to minority sign mass (g55, 2026-06-19)
 
 Door-(iv) Lane 3 extension of the landed multiplicative-coset collinearity constraint. The upstream
@@ -5865,4 +5864,3 @@ sign-mass wall. No CORE/cancellation/capacity claim; no moment/completion route.
 Lean: extended `Frontier/_DoorIVMultShiftCollinear.lean` with `coherence_eq_signMassCoherence` and
 `coherence_le_iff_minority_mass_ge`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.
->>>>>>> Stashed changes
