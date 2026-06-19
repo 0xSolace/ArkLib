@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import Mathlib.Tactic
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreRhoMonotone
 
 /-!
 # Door IV: the FIRST monotonicity rung of the `ρ` open core, instantiated with the EXACT
@@ -67,6 +68,8 @@ Issue #444.
 
 namespace ProximityGap.Frontier.OpenCoreRhoStepOne
 
+open ProximityGap.Frontier.OpenCoreRho
+
 /-- **The first rung with explicit energies.** With `E_1(ℂ) = n` and `E_2(ℂ) = 3n(n−1)` (both proven
 exact in-tree), `p − 1 > 0`, and `n > 1` (so `E_2 = 3n(n−1) > 0`), the antitone step `ρ(2) ≤ ρ(1)` —
 written as `S_2 / ((p−1)·(3n(n−1))) ≤ S_1 / ((p−1)·n)` — is equivalent to the explicit
@@ -108,9 +111,23 @@ theorem rho_step_one_target (S2 p n : ℝ) (hp1 : 0 < p - 1) (hn : 1 < n) :
   rw [rho_step_one_iff_cross_explicit (p * n - n ^ 2) S2 p n hp1 hn]
   exact cross_one_iff_S2_target S2 p n hn0
 
+
+/-- **Bounded first-rung consumer.** If the single explicit finite target
+`S_2 ≤ 3n(n−1)(p−n)` is proved and `1 < n < p`, then the normalized second rho quantity is
+strictly below `1`. This is only reduction bookkeeping: the strictness is the already-proven
+Parseval base `ρ_1 < 1`, and the analytic content remains exactly the finite `S_2` target. -/
+theorem rho_two_lt_one_of_step_one_target (S2 p n : ℝ)
+    (hn : 1 < n) (hnp : n < p)
+    (hS2 : S2 ≤ 3 * n * (n - 1) * (p - n)) :
+    S2 / ((p - 1) * (3 * n * (n - 1))) < 1 := by
+  have hp1 : 0 < p - 1 := by linarith
+  exact lt_of_le_of_lt ((rho_step_one_target S2 p n hp1 hn).2 hS2)
+    (rho_base_lt_one n p hn hnp)
+
 end ProximityGap.Frontier.OpenCoreRhoStepOne
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.OpenCoreRhoStepOne.rho_step_one_iff_cross_explicit
 #print axioms ProximityGap.Frontier.OpenCoreRhoStepOne.cross_one_iff_S2_target
 #print axioms ProximityGap.Frontier.OpenCoreRhoStepOne.rho_step_one_target
+#print axioms ProximityGap.Frontier.OpenCoreRhoStepOne.rho_two_lt_one_of_step_one_target
