@@ -7328,3 +7328,24 @@ lever.  No CORE/cancellation/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`,
 axiom-clean.  New theorem: `no_strict_bound_on_cosetHitting_set_below_global_value`.  Axioms are
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [twoadic-tropical-floor] Ultrametric valuation floor for the 2-adic graded tower (2026-06-19, sol)
+NON-MOMENT structural CORE lever continuing the stall-locator. The depth-ℓ gate biconditional
+`signedSum_mem_idealPow_iff_gradedTower` gives `D ∈ I^ℓ ⟺ G_ℓ ∈ I^ℓ`; the moment-vanishing consumer
+`..._of_moments_zero` needs the STRONG hypothesis σ_j=0 (j<ℓ). This commit locks the strictly weaker
+TERMWISE (ultrametric) consumer:
+- `signedSum_mem_idealPow_of_gradedTerms_mem`: `(∀j<ℓ, σ_j·t^j ∈ I^ℓ) ⟹ D ∈ I^ℓ`. This is the
+  ideal-theoretic shadow of the TROPICAL VALUATION FLOOR `v_λ(D) ≥ min_{j<ℓ}(v_λ(σ_j)+j)`: the
+  wraparound sum cannot beat its best graded coordinate's valuation.
+- `signedSum_mem_idealPow_of_moments_zero'`: recovers the moment-vanishing consumer as a special case
+  (σ_j=0 ⟹ σ_j·t^j=0∈I^ℓ), confirming the new consumer is strictly more general (it also fires when
+  σ_j≠0 but v(σ_j)≥ℓ−j).
+PROBE (R=ℤ, I=(2), t=2; /tmp/tap3.py): the floor inequality `v_2(D) ≥ min_j(v_2(σ_j)+j)` held with
+0 failures / 60k random instances. The matching EQUALITY `v_2(D) = min_j(v_2(σ_j)+j)` FAILS exactly
+when the tropical min is attained at ≥2 coordinates (ties ⟹ cancellation): 9023/60000 fails, ALL
+tie-related. So only the FLOOR is a theorem, not the equality — locked accordingly (no over-claim).
+Formal kernel: `Frontier/_TwoAdicTropicalFloor.lean`, axiom-clean (⊆ {propext,Classical.choice,
+Quot.sound}; no sorryAx); locked build exit 0 (3300 jobs); axiom_audit PASS (17 flagship clean);
+missing-import scan empty. SCOPE: algebraic tower substrate / ultrametric floor only. Does NOT prove
+the integer parity criterion at general depth, char-p transfer, BGK, CORE, cancellation, completion,
+moment-saving, or capacity claim — door (iv) anti-concentration remains the open $1M wall.
