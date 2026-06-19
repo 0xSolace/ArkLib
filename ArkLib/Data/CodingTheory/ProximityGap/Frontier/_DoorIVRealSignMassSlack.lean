@@ -124,6 +124,22 @@ theorem not_coherence_le_one_sub_of_minority_mass_lt {P N eps : ℝ}
   have hge := minority_mass_ge_of_coherence_le_one_sub hden hcoh
   linarith
 
+/-- Strict real sign-mass improvement below `1` forces both signs to be present with positive
+mass.  In particular, any real/collinear Door-IV refinement with zero minority sign mass is
+incapable of proving a threshold `theta < 1`. -/
+theorem positive_sign_masses_of_coherence_lt_one_threshold {P N theta : ℝ}
+    (hden : 0 < P + N) (htheta : theta < 1) (hcoh : signMassCoherence P N ≤ theta) :
+    0 < P ∧ 0 < N := by
+  have hminor_ge : (1 - theta) * (P + N) / 2 ≤ min P N :=
+    (signMassCoherence_le_iff_minority_mass_ge (P := P) (N := N) (theta := theta) hden).1 hcoh
+  have hminor_pos : 0 < min P N := by
+    have htheta_pos : 0 < 1 - theta := by linarith
+    have hleft : 0 < (1 - theta) * (P + N) / 2 := by
+      exact div_pos (mul_pos htheta_pos hden) two_pos
+    exact lt_of_lt_of_le hleft hminor_ge
+  exact ⟨lt_of_lt_of_le hminor_pos (min_le_left P N),
+    lt_of_lt_of_le hminor_pos (min_le_right P N)⟩
+
 end ProximityGap.Frontier.DoorIVRealSignMassSlack
 
 open ProximityGap.Frontier.DoorIVRealSignMassSlack
@@ -135,3 +151,4 @@ open ProximityGap.Frontier.DoorIVRealSignMassSlack
 #print axioms signMassCoherence_eq_one_sub_twice_min
 #print axioms signMassCoherence_le_iff_minority_mass_ge
 #print axioms not_coherence_le_one_sub_of_minority_mass_lt
+#print axioms positive_sign_masses_of_coherence_lt_one_threshold

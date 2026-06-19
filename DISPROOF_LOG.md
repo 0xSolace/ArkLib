@@ -5839,3 +5839,12 @@ subdivision. Any target `rho <= theta` is exactly equivalent to proving the mino
 bound `(1-theta)(P+N)/2 <= min P N`; if that minority mass is too small, every positive epsilon drop is
 impossible. Thus the only saving in real pieces is a balanced sign split, not hidden angular spread.
 NOT CORE, not a moment/completion route, and no capacity/beyond-Johnson claim.
+
+## [door-iv-real-piece-positive-minority] strict real-piece coherence drops require both signs (g55, 2026-06-18)
+Follow-up Door-(iv) Lane 3 consumer for real/collinear refinements. Extended
+`_DoorIVRealSignMassSlack.lean` and `_DoorIVRealPieceCompression.lean` with the positive-minority
+threshold forms: if `theta < 1` and compressed real coherence is `<= theta`, then both sign masses
+are positive (`0 < P ∧ 0 < N`). Hence a real/collinear refinement with only one sign, or zero
+minority mass, cannot produce any strict coherence drop. This is the operational form future
+Door-IV claims can cite before trying to extract cancellation from a real subdivision. NOT CORE,
+not a moment/completion route, and no capacity/beyond-Johnson claim.

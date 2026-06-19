@@ -57,6 +57,24 @@ theorem not_realPieceCoherence_le_one_sub_of_minority_mass_lt_of_compression {xs
       hsum habssum]
   exact not_coherence_le_one_sub_of_minority_mass_lt (P := P) (N := N) (eps := eps) hden hminor
 
+/-- Compressed real-piece consumer: any strict threshold below `1` forces both compressed sign
+masses to be positive.  So a collinear refinement with only one sign, or with zero minority mass,
+cannot be the source of a Door-IV coherence drop. -/
+theorem positive_sign_masses_of_realPieceCoherence_lt_one_threshold_of_compression {xs : List ℝ}
+    {P N theta : ℝ} (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N)
+    (hden : 0 < P + N) (htheta : theta < 1) (hcoh : realPieceCoherence xs ≤ theta) :
+    0 < P ∧ 0 < N := by
+  have hminor_ge : (1 - theta) * (P + N) / 2 ≤ min P N :=
+    (realPieceCoherence_le_iff_minority_mass_ge_of_compression (xs := xs) (P := P) (N := N)
+      (theta := theta) hsum habssum hden).1 hcoh
+  have hminor_pos : 0 < min P N := by
+    have htheta_pos : 0 < 1 - theta := by linarith
+    have hleft : 0 < (1 - theta) * (P + N) / 2 := by
+      exact div_pos (mul_pos htheta_pos hden) two_pos
+    exact lt_of_lt_of_le hleft hminor_ge
+  exact ⟨lt_of_lt_of_le hminor_pos (min_le_left P N),
+    lt_of_lt_of_le hminor_pos (min_le_right P N)⟩
+
 end ProximityGap.Frontier.DoorIVRealPieceCompression
 
 open ProximityGap.Frontier.DoorIVRealPieceCompression
@@ -64,3 +82,4 @@ open ProximityGap.Frontier.DoorIVRealPieceCompression
 #print axioms realPieceCoherence_eq_signMassCoherence_of_compression
 #print axioms realPieceCoherence_le_iff_minority_mass_ge_of_compression
 #print axioms not_realPieceCoherence_le_one_sub_of_minority_mass_lt_of_compression
+#print axioms positive_sign_masses_of_realPieceCoherence_lt_one_threshold_of_compression
