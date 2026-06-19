@@ -7962,6 +7962,7 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndex
 theorem `ratio_mem_squares_of_subset_coset`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
 
+
 ## [doorIV-valueshift-flat-histogram-necessity] nontrivial value-shift free part forces perfect fiber equidistribution (2026-06-19, g55)
 
 Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVValueShiftHistogramObstruction`. Prior kernel
@@ -7978,3 +7979,20 @@ moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVValueShiftHistogramObstruction.lean`,
 new theorem `nontrivial_valueShift_forces_flat_histogram`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+
+## door-(iv) two-piece strict slack is exactly non-same-ray phase geometry (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVComplexRayCoherence`. Prior bricks proved the two-piece
+coherence ceiling, the saturation equivalence `ρ=1 ↔ SameRay`, and the forward strict-slack form. This
+refinement packages the exact probe-facing criterion:
+
+`twoPieceNormCoherence x y < 1 ↔ ¬ SameRay ℝ x y`.
+
+VERDICT: a two-piece phase split has no hidden anti-concentration beyond proving genuine non-same-ray
+geometry for the adversarial pieces. Any door-(iv) two-piece certificate that cannot rule out same-ray
+alignment cannot claim strict coherence saving. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
+axiom-clean. New theorem: `twoPieceNormCoherence_lt_one_iff_not_sameRay`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`..

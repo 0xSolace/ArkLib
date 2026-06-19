@@ -158,6 +158,20 @@ theorem twoPieceNormCoherence_lt_one_of_not_sameRay {x y : E} (hden : 0 < ‖x�
     div_lt_div_of_pos_right hlt hden
   simpa [div_self (ne_of_gt hden)] using hdiv
 
+/-- Exact strict-slack criterion for a two-piece split: coherence drops below `1` if and only if
+the pieces are not on the same nonnegative ray.  This packages the Door-IV obstruction in the
+probe-facing form: a two-piece refinement has no hidden slack unless it proves non-same-ray phase
+geometry at the adversarial frequency. -/
+theorem twoPieceNormCoherence_lt_one_iff_not_sameRay {x y : E} (hden : 0 < ‖x‖ + ‖y‖) :
+    twoPieceNormCoherence x y < 1 ↔ ¬ SameRay ℝ x y := by
+  constructor
+  · intro hlt hsame
+    have hone : twoPieceNormCoherence x y = 1 :=
+      (twoPieceNormCoherence_eq_one_iff_sameRay (x := x) (y := y) hden).2 hsame
+    linarith
+  · intro h
+    exact twoPieceNormCoherence_lt_one_of_not_sameRay (x := x) (y := y) hden h
+
 /-- Threshold obstruction: any claimed two-piece coherence drop below a fixed `θ < 1` must first
 rule out same-ray alignment of the pieces. -/
 theorem not_sameRay_of_twoPieceNormCoherence_le {x y : E} {θ : ℝ} (hden : 0 < ‖x‖ + ‖y‖)
@@ -181,6 +195,7 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_le_one
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_eq_one_iff_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_of_not_sameRay
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_iff_not_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_le_one
