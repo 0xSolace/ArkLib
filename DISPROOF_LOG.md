@@ -1,5 +1,23 @@
 # DISPROOF / NO-GO LOG (#407 and predecessors)
 
+## door-(iv) multi-piece signed-mass slack is EXACTLY two-sided sign mass (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`.  Prior bricks showed that
+real multi-piece coherence compresses to the aggregate signed-mass ratio
+`|P-N|/(P+N)` and that any strict subunit bound forces `P>0` and `N>0`.  This pins the
+converse too: for nonnegative aggregate positive/negative masses with `P+N>0`,
+`|P-N|/(P+N) < 1` iff `P>0 ∧ N>0`, and saturation at `1` iff `P=0 ∨ N=0`.
+
+VERDICT: refining the adversarial monomial sum into real pieces gives no automatic cancellation.
+The exact remaining obligation for any multi-piece door-(iv) coherence attack is a two-sided
+signed-mass theorem at the worst frequency.  Subdivision alone is powerless; it beats coherence `1`
+exactly when both aggregate signs carry positive mass.  No CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
+axiom-clean.  New theorems: `abs_signedMass_ratio_lt_one_iff_two_sided` and
+`abs_signedMass_ratio_eq_one_iff_one_side_zero`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) coherence-slack with nonzero baseline must already pay the coherent peak (2026-06-18)
 
 Lens: door-(iv) Lane 3 follow-up to the coherent-argmax slack refutation.  The first lemma rules out

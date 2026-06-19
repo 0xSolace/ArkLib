@@ -174,6 +174,56 @@ theorem negMass_pos_of_strict_signedMass_balance {posMass negMass c : ℝ}
     simpa using (mul_lt_mul_of_pos_right hc hpospos)
   linarith
 
+/-- For nonnegative aggregate positive/negative masses with positive total, strict coherence slack is
+*exactly* the presence of both signs.  This is the sharp multi-piece signed-mass obstruction:
+a real refinement beats coherence `1` iff neither aggregate sign mass vanishes. -/
+theorem abs_signedMass_ratio_lt_one_iff_two_sided {posMass negMass : ℝ}
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) :
+    |posMass - negMass| / (posMass + negMass) < 1 ↔ 0 < posMass ∧ 0 < negMass := by
+  constructor
+  · intro hlt
+    let c := |posMass - negMass| / (posMass + negMass)
+    have hmul : c * (posMass + negMass) = |posMass - negMass| := by
+      dsimp [c]
+      rw [div_mul_cancel₀ _ (ne_of_gt htotal)]
+    have hbal : |posMass - negMass| ≤ c * (posMass + negMass) := by
+      rw [hmul]
+    exact ⟨
+      posMass_pos_of_strict_signedMass_balance hposMass hnegMass htotal hlt hbal,
+      negMass_pos_of_strict_signedMass_balance hposMass hnegMass htotal hlt hbal⟩
+  · rintro ⟨hpos, hneg⟩
+    have hlt_abs : |posMass - negMass| < posMass + negMass := by
+      rw [abs_lt]
+      constructor <;> linarith
+    exact (div_lt_one htotal).mpr hlt_abs
+
+/-- The complementary sharp form: with nonnegative masses and positive total, signed-mass coherence
+saturates at `1` exactly when one aggregate sign mass is zero. -/
+theorem abs_signedMass_ratio_eq_one_iff_one_side_zero {posMass negMass : ℝ}
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass) :
+    |posMass - negMass| / (posMass + negMass) = 1 ↔ posMass = 0 ∨ negMass = 0 := by
+  constructor
+  · intro h
+    by_cases hP : posMass = 0
+    · exact Or.inl hP
+    by_cases hN : negMass = 0
+    · exact Or.inr hN
+    have hpos : 0 < posMass := lt_of_le_of_ne hposMass (Ne.symm hP)
+    have hneg : 0 < negMass := lt_of_le_of_ne hnegMass (Ne.symm hN)
+    have hlt : |posMass - negMass| / (posMass + negMass) < 1 :=
+      (abs_signedMass_ratio_lt_one_iff_two_sided hposMass hnegMass htotal).mpr ⟨hpos, hneg⟩
+    linarith
+  · intro hzero
+    rcases hzero with hzero | hzero
+    · have hnegpos : negMass ≠ 0 := by linarith
+      rw [hzero, zero_sub, abs_neg, abs_of_nonneg hnegMass, zero_add]
+      exact div_self hnegpos
+    · have hpospos : posMass ≠ 0 := by linarith
+      rw [hzero, sub_zero, abs_of_nonneg hposMass, add_zero]
+      exact div_self hpospos
+
 /-- If the positive mass is at least the negative mass, coherence is just the normalized excess
 `(posMass - negMass)/(posMass + negMass)`. -/
 theorem multiPieceCoherence_eq_posExcess_ratio {ι : Type*} [DecidableEq ι]
@@ -210,5 +260,7 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_le_of_abs_signedMass_le
 #print axioms posMass_pos_of_strict_signedMass_balance
 #print axioms negMass_pos_of_strict_signedMass_balance
+#print axioms abs_signedMass_ratio_lt_one_iff_two_sided
+#print axioms abs_signedMass_ratio_eq_one_iff_one_side_zero
 #print axioms multiPieceCoherence_eq_posExcess_ratio
 #print axioms multiPieceCoherence_eq_negExcess_ratio
