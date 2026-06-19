@@ -7064,3 +7064,16 @@ axiom-clean.  New theorem: `exists_halfMassFamilyBound_iff_exists_normalizedPriz
 Axioms are contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction and
 renormalization: it proves no half-mass comparison theorem, no anti-concentration, no CORE
 cancellation, no completion/moment saving, and no capacity claim.
+
+## [doorIV-halfmass-all-forms-capstone] one theorem packages all four prize/half-mass Shaw reductions (2026-06-19, g55)
+Lane 2 capstone extending `_DoorIVHalfMassEquivalence`.  After closing the last mixed face, this
+packages the whole reduction surface in one citation theorem: under a family-wide comparison
+`M ≤ H ≤ K·M`, `K ≥ 0`, and positive scales, the original raw prize Big-O statement is equivalent to
+the simultaneous availability of raw half-mass, normalized prize Shaw value, and normalized half-mass
+Shaw value bounds.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassEquivalence.lean`,
+axiom-clean.  New theorem: `prizeFamilyBound_iff_all_halfMassShaw_forms`.  Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.  This is a citation/packaging theorem only: it proves no
+comparison `M≤H≤K·M`, no anti-concentration, no CORE cancellation, no moment/completion saving, and
+no capacity claim.
