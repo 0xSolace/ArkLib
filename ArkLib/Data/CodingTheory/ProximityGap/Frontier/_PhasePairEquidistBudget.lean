@@ -106,6 +106,28 @@ theorem abs_normalized_variance_sub_one_le_pairResidual {m : ℕ} (hm : 0 < m)
       (hpair := hpair)
     linarith
 
+/-- **Ideal normalized endpoint.**  Exact pair-equidistribution (`δ = 0`) pins the normalized
+variance to the Shaw/prize floor exactly:
+
+`avg_B η² / (2m) = 1`.
+
+This is the equality form of the two-sided normalized budget at zero residual.  It proves no
+prize-regime anti-concentration; it only records the endpoint of the named reduction. -/
+theorem normalized_variance_eq_one_of_ideal_pairEquidist {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) (hpair : PairEquidistributed φ 0) :
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m = 1 := by
+  have h := abs_normalized_variance_sub_one_le_pairResidual (hm := hm) (φ := φ) (hδ := by norm_num)
+    (hpair := hpair)
+  have hnonneg : 0 ≤
+      |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m - 1| :=
+    abs_nonneg _
+  have habs :
+      |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m - 1| = 0 := by
+    apply le_antisymm
+    · simpa using h
+    · exact hnonneg
+  exact sub_eq_zero.mp (abs_eq_zero.mp habs)
+
 /-- **Pair-discrepancy budget, standard `C/m` form.**  If the residual is bounded by
 `C/m`, then the normalized variance is bounded by `1+2C`.
 
@@ -205,6 +227,7 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.one_sub_pairResidual_le_normalized_variance
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_eq_one_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div

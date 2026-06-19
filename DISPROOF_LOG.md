@@ -7121,3 +7121,8 @@ Lane 2 continuation of `_PhasePairEquidistBudget` after the two-sided variance c
 `1 - δ(2m-1) ≤ avg_B η²/(2m)` and therefore `|avg_B η²/(2m) - 1| ≤ δ(2m-1)`.
 
 Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `one_sub_pairResidual_le_normalized_variance` and `abs_normalized_variance_sub_one_le_pairResidual`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only reduction/normalization: it proves no pair-equidistribution, no worst-b coherence anti-concentration, no CORE cancellation, and no capacity claim.
+
+## [doorIV-pair-discrepancy-ideal-normalized-endpoint] Exact pair-equidistribution gives normalized variance exactly `1` (2026-06-19, g55)
+Lane 2 endpoint corollary of the normalized two-sided pair-discrepancy budget.  At ideal residual `δ=0`, `PairEquidistributed φ 0` implies `avg_B η²/(2m)=1`, the exact normalized Shaw/prize variance floor.
+
+Formal kernel: extends `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean` with `normalized_variance_eq_one_of_ideal_pairEquidist`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.  Scope is only the ideal endpoint of the reduction; it proves no prize-regime pair-equidistribution, no anti-concentration, no CORE cancellation, and no capacity claim.
