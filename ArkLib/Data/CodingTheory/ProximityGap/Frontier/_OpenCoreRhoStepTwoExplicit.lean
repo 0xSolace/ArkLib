@@ -28,11 +28,15 @@ confirmed exactly: n=4 → 400, n=8 → 5120, n=16 → 50560, n=32 → 446720 (t
 8,16,32 reproduces n=4 exactly). The quadratic `3n² − 9n + 8` has negative discriminant
 `81 − 96 < 0`, so `E_3 = 5n(3n²−9n+8) > 0` for all `n > 0`.
 
-NOTE (honesty): unlike `E_2 = 3n(n−1)` (proven axiom-clean in `RootsOfUnityEnergyExact.lean`,
-`rootsOfUnity_additiveEnergy_eq`), the closed form `E_3 = 15n³−45n²+40n` is so far only
-PROBE-VERIFIED (exact at n=4,8,16,32), NOT yet kernel-proven. It is used below ONLY as the explicit
-RHS of a REDUCTION; nothing here asserts `E_3 = 15n³−45n²+40n` as a theorem. The combinatorial proof
-(a rhombus/coincidence count for triple sums of roots of unity) is left open.
+NOTE (honesty, updated): the closed form `E_3 = 15n³−45n²+40n` was originally only PROBE-VERIFIED
+here (exact at n=4,8,16,32). It is now KERNEL-PROVEN in-tree by
+`CharZeroEnergyThreeExact.B6_eq_E3` (the depth-3 zero-sum count `B 6 m = 15(2m)³−45(2m)²+40(2m)`,
+solved from the add-one-class recursion, axiom-clean relative to the two elementary named inputs
+Lam–Leung-depth-≤3 and `BalancedCount`). The companion file `_OpenCoreRhoStepTwoE3Proven.lean`
+threads that proven value into the rung below (`rho_step_two_target_E3_proven`), so the `E_3` value
+no longer rests on the probe. The literals here are kept as-is (used ONLY as the explicit RHS of a
+REDUCTION); for the recursion-backed version use the companion file. The genuine open content of
+rung 2 is still the char-p `S_3` bound, NOT the `E_3` value.
 
 ## The explicit second rung
 
