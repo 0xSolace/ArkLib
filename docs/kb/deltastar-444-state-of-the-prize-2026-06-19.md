@@ -114,6 +114,19 @@ a **true implication with a false hypothesis**. The honest residual shifts from 
 "**the specific prize prime is round**" (its cyclotomic ideal `𝔭` has no anomalously short vector) — a *per-prime*
 lattice-point-equidistribution statement, the same wall, but now correctly located off the family-averaging route.
 
+**FOLLOW-UP (the roundness proxy is refuted; over-dispersion is a thinness/onset effect).** Testing whether
+minimal `v₂(p-1)` ("round" `𝔭`) predicts a good prime: it does NOT (`probe_wraparound_v2_stratification`). At `n=8`
+the minimal-`v₂` prime `p=41` has `W₃=3120` while higher-`v₂` `p=97` has `W₃=480` — the **v₂-roundness proxy is
+REFUTED** as a goodness predictor. The true predictor is **thinness** `β=log p/log n`: `W_r` is largest for the
+*smallest* primes (just past the onset `r₀≈p^{1/φ(n)}`) and decays to 0 as `p` grows. So the over-dispersion is a
+*finite-window / onset* effect — the smallest primes in any window dominate — re-confirming the
+**thinness-essential / regime-gated** verdict (the bound is true at `β≥4`, false at thick structured primes; the
+proof must break exactly at the thin/thick boundary). This relocates the per-prime residual back onto the original
+thin-regime growing-order equidistribution wall — no new escape, but the obstruction is now correctly attributed
+to onset/thinness rather than to 2-adic structure.
+
+**FOLLOW-UP (the roundness proxy is refuted; over-dispersion is a thinness/onset effect).** Testing whether minimal `v₂(p-1)` ("round" `𝔭`) predicts a good prime: it does NOT (`probe_wraparound_v2_stratification`). At `n=8` the minimal-`v₂` prime `p=41` has `W₃=3120` while higher-`v₂` `p=97` has `W₃=480` — the **v₂-roundness proxy is REFUTED**. The true predictor is **thinness** `β=log p/log n`: `W_r` is largest for the smallest primes (just past onset `r₀≈p^{1/φ(n)}`) and decays to 0 as `p` grows. The over-dispersion is a finite-window/onset effect, re-confirming the **thinness-essential / regime-gated** verdict. This relocates the per-prime residual back onto the thin-regime growing-order equidistribution wall.
+
 **Verdict on the variance route:** fully mapped; exact structure known axiom-clean, bottoms out on the SAME
 growing-order Jacobi equidistribution as every other route. Genuinely-new objects, no closure.
 (See `issue444-create-open-frontiers`.)
