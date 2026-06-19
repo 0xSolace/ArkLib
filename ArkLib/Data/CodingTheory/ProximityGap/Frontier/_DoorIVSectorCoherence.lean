@@ -21,6 +21,8 @@ not merely non-collinear, but leave every sector with projection floor `> θ`.  
 constraint lemma; it is not a CORE bound.
 -/
 
+set_option linter.style.longLine false
+
 namespace ProximityGap.Frontier.DoorIVSectorCoherence
 
 /-- Coherence of a finite list of complex pieces: triangle-inequality saturation ratio. -/
@@ -103,12 +105,23 @@ theorem exists_piece_rayProj_lt_of_complexPieceCoherence_le {zs : List ℂ} {u :
     (hcoh : complexPieceCoherence zs ≤ θ) (hθ : θ < c) :
     ∃ z ∈ zs, rayProj u z < c * ‖z‖ := by
   by_contra hnone
-  push_neg at hnone
+  push Not at hnone
   have hproj : ∀ z ∈ zs, c * ‖z‖ ≤ rayProj u z := by
     intro z hz
     exact hnone z hz
   exact not_complexPieceCoherence_le_of_sector_floor
     (zs := zs) (u := u) (c := c) (θ := θ) hu hden hproj hθ hcoh
+
+/-- Epsilon-drop consumer: a positive `1 - ε` coherence saving forces a quantitative sector escape
+in every unit direction.  In particular, the pieces cannot all stay in the thinner sector with
+projection floor `1 - ε / 2`; some piece must lose at least `ε / 2` of its ray projection. -/
+theorem exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le {zs : List ℂ} {u : ℂ}
+    {ε : ℝ} (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum) (hε : 0 < ε)
+    (hcoh : complexPieceCoherence zs ≤ 1 - ε) :
+    ∃ z ∈ zs, rayProj u z < (1 - ε / 2) * ‖z‖ := by
+  refine exists_piece_rayProj_lt_of_complexPieceCoherence_le
+    (zs := zs) (u := u) (c := 1 - ε / 2) (θ := 1 - ε) hu hden hcoh ?_
+  linarith
 
 end ProximityGap.Frontier.DoorIVSectorCoherence
 
@@ -121,3 +134,5 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
   ProximityGap.Frontier.DoorIVSectorCoherence.not_complexPieceCoherence_le_of_sector_floor
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_of_complexPieceCoherence_le
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le

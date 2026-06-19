@@ -6337,3 +6337,21 @@ Mechanism: the triangle inequality is saturated under common nonnegative-ray ali
 alone supplies no phase cancellation. Door-(iv) multi-piece attacks must prove genuine non-collinearity
 or signed/two-sided mass, not merely refine the coset split. This is a constraint lemma only: no CORE
 bound, no moment/completion route, no capacity claim.
+
+## [door-iv-sector-epsilon-escape] strict finite-refinement coherence saving forces quantitative angular escape from every ray (g55, 2026-06-19)
+
+Lane: Door-(iv) Lane 3 constraint consumer for finite-refinement phase-spread claims.  Existing
+`_DoorIVSectorCoherence` proved the sector floor obstruction: if all pieces have projection at least
+`c‖z‖` along one unit ray, then normalized complex-piece coherence is at least `c`; hence any claimed
+`ρ≤θ` must find a piece outside every sector with floor `c>θ`.
+
+This sweep packages the operational epsilon form: a positive saving `ρ ≤ 1 - ε` forces, in every unit
+direction `u`, some piece with `rayProj u z < (1 - ε/2)‖z‖`.  Therefore a Door-IV finite-refinement
+anti-concentration theorem cannot merely prove "not common-ray" qualitatively; it must supply a
+quantitative angular escape at scale comparable to the claimed coherence deficit.  If the adversarial
+pieces stay inside a sector of aperture corresponding to projection floor `1 - ε/2`, the proposed
+`1 - ε` coherence bound is impossible.
+
+Formal kernel: extended `Frontier/_DoorIVSectorCoherence.lean` with
+`exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le`, axiom-clean with axioms subset
+`{propext, Classical.choice, Quot.sound}`.  Constraint lemma only: no CORE, no cancellation, no capacity claim.
