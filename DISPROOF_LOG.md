@@ -1,3 +1,24 @@
+## door-(iv) Lane-2 capstone — the CLEAN thin-regime Shaw-value floor `1/√(2L) ≤ Sh(M(μ_n))` (2026-06-19)
+
+Lens: Lane-2 citable capstone rung (the SAFE, certain, citable lane). `WorstPeriodSqrtNFloor.worstPeriod_ge_sqrt_half_n`
+proved the clean denominator-free thin-regime floor `√(n/2) ≤ M(μ_n)` (valid when `q ≥ 2n`, automatic at
+`q = n^β`), but it was left ORPHANED — no file imported it, so the clean Plancherel-floor rung the
+Shaw-value capstone names had never been threaded onto the REAL worst period. New file
+`Frontier/ConcreteShawValueThinFloor.lean` closes that gap with 4 axiom-clean theorems:
+- `shawValue_worstPeriod_half_n_floor` — `√(n/2)/scale ≤ Sh(M(μ_n))` (clean floor through Shaw normalization).
+- `floor_half_bracket_eq` — closed form: `√(n/2)/scale = 1/√(2L)`, INDEPENDENT of n.
+- `shawValue_worstPeriod_floor_clean` — `1/√(2L) ≤ Sh(M(μ_n))` (the n-independent floor in closed form).
+- `shawValue_worstPeriod_clean_corridor` — the clean two-sided corridor `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)`
+  on the actual Gauss-period worst frequency, both endpoints unconditional.
+
+VERDICT: in the thin prize regime the normalized worst period is pinned in the clean corridor `[1/√(2L), √(n/L)]`
+(multiplicative width `√(n/2)`). The open prize `Sh(M(μ_n)) = O(1)` lives strictly inside this proven corridor —
+collapsing the `√n`-wide bracket to an absolute constant is exactly CORE. Pure normalization arithmetic + one
+orphaned proven floor. No CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteShawValueThinFloor.lean`, axiom-clean.
+All four theorems' axioms ⊆ `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) single-window occupancy cannot meet any strict sublinear budget (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVWindowConcentrationTrivial`. Prior bricks proved that
