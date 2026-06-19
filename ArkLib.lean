@@ -1487,6 +1487,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DepthGradedConductor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoEnergyValueEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoNearSidonImprovement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoSavingSensitivity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechFiberNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DichMechWronskianNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DilationZeroEntropyNoGo
@@ -1576,6 +1577,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NTStrat_HDMagnitudeInvari
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegativeAssocMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NewANTInputBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NextDifferenceVariety
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoExcessOnsetThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OPDescentFromAntitoneOrbitCount

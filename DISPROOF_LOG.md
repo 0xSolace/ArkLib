@@ -6419,3 +6419,41 @@ Formal kernel: `not_completion_baseline_certifies_in_thin_regime` in
 `Frontier/ConcreteBaselineInsufficiency.lean`, axiom-clean with axioms subset
 `{propext, Classical.choice, Quot.sound}`.  This is only a no-go bookkeeping guardrail: it proves the
 classical completion ceiling leaves the exact prize gap open; it supplies no cancellation or CORE bound.
+
+## [difftrace-reality] the difference-variety first moment DiffTrace is REAL — the named open core's `.re` formulation loses nothing, and a MODULUS bound suffices (2026-06-19, sol)
+
+Lane: variance-core / door-(iv) frontier extension of `_NextDifferenceVariety` (Shaw, 552ea88cd).
+Frontier-movement (extending a PROVEN theorem), not boundary-remapping. NOT a Lane-1/Lane-3 coherence
+re-probe.
+
+Context. `_NextDifferenceVariety` reduced the off-diagonal SECOND moment
+`Σ_T Σ_{T'≠T} Jphase(T)·conj Jphase(T')` to the FIRST moment `DiffTrace θ Rel = Σ_T Σ_{T'≠T}
+Jphase(diffTuple T T')` over the difference variety V_diff, and named the open core
+`FirstMomentDiffCancellation θ Rel S := (DiffTrace θ Rel).re ≤ S` — a bound on the REAL PART. Two
+natural worries this resolves: (a) does the `.re` projection throw away cancellation hiding in the
+imaginary part? (b) a Lang–Weil/Katz character-sum estimate naturally bounds the MODULUS |DiffTrace|,
+not its real part — is there a gap?
+
+Result (axiom-clean, _DiffTraceReality.lean, axioms ⊆ {propext, Classical.choice, Quot.sound},
+build exit 0, no sorry): DiffTrace is REAL. Mechanism = conjugate-swap symmetry: each pair summand
+satisfies pairCorr(T',T) = Jphase(T')·conj Jphase(T) = conj(pairCorr(T,T')) (`pairCorr_swap_conj`),
+and the off-diagonal index set {(T,T'): T∈Rel, T'∈Rel.erase T} is symmetric under swapping the two
+summation variables (`erase_swap_iff` + `Finset.sum_comm'`). So conj of the off-diagonal second moment
+= itself (`secondMoment_offdiag_conj_eq_self`), hence — via `_NextDifferenceVariety.
+diffTrace_eq_secondMoment` — conj(DiffTrace)=DiffTrace (`diffTrace_conj_eq_self`), i.e.
+(DiffTrace).im = 0 (`diffTrace_im_eq_zero`) and ((DiffTrace).re : ℂ) = DiffTrace (`diffTrace_ofReal_re`).
+
+Consequence (the useful payload): (a) the `.re` in `FirstMomentDiffCancellation` discards NOTHING —
+the real part IS the whole first moment. (b) `firstMoment_modulus_to_re`: a MODULUS bound
+‖DiffTrace‖ ≤ S immediately gives (DiffTrace).re ≤ S, i.e. discharges `FirstMomentDiffCancellation`
+with the SAME slack. So a future Lang–Weil/Katz equidistribution estimate on V_diff (which outputs a
+modulus bound) feeds the off-diagonal pair-cancellation core directly, with no re/im bookkeeping loss.
+
+Probe (probe_dooriv_difftrace_reality.py; proper μ_n < F_p*, p ≫ n³, never n=q-1; n=16,32,64,
+β∈{4,4.5}, r∈{3,4,5}): |Im(DiffTrace)| ≤ 8·10⁻³⁰ (float noise) and |pairCorr(T',T) −
+conj pairCorr(T,T')| = 0 exactly across all configs. Confirms the conjugate-swap symmetry + reality.
+
+Scope: NO CORE / cancellation / completion / moment-saving / capacity claim. DiffTrace is NOT bounded
+here; this is a structural reality lemma that sharpens the attack surface (modulus suffices) and
+removes a phantom re/im worry on Shaw's named open core. Lean: `_DiffTraceReality.lean` (6 thms),
+umbrella import added.
