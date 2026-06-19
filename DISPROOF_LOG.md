@@ -6266,3 +6266,36 @@ door-(iv) Lane-1 "exploit the arithmetic of the worst b" family: any b-arithmeti
 frequency ONLY through its μ_n-coset and its sign (the symmetries f already carries), and the probe
 shows nothing finer survives (W is additively spread). The worst-b selector is coset-and-sign-blind
 below coset granularity. Asymptotic guard untouched.
+
+## [door-iv-coherence-tower-collapse] worst-b dyadic coherence tower COLLAPSES at the top — the 2-adic phase-alignment recursion is a dead lever (2026-06-19, sol)
+
+Lane: door-(iv) Lane 1 probe + Lane 3 constraint. The prize brief flags the "2-adic phase-alignment
+RECURSION" as a NON-MOMENT structural lever distinct from the (already-mapped) half-mass descent. The
+hope: bound |η_{b*}| by a PRODUCT of per-level coset-half coherences ρ_j telescoping down the
+a=log₂n dyadic tower μ_n ⊃ μ_{n/2} ⊃ ... ⊃ μ_1, so that (1−ρ_j) slack compounds over log n levels
+into a √-saving |η| ≲ √(n log). Distinct from [door-iv-worstb-non-nested] (which killed argmax-IDENTITY
+recursion): this asks WHERE in the tree the coherence slack LIVES.
+
+PROBE (probe_dooriv_coherence_tower_product.py; proper μ_n<F_p*, p≫n³, structured primes p=k·n+1,
+never n=q-1; global worst-b scan + full per-node coherence tree; n=16,32,64, β=4–4.5, multiple primes):
+DECISIVE + uniform. At the worst frequency b*, ALL coherence slack is concentrated at the BOTTOM
+levels of the tower (j=1, occasionally j=2,3); every TOP level is pinned at ρ=1.000 for ALL nodes.
+  - n=64: levels j=6,5,4 → 0/1, 0/2, 0/4 slack nodes (min ρ=1.000); j=1 → 30/32 slack nodes.
+  - n=32: j=5,4 (and usually j=3,2) all ρ=1.000; slack only at j=1 (15–16/16 nodes).
+  - The ROOT split (j=a) is ALWAYS ρ=1 (collinear, consistent with the proven same-ray ρ(b*)=1).
+  - The per-level mean-coherence product equals |η_{b*}|/n exactly precisely BECAUSE the upper levels
+    are collinear (so ‖A‖+‖B‖ propagates the L¹ mass faithfully up the chain).
+
+MECHANISM. A coherence-product bound needs the HIGH-level (large-coset) coherences bounded away from 1
+to telescope to √n. They are forced to EXACTLY 1 at b* (the root step loses NOTHING). The only slack
+sits at the bottom O(1) levels, each over a coset of size O(1); a constant number of such levels can
+supply at most a CONSTANT factor, never a factor growing with n. The 2-adic phase-alignment recursion
+cannot even start: the first descent step is slack-free.
+
+Formalized axiom-clean (_DoorIVCoherenceTowerCollapse.lean; axioms ⊆ {propext, Classical.choice,
+Quot.sound}; build exit 0): Coherent a b := ‖a+b‖=‖a‖+‖b‖ (ρ=1); coh ∈ [0,1] (coh_le_one/coh_nonneg);
+coherent_iff_coh_one; root_step_slackfree (coherent root split ⇒ ‖root‖=‖a‖+‖b‖); level_mass_preserved
+(fully-coherent level ⇒ Σparent-mass = Σchild-mass exactly); cumulative_defect_zero (all-coherent chain
+⇒ Σ mass-defect = 0); coherence_product_eq_one + product_bound_undamped (all-coherent upper chain ⇒
+∏ρ_j=1, so P·S=S: the product bound equals the un-damped mass bound). Verdict: refuted-lever /
+recursion-cannot-start brick. Does NOT bound M(n); no CORE/cancellation/anti-concentration/capacity claim.
