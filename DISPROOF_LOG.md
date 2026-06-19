@@ -6074,3 +6074,27 @@ Formal kernel: `_DoorIVPhaseSetDilationInvariant.lean` now defines `addLinearPat
 `addLinearPatternCount (λS) coeff (λt) = addLinearPatternCount S coeff t`; the consumer `addLinearPatternCount_phaseSet_indep_of_scalar` proves the same profile equality between any two nonzero frequencies after target rescaling.
 
 Verdict: any proposed door-(iv) anti-concentration lever that only counts solutions to a fixed finite additive-linear equation in the phase set `{b*x^m}` is `b`-blind.  It cannot select the adversarial worst frequency or explain worst-b coherence; a surviving theorem must use information beyond fixed linear-pattern counts.  This is a constraint lemma only, not a CORE/cancellation/capacity claim.
+
+## [door-iv-halfmass-equivalence] prize ⟺ worst-b half-mass L¹ bound (up to constant); the half-mass H(n) is an EQUIVALENT target, not just an upper envelope (2026-06-19, sol)
+
+Continuing the half-mass thread ([door-iv-halfmass-factorization]). Write M(n)=max_b|η_b| (prize) and
+H(n)=max_b(‖A_b‖+‖B_b‖) (worst-b index-2 coset-half L¹). Two facts pin M,H to the same scale:
+ - M ≤ H ALWAYS (coherence ≤ 1 pointwise ⇒ ‖A+B‖ ≤ ‖A‖+‖B‖; proven, _DoorIVHalfMassFactorization.norm_le_halfMass).
+ - H ≤ K·M with K ≈ 1: probe scripts/probes/probe_dooriv_halfmass_equiv.py (proper μ_n, p≫n³, n=16 FULL
+   F_p* scan, never n=q-1) gives H/M = 1.00 (n=16,64 full/near-full) and 1.11 (n=32 sampled) — H and M
+   COINCIDE.
+
+REDUCTION (citable, up to constants): under M≤H and H≤K·M, ∃C M≤C·scale ⟺ ∃C H≤C·scale. So the open
+door-(iv) target restates ENTIRELY as the half-mass bound: prize ⟺ H(n)=O(√(n·log(p/n))). The half-mass
+L¹ is an EQUIVALENT prize target, not merely an upper envelope. (Honest scope: the analytic content —
+bounding H itself — is left OPEN exactly as before; this is the reduction wrapper, no escape.)
+
+HONESTY (codex P2): the POINTWISE ∃-constant equivalence is, for a single positive scale, satisfiable
+trivially — so the genuine Big-O statement is the UNIFORM-FAMILY form (one constant K and one constant
+C across all indices), added as exists_prizeFamilyBound_iff_exists_halfMassFamilyBound.
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+_DoorIVHalfMassEquivalence.lean — prizeBound_of_halfMassBound, halfMassBound_of_prizeBound,
+prizeBound_iff_halfMassBound (pointwise rung), prize_halfMass_sandwich (M≤H≤K·M), and
+exists_prizeFamilyBound_iff_exists_halfMassFamilyBound (the uniform-family Big-O reduction: one K, one
+C over the whole admissible index family). No CORE/cancellation/capacity claim.
