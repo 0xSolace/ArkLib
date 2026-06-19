@@ -6098,3 +6098,11 @@ _DoorIVHalfMassEquivalence.lean — prizeBound_of_halfMassBound, halfMassBound_o
 prizeBound_iff_halfMassBound (pointwise rung), prize_halfMass_sandwich (M≤H≤K·M), and
 exists_prizeFamilyBound_iff_exists_halfMassFamilyBound (the uniform-family Big-O reduction: one K, one
 C over the whole admissible index family). No CORE/cancellation/capacity claim.
+
+## [door-iv-phaseset-linear-smallball-profile-b-blind] max-over-target fixed linear small-ball support profiles of `{b*x^m}` are frequency-blind (2026-06-19, g55)
+
+Lane: Door-(iv) Lane 1, strengthening `[door-iv-phaseset-linear-pattern-b-blind]` from labeled target fibers to the target-label-free small-ball support statistic.  A Halász/Littlewood-Offord lever usually uses the largest fiber, not the name of a particular target.
+
+Formal kernel: `_DoorIVPhaseSetDilationInvariant.lean` now defines `addLinearPatternFiberCounts S coeff`, the finite set/range of all target-fiber multiplicities for the fixed linear form `∑ coeff_i v_i`.  The theorem `addLinearPatternFiberCounts_smul_eq` proves this range is invariant under nonzero dilation of `S`; `addLinearPatternFiberCounts_phaseSet_indep_of_scalar` proves any two nonzero frequency dilates have the same unlabeled support of fiber sizes.
+
+Verdict: the max-fiber value, and any target-label-free statistic depending only on which fixed linear fiber sizes occur, is `b`-blind.  Such small-ball support data cannot select the adversarial worst frequency; a surviving door-(iv) theorem must use information beyond fixed linear fiber-size ranges.  No CORE/cancellation/capacity claim.

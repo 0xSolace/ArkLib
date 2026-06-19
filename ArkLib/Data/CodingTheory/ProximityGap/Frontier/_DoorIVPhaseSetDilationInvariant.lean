@@ -418,6 +418,51 @@ theorem addLinearPatternCount_phaseSet_indep_of_scalar {k : ℕ}
       addLinearPatternCount (S.image (fun x => b₂ * x)) coeff (b₂ * t) := by
   rw [addLinearPatternCount_smul_eq S coeff hb₁, addLinearPatternCount_smul_eq S coeff hb₂]
 
+
+
+/-- The set/range of target-fiber multiplicities for a fixed additive-linear pattern.  This records
+which fiber sizes occur after forgetting target labels: it contains every possible count of a fiber
+`∑ coeff_i v_i = t` with `v_i ∈ S`.  In particular, its maximum is the usual finite Littlewood-Offord
+small-ball multiplicity for this linear form.  It intentionally does not record how many targets have
+each size. -/
+def addLinearPatternFiberCounts {k : ℕ} (S : Finset F) (coeff : Fin k → F) : Finset ℕ :=
+  (Finset.univ : Finset F).image (fun t => addLinearPatternCount S coeff t)
+
+/-- Nonzero dilation preserves the range of target-fiber counts of a fixed additive-linear pattern.
+The labels of targets are merely permuted by `t ↦ λt`; therefore the max-over-target small-ball
+multiplicity, and any statistic depending only on which fiber sizes occur, is frequency-blind. -/
+theorem addLinearPatternFiberCounts_smul_eq {k : ℕ} (S : Finset F) (coeff : Fin k → F)
+    {lam : F} (hlam : lam ≠ 0) :
+    addLinearPatternFiberCounts (S.image (fun x => lam * x)) coeff =
+      addLinearPatternFiberCounts S coeff := by
+  classical
+  ext N
+  constructor
+  · intro hN
+    simp only [addLinearPatternFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨lam⁻¹ * t, ?_⟩
+    have htarg : lam * (lam⁻¹ * t) = t := by
+      rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+    have hcount := (addLinearPatternCount_smul_eq S coeff (t := lam⁻¹ * t) hlam).symm
+    simpa [htarg, ht] using hcount
+  · intro hN
+    simp only [addLinearPatternFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨lam * t, ?_⟩
+    rw [← ht]
+    exact addLinearPatternCount_smul_eq S coeff hlam
+
+/-- Two nonzero frequency dilates have the same range of linear-pattern fiber sizes.  Thus a lever
+using only the maximum fiber size, or any statistic depending only on the set of occurring fiber
+sizes, cannot select the adversarial worst frequency. -/
+theorem addLinearPatternFiberCounts_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addLinearPatternFiberCounts (S.image (fun x => b₁ * x)) coeff =
+      addLinearPatternFiberCounts (S.image (fun x => b₂ * x)) coeff := by
+  rw [addLinearPatternFiberCounts_smul_eq S coeff hb₁,
+    addLinearPatternFiberCounts_smul_eq S coeff hb₂]
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -494,6 +539,9 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternCount_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberCounts_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
