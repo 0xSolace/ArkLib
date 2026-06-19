@@ -18519,3 +18519,20 @@ through the DC-subtracted moment `S_r = q·E_r − n^{2r} ≤ (q−1)·Wick` (`_
 the genuinely-open core is `S_r ≤ (q−1)·Wick` (= BGK), where the DC term is already subtracted, NOT the raw
 `W_r ≤ slack`. Both capstones reduce the prize to a statement FALSE/refuted at prize scale; the DC-subtracted
 moment is the one honest open input.
+
+## [doorIV-multipiece-minority-mass-floor] coherence slack forces minority-sign mass (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`. Prior kernel proved
+the exact compressed identity `coherence = 1 - 2*min(posMass,negMass)/(posMass+negMass)` for real
+multi-piece refinements. This refinement adds the probe-facing floor direction:
+
+`multiPieceCoherence ≤ c  ⟹  (1-c)*(posMass+negMass) ≤ 2*min(posMass,negMass)`.
+
+VERDICT: any refined sign-balance/coherence-slack attack must produce actual aggregate minority-sign
+mass proportional to the desired slack. Subdividing into more real pieces does not create slack; the
+slack is exactly paid for by the minority-sign mass budget. No CORE, cancellation, completion,
+anti-concentration, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
+new theorem `two_mul_minMass_ge_of_multiPieceCoherence_le`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

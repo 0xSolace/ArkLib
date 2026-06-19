@@ -302,6 +302,22 @@ theorem multiPieceCoherence_eq_one_sub_two_mul_min_ratio {ι : Type*} [Decidable
   rw [multiPieceCoherence_eq_abs_signedMass_ratio s A hsum hden]
   exact abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio htotal
 
+/-- A strict upper bound on real multi-piece coherence forces a quantitative minority-sign mass
+floor.  If the compressed statistic is at most `c`, then the minority aggregate must pay at least
+`(1-c)/2` of the total `L¹` mass.  This is the probe-facing obligation for any refined door-(iv)
+sign-balance attack: the slack must be witnessed by actual two-sided mass, not by subdivision. -/
+theorem two_mul_minMass_ge_of_multiPieceCoherence_le {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass)
+    (hle : multiPieceCoherence s A ≤ c) :
+    (1 - c) * (posMass + negMass) ≤ 2 * min posMass negMass := by
+  rw [multiPieceCoherence_eq_one_sub_two_mul_min_ratio s A hsum hden htotal] at hle
+  have hmul := mul_le_mul_of_nonneg_right hle (le_of_lt htotal)
+  rw [sub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt htotal)] at hmul
+  linarith
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -322,3 +338,4 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_negExcess_ratio
 #print axioms abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio
 #print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
+#print axioms two_mul_minMass_ge_of_multiPieceCoherence_le
