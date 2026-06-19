@@ -27,6 +27,9 @@ names the open half (the wraparound) against an explicit, growing budget.
 -/
 import Mathlib.Tactic
 
+set_option linter.style.longLine false
+set_option linter.unusedVariables false
+
 namespace ProximityGap.RhoDecomposition
 
 /-- The DC-subtracted moment `S_r = p·E_r − n^{2r}` with `E_r = E0 + W`. -/
@@ -37,6 +40,44 @@ noncomputable def rho (p E0 W n2r Wick : ℝ) : ℝ := dcMoment p E0 W n2r / ((p
 
 /-- The explicit slack: char-0 component `(Wick − E0)` plus the DC term `(n^{2r} − Wick)/p`. -/
 noncomputable def slack (p E0 n2r Wick : ℝ) : ℝ := (Wick - E0) + (n2r - Wick) / p
+
+/-- The proven char-0 part of the slack budget. -/
+noncomputable def char0Slack (E0 Wick : ℝ) : ℝ := Wick - E0
+
+/-- The DC-subtraction part of the slack budget. -/
+noncomputable def dcSlack (p n2r Wick : ℝ) : ℝ := (n2r - Wick) / p
+
+/-- The slack budget splits into the char-0 slack plus the DC slack. -/
+theorem slack_eq_char0Slack_add_dcSlack (p E0 n2r Wick : ℝ) :
+    slack p E0 n2r Wick = char0Slack E0 Wick + dcSlack p n2r Wick := by
+  rfl
+
+/-- The char-0 component is nonnegative exactly under the proven char-0 energy bound `E0 ≤ Wick`. -/
+theorem char0Slack_nonneg_of_le {E0 Wick : ℝ} (hchar0 : E0 ≤ Wick) :
+    0 ≤ char0Slack E0 Wick := by
+  rw [char0Slack]
+  linarith
+
+/-- The DC component is nonnegative once the DC term dominates `Wick` and `p > 0`. -/
+theorem dcSlack_nonneg_of_le {p n2r Wick : ℝ} (hp : 0 < p) (hDC : Wick ≤ n2r) :
+    0 ≤ dcSlack p n2r Wick := by
+  rw [dcSlack]
+  exact div_nonneg (by linarith) (le_of_lt hp)
+
+/-- The full slack is nonnegative under the two proven nonnegative components: char-0 energy below
+Wick and the DC term beyond the crossover. This packages the docstring's "proven half plus DC budget"
+as a reusable kernel statement; the open content remains the wraparound upper bound. -/
+theorem slack_nonneg_of_char0_and_dc {p E0 n2r Wick : ℝ}
+    (hp : 0 < p) (hchar0 : E0 ≤ Wick) (hDC : Wick ≤ n2r) :
+    0 ≤ slack p E0 n2r Wick := by
+  rw [slack_eq_char0Slack_add_dcSlack]
+  exact add_nonneg (char0Slack_nonneg_of_le hchar0) (dcSlack_nonneg_of_le hp hDC)
+
+/-- The full slack budget is at least the char-0 slack whenever the DC component is nonnegative. -/
+theorem char0Slack_le_slack_of_dc {p E0 n2r Wick : ℝ} (hp : 0 < p) (hDC : Wick ≤ n2r) :
+    char0Slack E0 Wick ≤ slack p E0 n2r Wick := by
+  rw [slack_eq_char0Slack_add_dcSlack]
+  exact le_add_of_nonneg_right (dcSlack_nonneg_of_le hp hDC)
 
 /-- **The exact ρ-decomposition.**  With `p > 1` and `Wick > 0`, the corrected prize criterion `ρ_r ≤ 1`
 is *equivalent* to the wraparound bound `W_r ≤ slack`, where `slack = (Wick − E0) + (n^{2r} − Wick)/p`.
@@ -68,5 +109,13 @@ theorem wraparound_within_char0_slack_suffices
   rw [rho_le_one_iff_wraparound_le_slack p E0 W n2r Wick hp hW, slack]
   have hDCnn : 0 ≤ (n2r - Wick) / p := div_nonneg (by linarith) (le_of_lt hp0)
   linarith
+
+#print axioms slack_eq_char0Slack_add_dcSlack
+#print axioms char0Slack_nonneg_of_le
+#print axioms dcSlack_nonneg_of_le
+#print axioms slack_nonneg_of_char0_and_dc
+#print axioms char0Slack_le_slack_of_dc
+#print axioms rho_le_one_iff_wraparound_le_slack
+#print axioms wraparound_within_char0_slack_suffices
 
 end ProximityGap.RhoDecomposition

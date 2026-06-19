@@ -7650,6 +7650,7 @@ Lane 2/3 capstone constraint. Added `Frontier/_DoorIVIndexFactorOvershoot.lean`,
 
 
 
+
 ## [doorIV-valueshift-all-or-nothing] the value-shift free part is an additive subgroup, hence all-or-nothing in a prime field (2026-06-19, sol)
 
 Lane: door-(iv) Lane 3 constraint lemma, structural sharpening of `_DoorIVValueShiftHistogramObstruction`.
@@ -7673,3 +7674,10 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVValueShift
 new defs `ValueShift.comp`, `ValueShift.inv` and theorems `realizableStep_neg`, `realizableStep_add`,
 `realizableStep_zero`, `realizableStep_all_or_nothing`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## 2026-06-19 — rho-decomposition slack splits into nonnegative char-0 and DC components (g55)
+
+Lane 2/3 capstone constraint extending `_RhoDecomposition.lean`. The exact criterion `rho <= 1 <=> W <= slack` already quarantines the open wraparound `W`; this refinement names the two slack components `char0Slack = Wick - E0` and `dcSlack = (n2r - Wick)/p`, proves `slack = char0Slack + dcSlack`, and packages nonnegativity / lower-bound wrappers under the proven char-0 energy bound and the DC-crossover inequality.
+
+VERDICT: the char-0 and DC sides of Shaw's rho decomposition are now separately kernel-checkable nonnegative budgets. The only remaining open content in this reduction is still the wraparound bound `W <= slack`; no CORE, cancellation, completion, anti-concentration, or capacity claim.
+
