@@ -12,9 +12,9 @@ ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.AffineLines.Main ProximityGap.RS_c
 ArkLib.Data.CodingTheory.ProximityGap.BCIKS20.ReedSolomonGap ProximityGap.proximity_gap_RSCodes
 
 # ── Grand-challenge collapse (kernel-proven refutation + collapse) ─────
-ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse ProximityGap.not_listDecodingPrize
-ArkLib.Data.CodingTheory.ProximityGap.GrandChallengeCollapse ProximityGap.grandMCAChallenge_iff_epsMCA_one
-ArkLib.Data.CodingTheory.ProximityGap.GrandChallengesLattice ProximityGap.GrandChallengesLattice.mcaThreshold_spec
+ArkLib.Data.CodingTheory.ProximityGap.Collapse ProximityGap.not_listDecodingPrize
+ArkLib.Data.CodingTheory.ProximityGap.Collapse ProximityGap.grandMCAChallenge_iff_epsMCA_one
+ArkLib.Data.CodingTheory.ProximityGap.Lattice2 ProximityGap.GrandChallengesLattice.mcaThreshold_spec
 
 # ── KZG commitment scheme ──────────────────────────────────────────────
 ArkLib.CommitmentScheme.KZG.Correctness KZG.CommitmentScheme.correctness
