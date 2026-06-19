@@ -84,9 +84,20 @@ theorem not_completion_baseline_certifies_in_thin_regime {C n L q : ℝ} (hC : 0
   have hgap : C < Real.sqrt (q / (n * L)) := baseline_insufficient hC hn hL hthin
   linarith
 
+/-- Contradiction form for the triangle/trivial ceiling: in the prize normalization regime where
+`C² · L < n`, the normalized triangle ceiling `√(n/L)` cannot itself be a certificate below `C`.
+This pins the no-go consumer for attempts to close the Shaw-value target using only `M ≤ n`. -/
+theorem not_trivial_ceiling_certifies_in_thin_regime {C n L : ℝ} (hC : 0 ≤ C)
+    (hL : 0 < L) (hthin : C ^ 2 * L < n) :
+    ¬ Real.sqrt (n / L) ≤ C := by
+  intro hcert
+  have hgap : C < Real.sqrt (n / L) := trivial_ceiling_insufficient hC hL hthin
+  linarith
+
 end ProximityGap.Frontier.ConcreteBaselineInsufficiency
 
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.sqrt_ratio_gt_of_lt
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.baseline_insufficient
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.trivial_ceiling_insufficient
 #print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_completion_baseline_certifies_in_thin_regime
+#print axioms ProximityGap.Frontier.ConcreteBaselineInsufficiency.not_trivial_ceiling_certifies_in_thin_regime

@@ -6457,3 +6457,17 @@ Scope: NO CORE / cancellation / completion / moment-saving / capacity claim. Dif
 here; this is a structural reality lemma that sharpens the attack surface (modulus suffices) and
 removes a phantom re/im worry on Shaw's named open core. Lean: `_DiffTraceReality.lean` (6 thms),
 umbrella import added.
+
+## [door-iv-trivial-ceiling-no-certificate] triangle ceiling cannot certify bounded Shaw value in the thin regime (g55, 2026-06-19)
+
+Lane: Door-(iv) Lane 2 no-go consumer for the completed Shaw-value reduction layer, complementing
+`[door-iv-trivial-ceiling-insufficient]` and the completion-baseline contradiction form.
+
+Formal kernel: `not_trivial_ceiling_certifies_in_thin_regime` in
+`Frontier/ConcreteBaselineInsufficiency.lean`. If `0 ≤ C`, `0 < L`, and `C² · L < n`, then
+`¬ Real.sqrt (n / L) ≤ C`. Thus the normalized triangle ceiling coming from `M ≤ n` cannot itself
+serve as a bounded Shaw-value certificate in the prize regime.
+
+Scope: no-go bookkeeping only. This supplies no cancellation, anti-concentration, moment,
+completion-saving, or CORE bound; it only records that the elementary triangle ceiling leaves the
+Door-IV prize target genuinely open.
