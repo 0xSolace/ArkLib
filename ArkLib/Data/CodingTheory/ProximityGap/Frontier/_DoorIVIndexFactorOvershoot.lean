@@ -62,6 +62,7 @@ theorem naiveIncidenceBound_iff_shawValue_le_scaled {M C n m L : ℝ}
   simpa [mul_comm, mul_left_comm, mul_assoc] using
     (prizeBound_iff_shawValue_le (M := M) (C := C * Real.sqrt m) (n := n) (L := L) hs)
 
+<<<<<<< Updated upstream
 /-- If the index factor has size at least `R^2`, then the normalized naive constant is already
 at least `C * R`.  Thus in a family with unbounded `m`, the naive bridge cannot supply a uniform
 constant unless some separate argument removes the index factor. -/
@@ -78,6 +79,31 @@ theorem scaledConstantFamily_ge_linear_floor {ι : Type*} {C m R : ι → ℝ}
     ∀ i, C i * R i ≤ C i * Real.sqrt (m i) := by
   intro i
   exact scaledConstant_ge_linear_floor (hC i) (hm i)
+=======
+/-- In the actual indexed regime `1 ≤ m`, the naive incidence scale is never smaller than the
+prize scale.  Thus the bridge cannot secretly improve the Shaw normalization by the index step; it
+only preserves scale at `m = 1` and overshoots afterwards. -/
+theorem prizeScale_le_naiveIncidenceScale_of_one_le_m {n m L : ℝ}
+    (hn : 0 < n) (hm : 1 ≤ m) (hL : 0 < L) :
+    prizeScale n L ≤ naiveIncidenceScale n m L := by
+  rw [naiveIncidenceScale_eq_sqrt_mul_prizeScale (n := n) (m := m) (L := L)
+      (le_trans zero_le_one hm)]
+  have hps_nonneg : 0 ≤ prizeScale n L := le_of_lt (prizeScale_pos hn hL)
+  have hsqrt_one : (1 : ℝ) ≤ Real.sqrt m := by
+    rw [← Real.sqrt_one]
+    exact Real.sqrt_le_sqrt hm
+  nlinarith
+
+/-- The normalized constant loss is also monotone: if the raw constant is nonnegative and `m ≥ 1`,
+then the naive bridge's Shaw constant `C√m` is at least `C`.  Any constant-Shaw conclusion would
+therefore need an independent argument removing this factor. -/
+theorem constant_le_scaled_constant_of_one_le_m {C m : ℝ} (hC : 0 ≤ C) (hm : 1 ≤ m) :
+    C ≤ C * Real.sqrt m := by
+  have hsqrt_one : (1 : ℝ) ≤ Real.sqrt m := by
+    rw [← Real.sqrt_one]
+    exact Real.sqrt_le_sqrt hm
+  nlinarith
+>>>>>>> Stashed changes
 
 /-- Uniform-family form of the same obstruction: pointwise naive incidence bounds normalize to a
 Shaw-value family bound whose pointwise constant is multiplied by `sqrt(m i)`.  This is only scale
@@ -97,6 +123,11 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_sqrt_mul_prizeScale
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_div_prizeScale_eq_sqrt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceBound_iff_shawValue_le_scaled
+<<<<<<< Updated upstream
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_ge_linear_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_ge_linear_floor
+=======
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
+>>>>>>> Stashed changes
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound

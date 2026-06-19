@@ -18536,3 +18536,20 @@ anti-concentration, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
 new theorem `two_mul_minMass_ge_of_multiPieceCoherence_le`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-index-factor-monotone-loss] the naive bridge never improves scale when `m ≥ 1` (2026-06-19, g55)
+
+Lane: door-(iv) Lane 2/3 constraint lemma extending `_DoorIVIndexFactorOvershoot`. Prior kernel proved the
+exact ratio `naiveIncidenceScale / prizeScale = sqrt(m)`. This refinement records the monotone consequence
+in the actual indexed regime: if `1 ≤ m`, then `prizeScale ≤ naiveIncidenceScale`, and if `0 ≤ C`, then
+`C ≤ C*sqrt(m)`.
+
+VERDICT: the naive incidence bridge cannot hide a scale improvement. At `m=1` it merely matches the prize
+scale, and for unbounded index it strictly carries the normalized constant upward unless a genuinely new
+door-(iv) argument removes the factor. No CORE, cancellation, completion, anti-concentration, moment-saving,
+or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`, new
+theorems `prizeScale_le_naiveIncidenceScale_of_one_le_m` and
+`constant_le_scaled_constant_of_one_le_m`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
