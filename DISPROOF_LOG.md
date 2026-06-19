@@ -7349,3 +7349,21 @@ Quot.sound}; no sorryAx); locked build exit 0 (3300 jobs); axiom_audit PASS (17 
 missing-import scan empty. SCOPE: algebraic tower substrate / ultrametric floor only. Does NOT prove
 the integer parity criterion at general depth, char-p transfer, BGK, CORE, cancellation, completion,
 moment-saving, or capacity claim — door (iv) anti-concentration remains the open $1M wall.
+
+## [twoadic-lone-term-floor] Tropical floor is TIGHT at a unique minimizer (uncancellable lone term) (2026-06-19, sol)
+NON-MOMENT structural CORE lever sharpening the tropical floor. `_TwoAdicTropicalFloor` proved
+`v_λ(D) ≥ min_{j<ℓ}(v_λ(σ_j)+j)`; the floor can be STRICT, but only via cancellation between graded
+coordinates of equal tropical value. This commit locks the tightness direction:
+- `signedSum_notMem_idealPow_of_lone_gradedTerm_notMem`: if a single graded term `σ_{j₀}·t^{j₀} ∉ I^ℓ`
+  while every OTHER term `σ_j·t^j ∈ I^ℓ` (j<ℓ, j≠j₀), then `D ∉ I^ℓ`. The lone obstructing term cannot
+  be cancelled (uncancellable lowest-term principle).
+- `gradedTower_eq_lone_add_rest`: the `Finset.add_sum_erase` split feeding it.
+PROBE (/tmp/tap4.py, R=ℤ I=(2) t=2): UNIQUE tropical minimizer ⟹ floor EQUALITY `v(D)=min_j(v(σ_j)+j)`:
+0 failures / 66388 instances. Non-unique min (≥2 minimizers): strictly above floor in 12247/13612 (~90%)
+— extra cancellation lives exactly on ties. So tightness is a theorem precisely at the unique-minimizer
+hypothesis, encoded as "exactly one graded term escapes I^ℓ".
+Formal kernel: `Frontier/_TwoAdicLoneTermFloor.lean`, axiom-clean (⊆ {propext,Classical.choice,
+Quot.sound}; no sorryAx); locked build exit 0 (3301 jobs); axiom_audit PASS (17 clean); missing-import
+scan empty. SCOPE: algebraic tower substrate / floor-tightness only. Does NOT prove the integer parity
+criterion at general depth, char-p transfer, BGK, CORE, cancellation-saving, completion, moment, or
+capacity claim — door (iv) anti-concentration remains the open $1M wall.

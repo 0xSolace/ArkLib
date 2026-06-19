@@ -1713,6 +1713,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TrichotomyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwiseIndependenceFramework
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedDepth2
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicGradedTower
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicLoneTermFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicMomentAnnihilation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicStallLocator
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._TwoAdicTropicalFloor
