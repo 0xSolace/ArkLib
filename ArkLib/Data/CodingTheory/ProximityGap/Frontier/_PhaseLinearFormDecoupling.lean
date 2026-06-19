@@ -127,6 +127,19 @@ theorem avg_mono {f g : B → ℝ} (h : ∀ b, f b ≤ g b) : avg f ≤ avg g :=
   apply div_le_div_of_nonneg_right (Finset.sum_le_sum (fun b _ => h b))
   positivity
 
+/-- **The average is dominated by some sample (the L²→L∞ bridge).** Over a nonempty finite
+frequency set there is always a `b` with `avg_B f ≤ f b` — the average never exceeds the maximum.
+This is the engine that turns a variance LOWER bound into a sup-norm (max) lower bound: the Plancherel
+floor `M ≥ √(avg η²)`. -/
+theorem exists_avg_le (f : B → ℝ) : ∃ b : B, avg f ≤ f b := by
+  obtain ⟨b, _, hb⟩ := Finset.exists_max_image (Finset.univ : Finset B) f Finset.univ_nonempty
+  refine ⟨b, ?_⟩
+  unfold avg
+  rw [div_le_iff₀ (by positivity : (0 : ℝ) < (Fintype.card B : ℝ))]
+  calc (∑ x : B, f x) ≤ ∑ _x : B, f b := Finset.sum_le_sum (fun x _ => hb x (Finset.mem_univ x))
+    _ = f b * (Fintype.card B : ℝ) := by
+        rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, mul_comm]
+
 /-- **The average commutes with a finite sum** (linearity over an index set `ι`):
 `avg_B (∑_{i∈s} f i) = ∑_{i∈s} avg_B (f i)`. This is the engine for the variance-decoupling identity:
 the average of the expanded square distributes over the term sum. -/
@@ -468,6 +481,26 @@ theorem abs_variance_sub_prizeProxy_le_of_pairEquidist {m : ℕ} (φ : Fin m →
   · have := variance_ge_of_pairEquidist φ δ hδ h; linarith
   · have := variance_le_of_pairEquidist φ δ hδ h; linarith
 
+/-- **The Plancherel/prize FLOOR on the sup-norm from pair-equidistribution** (the lower bookend to
+`subGaussian_supNorm_of_pairEquidist`'s upper bound). The variance LOWER bound
+`variance_ge_of_pairEquidist` plus `exists_avg_le` (avg ≤ some sample) forces an actual frequency `b`
+whose squared period reaches the prize variance floor:
+
+> `∃ b, (∑_k 2cos(φ_k b))² ≥ 2m − 2δ·m·(2m−1)`.
+
+At `δ = 0` this is the exact **Plancherel floor** `M² ≥ 2m = n`, i.e. `M = max_b|η_b| ≥ √n` — the
+prize sup-norm cannot beat `√n` no matter how good the equidistribution. Together with the capstone
+upper bound `M ≤ √(2n log m)` this brackets the prize sup-norm between `√n` and `√(2n log m)` (the
+familiar `√n .. √(n log)` window), with the `log m` gap being exactly door-(iv). NO CORE/cancellation/
+capacity claim: the floor is the easy (Plancherel) direction; the open content is the matching
+`O(√(n log))` ceiling at ABSOLUTE constant in the thin regime. -/
+theorem exists_sq_ge_prizeFloor_of_pairEquidist {m : ℕ} (φ : Fin m → B → ℝ) (δ : ℝ)
+    (hδ : 0 ≤ δ) (h : PairEquidistributed φ δ) :
+    ∃ b : B, 2 * m - 2 * δ * (m * (2 * m - 1))
+      ≤ (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2 := by
+  obtain ⟨b, hb⟩ := exists_avg_le (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2)
+  exact ⟨b, le_trans (variance_ge_of_pairEquidist φ δ hδ h) hb⟩
+
 /-- **The decoupling capstone: the sub-Gaussian sup-norm from pair-equidistribution.** Under the
 pair-equidistribution residual `PairEquidistributed φ δ` and the per-phase Bessel MGF (proven, no
 independence), the period's symmetric MGF is dominated by the sub-Gaussian envelope with the
@@ -546,6 +579,10 @@ open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms variance_ge_of_pairEquidist
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms abs_variance_sub_prizeProxy_le_of_pairEquidist
+open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
+#print axioms exists_avg_le
+open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
+#print axioms exists_sq_ge_prizeFloor_of_pairEquidist
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
 #print axioms subGaussian_supNorm_of_pairEquidist
 open ArkLib.ProximityGap.Frontier.PhaseLinearFormDecoupling in
