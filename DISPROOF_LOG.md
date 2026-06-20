@@ -9030,3 +9030,23 @@ CORE bound and uses no cancellation, completion, moment, energy, or capacity cla
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexDelocalized.lean`,
 axiom-clean. New theorem axioms are empty (contained in `{propext, Classical.choice, Quot.sound}`).
+
+## door-(iv) signed-value selectors are invariant under the `b ↦ -b` pair (2026-06-20, g55)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVNegationSymmetryRealAndBalanced`. The previous increment
+proved the signed equality `η_{-b}=η_b` once conjugation-closedness makes `η_b` real. This sweep packages
+the selector consequence directly.
+
+New axiom-clean theorems:
+- `signed_value_selector_invariant` — for any predicate `P : ℂ → Prop`, if `η_{-b}=conj(η_b)` and
+  `η_b` is real, then `P(η_{-b}) ↔ P(η_b)`.
+- `signed_value_selector_invariant_of_conjClosed` — the same predicate invariance for period sums over
+  conjugation-closed phase sets.
+
+VERDICT: upgrading absolute-value symmetry to signed equality kills not only `|η|`-based selectors but
+any selector that reads the signed complex period value through a threshold, sign test, or predicate.
+The paired frequencies `b` and `-b` are indistinguishable at the signed-value level. No CORE bound and
+no cancellation, completion, moment, energy, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVNegationSymmetryRealAndBalanced.lean`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

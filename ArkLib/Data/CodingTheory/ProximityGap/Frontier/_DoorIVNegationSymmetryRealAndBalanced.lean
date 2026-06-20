@@ -162,4 +162,27 @@ theorem signed_neg_symmetry_of_conjClosed {ι : Type*} (S : ι → Finset ℂ) (
     (∑ z ∈ S nb, z) = ∑ z ∈ S b, z := by
   rw [hneg, sum_isReal_of_conj_closed hS]
 
+/-- Predicate-level selector form of signed negation symmetry. Once `η nb = η b`, every selector that
+only reads the signed complex value of the period is exactly `±b`-blind. This is the formal no-go used
+by the probe verdict: even signed-value gates cannot distinguish the paired frequencies. -/
+theorem signed_value_selector_invariant {ι : Type*} (η : ι → ℂ) (P : ℂ → Prop) (b nb : ι)
+    (hreal : (starRingEnd ℂ) (η b) = η b)
+    (hneg : η nb = (starRingEnd ℂ) (η b)) :
+    P (η nb) ↔ P (η b) := by
+  rw [signed_neg_symmetry η b nb hreal hneg]
+
+/-- Predicate-level selector form for conjugation-closed phase sets. Any threshold, sign test, or other
+predicate applied to the signed period value is invariant under the paired frequencies `b` and `-b`,
+provided the usual negation relation `η(-b)=conj(η(b))` holds. -/
+theorem signed_value_selector_invariant_of_conjClosed {ι : Type*} (S : ι → Finset ℂ) (P : ℂ → Prop)
+    (b nb : ι) (hS : ConjClosed (S b))
+    (hneg : (∑ z ∈ S nb, z) = (starRingEnd ℂ) (∑ z ∈ S b, z)) :
+    P (∑ z ∈ S nb, z) ↔ P (∑ z ∈ S b, z) := by
+  rw [signed_neg_symmetry_of_conjClosed S b nb hS hneg]
+
+#print axioms signed_neg_symmetry
+#print axioms signed_neg_symmetry_of_conjClosed
+#print axioms signed_value_selector_invariant
+#print axioms signed_value_selector_invariant_of_conjClosed
+
 end ArkLib.ProximityGap.Frontier.DoorIVNegationSymmetryRealAndBalanced
