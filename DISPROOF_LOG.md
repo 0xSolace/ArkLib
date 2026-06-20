@@ -1,3 +1,30 @@
+## door-(iv) single-defect FIRST-POWER deficit lower bound: linear in the off-aligned phase's defect (2026-06-20, sol)
+
+Lens: Lane 2/3 frontier-movement, extending `_JacobiCocycleSingleDefectDeficit`. The prior kernel
+proved the qualitative strict drop `‖∑γ‖ < M` and the exact SQUARED deficit
+`single_defect_normSq_eq : normSq(∑γ) = M² − 2(M−1)(1−Re w)`. What the squared identity does NOT give
+on its own (√ is concave) is a floor on the FIRST-POWER deficit `M − ‖∑γ‖`. This sweep supplies
+exactly that, built on the landed squared identity plus a concavity chord.
+
+New axiom-clean theorems (`_JacobiCocycleSingleDefectQuantDeficit.lean`):
+- `sqrt_sub_le_linear` — concavity chord `√(M²−t) ≤ M − t/(2M)` for `0<M`, `0≤t≤M²`.
+- `single_defect_deficit_ge` — `M − ‖phaseSum γ‖ ≥ (M−1)(1−Re w)/M` under the single-defect hypotheses,
+  built on `single_defect_normSq_eq`.
+
+Probe `scripts/probes/probe_dooriv_singledefect_quant_deficit.py` validates the bound over M up to 256,
+tight (min deficit/lb ratio = 1.0 as w→1). (Reuses the already-landed squared identity rather than
+re-deriving it — only the first-power floor is new content.)
+
+VERDICT: the single-defect FIRST-POWER drop is now controlled from below, linearly in the one phase's
+defect. This is a genuine quantitative rung beyond the qualitative strict inequality AND beyond the
+squared identity, BUT it does NOT lower-bound the FULL dispersion at the `√(n log m)` prize scale — the
+single-defect linear floor cannot reach prize scale, and the many-defect adversarially-phased dispersion
+(`JacobiCocycleDispersion`) stays open. NO CORE / cancellation / completion / anti-concentration /
+moment-saving / capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
+axiom-clean. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) index-factor equality occurs exactly at the degenerate index-one endpoint (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVIndexFactorOvershoot`. Prior bricks proved the weak
