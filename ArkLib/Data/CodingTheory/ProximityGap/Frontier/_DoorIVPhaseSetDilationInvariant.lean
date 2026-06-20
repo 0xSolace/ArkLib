@@ -640,6 +640,19 @@ theorem addEnergy_phaseSet_indep_of_scalar
     addEnergy (S.image (fun x => b₁ * x)) = addEnergy (S.image (fun x => b₂ * x)) := by
   rw [addEnergy_smul_eq S hb₁, addEnergy_smul_eq S hb₂]
 
+/-- **No strict scalar improvement for additive-energy bounds.**  If one nonzero frequency dilate has
+additive energy above a proposed threshold `C`, then every other nonzero frequency dilate has the same
+energy and therefore cannot satisfy `E⁺ ≤ C`.  Thus an additive-energy/Halász lever cannot become a
+worst-frequency anti-concentration theorem by optimizing over `b`; the scalar only relabels the phase
+set. -/
+theorem not_addEnergy_scalar_improvement
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addEnergy (S.image (fun x => b₁ * x))) :
+    ¬ addEnergy (S.image (fun x => b₂ * x)) ≤ C := by
+  intro hgood
+  have heq := addEnergy_phaseSet_indep_of_scalar (S := S) hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
@@ -676,3 +689,4 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergy_scalar_improvement

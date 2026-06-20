@@ -8672,3 +8672,19 @@ moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
 new theorem `not_addLinearPatternFiberMultiplicity_scalar_improvement`, axiom-clean with axioms
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv additive-energy scalar-threshold obstruction] optimizing over b cannot improve an energy bound (2026-06-20, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVPhaseSetDilationInvariant`. The file
+already proved exact additive-energy invariance `E⁺(b·S)=E⁺(S)` for all nonzero scalars. This sweep
+adds the direct strict-threshold consumer form for energy-based Halász/small-ball arguments.
+
+VERDICT: if one nonzero dilate has additive energy above a proposed threshold `C`, then no other
+nonzero dilate can satisfy `E⁺≤C`, because the energies are exactly equal. Optimizing the scalar `b`
+therefore cannot turn an additive-energy statistic into a worst-frequency anti-concentration theorem;
+it is scalar-blind and sits in the already-mapped energy/small-ball wall. No CORE, cancellation,
+completion, moment-saving, capacity, or anti-concentration theorem claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
+new theorem `not_addEnergy_scalar_improvement`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
