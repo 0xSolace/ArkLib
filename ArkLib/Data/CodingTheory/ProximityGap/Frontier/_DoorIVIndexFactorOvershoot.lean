@@ -115,6 +115,28 @@ theorem indexFamily_le_uniform_sq_of_scaledConstant_le {ι : Type*} {C D : ℝ} 
   intro i
   exact index_le_sq_of_scaledConstant_le hC (hm i) (hbound i)
 
+/-- Contrapositive uniform-family obstruction: one index larger than `(D/C)^2` refutes any uniform cap
+`C * sqrt(m i) ≤ D` on the naive normalized constant.  This is the exact finite witness form of the
+unbounded-index wall. -/
+theorem not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq {ι : Type*} {C D : ℝ}
+    {m : ι → ℝ} (hC : 0 < C) (hm : ∀ i, 0 ≤ m i)
+    (hlarge : ∃ i, (D / C) ^ 2 < m i) :
+    ¬ ∀ i, C * Real.sqrt (m i) ≤ D := by
+  intro hbound
+  rcases hlarge with ⟨i, hi⟩
+  have hindex := indexFamily_le_uniform_sq_of_scaledConstant_le (C := C) (D := D) (m := m)
+    hC hm hbound i
+  exact (not_lt_of_ge hindex) hi
+
+/-- Pointwise version of the same obstruction: if the index is already above `(D/C)^2`, then the
+normalized naive constant cannot be capped by `D`. -/
+theorem not_scaledConstant_le_of_index_gt_sq {C m D : ℝ}
+    (hC : 0 < C) (hm : 0 ≤ m) (hlarge : (D / C) ^ 2 < m) :
+    ¬ C * Real.sqrt m ≤ D := by
+  intro hbound
+  have hindex := index_le_sq_of_scaledConstant_le hC hm hbound
+  exact (not_lt_of_ge hindex) hlarge
+
 /-- Degenerate index-one endpoint: if the index factor is absent, the naive incidence scale is
 exactly the prize scale.  This identifies the only endpoint where the bridge has no scale loss;
 the thin prize regime has `m` growing, not `m = 1`. -/
@@ -261,6 +283,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.indexFamily_le_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.indexFamily_le_uniform_sq_of_scaledConstant_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstant_le_of_index_gt_sq
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_iff
