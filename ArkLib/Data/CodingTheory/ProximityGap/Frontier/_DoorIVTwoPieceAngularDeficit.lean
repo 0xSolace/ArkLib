@@ -226,6 +226,25 @@ theorem norm_sum_sq_lt_iff_totalPairDeficit_gt (zs : List ℂ) (T : ℝ) :
   · intro h; linarith
   · intro h; linarith
 
+/-- `L¹` mass is nonnegative. -/
+theorem l1Mass_nonneg (zs : List ℂ) : 0 ≤ l1Mass zs := by
+  unfold l1Mass
+  induction zs with
+  | nil => simp
+  | cons z zs ih => simp only [List.map_cons, List.sum_cons]; have := norm_nonneg z; linarith
+
+/-- **Sharp coherence-form (un-squared) bound.**  `‖Σ z_i‖·L¹ ≤ (L¹)² − totalPairDeficit zs`.
+
+Dividing by `L¹² > 0` this is exactly `ρ ≤ 1 − totalPairDeficit/L¹²`: a sqrt-free, division-free
+upper bound on the coherence itself (not its square) from the total pairwise angular deficit.  A
+coherence drop of `ε` therefore requires total angular deficit `≥ ε·L¹²`.  The slack is exactly
+`(L¹ − ‖Σ z_i‖)²/2 ≥ 0`, so the bound is tight at collinearity. -/
+theorem norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit (zs : List ℂ) :
+    ‖zs.sum‖ * l1Mass zs ≤ (l1Mass zs) ^ 2 - totalPairDeficit zs := by
+  have hid := norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit zs
+  -- 2·(L¹² − D − ‖Σ‖·L¹) = L¹² + ‖Σ‖² − 2‖Σ‖L¹ = (L¹ − ‖Σ‖)² ≥ 0, using ‖Σ‖² = L¹² − 2D.
+  nlinarith [sq_nonneg (l1Mass zs - ‖zs.sum‖), hid, norm_nonneg zs.sum, l1Mass_nonneg zs]
+
 end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_le_norm_mul
@@ -249,3 +268,6 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_l1Mass_sq
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_iff_totalPairDeficit_ge
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_lt_iff_totalPairDeficit_gt
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass_nonneg
+#print axioms
+  ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit
