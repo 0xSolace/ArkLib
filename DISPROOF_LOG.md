@@ -9069,3 +9069,21 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFa
 theorems `normFloor_le_product_of_coherence_le_of_halfMass_le` and
 `not_coherence_le_one_sub_of_normFloor_gt_drop_product`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) participation ratio strict savings are exactly squared-mass savings (2026-06-20, g55)
+
+Lane 3 constraint extension in `_DoorIVWorstBParticipationGeneric.lean`. The existing kernel proved the
+participation-ratio threshold equivalences after clearing the positive L² denominator. This refinement
+adds the probe-facing contrapositives: if the squared aligned mass exceeds the proposed `θ`-budget, the
+participation ratio cannot be `≤ θ`; if it merely reaches the budget, the participation ratio cannot be
+`< θ`.
+
+VERDICT: a claimed worst-b participation saving has no hidden phase slack after denominator clearing. It
+is exactly the corresponding squared-aligned-mass inequality against the L² denominator. Failed probes can
+therefore certify the obstruction by a single squared-mass comparison, without re-litigating the phase
+geometry. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParticipationGeneric.lean`,
+new theorems `not_participation_ratio_le_of_sq_aligned_gt` and
+`not_participation_ratio_lt_of_sq_aligned_ge`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

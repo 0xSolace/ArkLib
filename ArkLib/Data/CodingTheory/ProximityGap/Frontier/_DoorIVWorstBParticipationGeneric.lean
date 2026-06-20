@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Tactic
 
+set_option linter.style.longLine false
+
 /-!
 # Door IV ("outside the moment hierarchy" fork): the WORST-b internal term geometry is the generic
 # large deviation of n unit vectors — its coherence is a magnitude (L²) object, no non-moment lever
@@ -96,6 +98,32 @@ theorem participation_ratio_lt_iff_sq_aligned_lt
       (∑ j ∈ s, w j) ^ 2 < θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) := by
   exact div_lt_iff₀ hpos
 
+/-- Contrapositive participation-threshold interface: if the squared aligned mass already exceeds
+`θ` times the L² denominator, then the normalized participation ratio cannot be at most `θ`.  This is
+the probe-facing way to reject a claimed participation saving without re-opening any phase argument. -/
+theorem not_participation_ratio_le_of_sq_aligned_gt
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2)
+    (hgt : θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < (∑ j ∈ s, w j) ^ 2) :
+    ¬ (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ θ := by
+  intro hle
+  have hsq : (∑ j ∈ s, w j) ^ 2 ≤ θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :=
+    (participation_ratio_le_iff_sq_aligned_le s w hpos).1 hle
+  exact not_lt_of_ge hsq hgt
+
+/-- Strict-saving contrapositive: if the squared aligned mass reaches the `θ`-denominator budget, then
+the participation ratio cannot be strictly below `θ`.  A strict participation improvement therefore
+has exactly the strict squared-mass content named above, and no hidden door-(iv) slack. -/
+theorem not_participation_ratio_lt_of_sq_aligned_ge
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2)
+    (hge : θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ (∑ j ∈ s, w j) ^ 2) :
+    ¬ (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < θ := by
+  intro hlt
+  have hsq : (∑ j ∈ s, w j) ^ 2 < θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :=
+    (participation_ratio_lt_iff_sq_aligned_lt s w hpos).1 hlt
+  exact not_lt_of_ge hge hsq
+
 /-- Consequence for the lever search: if a worst-b coherence candidate `C` is controlled by the
 aligned mass `Σ wⱼ` and that mass is bounded (Cauchy–Schwarz) by `√(card · L²)`, then `C` is bounded
 by the L² magnitude data. Concretely: from `C ≤ (Σ wⱼ)` and `(Σ wⱼ)² ≤ card · L²` we get
@@ -162,6 +190,10 @@ end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_iff_sq_aligned_le
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_lt_iff_sq_aligned_lt
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_participation_ratio_le_of_sq_aligned_gt
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_participation_ratio_lt_of_sq_aligned_ge
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.coherence_sq_le_card_mul_sumSq
 #print axioms
