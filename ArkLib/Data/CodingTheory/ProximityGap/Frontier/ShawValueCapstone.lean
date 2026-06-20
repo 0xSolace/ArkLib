@@ -306,6 +306,16 @@ theorem rawLowerBoundFamily_iff_shawValueFloorFamily {ι : Type*} {B M n L : ι 
     exact (rawLowerBound_iff_shawValue_floor (B := B i) (M := M i)
       (n := n i) (L := L i) (hs i)).2 (h i)
 
+/-- Pointwise-positive parameter wrapper for the uniform lower-floor normalization.  In the prize
+regime the available hypotheses are normally `0 < n_i` and `0 < L_i`; this theorem exposes the
+same reversible floor rung without forcing each downstream reduction to rebuild positivity of
+`prizeScale`. -/
+theorem rawLowerBoundFamily_iff_shawValueFloorFamily_of_pos {ι : Type*} {B M n L : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∀ i, B i ≤ M i) ↔
+      (∀ i, B i / prizeScale (n i) (L i) ≤ shawValue (M i) (n i) (L i)) :=
+  rawLowerBoundFamily_iff_shawValueFloorFamily (fun i => prizeScale_pos (hn i) (hL i))
+
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
 theorem shawValue_floor_of_plancherel_floor {M n L : ℝ} (hs : 0 < prizeScale n L)
@@ -372,6 +382,15 @@ theorem rawComparisonFamily_iff_shawValueComparisonFamily {ι : Type*} {M H n L 
   · intro h i
     exact (rawComparison_iff_shawValueComparison (M := M i) (H := H i) (K := K)
       (n := n i) (L := L i) (hs i)).2 (h i)
+
+/-- Pointwise-positive parameter wrapper for uniform-family comparison normalization.  This is the
+family comparison rung in the native admissible-instance hypotheses `0 < n_i`, `0 < L_i`. -/
+theorem rawComparisonFamily_iff_shawValueComparisonFamily_of_pos
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∀ i, H i ≤ K * M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) ≤ K * shawValue (M i) (n i) (L i)) :=
+  rawComparisonFamily_iff_shawValueComparisonFamily (fun i => prizeScale_pos (hn i) (hL i))
 
 /-! ## The two-sided Shaw-value bracket: the citable framing of the open prize
 
@@ -442,6 +461,16 @@ theorem shawValueFamily_bracket {ι : Type*} {M n L : ι → ℝ}
   intro i
   exact shawValue_bracket (hs i) (hfloor i) (hceil i)
 
+/-- Pointwise-positive parameter wrapper for the family bracket.  Under the usual admissible
+instance hypotheses `0 < n_i` and `0 < L_i`, Plancherel floors and trivial ceilings give the same
+two-sided Shaw-value corridor pointwise. -/
+theorem shawValueFamily_bracket_of_pos {ι : Type*} {M n L : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i)
+    (hfloor : ∀ i, Real.sqrt (n i) ≤ M i) (hceil : ∀ i, M i ≤ n i) :
+    ∀ i, Real.sqrt (n i) / prizeScale (n i) (L i) ≤ shawValue (M i) (n i) (L i) ∧
+      shawValue (M i) (n i) (L i) ≤ n i / prizeScale (n i) (L i) :=
+  shawValueFamily_bracket (fun i => prizeScale_pos (hn i) (hL i)) hfloor hceil
+
 /-- Family closed-form bracket endpoints.  Under positive `n` and `L`, the pointwise family
 bracket from `shawValueFamily_bracket` has lower endpoint `1 / sqrt L` and upper endpoint
 `sqrt (n / L)` at every instance. -/
@@ -491,6 +520,15 @@ theorem rawEqFamily_iff_shawValueEqFamily {ι : Type*} {M H n L : ι → ℝ}
   · intro h i
     exact (rawEq_iff_shawValue_eq (M := M i) (H := H i) (n := n i) (L := L i) (hs i)).2 (h i)
 
+/-- Pointwise-positive parameter wrapper for equality normalization.  Equality rungs in a family
+of raw door-(iv) targets can be moved to and from Shaw-value units directly from `0 < n_i` and
+`0 < L_i`. -/
+theorem rawEqFamily_iff_shawValueEqFamily_of_pos {ι : Type*} {M H n L : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∀ i, H i = M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) = shawValue (M i) (n i) (L i)) :=
+  rawEqFamily_iff_shawValueEqFamily (fun i => prizeScale_pos (hn i) (hL i))
+
 end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
@@ -513,17 +551,21 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBound_iff_shawValue_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparison_iff_shawValueComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparisonFamily_iff_shawValueComparisonFamily
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparisonFamily_iff_shawValueComparisonFamily_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_bracket
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.bracket_width_eq_sqrt
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_endpoints
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_width_eq_sqrt
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawEq_iff_shawValue_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawEqFamily_iff_shawValueEqFamily
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawEqFamily_iff_shawValueEqFamily_of_pos
