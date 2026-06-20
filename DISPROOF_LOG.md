@@ -9857,3 +9857,19 @@ CORE/cancellation/moment/completion/anti-concentration/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
 axiom-clean. New theorem: `not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray`.
 Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [shaw-value-wall-side-capstones] no prize constant is exactly no Shaw-value constant (2026-06-20, g55)
+
+Lane: door-(iv) Lane 2 capstone extension in `ShawValueCapstone.lean`. The positive `prize ⇔ Sh(n)=O(1)` reduction already existed; this entry adds the wall-facing citation form directly at the capstone layer.
+
+VERDICT: under positive prize scale, `¬∃C, rawPrizeFamilyBound C` is equivalent to `¬∃C, shawValueFamilyBound C`, and likewise for the sign-normalized `0≤C` convention, with pointwise-positive wrappers. Thus a future Door-IV obstruction can cite the contrapositive reduction without rebuilding the normalization or changing the target. No CORE, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/ShawValueCapstone.lean`, new theorems `not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound`, `not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound_of_pos`, `not_exists_nonneg_rawPrizeFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound`, and `not_exists_nonneg_rawPrizeFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-naive-scale-wall-witness] one failed inflated Shaw inequality refutes the naive scale certificate (2026-06-20, g55)
+
+Lane: door-(iv) Lane 3 constraint extension in `_DoorIVIndexFactorOvershoot.lean`. The exact equivalence between a naive `sqrt(n*m*L)` family bound and a Shaw-value family bound with pointwise constants multiplied by `sqrt(m)` now has its contrapositive and one-bad-index audit interface.
+
+VERDICT: switching from the raw naive-incidence scale to normalized Shaw units does not hide the index loss. Failure of the inflated Shaw inequality is exactly failure of the naive-incidence family certificate, and a single indexed witness with `C_i*sqrt(m_i) < Sh_i` refutes the whole family. No CORE, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`, new theorems `not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled` and `not_naiveIncidenceFamilyBound_of_exists_scaledShawValue_gt`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
