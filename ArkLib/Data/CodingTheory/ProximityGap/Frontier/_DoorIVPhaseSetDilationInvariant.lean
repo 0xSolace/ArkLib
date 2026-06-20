@@ -653,6 +653,92 @@ theorem not_addEnergy_scalar_improvement
   have heq := addEnergy_phaseSet_indep_of_scalar (S := S) hb₁ hb₂
   exact not_lt_of_ge hgood (by simpa [heq] using hbad)
 
+/-- The higher-order additive-energy solution set `E_k(S)`: the set of `2k`-tuples
+`(a : Fin k → S, c : Fin k → S)` with balanced sums `∑ a_i = ∑ c_i`.  Its cardinality is the
+`k`-th additive energy `E_k(S) = #{(a,c) ∈ S^{2k} : ∑ a_i = ∑ c_i}`, the canonical input to a
+higher-order (`L^{2k}`-moment / Gowers / higher-Halász) small-ball bound.  The `k = 2` case is the
+classical additive energy `addEnergy`. -/
+def addEnergyKTuples {k : ℕ} (S : Finset F) :
+    Finset ((Fin k → F) × (Fin k → F)) :=
+  ((Finset.univ : Finset ((Fin k → F) × (Fin k → F))).filter
+    (fun q => (∀ i, q.1 i ∈ S) ∧ (∀ i, q.2 i ∈ S) ∧
+      (∑ i, q.1 i) = (∑ i, q.2 i)))
+
+/-- `k`-th additive energy `E_k(S) = #{(a,c) ∈ S^{2k} : ∑ a_i = ∑ c_i}`.  Generalizes `addEnergy`
+(the `k = 2` case) and is the natural input to a higher-order Halász/Gowers small-ball lever — the
+"go higher-order" escape from the saturated `E⁺` bound. -/
+def addEnergyK {k : ℕ} (S : Finset F) : ℕ := (addEnergyKTuples (k := k) S).card
+
+/-- **Higher-order additive energy is dilation-invariant.**  For nonzero `λ`, the coordinatewise
+multiply-by-`λ` map is a bijection of the `E_k` solution set: it preserves membership in `S` (after
+dilating `S`) and the balanced-sum relation `∑ a_i = ∑ c_i ⟺ ∑ λa_i = ∑ λc_i`.  Hence
+`E_k(λ • S) = E_k(S)` for every order `k`.  This closes the "go higher-order" escape b-blindly: no
+finite-order additive-energy lever can depend on the adversarial frequency. -/
+theorem addEnergyK_smul_eq {k : ℕ} (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    addEnergyK (k := k) (S.image (fun x => lam * x)) = addEnergyK (k := k) S := by
+  classical
+  unfold addEnergyK addEnergyKTuples
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun q => (fun i => lam⁻¹ * q.1 i, fun i => lam⁻¹ * q.2 i))
+    (fun q => (fun i => lam * q.1 i, fun i => lam * q.2 i))
+    ?_ ?_ ?_ ?_
+  · rintro ⟨a, c⟩ hq
+    simp only [coe_filter, Set.mem_setOf_eq, mem_univ, true_and] at hq ⊢
+    obtain ⟨ha, hc, hsum⟩ := hq
+    refine ⟨?_, ?_, ?_⟩
+    · intro i
+      obtain ⟨x, hx, hax⟩ := Finset.mem_image.mp (ha i)
+      simpa [← hax, hcdiv] using hx
+    · intro i
+      obtain ⟨x, hx, hcx⟩ := Finset.mem_image.mp (hc i)
+      simpa [← hcx, hcdiv] using hx
+    · apply mul_left_cancel₀ hlam
+      have hL : lam * (∑ i, lam⁻¹ * a i) = ∑ i, a i := by
+        rw [Finset.mul_sum]; exact Finset.sum_congr rfl (fun i _ => hcmul (a i))
+      have hR : lam * (∑ i, lam⁻¹ * c i) = ∑ i, c i := by
+        rw [Finset.mul_sum]; exact Finset.sum_congr rfl (fun i _ => hcmul (c i))
+      rw [hL, hR, hsum]
+  · rintro ⟨a, c⟩ hq
+    simp only [coe_filter, Set.mem_setOf_eq, mem_univ, true_and] at hq ⊢
+    obtain ⟨ha, hc, hsum⟩ := hq
+    refine ⟨?_, ?_, ?_⟩
+    · intro i; exact Finset.mem_image.mpr ⟨a i, ha i, rfl⟩
+    · intro i; exact Finset.mem_image.mpr ⟨c i, hc i, rfl⟩
+    · rw [← Finset.mul_sum, ← Finset.mul_sum, hsum]
+  · rintro ⟨a, c⟩ _
+    simp only [Prod.mk.injEq]
+    constructor <;> · funext i; simp [hcmul]
+  · rintro ⟨a, c⟩ _
+    simp only [Prod.mk.injEq]
+    constructor <;> · funext i; simp [hcdiv]
+
+/-- Two nonzero frequency dilates have the same `k`-th additive energy.  Thus a higher-order
+additive-energy / Gowers small-ball lever on `{b·x^m}` is exactly `b`-blind at every order, just like
+the classical `E⁺` case: the worst frequency cannot tune any finite-order energy. -/
+theorem addEnergyK_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addEnergyK (k := k) (S.image (fun x => b₁ * x)) =
+      addEnergyK (k := k) (S.image (fun x => b₂ * x)) := by
+  rw [addEnergyK_smul_eq (k := k) S hb₁, addEnergyK_smul_eq (k := k) S hb₂]
+
+/-- **No strict scalar improvement for higher-order additive-energy bounds.**  If one nonzero
+frequency dilate has `k`-th additive energy above a proposed threshold `C`, then every other nonzero
+dilate has the same energy and cannot satisfy `E_k ≤ C`.  Therefore the "go higher-order" escape —
+replacing the classical energy by a higher-moment/Gowers energy — still cannot become a worst-frequency
+anti-concentration theorem by optimizing over `b`; the scalar only relabels the phase set at every
+order. -/
+theorem not_addEnergyK_scalar_improvement {k : ℕ}
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addEnergyK (k := k) (S.image (fun x => b₁ * x))) :
+    ¬ addEnergyK (k := k) (S.image (fun x => b₂ * x)) ≤ C := by
+  intro hgood
+  have heq := addEnergyK_phaseSet_indep_of_scalar (k := k) (S := S) hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
@@ -690,3 +776,7 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergy_scalar_improvement
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergyK_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergyK_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergyK_scalar_improvement
