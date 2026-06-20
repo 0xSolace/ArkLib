@@ -203,6 +203,47 @@ theorem not_rootFamily_le_bound_of_exists_product_floor_above_target {ι : Type*
   exact not_root_le_bound_of_bound_div_leaf_lt_product_floor (a i) (B i) (floor i) (t i)
     (hpos i) hfloor htarget (hroot i)
 
+/-- **Product floor transfers to a raw root floor.**  On a positive tower, a lower bound
+`c ≤ ∏ρ_j` forces the raw root mass to be at least `c * M_leaf`.  This is the raw-scale form of the
+fixed-width bottom-slack obstruction: a coherence product bounded below by a constant keeps the root at
+least a constant fraction of the leaf mass. -/
+theorem root_ge_product_floor_mul_leaf (a c : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hfloor : c ≤ coherenceProduct (a :: t)) :
+    c * (a :: t).getLast (by simp) ≤ a := by
+  have hleaf_pos : 0 < (a :: t).getLast (by simp) :=
+    hpos _ (List.getLast_mem (by simp))
+  calc
+    c * (a :: t).getLast (by simp)
+        ≤ coherenceProduct (a :: t) * (a :: t).getLast (by simp) :=
+          mul_le_mul_of_nonneg_right hfloor (le_of_lt hleaf_pos)
+    _ = a := by rw [← root_eq_coherenceProduct_mul_leaf a t hpos]
+
+/-- Raw-scale obstruction: if a proposed root cap `B` lies below the floor `c * M_leaf` forced by a
+coherence-product lower bound, then the cap is impossible. -/
+theorem not_root_le_bound_of_product_floor_mul_leaf_gt (a B c : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hfloor : c ≤ coherenceProduct (a :: t))
+    (hB : B < c * (a :: t).getLast (by simp)) :
+    ¬ a ≤ B := by
+  intro hroot
+  have hroot_floor := root_ge_product_floor_mul_leaf a c t hpos hfloor
+  exact (not_lt_of_ge (le_trans hroot_floor hroot)) hB
+
+/-- Family raw-scale obstruction from one bad tower: a product floor whose raw leaf-scaled value exceeds
+`B i` refutes the pointwise family cap. -/
+theorem not_rootFamily_le_bound_of_exists_product_floor_mul_leaf_gt {ι : Type*}
+    (a B floor : ι → ℝ) (t : ι → List ℝ)
+    (hpos : ∀ i, ∀ x ∈ a i :: t i, 0 < x)
+    (hbad : ∃ i,
+      floor i ≤ coherenceProduct (a i :: t i) ∧
+        B i < floor i * (a i :: t i).getLast (by simp)) :
+    ¬ ∀ i, a i ≤ B i := by
+  intro hroot
+  rcases hbad with ⟨i, hfloor, hB⟩
+  exact not_root_le_bound_of_product_floor_mul_leaf_gt (a i) (B i) (floor i) (t i)
+    (hpos i) hfloor hB (hroot i)
+
 /-- Each consecutive ratio in a coherence tower is nonneg when the masses are positive; this is the
 sign discipline behind reading the ratios as coherences `∈ [0,1]` (the `≤ 1` half is the triangle
 inequality, supplied by `_DoorIVHalfMassFactorization`). -/
@@ -235,4 +276,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_bound_div_leaf_lt_coherenceProduct
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_product_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_product_floor_above_target
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_ge_product_floor_mul_leaf
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_product_floor_mul_leaf_gt
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_product_floor_mul_leaf_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.stepRatios_nonneg
