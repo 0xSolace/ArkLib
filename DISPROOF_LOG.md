@@ -9471,3 +9471,23 @@ moment-saving, anti-concentration, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
 new theorem `single_defect_norm_eq_sqrt`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) near-all-defect CS floor is only complement-size (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleNearAllDefectFloor.lean`.
+The all-defect refutation proved the k-defect Cauchy–Schwarz floor is exactly zero at `k=M`. This
+nearby refinement proves the quantitative obstruction before the endpoint: for defect set `S`, the floor
+`((M-#S)·D)/M` is always at most `2(M-#S)`, and therefore at most `2R` if the complement size is `≤R`.
+
+PROBE (`scripts/probes/probe_dooriv_near_all_defect_floor.py`): checked M=1..256 and every k. No failures;
+the ratio approaches 1 as k/M approaches 1, so the complement-size ceiling is sharp up to endpoint factor.
+
+VERDICT: the CS/L²-budget deficit route is not merely vacuous at the exact all-defect endpoint; near that
+adversarial regime it can only certify an O(complement-size) floor. Sparse-defect success does not extend
+to the worst-coset phase configuration. No CORE, cancellation, completion, moment-saving, anti-concentration,
+or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleNearAllDefectFloor.lean`,
+new theorems `kDefect_floor_le_twice_complement` and `kDefect_floor_le_of_complement_le`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
