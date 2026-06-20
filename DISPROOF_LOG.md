@@ -8801,3 +8801,31 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVTwoPieceAn
 `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVTransverseSpread.lean` (Pythagorean/transverse
 + resultant-frame). All theorems axiom-clean, axioms contained in `{propext, Classical.choice,
 Quot.sound}`. Commits 1c23b2266, d08e78a39, c19d360a1, 98deaa6b4, b5d1cc84d.
+
+## [doorIV-worstb-deficit-fraction-is-n-artifact] worst-b deficit fraction →1 is an n→∞ artifact, not a β-law; worst-b coherence tracks the prize reference within a bounded constant (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 probe (NON-discriminating but prize-consistent), backing the axiom-clean
+specialization `_DoorIVUnitPieceDeficit` (commit abb71d5f8). For unit pieces `z_x = e_p(b·x)` the
+proven angular-deficit identity gives the EXACT worst-b coset deficit `D(b) = (n² − |η_b|²)/2`, so the
+prize `M(n) ≤ C√(n·log(p/n))` is exactly the deficit-fraction statement `f(b*) = 1 − |η_b*|²/n² → 1`.
+
+PROBE (worst-b SCAN over all `m=(p−1)/n` quotient cosets; exact, no moment/completion route):
+- FIXED β=3, n=16..256: `f(b*)` rises 0.52 → 0.94 cleanly. BUT β=3 is the THICK β≈2.3–3.2 window where
+  CORE is KNOWN FALSE — so this n→∞ "f→1" is EXPECTED and does NOT bear on the prize.
+- FIXED small n (16, 32), β=3..6 (reaches the THIN prize regime, scan still tractable): holding n fixed
+  and growing the field (β↑) makes the worst-b coherence `ρ²(b*)` GROW toward 1, i.e. the deficit
+  fraction SHRINKS. So the "f→1" intuition is an ARTIFACT of n→∞ at fixed β; in the prize's own
+  (n→∞, β≈4–5 fixed) limit the deficit fraction is a COMPETITION between n (helps) and β (hurts), not a
+  monotone law forced by anything the probe sees.
+
+VERDICT: (1) The naive "worst-b deficit fraction → 1" route to the prize is NOT supported as a β-law;
+it is an n-artifact. (2) The cleanest measured invariant is `ρ²(b*) / (log(p/n)/n) ≈ 1.0–1.6` across all
+(n∈{16,32}, β∈{3..6}) — i.e. empirically `|η_b*|² ≈ C·n·log(p/n)` with C∈[1.0,1.6], CONSISTENT WITH
+(does NOT prove) the prize bound; the worst-b coherence-squared tracks the prize reference with no
+exploitable slack and no new arithmetic structure in the worst-b set beyond the already-mapped
+unstructured axes. No CORE / cancellation / completion / moment / capacity claim.
+
+Formal companion: `_DoorIVUnitPieceDeficit.lean` (abb71d5f8) — the exact unit-piece deficit identities
+this probe instantiates, axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Probe scripts:
+`scripts/probes/probe_444_worstb_deficit_fraction_law.py`,
+`scripts/probes/probe_444_worstb_deficit_thin_beta.py`.
