@@ -155,6 +155,33 @@ theorem normalized_variance_le_one_add_two_mul_of_delta_le_const_div {m : ℕ} (
         nlinarith [mul_le_mul_of_nonneg_left hcoef hC]
   nlinarith
 
+/-- **Pair-discrepancy budget, two-sided standard `C/m` form.**  If the residual is bounded
+by `C/m`, then the normalized variance stays within `2C` of the prize floor `1`.
+
+This is the symmetric companion to `normalized_variance_le_one_add_two_mul_of_delta_le_const_div`:
+the same `O(1/m)` residual scale controls the full normalized error, not only the upper tail. -/
+theorem abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ C : ℝ} (hδ : 0 ≤ δ) (hC : 0 ≤ C)
+    (hδle : δ ≤ C / (m : ℝ)) (hpair : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m - 1|
+      ≤ 2 * C := by
+  have habs := abs_normalized_variance_sub_one_le_pairResidual (hm := hm) (φ := φ) (hδ := hδ)
+    (hpair := hpair)
+  have hmR_pos : 0 < (m : ℝ) := by exact_mod_cast hm
+  have hmR_one : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hfactor_nonneg : 0 ≤ 2 * (m : ℝ) - 1 := by nlinarith
+  have hres : δ * (2 * (m : ℝ) - 1) ≤ 2 * C := by
+    calc
+      δ * (2 * (m : ℝ) - 1) ≤ (C / (m : ℝ)) * (2 * (m : ℝ) - 1) :=
+        mul_le_mul_of_nonneg_right hδle hfactor_nonneg
+      _ = C * (2 - 1 / (m : ℝ)) := by
+        field_simp [ne_of_gt hmR_pos]
+      _ ≤ 2 * C := by
+        have hinv_nonneg : 0 ≤ (1 : ℝ) / (m : ℝ) := div_nonneg zero_le_one (le_of_lt hmR_pos)
+        have hcoef : 2 - 1 / (m : ℝ) ≤ 2 := by linarith
+        nlinarith [mul_le_mul_of_nonneg_left hcoef hC]
+  exact le_trans habs hres
+
 /-- **Pair-discrepancy budget, multiplicative form.**  If the dimensionless residual obeys
 `δ(2m-1) ≤ ε`, then the variance is bounded by the prize proxy times `1+ε`.
 
@@ -228,6 +255,7 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.one_sub_pairResidual_le_normalized_variance
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_eq_one_of_ideal_pairEquidist
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div

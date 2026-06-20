@@ -8623,3 +8623,17 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBDyad
 new theorems `full_mass_exceeds_haar`, `full_mass_has_massAtLeast`, and
 `fixedRung_full_mass_forces_spike`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv pair residual two-sided C/m budget] O(1/m) controls the full normalized variance error (2026-06-19)
+
+Lane: door-(iv) Lane 2 pair-discrepancy reduction. Extends the existing PhasePairEquidistBudget
+capstone with the missing symmetric standard form: from `PairEquidistributed φ δ` and `δ ≤ C/m`,
+the normalized second-moment error satisfies
+`|avg_B η(b)^2 / (2m) - 1| ≤ 2C`. This bundles the already-proven exact two-sided residual bound
+`|V/(2m)-1| ≤ δ(2m-1)` with the standard `C/m` scale, showing that the live analytic obligation is
+precisely the `O(1/m)` pair-residual anti-concentration. It proves no such residual estimate.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`, new
+theorem `abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div`, axiom-clean with axioms
+contained in {propext, Classical.choice, Quot.sound}. No CORE, cancellation, completion, moment-saving,
+or capacity claim.
