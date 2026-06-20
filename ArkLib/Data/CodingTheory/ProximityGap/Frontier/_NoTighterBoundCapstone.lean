@@ -91,6 +91,56 @@ theorem secondMoment_does_not_determine_sup :
     rw [hb0]
     fin_cases j <;> simp [etaSpread] <;> linarith [hsqrt2]
 
+/-! ### Strengthening failure mode (1): even matching moments through order 4 (and 5) leaves the sup undetermined
+
+The witness above matches only the first two moments.  A skeptic could ask whether *adding* the
+fourth moment (the `r = 2` depth, `∑ η^4`) — or any fixed bundle of low-order symmetric power sums —
+lets a `b`-symmetric statistic recover the sup.  It does not.  The pair below is an *ideal*
+Prouhet-Tarry-Escott solution: two nonnegative families on `Fin 6` with **identical power sums of
+orders 1, 2, 3, 4 and 5**, yet a strictly larger maximal coordinate in one.  Hence no functional
+determined by the symmetric moment data up to order `5` (in particular the depth-`1` `∑η^2` *and*
+depth-`2` `∑η^4` even-moment methods simultaneously) can determine `max_b |η_b|`. -/
+
+/-- The PTE family `A = (0,5,6,16,17,22)` on `Fin 6`. -/
+def etaPTEa : Fin 6 → ℝ := ![0, 5, 6, 16, 17, 22]
+
+/-- The PTE family `B = (1,2,10,12,20,21)` on `Fin 6`. -/
+def etaPTEb : Fin 6 → ℝ := ![1, 2, 10, 12, 20, 21]
+
+/-- **Strengthened `b`-invariance obstruction (failure mode 1, through the 4th/5th moment).**
+There are two nonnegative real families on `Fin 6` whose power sums of orders `1, 2, 3, 4, 5` all
+coincide, yet one has a coordinate strictly larger in absolute value than *every* coordinate of the
+other.  Concretely `A = (0,5,6,16,17,22)` and `B = (1,2,10,12,20,21)` (an ideal Prouhet-Tarry-Escott
+pair): both share the power sums `66, 1090, 19998, 385234, 7632966` for exponents `1..5`, but
+`|A 5| = 22 > 21 ≥ |B j|` for every `j`.
+
+Consequence: **even a method that reads the full symmetric moment data up to order `5`** — in
+particular *both* the second moment `∑η^2` (depth `r=1`) and the fourth moment `∑η^4` (depth `r=2`) —
+assigns `A` and `B` the same value and therefore cannot determine the supremum `max_b |η_b|`
+(`22` for `A`, `21` for `B`).  Adding more low-order moments does not rescue a `b`-symmetric statistic;
+the sensitivity to the worst frequency `b` is genuinely beyond any fixed-order moment bundle.  This
+strictly strengthens `secondMoment_does_not_determine_sup` (which matched only orders `1,2`). -/
+theorem moments_through_five_do_not_determine_sup :
+    ∃ (η η' : Fin 6 → ℝ) (b₀ : Fin 6),
+      (∑ i, η i = ∑ i, η' i) ∧
+      (∑ i, (η i) ^ 2 = ∑ i, (η' i) ^ 2) ∧
+      (∑ i, (η i) ^ 3 = ∑ i, (η' i) ^ 3) ∧
+      (∑ i, (η i) ^ 4 = ∑ i, (η' i) ^ 4) ∧
+      (∑ i, (η i) ^ 5 = ∑ i, (η' i) ^ 5) ∧
+      (∀ j, |η' j| < |η b₀|) := by
+  refine ⟨etaPTEa, etaPTEb, 5, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · simp only [etaPTEa, etaPTEb, Fin.sum_univ_six, Matrix.cons_val]; norm_num
+  · simp only [etaPTEa, etaPTEb, Fin.sum_univ_six, Matrix.cons_val]; norm_num
+  · simp only [etaPTEa, etaPTEb, Fin.sum_univ_six, Matrix.cons_val]; norm_num
+  · simp only [etaPTEa, etaPTEb, Fin.sum_univ_six, Matrix.cons_val]; norm_num
+  · simp only [etaPTEa, etaPTEb, Fin.sum_univ_six, Matrix.cons_val]; norm_num
+  · -- |A 5| = 22 > 21 ≥ |B j| for every j
+    have hb0 : |etaPTEa 5| = 22 := by
+      simp only [etaPTEa, Matrix.cons_val]; norm_num
+    intro j
+    rw [hb0]
+    fin_cases j <;> (simp only [etaPTEb, Matrix.cons_val]; norm_num)
+
 /-! ## Failure mode (3): only `L²`/RMS — re-export the moment-depth floor
 
 For every fixed depth `r ≥ 1`, no method reading only the depth-`r` moment beats the trivial `√S`;

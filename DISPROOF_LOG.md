@@ -8132,3 +8132,23 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoFifthDoorTetrac
 predicate `Mechanism.RespectsProvenScale` and theorems `ceilingRespecting_classical_overshoots`,
 `forces_doorIV_ceilingRespecting`, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [no-tighter-bound mode-1 STRENGTHENED] matching symmetric moments through order 5 still cannot determine the sup (2026-06-19)
+
+Lane: door-(iv) / #407 no-tighter-bound capstone — EXTENDS the proven `secondMoment_does_not_determine_sup`
+(failure mode 1, b-invariance) in `_NoTighterBoundCapstone.lean`. The prior witness matched only the
+first TWO moments. PROBE-FIRST (python, exact integer power sums): the ideal Prouhet-Tarry-Escott pair
+A = (0,5,6,16,17,22) and B = (1,2,10,12,20,21) on Fin 6 has IDENTICAL power sums of orders 1,2,3,4,5
+(66, 1090, 19998, 385234, 7632966) — first DIFFERING at order 6 — with all entries nonnegative and
+max A = 22 > 21 = max B, so 22 > |B j| for every j.
+
+VERDICT: a b-symmetric statistic that reads the full symmetric moment data UP TO ORDER 5 — in
+particular BOTH the second moment Σ η^2 (depth r=1) AND the fourth moment Σ η^4 (depth r=2) — assigns
+A and B the same value yet they have different sup (22 vs 21). Adding more low-order moments does not
+rescue a b-symmetric statistic; the worst-frequency sensitivity is genuinely beyond any fixed-order
+moment bundle. This strictly strengthens mode-1 (which matched only orders 1,2). No CORE, cancellation,
+completion, anti-concentration, moment-saving, or capacity claim — a NEGATIVE structural sharpening.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoTighterBoundCapstone.lean, new
+definitions `etaPTEa`, `etaPTEb` and theorem `moments_through_five_do_not_determine_sup`, axiom-clean
+with axioms contained in {propext, Classical.choice, Quot.sound}.
