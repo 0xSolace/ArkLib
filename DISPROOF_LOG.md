@@ -8591,3 +8591,17 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBDyad
 new theorems `no_fixedRungRule_of_two_rungs`, `no_fixedRungSpike_of_no_haar_excess`,
 `no_fixedRungSpike_of_no_mass`, and `fixedRung_certificate_requires_spike`, axiom-clean with axioms
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv largest-empty-arc strict-budget obstruction] gap-only certificates force the trivial linear budget (2026-06-19)
+
+Lane: door-(iv) Lane 1 small-ball/spacing functional no-go. Extends the largest-gap energy-blind
+kernel with the exact strict-budget obstruction: for an empty arc `S=∅`, the split RHS
+`S.card + Sᶜ.card` is exactly `n`, so no largest-empty-arc triangle certificate can fit under any
+strict budget `B<n`. Equivalently, if the gap-only split is claimed to satisfy a budget `B`, then
+`n≤B` was already true. Thus a √-scale bound cannot be extracted from the largest gap itself; any
+real door-(iv) gain must prove phase coherence/cancellation among the surviving terms.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVLargestGapEnergyBlind.lean,
+new theorems `no_emptyArc_split_rhs_le_strict_budget` and `emptyArc_budget_forces_card_le`,
+axiom-clean with axioms contained in {propext, Classical.choice, Quot.sound}. No CORE,
+anti-concentration, moment, completion, or capacity claim.

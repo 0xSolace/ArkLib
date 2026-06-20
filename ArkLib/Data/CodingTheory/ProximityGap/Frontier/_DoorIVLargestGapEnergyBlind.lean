@@ -116,4 +116,38 @@ theorem largestGap_ceiling_independent_of_gap {n : ℕ}
     (((Sᶜ).card : ℝ)) = (((Tᶜ).card : ℝ)) := by
   subst hS; subst hT; simp
 
+/-- **Strict-budget obstruction.** Since an empty largest-gap arc has no inside mass, the purely
+cardinality-based split right-hand side is exactly `n`. Therefore no largest-gap triangle
+certificate can fit below a strict budget `B < n`. In particular, a √-scale door-(iv) bound cannot
+come from the empty-arc statistic alone; it must prove cancellation/coherence among the surviving
+terms. -/
+theorem no_emptyArc_split_rhs_le_strict_budget {n : ℕ}
+    (S : Finset (Fin n)) (hS : S = ∅) {B : ℝ} (hB : B < (n : ℝ)) :
+    ¬ (S.card : ℝ) + ((Sᶜ).card : ℝ) ≤ B := by
+  intro hle
+  have hconst : (S.card : ℝ) + ((Sᶜ).card : ℝ) = (n : ℝ) := by
+    subst hS
+    simp [Finset.compl_empty, Finset.card_univ]
+  linarith
+
+/-- **Budget-forcing form.** If the largest-empty-arc split is claimed to satisfy a budget `B`,
+then the trivial linear ceiling `n ≤ B` was already true. This packages the no-go without a strict
+hypothesis. It is the reusable constraint lemma ruling out gap-only √-cancellation
+certificates. -/
+theorem emptyArc_budget_forces_card_le {n : ℕ}
+    (S : Finset (Fin n)) (hS : S = ∅) {B : ℝ}
+    (hbudget : (S.card : ℝ) + ((Sᶜ).card : ℝ) ≤ B) :
+    (n : ℝ) ≤ B := by
+  have hconst : (S.card : ℝ) + ((Sᶜ).card : ℝ) = (n : ℝ) := by
+    subst hS
+    simp [Finset.compl_empty, Finset.card_univ]
+  linarith
+
+#print axioms emptyArc_bound_trivial
+#print axioms emptyArc_deficit_zero
+#print axioms largestGap_yields_only_trivial_ceiling
+#print axioms largestGap_ceiling_independent_of_gap
+#print axioms no_emptyArc_split_rhs_le_strict_budget
+#print axioms emptyArc_budget_forces_card_le
+
 end ProximityGap.Frontier.DoorIVLargestGapEnergyBlind
