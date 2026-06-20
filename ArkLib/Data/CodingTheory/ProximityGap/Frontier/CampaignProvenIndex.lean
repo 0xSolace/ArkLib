@@ -15,6 +15,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL4_char0_nonprincipal_e
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G2_ResonanceCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_nogo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
@@ -293,6 +294,28 @@ theorem roughness_does_not_add_bad_primes_export (N : ℕ) (rough : ℕ → Prop
     {p : ℕ | p ∣ N ∧ rough p} ⊆ {p : ℕ | p ∣ N} :=
   G4RoughnessNotTheDriver.roughness_does_not_add_bad_primes N rough
 
+/-! ## prize-bridge — the two faces are ONE wall (Parseval-dual; answers the "campaign still
+points miners at the refuted bare sup-norm" flag, #444). The additive-energy face and the
+multiplicative sup-norm face are the SAME object, bracketed within the trivial averaging factor
+`q−1`. The link is the exact moment identity `sum_nonzero_moment` — NO loss and NO gain — so the
+open core is one wall in two Fourier-dual bases, not two independent walls to be bridged. -/
+
+/-- **[prize-bridge, OneWall]** The backward bridge: a sup-norm bound forces an energy bound. If
+every nonzero period satisfies `‖η_b‖ ≤ M`, then the additive energy is controlled by `M`:
+`q·E_r − n^{2r} ≤ (q−1)·M^{2r}`. Together with the forward `M^{2r} ≤ q·E_r − n^{2r}`
+(worst-term ≤ sum), the worst-case sup-norm `M^{2r}` and the additive energy `E_r` bracket each
+other within `q−1`: the additive count and the Gauss-phase worst case carry IDENTICAL information.
+This is the consolidating statement that the prize is one wall, not two independent obstructions. -/
+theorem two_faces_are_one_wall_export {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ) {M : ℝ} (hM : 0 ≤ M)
+    (hsup : ∀ b ∈ Finset.univ.erase (0 : F),
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ≤ M) :
+    (Fintype.card F : ℝ)
+        * (_root_.ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy G r : ℝ)
+        - (G.card : ℝ) ^ (2 * r)
+      ≤ ((Fintype.card F : ℝ) - 1) * M ^ (2 * r) :=
+  _root_.ArkLib.ProximityGap.Frontier.BridgeOneWall.pincer_is_one_wall hψ G r hM hsup
+
 /-! ## ShawValue — the Lane-2 `prize ⟺ Sh(n)=O(1)` capstone (the citable normalization).
 Scope: **capstone**. The prize inequality `M ≤ C·√(n·L)` is exactly a bound on the normalized
 Shaw value `Sh(M) = M/√(n·L)`; the proven two-sided corridor `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` on
@@ -555,4 +578,5 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms wraparound_markov_count_le_export
 #print axioms wraparound_markov_bound_vacuous_below_mean_export
 #print axioms wraparound_average_control_does_not_bound_sup_export
+#print axioms two_faces_are_one_wall_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
