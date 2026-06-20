@@ -8572,3 +8572,22 @@ pre-selects the worst coset. Any worst-b-selection-based attack is walled. No CO
 completion, anti-concentration, moment, or capacity claim.
 
 Probe-only (Python, EXACT) ⇒ axiom-clean trivially; only DISPROOF_LOG.md + the probe script change.
+
+## [doorIV-worstb-dyadic-selector-formal] fixed-rung dyadic selection requires an actual histogram spike (2026-06-20, g55)
+
+Lane: door-(iv) Lane 1/3 formal kernel for the just-landed 2-adic worst-b probe. The probe measured
+`v₂(k*)`, where `k* = dlog_g(worst-b) mod n`, across proper thin `μ_n` instances and found the
+Haar-null distribution `P(v₂=j)=2^-(j+1)` with no fixed-level spike. This entry packages the exact
+finite combinatorial obligation for any dyadic-subtower selector attack.
+
+VERDICT: a fixed dyadic-rung rule is impossible as soon as two observed worst-b samples land on distinct
+rungs, and a “mostly fixed rung” certificate must exhibit BOTH a scaled excess over its Haar-null mass
+and enough absolute mass. Therefore the dyadic-selection route cannot proceed from ordinary Haar noise;
+it needs a genuine histogram spike. The exact prize-regime probe found none (n=16,32,64,128; 24 primes
+per n, p≫n³, proper μ_n), so the fixed-subtower selection hope is walled. No CORE, cancellation,
+completion, anti-concentration, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBDyadicSelectorWalled.lean`,
+new theorems `no_fixedRungRule_of_two_rungs`, `no_fixedRungSpike_of_no_haar_excess`,
+`no_fixedRungSpike_of_no_mass`, and `fixedRung_certificate_requires_spike`, axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.
