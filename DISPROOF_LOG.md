@@ -8205,3 +8205,19 @@ saturates. No CORE, cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
 new theorem `multiPieceCoherence_le_iff_two_mul_minMass_ge`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) scalar dilates cannot improve max-fiber small-ball bounds (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1 small-ball constraint extension in `_DoorIVPhaseSetDilationInvariant`. The existing
+kernel proved nonzero dilation preserves the usual max-over-target additive-linear fiber statistic for
+`{b*x^m}`. This refinement packages the obstruction directly: if that max-fiber statistic is already
+above `C` for one nonzero frequency, no other nonzero scalar dilate can satisfy a `≤ C` improvement.
+
+VERDICT: a Littlewood-Offord/Halász max-fiber anti-concentration bound cannot select a better adversarial
+frequency by changing `b`; the target labels are merely rescaled. Any genuine Door-IV improvement must
+use structure beyond scalar-dilate additive-linear fiber counts. No CORE, cancellation, completion,
+moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
+new theorem `not_addLinearPatternMaxFiber_scalar_improvement`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

@@ -505,6 +505,21 @@ theorem addLinearPatternMaxFiber_phaseSet_indep_of_scalar {k : ℕ}
     addLinearPatternMaxFiber_smul_eq S coeff hb₂]
 
 
+
+/-- **No strict scalar improvement for max-fiber small-ball bounds.**  If the additive-linear
+small-ball maximum for one nonzero frequency dilate is above a proposed threshold `C`, then no other
+nonzero frequency dilate can satisfy the bound `≤ C`.  Thus a Door-IV anti-concentration proof based
+only on the usual max-over-target Littlewood-Offord/Halász statistic cannot improve by choosing a
+better scalar `b`; the statistic is exactly scalar-blind. -/
+theorem not_addLinearPatternMaxFiber_scalar_improvement {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addLinearPatternMaxFiber (S.image (fun x => b₁ * x)) coeff) :
+    ¬ addLinearPatternMaxFiber (S.image (fun x => b₂ * x)) coeff ≤ C := by
+  intro hgood
+  have heq := addLinearPatternMaxFiber_phaseSet_indep_of_scalar
+    (S := S) (coeff := coeff) hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 /-- Histogram bin for target-fiber multiplicities of a fixed additive-linear pattern: the number of
 field targets `t` whose fiber has size exactly `N`.  Unlike `addLinearPatternFiberCounts`, this records
 how often each fiber size occurs. -/
@@ -637,6 +652,8 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternMaxFiber_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternMaxFiber_phaseSet_indep_of_scalar
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addLinearPatternMaxFiber_scalar_improvement
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar
