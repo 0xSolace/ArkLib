@@ -337,6 +337,20 @@ theorem not_exists_prizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
   exact not_congr (exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
     (M := M) (H := H) (scale := scale) hK hscale hMH hHM)
 
+/-- **Symmetric mixed wall-side capstone.**  With positive scales and the family-wide half-mass
+comparison, failure of a raw uniform half-mass Big-O bound is equivalent to failure of bounded
+normalized prize Shaw value.  This is the negative form of
+`exists_halfMassFamilyBound_iff_exists_normalizedPrizeFamilyBound` and closes the mixed wall API in
+the opposite direction. -/
+theorem not_exists_halfMassFamilyBound_iff_not_exists_normalizedPrizeFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ ∃ C, halfMassFamilyBound H scale C) ↔
+      ¬ ∃ C, normalizedPrizeFamilyBound M scale C := by
+  exact not_congr (exists_halfMassFamilyBound_iff_exists_normalizedPrizeFamilyBound
+    (M := M) (H := H) (scale := scale) hK hscale hMH hHM)
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_of_halfMassBound
@@ -356,3 +370,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_prizeFamilyBound_iff_not_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedPrizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_prizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_halfMassFamilyBound_iff_not_exists_normalizedPrizeFamilyBound
