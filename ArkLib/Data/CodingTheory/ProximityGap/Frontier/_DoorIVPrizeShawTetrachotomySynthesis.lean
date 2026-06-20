@@ -253,4 +253,41 @@ theorem completion_excluded_discharged_floorPrize
   · exact one_le_floorPrizeRatio_of_plancherel_floor hnref hfloor
   · exact prizeFloorBound_iff_floorPrizeRatio_le hnref
 
+/-! ## Fully-discharged synthesis: Shaw reduction plus ceiling-respecting no-fifth-door
+
+The earlier synthesis theorems combine the Shaw-value reduction with an abstract
+`hclassicalOvershoots` hypothesis.  The no-fifth-door file later discharged that hypothesis for the
+honest subclass of classical mechanisms whose certified scale respects the proven completion / SOTA
+floors.  This final rung packages those two facts together: the reduction `prize ⇔ Sh(n)=O(1)` and
+the door-(iv)-only conclusion, with no abstract overshoot postulate. -/
+
+/-- **Fully-discharged Lane-2/3 synthesis.**  The Shaw-value family reduction holds, and past the
+SOTA threshold every ceiling-respecting classical mechanism is excluded from a prize-floor certificate;
+hence any prize-certifying mechanism is door `(iv)`.  Compared with
+`prize_iff_shawBounded_nonneg_and_doorIV_only`, the classical-door overshoot hypothesis is discharged
+from `NoFifthDoorTetrachotomy.forces_doorIV_ceilingRespecting` rather than assumed.  The remaining
+`RespectsProvenScale` premise is the honest anti-degenerate guard: a claimed classical mechanism must
+respect the proven scale of its own door. -/
+theorem prize_iff_shawBounded_nonneg_and_discharged_doorIV_only
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (L i))
+    {Lref q C δ : ℝ} (hLnn : 0 ≤ Lref) (hLref : 1 < Lref)
+    (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ,
+      ((∃ K, 0 ≤ K ∧ ShawValueCapstone.rawPrizeFamilyBound M n L K) ↔
+          (∃ K, 0 ≤ K ∧ ShawValueCapstone.shawValueFamilyBound M n L K)) ∧
+        (∀ nref : ℝ, max N₀ 1 ≤ nref → nref * Lref ≤ q →
+          (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+            m'.door.isClassical →
+              m'.RespectsProvenScale q C δ nref) →
+          ∀ m : NoFifthDoorTetrachotomy.Mechanism,
+            m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+            m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) := by
+  obtain ⟨N₀, hdoor⟩ :=
+    NoFifthDoorTetrachotomy.forces_doorIV_ceilingRespecting hLnn hLref hC hδ
+  refine ⟨N₀, ?_, ?_⟩
+  · exact
+      ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs
+  · exact hdoor
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
