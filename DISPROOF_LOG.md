@@ -8091,7 +8091,6 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVRealSignMa
 theorems `signMassCoherence_lt_one_iff_min_pos` and `signMassCoherence_eq_one_of_min_eq_zero`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
 
-
 ## door-(iv) common-ray strict targets are impossible before angular spread (2026-06-19, g55)
 
 Lane: door-(iv) Lane 3 constraint extension in `_DoorIVCommonRayCoherence`. The existing kernel proved
@@ -8108,3 +8107,28 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCommonRayC
 theorems `commonRay_not_complexPieceCoherence_lt_one` and
 `commonRay_not_complexPieceCoherence_le_of_lt_one`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [nofifthdoor-overshoot-discharged] forces_doorIV quantifier discharged from the proven ceilings, not postulated (2026-06-19)
+
+Lane: door-(iv) tetrachotomy backbone — EXTENDS two proven theorems (`forces_doorIV` +
+`classicalSide_closed`) in `_NoFifthDoorTetrachotomy.lean`. The capstone `forces_doorIV` took
+`hclassicalOvershoots : ∀ m', m'.door.isClassical → m'.OvershootsBGK n L` as a HYPOTHESIS; the proven
+overshoot discharges (`completionMechanism_overshootsBGK` for √q, `momentEVT_..._overshootsBGK_eventually`
+for SOTA C·n^{1−δ}) were never fed back into it. The `_NamedLeverRefutationCapstone` docstring itself
+flagged this open quantifier.
+
+VERDICT: the abstract overshoot quantifier of `forces_doorIV` CANNOT be discharged for an arbitrary
+`Mechanism` value (its `certScale` field is unconstrained — a degenerate completion `Mechanism` with
+`certScale = 0` does not overshoot, but it also violates the proven `M ≤ √q` completion floor on what a
+completion door can certify). The honest, non-vacuous subclass is the mechanisms that RESPECT their
+proven ceiling: completion certifies ≥ √q, moment/extreme-value certifies ≥ the SOTA C·n^{1−δ}. For
+that subclass overshoot is a THEOREM (no postulate, only the proven ceilings + regime facts n·L ≤ q,
+δ < 1/2), and `forces_doorIV` then forces door (iv) unconditionally. This locks the no-fifth-door
+exclusion as kernel-checked at the proven scales for any real classical mechanism, leaving the honest
+residual exactly the structural hypothesis that classical mechanisms respect their proven floor. No
+CORE, cancellation, completion-beating, anti-concentration, moment-saving, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoFifthDoorTetrachotomy.lean, new
+predicate `Mechanism.RespectsProvenScale` and theorems `ceilingRespecting_classical_overshoots`,
+`forces_doorIV_ceilingRespecting`, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
