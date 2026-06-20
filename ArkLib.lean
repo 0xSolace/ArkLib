@@ -1497,6 +1497,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoNearSidonImpro
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiBenedettoSavingSensitivity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceDiagonalExtraction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceEnvelopeCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTracePlancherelFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTracePlancherelFloorAttained
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceLinearSumReframe
