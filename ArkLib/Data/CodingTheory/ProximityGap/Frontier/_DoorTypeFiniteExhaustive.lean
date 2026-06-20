@@ -28,6 +28,7 @@ This module closes that gap with real, axiom-clean `Fintype`/cardinality stateme
 * `univ_doorType` — the explicit enumeration `{moment, completion, extremeValue, newEvaluation}`;
 * `card_classical_doors = 3` and `card_nonClassical_doors = 1` — the 3-dead / 1-live split as
   cardinalities, with `newEvaluation` the unique non-classical door;
+* `existsUnique_nonClassicalDoor` — the unique-live-door fact as an `∃!` eliminator;
 * `classical_add_live_eq_total` — `3 + 1 = 4` as a partition fact: the classical doors plus the single
   live door exhaust all four.
 
@@ -100,4 +101,15 @@ theorem mem_nonClassical_iff_newEvaluation (d : DoorType) :
     d ∈ Finset.univ.filter (fun d : DoorType => ¬ d.isClassical) ↔ d = DoorType.newEvaluation := by
   rw [filter_not_classical_eq, Finset.mem_singleton]
 
+/-- **The unique-live-door eliminator.**  There exists exactly one non-classical door, namely
+door (iv) `newEvaluation`.  This is the `∃!` form of the no-fifth-door combinatorial backbone,
+convenient for consumers that want uniqueness rather than a filtered-cardinality statement. -/
+theorem existsUnique_nonClassicalDoor : ∃! d : DoorType, ¬ d.isClassical := by
+  refine ⟨DoorType.newEvaluation, ?_, ?_⟩
+  · decide
+  · intro d hd
+    exact (DoorType.not_classical_iff_eq_newEvaluation d).mp hd
+
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy
+
+#print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.existsUnique_nonClassicalDoor
