@@ -138,6 +138,26 @@ theorem dominance_not_satisfiable_witness :
   · norm_num
   · norm_num
 
+/-- At the same `n=32` witness, the **dominance input itself** is already false:
+`G₀ + L < 0`.  Thus the route does not merely fail after adding the wraparound gap `Q`; the linear
+wraparound term has already overwhelmed the positive char-zero gap before `Q` is considered. -/
+theorem dominance_sum_negative_n32 :
+    (2385085198648320 : ℝ) + (-3635991075225600 : ℝ) < 0 := by
+  norm_num
+
+/-- The positive wraparound gap `Q` at the `n=32` witness is too small to repair the failed dominance
+sum.  In exact numbers, `Q < -(G₀+L)`, so even adding the already nonnegative `Q` leaves the char-`p`
+step-ratio gap negative. -/
+theorem wrap_gap_too_small_to_repair_dominance_n32 :
+    (14982473318400 : ℝ) < -((2385085198648320 : ℝ) + (-3635991075225600 : ℝ)) := by
+  norm_num
+
+/-- The conditional transfer's advertised dominance premise `0 ≤ G₀ + L` is refuted by the exact
+`n=32, p=786433, r=3` values.  This pins the unsatisfied hypothesis directly, rather than only via the
+assembled negative gap. -/
+theorem not_dominance_premise_n32 :
+    ¬ (0 ≤ (2385085198648320 : ℝ) + (-3635991075225600 : ℝ)) := by
+  exact not_le_of_gt dominance_sum_negative_n32
 
 /-- `Q ≥ 0` plus a nonnegative char-0 gap is insufficient to force the transferred char-`p` gap.
 This is the theorem-form no-go behind the dominance witness: the missing input cannot be replaced
@@ -160,4 +180,7 @@ end ArkLib.ProximityGap.CharPStepRatioFails
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_gap_neg_n64
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_n64
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.dominance_not_satisfiable_witness
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.dominance_sum_negative_n32
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.wrap_gap_too_small_to_repair_dominance_n32
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_dominance_premise_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_forall_gap_nonneg_of_charZero_and_Q_nonneg

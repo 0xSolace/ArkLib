@@ -9758,3 +9758,21 @@ control both phenomena, not conflate them. No CORE/cancellation/completion/momen
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`, axiom-clean.
 New theorems: `rho4_lt_one_normalized` and `rho3_lt_rho4_lt_one_normalized`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) char-p transfer dominance premise refuted directly (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 constraint refinement of `_CharPStepRatioMonotoneFails`. The previous witness
+showed the assembled char-`p` step-ratio gap is negative even with `G₀≥0` and `Q≥0`. This refinement
+pins the exact failed transfer hypothesis itself: at the `n=32, p=786433, r=3` witness,
+`G₀ + L = 2385085198648320 - 3635991075225600 < 0`, and the positive wraparound gap
+`Q = 14982473318400` is strictly too small to repair it (`Q < -(G₀+L)`).
+
+VERDICT: the conditional transfer route fails at its advertised dominance premise `0≤G₀+L`, not only
+after assembling the full gap. A repair must supply new arithmetic control of the linear wraparound term;
+nonnegative char-zero gap plus nonnegative `Q` cannot do it. No CORE/cancellation/completion/moment/
+anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
+axiom-clean. New theorems: `dominance_sum_negative_n32`,
+`wrap_gap_too_small_to_repair_dominance_n32`, and `not_dominance_premise_n32`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
