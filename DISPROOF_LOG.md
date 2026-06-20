@@ -1,3 +1,11 @@
+## door-(iv) participation-ratio savings are exactly squared-L2 budget savings (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVWorstBParticipationGeneric`. Prior participation bricks proved the Cauchy-Schwarz ceiling `PR≤1` and the L2 floor forced by a coherent aligned-mass certificate. This refinement denominator-clears the threshold itself: `PR≤θ` is equivalent to `(Σw_j)^2 ≤ θ·(|s|·Σw_j^2)`, with the strict analogue as well.
+
+VERDICT: naming a participation ratio does not create an independent anti-concentration lever. Any claimed worst-b participation saving must prove the corresponding L2-normalized squared-aligned-mass inequality by genuine arithmetic input; otherwise it is just the Plancherel/magnitude budget in ratio notation. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParticipationGeneric.lean`, axiom-clean. New theorems: `participation_ratio_le_iff_sq_aligned_le` and `participation_ratio_lt_iff_sq_aligned_lt`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) real-collinear coherence drop requires an exact ε/2 minority-mass budget (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVMultShiftCollinear`. Prior bricks identified real-collinear multiplicative-shift coherence with the sign-mass ratio and proved strict slack iff both signs occur. This refinement packages the probe-facing `1 - ε` budget exactly: `ρ ≤ 1 - ε` iff the minority sign mass is at least `ε/2` of total mass, and if that budget fails then the coherence drop is impossible.
@@ -5,6 +13,7 @@ Lens: Lane 3 constraint lemma extending `_DoorIVMultShiftCollinear`. Prior brick
 VERDICT: a real-collinear Door-IV split has no hidden angular anti-concentration. Any claimed `ε` coherence saving must first prove the missing minority-mass lower bound; near one-signed adversarial frequencies remain trapped at the triangle baseline. No CORE/cancellation/completion/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultShiftCollinear.lean`, new theorems `coherence_le_one_sub_iff_minority_mass_ge` and `not_coherence_le_one_sub_of_minority_mass_lt`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
 
 ## door-(iv) coherence drop forces reciprocal half-mass spend (2026-06-19)
 

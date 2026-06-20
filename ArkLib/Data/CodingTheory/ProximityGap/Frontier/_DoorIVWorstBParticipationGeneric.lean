@@ -76,6 +76,26 @@ theorem participation_ratio_le_one
   rw [div_le_one hpos]
   simpa using sq_sum_le_card_mul_sum_sq (s := s) (f := w)
 
+/-- Denominator-cleared participation threshold.  A claimed participation-ratio saving
+`PR ≤ θ` is exactly the squared aligned-mass budget `(Σwⱼ)² ≤ θ · (card · Σwⱼ²)`.  This packages the
+constraint in the form probes use: a participation lever is not a new phase object unless it proves
+this L²-normalized squared-mass inequality by some arithmetic input. -/
+theorem participation_ratio_le_iff_sq_aligned_le
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :
+    (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ θ ↔
+      (∑ j ∈ s, w j) ^ 2 ≤ θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) := by
+  exact div_le_iff₀ hpos
+
+/-- Strict denominator-cleared participation threshold.  Strict participation savings are likewise
+nothing more or less than strict L²-normalized squared-aligned-mass savings. -/
+theorem participation_ratio_lt_iff_sq_aligned_lt
+    {ι : Type*} (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :
+    (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < θ ↔
+      (∑ j ∈ s, w j) ^ 2 < θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) := by
+  exact div_lt_iff₀ hpos
+
 /-- Consequence for the lever search: if a worst-b coherence candidate `C` is controlled by the
 aligned mass `Σ wⱼ` and that mass is bounded (Cauchy–Schwarz) by `√(card · L²)`, then `C` is bounded
 by the L² magnitude data. Concretely: from `C ≤ (Σ wⱼ)` and `(Σ wⱼ)² ≤ card · L²` we get
@@ -138,6 +158,10 @@ end ProximityGap.Frontier.DoorIVWorstBParticipationGeneric
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.sq_aligned_mass_le_card_mul_sumSq
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_one
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_iff_sq_aligned_le
+#print axioms
+  ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_lt_iff_sq_aligned_lt
 #print axioms
   ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.coherence_sq_le_card_mul_sumSq
 #print axioms
