@@ -96,6 +96,109 @@ theorem norm_add_sq_le_halfMass_sq_sub_two_mul_of_angularDeficit_ge {A B : ℂ} 
   rw [norm_add_sq_eq_halfMass_sq_sub_two_angularDeficit]
   linarith
 
+/-! ### Multi-piece (list) angular deficit
+
+The worst-frequency coset sum is a sum of many complex pieces, not just two.  The two-piece identity
+lifts to the full list: `‖Σ z_i‖²` loses, relative to the squared half-mass `(Σ‖z_i‖)²`, exactly
+twice the **total pairwise angular deficit** `Σ_{i<j} angularDeficit(z_i, z_j) ≥ 0`.  We build this
+recursively via the per-element cross deficit against the rest of the list. -/
+
+/-- Re of `z · conj(·)` is additive over a finite list (linearity of the alignment form). -/
+theorem re_mul_conj_list_sum (z : ℂ) (zs : List ℂ) :
+    (z * starRingEnd ℂ zs.sum).re = (zs.map (fun w => (z * starRingEnd ℂ w).re)).sum := by
+  induction zs with
+  | nil => simp
+  | cons w zs ih =>
+      simp only [List.sum_cons, map_add, mul_add, Complex.add_re, List.map_cons, ih]
+
+/-- Cons expansion of the squared norm of a list sum:
+`‖z + Σzs‖² = ‖z‖² + ‖Σzs‖² + 2·Σ_{w∈zs} Re(z·conj w)`. -/
+theorem norm_cons_sum_sq (z : ℂ) (zs : List ℂ) :
+    ‖z + zs.sum‖ ^ 2
+      = ‖z‖ ^ 2 + ‖zs.sum‖ ^ 2 + 2 * (zs.map (fun w => (z * starRingEnd ℂ w).re)).sum := by
+  rw [norm_add_sq, re_mul_conj_list_sum]
+
+/-- Per-element **cross deficit** of `z` against a list: `Σ_{w∈zs}(‖z‖‖w‖ − Re(z·conj w)) ≥ 0`. -/
+noncomputable def crossDeficit (z : ℂ) (zs : List ℂ) : ℝ :=
+  (zs.map (fun w => angularDeficit z w)).sum
+
+/-- The cross deficit is nonnegative (each summand is a pairwise angular deficit). -/
+theorem crossDeficit_nonneg (z : ℂ) (zs : List ℂ) : 0 ≤ crossDeficit z zs := by
+  unfold crossDeficit
+  induction zs with
+  | nil => simp
+  | cons w zs ih =>
+      simp only [List.map_cons, List.sum_cons]
+      have := angularDeficit_nonneg z w
+      linarith
+
+/-- **Total pairwise angular deficit** of a list, accumulated as each new head is paired against the
+remaining tail.  `totalPairDeficit zs = Σ_{i<j} angularDeficit(z_i, z_j) ≥ 0`. -/
+noncomputable def totalPairDeficit : List ℂ → ℝ
+  | [] => 0
+  | z :: zs => crossDeficit z zs + totalPairDeficit zs
+
+/-- Total pairwise angular deficit is nonnegative. -/
+theorem totalPairDeficit_nonneg (zs : List ℂ) : 0 ≤ totalPairDeficit zs := by
+  induction zs with
+  | nil => simp [totalPairDeficit]
+  | cons z zs ih =>
+      unfold totalPairDeficit
+      have := crossDeficit_nonneg z zs
+      linarith
+
+/-- `L¹` mass of a list: `Σ ‖z_i‖`. -/
+noncomputable def l1Mass (zs : List ℂ) : ℝ := (zs.map norm).sum
+
+/-- Cons expansion of the cross deficit against the squared `L¹`:
+`(‖z‖ + l1Mass zs)² = ‖z‖² + l1Mass zs² + 2‖z‖·l1Mass zs`, and the cross deficit pairs `z` with the
+sum-of-norms, so `2(‖z‖·l1Mass zs) − 2·crossDeficit z zs = 2·Σ Re(z·conj w)`. -/
+theorem two_mul_crossDeficit_eq (z : ℂ) (zs : List ℂ) :
+    2 * crossDeficit z zs
+      = 2 * (‖z‖ * l1Mass zs) - 2 * (zs.map (fun w => (z * starRingEnd ℂ w).re)).sum := by
+  unfold crossDeficit l1Mass angularDeficit
+  induction zs with
+  | nil => simp
+  | cons w zs ih =>
+      simp only [List.map_cons, List.sum_cons, mul_add]
+      have hz : ‖z‖ * (‖w‖ + (zs.map norm).sum) = ‖z‖ * ‖w‖ + ‖z‖ * (zs.map norm).sum := by ring
+      nlinarith [ih]
+
+/-- **Exact multi-piece angular-deficit identity.**
+`‖Σ z_i‖² = (Σ‖z_i‖)² − 2·totalPairDeficit zs`.
+
+The squared coherence of the worst-frequency coset sum loses, relative to the squared `L¹` half-mass,
+exactly twice the total pairwise angular deficit — a sum of nonnegative phase-misalignment terms.
+This is the genuine many-piece object: an anti-concentration drop is exactly an accumulation of
+pairwise phase misalignments, never available from mere subdivision (which adds zero-deficit collinear
+pieces). -/
+theorem norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit (zs : List ℂ) :
+    ‖zs.sum‖ ^ 2 = (l1Mass zs) ^ 2 - 2 * totalPairDeficit zs := by
+  induction zs with
+  | nil => simp [l1Mass, totalPairDeficit]
+  | cons z zs ih =>
+      have hcons : ‖(z :: zs).sum‖ ^ 2 = ‖z + zs.sum‖ ^ 2 := by simp [List.sum_cons]
+      rw [hcons, norm_cons_sum_sq]
+      unfold totalPairDeficit l1Mass
+      have hl1 : ((z :: zs).map norm).sum = ‖z‖ + (zs.map norm).sum := by
+        simp [List.map_cons, List.sum_cons]
+      rw [hl1]
+      have hcross := two_mul_crossDeficit_eq z zs
+      unfold l1Mass at hcross ih
+      -- goal: ‖z‖² + ‖zs.sum‖² + 2*S = (‖z‖ + L1)² - 2*(crossDeficit z zs + totalPairDeficit zs)
+      -- ih: ‖zs.sum‖² = L1² - 2*totalPairDeficit zs ; hcross: 2*crossDeficit = 2*(‖z‖*L1) - 2*S
+      have hsq : (‖z‖ + (zs.map norm).sum) ^ 2
+          = ‖z‖ ^ 2 + (zs.map norm).sum ^ 2 + 2 * (‖z‖ * (zs.map norm).sum) := by ring
+      rw [hsq]
+      linarith [ih, hcross]
+
+/-- The squared resultant norm is at most the squared `L¹` mass (multi-piece triangle inequality
+recovered from the total pairwise angular deficit being nonnegative). -/
+theorem norm_sum_sq_le_l1Mass_sq (zs : List ℂ) : ‖zs.sum‖ ^ 2 ≤ (l1Mass zs) ^ 2 := by
+  rw [norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit]
+  have := totalPairDeficit_nonneg zs
+  linarith
+
 end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_le_norm_mul
@@ -109,3 +212,11 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_add_sq_eq_halfMass_sq_of_angularDeficit_zero
 #print axioms
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_add_sq_le_halfMass_sq_sub_two_mul_of_angularDeficit_ge
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_list_sum
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_cons_sum_sq
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.crossDeficit_nonneg
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit_nonneg
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.two_mul_crossDeficit_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_l1Mass_sq
