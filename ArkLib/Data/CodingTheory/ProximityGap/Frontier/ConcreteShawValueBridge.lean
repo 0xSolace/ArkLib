@@ -150,7 +150,32 @@ theorem shawValue_worstPeriod_sharp_floor {ψ : AddChar F ℂ} (hψ : ψ.IsPrimi
   rw [hendpoint] at hfloor
   exact hfloor
 
+/-- **The sharp prize-regime Shaw-value bracket on the REAL worst period (citable capstone).**
+In the prize regime `n² ≤ q` (`q = n^β, β ≥ 2`), the normalized Shaw value of the actual character
+sum is sandwiched in CLOSED FORM:
+`√(1 − 1/n) / √L  ≤  Sh(M(μ_n))  ≤  √(n / L)`.
+The lower endpoint is the sharp floor at the true bracket value `1/√L` (up to `√(1−1/n) → 1`); the
+upper endpoint is the trivial ceiling `n` normalized to `√(n/L)` (`ceiling_bracket_eq`). This is the
+clean two-sided statement of everything proven unconditionally about `Sh(M(μ_n))` in the prize regime.
+The prize `Sh(M(μ_n)) = O(1)` at `L = log(q/n)` is exactly the demand to collapse this corridor's
+upper endpoint from `√(n/L)` to an absolute constant; the lower endpoint is already pinned at the
+true `1/√L`. No CORE/cancellation/completion/anti-concentration/capacity claim. -/
+theorem shawValue_worstPeriod_sharp_bracket {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) {L : ℝ} (hL : 0 < L) :
+    Real.sqrt (1 - 1 / (G.card : ℝ)) / Real.sqrt L
+        ≤ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L
+      ∧ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L
+          ≤ Real.sqrt ((G.card : ℝ) / L) := by
+  have hnpos : (0 : ℝ) < (G.card : ℝ) := by linarith
+  have hs : 0 < prizeScale (G.card : ℝ) L := prizeScale_pos hnpos hL
+  refine ⟨shawValue_worstPeriod_sharp_floor hψ G hne hq1 hG1 hsq hL, ?_⟩
+  have hceil := shawValue_worstPeriod_le_of_card (ψ := ψ) G hne hs
+  rwa [ceiling_bracket_eq hnpos hL] at hceil
+
 end ProximityGap.Frontier.ConcreteShawValueBridge
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ConcreteShawValueBridge.shawValue_worstPeriod_sharp_floor
+#print axioms ProximityGap.Frontier.ConcreteShawValueBridge.shawValue_worstPeriod_sharp_bracket
