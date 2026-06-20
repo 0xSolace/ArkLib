@@ -1523,6 +1523,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorridorIcc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoPieceAngularDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVUnitPieceDeficit
