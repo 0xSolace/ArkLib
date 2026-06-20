@@ -8736,3 +8736,37 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidis
 axiom-clean. New theorems: `variance_eq_prizeProxy_of_ideal_pairEquidist` and
 `abs_variance_sub_prizeProxy_eq_zero_of_ideal_pairEquidist`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv sector aggregate epsilon budget] coherence drop forces full aggregate angular defect (2026-06-20, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVSectorCoherence`. Prior bricks proved the
+sector floor and the aggregate projection-defect obligation in `θ` form. This refinement packages the
+exact epsilon form used by probe-facing coherence claims: `ρ ≤ 1 - ε` forces at least `ε · L¹` total
+ray-projection defect in every unit direction, and any direction with smaller aggregate defect refutes
+that proposed drop.
+
+VERDICT: a sector/angle proof cannot certify a Door-IV coherence saving by displaying only local or
+qualitative angular spread. It must pay the full aggregate `ε · L¹` defect budget at the adversarial
+frequency. This is a constraint on possible anti-concentration arguments, not a CORE/cancellation/
+completion/moment-saving/capacity theorem.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSectorCoherence.lean`, new
+theorems `aggregate_rayProj_deficit_ge_eps_of_complexPieceCoherence_le_one_sub` and
+`not_complexPieceCoherence_le_one_sub_of_aggregate_rayProj_deficit_lt`, axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv sector exact escape threshold] every smaller angular-defect threshold must be witnessed (2026-06-20, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVSectorCoherence`. The previous consumer had
+a convenient fixed `ε/2` sector escape. This refinement generalizes it to the exact threshold: for every
+`δ < ε`, a claimed `ρ ≤ 1 - ε` drop forces some piece, in every unit direction, to lose more than
+`δ · ‖z‖` of ray projection.
+
+VERDICT: the local angular-spread obligation is sharp in threshold form. A proof of `1-ε` coherence
+saving must produce witnesses past every smaller defect budget `δ`; merely proving a nonzero or
+sub-threshold tilt is insufficient. No CORE, cancellation, completion, anti-concentration theorem,
+moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSectorCoherence.lean`, new
+theorem `exists_piece_rayProj_deficit_gt_delta_of_complexPieceCoherence_le_one_sub`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.
