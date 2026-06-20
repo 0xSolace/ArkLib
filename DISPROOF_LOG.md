@@ -8829,3 +8829,52 @@ Formal companion: `_DoorIVUnitPieceDeficit.lean` (abb71d5f8) — the exact unit-
 this probe instantiates, axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Probe scripts:
 `scripts/probes/probe_444_worstb_deficit_fraction_law.py`,
 `scripts/probes/probe_444_worstb_deficit_thin_beta.py`.
+
+## [doorIV-worstb-coherence-constant-prime-stable] worst-b coherence constant C(n,β,p)=ρ²(b*)·n/log(p/n) is PRIME-STABLE and TIGHTENS in the prize regime; NO lower tail (empirical ∀-field reinforcement) (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 probe (NON-discriminating but prize-consistent + lever-reinforcing). Complements
+the prior entry [doorIV-worstb-deficit-fraction-is-n-artifact], which found the cleanest worst-b
+invariant is the dimensionless prize-reference constant `C(n,β,p) = ρ²(b*) · n / log(p/n) ≈ 1.0–1.6`,
+but varied only ONE prime per (n,β). This probe measures the previously-unmeasured SPREAD of C over a
+window of primes `p ≡ 1 (mod n)`, `p ≥ n^β`, at FIXED (n,β).
+
+WHY IT MATTERS. The prize is ∀-field-universal (#444 c.154: no "good prime exists" pigeonhole escape).
+From the over-det / symmetric-function face this is already welded shut by a p-INDEPENDENCE mechanism
+(Lang–Weil dim-0, `_A002GoodPrimeJohnsonWeld`). This probe tests the SAME no-escape on the live
+door-(iv) object itself — the worst-b coset coherence ρ²(b*), NOT the over-det count — from the
+measurement side. A good-prime escape would require some prime making ρ²(b*) anomalously SMALL (a heavy
+LOWER tail of C at fixed (n,β)). The probe checks for exactly that tail.
+
+PROBE (`probe_444_worstb_const_prime_stability.py`; worst-b SCAN over all `m=(p−1)/n` quotient cosets,
+exact, no moment/energy/completion route; 12 primes per cell):
+
+    n   β    Cmin    Cmed    Cmax     CV     max/min
+   16   3   1.258   1.378   1.526   0.065    1.213
+   16   4   1.297   1.339   1.457   0.041    1.123
+   16   5   1.187   1.224   1.254   0.018    1.057
+   32   3   1.297   1.509   2.539   0.196    1.957
+   32   4   1.398   1.552   1.705   0.055    1.219
+
+VERDICT (honest, non-overclaiming):
+1. PRIME-STABILITY HOLDS and SHARPENS toward the prize regime. As β grows from the THICK window (β=3)
+   into the THIN prize window (β≈4–5), the spread of C COLLAPSES: at n=16, CV drops 0.065 → 0.041 →
+   0.018 and max/min drops 1.213 → 1.123 → 1.057. The deeper into the prize regime, the more rigidly
+   the worst-b coherence pins to a single constant across primes.
+2. NO LOWER TAIL. The minimum C is stable and bounded away from 0 in every cell (Cmin ≥ 1.19); there is
+   NO prime that makes ρ²(b*) anomalously small. The single visible outlier (p=32993, n=32, β=3,
+   C=2.54) is an UPPER outlier (coherence anomalously HIGH, helps the wall not the adversary) and lives
+   in the THICK β=3 non-prize window. This is the empirical signature that the good-prime escape is
+   dead at the door-(iv) object too: no prime hands the adversary an anomalously-cancelled worst
+   frequency.
+3. NON-DISCRIMINATING for a PROOF: prime-stability of an O(1) constant is consistent with (does not
+   prove) the prize bound M(n)=O(√(n log(p/n))). The constant could still drift slowly with n (the
+   25-yr wall lives in the n-asymptotics, not the prime-variation). No new exploitable arithmetic
+   structure in the worst-b set is exposed.
+
+Relation to existing in-tree facts: complements `_A002GoodPrimeJohnsonWeld` (good-prime no-escape on the
+over-det/symmetric-function face via Lang–Weil p-independence) by checking the SAME no-escape, from the
+empirical side, on the live door-(iv) coherence object ρ²(b*). Consistent: both say "no good prime."
+
+No CORE / cancellation / completion / moment / energy / capacity claim. This is a reproducible probe with
+a clear verdict (prime-stability + no lower tail), not a bound. Probe script:
+`scripts/probes/probe_444_worstb_const_prime_stability.py`.
