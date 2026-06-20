@@ -222,6 +222,18 @@ theorem normFloor_le_product_of_coherence_le_of_halfMass_le {A B : E} {T rho H :
     T ≤ rho * H := by
   exact le_trans hT (norm_le_of_coherence_le_of_halfMass_le h hrho0 hcoh hmass)
 
+/-- **Simultaneous-cap product obstruction.**  If the advertised coherence cap `rho` and half-mass cap
+`H` have product strictly below a known period floor `T`, then the pair of caps cannot hold together.
+This is the exact audit form for Door-IV split certificates: a coherence saving and an `L¹` half-mass
+saving are only meaningful if their product still reaches the observed worst-period floor. -/
+theorem not_coherence_and_halfMass_caps_of_normFloor_gt_product {A B : E} {T rho H : ℝ}
+    (h : 0 < halfMass A B) (hrho0 : 0 ≤ rho)
+    (hT : T ≤ ‖A + B‖) (hprod : rho * H < T) :
+    ¬ (coherence A B ≤ rho ∧ halfMass A B ≤ H) := by
+  rintro ⟨hcoh, hmass⟩
+  exact (not_lt_of_ge (normFloor_le_product_of_coherence_le_of_halfMass_le
+    h hrho0 hT hcoh hmass)) hprod
+
 /-- Fixed-drop product obstruction: if a proposed strict coherence drop `coherence ≤ 1 - ε` is paired
 with a half-mass ceiling `H`, then the product `(1 - ε) * H` must still reach any known period floor
 `T`.  If it does not, the claimed drop is incompatible with the exact Door-IV factorization. -/
@@ -271,6 +283,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_halfMass_of_normFloor_le_norm
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_product_of_coherence_le_of_halfMass_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_and_halfMass_caps_of_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_one_sub_of_normFloor_gt_drop_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_zero_of_halfMass_eq_zero
