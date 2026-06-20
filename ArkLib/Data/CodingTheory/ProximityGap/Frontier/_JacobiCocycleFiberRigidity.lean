@@ -158,4 +158,58 @@ theorem trivial_transform_offSupport_all_zero {n : ℕ} {r : Fin n → ℂ}
   exact ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.geom_sum_zero_of_pow_eq_one_of_ne_one
     (r i) (hroot i) (hoff i hi)
 
+/-- **The trivial-cocycle transform has sup exactly `n`.** Under the same one-on-support / all-off-support
+hypotheses as `trivial_transform_l2_delta`, the `L∞` norm over frequency offsets is the full triangle
+ceiling `n`. This is the sup-norm face of the delta baseline: the unique on-support fiber attains `n`, and
+all other fibers vanish. -/
+theorem trivial_transform_sup_delta {n : ℕ} (hn : 0 < n) (r : Fin n → ℂ)
+    (hroot : ∀ i, (r i) ^ n = 1) (i₀ : Fin n) (hi₀ : r i₀ = 1)
+    (hoff : ∀ i, i ≠ i₀ → r i ≠ 1) :
+    (univ.sup'
+        (by simpa [Finset.univ_nonempty_iff] using Fin.pos_iff_nonempty.mp hn)
+        (fun i => ‖∑ g ∈ range n, (r i) ^ g‖)) = (n : ℝ) := by
+  let hne : (univ : Finset (Fin n)).Nonempty := by
+    simpa [Finset.univ_nonempty_iff] using Fin.pos_iff_nonempty.mp hn
+  apply le_antisymm
+  · refine Finset.sup'_le hne _ ?_
+    intro i _
+    by_cases hi : i = i₀
+    · have hcard : (∑ g ∈ range n, (r i) ^ g) = (n : ℂ) := by
+        rw [hi, hi₀]; simp
+      rw [hcard, Complex.norm_natCast]
+    · have hzero : (∑ g ∈ range n, (r i) ^ g) = 0 :=
+        ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.geom_sum_zero_of_pow_eq_one_of_ne_one
+          (r i) (hroot i) (hoff i hi)
+      rw [hzero, norm_zero]
+      exact_mod_cast Nat.zero_le n
+  · have hcard : (∑ g ∈ range n, (r i₀) ^ g) = (n : ℂ) := by
+      rw [hi₀]; simp
+    calc (n : ℝ) = ‖∑ g ∈ range n, (r i₀) ^ g‖ := by rw [hcard, Complex.norm_natCast]
+      _ ≤ univ.sup' hne (fun i => ‖∑ g ∈ range n, (r i) ^ g‖) :=
+          Finset.le_sup' (fun i => ‖∑ g ∈ range n, (r i) ^ g‖) (Finset.mem_univ i₀)
+
+/-- **Concentration-ratio form: the trivial cocycle has `L² = L∞²`.** The Parseval mass over all frequency
+offsets equals the square of the `L∞` norm. Hence the trivial cocycle has concentration ratio exactly `1`:
+no `L²` mass is dispersed away from the worst fiber. Any Door-IV saving must make this equality fail for
+the genuine Jacobi cocycle. -/
+theorem trivial_transform_l2_eq_sup_sq {n : ℕ} (hn : 0 < n) (r : Fin n → ℂ)
+    (hroot : ∀ i, (r i) ^ n = 1) (i₀ : Fin n) (hi₀ : r i₀ = 1)
+    (hoff : ∀ i, i ≠ i₀ → r i ≠ 1) :
+    ∑ i, ‖∑ g ∈ range n, (r i) ^ g‖ ^ 2 =
+      ((univ.sup'
+        (by simpa [Finset.univ_nonempty_iff] using Fin.pos_iff_nonempty.mp hn)
+        (fun i => ‖∑ g ∈ range n, (r i) ^ g‖)) ^ 2) := by
+  rw [trivial_transform_l2_delta hn r hroot i₀ hi₀ hoff]
+  rw [trivial_transform_sup_delta hn r hroot i₀ hi₀ hoff]
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity
+
+/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; no extra axioms) -/
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.fiber_eq_card_iff_one
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.norm_fiber_eq_card_iff_one
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.norm_fiber_lt_card_of_ne_one
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.fiber_full_mass_forces_trivial_cocycle
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.trivial_transform_l2_delta
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.trivial_transform_offSupport_all_zero
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.trivial_transform_sup_delta
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity.trivial_transform_l2_eq_sup_sq

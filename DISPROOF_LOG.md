@@ -9266,3 +9266,19 @@ No CORE, cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`,
 `trivial_transform_l2_delta` (∑_i ‖fiber‖² = n²) + `trivial_transform_offSupport_all_zero`,
 axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
+
+## door-(iv) trivial-cocycle L∞ concentration ratio is exactly one (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleFiberRigidity.lean`. Prior
+bricks proved the trivial-cocycle geometric fiber is a delta and that its total `L²`/Parseval mass is `n²`
+on a single frequency. This refinement adds the missing sup-norm and concentration-ratio API:
+`trivial_transform_sup_delta` proves the trivial transform's frequency supremum is exactly `n`, and
+`trivial_transform_l2_eq_sup_sq` proves total `L²` mass equals `L∞²`.
+
+VERDICT: the degenerate/trivial cocycle has concentration ratio exactly `1`: all Parseval mass is carried by
+one fiber and no mass is dispersed into off-support frequencies. This pins the maximally-bad baseline any
+Door-IV Jacobi-cocycle dispersion theorem must break. It does not prove dispersion for the genuine Jacobi
+cocycle and makes no CORE, cancellation, completion, moment, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`, axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`.
