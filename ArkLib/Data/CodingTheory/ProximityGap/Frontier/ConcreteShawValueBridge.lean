@@ -109,4 +109,48 @@ theorem prizeBound_worstPeriod_iff_shawValue_le_of_pos {ψ : AddChar F ℂ} (G :
       ↔ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L ≤ C :=
   prizeBound_iff_shawValue_le_of_pos hn hL
 
+/-- **Sharp prize-regime Shaw-value floor at the TRUE bracket endpoint.** In the prize regime
+`n² ≤ q` (`q = n^β, β ≥ 2`), the sharp Parseval floor `√(n−1) ≤ M(μ_n)`
+(`worstPeriod_ge_sqrt_card_pred_of_sq_le`) normalizes to
+`√(1 − 1/n) / √L ≤ Sh(M(μ_n))`.
+
+The lower endpoint of the abstract Shaw-value bracket is exactly `1/√L` (`floor_bracket_eq`). This
+floor reaches it up to the factor `√(1−1/n) → 1`, i.e. on the REAL worst period the normalized Shaw
+value is bounded below by essentially the FULL bracket endpoint `1/√L` — sharper than the generic RMS
+floor and the `1/√(2L)` torsion floor, which only reach a constant fraction. The prize `Sh = O(1)` at
+`L = log(q/n)` still lives strictly above this floor; the LOWER side is pinned, the UPPER gap is the
+open prize. -/
+theorem shawValue_worstPeriod_sharp_floor {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) {L : ℝ} (hL : 0 < L) :
+    Real.sqrt (1 - 1 / (G.card : ℝ)) / Real.sqrt L
+      ≤ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L := by
+  have hnpos : (0 : ℝ) < (G.card : ℝ) := by linarith
+  have hs : 0 < prizeScale (G.card : ℝ) L := prizeScale_pos hnpos hL
+  -- normalized sharp floor: √(n−1)/scale ≤ Sh(M)
+  have hfloor : Real.sqrt ((G.card : ℝ) - 1) / prizeScale (G.card : ℝ) L
+      ≤ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L := by
+    unfold shawValue
+    exact div_le_div_of_nonneg_right
+      (worstPeriod_ge_sqrt_card_pred_of_sq_le hψ G hne hq1 hG1 hsq) (le_of_lt hs)
+  -- closed form: √(n−1)/√(nL) = √(1−1/n)/√L, via √(n−1)=√n·√(1−1/n) and √(nL)=√n·√L
+  have hsn : (0 : ℝ) < Real.sqrt (G.card : ℝ) := Real.sqrt_pos.2 hnpos
+  have hnum : Real.sqrt ((G.card : ℝ) - 1)
+      = Real.sqrt (G.card : ℝ) * Real.sqrt (1 - 1 / (G.card : ℝ)) := by
+    rw [← Real.sqrt_mul (le_of_lt hnpos)]
+    congr 1
+    field_simp
+  have hden : prizeScale (G.card : ℝ) L = Real.sqrt (G.card : ℝ) * Real.sqrt L := by
+    unfold prizeScale
+    rw [Real.sqrt_mul (le_of_lt hnpos) L]
+  have hendpoint : Real.sqrt ((G.card : ℝ) - 1) / prizeScale (G.card : ℝ) L
+      = Real.sqrt (1 - 1 / (G.card : ℝ)) / Real.sqrt L := by
+    rw [hnum, hden, mul_div_mul_left _ _ (ne_of_gt hsn)]
+  rw [hendpoint] at hfloor
+  exact hfloor
+
 end ProximityGap.Frontier.ConcreteShawValueBridge
+
+/-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ConcreteShawValueBridge.shawValue_worstPeriod_sharp_floor
