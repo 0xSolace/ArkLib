@@ -62,6 +62,22 @@ theorem sqrt_sub_le_linear {M t : ℝ} (hM : 0 < M) (ht0 : 0 ≤ t) (htM : t ≤
       ≤ Real.sqrt ((M - t / (2 * M)) ^ 2) := Real.sqrt_le_sqrt hsq
     _ = M - t / (2 * M) := Real.sqrt_sq hrhs_nonneg
 
+/-- **Reusable squared-deficit → first-power-deficit bridge.** If a complex phase sum has squared norm
+at most `M² − t`, then its FIRST-POWER deficit from the triangle ceiling `M` is at least `t/(2M)`. This
+is the normalized chord-conversion form used by the single-defect theorem below, and it is the generic
+Door-IV audit API for any proposed mechanism that first proves a squared deficit. -/
+theorem deficit_ge_of_normSq_le {M t : ℝ} {z : ℂ} (hM : 0 < M) (ht0 : 0 ≤ t)
+    (htM : t ≤ M ^ 2) (hz : Complex.normSq z ≤ M ^ 2 - t) :
+    t / (2 * M) ≤ M - ‖z‖ := by
+  have hnorm : ‖z‖ = Real.sqrt (Complex.normSq z) := by
+    rw [Complex.normSq_eq_norm_sq, Real.sqrt_sq (norm_nonneg _)]
+  have hsqrt_le : Real.sqrt (Complex.normSq z) ≤ Real.sqrt (M ^ 2 - t) :=
+    Real.sqrt_le_sqrt hz
+  have hlinear : Real.sqrt (M ^ 2 - t) ≤ M - t / (2 * M) :=
+    sqrt_sub_le_linear hM ht0 htM
+  rw [hnorm]
+  linarith
+
 /-- **Quantitative single-defect deficit (the explicit first-power drop).** Under the single-defect
 hypotheses (`γ ≡ 1` off one index `i₀`, `γ i₀ = w` unit, `w ≠ 1`, `M > 1`), the FIRST-POWER deficit
 is at least `(M − 1)(1 − Re w)/M`:
@@ -115,4 +131,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.sqrt_sub_le_linear
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.deficit_ge_of_normSq_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.single_defect_deficit_ge

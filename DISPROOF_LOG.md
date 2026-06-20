@@ -9354,3 +9354,20 @@ cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectDeficit.lean`,
 new theorems `normSq_baseline_plus_unit_eq` and `single_defect_normSq_eq`, axiom-clean with axioms contained
 in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) squared-deficit implies first-power deficit by chord conversion (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleSingleDefectQuantDeficit.lean`.
+The prior first-power single-defect theorem used a private concavity step to turn the exact squared deficit
+`M² - ‖S‖² ≥ t` into a first-power deficit. This refinement exposes that conversion as a reusable Door-IV
+audit API: if `Complex.normSq z ≤ M² - t`, with `0 ≤ t ≤ M²` and `0 < M`, then
+`t/(2M) ≤ M - ‖z‖`.
+
+VERDICT: any proposed Jacobi-cocycle dispersion mechanism that only produces a squared deficit must pay the
+explicit `1/(2M)` chord-conversion factor when translated to the first-power sup norm. This is bookkeeping
+for future door-(iv) claims, not a cancellation theorem. No CORE, completion, moment-saving, anti-concentration,
+or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
+new theorem `deficit_ge_of_normSq_le`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
