@@ -9282,3 +9282,19 @@ cocycle and makes no CORE, cancellation, completion, moment, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`, axiom-clean
 with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) single-defect phase loss is exactly the real-part deficit (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleSingleDefectDeficit.lean`.
+Prior brick proved a one-site off-aligned unit phase makes the phase sum strictly sub-saturating. This
+refinement pins the exact squared-deficit formula: `Complex.normSq ((M-1)+w) = M^2 - 2(M-1)(1-Re w)`, and
+lifts it to the single-defect phase-sum model.
+
+VERDICT: a one-defect Jacobi-cocycle saturation failure has no hidden aggregate/moment content. The entire
+loss is exactly the real-part defect of the lone off-aligned phase, scaled by `2(M-1)`. This is a constraint
+and audit identity for proposed dispersion mechanisms, not a lower bound at the prize scale. No CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectDeficit.lean`,
+new theorems `normSq_baseline_plus_unit_eq` and `single_defect_normSq_eq`, axiom-clean with axioms contained
+in `{propext, Classical.choice, Quot.sound}`.

@@ -54,6 +54,19 @@ theorem unit_ne_one_re_lt_one {w : ℂ} (hw : ‖w‖ = 1) (hne : w ≠ 1) : w.r
     have him : w.im = 0 := by nlinarith [sq_nonneg w.im]
     apply Complex.ext <;> simp [h, him]
 
+/-- **Exact planar deficit identity.** For a unit phase `w`, the squared norm of the one-defect
+baseline `(M−1)+w` equals `M² − 2(M−1)(1−Re w)`. Thus the deficit is exactly the missing real part of the
+single bad phase, with no hidden moment/completion input. -/
+theorem normSq_baseline_plus_unit_eq {M : ℝ} {w : ℂ} (hw : ‖w‖ = 1) :
+    Complex.normSq (((M - 1 : ℝ) : ℂ) + w) = M ^ 2 - 2 * (M - 1) * (1 - w.re) := by
+  have hns : Complex.normSq w = 1 := by
+    have := Complex.normSq_eq_norm_sq w; rw [this, hw]; norm_num
+  have hsq : w.re ^ 2 + w.im ^ 2 = 1 := by
+    simpa [Complex.normSq_apply, sq] using hns
+  simp only [Complex.normSq_apply, Complex.add_re, Complex.add_im, Complex.ofReal_re,
+    Complex.ofReal_im]
+  nlinarith
+
 /-- **Planar deficit bound.** For `M > 1` and a unit `w ≠ 1`, `‖(M − 1) + w‖ < M`. The missing real
 part `1 − Re w > 0` of `w` keeps the resultant strictly inside the radius-`M` circle. -/
 theorem norm_baseline_plus_unit_lt {M : ℝ} {w : ℂ}
@@ -74,6 +87,27 @@ theorem norm_baseline_plus_unit_lt {M : ℝ} {w : ℂ}
   calc Real.sqrt (Complex.normSq (((M - 1 : ℝ) : ℂ) + w))
         < Real.sqrt (M ^ 2) := Real.sqrt_lt_sqrt (Complex.normSq_nonneg _) key
     _ = M := by rw [Real.sqrt_sq (by linarith)]
+
+/-- **Single-defect squared deficit formula.** If a unit-phase family `γ` over `Fin M` equals the aligned
+baseline `1` at every index except a single `i₀` where `γ i₀ = w`, then the squared phase-sum deficit is
+exactly `2(M−1)(1−Re w)`. This is the arithmetic-audit form of the single-defect mechanism: the whole loss
+is the real-part defect of the lone off-aligned phase. -/
+theorem single_defect_normSq_eq {M : ℕ} (hM : 1 ≤ M) (i₀ : Fin M) (w : ℂ)
+    (hw : ‖w‖ = 1) (γ : Fin M → ℂ)
+    (hi : γ i₀ = w) (hrest : ∀ j, j ≠ i₀ → γ j = 1) :
+    Complex.normSq (phaseSum γ) =
+      (M : ℝ) ^ 2 - 2 * ((M : ℝ) - 1) * (1 - w.re) := by
+  have hsplit : phaseSum γ = (∑ j ∈ univ.erase i₀, γ j) + γ i₀ := by
+    unfold phaseSum
+    rw [Finset.sum_erase_add _ _ (mem_univ i₀)]
+  have hrestsum : (∑ j ∈ univ.erase i₀, γ j) = (((M : ℝ) - 1 : ℝ) : ℂ) := by
+    rw [Finset.sum_congr rfl (fun j hj => hrest j (Finset.ne_of_mem_erase hj))]
+    rw [Finset.sum_const, Finset.card_erase_of_mem (mem_univ i₀), Finset.card_univ,
+      Fintype.card_fin, nsmul_eq_mul, mul_one, Nat.cast_sub hM]
+    push_cast
+    ring
+  rw [hsplit, hrestsum, hi]
+  exact normSq_baseline_plus_unit_eq (M := (M : ℝ)) hw
 
 /-- **Single-defect strict deficit (the sharp converse).** If a unit-phase family `γ` over `Fin M`
 (`M > 1`) equals the aligned baseline `1` at every index except a single `i₀` where `γ i₀ = w` with
@@ -98,7 +132,9 @@ theorem single_defect_phaseSum_lt {M : ℕ} (hM : 1 < M) (i₀ : Fin M) (w : ℂ
 
 end ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit
 
-/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; no extra axioms) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit.unit_ne_one_re_lt_one
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit.normSq_baseline_plus_unit_eq
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit.norm_baseline_plus_unit_lt
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit.single_defect_normSq_eq
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectDeficit.single_defect_phaseSum_lt
