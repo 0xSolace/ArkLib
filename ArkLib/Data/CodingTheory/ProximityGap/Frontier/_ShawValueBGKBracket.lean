@@ -150,4 +150,32 @@ theorem shawValue_resonanceLever_le_floor {c n L : ℝ} (hn : 0 < n) (hL : 0 < L
   rw [div_le_div_iff₀ hsL hsL]
   nlinarith [hc, hsL]
 
+/-! ## Uniform-family form: the GENUINE prize `prize ⇔ Sh(n) = O(1/√L)` over admissible families
+
+`ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound` packages the BGK-*shaped* family bound
+`M ≤ C·√(n·L)` ⇔ `Sh ≤ C`.  The next rungs package the GENUINE prize family bound `M ≤ C·√n` ⇔
+`Sh ≤ C/√L` at every admissible thin instance — the uniform Shaw-value capstone for the actual prize
+target. -/
+
+/-- A uniform GENUINE-prize family bound by `C` across a parameter family: `M i ≤ C·√(n i)` at each `i`
+(the prize target uses `√n`, not the normalizer `√(n·L)`). -/
+def genuinePrizeFamilyBound {ι : Type*} (M n : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, M i ≤ C * Real.sqrt (n i)
+
+/-- **Uniform GENUINE-prize Shaw-value capstone.**  Under pointwise positive `n` and `L`, the uniform
+genuine-prize family bound `M i ≤ C·√(n i)` is exactly the uniform pointwise Shaw-value bound
+`shawValue (M i) (n i) (L i) ≤ C/√(L i)` at every instance.  This is the machine-checked arithmetic
+core of "genuine prize ⇔ Sh(n) = O(1/√L)" — the prize landing at the lower bracket endpoint scale, not
+the BGK-ceiling scale.  No cancellation estimate is hidden. -/
+theorem genuinePrizeFamilyBound_iff_shawValue {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    genuinePrizeFamilyBound M n C ↔
+      ∀ i, shawValue (M i) (n i) (L i) ≤ C / Real.sqrt (L i) := by
+  unfold genuinePrizeFamilyBound
+  constructor
+  · intro h i
+    exact (prize_iff_shawValue_le_div_sqrtL (hn i) (hL i)).1 (h i)
+  · intro h i
+    exact (prize_iff_shawValue_le_div_sqrtL (hn i) (hL i)).2 (h i)
+
 end ArkLib.ProximityGap.Frontier.ShawValueBGKBracket

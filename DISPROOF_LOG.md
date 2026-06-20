@@ -8292,3 +8292,19 @@ capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorems
 shawValue_resonanceLever_eq and shawValue_resonanceLever_le_floor, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [genuine-prize uniform family capstone] prize ⇔ Sh(n)=O(1/√L) over admissible thin families (2026-06-19)
+
+Lane: door-(iv) Lane 2 uniform-family capstone — EXTENDS my proven prize_iff_shawValue_le_div_sqrtL to
+the family setting. ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound packages the
+BGK-SHAPED family bound M<=C√(nL) ⇔ Sh<=C; the GENUINE prize uses √n. Added genuinePrizeFamilyBound
+(∀i, M i<=C√(n i)) and genuinePrizeFamilyBound_iff_shawValue (⇔ ∀i, Sh<=C/√(L i) pointwise).
+
+VERDICT: the genuine prize family bound M<=C√n at every admissible thin instance is exactly the uniform
+pointwise Shaw-value bound Sh<=C/√L — the prize landing at the LOWER bracket endpoint scale, not the
+BGK ceiling scale. Machine-checked arithmetic core of "genuine prize ⇔ Sh(n)=O(1/√L)". No cancellation
+estimate hidden; no CORE/anti-concentration/capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new def
+genuinePrizeFamilyBound and theorem genuinePrizeFamilyBound_iff_shawValue, axiom-clean with axioms
+contained in {propext, Classical.choice, Quot.sound}.
