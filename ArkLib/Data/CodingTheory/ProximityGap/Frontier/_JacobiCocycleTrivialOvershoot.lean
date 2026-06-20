@@ -84,8 +84,43 @@ theorem trivial_cocycle_overshoots_thin {C n logm : ℝ}
   push_neg
   exact hthin
 
+/-- **Strict overshoot is exactly the thin-threshold failure.** This is the strict companion to
+`trivial_dispersion_iff_thin_le`: the trivial baseline exceeds the prize ceiling precisely when
+`C²·log m < n`. It packages the Door-IV baseline gap as a strict inequality, with no genuine-cocycle
+claim. -/
+theorem trivial_strict_overshoot_iff {C n logm : ℝ}
+    (hn : 0 ≤ n) (hC : 0 ≤ C) (hlogm : 0 ≤ logm) :
+    C * Real.sqrt (n * logm) < n ↔ C ^ 2 * logm < n := by
+  constructor
+  · intro hgap
+    by_contra hnot
+    have hle : n ≤ C ^ 2 * logm := le_of_not_gt hnot
+    have hdisp : JacobiCocycleDispersion n C n (Real.exp logm) :=
+      (trivial_dispersion_iff_thin_le hn hC hlogm).2 hle
+    unfold JacobiCocycleDispersion at hdisp
+    rw [Real.log_exp] at hdisp
+    exact not_lt_of_ge hdisp hgap
+  · intro hthin
+    have hnot : ¬ JacobiCocycleDispersion n C n (Real.exp logm) :=
+      trivial_cocycle_overshoots_thin hn hC hlogm hthin
+    unfold JacobiCocycleDispersion at hnot
+    rw [Real.log_exp] at hnot
+    exact lt_of_not_ge hnot
+
+/-- **Positive additive gap at the trivial baseline.** In the thin regime the amount by which the
+trivial-cocycle spike exceeds the prize ceiling is strictly positive. This is only a baseline audit
+identity: the open work is still to make the genuine Jacobi cocycle disperse. -/
+theorem trivial_overshoot_gap_pos {C n logm : ℝ}
+    (hn : 0 ≤ n) (hC : 0 ≤ C) (hlogm : 0 ≤ logm) (hthin : C ^ 2 * logm < n) :
+    0 < n - C * Real.sqrt (n * logm) := by
+  have hgap : C * Real.sqrt (n * logm) < n :=
+    (trivial_strict_overshoot_iff hn hC hlogm).2 hthin
+  linarith
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_dispersion_iff_thin_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_cocycle_overshoots_thin
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_strict_overshoot_iff
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_overshoot_gap_pos

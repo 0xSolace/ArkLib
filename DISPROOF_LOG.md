@@ -9500,3 +9500,20 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalH
 axiom-clean (`{propext, Classical.choice, Quot.sound}`). New theorems: `sum_conjClosed_isReal` (conjugation-
 closed unit sums are real — the mechanism), `coherence_quantized_of_real` (coherence of two reals ∈ {-1,0,1}),
 `coherence_pm_one_of_real_ne` (= ±1 when both nonzero — no continuous slack).
+
+## door-(iv) trivial-cocycle strict overshoot threshold and positive gap (2026-06-20, g55)
+
+Lane 3 baseline constraint refinement in `_JacobiCocycleTrivialOvershoot`. The prior brick showed the
+trivial-baseline dispersion predicate reduces to `n ≤ C²·log m` and therefore fails in the thin regime.
+This refinement packages the strict form actually used by gap arguments:
+
+`C·√(n·log m) < n  ↔  C²·log m < n`,
+
+plus the additive gap statement `0 < n - C·√(n·log m)` under the thin-threshold hypothesis. This pins the
+strict amount the genuine Door-IV Jacobi cocycle must erase relative to the trivial spike. It is only a
+baseline audit identity, not a genuine-cocycle dispersion theorem and not a CORE/cancellation/completion/
+moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleTrivialOvershoot.lean`, new
+theorems `trivial_strict_overshoot_iff` and `trivial_overshoot_gap_pos`, axiom-clean with axioms contained
+in `{propext, Classical.choice, Quot.sound}`.
