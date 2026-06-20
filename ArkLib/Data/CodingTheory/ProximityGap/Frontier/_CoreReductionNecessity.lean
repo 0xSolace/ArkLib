@@ -113,6 +113,24 @@ theorem not_clears_johnson_of_BCHKS_fails
   -- `kNat - 1 < m*` with `kNat ≥ 1` ⟹ `kNat ≤ m*`.
   omega
 
+/-- **Johnson fold equivalence.** At a positive Johnson fold `kNat`, clearing the strict
+Johnson-side gate `m* < kNat` is equivalent to satisfying the BCHKS budget at the preceding fold
+`kNat - 1`.
+
+This is the consumer-facing form of `mStar_le_iff_BCHKS`: the Nat inequality `m* < kNat` is the same
+as `m* ≤ kNat - 1` when `kNat > 0`.  It is pure reduction bookkeeping and proves no new
+anti-concentration, CORE cancellation, or capacity claim. -/
+theorem clears_johnson_iff_BCHKS_at_prev_fold
+    (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
+    (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (n : ℕ)
+    (hex : ∃ m, D n m ≤ budget n)
+    (hmono : ∀ {a b : ℕ}, a ≤ b → D n b ≤ D n a)
+    (hident : ∀ m, D n m = Sigma (smap n) (rmap n m)) (kNat : ℕ) (hk_pos : 1 ≤ kNat) :
+    mStar D budget n hex < kNat ↔
+      BCHKSBudget Sigma (smap n) (rmap n (kNat - 1)) (budget n) := by
+  rw [← mStar_le_iff_BCHKS D budget Sigma smap rmap n hex hmono hident (kNat - 1)]
+  omega
+
 /-! ## Non-vacuity: the necessity gate fires on the concrete model. -/
 
 /-- **Non-vacuity of necessity.** On the concrete cascade `modelD` (`n = 16`), the fold `2` is over
@@ -133,3 +151,6 @@ example : (2 : ℕ) < mStar modelD (fun _ => 16) 16 ⟨3, by decide⟩ := by
     exact Nat.zero_le _
 
 end ArkLib.ProximityGap.CoreReductionComplete
+
+/-! ## Axiom audit (expected: no axioms or only theorem dependencies already allowed). -/
+#print axioms ArkLib.ProximityGap.CoreReductionComplete.clears_johnson_iff_BCHKS_at_prev_fold
