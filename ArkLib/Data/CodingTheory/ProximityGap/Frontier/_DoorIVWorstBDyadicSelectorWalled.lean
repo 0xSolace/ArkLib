@@ -128,6 +128,24 @@ theorem fixedRung_full_mass_forces_spike {a : Nat} (hist : Fin a → Nat)
   ⟨full_mass_exceeds_haar hist hfull hpos hthreshold,
    full_mass_has_massAtLeast hist hfull hmass⟩
 
+/-- **No hidden fixed rung behind a no-spike certificate.**  If the histogram has no rung satisfying
+the probe's combined spike predicate, then no rung can secretly carry all samples, provided the probe
+thresholds are in the honest regime: positive total sample count, the Haar-excess threshold is below
+the reciprocal Haar mass at every rung, and the absolute-mass threshold is at most full mass.
+
+This is the finite contrapositive used by the door-(iv) dyadic-selector wall: a true fixed-subtower
+worst-`b` law would force a visible histogram spike, so a verified no-spike sweep rules out not only
+"mostly fixed" selectors but also exact fixed-rung selectors. -/
+theorem no_full_mass_rung_of_no_fixedRungSpike {a : Nat} (hist : Fin a → Nat)
+    {total spikeNum spikeDen massNum massDen : Nat}
+    (hno : ¬ ∃ j : Fin a, FixedRungSpike hist total spikeNum spikeDen massNum massDen j)
+    (hpos : 0 < total)
+    (hthreshold : ∀ j : Fin a, spikeNum < spikeDen * 2 ^ (j.val + 1))
+    (hmass : massNum ≤ massDen) :
+    ∀ j : Fin a, hist j ≠ total := by
+  intro j hfull
+  exact hno ⟨j, fixedRung_full_mass_forces_spike hist hfull hpos (hthreshold j) hmass⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_fixedRungRule_of_two_rungs
@@ -135,3 +153,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_certificate_requires_spike
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.full_mass_exceeds_haar
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_full_mass_forces_spike
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_full_mass_rung_of_no_fixedRungSpike

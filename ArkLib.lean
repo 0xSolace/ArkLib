@@ -1513,6 +1513,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DonohoStarkTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorridorIcc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorTypeFiniteExhaustive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicDeviationDecayEnvelope
