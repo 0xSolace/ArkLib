@@ -136,6 +136,19 @@ theorem exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le {zs
     (zs := zs) (u := u) (c := 1 - ε / 2) (θ := 1 - ε) hu hden hcoh ?_
   linarith
 
+/-- General epsilon/drop consumer: a `ρ ≤ 1 - ε` coherence saving forces, for every unit
+ray and every smaller budget `δ < ε`, at least one piece to lose more than a `δ`-fraction of its
+norm in ray projection.  The earlier `ε / 2` statement is one convenient corollary; this is the
+exact probe-facing threshold. -/
+theorem exists_piece_rayProj_deficit_gt_delta_of_complexPieceCoherence_le_one_sub {zs : List ℂ}
+    {u : ℂ} {δ ε : ℝ} (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum) (hδε : δ < ε)
+    (hcoh : complexPieceCoherence zs ≤ 1 - ε) :
+    ∃ z ∈ zs, δ * ‖z‖ < ‖z‖ - rayProj u z := by
+  obtain ⟨z, hz, hproj⟩ := exists_piece_rayProj_lt_of_complexPieceCoherence_le
+    (zs := zs) (u := u) (c := 1 - δ) (θ := 1 - ε) hu hden hcoh (by linarith)
+  refine ⟨z, hz, ?_⟩
+  nlinarith
+
 /-- The list of ray-projection deficits sums to the total `L¹` mass minus the projection of the
 combined vector. -/
 theorem rayProj_deficit_sum (u : ℂ) (zs : List ℂ) :
@@ -203,6 +216,8 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
   ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_of_complexPieceCoherence_le
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_one_sub_half_eps_of_complexPieceCoherence_le
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_deficit_gt_delta_of_complexPieceCoherence_le_one_sub
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_deficit_sum
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le
