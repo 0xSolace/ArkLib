@@ -6,6 +6,7 @@ Authors: ArkLib Contributors (#444)
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Basic
+import Mathlib.Data.Fintype.Card
 
 set_option autoImplicit false
 set_option linter.style.longLine false
@@ -231,6 +232,71 @@ theorem superLevel_ne_singleton_of_nontrivial_sigma_smul
     simpa [hsingle] using hgb
   exact hmove (by simpa using hgb_mem_singleton)
 
+/-! ### Finite cardinal floor: a near-max threshold contains a full free orbit -/
+
+/-- Finite version of `superLevel`, used to state cardinal floors without quotient machinery. -/
+noncomputable def superLevelFinset [Fintype β] (f : β → ℝ) (c : ℝ) : Finset β :=
+  Finset.univ.filter fun b => c ≤ f b
+
+/-- Membership in the finite super-level set is the same as membership in `superLevel`. -/
+theorem mem_superLevelFinset [Fintype β] {f : β → ℝ} {c : ℝ} {b : β} :
+    b ∈ superLevelFinset f c ↔ b ∈ superLevel f c := by
+  classical
+  simp [superLevelFinset, superLevel]
+
+/-- **Orbit-size cardinal floor.**  In a finite free orbit, one near-max frequency forces at least
+`|G|` near-max frequencies: the entire orbit injects into the finite super-level set.  This is the
+cardinality form of the Door-IV worst-`b` coset-closure mechanism (`|W|` is forced to pay whole
+cosets before any finer arithmetic selector can act). -/
+theorem card_group_le_superLevelFinset_of_free_orbit
+    [Fintype G] [Fintype β]
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c)
+    (hfree : ∀ {g h : G}, g • b = h • b → g = h) :
+    Fintype.card G ≤ (superLevelFinset f c).card := by
+  classical
+  let φ : G → β := fun g => g • b
+  have hφinj : Function.Injective φ := by
+    intro g h hgh
+    exact hfree hgh
+  have hsubset : (Finset.univ.image φ) ⊆ superLevelFinset f c := by
+    intro x hx
+    rcases Finset.mem_image.mp hx with ⟨g, _hg, rfl⟩
+    exact (mem_superLevelFinset (f := f) (c := c)).2
+      (smul_mem_superLevel_of_orbitConstant (G := G) hf c g hb)
+  calc
+    Fintype.card G = (Finset.univ.image φ).card := by
+      symm
+      exact Finset.card_image_of_injective Finset.univ hφinj
+    _ ≤ (superLevelFinset f c).card := Finset.card_le_card hsubset
+
+/-- Combined coset/sign cardinal floor.  If the generated signed-coset map `g ↦ σ(g•b)` is
+injective, then a threshold set containing `b` contains at least `|G|` signed coset mates.  Thus the
+worst-frequency selector cannot be point-sized or sub-coset-sized unless this whole signed fiber
+collapses. -/
+theorem card_group_le_superLevelFinset_of_free_sigma_orbit
+    [Fintype G] [Fintype β]
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f)
+    (hσ : InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c)
+    (hfree : ∀ {g h : G}, σ (g • b) = σ (h • b) → g = h) :
+    Fintype.card G ≤ (superLevelFinset f c).card := by
+  classical
+  let φ : G → β := fun g => σ (g • b)
+  have hφinj : Function.Injective φ := by
+    intro g h hgh
+    exact hfree hgh
+  have hsubset : (Finset.univ.image φ) ⊆ superLevelFinset f c := by
+    intro x hx
+    rcases Finset.mem_image.mp hx with ⟨g, _hg, rfl⟩
+    exact (mem_superLevelFinset (f := f) (c := c)).2
+      (sigma_smul_mem_superLevel_of_orbitConstant hf hσ c g hb)
+  calc
+    Fintype.card G = (Finset.univ.image φ).card := by
+      symm
+      exact Finset.card_image_of_injective Finset.univ hφinj
+    _ ≤ (superLevelFinset f c).card := Finset.card_le_card hsubset
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
@@ -240,3 +306,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.image_sigma_smul_superLevel
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_smul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_sigma_smul
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_sigma_orbit

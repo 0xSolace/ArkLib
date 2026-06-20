@@ -9906,3 +9906,20 @@ not a Door-IV cancellation theorem. No CORE/cancellation/moment/completion/anti-
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`, axiom-clean.
 New theorem: `scaled_constant_family_eq_constant_iff`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) worst-b coset closure has a finite orbit-size cardinal floor (2026-06-20, g55)
+
+Lane: Door-IV Lane 1 worst-frequency selector structure, extending `_DoorIVWorstBCosetClosed` without
+re-probing the already mapped worst-b arithmetic. The earlier file proved super-level membership is
+coset/sign invariant and cannot isolate a singleton when a nontrivial mate exists. This refinement records
+the finite cardinal consequence used by the probes: in a finite free orbit, one near-max frequency forces
+at least `|G|` near-max frequencies, and the same holds for the signed coset fiber `g ↦ σ(g•b)` when that
+fiber is injective.
+
+VERDICT: the worst-b selector must pay whole coset/sign fibers before any finer arithmetic lever can act.
+This is a selector-granularity/cardinality constraint only. It does not bound `M(n)`, does not prove CORE,
+and does not use moment, completion, or capacity reasoning.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new theorems
+`card_group_le_superLevelFinset_of_free_orbit` and `card_group_le_superLevelFinset_of_free_sigma_orbit`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
