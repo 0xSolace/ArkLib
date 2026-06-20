@@ -9776,3 +9776,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMo
 axiom-clean. New theorems: `dominance_sum_negative_n32`,
 `wrap_gap_too_small_to_repair_dominance_n32`, and `not_dominance_premise_n32`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) ρ ladder has sustained local increase through ceiling break (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 normalized-coordinate refinement of `_RhoAntitoneFailsThinPrime`. The previous
+kernel entry separated the first antitone failure `ρ(3)<ρ(4)` from the later ceiling failure `ρ(5)>1`.
+This refinement pins the intervening step too: at the same proper thin prize-regime prime,
+`ρ(4)<ρ(5)`, hence `ρ(3)<ρ(4)<ρ(5)` and the ladder increases continuously into the ceiling break.
+
+VERDICT: the antitone route is not defeated by a one-step numerical artifact. The local normalized
+ladder itself moves the wrong direction on consecutive rungs before crossing the Wick/char-zero ceiling.
+This remains only a route obstruction, not a CORE counterexample or cancellation claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`,
+axiom-clean. New theorems: `rho5_gt_rho4_normalized` and `rho3_lt_rho4_lt_rho5_normalized`. Axioms are
+contained in `{propext, Classical.choice, Quot.sound}`.
