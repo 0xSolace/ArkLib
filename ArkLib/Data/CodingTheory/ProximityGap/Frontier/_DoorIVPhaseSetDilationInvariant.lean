@@ -855,6 +855,110 @@ theorem not_addKSumMaxFiber_scalar_improvement {k : ℕ}
   have heq := addKSumMaxFiber_phaseSet_indep_of_scalar (k := k) (S := S) hb₁ hb₂
   exact not_lt_of_ge hgood (by simpa [heq] using hbad)
 
+/-! ## The multi-dimensional small-ball lever: a SYSTEM of additive-linear forms is b-blind
+
+A genuine Halász / Littlewood–Offord anti-concentration lever for the phase set is `m`-dimensional:
+it measures the JOINT fiber `{v ∈ S^k : A·v = t}` of a SYSTEM of `m` additive-linear forms
+(`A : Fin m → Fin k → F`, vector target `t : Fin m → F`), not a single scalar form. The single-form
+`addLinearPatternCount` does NOT subsume this multi-dimensional case. We close the entire
+multi-dimensional additive small-ball class in one statement: every such joint count is dilation
+invariant (after rescaling the vector target), hence b-blind on the worst-frequency phase set.
+This matches the probe `scripts/probes/probe_dooriv_multiform_smallball_blind.py` (PROPER 2-power
+`μ_n`, p≫n³, structured primes, `m=2,k=3`, multiple nonzero dilates × targets, never n=q−1), which
+found the joint system count invariant under every nonzero dilation. -/
+
+/-- The joint solution set of a SYSTEM of `m` additive-linear forms `A : Fin m → Fin k → F` over a
+finite set `S`, at vector target `t : Fin m → F`: the tuples `v : Fin k → F` with all coordinates in
+`S` simultaneously satisfying `∑ⱼ A r j · v j = t r` for every row `r`. Its cardinality is the
+`m`-dimensional Littlewood–Offord / Halász small-ball count for the system. -/
+def addSystemPatternCount {m k : ℕ} (S : Finset F) (A : Fin m → Fin k → F) (t : Fin m → F) : ℕ :=
+  ((Finset.univ : Finset (Fin k → F)).filter
+    (fun v => (∀ i : Fin k, v i ∈ S) ∧ (∀ r : Fin m, (∑ j : Fin k, A r j * v j) = t r))).card
+
+/-- **A SYSTEM of additive-linear forms is dilation-invariant** (after rescaling the vector target).
+Multiplication by a nonzero `λ` transports the joint solution set for `S` and target `t` bijectively
+onto the one for `λS` and target `λt`, simultaneously across all `m` rows. Hence the multi-dimensional
+Halász / Littlewood–Offord small-ball count of the phase set is frequency-blind. -/
+theorem addSystemPatternCount_smul_eq {m k : ℕ} (S : Finset F) (A : Fin m → Fin k → F)
+    {lam : F} (t : Fin m → F) (hlam : lam ≠ 0) :
+    addSystemPatternCount (S.image (fun x => lam * x)) A (fun r => lam * t r) =
+      addSystemPatternCount S A t := by
+  classical
+  unfold addSystemPatternCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun v i => lam⁻¹ * v i)
+    (fun v i => lam * v i)
+    ?_ ?_ ?_ ?_
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hlin⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i
+      obtain ⟨x, hx, hvx⟩ := Finset.mem_image.mp (hmem i)
+      simpa [← hvx, hcdiv] using hx
+    · intro r
+      have hscaled : lam * (∑ j : Fin k, A r j * (lam⁻¹ * v j)) = lam * t r := by
+        calc
+          lam * (∑ j : Fin k, A r j * (lam⁻¹ * v j))
+              = ∑ j : Fin k, A r j * v j := by
+                rw [Finset.mul_sum]
+                apply Finset.sum_congr rfl
+                intro j _
+                field_simp [hlam]
+          _ = lam * t r := hlin r
+      exact mul_left_cancel₀ hlam hscaled
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hlin⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i
+      exact Finset.mem_image.mpr ⟨v i, hmem i, rfl⟩
+    · intro r
+      calc
+        ∑ j : Fin k, A r j * (lam * v j)
+            = lam * (∑ j : Fin k, A r j * v j) := by
+              rw [Finset.mul_sum]
+              apply Finset.sum_congr rfl
+              intro j _
+              ring
+        _ = lam * t r := by rw [hlin r]
+  · intro v _
+    ext i
+    simp [hcmul]
+  · intro v _
+    ext i
+    simp [hcdiv]
+
+/-- **Two nonzero frequency dilates have identical joint system small-ball profiles** (after the
+vector-target rescaling). The entire multi-dimensional additive small-ball / Halász family lives on
+the undilated subgroup and cannot single out the adversarial worst frequency. This subsumes the
+single-form `addLinearPatternCount_phaseSet_indep_of_scalar` (take `m = 1`). -/
+theorem addSystemPatternCount_phaseSet_indep_of_scalar {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (t : Fin m → F) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addSystemPatternCount (S.image (fun x => b₁ * x)) A (fun r => b₁ * t r) =
+      addSystemPatternCount (S.image (fun x => b₂ * x)) A (fun r => b₂ * t r) := by
+  rw [addSystemPatternCount_smul_eq S A t hb₁, addSystemPatternCount_smul_eq S A t hb₂]
+
+/-- **No strict scalar improvement for the multi-dimensional small-ball count.** If one nonzero
+frequency dilate makes the joint system fiber exceed a proposed threshold `C`, no other nonzero
+dilate can satisfy `≤ C` at the rescaled target. The adversarial worst `b` cannot tune the
+multi-dimensional Halász small-ball lever to beat the typical value: it is genuinely frequency-blind.
+This is the multi-form analogue of `not_addLinearPatternMaxFiber_scalar_improvement`, and locks the
+full `m`-dimensional additive small-ball class as a dead door-(iv) lever. -/
+theorem not_addSystemPatternCount_scalar_improvement {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (t : Fin m → F) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addSystemPatternCount (S.image (fun x => b₁ * x)) A (fun r => b₁ * t r)) :
+    ¬ addSystemPatternCount (S.image (fun x => b₂ * x)) A (fun r => b₂ * t r) ≤ C := by
+  intro hgood
+  have heq := addSystemPatternCount_phaseSet_indep_of_scalar (S := S) A t hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
@@ -903,3 +1007,8 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber_phaseSet_indep_of_scalar
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addKSumMaxFiber_scalar_improvement
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternCount_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternCount_phaseSet_indep_of_scalar
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternCount_scalar_improvement
