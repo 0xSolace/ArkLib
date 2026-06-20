@@ -193,6 +193,43 @@ theorem norm_sum_sq_div_eq_iff_deficitFraction_eq {zs : List ℂ} (ε : ℝ) :
   unfold deficitFraction
   constructor <;> intro h <;> linarith
 
+/-- Bottom endpoint: zero deficit fraction is exactly saturation of the trivial coherence ceiling. -/
+theorem deficitFraction_eq_zero_iff_norm_sum_sq_eq_length_sq {zs : List ℂ} (hne : zs ≠ []) :
+    deficitFraction zs = 0 ↔ ‖zs.sum‖ ^ 2 = (zs.length : ℝ) ^ 2 := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  have hlsq : (0 : ℝ) < (zs.length : ℝ) ^ 2 := by positivity
+  unfold deficitFraction
+  constructor
+  · intro h
+    have hdiv : ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 = 1 := by linarith
+    field_simp [hlsq.ne'] at hdiv
+    exact hdiv
+  · intro h
+    rw [h]
+    field_simp [hlsq.ne']
+    ring
+
+/-- Top endpoint: full deficit fraction is exactly zero resultant norm. -/
+theorem deficitFraction_eq_one_iff_norm_sum_eq_zero {zs : List ℂ} (hne : zs ≠ []) :
+    deficitFraction zs = 1 ↔ ‖zs.sum‖ = 0 := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  have hlsq : (0 : ℝ) < (zs.length : ℝ) ^ 2 := by positivity
+  unfold deficitFraction
+  constructor
+  · intro h
+    have hsq : ‖zs.sum‖ ^ 2 = 0 := by
+      have hdiv : ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 = 0 := by linarith
+      field_simp [hlsq.ne'] at hdiv
+      simpa using hdiv
+    exact sq_eq_zero_iff.mp hsq
+  · intro h
+    rw [h]
+    norm_num
+
 end ProximityGap.Frontier.DoorIVUnitPieceDeficit
 
 #print axioms
@@ -221,3 +258,7 @@ end ProximityGap.Frontier.DoorIVUnitPieceDeficit
   ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_lt_iff_deficitFraction_gt
 #print axioms
   ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_eq_iff_deficitFraction_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_eq_zero_iff_norm_sum_sq_eq_length_sq
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_eq_one_iff_norm_sum_eq_zero
