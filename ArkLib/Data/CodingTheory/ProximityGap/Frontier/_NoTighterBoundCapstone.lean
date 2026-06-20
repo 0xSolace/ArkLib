@@ -139,7 +139,7 @@ theorem moments_through_five_do_not_determine_sup :
       simp only [etaPTEa, Matrix.cons_val]; norm_num
     intro j
     rw [hb0]
-    fin_cases j <;> (simp only [etaPTEb, Matrix.cons_val]; norm_num)
+    fin_cases j <;> (simp only [etaPTEb]; norm_num [Matrix.cons_val])
 
 /-! ## Failure mode (3): only `L²`/RMS — re-export the moment-depth floor
 
@@ -186,9 +186,28 @@ theorem noTighterBound_from_symmetric_or_L2 :
   intro ι _ _ _ r hr g hg S hS
   exact onlyL2_method_floor hr g hg hS
 
+/-- **No-tighter-bound capstone, STRENGTHENED at failure mode 1.**  Same negative structural statement
+as `noTighterBound_from_symmetric_or_L2`, but with the `b`-invariance face sharpened to the
+order-`5` Prouhet-Tarry-Escott witness: a `b`-symmetric statistic blind to the sup survives matching
+*all* of the first five power sums (not merely the first two).  Bundled with the depth-`r` `L²` floor
+for every `r`.  One citation surface for "the symmetric-moment direction provably fails even through
+order 5, and the `L²`/RMS direction fails at every depth". -/
+theorem noTighterBound_strengthened :
+    (∃ (η η' : Fin 6 → ℝ) (b₀ : Fin 6),
+        (∑ i, η i = ∑ i, η' i) ∧ (∑ i, (η i) ^ 2 = ∑ i, (η' i) ^ 2) ∧
+        (∑ i, (η i) ^ 3 = ∑ i, (η' i) ^ 3) ∧ (∑ i, (η i) ^ 4 = ∑ i, (η' i) ^ 4) ∧
+        (∑ i, (η i) ^ 5 = ∑ i, (η' i) ^ 5) ∧ (∀ j, |η' j| < |η b₀|)) ∧
+    (∀ {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty ι] {r : ℕ}, 1 ≤ r → ∀ (g : ℝ → ℝ),
+        (∀ (η : ι → ℝ) (b : ι), |η b| ≤ g (∑ i, (η i) ^ (2 * r))) →
+        ∀ {S : ℝ}, 0 ≤ S → Real.sqrt S ≤ g (S ^ r)) := by
+  refine ⟨moments_through_five_do_not_determine_sup, ?_⟩
+  intro ι _ _ _ r hr g hg S hS
+  exact onlyL2_method_floor hr g hg hS
+
 end ProximityGap.Frontier.NoTighterBoundCapstone
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.NoTighterBoundCapstone.secondMoment_does_not_determine_sup
 #print axioms ProximityGap.Frontier.NoTighterBoundCapstone.onlyL2_method_floor
 #print axioms ProximityGap.Frontier.NoTighterBoundCapstone.noTighterBound_from_symmetric_or_L2
+#print axioms ProximityGap.Frontier.NoTighterBoundCapstone.noTighterBound_strengthened

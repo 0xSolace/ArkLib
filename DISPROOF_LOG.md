@@ -8369,3 +8369,17 @@ concentration/capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorem
 doorIV_sharp_corridor_capstone, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [no-tighter-bound strengthened bundle] mode-1 sharpened to order-5 PTE in one capstone (2026-06-19)
+
+Lane: door-(iv)/#407 no-tighter-bound capstone — assembles my proven order-5 PTE witness (sweep
+de04cfa75) into the combined negative-structural capstone. noTighterBound_strengthened bundles: the
+order-5 PTE b-invariance witness (a b-symmetric statistic blind to the sup survives matching ALL of
+the first five power sums) with the depth-r L² floor for every r. One citation surface for "the
+symmetric-moment direction provably fails even through order 5, and the L²/RMS direction fails at every
+depth". Also cleaned a leftover unused-simp-arg linter warning in the order-5 witness proof. Pure
+assembly; no CORE/cancellation/anti-concentration/capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoTighterBoundCapstone.lean, new theorem
+noTighterBound_strengthened, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
