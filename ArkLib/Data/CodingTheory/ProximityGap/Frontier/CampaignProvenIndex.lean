@@ -26,6 +26,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVValueShiftHistogram
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundMarkovVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -100,6 +101,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_cosetInvariant_blind_to_order_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_cosetHitting_selector_bound_iff_global_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_strict_selector_bound_misses_coset_export` | obstruction | DoorIVCoherenceOrderBlind |
+| `doorIV_additiveEnergyExcess_eq_zero_iff_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
+| `doorIV_no_positive_additiveEnergyExcess_of_subset_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
+| `doorIV_positive_additiveEnergyExcess_iff_not_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -717,6 +721,43 @@ theorem doorIV_strict_selector_bound_misses_coset_export {G : Type*} [Group G]
   _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.exists_coset_missed_of_strict_selector_bound
     (H := H) (f := f) hf hbound hstrict
 
+/-! ## Door-IV worst-b Sidon/no energy-excess obstruction. Scope: **obstruction**.
+
+These exports make the exact Sidon-floor constraint reusable from the permanent index. On a Sidon
+worst-frequency representative set, the additive-energy excess above `2|G|²-|G|` is exactly zero,
+and this remains true on every subset. Thus an additive-energy/sum-product lever must first prove
+non-Sidon structure; when the probe-facing object is Sidon, the route has no positive energy budget
+to grip. Route refutation only; no CORE claim. -/
+
+/-- **[obstruction, DoorIVWorstBSidonNoEnergyExcess]** The additive-energy excess above the Sidon
+floor vanishes exactly for Sidon sets. This pins the probe report `E(W)=2|W|²-|W|` to a kernel
+checked no-excess statement. -/
+theorem doorIV_additiveEnergyExcess_eq_zero_iff_sidon_export {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] (G : Finset F) :
+    ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess G = 0 ↔
+      ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet G :=
+  ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_eq_zero_iff_sidon G
+
+/-- **[obstruction, DoorIVWorstBSidonNoEnergyExcess]** Sidon-ness is hereditary for this no-go:
+every subset of a Sidon worst-b representative set has zero positive additive-energy budget above
+the Sidon floor. Restricting to a subcollection cannot resurrect an additive-energy lever. -/
+theorem doorIV_no_positive_additiveEnergyExcess_of_subset_sidon_export {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] {G H : Finset F}
+    (hG : ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet G) (hHG : H ⊆ G) :
+    ∀ B : ℕ, 0 < B →
+      ¬ (B ≤ ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess H) :=
+  ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_subset_sidon
+    hG hHG
+
+/-- **[obstruction, DoorIVWorstBSidonNoEnergyExcess]** Positive additive-energy excess is exactly
+non-Sidon structure. Any door-(iv) certificate demanding positive energy excess is therefore a
+certificate that the worst-b object is not Sidon, contrary to the pinned Sidon-floor probe regime. -/
+theorem doorIV_positive_additiveEnergyExcess_iff_not_sidon_export {F : Type*}
+    [Field F] [Fintype F] [DecidableEq F] (G : Finset F) :
+    0 < ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess G ↔
+      ¬ ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet G :=
+  ArkLib.ProximityGap.SubgroupGaussSumMoment.positive_additiveEnergyExcess_iff_not_sidon G
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -761,6 +802,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_cosetInvariant_blind_to_order_export
 #print axioms doorIV_cosetHitting_selector_bound_iff_global_export
 #print axioms doorIV_strict_selector_bound_misses_coset_export
+#print axioms doorIV_additiveEnergyExcess_eq_zero_iff_sidon_export
+#print axioms doorIV_no_positive_additiveEnergyExcess_of_subset_sidon_export
+#print axioms doorIV_positive_additiveEnergyExcess_iff_not_sidon_export
 #print axioms two_faces_are_one_wall_export
 #print axioms noFifthDoor_forces_doorIV_export
 #print axioms prizeCertifying_subset_doorIV_export
