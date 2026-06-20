@@ -138,6 +138,79 @@ theorem rayProj_lt_norm_of_rayPerp_ne_zero {u z : ℂ} (hu : ‖u‖ = 1)
   have hfull : ‖z‖ = rayProj u z := le_antisymm hnot hle
   exact hperp (rayPerp_eq_zero_of_no_deficit hu hfull)
 
+/-- Real projection is additive (companion to `rayPerp_add`). -/
+theorem rayProj_add (u z w : ℂ) : rayProj u (z + w) = rayProj u z + rayProj u w := by
+  simp [rayProj, mul_add]
+
+/-- Real projection is additive over a finite list. -/
+theorem rayProj_list_sum (u : ℂ) (zs : List ℂ) :
+    rayProj u zs.sum = (zs.map (rayProj u)).sum := by
+  induction zs with
+  | nil => simp [rayProj]
+  | cons z zs ih =>
+      simp [rayProj_add, ih]
+
+/-! ### Resultant-frame structure
+
+The natural adversarial direction for a list `zs` is its own resultant `R = Σ z_i`, i.e.
+`u = R / ‖R‖`.  In that frame the resultant is exactly on the ray (`rayProj = ‖R‖`, `rayPerp = 0`),
+so the per-piece transverse components form a **signed set summing to zero** (forced cancellation
+structure), and the per-piece projection deficits sum to exactly `(1 - ρ)·L¹` where `ρ = ‖R‖/L¹` is
+the coherence.  These are the exact list-level shape of "a coherence deficit is an aggregate angular
+obligation". -/
+
+/-- The frame product `conj(R/‖R‖) · R` evaluates to the real number `‖R‖` (as a complex value). -/
+theorem frameProd_self_eq_norm {R : ℂ} (hR : R ≠ 0) :
+    starRingEnd ℂ (R / (‖R‖ : ℂ)) * R = (‖R‖ : ℂ) := by
+  have hRn : (‖R‖ : ℂ) ≠ 0 := by
+    simpa [Complex.ofReal_eq_zero, norm_eq_zero] using hR
+  rw [map_div₀, Complex.conj_ofReal, div_mul_eq_mul_div]
+  have hmul : starRingEnd ℂ R * R = (Complex.normSq R : ℂ) := by
+    rw [mul_comm]; exact Complex.mul_conj R
+  rw [hmul]
+  have hns : (Complex.normSq R : ℂ) = (‖R‖ : ℂ) * (‖R‖ : ℂ) := by
+    rw [Complex.normSq_eq_norm_sq]; push_cast; ring
+  rw [hns, mul_div_assoc, div_self hRn, mul_one]
+
+/-- In the resultant's own frame `u = R/‖R‖`, the projection of `R` is its full norm. -/
+theorem rayProj_self_eq_norm {R : ℂ} (hR : R ≠ 0) :
+    rayProj (R / (‖R‖ : ℂ)) R = ‖R‖ := by
+  unfold rayProj
+  rw [frameProd_self_eq_norm hR, Complex.ofReal_re]
+
+/-- In the resultant's own frame `u = R/‖R‖`, the resultant has zero transverse component
+(`R` lies exactly on its own ray). -/
+theorem rayPerp_self_eq_zero {R : ℂ} (hR : R ≠ 0) :
+    rayPerp (R / (‖R‖ : ℂ)) R = 0 := by
+  unfold rayPerp
+  rw [frameProd_self_eq_norm hR, Complex.ofReal_im]
+
+/-- **Resultant-frame transverse cancellation.**  Choosing `u = R/‖R‖` (the resultant's own
+direction), the per-piece transverse components sum to zero:
+`Σ rayPerp u z_i = 0`.  Thus any genuine per-piece angular spread at this natural adversarial
+frame is *signed and cancelling*, not free; an anti-concentration method must control this signed
+transverse set, it cannot merely subdivide. -/
+theorem sum_rayPerp_resultant_frame_eq_zero (zs : List ℂ) (hR : zs.sum ≠ 0) :
+    (zs.map (rayPerp (zs.sum / (‖zs.sum‖ : ℂ)))).sum = 0 := by
+  rw [← rayPerp_list_sum]
+  exact rayPerp_self_eq_zero hR
+
+/-- **Resultant-frame deficit budget (exact).**  In the resultant frame `u = R/‖R‖`, the total
+per-piece projection deficit equals exactly `L¹ - ‖R‖` where `L¹ = Σ ‖z_i‖`.  Equivalently it is
+`(1 - ρ)·L¹` with coherence `ρ = ‖R‖/L¹`: the coherence deficit is *exactly* the aggregate
+projection deficit at the natural adversarial frame, with no slack. -/
+theorem sum_deficit_resultant_frame_eq (zs : List ℂ) (hR : zs.sum ≠ 0) :
+    (zs.map (fun z => ‖z‖ - rayProj (zs.sum / (‖zs.sum‖ : ℂ)) z)).sum
+      = (zs.map norm).sum - ‖zs.sum‖ := by
+  have hsplit : ∀ (u : ℂ) (ws : List ℂ),
+      (ws.map (fun z => ‖z‖ - rayProj u z)).sum
+        = (ws.map norm).sum - (ws.map (rayProj u)).sum := by
+    intro u ws
+    induction ws with
+    | nil => simp
+    | cons z ws ih => simp only [List.map_cons, List.sum_cons, ih]; ring
+  rw [hsplit, ← rayProj_list_sum, rayProj_self_eq_norm hR]
+
 end ProximityGap.Frontier.DoorIVTransverseSpread
 
 #print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp_add
@@ -146,3 +219,10 @@ end ProximityGap.Frontier.DoorIVTransverseSpread
 #print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp_sq_le_two_norm_mul_deficit
 #print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp_eq_zero_of_no_deficit
 #print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayProj_lt_norm_of_rayPerp_ne_zero
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayProj_add
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayProj_list_sum
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.frameProd_self_eq_norm
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayProj_self_eq_norm
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp_self_eq_zero
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.sum_rayPerp_resultant_frame_eq_zero
+#print axioms ProximityGap.Frontier.DoorIVTransverseSpread.sum_deficit_resultant_frame_eq
