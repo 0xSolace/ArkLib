@@ -195,6 +195,32 @@ theorem halfMass_ge_normFloor_div_one_sub_of_coherence_drop {A B : E} {T ε : �
     T / (1 - ε) ≤ halfMass A B :=
   halfMass_ge_normFloor_div_of_coherence_le h hε hcoh hT
 
+/-- Family reciprocal-spend obstruction: an indexed coherence cap `rho_i` and period floor `T_i`
+force the matching half-mass floor `T_i/rho_i` member-by-member.  This is the family audit form of the
+Door-IV tradeoff: a uniform-looking coherence saving cannot erase the required `L¹` half-mass spend at
+any adversarial index. -/
+theorem halfMassFamily_ge_normFloor_div_of_coherence_le {ι : Type*} {A B : ι → E}
+    {T rho : ι → ℝ} (h : ∀ i, 0 < halfMass (A i) (B i)) (hrho : ∀ i, 0 < rho i)
+    (hcoh : ∀ i, coherence (A i) (B i) ≤ rho i)
+    (hT : ∀ i, T i ≤ ‖A i + B i‖) :
+    ∀ i, T i / rho i ≤ halfMass (A i) (B i) := by
+  intro i
+  exact halfMass_ge_normFloor_div_of_coherence_le (h i) (hrho i) (hcoh i) (hT i)
+
+/-- Family reciprocal-budget obstruction: if even one member has an advertised half-mass cap below
+`T_i/rho_i`, then the family cannot simultaneously satisfy the coherence caps and half-mass caps.
+This packages the exact cost of a proposed Door-IV coherence drop in indexed worst-frequency form. -/
+theorem not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt {ι : Type*}
+    {A B : ι → E} {T rho H : ι → ℝ}
+    (h : ∀ i, 0 < halfMass (A i) (B i)) (hrho : ∀ i, 0 < rho i)
+    (hT : ∀ i, T i ≤ ‖A i + B i‖) (hbad : ∃ i, H i < T i / rho i) :
+    ¬ ∀ i, coherence (A i) (B i) ≤ rho i ∧ halfMass (A i) (B i) ≤ H i := by
+  intro hcaps
+  rcases hbad with ⟨i, hi⟩
+  have hfloor := halfMassFamily_ge_normFloor_div_of_coherence_le h hrho
+    (fun j => (hcaps j).1) hT i
+  exact (not_lt_of_ge (le_trans hfloor (hcaps i).2)) hi
+
 /-- **Half-mass budget is necessary before any coherence saving.**  Any period floor `T` is already
 a half-mass floor, because `‖A+B‖ ≤ ‖A‖+‖B‖`.  Thus a coset-half route cannot pair the observed period
 floor with a half-mass ceiling below `T`, regardless of any later coherence bookkeeping. -/
@@ -328,6 +354,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_of_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_of_coherence_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_one_sub_of_coherence_drop
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMassFamily_ge_normFloor_div_of_coherence_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_halfMass_of_normFloor_le_norm
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloorFamily_le_halfMass_of_normFloor_le_norm

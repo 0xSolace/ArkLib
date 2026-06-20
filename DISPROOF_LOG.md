@@ -9807,3 +9807,21 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFa
 axiom-clean. New theorems: `normFloorFamily_le_halfMass_of_normFloor_le_norm` and
 `not_family_halfMass_le_of_exists_normFloor_gt`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) family reciprocal half-mass spend obstruction (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 split-budget constraint refinement of `_DoorIVHalfMassFactorization`. The previous
+family budget gates forced `T_i≤halfMass_i` and `T_i≤rho_i*H_i` under simultaneous caps. This refinement
+records the reciprocal form used by coherence-saving claims: if a member has period floor `T_i` and a
+positive coherence cap `rho_i`, then that member must carry half-mass at least `T_i/rho_i`. Consequently,
+one advertised member with `H_i < T_i/rho_i` refutes a universal family certificate combining
+`coherence_i≤rho_i` and `halfMass_i≤H_i`.
+
+VERDICT: a Door-IV family statement cannot hide the reciprocal `L¹` cost of a proposed coherence drop at
+one adversarial index. This is exact split algebra only, not a CORE/cancellation/moment/completion/
+anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`,
+axiom-clean. New theorems: `halfMassFamily_ge_normFloor_div_of_coherence_le` and
+`not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
