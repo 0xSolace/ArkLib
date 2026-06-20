@@ -120,6 +120,15 @@ theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} 
   · rintro ⟨C, hC⟩
     exact ⟨C, (rawPrizeFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
 
+/-- Existential constant capstone in pointwise-positive parameters.  This is the most direct
+`prize ⇔ Sh(n)=O(1)` wrapper for a family indexed by admissible thin instances: if every subgroup
+size and logarithmic thinness parameter is positive, the existence of one absolute raw prize constant
+is equivalent to the existence of one absolute Shaw-value constant. -/
+theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound_of_pos
+    {ι : Type*} {M n L : ι → ℝ} (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∃ C, rawPrizeFamilyBound M n L C) ↔ (∃ C, shawValueFamilyBound M n L C) :=
+  exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound (fun i => prizeScale_pos (hn i) (hL i))
+
 /-- Monotonicity of the raw family constant: increasing the absolute constant preserves a raw prize
 family bound, because the prize scale is nonnegative pointwise. -/
 theorem rawPrizeFamilyBound_mono_const {ι : Type*} {M n L : ι → ℝ} {C D : ℝ}
@@ -172,6 +181,16 @@ theorem exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound
   rw [exists_nonneg_rawPrizeFamilyBound_iff_exists_rawPrizeFamilyBound hs,
     exists_nonneg_shawValueFamilyBound_iff_exists_shawValueFamilyBound,
     exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound hs]
+
+/-- Nonnegative-uniform Lane-2 capstone in pointwise-positive parameters.  This is the citable
+absolute-constant version of `prize ⇔ Sh(n)=O(1)` with the sign convention `0 ≤ C`, specialized to
+the usual hypotheses `0 < n_i` and `0 < L_i`. -/
+theorem exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos
+    {ι : Type*} {M n L : ι → ℝ} (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∃ C, 0 ≤ C ∧ rawPrizeFamilyBound M n L C) ↔
+      (∃ C, 0 ≤ C ∧ shawValueFamilyBound M n L C) :=
+  exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound
+    (fun i => prizeScale_pos (hn i) (hL i))
 
 /-- Uniform raw comparison transfers to a uniform Shaw-value bound with the same comparison constant.
 If `H i ≤ K * M i` throughout a family and `M` has Shaw-value bound `C`, then `H` has Shaw-value
@@ -480,11 +499,13 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_rawPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_of_rawComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_of_rawComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
