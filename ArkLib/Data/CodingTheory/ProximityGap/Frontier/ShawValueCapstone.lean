@@ -392,6 +392,56 @@ theorem rawComparisonFamily_iff_shawValueComparisonFamily_of_pos
       (∀ i, shawValue (H i) (n i) (L i) ≤ K * shawValue (M i) (n i) (L i)) :=
   rawComparisonFamily_iff_shawValueComparisonFamily (fun i => prizeScale_pos (hn i) (hL i))
 
+/-- Strict raw comparison is also preserved and reflected by Shaw-value normalization.  Under a
+positive prize scale, a genuine strict multiplicative gap `H < K*M` is exactly the normalized strict
+gap `Sh(H) < K*Sh(M)`.  This packages the "strict slack survives normalization" rung needed when a
+door-(iv) constraint is stated as a positive gap rather than a weak comparison. -/
+theorem rawStrictComparison_iff_shawValueStrictComparison {M H K n L : ℝ}
+    (hs : 0 < prizeScale n L) :
+    H < K * M ↔ shawValue H n L < K * shawValue M n L := by
+  constructor
+  · intro h
+    unfold shawValue
+    have h1 : H / prizeScale n L < (K * M) / prizeScale n L :=
+      div_lt_div_of_pos_right h hs
+    have h2 : (K * M) / prizeScale n L = K * (M / prizeScale n L) := by ring
+    exact h2 ▸ h1
+  · intro h
+    unfold shawValue at h
+    have hsne : prizeScale n L ≠ 0 := ne_of_gt hs
+    have hmul : (H / prizeScale n L) * prizeScale n L <
+        (K * (M / prizeScale n L)) * prizeScale n L :=
+      mul_lt_mul_of_pos_right h hs
+    calc
+      H = (H / prizeScale n L) * prizeScale n L := by field_simp [hsne]
+      _ < (K * (M / prizeScale n L)) * prizeScale n L := hmul
+      _ = K * M := by field_simp [hsne]
+
+/-- Uniform-family strict comparison normalization.  Pointwise strict raw gaps and pointwise strict
+Shaw-value gaps are equivalent under positive prize scale.  This is only algebraic normalization; it
+contains no cancellation or anti-concentration input. -/
+theorem rawStrictComparisonFamily_iff_shawValueStrictComparisonFamily
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∀ i, H i < K * M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) < K * shawValue (M i) (n i) (L i)) := by
+  constructor
+  · intro h i
+    exact (rawStrictComparison_iff_shawValueStrictComparison (M := M i) (H := H i) (K := K)
+      (n := n i) (L := L i) (hs i)).1 (h i)
+  · intro h i
+    exact (rawStrictComparison_iff_shawValueStrictComparison (M := M i) (H := H i) (K := K)
+      (n := n i) (L := L i) (hs i)).2 (h i)
+
+/-- Pointwise-positive wrapper for uniform strict comparison normalization. -/
+theorem rawStrictComparisonFamily_iff_shawValueStrictComparisonFamily_of_pos
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∀ i, H i < K * M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) < K * shawValue (M i) (n i) (L i)) :=
+  rawStrictComparisonFamily_iff_shawValueStrictComparisonFamily
+    (fun i => prizeScale_pos (hn i) (hL i))
+
 /-! ## The two-sided Shaw-value bracket: the citable framing of the open prize
 
 The prize asks to collapse the *width* of the bracket below to an absolute constant.  The two
@@ -558,6 +608,9 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparison_iff_shawValueComparison
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparisonFamily_iff_shawValueComparisonFamily
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawComparisonFamily_iff_shawValueComparisonFamily_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictComparison_iff_shawValueStrictComparison
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictComparisonFamily_iff_shawValueStrictComparisonFamily
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictComparisonFamily_iff_shawValueStrictComparisonFamily_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_bracket
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.floor_bracket_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.ceiling_bracket_eq
