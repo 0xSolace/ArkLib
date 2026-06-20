@@ -8514,3 +8514,32 @@ wall, NOT a crack. So the growth-rate measurement at accessible n is INCONCLUSIV
 wall (ratio creeping up). Do NOT assert capacity/beyond-Johnson from this combinatorial face (cliff-at-
 n/2). No exploitable slack survives. Python-only, no Lean changed ⇒ axiom-clean trivially. No CORE/
 cancellation/completion/anti-concentration/capacity claim.
+## [doorIV-largest-gap-energy-blind] longest-empty-arc (gap statistic) is energy-blind (2026-06-20, sol)
+
+Lane: door-(iv) Lane-1 small-ball / anti-concentration NON-ENERGY functional. Sibling of the
+single-window (`_DoorIVWindowConcentrationTrivial` / `758205014`, energy-blind) and multi-window
+(g55, trivial-budget) refutations — closes a DISTINCT unmined functional: the SPACING / largest-gap
+(longest-empty-arc) statistic of the worst-`b` phase set `A_b = { b·y mod p : y ∈ μ_n }`.
+
+PROBE (`scripts/probes/probe_dooriv_emptyarc_gap.py`, EXACT, prize regime β=4, PROPER μ_n, p≫n³,
+n=16,32,64,128, incl. Fermat p=65537):
+- The worst-`b` largest gap IS anomalous vs a random n-subset (8.0, 14.4, 15.6 units of mean spacing
+  p/n at n=16,32,64 vs random mean ≈3.4,4.1,4.8) — the gap statistic DOES see the worst-b clumping.
+- BUT the single biggest empty arc covers a DECAYING fraction of the circle: 50%, 45%, 14%, 4.4% at
+  n=16,32,64,128, whereas a √-cancellation route would need the empty fraction to GROW toward
+  1−1/√n ≈ 75–91%. The clumping is spread over MANY moderate gaps (Weyl-spacing-scale), not one hole.
+- corr(|η_b|, G_max/(p/n)) DECAYS (+0.57,+0.34,+0.22 at n=16,32,64): big |η| does NOT force a
+  proportionally big single hole at scale.
+
+VERDICT: the largest-gap (longest-empty-arc) small-ball functional SATURATES and cannot carry the
+√(n·log(p/n)) cancellation. Mechanism (formal kernel): an empty arc contributes ZERO removable mass,
+so the triangle inequality on the n surviving unit-modulus terms yields only the trivial linear
+ceiling `|η_b| ≤ n`, independent of the gap size. A genuine bound must control phase COHERENCE among
+the surviving terms (the energy object / Door IV proper), which the gap statistic does not touch.
+Walls the spacing-statistic Lane-1 hope. No CORE, cancellation, completion, anti-concentration,
+moment, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVLargestGapEnergyBlind.lean`,
+axiom-clean. Theorems `emptyArc_bound_trivial`, `emptyArc_deficit_zero`,
+`largestGap_yields_only_trivial_ceiling`, `largestGap_ceiling_independent_of_gap`; axioms ⊆
+{propext, Classical.choice, Quot.sound}.
