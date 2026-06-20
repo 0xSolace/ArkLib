@@ -9155,3 +9155,35 @@ mechanism (if any) must live OUTSIDE additive energy / sum-product, exactly as t
 "anti-concentration NOT through additive energy" requires. No CORE / cancellation / completion / moment /
 anti-concentration / capacity claim. (Probe-only caveat; the formal kernel _DoorIVWorstBSidonNoEnergyExcess
 is unaffected and remains axiom-clean.)
+
+## [door-iv-multiform-smallball-b-blind] the FULL m-dimensional Littlewood-Offord/Halász small-ball lever (a SYSTEM of linear forms) is frequency-blind (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1, the brief's verbatim small-ball target. Prior bricks in
+`_DoorIVPhaseSetDilationInvariant` proved every SINGLE additive-linear form statistic on the phase set
+`S_b = b·μ_n` is dilation-invariant (sumset/diffset card, pair-sum/diff, triple-sum, 3AP, the general
+single form `addLinearPatternCount` with arbitrary k+coeff, fiber counts, max-fiber, multiplicity,
+additive energy). A genuine multi-dimensional Halász / Littlewood-Offord anti-concentration lever,
+however, uses a SYSTEM of `m` linear forms with a VECTOR target — NOT a single scalar form — and the
+single-form theorem does not subsume it.
+
+PROBE (scripts/probes/probe_dooriv_multiform_smallball_blind.py; PROPER 2-power μ_n < F_p*, p≫n³,
+structured primes p=4129/65537/32801, system m=2 forms in k=3 phase-set variables, 4 random nonzero
+dilates λ × 25 vector targets each, never n=q−1): the joint fiber count #{v∈S^k : A·v=t} of the
+SYSTEM is dilation-invariant under every nonzero λ (after rescaling t↦λt) — ALL match at n=8,16, β=4,5.
+
+VERDICT (constraint lemma, no-fifth-door for the additive small-ball class): the entire m-dimensional
+additive small-ball / Halász family is b-blind. Multiplication by a unit λ is a bijection of F_p that
+preserves every linear relation `∑ A r j · v j = t r` simultaneously across all rows, so the joint
+solution count for `λS, λt` equals that for `S, t`. The adversarial worst frequency `b` (acting as the
+dilation λ=b on μ_n) cannot tune the multi-dimensional small-ball statistic; it inherits the typical
+(EVT/Plancherel) value. Any door-(iv) anti-concentration certificate built from a finite SYSTEM of
+additive-linear forms on the phase set is therefore vacuous as a worst-b selector. This closes the
+full multi-dim additive small-ball class in one kernel statement; a surviving lever must use
+information beyond fixed additive-linear systems (i.e. genuinely multiplicative structure, per the
+campaign meta-thm). No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
+new `def addSystemPatternCount` + theorems `addSystemPatternCount_smul_eq`,
+`addSystemPatternCount_phaseSet_indep_of_scalar` (subsumes the single-form indep at m=1), and
+`not_addSystemPatternCount_scalar_improvement`. Axiom-clean, axioms ⊆ {propext, Classical.choice,
+Quot.sound}. Pushed 592c1bedf.
