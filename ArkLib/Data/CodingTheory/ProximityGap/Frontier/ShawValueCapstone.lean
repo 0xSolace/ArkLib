@@ -251,13 +251,49 @@ theorem exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
     exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs]
   exact exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich hK hs hMH hHM
 
+/-- Exact lower-floor normalization.  Under positive prize scale, a raw lower certificate
+`B ≤ M` is equivalent to the normalized lower certificate `B/scale ≤ Sh(M)`.  This is the
+lower-bound companion to `prizeBound_iff_shawValue_le`; it is useful for keeping the Plancherel /
+Johnson floor rung reversible without hiding any analytic input. -/
+theorem rawLowerBound_iff_shawValue_floor {B M n L : ℝ} (hs : 0 < prizeScale n L) :
+    B ≤ M ↔ B / prizeScale n L ≤ shawValue M n L := by
+  constructor
+  · intro h
+    unfold shawValue
+    exact div_le_div_of_nonneg_right h (le_of_lt hs)
+  · intro h
+    unfold shawValue at h
+    have hsne : prizeScale n L ≠ 0 := ne_of_gt hs
+    have hmul : (B / prizeScale n L) * prizeScale n L ≤
+        (M / prizeScale n L) * prizeScale n L :=
+      mul_le_mul_of_nonneg_right h (le_of_lt hs)
+    calc
+      B = (B / prizeScale n L) * prizeScale n L := by field_simp [hsne]
+      _ ≤ (M / prizeScale n L) * prizeScale n L := hmul
+      _ = M := by field_simp [hsne]
+
+/-- Uniform-family exact lower-floor normalization.  A pointwise raw floor `B_i ≤ M_i` is exactly
+the corresponding pointwise normalized Shaw floor `B_i/scale_i ≤ Sh_i`.  This packages the reversible
+floor side of the prize `↔` Shaw-value reduction for families. -/
+theorem rawLowerBoundFamily_iff_shawValueFloorFamily {ι : Type*} {B M n L : ι → ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∀ i, B i ≤ M i) ↔
+      (∀ i, B i / prizeScale (n i) (L i) ≤ shawValue (M i) (n i) (L i)) := by
+  constructor
+  · intro h i
+    exact (rawLowerBound_iff_shawValue_floor (B := B i) (M := M i)
+      (n := n i) (L := L i) (hs i)).1 (h i)
+  · intro h i
+    exact (rawLowerBound_iff_shawValue_floor (B := B i) (M := M i)
+      (n := n i) (L := L i) (hs i)).2 (h i)
+
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
 theorem shawValue_floor_of_plancherel_floor {M n L : ℝ} (hs : 0 < prizeScale n L)
     (hfloor : Real.sqrt n ≤ M) :
     Real.sqrt n / prizeScale n L ≤ shawValue M n L := by
-  unfold shawValue
-  exact div_le_div_of_nonneg_right hfloor (le_of_lt hs)
+  exact (rawLowerBound_iff_shawValue_floor (B := Real.sqrt n) (M := M) (n := n) (L := L) hs).1
+    hfloor
 
 /-- The trivial ceiling `M ≤ n` becomes the corresponding normalized upper bound for the Shaw value.
 This is the harmless top bracket `M ≤ n`, in Shaw-value units. -/
@@ -454,6 +490,8 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBound_iff_shawValue_floor
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
