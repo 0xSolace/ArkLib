@@ -139,6 +139,36 @@ theorem norm_le_of_coherence_le_of_halfMass_le {A B : E} {rho H : ℝ}
   have hmass0 : 0 ≤ halfMass A B := halfMass_nonneg A B
   exact mul_le_mul hcoh hmass hmass0 hrho0
 
+/-- **A norm floor plus a half-mass ceiling forces a coherence floor.**  This is the converse-facing
+budget identity to `halfMass_ge_normFloor_div_of_coherence_le`: if the original period has floor `T`
+and the two half-sums have total `L¹` at most `H`, then the coset-half coherence itself must be at least
+`T / H`.  Therefore a Door-IV coherence-saving claim is only compatible with an independent half-mass
+ceiling when the product `rho * H` still covers the observed norm floor. -/
+theorem coherence_ge_normFloor_div_of_halfMass_le {A B : E} {T H : ℝ}
+    (h : 0 < halfMass A B) (hH : 0 < H)
+    (hT : T ≤ ‖A + B‖) (hmass : halfMass A B ≤ H) :
+    T / H ≤ coherence A B := by
+  rw [div_le_iff₀ hH]
+  calc
+    T ≤ ‖A + B‖ := hT
+    _ = coherence A B * halfMass A B := norm_eq_coherence_mul_halfMass h
+    _ ≤ coherence A B * H := by
+      exact mul_le_mul_of_nonneg_left hmass (coherence_nonneg A B)
+
+/-- **Product-budget obstruction.**  If a proposed coherence cap `rho` and half-mass cap `H` have product
+strictly below the known period floor `T`, then the coherence cap is impossible.  The split algebra alone
+cannot beat the floor: any advertised `rho < 1` must be paired with enough half-mass budget that
+`rho * H` still reaches `T`, or else it contradicts the exact factorization. -/
+theorem not_coherence_le_of_normFloor_gt_product {A B : E} {T rho H : ℝ}
+    (h : 0 < halfMass A B) (hrho0 : 0 ≤ rho)
+    (hcohMass : halfMass A B ≤ H) (hT : T ≤ ‖A + B‖) (hprod : rho * H < T) :
+    ¬ coherence A B ≤ rho := by
+  intro hcoh
+  have hnorm : ‖A + B‖ ≤ rho * H :=
+    norm_le_of_coherence_le_of_halfMass_le h hrho0 hcoh hcohMass
+  have hle : T ≤ rho * H := le_trans hT hnorm
+  exact (not_lt_of_ge hle) hprod
+
 /-- **Coherence drop forces reciprocal half-mass spend.**  If the split has coherence at most
 `rho > 0` while the original period norm is at least `T`, then the half-mass must be at least
 `T / rho`.  Thus a door-(iv) proof cannot get a saving merely by proving `rho < 1`: any coherence
@@ -198,6 +228,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_ge_of_coherence_ge_of_halfMass_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_le_of_coherence_le_of_halfMass_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_ge_normFloor_div_of_halfMass_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_of_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_of_coherence_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_one_sub_of_coherence_drop
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero

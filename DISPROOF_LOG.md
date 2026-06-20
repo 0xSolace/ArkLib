@@ -8637,3 +8637,21 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidis
 theorem `abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div`, axiom-clean with axioms
 contained in {propext, Classical.choice, Quot.sound}. No CORE, cancellation, completion, moment-saving,
 or capacity claim.
+
+## [door-iv half-mass coherence product budget] norm floor plus half-mass cap forces a coherence floor (2026-06-20, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVHalfMassFactorization`. Prior bricks proved
+that a coherence cap `rho` plus a period floor `T` forces reciprocal half-mass spend `T/rho`. This
+refinement records the converse budget: if the split half-mass is independently capped by `H` while the
+full period has floor `T`, then the coherence must be at least `T/H`; equivalently, any proposed pair
+of caps `coherence ≤ rho` and `halfMass ≤ H` is impossible when `rho * H < T`.
+
+VERDICT: a coset-half coherence saving cannot be certified in isolation. The exact product budget
+`coherence * halfMass` must still cover the observed period floor; otherwise the claimed coherence drop
+just contradicts the factorization. This sharpens the half-mass obstruction without proving any
+anti-concentration, cancellation, completion, moment-saving, capacity, or CORE bound.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`,
+new theorems `coherence_ge_normFloor_div_of_halfMass_le` and
+`not_coherence_le_of_normFloor_gt_product`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
