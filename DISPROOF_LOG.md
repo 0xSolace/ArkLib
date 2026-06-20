@@ -8605,3 +8605,21 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVLargestGapE
 new theorems `no_emptyArc_split_rhs_le_strict_budget` and `emptyArc_budget_forces_card_le`,
 axiom-clean with axioms contained in {propext, Classical.choice, Quot.sound}. No CORE,
 anti-concentration, moment, completion, or capacity claim.
+
+## [doorIV-worstb-dyadic-full-mass-spike] a true fixed subtower would force a visible Haar spike (2026-06-20, g55)
+
+Lane: door-(iv) Lane 1/3 sharpening of `_DoorIVWorstBDyadicSelectorWalled`. The first dyadic-selector
+formal kernel stated that any mostly-fixed dyadic selector must exhibit a histogram spike. This
+refinement proves the converse-facing sanity check: if a rung really carries full sample mass
+(`hist j = total`), then it automatically exceeds the Haar-null envelope whenever the spike threshold is
+below the reciprocal Haar mass `2^(j+1)`, and it satisfies any absolute mass threshold ≤ full mass.
+
+VERDICT: a genuine fixed-subtower selection rule cannot hide as ordinary Haar noise. It would produce a
+large, directly checkable spike in the same finite histogram the probe computed. Since the exact probe
+showed no such spike, the fixed-subtower worst-b-selection route is walled at the finite selector level.
+No CORE, cancellation, completion, anti-concentration, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBDyadicSelectorWalled.lean`,
+new theorems `full_mass_exceeds_haar`, `full_mass_has_massAtLeast`, and
+`fixedRung_full_mass_forces_spike`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

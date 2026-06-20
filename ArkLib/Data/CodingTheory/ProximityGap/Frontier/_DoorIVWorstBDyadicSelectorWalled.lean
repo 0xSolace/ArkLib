@@ -97,8 +97,41 @@ theorem fixedRung_certificate_requires_spike {a : Nat} (hist : Fin a → Nat)
   rintro ⟨j, hj⟩
   exact ⟨j, hj⟩
 
+/-- A truly fixed dyadic rung (`hist j = total`) is automatically a scaled Haar excess whenever the
+chosen spike threshold is below the reciprocal Haar mass `2^(j+1)`.  Thus a genuine fixed-subtower
+selection rule would be loudly visible in the histogram; it cannot hide inside Haar-null noise. -/
+theorem full_mass_exceeds_haar {a : Nat} (hist : Fin a → Nat)
+    {total spikeNum spikeDen : Nat} {j : Fin a} (hfull : hist j = total) (hpos : 0 < total)
+    (hthreshold : spikeNum < spikeDen * 2 ^ (j.val + 1)) :
+    ExceedsHaarBy hist total spikeNum spikeDen j := by
+  unfold ExceedsHaarBy
+  have hmul := Nat.mul_lt_mul_of_pos_right hthreshold hpos
+  simpa [hfull, Nat.mul_assoc, Nat.mul_left_comm, Nat.mul_comm] using hmul
+
+/-- Full mass at a rung also satisfies any absolute-mass certificate whose requested fraction is at
+most one (`massNum ≤ massDen`). -/
+theorem full_mass_has_massAtLeast {a : Nat} (hist : Fin a → Nat)
+    {total massNum massDen : Nat} {j : Fin a} (hfull : hist j = total) (hmass : massNum ≤ massDen) :
+    HasMassAtLeast hist total massNum massDen j := by
+  unfold HasMassAtLeast
+  exact hfull ▸ Nat.mul_le_mul_right total hmass
+
+/-- Combined witness: a true fixed-rung histogram necessarily produces the exact spike certificate used
+by the probe, provided the ratio threshold is below the Haar reciprocal and the mass threshold is at
+most full mass.  The absence of such a spike is therefore a direct finite obstruction to fixed-rung
+selection. -/
+theorem fixedRung_full_mass_forces_spike {a : Nat} (hist : Fin a → Nat)
+    {total spikeNum spikeDen massNum massDen : Nat} {j : Fin a}
+    (hfull : hist j = total) (hpos : 0 < total)
+    (hthreshold : spikeNum < spikeDen * 2 ^ (j.val + 1)) (hmass : massNum ≤ massDen) :
+    FixedRungSpike hist total spikeNum spikeDen massNum massDen j :=
+  ⟨full_mass_exceeds_haar hist hfull hpos hthreshold,
+   full_mass_has_massAtLeast hist hfull hmass⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_fixedRungRule_of_two_rungs
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_fixedRungSpike_of_no_haar_excess
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_certificate_requires_spike
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.full_mass_exceeds_haar
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_full_mass_forces_spike
