@@ -234,6 +234,34 @@ theorem not_coherence_and_halfMass_caps_of_normFloor_gt_product {A B : E} {T rho
   exact (not_lt_of_ge (normFloor_le_product_of_coherence_le_of_halfMass_le
     h hrho0 hT hcoh hmass)) hprod
 
+/-- Family product-budget necessity: if every member has positive half-mass, a period floor, a
+coherence cap, and a half-mass cap, then every advertised product budget must cover its floor.  This is
+the uniform audit form for Door-IV split certificates; it contains no arithmetic cancellation input. -/
+theorem normFloorFamily_le_product_of_caps {ι : Type*} {A B : ι → E} {T rho H : ι → ℝ}
+    (h : ∀ i, 0 < halfMass (A i) (B i)) (hrho0 : ∀ i, 0 ≤ rho i)
+    (hT : ∀ i, T i ≤ ‖A i + B i‖)
+    (hcoh : ∀ i, coherence (A i) (B i) ≤ rho i)
+    (hmass : ∀ i, halfMass (A i) (B i) ≤ H i) :
+    ∀ i, T i ≤ rho i * H i := by
+  intro i
+  exact normFloor_le_product_of_coherence_le_of_halfMass_le
+    (h i) (hrho0 i) (hT i) (hcoh i) (hmass i)
+
+/-- Family simultaneous-cap obstruction: a single member whose advertised product cap is below its
+period floor refutes a universal Door-IV split certificate `coherence ≤ rho ∧ halfMass ≤ H`.  This is
+the quantified counterpart of the pointwise product obstruction and is the form needed for indexed
+worst-frequency families. -/
+theorem not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product {ι : Type*}
+    {A B : ι → E} {T rho H : ι → ℝ}
+    (h : ∀ i, 0 < halfMass (A i) (B i)) (hrho0 : ∀ i, 0 ≤ rho i)
+    (hT : ∀ i, T i ≤ ‖A i + B i‖) (hbad : ∃ i, rho i * H i < T i) :
+    ¬ ∀ i, coherence (A i) (B i) ≤ rho i ∧ halfMass (A i) (B i) ≤ H i := by
+  intro hcaps
+  rcases hbad with ⟨i, hi⟩
+  have hbudget := normFloorFamily_le_product_of_caps h hrho0 hT
+    (fun j => (hcaps j).1) (fun j => (hcaps j).2) i
+  exact (not_lt_of_ge hbudget) hi
+
 /-- Fixed-drop product obstruction: if a proposed strict coherence drop `coherence ≤ 1 - ε` is paired
 with a half-mass ceiling `H`, then the product `(1 - ε) * H` must still reach any known period floor
 `T`.  If it does not, the claimed drop is incompatible with the exact Door-IV factorization. -/
@@ -284,6 +312,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_product_of_coherence_le_of_halfMass_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_and_halfMass_caps_of_normFloor_gt_product
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloorFamily_le_product_of_caps
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_one_sub_of_normFloor_gt_drop_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_zero_of_halfMass_eq_zero
