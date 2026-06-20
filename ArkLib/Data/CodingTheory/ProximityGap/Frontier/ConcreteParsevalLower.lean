@@ -273,6 +273,42 @@ theorem worstPeriod_ge_sqrt_card_pred {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive
   rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
   exact Real.sqrt_le_sqrt hsq
 
+/-- **Clean `β ≥ 2` prize-regime floor.** Under the textbook thinness `n² ≤ q` (i.e. `q = n^β` with
+`β ≥ 2`), the Parseval floor reaches `√(n − 1) ≤ M(μ_n)`. The quadratic hypothesis `n² ≤ q` implies
+the sharper `n² − n + 1 ≤ q` used by `worstPeriod_ge_sqrt_card_pred` (since `n ≥ 1`), so this is the
+clean restatement directly in terms of `n² ≤ q`. Still the LOWER/Johnson side only. -/
+theorem worstPeriod_ge_sqrt_card_pred_of_sq_le {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((G.card : ℝ) - 1) ≤ worstPeriod ψ G hne := by
+  have hreg : (G.card : ℝ) ^ 2 - (G.card : ℝ) + 1 ≤ (Fintype.card F : ℝ) := by
+    have hge1 : (1 : ℝ) ≤ (G.card : ℝ) := le_of_lt hG1
+    nlinarith [hsq, hge1]
+  exact worstPeriod_ge_sqrt_card_pred hψ G hne hq1 hG1 hreg
+
+/-- **Floor-to-ideal ratio (`√n · √(1−1/n)` form).** Rewriting `√(n−1) = √n · √(1−1/n)`, the
+quadratic-regime floor says `M(μ_n) ≥ √n · √(1 − 1/n)` whenever `n² ≤ q`. The deficit factor
+`√(1 − 1/n) → 1`, so the unconditional Parseval floor reaches the ideal Plancherel value `√n` with
+multiplicative loss tending to `1`: in the prize regime the lower bracket endpoint is the FULL `√n`
+asymptotically, with optimal constant. (Probe: ratio `√(1−1/n)` = .866,.935,.968,.984,.992,.996,.998 at
+`n=4..256`.) Still the LOWER side only — the missing `√(log(q/n))` upper cancellation is the prize. -/
+theorem worstPeriod_ge_sqrt_mul_one_sub {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt (G.card : ℝ) * Real.sqrt (1 - 1 / (G.card : ℝ)) ≤ worstPeriod ψ G hne := by
+  have hbase := worstPeriod_ge_sqrt_card_pred_of_sq_le hψ G hne hq1 hG1 hsq
+  have hnpos : (0 : ℝ) < (G.card : ℝ) := by linarith
+  -- √n · √(1−1/n) = √(n·(1−1/n)) = √(n−1)
+  have hfac : Real.sqrt (G.card : ℝ) * Real.sqrt (1 - 1 / (G.card : ℝ))
+      = Real.sqrt ((G.card : ℝ) - 1) := by
+    rw [← Real.sqrt_mul (le_of_lt hnpos)]
+    congr 1
+    field_simp
+  rw [hfac]
+  exact hbase
+
 end ProximityGap.Frontier.ConcreteParsevalLower
 
 /-! ## Axiom audit -/
@@ -285,5 +321,7 @@ end ProximityGap.Frontier.ConcreteParsevalLower
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_const_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_card_pred
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_card_pred
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_card_pred_of_sq_le
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_mul_one_sub
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_const_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_three_quarters_card
