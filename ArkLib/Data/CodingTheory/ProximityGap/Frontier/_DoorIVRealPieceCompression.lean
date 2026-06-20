@@ -75,6 +75,39 @@ theorem positive_sign_masses_of_realPieceCoherence_lt_one_threshold_of_compressi
   exact ⟨lt_of_lt_of_le hminor_pos (min_le_left P N),
     lt_of_lt_of_le hminor_pos (min_le_right P N)⟩
 
+/-- **Compressed strict-slack criterion.**  A compressed real refinement has list coherence strictly
+below `1` if and only if its minority sign mass is positive.  Transports the two-mass criterion
+`signMassCoherence_lt_one_iff_min_pos` to the list level under compression. -/
+theorem realPieceCoherence_lt_one_iff_min_pos_of_compression {xs : List ℝ} {P N : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) (hden : 0 < P + N) :
+    realPieceCoherence xs < 1 ↔ 0 < min P N := by
+  rw [realPieceCoherence_eq_signMassCoherence_of_compression (xs := xs) (P := P) (N := N)
+      hsum habssum]
+  exact signMassCoherence_lt_one_iff_min_pos (P := P) (N := N) hden
+
+/-- A compressed real refinement with zero minority sign mass has no slack: coherence is exactly
+`1`.  Hence a single-sign collinear refinement cannot be the source of a Door-IV coherence drop. -/
+theorem realPieceCoherence_eq_one_of_min_eq_zero_of_compression {xs : List ℝ} {P N : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) (hden : 0 < P + N)
+    (hmin : min P N = 0) :
+    realPieceCoherence xs = 1 := by
+  rw [realPieceCoherence_eq_signMassCoherence_of_compression (xs := xs) (P := P) (N := N)
+      hsum habssum]
+  exact signMassCoherence_eq_one_of_min_eq_zero (P := P) (N := N) hden hmin
+
+/-- **Compressed slack forces a positive minority mass AND genuine list-level sign mixing.**  This
+binds the two views: a compressed real refinement with positive total mass and nonzero signed sum
+that achieves coherence below `1` has strictly positive minority sign mass `min P N`, and the
+underlying piece list contains BOTH a strictly positive and a strictly negative entry.  The signed
+sum being nonzero is derived from the compression identity `xs.sum = P - N` together with `P ≠ N`
+(equivalently the slack itself), so the hypotheses are exactly the compression data plus the slack. -/
+theorem min_pos_and_both_signs_of_realPieceCoherence_lt_one_of_compression {xs : List ℝ} {P N : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) (hden : 0 < P + N)
+    (hsumne : xs.sum ≠ 0) (hcoh : realPieceCoherence xs < 1) :
+    0 < min P N ∧ (∃ x ∈ xs, 0 < x) ∧ (∃ x ∈ xs, x < 0) := by
+  refine ⟨?_, realPieceCoherence_lt_one_forces_both_signs hsumne hcoh⟩
+  exact (realPieceCoherence_lt_one_iff_min_pos_of_compression hsum habssum hden).1 hcoh
+
 end ProximityGap.Frontier.DoorIVRealPieceCompression
 
 open ProximityGap.Frontier.DoorIVRealPieceCompression
@@ -83,3 +116,6 @@ open ProximityGap.Frontier.DoorIVRealPieceCompression
 #print axioms realPieceCoherence_le_iff_minority_mass_ge_of_compression
 #print axioms not_realPieceCoherence_le_one_sub_of_minority_mass_lt_of_compression
 #print axioms positive_sign_masses_of_realPieceCoherence_lt_one_threshold_of_compression
+#print axioms realPieceCoherence_lt_one_iff_min_pos_of_compression
+#print axioms realPieceCoherence_eq_one_of_min_eq_zero_of_compression
+#print axioms min_pos_and_both_signs_of_realPieceCoherence_lt_one_of_compression
