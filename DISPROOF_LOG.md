@@ -8325,3 +8325,17 @@ bookkeeping isolating the open content.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeConditionalCapstone.lean, new
 theorem saddleEnergyBound_necessary, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [saddle bound = moment<=charZero, formalized] the docstring's "equivalently μ_{2r}<=E_r" locked (2026-06-19)
+
+Lane: door-(iv) Lane 2 conditional capstone — EXTENDS _PrizeConditionalCapstone.lean. The capstone
+docstring states the saddle hypothesis S<=(p-1)E is "equivalently μ_{2r}<=E_r" but never formalized it.
+
+VERDICT: saddleEnergyBound_iff_moment_le_charZero: since μ(p-1)=S and p>1 (p-1>0), the saddle bound
+S<=(p-1)E holds IFF μ<=E (the normalized b≠0 moment is at most the char-0 budget). Exact normalization
+equivalence, no anchor E<=Wick used. Locks the docstring's claimed equivalence as a kernel statement.
+No CORE, cancellation, anti-concentration, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeConditionalCapstone.lean, new
+theorem saddleEnergyBound_iff_moment_le_charZero, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.

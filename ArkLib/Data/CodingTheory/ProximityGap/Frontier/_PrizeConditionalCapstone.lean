@@ -88,9 +88,30 @@ theorem saddleEnergyBound_necessary (S E Wick μ p : ℝ) (hp : 1 < p)
   have h3 : (p - 1) * μ = S := by rw [mul_comm]; exact hμ
   linarith
 
+/-- **The saddle energy bound is exactly `μ_{2r} ≤ E_r`.**  The conditional capstone's docstring states
+the saddle hypothesis `S ≤ (p−1)·E` is "equivalently `μ_{2r} ≤ E_r`".  This formalizes that exact
+equivalence: since `μ·(p−1) = S` and `p > 1` (so `p−1 > 0`), the saddle bound `S ≤ (p−1)·E` holds iff
+the normalized b≠0 moment is at most the char-0 budget, `μ ≤ E`.  No anchor `E ≤ Wick` is used here —
+this is the raw normalization equivalence between the saddle bound and the moment-vs-char-0 comparison. -/
+theorem saddleEnergyBound_iff_moment_le_charZero (S E μ p : ℝ) (hp : 1 < p)
+    (hμ : μ * (p - 1) = S) :
+    S ≤ (p - 1) * E ↔ μ ≤ E := by
+  have hp1 : 0 < p - 1 := by linarith
+  constructor
+  · intro h
+    -- μ*(p-1) = S ≤ (p-1)*E = μ... cancel (p-1) > 0
+    have hS : μ * (p - 1) ≤ (p - 1) * E := by rw [hμ]; exact h
+    have hS' : μ * (p - 1) ≤ E * (p - 1) := by rw [mul_comm E]; exact hS
+    exact le_of_mul_le_mul_right hS' hp1
+  · intro h
+    -- μ ≤ E => μ*(p-1) ≤ E*(p-1) = (p-1)*E, and S = μ*(p-1)
+    have : μ * (p - 1) ≤ E * (p - 1) := mul_le_mul_of_nonneg_right h hp1.le
+    rw [hμ] at this; rw [mul_comm (p - 1) E]; exact this
+
 end ProximityGap.Frontier.PrizeCapstone
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.PrizeCapstone.prize_of_saddleEnergyBound
 #print axioms ProximityGap.Frontier.PrizeCapstone.prize_thin_range
 #print axioms ProximityGap.Frontier.PrizeCapstone.saddleEnergyBound_necessary
+#print axioms ProximityGap.Frontier.PrizeCapstone.saddleEnergyBound_iff_moment_le_charZero
