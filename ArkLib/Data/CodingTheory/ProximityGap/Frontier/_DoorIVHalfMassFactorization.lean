@@ -139,6 +139,32 @@ theorem norm_le_of_coherence_le_of_halfMass_le {A B : E} {rho H : ℝ}
   have hmass0 : 0 ≤ halfMass A B := halfMass_nonneg A B
   exact mul_le_mul hcoh hmass hmass0 hrho0
 
+/-- **Coherence drop forces reciprocal half-mass spend.**  If the split has coherence at most
+`rho > 0` while the original period norm is at least `T`, then the half-mass must be at least
+`T / rho`.  Thus a door-(iv) proof cannot get a saving merely by proving `rho < 1`: any coherence
+saving has to be paid for by a correspondingly larger `L¹` half-mass budget unless it also proves an
+independent half-mass upper bound. -/
+theorem halfMass_ge_normFloor_div_of_coherence_le {A B : E} {T rho : ℝ}
+    (h : 0 < halfMass A B) (hrho : 0 < rho)
+    (hcoh : coherence A B ≤ rho) (hT : T ≤ ‖A + B‖) :
+    T / rho ≤ halfMass A B := by
+  rw [div_le_iff₀ hrho]
+  calc
+    T ≤ ‖A + B‖ := hT
+    _ = coherence A B * halfMass A B := norm_eq_coherence_mul_halfMass h
+    _ ≤ halfMass A B * rho := by
+      simpa [mul_comm] using mul_le_mul_of_nonneg_right hcoh (halfMass_nonneg A B)
+
+/-- Fixed-drop specialization of the reciprocal-spend obstruction: a certificate
+`coherence ≤ 1 - ε` only converts a norm floor `T` into the half-mass floor `T/(1-ε)`.  For small or
+constant `ε`, this is only a constant-factor relocation of the original prize burden onto half-mass,
+not a square-root cancellation theorem. -/
+theorem halfMass_ge_normFloor_div_one_sub_of_coherence_drop {A B : E} {T ε : ℝ}
+    (h : 0 < halfMass A B) (hε : 0 < 1 - ε)
+    (hcoh : coherence A B ≤ 1 - ε) (hT : T ≤ ‖A + B‖) :
+    T / (1 - ε) ≤ halfMass A B :=
+  halfMass_ge_normFloor_div_of_coherence_le h hε hcoh hT
+
 /-- If the half-mass envelope is zero, the original period norm is zero too.  Thus any nonzero period
 certificate must live in the positive-half-mass branch where the coherence factorization is meaningful;
 the zero branch cannot hide a prize-sized peak. -/
@@ -172,6 +198,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_lt_one_of_norm_eq_halfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_ge_of_coherence_ge_of_halfMass_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_le_of_coherence_le_of_halfMass_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_of_coherence_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_one_sub_of_coherence_drop
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_eq_zero_of_halfMass_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_pos_of_norm_pos

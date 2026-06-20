@@ -1,3 +1,11 @@
+## door-(iv) coherence drop forces reciprocal half-mass spend (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassFactorization`. Prior half-mass bricks proved the exact identity `‖A+B‖ = coherence(A,B) · (‖A‖+‖B‖)` and the upper-bound transfer `coherence ≤ rho` plus `halfMass ≤ H` gives `‖A+B‖ ≤ rho·H`. This refinement records the contrapositive-facing spend obligation: if the original period has norm floor `T` while `coherence ≤ rho` with `rho>0`, then the half-mass must already be at least `T/rho`; in particular `coherence ≤ 1-ε` only relocates the floor to `T/(1-ε)`.
+
+VERDICT: a coset-half coherence-saving certificate is not by itself a door-(iv) cancellation theorem. Any fixed coherence drop must be paired with an independent half-mass upper bound; otherwise the same prize-sized norm burden reappears as reciprocal `L¹` half-mass spend. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`, axiom-clean. New theorems: `halfMass_ge_normFloor_div_of_coherence_le` and `halfMass_ge_normFloor_div_one_sub_of_coherence_drop`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) half-mass descent must pay any observed balance floor (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassBalanceAtArgmax`. Prior half-mass bricks showed
