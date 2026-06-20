@@ -182,9 +182,30 @@ theorem sigma_smul_mem_superLevel_of_orbitConstant
     σ (g • b) ∈ superLevel f c :=
   (sigma_smul_mem_superLevel_iff hf hσ c g).mpr hb
 
+/-- **The combined coset/sign map permutes every super-level set.**  The map
+`b ↦ σ (g • b)` sends the near-max set onto itself, not merely into itself.  This is the set-level
+form of the selector granularity wall: once orbit-constancy and sign-invariance are present, the
+generated coset/sign fiber is an internal permutation of every threshold set, so no worst-`b` rule
+based only on that statistic can choose a distinguished representative inside the fiber. -/
+theorem image_sigma_smul_superLevel
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f) (hσ : InvolutionConstant σ f)
+    (c : ℝ) (g : G) :
+    (fun b : β => σ (g • b)) '' superLevel f c = superLevel f c := by
+  ext b
+  constructor
+  · rintro ⟨a, ha, rfl⟩
+    exact sigma_smul_mem_superLevel_of_orbitConstant hf hσ c g ha
+  · intro hb
+    have hsig : σ b ∈ superLevel f c := (sigma_mem_superLevel_iff hσ c).mpr hb
+    have hpre : g⁻¹ • σ b ∈ superLevel f c :=
+      (smul_mem_superLevel_iff_of_orbitConstant (G := G) hf c g⁻¹).mpr hsig
+    refine ⟨g⁻¹ • σ b, hpre, ?_⟩
+    simp [hσ.1 b]
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_mem_superLevel_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_of_orbitConstant
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.image_sigma_smul_superLevel
