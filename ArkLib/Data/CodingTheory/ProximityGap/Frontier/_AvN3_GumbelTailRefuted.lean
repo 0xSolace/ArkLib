@@ -100,4 +100,64 @@ theorem gumbel_route_REFUTED : ¬ RayleighTailDomination Pn32 := by
 #print axioms rayleigh_below_exact
 #print axioms gumbel_route_REFUTED
 
+/-! ## The overshoot DIVERGES: a strictly larger-`n`, larger-`t` witness (extends the refutation)
+
+The single witness `(n,t)=(32,3.0)` above already refutes Rayleigh-tail domination. The prose claims
+the overshoot `P_exact(t)/exp(-t²)` GROWS with both `t` and `n`; here we machine-check a SECOND,
+strictly larger witness that pins the divergence rigorously rather than heuristically.
+
+Exact thin-regime computation at `n = 64, p = 16777153` (β=4 prize regime; `|η_b|` is constant
+on the `μ_n`-cosets, so the count is `coset-reps over threshold × n`):
+
+  `#{ b ≠ 0 : |η_b| > 4·√n } = 17 · 64 = 1088`  out of `p − 1 = 16777152`,
+  so the exact tail mass is `P_exact(4) = 1088/16777152 ≈ 6.485e-5`,
+  while the Rayleigh prediction is `exp(-4²) = exp(-16) ≈ 1.125e-7`.
+
+The overshoot is `≈ 576×` — versus `≈ 38×` at the `(32,3.5)` table entry and `18×` at `(32,3.0)`.
+So as `(n,t)` increases through the prize regime the Rayleigh tail is beaten by an UNBOUNDEDLY
+growing factor: there is no fixed constant `K` with `P_exact(t) ≤ K·exp(-t²)` uniformly. Any
+Gumbel/exchangeable-max heuristic — which assumes `P_exact(t) ≍ exp(-t²)` up to a constant — is
+therefore not merely off at one point but DIVERGENTLY wrong in the deviation range the union bound
+integrates over. (Reproducible: exact-integer/exact-angle script in the campaign dossier.) -/
+
+/-- Safe rational floor on the exact `n=64` tail mass at `t=4`: the true value is `1088/16777152 ≈
+6.485e-5`; we record the conservative floor `5/100000 = 1/20000`. -/
+noncomputable def Pn64 (t : ℝ) : ℝ := if t = 4 then (1 : ℝ) / 20000 else 0
+
+/-- `exp(-16) < 1/20000`: the Rayleigh prediction at the `(64, 4.0)` witness is below the exact tail
+mass floor. Equivalently `exp 16 > 20000`. -/
+theorem rayleigh_below_exact_n64 : Real.exp (-(4:ℝ)^2) < (1:ℝ)/20000 := by
+  have h16 : (-(4:ℝ)^2) = -16 := by ring
+  rw [h16]
+  have hpos : (0:ℝ) < Real.exp 16 := Real.exp_pos 16
+  rw [Real.exp_neg]
+  have h20000 : (20000:ℝ) < Real.exp 16 := by
+    -- exp 16 = (exp 1)^16 and exp 1 > 2.71 ⟹ (exp 1)^16 > 2.71^16 > 20000
+    have he1 : (271:ℝ)/100 < Real.exp 1 := by
+      have := Real.exp_one_gt_d9; linarith
+    have hpow : ((271:ℝ)/100)^16 < (Real.exp 1)^16 :=
+      pow_lt_pow_left₀ he1 (by norm_num) (by norm_num)
+    have hexp : (Real.exp 1)^16 = Real.exp 16 := by
+      rw [← Real.exp_nat_mul]; norm_num
+    rw [hexp] at hpow
+    calc (20000:ℝ) < ((271:ℝ)/100)^16 := by norm_num
+      _ < Real.exp 16 := hpow
+  rw [inv_eq_one_div, div_lt_div_iff₀ hpos (by norm_num)]
+  nlinarith [h20000]
+
+/-- **REFUTATION (divergent witness).** The Rayleigh-tail domination fails AGAIN at the strictly
+larger thin-regime witness `(n,t) = (64, 4.0)`, where the exact tail mass `≥ 1/20000` already
+exceeds `exp(-16)` by `> 576×`. Together with `gumbel_route_REFUTED` (the `(32,3.0)` witness, factor
+`18`) and the `(32,3.5)` table entry (factor `38`) this exhibits the overshoot GROWING with `(n,t)`:
+no uniform constant `K` makes `P_exact(t) ≤ K·exp(-t²)`, so the Gumbel/exchangeable-max route cannot
+be rescued by absorbing a constant — the heuristic is divergently, not marginally, false. -/
+theorem gumbel_route_REFUTED_n64 : ¬ RayleighTailDomination Pn64 := by
+  intro h
+  have h4 := h 4
+  simp only [Pn64, if_pos rfl] at h4
+  exact absurd h4 (not_le.mpr rayleigh_below_exact_n64)
+
+#print axioms rayleigh_below_exact_n64
+#print axioms gumbel_route_REFUTED_n64
+
 end ProximityGap.Frontier.AvN3

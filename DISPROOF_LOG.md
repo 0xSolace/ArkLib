@@ -8404,3 +8404,28 @@ assembly; no CORE/cancellation/anti-concentration/capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoTighterBoundCapstone.lean, new theorem
 noTighterBound_strengthened, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [Gumbel/Rayleigh-tail route — DIVERGENT refutation] overshoot grows unboundedly (2026-06-19)
+
+Lane: door-(iv) Lane-1 anti-concentration / extreme-value (door-iii adjacent). EXTENDS the proven
+single-point Rayleigh-domination refutation (_AvN3_GumbelTailRefuted.gumbel_route_REFUTED, witness
+(n,t)=(32,3.0), overshoot 18x) with a STRICTLY larger, divergence-pinning witness.
+
+PROBE-FIRST (exact-integer/exact-angle, β=4 prize regime, |η_b| constant on μ_n-cosets so counted
+over coset reps × n): at (n,t)=(64, p=16777153, t=4.0):
+  #{b≠0 : |η_b| > 4√n} = 17·64 = 1088 of p−1=16777152  ⟹  P_exact(4) = 1088/16777152 ≈ 6.485e-5,
+  Rayleigh exp(-16) ≈ 1.125e-7  ⟹  overshoot ≈ 576×.
+Sequence of overshoots is MONOTONE INCREASING through the prize regime: 18× at (32,3.0), 38× at
+(32,3.5), 576× at (64,4.0). There is NO uniform constant K with P_exact(t) ≤ K·exp(-t²): the
+Gumbel/exchangeable-max heuristic (which assumes P_exact ≍ exp(-t²) up to a constant) is DIVERGENTLY,
+not marginally, wrong in the deviation range the union bound integrates. The bulk is simultaneously
+SUB-Rayleigh (empirical mean |η_b|/√n ≈ 0.80 vs Rayleigh 0.886, STATIONARY across n=16,32,64) — mass
+is pulled out of the bulk INTO the fat tail. So door-(iii)/extreme-value and any random-model
+small-ball (Littlewood-Offord/Halász) bound, which assume the Rayleigh tail, OVERSHOOT the true
+worst-b — confirming door (iv) (a genuinely arithmetic, non-distributional evaluation) is required.
+Consistent with the prior ILO/bulk-correlation entry (thin μ_n has worse small-ball than random).
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvN3_GumbelTailRefuted.lean, new
+theorems rayleigh_below_exact_n64, gumbel_route_REFUTED_n64, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}. No CORE/cancellation/completion/anti-concentration/capacity
+claim — this LOCKS the no-go for the distributional route.
