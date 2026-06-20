@@ -2119,7 +2119,6 @@ NET: 6feb11b53's two claims (collective inflation; exceeds sup at deep r) both S
 self-consistent re-audit; the only adjustment is the precise onset (r≥4 strict, vs r≥3 loose). No overclaim
 survives; the finding is robust. Python-only => axiom-clean trivially.
 
-=========================================================================2026-06-14 wf-D1 (#444): the binding wf-NH far-line incidence I(n) is QUARTIC, not a small constant
 --------------------------------------------------------------------------------
 REFUTED (as a reading of the closure path): "at the binding radius δ* is a SMALL p-independent
 computable combinatorial quantity off the √-cancellation wall, so the prize is a small number."
@@ -2147,7 +2146,6 @@ half is refuted. New open object: the r-PROFILE I(n,r) (δ* = largest r with I(n
 exact p-free computation, not a char-sum bound.
 Python-only numerics => axiom-clean trivially. — wf-D1
 
-=========================================================================2026-06-15 LD-radius plateau thinness gate (#444): the per-direction n-plateau
 quantization is thinness-essential but ANTI-HELPFUL for the floor (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: the list-decoding reframing (KB deltastar-perdirection-decomposition-listdecoding.md +
@@ -2190,7 +2188,6 @@ Johnson is TRUE empirically i.e. mu_n ~ random) — and SHARPENS it: mu_n is not
 the far-line LD radius, it is at-or-slightly-worse, so the floor cannot come from a thinness ADVANTAGE
 in this object. Python-only exact => axiom-clean trivially.
 
-=========================================================================2026-06-15 LD-radius s* is STRUCTURED-PRIME-BLIND (#444): a purely-cyclotomic invariant
 that cannot encode the meta-theorem's essential structured-prime mechanism (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: companion to the LD-radius plateau thinness gate (prev entry). The brief rule-2 + the §3/§4
@@ -2218,7 +2215,6 @@ thinness-sensitive in QUANTIZATION but structure-blind in VALUE => it is a cyclo
 invariant, not the moment/BGK object the prize ultimately needs. CORE not closed, not faked.
 Python-only exact => axiom-clean trivially. probe_407_ld_radius_structured_primes.py.
 
-=========================================================================## ⚠️ REFUTATION (census->CORE lane) — the "#bad collapse to O(1) at the hifreq binding line" is THICKNESS-INVARIANT, NOT thinness-essential (2026-06-15, opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LENS: the census<->CORE map (probe_407_census_core_bindingband_ratio.py + c.1037) showed at the
 hifreq BINDING line #bad COLLAPSES to O(1) while #alignable overcounts up to 112x, and concluded
@@ -2264,7 +2260,6 @@ structure)" -- formalizable as a statement that badScalars.card at the hifreq bi
 through the single-far-line agreement locus, which is defined field-/subgroup-structure-free.
 CORE not closed, not faked. Python-only exact => axiom-clean trivially.
 
-=========================================================================2026-06-15 LD plateau = single dilation orbit: EXACT numerical corroboration of in-tree
 wf3D4 monomial_badset_orbit_closed, extended to Fermat prime (#444) (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 Probe-first verification of the MECHANISM behind the plateau-=-n (the prev two LD-radius entries).
@@ -2289,7 +2284,6 @@ real but points the WRONG way for the floor (it is the residual open Prop "does 
 budget" that carries the prize, and the orbit being exactly =budget at the binding is the knife-edge).
 CORE not closed. Python-only exact => axiom-clean trivially. probe_407_ld_plateau_dilation_orbit.py.
 
-=========================================================================2026-06-15 The e2=0 over-det census (the prize FLOOR's load-bearing R1 object) is
 THINNESS-ESSENTIAL: built on antipodal pairing, VANISHES for random domains (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: the in-tree prize skeleton. DeltaStarEqEdge.lean reduces the FLOOR to ONE open hyp (R1, `hgood`):
@@ -2324,7 +2318,6 @@ itself bound K(n) — the open content is purely the K growth law (the additive-
 closed, not faked. Python-only exact => axiom-clean trivially.
 probe_407_e2_census_K_thinness.py + probe_407_e2_census_mechanism.py.
 
-=========================================================================## ⚠️ REFUTATION + REPLACEMENT LAW — the char-0 far-line delta* candidate "delta* = (1-rho) - log2(n)/n" is FALSE at n=64; the true law is s*-k = n/4 i.e. delta* = 3/4 - rho (2026-06-15, opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: the full-assault-synthesis "live lead" (docs/kb/deltastar-444-full-assault-synthesis + 
 deltastar-407-char0-logn-over-n-candidate): a NEW candidate char-0 worst-case far-line crossing
@@ -2402,7 +2395,6 @@ TIMED OUT. A pinned s* with climbing delta* is the signature of a SEARCH CEILING
 deviation (s*=13 not 15) may be real (n=32 was within H100 reach) and is the genuine open sub-question.
 Python-only exact + p-invariant => axiom-clean trivially. Probes probe_wf3D2_*.py.
 
-=========================================================================2026-06-15 e2=0 census WIDTH PROFILE: super-budget at all widths past the smallest;
 corroborates wf-D5 free-mu_{n/2}-action backbone from the census side (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: K(n,w) width profile of the e2=0 census (the prize FLOOR's R1 object). Follow-up to the
@@ -2432,7 +2424,6 @@ off-budget floor, at probed n. CORE not closed, not faked. The thin-ONLY nature 
 adds the width profile + growth + the wf-D5 census-side corroboration. Python-only exact => axiom-clean.
 probe_407_e2_K_growth_antipodal.py (validated MIM) + probe_407_e2_K_width_profile.py.
 
-=========================================================================2026-06-15 The e2=0 census K is WITHIN floor budget (K<=1) ONLY at radii DEEPER than
 Johnson; at/above the Johnson edge K is large + super-linear (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: the load-bearing e2=0 census R1 object (DeltaStarEqEdge.lean hgood + _E2DilationDirectCount:
@@ -2481,7 +2472,6 @@ CORE not closed, not faked. K(64) full-window enumeration feasible at SMALL w (t
 w<=7 needs only C(64,<=7) per side -- TRACTABLE, unlike w=n/2. Python-only exact => axiom-clean trivially.
 probe_e2_widthsweep_directcount.py + /tmp/e2_floorwindow.py.
 
-=========================================================================2026-06-15 EXACT CLOSED FORM for the shallow e2=0 census: K(n,4) = n/4 - 1,
 #bad = n^2/4 - n; the census n/4 = wf-D2's s*-k=n/4 (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 Beat the C(64,32) wall for the e2=0 census by enumerating the SHALLOWEST over-det width w=k+2=4 directly
@@ -2507,7 +2497,6 @@ count). CORE not closed: the closed form CONFIRMS super-budget (n^2/4 >> n) => n
 shallow width, consistent with Johnson-tracking. Python-only exact => axiom-clean trivially.
 probe_407_e2_K_w4_n64.py (5-point, multi-prime verified).
 
-=========================================================================2026-06-15 The shallow-width e2=0 census MAP + the w=5 KNIFE-EDGE (#bad=budget=n
 exactly, single orbit, 2-pairs+singleton): cleanest formalization target (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 Completed the shallow-width map of the e2=0 census (prize FLOOR's R1 object) for 2-power n, exact,
@@ -2535,7 +2524,6 @@ floor-slack; the binding among ALL widths/families is the R1 residual) but it pi
 edge witness. Consistent w/ wf-D2 Johnson-tracking + the shared n/4 structure. CORE not closed, not
 faked. Python-only exact => axiom-clean trivially. probe_407_e2_w5_knife_edge.py.
 
-=========================================================================2026-06-15 The shallow e2=0 over-det census is a w==0 (mod 4) RESONANCE: K(n,w)=n/4-1
 iff 4|w, else K<=1 -- so the over-det floor object is within budget UNLESS k==2 (mod 4)
 (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2580,7 +2568,6 @@ VERDICT (rule-4 mapped structural law; rule-6 honest, NOT a closure):
    axiom-clean trivially.
 probe_407_e2_census_general_k_resonance.py + probe_407_e2_census_n64_shallow.py.
 
-=========================================================================2026-06-15 ★ LIVE-LEAD (route 36, never-tried per ledger): mu_n deep holes ARE concentration
 points; deep-hole monomials are EXACTLY x^j with j == k (mod 4) -- a FINITE n/4-size candidate
 set for the worst-case u0 (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2623,7 +2610,6 @@ beats Johnson is the live question. CORE not closed; this OPENS a finite-candida
 Python-only exact => axiom-clean trivially.
 probe_407_deephole_classification.py + probe_407_deephole_concentration.py.
 
-=========================================================================2026-06-15 CORRECTION to the route-36 deep-hole classification: "j == k (mod 4)" was a
 k=3 COINCIDENCE; the true law is R=n-k with deep-hole count n/4 (odd k) / n/2 (even k)
 (opus-4-8 subagent, self-correcting push 1b3f947fa)
 --------------------------------------------------------------------------------
@@ -2649,7 +2635,6 @@ reduces to this deep-hole family. The open work (bound #bad over the deep-hole f
 unchanged. CORE not closed. Python-only exact => axiom-clean.
 probe_407_deephole_kvary.py.
 
-=========================================================================2026-06-15 CENSUS ROUTE INTERNAL INFEASIBILITY: the deployed CensusDomination is
 FALSE at ITS OWN weld budget eps* at the SHALLOW over-det bands (and the deepest
 band) -- the route over-shoots the very supply bound that defines eps* (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2708,7 +2693,6 @@ non-Fermat, p-independent. K at n=16 is a max over a worst-line family + random 
 but every DEAD row is a rigorous lower-bound overflow. Python-only, no Lean changed => axiom-clean trivially.
 probe_407_census_supply_budget_feasibility.py + probe_407_census_supply_budget_exhaustive.py.
 
-=========================================================================2026-06-15 The LAST NON-MOMENT route (per-frequency worst-coset tower descent) is
 DEAD: the worst-coset transfer ratio rho* is THICKNESS-INVARIANT and the two half-
 coset periods are ALWAYS sign-aligned (no signed cancellation) (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2798,7 +2782,6 @@ should target the HIGHER-ORDER collective moment profile (the L7 BGK aggregate t
 to), NOT r_min. This CLOSES the smallest-vanisher sub-lane. CORE not closed, no overclaim. Python-only
 exact, no Lean changed => axiom-clean trivially. probe_407_thin_sidon_depth_n64_bracket.py.
 
-=========================================================================2026-06-15 The OddExcessSpikeLaw value (the 2-adic even-direction collapse-failure
 margin) is THICKNESS-INVARIANT -> the even-direction descent's odd-excess is NOT the
 thin-specific prize mechanism (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2829,7 +2812,6 @@ tracking; only the aggregate BGK moment is open). RULE-6: does NOT close CORE, d
 tree oddExcess_card or the named Prop (the collapse genuinely fails; E IS the obstruction) -- it maps
 that the obstruction's VALUE is thin-independent. Python-only exact => axiom-clean trivially.
 
-=========================================================================2026-06-15 POSITIVE FEASIBILITY: the CANONICAL open core B=max_stack #bad IS within
 the eps* budget at EVERY r (ratio 0.04-0.41) -- the census route's infeasibility is
 PURELY the #bad<=#alignable loss; target #bad DIRECTLY (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2876,7 +2858,6 @@ VERDICT (positive direction-setting, rule-6 honest -- NOT a CORE closure):
    collective BGK depth, that this finite-n feasibility persists asymptotically.
 Python-only, no Lean => axiom-clean trivially. probe_407_truecore_B_vs_budget.py.
 
-=========================================================================2026-06-15 FLOOR-CONSISTENT on the CORRECT object: the canonical #bad / eps*-budget
 ratio at the shallowest binding band is BOUNDED BELOW 1 (converging ~0.26), NOT
 Johnson-tracking -- the first floor-consistent growth on #bad direct (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -2917,7 +2898,6 @@ it is the first face whose #bad-to-budget ratio does NOT march to Johnson. The d
 the multi-band + larger-n confirmation are the open residual. CORE not closed, not faked. Python-only,
 no Lean => axiom-clean trivially. probe_407_truecore_B_growth.py.
 
-=========================================================================2026-06-15 The TRUE-CORE B (max_stack #distinct-bad-gamma) feasibility margin is
 THICKNESS-INVARIANT -- B/budget identical thin vs thick => finite-n feasibility is
 Johnson-margin, NOT thin-essential; thin content is purely in B's ASYMPTOTIC growth
 (opus-4-8 subagent)
@@ -2982,7 +2962,6 @@ radius; generic stacks do NOT threaten the canonical core B = max over ALL stack
 the "->Johnson" derived on monomials is NOT an under-estimate of the true B at the binding band. CORE not
 closed, no overclaim. Python-only exact, no Lean => axiom-clean trivially. probe_407_genericstack_vs_monomial_worst.py.
 
-=========================================================================2026-06-15 The moment-ratio STEP margin g(2)=(A_3/A_2)/((2r+1)n) SATURATES TO
 EXACTLY 1 (geometric rho~1/2, L~1.0003): the r=2 step is asymptotically TIGHT, not
 slack -- the surviving-lever margin closes to ZERO as n->inf (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3028,7 +3007,6 @@ companion + sharpening of the FFT g(r*) trend, not a proof at r*. CORE not close
 exact-integer E_r unlock (no size-p FFT) is reusable for deeper-r / larger-n moment-step extension.
 Python-only exact => axiom-clean trivially. probe_407_step_at_rstar_n128.py.
 
-=========================================================================2026-06-15 EXACT CLOSED FORMS pin the r=2 moment-step saturation ANALYTICALLY:
 E_2(mu_n)=3n(n-1), E_3(mu_n)=15n^3-45n^2+40n => g(2;n)=1-2/n+O(1/n^2) -> EXACTLY 1,
 and the LEADING terms are NEGATION-CLOSURE-generic (thin advantage is a VANISHING
 O(1/n) subleading correction, NOT leading-order) (opus-4-8 subagent)
@@ -3105,7 +3083,6 @@ HONEST: sub-prize p (~10^6; budget p~2^128), r capped at 6 (E0-ring), r*=14 not 
 NOT refute the prize, NOT contradict 98db97afc. Pure-Python exact integer counts, no Lean => axiom-clean
 trivially. probe_407_anom_worst_rtraj_n32.py.
 
-=========================================================================2026-06-15 The E_r STRUCTURE is WICK-leading with a clean -C(r,2) subleading:
 E_r(mu_n) = (2r-1)!![n^r - C(r,2)n^{r-1} + O(n^{r-2})] => the GENERAL moment-step
 margin is g(r) = 1 - r/n + O(1/n^2) EXACTLY (the BGK knife-edge in closed form)
 (opus-4-8 subagent)
@@ -3154,7 +3131,6 @@ irreducible prize content; the leading r/n law does NOT resolve it (it -> 0, con
 prize-true and BGK-tight). The closed forms E_r = (2r-1)!![n^r - C(r,2)n^{r-1}+...] are clean formalizable
 targets (exact rational arithmetic => axiom-clean trivially). probe_407_Er_closedform_thin.py.
 
-=========================================================================2026-06-15 The A_r/Wick PRIZE-RATIO profile CONFIRMS the r/n margin law on the
 actual object: ratio RISES toward 1 as n grows at every fixed r (margin shrinks);
 deep-r upturn at fixed p is a finite-field artifact (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3224,7 +3200,6 @@ DC-essential threshold q*(2r-1)!! < n^r does NOT fire here (5.2e7 >> 4096), so t
 driven mechanism breaking A_r<=Wick at bad primes that the known threshold does not flag. Pure-Python exact
 integer counts, no Lean => axiom-clean trivially. probe_407_headroom_race.py, probe_407_n64_monotonicity_break.py.
 
-=========================================================================2026-06-15 RULE-3 on the E_r SUBLEADING coeff: the -C(r,2)(2r-1)!! subleading
 (E_3's -45) is ALSO neg-closure-generic (thin~neg~thick) -- BOTH leading AND
 subleading orders are thin-blind; the thin advantage is confined to the 3rd+
 coefficients (opus-4-8 subagent)
@@ -3251,7 +3226,6 @@ question). Tightens the brick-4 picture: g(r)=1-r/n is built from two neg-closur
 deviation is below O(1/n^2) in the per-step margin. CORE not closed, no overclaim. Python-only exact =>
 axiom-clean trivially. probe_407_Er_subleading_rule3.py.
 
-=========================================================================2026-06-15 The ACCUMULATED 2nd-ORDER correction to the Wick ratio is NEGATIVE and
 ASYMPTOTICALLY SUBDOMINANT => the "2nd-order rescues a positive prize margin"
 hypothesis is REFUTED at the joint limit r*~log n (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3328,7 +3302,6 @@ prize bound, M^4<=p A_2 -> M<=(3p)^{1/4}sqrt(n)). Maps EXACTLY how the char-0 r/
 anomaly race: the anomaly wins ~18x/octave. Pure-Python exact, no Lean => axiom-clean trivially.
 probe_407_anom_vs_rn_headroom.py.
 
-=========================================================================2026-06-15 The RESUMMED Wick ratio W(r*) -> 1 on EVERY polynomial-log joint
 diagonal r*=a*log2 n in the prize regime r*<<n => BGK-tight confirmed
 non-perturbatively; W-bounded-below-1 only at r~n (NOT prize) (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3438,7 +3411,6 @@ the knife-edge or worse at every accessible r, consistent with the whole board. 
 integer cyclotomic-lattice convolution, no control, no prime, no Lean => axiom-clean trivially. CORE not
 closed, not refuted. probe_407_Wickratio_rtrend_exact.py.
 
-=========================================================================PHASE-ALIGNMENT TOWER lane: the "cos@b*=1.0000 tower-recursive" descent-handle
 premise is REFUTED -- it is antipodal symmetry (-1 in mu_n), a SIGN not a phase.
 (push b3ad58f20, receipt #444 ic-4705287464, probe_407_phase_alignment_is_antipodal_symmetry.py)
 
@@ -3461,7 +3433,6 @@ faster-than-sqrt-log read was a finite-size artifact. No prize-tension at access
 
 Does NOT close/refute CORE. Removes one hoped-for mechanism + one false-alarm read.
 
-=========================================================================2026-06-15 The bad-prime ANOMALY Anom_r is prime-selective + QUANTIZED, and its
 ONSET DEPTH r0(n) DECREASES with n (4->4->3 over n=16,32,64), descending toward
 the prize rung r=2 (but r0>2 at n<=64 => prize rung still anomaly-clean) (opus-4-8)
 --------------------------------------------------------------------------------
@@ -3546,7 +3517,6 @@ difference being pure small-field suppression. CLOSES the route-36 explicit open
 field-saturated object. Python-only exact => axiom-clean trivially.
 probe_407_deephole_restricted_sup_growth.py.
 
-=========================================================================2026-06-15 The r=2 PRIZE RUNG is ANOMALY-FREE at every in-window prize prime
 (n=16..256) => A_2 char-0-fixed; its L4 ceiling (pA2)^{1/4}~n^{1.5} >> prize
 sqrt(n log) => moment-method walled from BOTH ends (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3571,7 +3541,6 @@ DECREASING 4,4,3) CARRY the bad-prime anomaly but there the char-0 Wick ratio sa
 ends are walled; the prize sits in neither. CORE not closed; the moment/L4 method is mapped as
 walled-from-both-ends. Pure-Python exact => axiom-clean trivially. probe_407_r2_rung_anomaly_free.py.
 
-=========================================================================2026-06-15 The bad-prime anomaly ONSET DEPTH r0(n) PLATEAUS at 3 (does NOT reach
 the prize rung r=2): r0 = {16:4, 32:4, 64:3, 128:3}. The r=2 prize rung is
 anomaly-CLEAN in-window at n=128 (exact, 30-prime net). (opus-4-8 subagent)
 --------------------------------------------------------------------------------
@@ -3610,7 +3579,6 @@ VERDICT (rule-4 mapped result, rule-6 honest -- NOT a closure/refutation):
     open question (plateau, not ->2). Pure-Python exact integer counts, no Lean => axiom-clean trivially.
     probe_407_anomaly_onset_n128.py + probe_407_anomaly_onset_n128_verify.py.
 
-=========================================================================THIN-SIDON depth->sup-norm bootstrap (§7.2, the only-live thinness-essential lead):
 the conversion failure is beta-ROBUST. (push edc3a3913, receipt #444 ic-4705330516,
 probe_407_supnorm_gate_beta_invariance.py)
 
@@ -3654,7 +3622,6 @@ per beta; n=32 beta=5 sup-sweep (p~3.3e7) untested (heavy). Does NOT close/refut
   onset depth NOR the magnitude quantization of the bad-prime anomaly is thin-essential; the density is a
   separate n-arithmetic phenomenon, not a prize lever. probe_407_anom3_quantization_rule3.py.
 
-=========================================================================2026-06-15 The SINGLE-FREQUENCY-DOMINATES step (M^{2r} <= p*A_r) carries NO thin
 advantage: the domination slack D_r is thickness-generic and thin is slightly
 WORSE (adverse, rule-3 fail) -- all prize tension is in A_{r*}<=Wick, not the
 moment-to-sup passage (opus-4-8 subagent)
@@ -3686,7 +3653,6 @@ VERDICT (rule-3 mapped, rule-6 honest -- NOT a closure/refutation):
   - Does NOT close/refute CORE. Maps the domination step as a non-lever. Pure-Python exact (FFT-free real
     period sums), no Lean => axiom-clean trivially. probe_407_singlefreq_domination_slack.py.
 
-=========================================================================2026-06-15 The SHALLOW e2=0 over-det resonance K(n,4)=n/4-1 is THICKNESS-INVARIANT
 (rule-3 FAIL): subgroup-essential but NOT thin-essential (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 LANE: the §6 honest-open-question combinatorial face -- the e2=0 over-det census R1 object. Follow-up to
@@ -3719,7 +3685,6 @@ in the REFUTATION direction (in-window but thin-blind => Johnson-region/thicknes
 wf-D2 delta*->Johnson and #bad=n^2/4-n super-budget). CORE not closed, not faked. Pure-Python exact, no
 Lean => axiom-clean trivially. probe_407_shallow_resonance_thickness_rule3.py.
 
-=========================================================================2026-06-15 FINER rule-3 on the shallow resonance: the orbit-rep STRUCTURE is
 ALSO thickness-blind (rule-3 FAIL is TOTAL, count AND structure) (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 Follow-up to push 563fc7f85 (K(n,4)=n/4-1 thickness-invariant). Loophole closed: could two same-COUNT
@@ -3742,7 +3707,6 @@ structure. Confirms + completes 563fc7f85: the shallow resonance is a generic 2-
 object, not a thin-essential prize lever, at the count AND the structural level. CORE not closed, not faked.
 Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_e1set_structure_rule3.py.
 
-=========================================================================2026-06-15 n=64 octave confirms the shallow-resonance thickness-invariance brick
 (K(64,4)=15 across thick+thin) (opus-4-8 subagent)
 --------------------------------------------------------------------------------
 Extension of push 563fc7f85 to the dossier's enumeration frontier n=64 (the thick-beta n=64 control was
@@ -3754,7 +3718,6 @@ VERDICT: the thickness-invariance of the shallow e2=0 resonance now holds at n=1
 to the enumeration frontier. The rule-3 FAIL is robust across scale. CORE not closed, not faked.
 Pure-Python exact, no Lean => axiom-clean trivially. probe_407_resonance_n64_thickness.py.
 
-=========================================================================2026-06-15 wf-D2 BINDING-LAW CORRECTION: the formula s*=2k-1 (c*=k-1, delta*=1/2+1/n)
 FAILS at n=8 -- the TRUE binding is s*=5 (c*=3), q-invariant. Independent EXACT
 (non-GPU) reconfirmation of n=16 binding s*=7. The "law" is NOT universal => the
 regime A->B s* transition is a REAL binding-formula change, not just a search
@@ -3998,9 +3961,7 @@ full-b-range enumeration. Far-line is the Plotkin/Johnson PROXY (epsMCA >= far_i
 prize is the UNDER-determined (s-k<=1) BGK char-sum wall M(n)=max_{b!=0}|sum_{x in mu_n} e_p(bx)|,
 UNCHANGED. No closure claimed. — wf-RB (proven-per-fixed-n n=16,20; binder-exact n=24)
 
-=========================================================================REFUTATION (constraint lemma): the over-det VANISHING (coset-union) supply is NOT the binding
 constraint at prize depth — it is super-exponentially LOOSE there. (zeta lane, push pending)
-=========================================================================OBJECT (exact char-0 cyclotomic, PROPER mu_n, n=2^a, NEVER n=q-1): the over-det vanishing-subset
 count V_r(n) = #{S subset mu_n : p_1(S)=...=p_r(S)=0}, the §6.5 generating-function object. CLOSED
 FORM (axiom-clean, OverdetVanishingCosetCount.lean, pushes 29b45f180 + f4e864a8b):
    V_r(n) = 2^{ n / 2^{floor(log2 r)+1} }   (r>=1)   [= coset-unions of the order-2^{floor(log2 r)+1}
@@ -4025,9 +3986,7 @@ DC-subtracted A_r <= Wick char-p validity), NOT the supply count. Localizes the 
 the §6.5 supply-count object. CORE (M(mu_n) <= C sqrt(n log m)) UNCHANGED/OPEN. -- zeta lane,
 co-author wakesync.
 
-=========================================================================CONSTRAINT LEMMA (push CrossStepCeilingInsufficient.lean, lane m3r2, 2026-06-15):
 The LOOSE Lam-Leung ceiling alone CANNOT discharge M3CrossStepBound for r >= 2.
-==================================================================The recursion-closure (_wf5M3_crossstep_ceiling) localized the prize energy ladder onto ONE open
 Prop: M3CrossStepBound G : forall r, crossMass G r <= 2r*(2r-1)!!*n^{r+1}, where
 crossMass G r = E_{r+1} - n*E_r (off-diagonal cross mass of the proven recursion E_{r+1}=n*E_r+cross_r).
 CrossStepRungOne discharged r=0,1 from the proven r<=2 energy ceilings. This entry maps the wall on
@@ -4059,10 +4018,8 @@ NOT a refutation of M3CrossStepBound (which IS true). A refutation of the ceilin
 for r >= 2, with the exact slack. CORE (M(mu_n) <= C sqrt(n log(p/n))) UNCHANGED/OPEN. -- m3r2 lane,
 co-author wakesync.
 
-=========================================================================CONSTRAINT LEMMA (probe probe_spur_onset_growth.py, lane spur3, 2026-06-15):
 The smallest odd bad prime for antipodal-free relations does NOT grow with scale m —
 it pins at 3 from weight 4 onward, uniformly in m. Bad primes ACCUMULATE, they don't escape.
-=========================================================================OBJECT (exact char-0 cyclotomic norms N(σ_T)=|Res(R_T,Φ_{2^m})|, PROPER μ_n, n=2^a, NEVER n=q−1):
 the spurious-collision support — for weight w and scale m, the set of odd primes p with p|N(σ_T) for
 SOME antipodal-free relation σ_T of weight w over μ_{2^m}. This is the p-set on which Spur_{w/2}(p)≥1.
 
@@ -4086,9 +4043,7 @@ odd p, weight≥3 dirty at every odd p — they pin the tower's onset at weight 
 NOT a refutation of CORE; a mapped boundary on the Spur support. CORE (M(μ_n)≤C√(n log(p/n))) OPEN.
 -- spur3 lane, co-author wakesync.
 
-=========================================================================REFUTATION-WITH-MECHANISM (lane dblcompose, 2026-06-15): the doubling-mass HALVING
 does NOT iterate via the other tower neighbor. plus2Mass = plusMass EXACTLY.
-=========================================================================OBJECT. DilationDoublingMassHalf proves a SINGLE-level cap: along one genuine disjoint
 tower step (negation-closed G=μ_n, ζ order 2n, μ_n ⊔ ζμ_n disjoint), the L²-weighted
 DOUBLING (+sign) cross-mass plusMass = Σ_{s_b≥0} ‖η_b‖‖η_{ζb}‖ ≤ ½q|G|, where
 s_b = Re η_b · Re η_{ζb}. Its honesty note flags the OPEN gap: a single frequency may sit
@@ -4131,10 +4086,8 @@ Frontier/DilationDoublingMassNoCompose.lean —
 NOT a refutation of CORE; a precise NO-GO on the iterated-halving deep-descent route + the exact
 mechanism. CORE M(μ_n) ≤ C√(n log(p/n)) UNCHANGED/OPEN. -- dblcompose lane, co-author wakesync.
 
-=========================================================================REFUTATION-WITH-MECHANISM (lane bivstep, 2026-06-16): the SECOND Stepanov stall
 on mu_n -- the Stepanov-Weil sqrt(q) FIELD bound is VACUOUS in the prize regime,
 and Johnson sqrt(kn) sits strictly BELOW both Stepanov outputs.
-=========================================================================OBJECT. StepanovStructuredVacuous formalized the FIRST Stepanov stall (classical Stepanov on the
 SEPARABLE X^n-1 pins multiplicity to M=1 => trivial degree bound s* <= n-1, mu_n_roots_simple /
 stepanov_collapses_to_degree). Its docstring records the SECOND stall AS PROSE ONLY: the
 Stepanov-Weil / Kelley-Owen field-root bound is ~ sqrt(q), "exponentially vacuous because
@@ -4175,11 +4128,9 @@ NOT a refutation of CORE; a precise NO-GO mapping the SECOND Stepanov stall (the
 vacuity), companion to the in-tree FIRST stall (separability/M=1 collapse). CORE
 M(mu_n) <= C sqrt(n log(p/n)) UNCHANGED/OPEN. -- bivstep lane, co-author wakesync.
 
-=========================================================================REFUTATION-WITH-MECHANISM (lane plotkinsep, 2026-06-16): the far-line incidence
 threshold is a PLOTKIN PROXY -> 1/2, strictly BELOW Johnson for rho < 1/4, hence
 it is NOT the MCA delta* (the prize object, >= Johnson). Clean structural
 separation isolating the BGK/Paley-hard residual. master-open-thread #5.
-=========================================================================OBJECT. Two distinct thresholds are conflated in the #357/#389/#407 attack:
   (1) far-line incidence threshold (COMPUTABLE proxy), in-tree budget B = q*eps* =
       (n*2^128)*2^-128 = n (B1IncidenceBridge.WorstCaseFarIncidenceBounded at B=n).
       Validated exact (Rust engine, matches canonical probe delta*(mu_16,k=4)=9/16):
@@ -9514,3 +9465,38 @@ missing-index fraction `(M-#S)/M`, and any normalized target `eps` forces comple
 VERDICT: the near-all-defect Cauchy-Schwarz/L2 route has no asymptotic normalized saving when the
 complement is sublinear. A fixed `eps`-saving demands a fixed complement fraction before any arithmetic
 phase structure enters. No CORE/cancellation/completion/moment/capacity claim. CORE OPEN.
+## door-(iv) Lane-1: the canonical-half coherence is SIGN-QUANTIZED to {+1,-1} (no continuous slack) (2026-06-20, sol)
+
+Lane 1 PROBE → constraint lemma, multiplicative/Door-(iv) side. CLOSES the standing ESCAPE CLAUSE of the
+coherence-slack refuted-lever family (`_DoorIVCoherenceSlackVacuousAtArgmax`, `_DoorIVMultiPieceSignCoherence`,
+...): every one of those refutations is conditioned on "the prize-worst frequency is FULLY COHERENT, OR you
+must prove it is NOT fully coherent." This entry proves the canonical-split coherence at the worst frequency
+is forced to `+1` by a QUANTIZATION, not by soft alignment a `1-ε` slack certificate could chip at.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_canonical_half_coherence.py`): for `n=2^a`, `a≥2`, primes
+`p≡1 (mod n)` in the prize regime (`p≈n^4≫n^3`, PROPER subgroup `μ_n⊊F_p^*`), split along the *canonical*
+index-2 decomposition `μ_n = μ_{n/2} ⊔ ξ·μ_{n/2}` (NOT the even/odd-power split, which is a real-positive
+ARTIFACT giving `cos≡+1` trivially for large-|η| cosets). Measured EXACTLY over `n=8,16,32,64`, 12 structured
+primes, hundreds of frequencies, exact integer phases:
+  - `|Im η_b| = |Im A_b| = |Im B_b| = 0` (machine zero ~1e-15): each half-sum `A_b,B_b` is REAL;
+  - `cos_half(b) = Re(A_b·conj B_b)/(|A_b||B_b|) ∈ {+1,-1}` with deviation EXACTLY 0 at EVERY `b`,
+    while the magnitude balance `|A_b|/|B_b|` genuinely varies (0.61..0.93) — a real two-piece object,
+    not a trivially symmetric one;
+  - at the ARGMAX `b*` (prize-worst frequency) coherence is `+1` (deficit `1-cos = 0`) across all primes;
+    the small-|η| frequencies are exactly the `-1` (destructive) ones.
+
+MECHANISM (honest): `μ_{n/2}=⟨h²⟩` is closed under negation because `-1 = h^{n/2} = (h²)^{n/4} ∈ μ_{n/2}`
+(this needs `4∣n`, i.e. `a≥2`). A unit-circle sum over a negation-closed (conjugation-closed) index set is
+real; `e_p(b·(-u)) = conj(e_p(b·u))`, so each half-sum is real, hence `cos_half(b) = sign(A_b·B_b) ∈ {-1,0,+1}`,
+and `= ±1` whenever both halves are nonzero. The "fully coherent worst frequency" is FORCED.
+
+VERDICT: there is NO continuous coherence slack `1-ε` to exploit on the canonical half-split — the coherence
+is discrete (`±1`), so the coherence-slack escape clause is DEAD for the canonical decomposition. A door-(iv)
+attack cannot win by "shaving the worst-b coherence below 1"; it must attack the BASELINE peak directly or
+use a NON-canonical decomposition whose halves are not individually real. No CORE, cancellation, completion,
+moment-saving, anti-concentration, or capacity claim. CORE stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalHalfCoherenceQuantized.lean`,
+axiom-clean (`{propext, Classical.choice, Quot.sound}`). New theorems: `sum_conjClosed_isReal` (conjugation-
+closed unit sums are real — the mechanism), `coherence_quantized_of_real` (coherence of two reals ∈ {-1,0,1}),
+`coherence_pm_one_of_real_ne` (= ±1 when both nonzero — no continuous slack).
