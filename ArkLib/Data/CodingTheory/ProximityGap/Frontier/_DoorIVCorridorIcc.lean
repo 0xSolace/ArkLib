@@ -104,6 +104,21 @@ theorem lt_bgkScale_of_mem_doorIVCorridor_of_ne {n L M : ℝ}
     M < bgkScale n L :=
   lt_of_le_of_ne ((mem_doorIVCorridor_iff.mp hmem).2) hne
 
+/-- At `L = 1` the door-(iv) corridor collapses to the singleton floor `{√n}`.  Thus every
+positive-width corridor statement genuinely uses the thinness slack `L > 1`; at the endpoint there is
+no room between the Plancherel floor and the BGK ceiling. -/
+theorem doorIVCorridor_one_eq_singleton (n : ℝ) :
+    doorIVCorridor n 1 = {prizeScale n} := by
+  unfold doorIVCorridor bgkScale prizeScale
+  simp
+
+/-- Endpoint-collapse membership form: when `L = 1`, being in the door-(iv) corridor is exactly being
+at the Plancherel floor.  This is the no-slack boundary case of the corridor interface. -/
+theorem mem_doorIVCorridor_one_iff {n M : ℝ} :
+    M ∈ doorIVCorridor n 1 ↔ M = prizeScale n := by
+  rw [doorIVCorridor_one_eq_singleton]
+  simp
+
 /-- **Corridor monotonicity in the thinness index.**  A larger thinness index `L₁ ≤ L₂` (with `0 ≤ n`)
 yields a wider BGK ceiling, hence a larger corridor: `doorIVCorridor n L₁ ⊆ doorIVCorridor n L₂`.
 The floor `√n` is `L`-independent; only the ceiling `√(n·L)` grows. -/
@@ -119,3 +134,5 @@ end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy
 #print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale_mem_doorIVCorridor
 #print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.not_mem_doorIVCorridor_of_bgkScale_lt
 #print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.lt_bgkScale_of_mem_doorIVCorridor_of_ne
+#print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor_one_eq_singleton
+#print axioms ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.mem_doorIVCorridor_one_iff
