@@ -8463,3 +8463,22 @@ theorems witnessed_ratio_gt_400, gumbel_route_REFUTED_no_constant_le_400 (∀K�
 ScaledRayleighTailDomination Pn64 K), axiom-clean {propext, Classical.choice, Quot.sound}. No
 CORE/cancellation/completion/anti-concentration/capacity claim — LOCKS the constant-rescued
 distributional no-go. (Also cleaned the pre-existing unused-simp linter warning in this file.)
+
+## [Lane-1 PROBE — worst-b argmax coset is UNSTRUCTURED at generic primes] (2026-06-19, Python-only)
+
+Lane: door-(iv) Lane-1 "is the worst-b set itself structured?" (brief's explicit open question).
+PROBE (exact, n=16, β=4): |η_b| is constant on μ_n-cosets, so the worst frequency is an argmax coset
+class c* = dlog_g(worst-b) mod e in [0,e). Scanned c* across 5 distinct β≈4 primes at p≈65521:
+  p=65521 c*/e=0.297 gcd(c*,e)=1 | p=65617 0.265 gcd=1 | p=65633 0.808 gcd=2 | p=65393 0.256 gcd=1.
+The argmax coset label is essentially RANDOM in [0,e) with no clustering and gcd(c*,e)=1 generically
+— NO low-complexity / exploitable arithmetic selection rule for the worst class.
+SINGLE STRUCTURED EXCEPTION: at the Fermat prime p=65537 (e=4096=2^12) the worst coset is c*=0, i.e.
+the worst b lies in μ_n itself. This is a measure-zero special-prime artifact and CANNOT be leveraged:
+the prize is ∀-field-universal (§6, c.154 — the "good prime exists" pigeonhole is already refuted), so
+a structured argmax at a single Fermat prime gives no universal lever; the generic-prime argmax has no
+structure to grip.
+VERDICT: confirms the wall on the Lane-1 "structured worst-b" hope — a non-sum-product anti-
+concentration cannot select the worst coset by its arithmetic, because that coset is generically a
+primitive unstructured residue. No exploitable structure survives adversarial re-checking ⇒ do NOT
+larp a selection conjecture. Python-only, no Lean changed ⇒ axiom-clean trivially. No CORE/cancellation/
+completion/anti-concentration/capacity claim.
