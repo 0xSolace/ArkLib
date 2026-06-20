@@ -131,6 +131,7 @@ theorem shawOOneOn_iff_corePrizeBoundOn_of_pos_lt {ι : Type*} {q n M : ι → �
   shawOOneOn_iff_corePrizeBoundOn (q := q) (n := n) (M := M)
     (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
 
+
 /-- Plancherel/Johnson-floor normalization: if `sqrt n ≤ M`, then Shaw's value is at least
 `sqrt n / sqrt(n log(q/n))`.  This records the floor in normalized units without claiming any
 upper bound. -/
@@ -195,6 +196,34 @@ theorem shawValue_mem_interval_iff_raw_mem_scaled_interval_of_pos_lt {q n M L U 
   exact shawValue_mem_interval_iff_raw_mem_scaled_interval (q := q) (n := n) (M := M)
     (L := L) (U := U) (shawScale_pos_of_pos_lt hn hnq)
 
+
+/-- Uniform-family version of the exact Shaw interval capstone.  A family lies pointwise in the
+normalized corridor `L ≤ Sh_i ≤ U` iff the raw Gauss-period norms lie pointwise in the scaled corridor
+`L*scale_i ≤ M_i ≤ U*scale_i`.  This is the family-level corridor analogue of
+`prize ↔ bounded Shaw value`, with no hidden loss and no analytic input. -/
+theorem uniformShawInterval_iff_uniformRawScaledInterval {ι : Type*} {q n M : ι → ℝ} {L U : ℝ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i)) :
+    (∀ i : ι, L ≤ shawValue (q i) (n i) (M i) ∧ shawValue (q i) (n i) (M i) ≤ U) ↔
+      (∀ i : ι, L * shawScale (q i) (n i) ≤ M i ∧
+        M i ≤ U * shawScale (q i) (n i)) := by
+  constructor
+  · intro h i
+    exact (shawValue_mem_interval_iff_raw_mem_scaled_interval
+      (q := q i) (n := n i) (M := M i) (L := L) (U := U) (hscale i)).mp (h i)
+  · intro h i
+    exact (shawValue_mem_interval_iff_raw_mem_scaled_interval
+      (q := q i) (n := n i) (M := M i) (L := L) (U := U) (hscale i)).mpr (h i)
+
+/-- Prize-regime specialization of the uniform-family exact Shaw interval capstone. -/
+theorem uniformShawInterval_iff_uniformRawScaledInterval_of_pos_lt {ι : Type*}
+    {q n M : ι → ℝ} {L U : ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    (∀ i : ι, L ≤ shawValue (q i) (n i) (M i) ∧ shawValue (q i) (n i) (M i) ≤ U) ↔
+      (∀ i : ι, L * shawScale (q i) (n i) ≤ M i ∧
+        M i ≤ U * shawScale (q i) (n i)) := by
+  exact uniformShawInterval_iff_uniformRawScaledInterval (q := q) (n := n) (M := M)
+    (L := L) (U := U) (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
+
 /-- The explicit Johnson-floor/trivial-ceiling corridor in Shaw units: from
 `sqrt n ≤ M ≤ n` one gets
 `sqrt n / sqrt(n log(q/n)) ≤ Sh(q,n) ≤ n / sqrt(n log(q/n))`.  This records exactly where the
@@ -225,6 +254,8 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.uniformShawInterval_iff_uniformRawScaledInterval
+#print axioms ProximityGap.Frontier.ShawValueCapstone.uniformShawInterval_iff_uniformRawScaledInterval_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_sqrt_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_trivial_ceiling_of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_corridor_of_mem_raw_corridor
