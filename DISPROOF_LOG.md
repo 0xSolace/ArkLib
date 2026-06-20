@@ -8770,3 +8770,34 @@ moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSectorCoherence.lean`, new
 theorem `exists_piece_rayProj_deficit_gt_delta_of_complexPieceCoherence_le_one_sub`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) angular-deficit: coherence slack IS phase misalignment, subdivision is free-of-charge (2026-06-20)
+
+Lens: door-(iv) Lane 1/2/3 constraint family for the worst-frequency coset-sum coherence
+`ρ = ‖Σ z_i‖ / Σ‖z_i‖`. Records the EXACT decomposition of the coherence deficit into pairwise
+angular (phase) misalignment, killing the "just subdivide the sum into more pieces" escape and
+pinning what arithmetic input a real CORE bound needs.
+
+Mechanism (all probe-verified exact over 5e4–2e5 random trials, then formalized axiom-clean):
+- `angularDeficit A B = ‖A‖‖B‖ − Re(A·conj B) ≥ 0` (Cauchy–Schwarz; `=0` iff same ray).
+- two-piece: `‖A+B‖² = (‖A‖+‖B‖)² − 2·angularDeficit A B`; squared-level `ρ<1 ⟺ angularDeficit>0`.
+- multi-piece: `‖Σz_i‖² = (Σ‖z_i‖)² − 2·Σ_{i<j} angularDeficit(z_i,z_j)`, each term `≥0`
+  (`totalPairDeficit_nonneg`). Subdivision adds collinear (zero-deficit) pieces ⟹ contributes nothing.
+- EXACT reduction: `‖Σz_i‖² ≤ T ⟺ totalPairDeficit ≥ (L¹²−T)/2`. The prize √-cancellation ceiling
+  is *exactly* a lower bound on the accumulated total pairwise angular deficit (`≈ L¹²/2`).
+- transverse view (`_DoorIVTransverseSpread`): per-piece `rayProj²+rayPerp²=‖z‖²`, sharp
+  `rayPerp² ≤ 2‖z‖·(‖z‖−rayProj)` (projection deficit ⟹ genuine transverse spread), and at the
+  resultant frame `Σ rayPerp = 0` (forced signed cancellation) + `Σ deficit = (1−ρ)L¹`.
+
+VERDICT: a two-piece / multi-piece coset refinement supplies anti-concentration slack ONLY through
+genuine pairwise phase misalignment (angular deficit), never through subdivision; and the prize is
+exactly a near-extremal total-angular-deficit budget. This is a constraint/identity family — it proves
+NO cancellation, anti-concentration, completion, moment, or capacity bound and makes no CORE claim;
+the open arithmetic burden (forcing the coset pieces to carry `≈ L¹²/2` total angular deficit at the
+worst b without a moment/completion route) is untouched.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVTwoPieceAngularDeficit.lean`
+(angularDeficit identities + multi-piece + threshold reduction) and
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVTransverseSpread.lean` (Pythagorean/transverse
++ resultant-frame). All theorems axiom-clean, axioms contained in `{propext, Classical.choice,
+Quot.sound}`. Commits 1c23b2266, d08e78a39, c19d360a1, 98deaa6b4, b5d1cc84d.
