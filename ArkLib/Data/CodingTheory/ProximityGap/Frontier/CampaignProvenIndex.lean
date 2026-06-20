@@ -16,6 +16,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G2_ResonanceCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_nogo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 
@@ -72,6 +73,9 @@ anything here; this index does not claim otherwise.
 | `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
+| `charP_wrap_gap_ge_two_mul_sq_export` | obstruction | CharPWraparoundLogConcaveQ |
+| `charP_wrap_gap_nonneg_of_logConcave_export` | obstruction | CharPWraparoundLogConcaveQ |
+| `charP_transfer_of_dominance_logConcave_export` | obstruction | CharPWraparoundLogConcaveQ |
 | `charP_stepRatioMonotoneAt_iff_gap_nonneg_export` | obstruction | CharPStepRatioFails |
 | `charP_stepRatioMonotone_false_n32_export` | obstruction | CharPStepRatioFails |
 | `charP_no_universal_positive_stepRatioMonotone_export` | obstruction | CharPStepRatioFails |
@@ -328,6 +332,43 @@ theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 
     (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
   bracket_width_eq_sqrt hn hL
 
+/-! ## Door-IV wraparound `Q ≥ 0` discharge. Scope: **obstruction**.
+
+These exports preserve the algebraic narrowing of the char-`p` transfer route: the blind
+wraparound-gap assumption `Q ≥ 0` follows from the sharper log-concavity input `wa·wc ≤ wb²`,
+with an explicit `2·wb²` margin. The companion dominance hypothesis is refuted by the next section,
+so this is a route-local constraint/reduction, not a CORE proof. -/
+
+/-- **[obstruction, CharPWraparoundLogConcaveQ]** Under wraparound log-concavity `wa·wc≤wb²`
+and `0≤s`, the wraparound transfer gap is at least `2·wb²`. This replaces a blind `Q≥0` input
+by a sharper single inequality plus an explicit margin. -/
+theorem charP_wrap_gap_ge_two_mul_sq_export {s wa wb wc : ℝ}
+    (hs : 0 ≤ s) (hlc : wa * wc ≤ wb ^ 2) :
+    2 * wb ^ 2 ≤ ArkLib.ProximityGap.CharPTransferDecomposition.gap s wa wb wc :=
+  ArkLib.ProximityGap.CharPTransferDecomposition.gap_wrap_ge_two_mul_sq hs hlc
+
+/-- **[obstruction, CharPWraparoundLogConcaveQ]** The open wraparound-control hypothesis `Q≥0`
+of the char-`p` transfer assembly follows from `0≤s` and wraparound log-concavity. The remaining
+dominance input is separate and is not discharged here. -/
+theorem charP_wrap_gap_nonneg_of_logConcave_export {s wa wb wc : ℝ}
+    (hs : 0 ≤ s) (hlc : wa * wc ≤ wb ^ 2) :
+    0 ≤ ArkLib.ProximityGap.CharPTransferDecomposition.gap s wa wb wc :=
+  ArkLib.ProximityGap.CharPTransferDecomposition.gap_wrap_nonneg_of_logConcave hs hlc
+
+/-- **[obstruction, CharPWraparoundLogConcaveQ]** The char-`p` transfer assembly with the
+`Q≥0` hypothesis replaced by wraparound log-concavity. This records the exact remaining obligation:
+`0≤G₀+L` dominance plus `wa·wc≤wb²`, with dominance refuted at concrete prize-regime witnesses in
+`CharPStepRatioFails`. -/
+theorem charP_transfer_of_dominance_logConcave_export {s a₀ b₀ c₀ wa wb wc : ℝ}
+    (hs : 0 ≤ s)
+    (hdom : 0 ≤ ArkLib.ProximityGap.CharPTransferDecomposition.gap s a₀ b₀ c₀ +
+      (2 * (s + 2) * b₀ * wb - s * (a₀ * wc + c₀ * wa)))
+    (hlc : wa * wc ≤ wb ^ 2) :
+    0 ≤ ArkLib.ProximityGap.CharPTransferDecomposition.gap
+      s (a₀ + wa) (b₀ + wb) (c₀ + wc) :=
+  ArkLib.ProximityGap.CharPTransferDecomposition.charP_transfer_of_dominance_logConcave
+    hs hdom hlc
+
 /-! ## Door-IV char-p transfer / ρ-antitone refutations. Scope: **obstruction**.
 
 These exports make the newest door-(iv) Lane-3 no-go results permanent: char-`p` step-ratio
@@ -408,6 +449,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms prizeBound_iff_shawValue_le_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
 #print axioms shawValue_bracket_width_eq_sqrt_export
+#print axioms charP_wrap_gap_ge_two_mul_sq_export
+#print axioms charP_wrap_gap_nonneg_of_logConcave_export
+#print axioms charP_transfer_of_dominance_logConcave_export
 #print axioms charP_stepRatioMonotoneAt_iff_gap_nonneg_export
 #print axioms charP_stepRatioMonotone_false_n32_export
 #print axioms charP_no_universal_positive_stepRatioMonotone_export
