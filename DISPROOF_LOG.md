@@ -8931,3 +8931,37 @@ No CORE / cancellation / completion / moment / energy / capacity claim. Reproduc
 (non-discriminating) verdict, not a bound. Probe scripts:
 `scripts/probes/probe_444_worstb_const_ndrift.py` (this entry),
 `scripts/probes/probe_444_worstb_const_prime_stability.py` (prior entry).
+
+## door-(iv) the worst-frequency coset INDEX is prime-independently DELOCALIZED (2026-06-20)
+
+Lane: door-(iv) Lane 1 probe + Lane 3 constraint lemma. The brief's live open question "is the worst-b
+SET itself structured?" has a prime-independent form nobody had measured: as `p = k·n+1` ranges over
+primes, is the worst quotient index `j*(p) ∈ Z_k` (`k=(p−1)/n`) selected by a REPEATABLE arithmetic rule
+(fixed residue mod small `d`, or fixed normalized position `j*/k`) that a TARGETED (non-energy, non-sum-
+product) anti-concentration bound could grip? Prior worst-b probes mapped single-prime internal structure
+(scattered); `probe_444_worstb_const_prime_stability` pinned the worst-b COHERENCE CONSTANT across primes
+but said nothing about the INDEX identity.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_crossprime_index.py`, EXACT phase sums, prize regime p≈n⁴≫n³,
+proper μ_n, 14 primes per n∈{16,32,64}, RANDOM uniform subsample of Z_k):
+- normalized position j*/k: mean≈0.41–0.56, sd≈0.31–0.33 — matches the uniform(0,1) reference
+  (mean 0.5, sd 0.289). Full-range, not pinned.
+- j* mod 2,3,4: uniform at every n.
+
+ARTIFACT CAUGHT + FIXED (logged in the probe `.NOTE`): the first run used a STRIDED subsample, which at
+n=32 (stride 8) only saw indices j≡0 (mod 8) and produced a SPURIOUS "all worst indices ≡0 mod 4"
+([14,0,0,0]). Random uniform sampling removed it ([7,7] mod 2). Same trap that deprecated
+`probe_dooriv_worstb_class_structure.py` v1.
+
+VERDICT: the worst-b coset index is prime-independently DELOCALIZED — no repeatable arithmetic rule
+selects the adversarial frequency across primes. The adversary offers no prime-stable index structure for
+a targeted anti-concentration bound to grip. This closes the door-(iv) Lane-1 "worst-b is a prime-
+independent arithmetic object" hope. NON-CLAIM: this is a refutation of a selection-structure hope, not a
+CORE bound; CORE stays OPEN. Complements (does not subsume) the single-prime worst-b structure probes and
+the worst-b coherence-constant prime-stability result.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexDelocalized.lean`,
+axiom-clean (theorems depend on NO axioms). New theorems `not_constant_mod_of_two_residues`,
+`not_constant_position_of_two_values`, `delocalized_excludes_fixed_selector`,
+`fixedResidue_forces_constant_mod`: a worst-index family witnessed delocalized (two residues mod d AND two
+distinct values) is excluded by every fixed-residue and every fixed-position prime-independent selector.
