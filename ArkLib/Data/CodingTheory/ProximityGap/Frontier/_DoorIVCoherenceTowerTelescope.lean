@@ -134,6 +134,23 @@ theorem root_le_bound_iff_coherenceProduct_le_bound_div_leaf (a B : ℝ) (t : Li
   rw [coherenceProduct_eq_root_div_leaf a t hpos]
   exact (div_le_div_iff_of_pos_right hlast_pos).symm
 
+/-- Family form of the product-threshold interface.  A pointwise raw root bound along a family of
+positive coherence towers is exactly the pointwise normalized product bound against `B i / leaf_i`.
+This is the batch form consumed by asymptotic door-(iv) reductions: uniform control of the roots can
+only enter this tower through uniform control of the products. -/
+theorem rootFamily_le_bound_iff_coherenceProductFamily_le_bound_div_leaf {ι : Type*}
+    (a B : ι → ℝ) (t : ι → List ℝ)
+    (hpos : ∀ i, ∀ x ∈ a i :: t i, 0 < x) :
+    (∀ i, a i ≤ B i) ↔
+      ∀ i, coherenceProduct (a i :: t i) ≤ B i / (a i :: t i).getLast (by simp) := by
+  constructor
+  · intro h i
+    exact (root_le_bound_iff_coherenceProduct_le_bound_div_leaf (a i) (B i) (t i) (hpos i)).mp
+      (h i)
+  · intro h i
+    exact (root_le_bound_iff_coherenceProduct_le_bound_div_leaf (a i) (B i) (t i) (hpos i)).mpr
+      (h i)
+
 /-- Contrapositive product interface: if the coherence product stays above the target normalized
 threshold `B/M_leaf`, then the root mass cannot satisfy the raw bound `B`.  This is the formal version
 of the probe verdict: a tower whose product is bounded below by a fixed-width constant cannot by itself
@@ -145,6 +162,19 @@ theorem not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct (a B : ℝ) (t :
   intro hroot
   have hle := (root_le_bound_iff_coherenceProduct_le_bound_div_leaf a B t hpos).mp hroot
   linarith
+
+/-- Family contrapositive: one tower whose coherence product exceeds its normalized target refutes the
+corresponding pointwise raw family bound.  This packages the exact failure certificate probes report:
+a single adversarial `b` with product above threshold is enough to kill the claimed family root cap. -/
+theorem not_rootFamily_le_bound_of_exists_bound_div_leaf_lt_coherenceProduct {ι : Type*}
+    (a B : ι → ℝ) (t : ι → List ℝ)
+    (hpos : ∀ i, ∀ x ∈ a i :: t i, 0 < x)
+    (hbad : ∃ i, B i / (a i :: t i).getLast (by simp) < coherenceProduct (a i :: t i)) :
+    ¬ ∀ i, a i ≤ B i := by
+  rintro hroot
+  rcases hbad with ⟨i, hi⟩
+  exact not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct (a i) (B i) (t i) (hpos i) hi
+    (hroot i)
 
 /-- Each consecutive ratio in a coherence tower is nonneg when the masses are positive; this is the
 sign discipline behind reading the ratios as coherences `∈ [0,1]` (the `≤ 1` half is the triangle
@@ -173,5 +203,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_eq_coherenceProduct_mul_leaf
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.coherenceProduct_eq_root_div_leaf
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_le_bound_iff_coherenceProduct_le_bound_div_leaf
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.rootFamily_le_bound_iff_coherenceProductFamily_le_bound_div_leaf
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_bound_div_leaf_lt_coherenceProduct
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.stepRatios_nonneg
