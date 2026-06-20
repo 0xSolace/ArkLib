@@ -135,4 +135,56 @@ theorem remaining_gap_is_sqrtL_factor_doorIV_only
       (le_of_lt (lt_trans one_pos hLref))
   · exact NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hnref hLref hclassicalOvershoots
 
+/-! ## Floor-normalized prize ratio `M/√n` (the tetrachotomy's own `prizeScale n = √n` units)
+
+The `ShawValueCapstone` reduction normalizes by the BGK-shaped scale `√(n·L)`, landing the Plancherel
+floor at the `n`-independent but `L`-dependent value `1/√L`.  The tetrachotomy, by contrast, measures
+the worst-frequency sup against the prize *floor* `prizeScale n = √n`.  In *that* normalization the
+Plancherel/RMS floor lands at the clean absolute constant `1`, and the prize is exactly the demand
+`M/√n = O(1)`.  This is the cleanest normalization in which to state the floor and it was absent from
+both capstones.  These rungs add it and tie it to the door-(iv) exclusion. -/
+
+/-- The floor-normalized prize ratio: worst-frequency sup divided by the prize *floor* `√n`. -/
+noncomputable def floorPrizeRatio (M n : ℝ) : ℝ :=
+  M / NoFifthDoorTetrachotomy.prizeScale n
+
+/-- **The Plancherel floor lands the floor-normalized ratio at the absolute constant `1`.**  The
+RMS/Plancherel lower bound `√n ≤ M` is, in `√n` units, exactly `1 ≤ M/√n`.  Unlike the `√(n·L)`
+normalization (floor `1/√L`), this floor is a clean `n`- and `L`-independent constant. -/
+theorem one_le_floorPrizeRatio_of_plancherel_floor {M n : ℝ} (hn : 0 < n)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale n ≤ M) :
+    1 ≤ floorPrizeRatio M n := by
+  unfold floorPrizeRatio
+  rw [le_div_iff₀ (NoFifthDoorTetrachotomy.prizeScale_pos hn), one_mul]
+  exact hfloor
+
+/-- **Prize bound ⇔ floor-normalized ratio ≤ C.**  The raw prize-floor-shaped bound `M ≤ C·√n` is
+exactly `M/√n ≤ C`.  This is the prize-floor analogue of `ShawValueCapstone.prizeBound_iff_shawValue_le`,
+in `√n` units.  (Note: the prize is `M ≤ C·√n` only up to the `√L` thinness factor — this rung is the
+*floor*-scale reduction, complementary to the BGK-scale Shaw reduction.) -/
+theorem prizeFloorBound_iff_floorPrizeRatio_le {M n C : ℝ} (hn : 0 < n) :
+    M ≤ C * NoFifthDoorTetrachotomy.prizeScale n ↔ floorPrizeRatio M n ≤ C := by
+  unfold floorPrizeRatio
+  rw [div_le_iff₀ (NoFifthDoorTetrachotomy.prizeScale_pos hn), mul_comm]
+
+/-- **Floor-normalized synthesis.**  At the reference instance: the Plancherel floor pins the
+floor-normalized ratio at `≥ 1`, the prize-floor bound is exactly `M/√n ≤ C`, and any mechanism
+reaching the prize floor is door-(iv)-only.  One citable statement in the prize-floor `√n` units:
+the ratio lives in `[1, …]`, the prize asks to cap it by an absolute constant, and only door (iv) can. -/
+theorem floorRatio_bracketed_prize_iff_and_doorIV_only
+    {M nref Lref C : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale nref ≤ M)
+    (hclassicalOvershoots :
+      ∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK nref Lref) :
+    (1 ≤ floorPrizeRatio M nref) ∧
+      (M ≤ C * NoFifthDoorTetrachotomy.prizeScale nref ↔ floorPrizeRatio M nref ≤ C) ∧
+      (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+        m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) := by
+  refine ⟨?_, ?_, ?_⟩
+  · exact one_le_floorPrizeRatio_of_plancherel_floor hnref hfloor
+  · exact prizeFloorBound_iff_floorPrizeRatio_le hnref
+  · exact NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hnref hLref hclassicalOvershoots
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
