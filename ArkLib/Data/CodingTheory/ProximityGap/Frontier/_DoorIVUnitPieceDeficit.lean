@@ -106,6 +106,63 @@ theorem norm_sum_sq_eq_length_sq_iff_totalPairDeficit_eq_zero_of_unit {zs : List
   rw [l1Mass_eq_length_of_forall_norm_one h] at hiff
   exact hiff
 
+/-- The **deficit fraction** of unit pieces: `f = 1 − ‖Σ zᵢ‖² / (#pieces)²`.  For the worst
+monomial sum (`#pieces = n`) this is exactly `f(b) = 1 − |η_b|²/n² = 2·D(b)/n²`, the normalized
+total pairwise angular deficit.  The prize `M(n) ≤ C√(n·log(p/n))` is exactly `f(b*) ≥ 1 −
+C²·log(p/n)/n → 1`. -/
+noncomputable def deficitFraction (zs : List ℂ) : ℝ :=
+  1 - ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2
+
+/-- For a nonempty list of unit pieces, the deficit fraction equals `2·totalPairDeficit/(#pieces)²`
+— the normalized total pairwise angular deficit. -/
+theorem deficitFraction_eq_two_mul_totalPairDeficit_div {zs : List ℂ}
+    (h : ∀ z ∈ zs, ‖z‖ = 1) (hne : zs ≠ []) :
+    deficitFraction zs = 2 * totalPairDeficit zs / (zs.length : ℝ) ^ 2 := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  have hlsq : ((zs.length : ℝ)) ^ 2 ≠ 0 := by positivity
+  unfold deficitFraction
+  rw [norm_sum_sq_eq_length_sq_sub_two_totalPairDeficit_of_unit h]
+  field_simp
+  ring
+
+/-- The deficit fraction of unit pieces is nonnegative (coherence never exceeds the trivial top). -/
+theorem deficitFraction_nonneg {zs : List ℂ} (h : ∀ z ∈ zs, ‖z‖ = 1) (hne : zs ≠ []) :
+    0 ≤ deficitFraction zs := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  rw [deficitFraction_eq_two_mul_totalPairDeficit_div h hne]
+  have hD : 0 ≤ totalPairDeficit zs := totalPairDeficit_nonneg zs
+  positivity
+
+/-- The deficit fraction of unit pieces is at most one (the resultant norm is nonnegative). -/
+theorem deficitFraction_le_one {zs : List ℂ} (h : ∀ z ∈ zs, ‖z‖ = 1) (hne : zs ≠ []) :
+    deficitFraction zs ≤ 1 := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  have hlsq : (0 : ℝ) < (zs.length : ℝ) ^ 2 := by positivity
+  unfold deficitFraction
+  have hnn : 0 ≤ ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 := by positivity
+  linarith
+
+/-- The prize-facing deficit-fraction equivalence for unit pieces: the squared-coherence ceiling
+`‖Σ zᵢ‖² ≤ T` is exactly the deficit-fraction lower bound `f ≥ 1 − T/(#pieces)²`.  For the worst
+monomial sum with the prize ceiling `T = C²·n·log(p/n)` this is `f(b*) ≥ 1 − C²·log(p/n)/n`: the prize
+is EXACTLY the statement that the worst-b deficit fraction is forced to `1 − o(1)`. -/
+theorem norm_sum_sq_le_iff_deficitFraction_ge_of_unit {zs : List ℂ} (T : ℝ)
+    (h : ∀ z ∈ zs, ‖z‖ = 1) (hne : zs ≠ []) :
+    ‖zs.sum‖ ^ 2 ≤ T ↔ 1 - T / (zs.length : ℝ) ^ 2 ≤ deficitFraction zs := by
+  have hlen : (0 : ℝ) < (zs.length : ℝ) := by
+    have : 0 < zs.length := List.length_pos_of_ne_nil hne
+    exact_mod_cast this
+  have hlsq : (0 : ℝ) < (zs.length : ℝ) ^ 2 := by positivity
+  unfold deficitFraction
+  rw [sub_le_sub_iff_left]
+  rw [div_le_div_iff_of_pos_right hlsq]
+
 end ProximityGap.Frontier.DoorIVUnitPieceDeficit
 
 #print axioms
@@ -120,3 +177,9 @@ end ProximityGap.Frontier.DoorIVUnitPieceDeficit
   ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_lt_length_sq_iff_totalPairDeficit_pos_of_unit
 #print axioms
   ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_eq_length_sq_iff_totalPairDeficit_eq_zero_of_unit
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_eq_two_mul_totalPairDeficit_div
+#print axioms ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_nonneg
+#print axioms ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_le_one
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_le_iff_deficitFraction_ge_of_unit
