@@ -212,6 +212,32 @@ theorem not_isSubMaximizer_of_witness_gap_pos {subMag : ι → ℝ} {b c : ι}
   have hlt : subMag b < subMag c := by linarith
   exact not_isSubMaximizer_of_lt hlt
 
+/-- Ratio-normalized maximizer form.  If the claimed sub-maximizer has positive magnitude, then
+nesting is equivalent to every other frequency having normalized ratio at most `1`.  This is the
+probe-facing reciprocal form of `IsSubMaximizer`: a recursive-ascent proof must rule out every ratio
+spike above one, not only every raw positive gap. -/
+theorem isSubMaximizer_iff_forall_ratio_le_one {subMag : ι → ℝ} {b : ι}
+    (hpos : 0 < subMag b) :
+    IsSubMaximizer subMag b ↔ ∀ c, subMag c / subMag b ≤ 1 := by
+  constructor
+  · intro hmax c
+    exact (div_le_one hpos).mpr (hmax c)
+  · intro hratio c
+    exact (div_le_one hpos).mp (hratio c)
+
+/-- Ratio-spike form of non-maximality.  With a positive denominator at the claimed nested frequency,
+non-nesting is exactly the existence of some thinner-level frequency whose normalized ratio is above
+`1`.  This packages full-scan witnesses as the same obstruction as the raw positive gap. -/
+theorem not_isSubMaximizer_iff_exists_ratio_gt_one {subMag : ι → ℝ} {b : ι}
+    (hpos : 0 < subMag b) :
+    ¬ IsSubMaximizer subMag b ↔ ∃ c, 1 < subMag c / subMag b := by
+  rw [not_isSubMaximizer_iff_exists_lt]
+  constructor
+  · rintro ⟨c, hlt⟩
+    exact ⟨c, (one_lt_div hpos).mpr hlt⟩
+  · rintro ⟨c, hratio⟩
+    exact ⟨c, (one_lt_div hpos).mp hratio⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
@@ -229,3 +255,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.isSubMaximizer_iff_forall_gap_nonpos
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.eq_of_isSubMaximizer_of_isSubMaximizer
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_witness_gap_pos
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.isSubMaximizer_iff_forall_ratio_le_one
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_ratio_gt_one
