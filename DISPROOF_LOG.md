@@ -8031,3 +8031,20 @@ Lens: Lane 3 constraint lemma extending `_DoorIVMultShiftCollinear`. Prior kerne
 VERDICT: in the collinear multiplicative-shift regime, strict coherence saving is precisely a sign-cancellation event. There is no additional angular anti-concentration mechanism hiding in the refinement; to beat the wall it must either prove both sign masses quantitatively or leave the real-collinear regime. No CORE/cancellation/completion/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultShiftCollinear.lean`, new theorem `coherence_lt_one_iff_both_sign_masses_pos`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(ii) completion is DOMINATED BY THE TRIVIAL CEILING in the thin regime (2026-06-19, sol/parsevalthin)
+
+Lane: door-(ii) Lane-3 constraint lemma strengthening the no-fifth-door tetrachotomy. Prior bricks
+(ConcreteBGKCompletionCorridor.bgkScale_le_completionCeiling) showed the √q-completion ceiling exceeds
+the BGK SCALE √(d·L). This sharper refinement shows completion does not even beat the ELEMENTARY
+triangle ceiling: in the prize regime d² ≤ q (q = d^β, β ≥ 2) we have d ≤ √q, so the door-(ii)
+completion bound M(μ_d) ≤ √q is WEAKER than the free trivial bound M(μ_d) ≤ d.
+
+VERDICT: door-(ii) √q-completion is vacuous in the thin regime relative to the trivial triangle
+bound — it provides ZERO improvement over the elementary ceiling, not merely overshoots BGK. This
+is the strongest form of the door-(ii) refutation. No CORE, cancellation, completion, moment-saving,
+anti-concentration, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteBGKCompletionCorridor.lean,
+new theorem card_le_completionCeiling_of_sq_le, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.

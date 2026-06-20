@@ -104,9 +104,23 @@ theorem doorIV_shave_obligation {d L : ℝ} (hd : 0 ≤ d) (hL : 0 ≤ L) :
     bgkScale d L = Real.sqrt L * prizeScale d :=
   bgkScale_eq_sqrtL_mul_prizeScale hd hL
 
+/-- **Door-(ii) is dominated by the TRIVIAL ceiling in the thin regime.**  Sharper than the
+BGK-overshoot above: in the prize regime `d² ≤ q` (`q = d^β, β ≥ 2`) the classical √q-completion
+ceiling does not even beat the ELEMENTARY triangle ceiling `M(μ_d) ≤ d`, since `d ≤ √q`.  So the
+completion door provides ZERO improvement over the trivial bound on the worst period: it is not merely
+above the BGK scale, it is above `d` itself.  This is the strongest form of the door-(ii) refutation —
+completion is vacuous in the thin regime relative to the free triangle bound.  No CORE/cancellation/
+completion/anti-concentration/capacity claim. -/
+theorem card_le_completionCeiling_of_sq_le {d : ℝ} (hd : 0 ≤ d)
+    (hsq : d ^ 2 ≤ (Fintype.card F : ℝ)) :
+    d ≤ Real.sqrt (Fintype.card F) := by
+  rw [show d = Real.sqrt (d ^ 2) from (Real.sqrt_sq hd).symm]
+  exact Real.sqrt_le_sqrt hsq
+
 end ProximityGap.Frontier.ConcreteBGKCompletionCorridor
 
 /-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ConcreteBGKCompletionCorridor.card_le_completionCeiling_of_sq_le
 #print axioms ProximityGap.Frontier.ConcreteBGKCompletionCorridor.worstPeriod_torsion_completion_corridor
 #print axioms ProximityGap.Frontier.ConcreteBGKCompletionCorridor.bgkScale_le_completionCeiling
 #print axioms ProximityGap.Frontier.ConcreteBGKCompletionCorridor.doorIV_shave_obligation
