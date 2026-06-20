@@ -1599,6 +1599,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_AgreementDepthMerg
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_DegBadRGrowingSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_OPSingleOrbitPersistence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OffBGK_UnionGrowthGeneratingFn
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OneWallTwoFaces
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetNormDichotomyTight
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreCharPLighterReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OpenCoreMonotoneReduction
