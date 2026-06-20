@@ -111,6 +111,37 @@ def ShawOOneOn {ι : Type*} (q n M : ι → ℝ) : Prop :=
 def CorePrizeBoundOn {ι : Type*} (q n M : ι → ℝ) : Prop :=
   ∃ C : ℝ, 0 ≤ C ∧ UniformCoreBound q n M C
 
+/-- The Shaw scale is always nonnegative because it is a square root.  This is the only order fact
+needed to safely enlarge constants in raw prize-scale bounds. -/
+theorem shawScale_nonneg (q n : ℝ) : 0 ≤ shawScale q n := by
+  unfold shawScale
+  exact Real.sqrt_nonneg _
+
+/-- Uniform Shaw bounds are monotone in the absolute constant.  This packages the harmless
+"enlarge the constant" step in the `Sh(n)=O(1)` reduction. -/
+theorem UniformShawBound.mono {ι : Type*} {q n M : ι → ℝ} {C D : ℝ} (hCD : C ≤ D)
+    (h : UniformShawBound q n M C) : UniformShawBound q n M D := by
+  intro i
+  exact le_trans (h i) hCD
+
+/-- Uniform raw prize bounds are monotone in the absolute constant.  The nonnegative Shaw scale
+prevents the constant-enlargement step from flipping the inequality. -/
+theorem UniformCoreBound.mono {ι : Type*} {q n M : ι → ℝ} {C D : ℝ} (hCD : C ≤ D)
+    (h : UniformCoreBound q n M C) : UniformCoreBound q n M D := by
+  intro i
+  exact le_trans (h i) (mul_le_mul_of_nonneg_right hCD (shawScale_nonneg (q i) (n i)))
+
+/-- A single nonnegative uniform Shaw bound immediately packages as `Sh(n)=O(1)`. -/
+theorem shawOOneOn_of_uniformShawBound {ι : Type*} {q n M : ι → ℝ} {C : ℝ} (hC : 0 ≤ C)
+    (h : UniformShawBound q n M C) : ShawOOneOn q n M :=
+  ⟨C, hC, h⟩
+
+/-- A single nonnegative uniform raw prize bound immediately packages as the existential
+prize-style square-root cancellation statement. -/
+theorem corePrizeBoundOn_of_uniformCoreBound {ι : Type*} {q n M : ι → ℝ} {C : ℝ} (hC : 0 ≤ C)
+    (h : UniformCoreBound q n M C) : CorePrizeBoundOn q n M :=
+  ⟨C, hC, h⟩
+
 /-- **Shaw-value essay slogan, formalized.**  On a positive-scale family, `Sh(n)=O(1)` is exactly
 the prize-scale square-root `CORE` bound, with the same absolute constant and no hidden loss. -/
 theorem shawOOneOn_iff_corePrizeBoundOn {ι : Type*} {q n M : ι → ℝ}
@@ -254,6 +285,11 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformCoreBound_iff_uniformShawBound_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_corePrizeBoundOn_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawScale_nonneg
+#print axioms ProximityGap.Frontier.ShawValueCapstone.UniformShawBound.mono
+#print axioms ProximityGap.Frontier.ShawValueCapstone.UniformCoreBound.mono
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_uniformShawBound
+#print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_of_uniformCoreBound
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformShawInterval_iff_uniformRawScaledInterval
 #print axioms ProximityGap.Frontier.ShawValueCapstone.uniformShawInterval_iff_uniformRawScaledInterval_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_sqrt_le
