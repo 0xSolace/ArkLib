@@ -8257,3 +8257,21 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBrack
 theorems shawValue_le_one_of_bgk_ceiling, shawValue_sharp_bracket, shawValue_sharp_bracket_lower_eq,
 shawValue_sharp_bracket_width, sharp_width_lt_trivial_width, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [shaw-value prize-vs-BGK gap quantified] prize bound is Sh<=C/√L, strictly below the BGK ceiling Sh<=1 (2026-06-19)
+
+Lane: door-(iv) Lane 2 capstone — EXTENDS the proven sharp BGK bracket (_ShawValueBGKBracket.lean,
+sweep 82dcdcce5) with the prize-equivalence content. ShawValueCapstone.prizeBound_iff_shawValue_le
+normalizes the BGK-shaped bound M<=C√(nL) to Sh<=C; but the GENUINE prize target is M<=C√n (note √n,
+NOT √(nL)). PROBE-FIRST (python exact, n∈{16,64,256}, L∈{2,4,8}, C∈{1,1.25,2}): M<=C√n ⟺ Sh<=C/√L,
+matched 1e-12.
+
+VERDICT: in Shaw-value units the prize bound is Sh<=C/√L (the lower bracket endpoint scaled by C),
+while doors (i)-(iii) only deliver the BGK ceiling Sh<=1. Since C/√L < 1 whenever C<√L (the thin prize
+regime, √L≫1), the prize is STRICTLY below the BGK ceiling: door (iv) must shave Sh by a factor √L/C
+past what the classical doors give. This quantifies the door-(iv) obligation exactly. Pure normalization
+bookkeeping; no cancellation, anti-concentration, or capacity estimate.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorems
+prize_iff_shawValue_le_div_sqrtL and doorIV_obligation_below_bgk_ceiling, axiom-clean with axioms
+contained in {propext, Classical.choice, Quot.sound}.
