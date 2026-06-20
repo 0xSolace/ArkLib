@@ -228,6 +228,33 @@ theorem not_bddAbove_range_normalizedHalfMass_iff_not_bddAbove_range_normalizedP
   exact (not_bddAbove_range_normalizedPrize_iff_not_bddAbove_range_normalizedHalfMass
     hK hscale hMH hHM).symm
 
+/-- **Cross drift form, normalized-prize wall versus half-mass drift.** Under the family-wide
+half-mass comparison, unbounded normalized prize ratios are equivalent to the normalized half-mass
+Shaw ratios exceeding every candidate constant.  This is the direct standard-library wall statement
+for probes that record `¬ BddAbove` on the prize side and explicit drift on the half-mass side. -/
+theorem not_bddAbove_range_normalizedPrize_iff_forall_exists_lt_normalizedHalfMass {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ BddAbove (Set.range fun i => M i / scale i)) ↔
+      ∀ C, ∃ i, C < H i / scale i := by
+  rw [not_bddAbove_range_normalizedPrize_iff_not_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      not_bddAbove_range_iff_forall_exists_lt]
+
+/-- **Cross drift form, normalized-half-mass wall versus prize drift.** This is the symmetric direct
+standard-library wall statement: unbounded normalized half-mass Shaw ratios are equivalent to the
+normalized prize ratios exceeding every constant. -/
+theorem not_bddAbove_range_normalizedHalfMass_iff_forall_exists_lt_normalizedPrize {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ BddAbove (Set.range fun i => H i / scale i)) ↔
+      ∀ C, ∃ i, C < M i / scale i := by
+  rw [not_bddAbove_range_normalizedHalfMass_iff_not_bddAbove_range_normalizedPrize
+        hK hscale hMH hHM,
+      not_bddAbove_range_iff_forall_exists_lt]
+
 /-- **The door-(iv) prize/wall dichotomy in `BddAbove` form.**  Under the family-wide half-mass
 comparison and positive scales, the prize-side (normalized prize ratios bounded above) and the
 wall-side (normalized half-mass ratios unbounded) are exact negations of each other across the two
@@ -278,5 +305,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_not_bddAbove_range_normalizedHalfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedHalfMass_iff_not_bddAbove_range_normalizedPrize
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_forall_exists_lt_normalizedHalfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedHalfMass_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_not_forall_exists_lt_normalizedPrize
