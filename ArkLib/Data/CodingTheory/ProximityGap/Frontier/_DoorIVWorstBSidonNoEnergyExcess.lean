@@ -110,9 +110,28 @@ theorem not_sidon_of_positive_additiveEnergyExcess (G : Finset F)
   exact (Nat.lt_irrefl 0)
     (by rwa [(additiveEnergyExcess_eq_zero_iff_sidon G).mpr hG] at h)
 
+/-- **Hereditarity: no sub-collection escape.**  Since Sidon-ness is hereditary
+(`IsSidonSet.subset`), every subset `H ⊆ W` of the (Sidon) worst-frequency rep set is itself Sidon,
+hence has additive-energy excess `0`.  A door-(iv) attack cannot recover additive structure by
+restricting to a sub-collection of the worst frequencies: the energy floor is inherited by every
+subset. -/
+theorem additiveEnergyExcess_eq_zero_of_subset_sidon {G H : Finset F}
+    (hG : IsSidonSet G) (hHG : H ⊆ G) :
+    additiveEnergyExcess H = 0 :=
+  (additiveEnergyExcess_eq_zero_iff_sidon H).mpr (hG.subset hHG)
+
+/-- **No positive additive-energy budget on any sub-collection of a Sidon worst-b object.**
+The sum-product / additive-energy lever is vacuous not just on `W` but on every `H ⊆ W`. -/
+theorem no_positive_additiveEnergyExcess_of_subset_sidon {G H : Finset F}
+    (hG : IsSidonSet G) (hHG : H ⊆ G) :
+    ∀ B : ℕ, 0 < B → ¬ (B ≤ additiveEnergyExcess H) :=
+  no_positive_additiveEnergyExcess_of_sidon H (hG.subset hHG)
+
 end ArkLib.ProximityGap.SubgroupGaussSumMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_eq_zero_iff_sidon
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_sidon
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_eq_floor_of_sidon
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.not_sidon_of_positive_additiveEnergyExcess
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_eq_zero_of_subset_sidon
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_subset_sidon
