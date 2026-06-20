@@ -9692,3 +9692,40 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMo
 axiom-clean. New theorems: `stepRatioMonotoneAt_iff_gap_nonneg`,
 `not_stepRatioMonotoneAt_of_gap_neg`, and `not_stepRatioMonotoneAt_n64`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+---
+
+## REFUTATION — the ρ-antitone-and-bounded ROUTE is not universally satisfiable (2026-06-20, sol)
+
+CONTEXT. `_OpenCoreRhoMonotone` packages the prize-route reduction: `open_core_of_rho_antitone`
+(`(∀r, ρ(r+1)≤ρ(r)) ∧ ρ(1)≤1 ⟹ ∀r, ρ(r)≤1`) + `rho_antitone_iff_energy_cross`
+(`ρ(r+1)≤ρ(r) ⟺ S_{r+1}E_r ≤ S_r E_{r+1}`), with `ρ(r)=S_r/((p−1)E_r)`, `S_r=p·E_r(F_p)−n^{2r}`,
+`E_r=E_r(ℂ)`. The file's prose calls the antitonicity "equivalent to the prize" and "what every remaining
+attack should target". RESULTS-444-RHO-ANTITONE reported ρ strictly decreasing + ≤1 — but only over its
+r-cap and at LARGER primes (n=32 used p=1048609, β≈4.0).
+
+THE ANTITONE HYPOTHESIS IS FALSE at a genuine prize-regime instance with SMALLER β (wraparound onsets
+earlier in r). VALIDATION: my exact recompute REPRODUCES the doc DIGIT-FOR-DIGIT at p=1048609
+(ρ=.999970,.999665,.997709,.995562,.994132, antitone+≤1) — so the method is trusted. At a smaller-β prime:
+
+  n=32, p=786433 (=3·2^18+1; prime; 32∣p−1; β=log_n p≈3.917, prize regime; μ_32⊊F_p^* PROPER, thin index
+  24576; p>n³). EXACT data (`probe_rho_antitone_FAILS_thinprime.py`):
+    S₃=350241607936, S₄=71393378995104, S₅=18417535837279232,
+    E₃(ℂ)=446720, E₄(ℂ)=90889120, E₅(ℂ)=23012946432, p−1=786432.
+    ρ(1..5) = 0.999961, 0.999553, 0.996945, 0.998815, 1.017649. HENCE:
+      - ρ(4) > ρ(3): antitonicity FAILS (S₄·E₃=31892850264692858880 > S₃·E₄=31833151532688056320);
+      - ρ(5) > 1:    the ≤1 ceiling FAILS (S₅=18417535837279232 > (p−1)·E₅=18098117488410624) —
+                     the char-p energy EXCEEDS the Wick/char-0 (Gaussian) bound at r=5.
+  (PRIME-DEPENDENT: n=64,p=2752513 stays antitone through r=4. Gated by wraparound onset, not universal.)
+
+CONSEQUENCE (constraint). REFUTES the sufficiency route `ρ antitone & ρ(1)≤1 ⟹ ρ≤1` as an UNCONDITIONAL
+lever: the antitone hypothesis of `open_core_of_rho_antitone` is not satisfiable at every prize prime, so
+this route cannot prove CORE without restricting the prime / using a different argument. The prose
+"antitonicity ⟺ prize" is too strong — antitonicity is SUFFICIENT, and its failure does NOT disprove CORE
+(the sup bound M(n)≤C√(n log(p/n)) is not implied false by ρ>1 at one r; ρ>1 only means the order-r moment
+route fails to certify the bound there). Consistent with §3 meta-thm + the char-p step-ratio refutation
+(`_CharPStepRatioMonotoneFails`). No cancellation/completion/moment/anti-concentration/capacity claim.
+CORE stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`,
+axiom-clean (`{propext, Classical.choice, Quot.sound}`). Theorems: `energy_cross_reversed_r3`,
+`rho_antitone_step_fails_r3`, `rho_ceiling_fails_r5`, `antitone_route_not_universal`.

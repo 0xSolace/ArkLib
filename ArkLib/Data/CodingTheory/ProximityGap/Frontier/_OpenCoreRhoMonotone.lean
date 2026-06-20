@@ -43,6 +43,16 @@ log-ratio monotonicity with an unconditional `r=1` base case — and it is what 
   (the induction collapsing the open core to the monotonicity).
 * `rho_antitone_iff_energy_cross` — the monotonicity `ρ(r+1) ≤ ρ(r)` ⟺ the energy cross-inequality
   `S_{r+1}·E_r ≤ S_r·E_{r+1}` (the explicit target). Issue #444.
+
+⚠ SCOPE CORRECTION (2026-06-20): the prose above ("`ρ(r+1) ≤ ρ(r)` for all `r` is equivalent to the
+prize", "what every remaining attack should target") is too strong on one side: the antitone hypothesis
+of `open_core_of_rho_antitone` is SUFFICIENT for the route, but it is NOT universally satisfiable. At a
+genuine prize-regime instance with smaller `β` (where the additive wraparound onsets earlier in `r`) BOTH
+`ρ` antitonicity AND the `ρ ≤ 1` ceiling FAIL: at `n=32, p=786433` (`β≈3.917`, proper thin `μ_32`, `p>n³`)
+one has `ρ(4) > ρ(3)` and `ρ(5) > 1` (kernel-checked in `_RhoAntitoneFailsThinPrime.lean`; method validated
+by reproducing RESULTS-444-RHO-ANTITONE digit-for-digit at the larger prime `p=1048609`). So this route is
+CONDITIONAL on the prime, not unconditional; its failure does NOT disprove CORE (the sup bound is not
+implied false by `ρ>1` at one `r`). The lemmas below are correct as stated. CORE stays OPEN.
 -/
 
 namespace ProximityGap.Frontier.OpenCoreRho
