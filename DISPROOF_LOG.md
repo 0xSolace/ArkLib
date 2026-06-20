@@ -1,3 +1,28 @@
+## door-(iv) the Cauchy–Schwarz / L²-budget deficit floor is VACUOUS in the all-defect regime (2026-06-20, sol)
+
+Lens: Lane 3 constraint lemma backing Shaw's Lever-B (additive-energy / L²) refutation, extending the
+k-defect deficit floor. The k-defect bound `M−‖∑γ‖ ≥ (M−k)·D/M` (`D=∑_{i∈S}(1−Re w_i)`, `k=#S`) is the
+best the Cauchy–Schwarz/L²-budget route gives. The PRIZE regime is the adversarial worst coset where
+EVERY phase is off-aligned: `k = M`, `D = Θ(M)`. This sweep records the exact, kernel-checked
+degeneration there.
+
+New axiom-clean theorems (`_JacobiCocycleAllDefectCSVacuous.lean`):
+- `kDefect_floor_eq_zero_of_full` — at `S = univ` (`#S = M`) the floor `(M−#S)·D/M = 0`, for any `w, M`.
+- `allDefect_cs_floor_vacuous` — at `k = M` the k-defect bound degrades to the content-free
+  `0 ≤ M−‖∑γ‖`; the ONLY consequence of the CS/L²-budget route in the all-defect regime is the trivial
+  ceiling `‖∑γ‖ ≤ M`.
+
+VERDICT: the Cauchy–Schwarz / L²-budget deficit lever is STRUCTURALLY INCAPABLE of proving CORE — its
+floor `(M−k)D/M → 0` exactly in the all-defect regime the prize lives in, so it certifies zero
+cancellation there (only `‖∑γ‖ ≤ M`). This is the precise mechanism behind Shaw's Lever-B (additive-
+energy/L²-circularity) refutation, now kernel-checked, not just prose. A real prize bound must exploit
+the ARITHMETIC phase structure of `{b·x^m}` (the open door-(iv) anti-concentration), NOT the metric
+Cauchy–Schwarz budget. NO CORE / cancellation / completion / anti-concentration / moment-saving /
+capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleAllDefectCSVacuous.lean`,
+axiom-clean. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) k-defect QUANTITATIVE deficit: additive-in-defect first-power floor (2026-06-20, sol)
 
 Lens: Lane 2/3 frontier-movement, generalizing the single-defect deficit to ALL defect cardinalities.
