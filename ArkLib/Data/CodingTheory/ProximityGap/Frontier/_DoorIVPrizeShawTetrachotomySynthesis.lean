@@ -222,4 +222,35 @@ theorem floorUnit_corridor_one_sqrtL_doorIV_only
   · exact floorPrizeRatio_le_sqrtL_of_bgk_ceiling hnref hceil
   · exact NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hnref hLref hclassicalOvershoots
 
+/-! ## A fully-discharged instance: the named √q-completion lever fails, no postulate
+
+The synthesis theorems above carry the abstract `hclassicalOvershoots` quantifier (ranging over *all*
+classical mechanisms).  For the *named* √q-completion door (door (ii)), that overshoot is not a
+postulate — it is *discharged* by the proven Polya-Vinogradov/Gauss-sum ceiling `M ≤ √q` via
+`NoFifthDoorTetrachotomy.completionMechanism_overshootsBGK`.  This rung records the fully-discharged
+consequence: in the prize regime (`n·L ≤ q`, `L > 1`) the concrete completion mechanism provably fails
+to certify the prize floor, with NO assumed-overshoot hypothesis.  It is the one named lever for which
+the synthesis is unconditional. -/
+
+/-- **Discharged completion failure (no postulate).**  In the prize regime `L > 1`, `n·L ≤ q`, the
+concrete √q-completion mechanism `⟨completion, √q⟩` provably overshoots BGK and therefore does *not*
+certify the prize floor `√n`.  Combined with the floor-normalized Plancherel floor (`1 ≤ M/√n`) and
+the floor-scale prize reduction (`M ≤ C·√n ⇔ M/√n ≤ C`), this gives an unconditional witness that at
+least one named classical door is excluded — no `hclassicalOvershoots` postulate required. -/
+theorem completion_excluded_discharged_floorPrize
+    {M nref Lref q C : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hq : nref * Lref ≤ q)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale nref ≤ M) :
+    (¬ ((⟨NoFifthDoorTetrachotomy.DoorType.completion,
+          NoFifthDoorTetrachotomy.completionScale q⟩ :
+            NoFifthDoorTetrachotomy.Mechanism).certScale ≤
+        NoFifthDoorTetrachotomy.prizeScale nref)) ∧
+      (1 ≤ floorPrizeRatio M nref) ∧
+      (M ≤ C * NoFifthDoorTetrachotomy.prizeScale nref ↔ floorPrizeRatio M nref ≤ C) := by
+  refine ⟨?_, ?_, ?_⟩
+  · exact NoFifthDoorTetrachotomy.not_certifies_prizeScale_of_overshoot hnref hLref
+      (NoFifthDoorTetrachotomy.completionMechanism_overshootsBGK hq)
+  · exact one_le_floorPrizeRatio_of_plancherel_floor hnref hfloor
+  · exact prizeFloorBound_iff_floorPrizeRatio_le hnref
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
