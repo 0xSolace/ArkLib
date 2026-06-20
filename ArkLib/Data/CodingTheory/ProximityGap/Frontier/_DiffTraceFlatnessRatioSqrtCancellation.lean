@@ -71,6 +71,37 @@ theorem flatnessRatio_eq_one_iff_normSq_eq_card (Rel : Finset (Fin r → R))
   rw [div_eq_iff (ne_of_gt hne)]
   ring_nf
 
+
+/-! ## §2 Arbitrary threshold dictionary -/
+
+/-- **`flatnessRatio_le_const_iff_normSq_le_const_mul_card`** — for any real threshold `C`, the
+flatness-ratio budget `ρ_flat ≤ C` is exactly the raw aggregate norm-square budget
+`‖Σ Jphase‖² ≤ C * #Rel`.  The square-root target above is the special case `C=1`. -/
+theorem flatnessRatio_le_const_iff_normSq_le_const_mul_card (Rel : Finset (Fin r → R)) (C : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessRatio θ Rel ≤ C
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) ≤ C * (Rel.card : ℝ) := by
+  unfold flatnessRatio
+  rw [div_le_iff₀ hne]
+
+/-- **`flatnessRatio_lt_const_iff_normSq_lt_const_mul_card`** — strict arbitrary-threshold form:
+`ρ_flat < C` iff `‖Σ Jphase‖² < C * #Rel`. -/
+theorem flatnessRatio_lt_const_iff_normSq_lt_const_mul_card (Rel : Finset (Fin r → R)) (C : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessRatio θ Rel < C
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) < C * (Rel.card : ℝ) := by
+  unfold flatnessRatio
+  rw [div_lt_iff₀ hne]
+
+/-- **`flatnessRatio_eq_const_iff_normSq_eq_const_mul_card`** — equality arbitrary-threshold form:
+`ρ_flat = C` iff `‖Σ Jphase‖² = C * #Rel`. -/
+theorem flatnessRatio_eq_const_iff_normSq_eq_const_mul_card (Rel : Finset (Fin r → R)) (C : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessRatio θ Rel = C
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) = C * (Rel.card : ℝ) := by
+  unfold flatnessRatio
+  rw [div_eq_iff (ne_of_gt hne)]
+
 /-- **`flatnessRatio_le_one_of_normSq_le_card`** — forward-facing consumer wrapper for certificates of
 the diagonal-floor norm-square budget. -/
 theorem flatnessRatio_le_one_of_normSq_le_card (Rel : Finset (Fin r → R))
@@ -92,5 +123,8 @@ end ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_le_one_iff_normSq_le_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_lt_one_iff_normSq_lt_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_eq_one_iff_normSq_eq_card
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_le_const_iff_normSq_le_const_mul_card
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_lt_const_iff_normSq_lt_const_mul_card
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_eq_const_iff_normSq_eq_const_mul_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_le_one_of_normSq_le_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.normSq_le_card_of_flatnessRatio_le_one
