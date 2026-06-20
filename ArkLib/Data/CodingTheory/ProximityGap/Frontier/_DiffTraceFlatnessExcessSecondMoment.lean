@@ -88,6 +88,35 @@ theorem flatnessExcess_eq_iff_secondMomentRe_eq_mul (hmul : ∀ a b, θ (a + b) 
   rw [flatnessExcess_eq_secondMomentRe_div_card hmul hone hunit Rel hne]
   rw [div_eq_iff (ne_of_gt hne)]
 
+/-! ## §2 Zero-threshold specialization -/
+
+/-- **`flatnessExcess_le_zero_iff_secondMomentRe_nonpos`** — square-root/diagonal-floor cancellation
+(`flatnessExcess ≤ 0`) is exactly nonpositive off-diagonal second moment. -/
+theorem flatnessExcess_le_zero_iff_secondMomentRe_nonpos (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel : Finset (Fin r → R)) (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel ≤ 0 ↔
+      (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re ≤ 0 := by
+  simpa using flatnessExcess_le_iff_secondMomentRe_le_mul hmul hone hunit Rel 0 hne
+
+/-- **`flatnessExcess_lt_zero_iff_secondMomentRe_neg`** — strict sub-diagonal flatness is exactly
+negative off-diagonal second moment. -/
+theorem flatnessExcess_lt_zero_iff_secondMomentRe_neg (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel : Finset (Fin r → R)) (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel < 0 ↔
+      (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re < 0 := by
+  simpa using flatnessExcess_lt_iff_secondMomentRe_lt_mul hmul hone hunit Rel 0 hne
+
+/-- **`flatnessExcess_eq_zero_iff_secondMomentRe_eq_zero`** — exact diagonal-floor equality is exactly
+zero off-diagonal second moment. -/
+theorem flatnessExcess_eq_zero_iff_secondMomentRe_eq_zero (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel : Finset (Fin r → R)) (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel = 0 ↔
+      (∑ T ∈ Rel, ∑ T' ∈ Rel.erase T, Jphase θ T * conj (Jphase θ T')).re = 0 := by
+  simpa using flatnessExcess_eq_iff_secondMomentRe_eq_mul hmul hone hunit Rel 0 hne
+
 end ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -95,3 +124,6 @@ end ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_le_iff_secondMomentRe_le_mul
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_lt_iff_secondMomentRe_lt_mul
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_eq_iff_secondMomentRe_eq_mul
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_le_zero_iff_secondMomentRe_nonpos
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_lt_zero_iff_secondMomentRe_neg
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessExcessSecondMoment.flatnessExcess_eq_zero_iff_secondMomentRe_eq_zero
