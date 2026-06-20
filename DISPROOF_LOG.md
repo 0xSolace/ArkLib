@@ -1,3 +1,11 @@
+## door-(iv) real-collinear coherence drop requires an exact ε/2 minority-mass budget (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVMultShiftCollinear`. Prior bricks identified real-collinear multiplicative-shift coherence with the sign-mass ratio and proved strict slack iff both signs occur. This refinement packages the probe-facing `1 - ε` budget exactly: `ρ ≤ 1 - ε` iff the minority sign mass is at least `ε/2` of total mass, and if that budget fails then the coherence drop is impossible.
+
+VERDICT: a real-collinear Door-IV split has no hidden angular anti-concentration. Any claimed `ε` coherence saving must first prove the missing minority-mass lower bound; near one-signed adversarial frequencies remain trapped at the triangle baseline. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultShiftCollinear.lean`, new theorems `coherence_le_one_sub_iff_minority_mass_ge` and `not_coherence_le_one_sub_of_minority_mass_lt`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) coherence drop forces reciprocal half-mass spend (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassFactorization`. Prior half-mass bricks proved the exact identity `‖A+B‖ = coherence(A,B) · (‖A‖+‖B‖)` and the upper-bound transfer `coherence ≤ rho` plus `halfMass ≤ H` gives `‖A+B‖ ≤ rho·H`. This refinement records the contrapositive-facing spend obligation: if the original period has norm floor `T` while `coherence ≤ rho` with `rho>0`, then the half-mass must already be at least `T/rho`; in particular `coherence ≤ 1-ε` only relocates the floor to `T/(1-ε)`.

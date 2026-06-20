@@ -128,6 +128,27 @@ theorem coherence_le_iff_minority_mass_ge {ι : Type*} (s : Finset ι) (A : ι �
   rw [coherence_eq_signMassCoherence]
   exact signMassCoherence_le_iff_minority_mass_ge hden
 
+/-- Operational `1 - ε` form of the real-collinear threshold.  A claimed Door-IV coherence saving
+`ρ ≤ 1 - ε` for a real multiplicative-shift refinement is exactly the obligation to prove an
+`ε/2` minority-sign-mass fraction.  This is the finite obstruction probes use: if the adversarial
+frequency is nearly one-signed, a collinear split cannot yield the requested saving. -/
+theorem coherence_le_one_sub_iff_minority_mass_ge {ι : Type*} (s : Finset ι) (A : ι → ℝ) {eps : ℝ}
+    (hden : 0 < posMass s A + negMass s A) :
+    coherence s A ≤ 1 - eps ↔
+      eps * (posMass s A + negMass s A) / 2 ≤ min (posMass s A) (negMass s A) := by
+  simpa using (coherence_le_iff_minority_mass_ge (s := s) (A := A) (theta := 1 - eps) hden)
+
+/-- Contrapositive budget form.  If the minority sign mass is below the `ε/2` fraction demanded by
+the target, then the real-collinear multiplicative-shift refinement cannot certify `ρ ≤ 1 - ε`.
+Thus any successful Door-IV proof in this regime must first produce the missing minority-mass lower
+bound; the coherence drop is not free bookkeeping. -/
+theorem not_coherence_le_one_sub_of_minority_mass_lt {ι : Type*} (s : Finset ι) (A : ι → ℝ)
+    {eps : ℝ} (hden : 0 < posMass s A + negMass s A)
+    (hminor : min (posMass s A) (negMass s A) < eps * (posMass s A + negMass s A) / 2) :
+    ¬ coherence s A ≤ 1 - eps := by
+  rw [coherence_eq_signMassCoherence]
+  exact DoorIVRealSignMassSlack.not_coherence_le_one_sub_of_minority_mass_lt hden hminor
+
 /-- Strict real-collinear multshift coherence improvement below `1` forces both sign masses to be
 positive.  A one-sign real refinement cannot yield any nontrivial Door-IV coherence drop. -/
 theorem positive_sign_masses_of_coherence_lt_one_threshold {ι : Type*} (s : Finset ι) (A : ι → ℝ)
@@ -198,6 +219,8 @@ open ProximityGap.Frontier.DoorIVMultShiftCollinear
 #print axioms coherence_eq_signMass_imbalance
 #print axioms coherence_eq_signMassCoherence
 #print axioms coherence_le_iff_minority_mass_ge
+#print axioms coherence_le_one_sub_iff_minority_mass_ge
+#print axioms not_coherence_le_one_sub_of_minority_mass_lt
 #print axioms positive_sign_masses_of_coherence_lt_one_threshold
 #print axioms coherence_eq_one_of_oneMass_zero
 #print axioms coherence_lt_one_of_signsplit
