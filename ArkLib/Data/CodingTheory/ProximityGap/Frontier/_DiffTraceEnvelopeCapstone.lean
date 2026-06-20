@@ -134,6 +134,39 @@ theorem diffTrace_re_lt_iff_norm_lt (hmul : ∀ a b, θ (a + b) = θ a * θ b) (
   have hle := diffTrace_re_le_iff_norm_le hmul hone hunit Rel₂ Rel₁ hcard.symm
   rw [lt_iff_not_ge, lt_iff_not_ge, hle]
 
+
+/-- **`diffTrace_re_eq_iff_norm_eq`** — equality form of the fixed-piece-count bridge: at EQUAL
+piece count, two variance-core traces are equal exactly when their aggregate phase-sum norms are equal.
+This is the no-slack equality companion to the `≤` and `<` order-isomorphism lemmas. -/
+theorem diffTrace_re_eq_iff_norm_eq (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel₁ Rel₂ : Finset (Fin r → R))
+    (hcard : Rel₁.card = Rel₂.card) :
+    (DiffTrace θ Rel₁).re = (DiffTrace θ Rel₂).re
+      ↔ ‖∑ T ∈ Rel₁, Jphase θ T‖ = ‖∑ T ∈ Rel₂, Jphase θ T‖ := by
+  constructor
+  · intro h
+    have h12 : (DiffTrace θ Rel₁).re ≤ (DiffTrace θ Rel₂).re := le_of_eq h
+    have h21 : (DiffTrace θ Rel₂).re ≤ (DiffTrace θ Rel₁).re := ge_of_eq h
+    have hn12 := (diffTrace_re_le_iff_norm_le hmul hone hunit Rel₁ Rel₂ hcard).1 h12
+    have hn21 := (diffTrace_re_le_iff_norm_le hmul hone hunit Rel₂ Rel₁ hcard.symm).1 h21
+    exact le_antisymm hn12 hn21
+  · intro h
+    have h12 : (DiffTrace θ Rel₁).re ≤ (DiffTrace θ Rel₂).re :=
+      (diffTrace_re_le_iff_norm_le hmul hone hunit Rel₁ Rel₂ hcard).2 (le_of_eq h)
+    have h21 : (DiffTrace θ Rel₂).re ≤ (DiffTrace θ Rel₁).re :=
+      (diffTrace_re_le_iff_norm_le hmul hone hunit Rel₂ Rel₁ hcard.symm).2 (ge_of_eq h)
+    exact le_antisymm h12 h21
+
+/-- **`diffTrace_re_ne_iff_norm_ne`** — inequivalence form: at EQUAL piece count, changing the
+variance-core trace is exactly changing the aggregate coherence norm. -/
+theorem diffTrace_re_ne_iff_norm_ne (hmul : ∀ a b, θ (a + b) = θ a * θ b) (hone : θ 0 = 1)
+    (hunit : ∀ s, Complex.normSq (θ s) = 1) (Rel₁ Rel₂ : Finset (Fin r → R))
+    (hcard : Rel₁.card = Rel₂.card) :
+    (DiffTrace θ Rel₁).re ≠ (DiffTrace θ Rel₂).re
+      ↔ ‖∑ T ∈ Rel₁, Jphase θ T‖ ≠ ‖∑ T ∈ Rel₂, Jphase θ T‖ := by
+  rw [not_iff_not]
+  exact diffTrace_re_eq_iff_norm_eq hmul hone hunit Rel₁ Rel₂ hcard
+
 end ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -141,3 +174,5 @@ end ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_envelope_endpoints
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_le_iff_norm_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_lt_iff_norm_lt
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_eq_iff_norm_eq
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_ne_iff_norm_ne
