@@ -739,6 +739,122 @@ theorem not_addEnergyK_scalar_improvement {k : ℕ}
   have heq := addEnergyK_phaseSet_indep_of_scalar (k := k) (S := S) hb₁ hb₂
   exact not_lt_of_ge hgood (by simpa [heq] using hbad)
 
+/-- Target-fiber of the higher-order balanced sum: for an order `k`, the set of `k`-tuples
+`(a : Fin k → S)` whose sum hits a fixed target `t`.  Its cardinality is the `L^{2k}`-small-ball /
+higher-Halász multiplicity at `t`; maximizing over `t` gives the higher-order analogue of
+`addLinearPatternMaxFiber`. -/
+def addKSumCount {k : ℕ} (S : Finset F) (t : F) : ℕ :=
+  ((Finset.univ : Finset (Fin k → F)).filter
+    (fun v => (∀ i, v i ∈ S) ∧ (∑ i, v i) = t)).card
+
+/-- Nonzero dilation transports every higher-order sum fiber by `t ↦ λt`.  This is the higher-order
+analogue of `addLinearPatternCount_smul_eq` for the homogeneous all-ones linear form on `k`
+coordinates. -/
+theorem addKSumCount_smul_eq {k : ℕ} (S : Finset F) {lam t : F} (hlam : lam ≠ 0) :
+    addKSumCount (k := k) (S.image (fun x => lam * x)) (lam * t) = addKSumCount (k := k) S t := by
+  classical
+  unfold addKSumCount
+  have hcdiv : ∀ z : F, lam⁻¹ * (lam * z) = z := fun z => by
+    rw [← mul_assoc, inv_mul_cancel₀ hlam, one_mul]
+  have hcmul : ∀ z : F, lam * (lam⁻¹ * z) = z := fun z => by
+    rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+  refine Finset.card_nbij'
+    (fun v i => lam⁻¹ * v i)
+    (fun v i => lam * v i)
+    ?_ ?_ ?_ ?_
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hsum⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i
+      obtain ⟨x, hx, hvx⟩ := Finset.mem_image.mp (hmem i)
+      simpa [← hvx, hcdiv] using hx
+    · apply mul_left_cancel₀ hlam
+      have hL : lam * (∑ i, lam⁻¹ * v i) = ∑ i, v i := by
+        rw [Finset.mul_sum]; exact Finset.sum_congr rfl (fun i _ => hcmul (v i))
+      rw [hL, hsum]
+  · intro v hv
+    simp only [coe_filter, mem_univ, true_and] at hv ⊢
+    obtain ⟨hmem, hsum⟩ := hv
+    refine ⟨?_, ?_⟩
+    · intro i; exact Finset.mem_image.mpr ⟨v i, hmem i, rfl⟩
+    · rw [← Finset.mul_sum, hsum]
+  · intro v _; funext i; simp [hcmul]
+  · intro v _; funext i; simp [hcdiv]
+
+/-- The set of higher-order sum-fiber sizes (forgetting target labels).  Its maximum is the
+`L^{2k}` higher-order small-ball multiplicity. -/
+def addKSumFiberCounts {k : ℕ} (S : Finset F) : Finset ℕ :=
+  (Finset.univ : Finset F).image (fun t => addKSumCount (k := k) S t)
+
+/-- Nonzero dilation preserves the range of higher-order sum-fiber sizes: `t ↦ λt` merely permutes
+target labels. -/
+theorem addKSumFiberCounts_smul_eq {k : ℕ} (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    addKSumFiberCounts (k := k) (S.image (fun x => lam * x)) = addKSumFiberCounts (k := k) S := by
+  classical
+  ext N
+  constructor
+  · intro hN
+    simp only [addKSumFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨lam⁻¹ * t, ?_⟩
+    have htarg : lam * (lam⁻¹ * t) = t := by
+      rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+    have hcount := (addKSumCount_smul_eq (k := k) S (t := lam⁻¹ * t) hlam).symm
+    simpa [htarg, ht] using hcount
+  · intro hN
+    simp only [addKSumFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨lam * t, ?_⟩
+    rw [← ht]
+    exact addKSumCount_smul_eq (k := k) S hlam
+
+/-- The higher-order `L^{2k}` small-ball multiplicity: the maximum over targets of the `k`-fold
+sum-fiber size.  This is the higher-order analogue of `addLinearPatternMaxFiber`. -/
+def addKSumMaxFiber {k : ℕ} (S : Finset F) : ℕ :=
+  (addKSumFiberCounts (k := k) S).max' (by
+    classical
+    simp [addKSumFiberCounts])
+
+/-- Nonzero dilation preserves the higher-order `L^{2k}` small-ball multiplicity.  The worst
+frequency cannot tune the max-over-target higher-order fiber; dilation only relabels the target
+attaining the maximum. -/
+theorem addKSumMaxFiber_smul_eq {k : ℕ} (S : Finset F) {lam : F} (hlam : lam ≠ 0) :
+    addKSumMaxFiber (k := k) (S.image (fun x => lam * x)) = addKSumMaxFiber (k := k) S := by
+  classical
+  apply le_antisymm
+  · rw [addKSumMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addKSumMaxFiber]
+    apply Finset.le_max'
+    simpa [addKSumFiberCounts_smul_eq (k := k) S hlam] using hy
+  · rw [addKSumMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addKSumMaxFiber]
+    apply Finset.le_max'
+    simpa [← addKSumFiberCounts_smul_eq (k := k) S hlam] using hy
+
+/-- Two nonzero frequency dilates have the same higher-order `L^{2k}` small-ball multiplicity.  A
+higher-order Halász max-fiber anti-concentration attempt is therefore exactly `b`-blind at every
+order. -/
+theorem addKSumMaxFiber_phaseSet_indep_of_scalar {k : ℕ}
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addKSumMaxFiber (k := k) (S.image (fun x => b₁ * x)) =
+      addKSumMaxFiber (k := k) (S.image (fun x => b₂ * x)) := by
+  rw [addKSumMaxFiber_smul_eq (k := k) S hb₁, addKSumMaxFiber_smul_eq (k := k) S hb₂]
+
+/-- **No strict scalar improvement for the higher-order `L^{2k}` small-ball multiplicity.**  If one
+nonzero frequency dilate has higher-order max-fiber above a proposed threshold `C`, then no other
+nonzero dilate can satisfy `≤ C`.  Passing to the higher-order small-ball constant still cannot improve
+the adversarial frequency. -/
+theorem not_addKSumMaxFiber_scalar_improvement {k : ℕ}
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addKSumMaxFiber (k := k) (S.image (fun x => b₁ * x))) :
+    ¬ addKSumMaxFiber (k := k) (S.image (fun x => b₂ * x)) ≤ C := by
+  intro hgood
+  have heq := addKSumMaxFiber_phaseSet_indep_of_scalar (k := k) (S := S) hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_smul_eq_image
@@ -780,3 +896,10 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergyK_phaseSet_indep_of_scalar
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergyK_scalar_improvement
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumCount_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumFiberCounts_smul_eq
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber_phaseSet_indep_of_scalar
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addKSumMaxFiber_scalar_improvement
