@@ -125,6 +125,21 @@ theorem common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub {ι : Type*}
   intro hcoh
   exact not_common_nonneg_ray_of_multiPieceNormCoherence_le s A (sub_lt_self 1 hε) hcoh hray
 
+/-- Family multi-piece ray obstruction: a universal positive epsilon-drop for finite refinements must
+exclude common nonnegative-ray alignment at every indexed split.  One aligned member, even after further
+subdivision into many pieces, refutes the whole strict-coherence family. -/
+theorem not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray
+    {κ ι : Type*} (s : κ → Finset ι) (A : κ → ι → E) {ε : κ → ℝ}
+    (hε : ∀ k, 0 < ε k)
+    (hbad : ∃ k, ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ s k, A k i = c i • u) ∧
+      (∀ i ∈ s k, 0 ≤ c i) ∧
+      0 < (∑ i ∈ s k, c i) ∧ u ≠ 0) :
+    ¬ ∀ k, multiPieceNormCoherence (s k) (A k) ≤ 1 - ε k := by
+  intro hcoh
+  rcases hbad with ⟨k, hk⟩
+  exact common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub (s k) (A k) (hε k) hk (hcoh k)
+
 variable [StrictConvexSpace ℝ E]
 
 /-- Saturation of two-piece norm coherence is exactly triangle-equality saturation, hence the two
@@ -215,3 +230,4 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_common_nonneg_ray_of_multiPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray

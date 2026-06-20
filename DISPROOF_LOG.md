@@ -9841,3 +9841,19 @@ triangle-equality bookkeeping, not a CORE/cancellation/moment/completion/anti-co
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
 axiom-clean. New theorem: `not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay`. Axioms are
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) multi-piece common-ray obstruction in family form (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 geometric coherence constraint extending `_DoorIVComplexRayCoherence`. The previous
+same-ray family lemma handled two-piece splits. This refinement records the finite-refinement analogue:
+for an indexed family of multi-piece splits, one member whose pieces all lie on a common nonnegative ray
+refutes a universal strict cap `multiPieceNormCoherence_k ≤ 1 - ε_k`.
+
+VERDICT: further subdivision of the adversarial monomial sum cannot by itself create Door-IV coherence
+slack. A strict multi-piece coherence theorem must prove non-common-ray phase geometry for every
+adversarial member, not merely refine the partition. This is pure triangle-equality bookkeeping, not a
+CORE/cancellation/moment/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
+axiom-clean. New theorem: `not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray`.
+Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
