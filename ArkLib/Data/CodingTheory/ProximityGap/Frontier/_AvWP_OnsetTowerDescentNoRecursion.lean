@@ -129,6 +129,39 @@ theorem no_transfer_operator
   rw [h1] at h2
   exact (lt_irrefl (0 : ℚ)) (h2 ▸ hw)
 
+/-- **★ No-Recursion, value-agnostic collision form (strict generalization).** The obstruction does
+NOT depend on the special lower value `0`: it is purely about a *collision* in the tower data. If a
+single transfer map `T` reproduces level-`2k` wraparound from level-`k`, and two rungs `r₁, r₂` carry
+the SAME level-`k` value `v` (`W k r₁ = v = W k r₂`) but DISTINCT level-`2k` values
+(`W (2k) r₁ = w₁ ≠ w₂ = W (2k) r₂`), then no such `T` exists — a function cannot send the one input `v`
+to two distinct outputs. The original `no_transfer_operator` is the special case `v = 0`, `w₁ = 0`,
+`w₂ = w > 0`.
+
+This pins the No-Recursion mechanism to the COLLISION GEOMETRY (one repeated lower value with a split
+image), not to the arithmetic accident that the sub-onset rungs vanish: any tower level at which two
+distinct depths share a wraparound value while their doublings differ already kills every level-blind
+transfer operator. -/
+theorem no_transfer_operator_of_collision
+    (W : ℕ → ℕ → ℚ) (k r₁ r₂ : ℕ) (v w₁ w₂ : ℚ) (hne : w₁ ≠ w₂)
+    (hk₁ : W k r₁ = v) (hk₂ : W k r₂ = v)
+    (h2k₁ : W (2 * k) r₁ = w₁) (h2k₂ : W (2 * k) r₂ = w₂) :
+    ¬ ∃ T : ℚ → ℚ, IsTransferOperator W T := by
+  rintro ⟨T, hT⟩
+  -- T v = W (2k) r₁ = w₁  and  T v = W (2k) r₂ = w₂, so w₁ = w₂, contradicting hne.
+  have e₁ : T v = w₁ := by have := hT k r₁; rw [hk₁] at this; rw [← this, h2k₁]
+  have e₂ : T v = w₂ := by have := hT k r₂; rw [hk₂] at this; rw [← this, h2k₂]
+  exact hne (e₁ ▸ e₂)
+
+/-- The original zero-anchored `no_transfer_operator` is the `v = 0`, `w₁ = 0`, `w₂ = w` instance of
+the value-agnostic collision form — confirming the generalization subsumes it (no content lost). -/
+theorem no_transfer_operator_eq_collision_specialization
+    (W : ℕ → ℕ → ℚ) (k r₁ r₂ : ℕ) (w : ℚ) (hw : 0 < w)
+    (hoff_k : W k r₁ = 0) (hoff_2k : W (2 * k) r₁ = 0)
+    (honset_k : W k r₂ = 0) (honset_2k : W (2 * k) r₂ = w) :
+    ¬ ∃ T : ℚ → ℚ, IsTransferOperator W T :=
+  no_transfer_operator_of_collision W k r₁ r₂ 0 0 w (ne_of_lt hw)
+    hoff_k honset_k hoff_2k honset_2k
+
 /-- **The data instance.** The hypotheses of `no_transfer_operator` are realized by the exact
 computation at `p = 1048609` (β ≈ 4 vs `n = 32`), level `k = 8`, off-rung `r₁ = 4`, onset-rung
 `r₂ = 8`: `W_4(μ_8)=0, W_4(μ_16)=0, W_8(μ_8)=0, W_8(μ_16) = w > 0` (here `r₀(μ_16)=8`, `r₀(μ_8)>7`).
@@ -147,4 +180,6 @@ end ArkLib.ProximityGap.Frontier.OnsetTowerDescent
 #print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.onsetScale_descent_ratio
 #print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.onsetScale_descent_ratio_gt_one
 #print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.no_transfer_operator
+#print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.no_transfer_operator_of_collision
+#print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.no_transfer_operator_eq_collision_specialization
 #print axioms ArkLib.ProximityGap.Frontier.OnsetTowerDescent.no_transfer_operator_from_data
