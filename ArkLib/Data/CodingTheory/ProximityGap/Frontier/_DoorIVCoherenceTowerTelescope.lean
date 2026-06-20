@@ -121,6 +121,31 @@ theorem coherenceProduct_eq_root_div_leaf (a : ℝ) (t : List ℝ)
   field_simp
   linarith [h]
 
+/-- **Bound transfer to the coherence product.**  On a positive mass chain, any raw root-mass
+certificate `M₀ ≤ B` is EXACTLY the same statement as the product certificate
+`(∏ρ_j) ≤ B/M_leaf`.  This is the door-(iv) reduction interface: a prize-scale estimate for the
+Gauss period can only enter the dyadic tower by proving the corresponding small product of level
+coherences. -/
+theorem root_le_bound_iff_coherenceProduct_le_bound_div_leaf (a B : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x) :
+    a ≤ B ↔ coherenceProduct (a :: t) ≤ B / (a :: t).getLast (by simp) := by
+  have hlast_pos : 0 < (a :: t).getLast (by simp) :=
+    hpos _ (List.getLast_mem (by simp))
+  rw [coherenceProduct_eq_root_div_leaf a t hpos]
+  exact (div_le_div_iff_of_pos_right hlast_pos).symm
+
+/-- Contrapositive product interface: if the coherence product stays above the target normalized
+threshold `B/M_leaf`, then the root mass cannot satisfy the raw bound `B`.  This is the formal version
+of the probe verdict: a tower whose product is bounded below by a fixed-width constant cannot by itself
+supply a `√n` saving. -/
+theorem not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct (a B : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hprod : B / (a :: t).getLast (by simp) < coherenceProduct (a :: t)) :
+    ¬ a ≤ B := by
+  intro hroot
+  have hle := (root_le_bound_iff_coherenceProduct_le_bound_div_leaf a B t hpos).mp hroot
+  linarith
+
 /-- Each consecutive ratio in a coherence tower is nonneg when the masses are positive; this is the
 sign discipline behind reading the ratios as coherences `∈ [0,1]` (the `≤ 1` half is the triangle
 inequality, supplied by `_DoorIVHalfMassFactorization`). -/
@@ -147,4 +172,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.coherenceProduct_mul_getLast
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_eq_coherenceProduct_mul_leaf
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.coherenceProduct_eq_root_div_leaf
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_le_bound_iff_coherenceProduct_le_bound_div_leaf
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.stepRatios_nonneg
