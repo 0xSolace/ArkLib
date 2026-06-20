@@ -206,6 +206,47 @@ theorem variance_le_prizeProxy_mul_one_add_of_pairResidual {m : ℕ} (hm : 0 < m
       simpa [add_comm, add_left_comm, add_assoc] using add_le_add_left hcorr (2 * (m : ℝ))
     _ = prizeVarianceProxy m * (1 + ε) := by unfold prizeVarianceProxy; ring
 
+
+/-- **Pair-discrepancy budget, lower multiplicative form.**  If the dimensionless residual obeys
+`δ(2m-1) ≤ ε`, then the variance is bounded below by the prize proxy times `1-ε`.
+Together with `variance_le_prizeProxy_mul_one_add_of_pairResidual`, this gives the raw two-sided
+Lane-2 corridor around the Plancherel/prize variance scale. -/
+theorem prizeProxy_mul_one_sub_le_variance_of_pairResidual {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ) (hε : δ * (2 * (m : ℝ) - 1) ≤ ε)
+    (hpair : PairEquidistributed φ δ) :
+    prizeVarianceProxy m * (1 - ε)
+      ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) := by
+  have hbase := variance_ge_of_pairEquidist (B := B) φ δ hδ hpair
+  have hmnonneg : (0 : ℝ) ≤ 2 * (m : ℝ) := by positivity
+  have hcorr : 2 * (m : ℝ) * ε ≥ 2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1)) := by
+    calc
+      2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1))
+          = 2 * (m : ℝ) * (δ * (2 * (m : ℝ) - 1)) := by ring
+      _ ≤ 2 * (m : ℝ) * ε := mul_le_mul_of_nonneg_left hε hmnonneg
+  calc
+    prizeVarianceProxy m * (1 - ε) = 2 * (m : ℝ) - 2 * (m : ℝ) * ε := by
+      unfold prizeVarianceProxy
+      ring
+    _ ≤ 2 * (m : ℝ) - 2 * δ * ((m : ℝ) * (2 * (m : ℝ) - 1)) := by linarith
+    _ ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) := hbase
+
+/-- **Pair-discrepancy budget, raw two-sided multiplicative form.**  If the dimensionless residual is
+at most `ε`, then the raw variance proxy differs from `2m` by at most `(2m)ε`.
+This is the exact unnormalized companion to the normalized absolute-error capstone. -/
+theorem abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ) (hε : δ * (2 * (m : ℝ) - 1) ≤ ε)
+    (hpair : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) - prizeVarianceProxy m|
+      ≤ prizeVarianceProxy m * ε := by
+  rw [abs_le]
+  constructor
+  · have hlower := prizeProxy_mul_one_sub_le_variance_of_pairResidual (hm := hm) (φ := φ)
+      (hδ := hδ) (hε := hε) (hpair := hpair)
+    linarith
+  · have hupper := variance_le_prizeProxy_mul_one_add_of_pairResidual (hm := hm) (φ := φ)
+      (hδ := hδ) (hε := hε) (hpair := hpair)
+    linarith
+
 /-- **Pair-discrepancy budget, explicit `O(1/m)` form.**  If
 `δ ≤ ε/(2m-1)`, then the variance is bounded by the prize proxy times `1+ε`.
 The denominator is positive for every nonempty antipodal-pair list `m>0`. -/
@@ -258,6 +299,8 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.prizeProxy_mul_one_sub_le_variance_of_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_div_prizeProxy_eq_pairResidual

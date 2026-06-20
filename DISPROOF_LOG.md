@@ -8688,3 +8688,21 @@ completion, moment-saving, capacity, or anti-concentration theorem claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
 new theorem `not_addEnergy_scalar_improvement`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane-2 pair-discrepancy residual controls the raw variance corridor (2026-06-20)
+
+Lens: Lane 2 citable reduction rung extending `_PhasePairEquidistBudget`. Prior bricks recorded the
+normalized two-sided budget `|V/(2m)-1| ≤ δ(2m-1)` and the raw upper multiplicative form
+`V ≤ (2m)(1+ε)`. This refinement packages the missing raw lower and absolute-error corridor: if the
+named pair-discrepancy residual obeys `δ(2m-1)≤ε`, then
+
+`(2m)(1-ε) ≤ V` and `|V-2m| ≤ (2m)ε`.
+
+VERDICT: the reduction target is exact in unnormalized as well as normalized units. A prize-scale
+variance certificate from this lane is equivalent to proving the genuinely arithmetic residual
+`δ=O(1/m)`; no cancellation, anti-concentration, completion saving, or CORE bound is proved here.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`,
+axiom-clean. New theorems: `prizeProxy_mul_one_sub_le_variance_of_pairResidual` and
+`abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
