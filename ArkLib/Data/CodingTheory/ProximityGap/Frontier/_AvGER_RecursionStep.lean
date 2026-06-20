@@ -7,6 +7,8 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Tactic
 
+set_option autoImplicit false
+
 /-!
 # Gaussian additive-energy recursion: base case, convolution identity, conditional step (#444)
 
