@@ -217,6 +217,22 @@ theorem bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMa
       ← not_bddAbove_range_iff_forall_exists_lt (fun i => H i / scale i),
       not_not]
 
+/-- **The symmetric door-(iv) half-mass/wall dichotomy in `BddAbove` form.**  Under the same
+comparison hypotheses, boundedness of the normalized half-mass Shaw ratios is equivalent to the
+normalized prize ratios *not* exceeding every constant.  This is the missing symmetric companion to
+`bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass`, so the positive/wall
+BddAbove API is closed on both sides of the half-mass reduction. -/
+theorem bddAbove_range_normalizedHalfMass_iff_not_forall_exists_lt_normalizedPrize {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ¬ ∀ C, ∃ i, C < M i / scale i := by
+  rw [← bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      ← not_bddAbove_range_iff_forall_exists_lt (fun i => M i / scale i),
+      not_not]
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_forall_le
@@ -234,3 +250,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedHalfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_not_forall_exists_lt_normalizedPrize
