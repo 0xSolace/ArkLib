@@ -18647,3 +18647,18 @@ real worst-b sup to this S_r bound BOTH ways, axiom-clean: sufficiency `period_l
 worstPeriod_le_prizeFloor_dc`, necessity `dcSubtractedMoment_le_of_worstPeriod_le`. Everything else is
 genuinely proven; no file claims the prize closed. The two issues above are local (one vacuous premise, one
 prose mislabel), not closure claims.
+
+## [audit-round2-CORRECTION-one-wall-two-faces] Refinement to the round-2 synthesis: it is ONE WALL in TWO non-machine-linked faces, NOT "one open input" (2026-06-20, NubsCarson)
+
+Self-correction to the synthesis in [adversarial-audit-round2-2026-06-20]. That synthesis was scoped to the
+moment/energy capstone files and concluded "the prize is reduced to exactly ONE open analytic statement
+(DC-subtracted `S_r ≤ (q−1)·Wick`)." Accurate FOR THE MOMENT/ENERGY FACE (worst-b sup ⟺ `S_r` is two-sided,
+axiom-clean), but the global "one open input" phrasing is imprecise and should be avoided: the open core is
+ONE WALL exposed in TWO formal faces that are NOT linked by any in-tree theorem —
+(i) the moment/energy face `SaddleEnergyBound` (char-`p` Lam–Leung transfer / DC-subtracted `S_r` = BGK@β=4), and
+(ii) the incidence face `ShawOperator.MCAShawConjecture` / `UniformBCHKSIncidence` (the `√q·B` cancellation =
+BCHKS Conj 1.12).
+They are the same √n-vs-√p dispersion wall in two languages, but no machine-checked bridge connects them, so
+discharging one would not formally discharge the other. Honest statement: the moment face is fully reduced to
+`S_r`; the incidence face is separately open; the prize needs one of the two faces proven (and a bridge, if via
+the other). Do not describe the campaign as having "a single open input."
