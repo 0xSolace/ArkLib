@@ -944,6 +944,86 @@ theorem addSystemPatternCount_phaseSet_indep_of_scalar {m k : ℕ}
       addSystemPatternCount (S.image (fun x => b₂ * x)) A (fun r => b₂ * t r) := by
   rw [addSystemPatternCount_smul_eq S A t hb₁, addSystemPatternCount_smul_eq S A t hb₂]
 
+/-- The range of joint-system target-fiber multiplicities over all vector targets.  This is the
+multi-form, multi-target small-ball profile: it forgets target labels and keeps exactly which fiber
+sizes occur for the system `∀ r, ∑ j A r j * v j = t r`. -/
+def addSystemPatternFiberCounts {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) : Finset ℕ :=
+  (Finset.univ : Finset (Fin m → F)).image (fun t => addSystemPatternCount S A t)
+
+/-- Nonzero dilation preserves the full range of joint-system fiber sizes.  The vector target labels
+are merely permuted by `t ↦ λ • t`; hence even taking an arbitrary vector-target histogram/range does
+not recover any dependence on the adversarial frequency. -/
+theorem addSystemPatternFiberCounts_smul_eq {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {lam : F} (hlam : lam ≠ 0) :
+    addSystemPatternFiberCounts (S.image (fun x => lam * x)) A =
+      addSystemPatternFiberCounts S A := by
+  classical
+  ext N
+  constructor
+  · intro hN
+    simp only [addSystemPatternFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨fun r => lam⁻¹ * t r, ?_⟩
+    rw [← ht]
+    have hcount := (addSystemPatternCount_smul_eq S A (fun r => lam⁻¹ * t r) hlam).symm
+    simpa [← mul_assoc, mul_inv_cancel₀ hlam] using hcount
+  · intro hN
+    simp only [addSystemPatternFiberCounts, mem_image, mem_univ, true_and] at hN ⊢
+    obtain ⟨t, ht⟩ := hN
+    refine ⟨fun r => lam * t r, ?_⟩
+    rw [← ht]
+    exact addSystemPatternCount_smul_eq S A t hlam
+
+/-- Two nonzero frequency dilates have the same joint-system small-ball fiber-size range.  This is the
+histogram/range form of multi-dimensional Halász blindness, independent of which vector target is
+chosen after dilation. -/
+theorem addSystemPatternFiberCounts_phaseSet_indep_of_scalar {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addSystemPatternFiberCounts (S.image (fun x => b₁ * x)) A =
+      addSystemPatternFiberCounts (S.image (fun x => b₂ * x)) A := by
+  rw [addSystemPatternFiberCounts_smul_eq S A hb₁,
+    addSystemPatternFiberCounts_smul_eq S A hb₂]
+
+/-- The maximum joint-system target-fiber multiplicity over all vector targets.  This is the usual
+multi-dimensional small-ball/Halász statistic obtained from a system of additive linear forms. -/
+def addSystemPatternMaxFiber {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) : ℕ :=
+  (addSystemPatternFiberCounts S A).max' (by
+    classical
+    simp [addSystemPatternFiberCounts])
+
+/-- Nonzero dilation preserves the maximum joint-system small-ball multiplicity.  Taking `max_t` over
+all vector targets only renames the maximizer by scalar multiplication; it does not create a worst-`b`
+anti-concentration lever. -/
+theorem addSystemPatternMaxFiber_smul_eq {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {lam : F} (hlam : lam ≠ 0) :
+    addSystemPatternMaxFiber (S.image (fun x => lam * x)) A =
+      addSystemPatternMaxFiber S A := by
+  classical
+  apply le_antisymm
+  · rw [addSystemPatternMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addSystemPatternMaxFiber]
+    apply Finset.le_max'
+    simpa [addSystemPatternFiberCounts_smul_eq S A hlam] using hy
+  · rw [addSystemPatternMaxFiber, Finset.max'_le_iff]
+    intro y hy
+    rw [addSystemPatternMaxFiber]
+    apply Finset.le_max'
+    simpa [← addSystemPatternFiberCounts_smul_eq S A hlam] using hy
+
+/-- Two nonzero frequency dilates have the same maximum joint-system small-ball fiber.  Thus the
+strongest target-optimized multi-dimensional additive small-ball statistic is still scalar-blind. -/
+theorem addSystemPatternMaxFiber_phaseSet_indep_of_scalar {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addSystemPatternMaxFiber (S.image (fun x => b₁ * x)) A =
+      addSystemPatternMaxFiber (S.image (fun x => b₂ * x)) A := by
+  rw [addSystemPatternMaxFiber_smul_eq S A hb₁,
+    addSystemPatternMaxFiber_smul_eq S A hb₂]
+
 /-- **No strict scalar improvement for the multi-dimensional small-ball count.** If one nonzero
 frequency dilate makes the joint system fiber exceed a proposed threshold `C`, no other nonzero
 dilate can satisfy `≤ C` at the rescaled target. The adversarial worst `b` cannot tune the
@@ -957,6 +1037,19 @@ theorem not_addSystemPatternCount_scalar_improvement {m k : ℕ}
     ¬ addSystemPatternCount (S.image (fun x => b₂ * x)) A (fun r => b₂ * t r) ≤ C := by
   intro hgood
   have heq := addSystemPatternCount_phaseSet_indep_of_scalar (S := S) A t hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
+/-- **No strict scalar improvement for target-optimized multi-dimensional small-ball bounds.** If the
+max-over-vector-target joint fiber for one nonzero frequency is above `C`, then every other nonzero
+frequency has the same maximum and cannot satisfy `≤ C`. This packages the actual Halász/LO
+small-ball use case where the target is chosen adversarially after the system is fixed. -/
+theorem not_addSystemPatternMaxFiber_scalar_improvement {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addSystemPatternMaxFiber (S.image (fun x => b₁ * x)) A) :
+    ¬ addSystemPatternMaxFiber (S.image (fun x => b₂ * x)) A ≤ C := by
+  intro hgood
+  have heq := addSystemPatternMaxFiber_phaseSet_indep_of_scalar (S := S) A hb₁ hb₂
   exact not_lt_of_ge hgood (by simpa [heq] using hbad)
 
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
@@ -1010,5 +1103,13 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternCount_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternCount_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternFiberCounts_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternFiberCounts_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber_phaseSet_indep_of_scalar
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternCount_scalar_improvement
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternMaxFiber_scalar_improvement
