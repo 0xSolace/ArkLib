@@ -104,6 +104,20 @@ theorem prize_iff_shawValue_le_div_sqrtL {M C n L : ℝ} (hn : 0 < n) (hL : 0 < 
   · intro h; nlinarith [h, hsL, hsn]
   · intro h; nlinarith [h, hsL, hsn]
 
+/-- **Exact non-strict door-(iv) target-vs-BGK ceiling gate.**  The genuine-prize Shaw threshold
+`C/√L` is at most the BGK ceiling `1` exactly when `C ≤ √L`.  This is the closed-form
+normalization guard behind the strict `C < √L` hypothesis used in the door-(iv) obligation: no
+cancellation is asserted, only the endpoint arithmetic of the sharp Shaw bracket. -/
+theorem doorIV_target_le_bgk_ceiling_iff {C L : ℝ} (hL : 0 < L) :
+    C / Real.sqrt L ≤ 1 ↔ C ≤ Real.sqrt L := by
+  rw [div_le_one (Real.sqrt_pos.2 hL)]
+
+/-- **Exact strict door-(iv) target-vs-BGK ceiling gate.**  The genuine-prize Shaw threshold
+`C/√L` is strictly below the BGK ceiling `1` exactly when `C < √L`. -/
+theorem doorIV_target_lt_bgk_ceiling_iff {C L : ℝ} (hL : 0 < L) :
+    C / Real.sqrt L < 1 ↔ C < Real.sqrt L := by
+  rw [div_lt_one (Real.sqrt_pos.2 hL)]
+
 /-- **Door-(iv) obligation, quantified in Shaw-value units.**  In the prize regime (`0 < n`, `0 < L`),
 for any `M` satisfying an explicit BGK-shaped hypothesis `M ≤ √(n·L)` (so `shawValue ≤ 1`): the prize bound
 `M ≤ C·√n` is equivalent to pushing the Shaw value all the way down to `C/√L`.  Since `C/√L < 1`
@@ -231,6 +245,8 @@ theorem doorIV_sharp_corridor_capstone {M C n L : ℝ} (hn : 0 < n) (hL : 0 < L)
 
 end ArkLib.ProximityGap.Frontier.ShawValueBGKBracket
 
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_target_le_bgk_ceiling_iff
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_target_lt_bgk_ceiling_iff
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_shave_factor_eq
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.one_lt_doorIV_shave_factor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_sharp_corridor_capstone
