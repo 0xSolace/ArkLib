@@ -146,6 +146,21 @@ theorem no_full_mass_rung_of_no_fixedRungSpike {a : Nat} (hist : Fin a → Nat)
   intro j hfull
   exact hno ⟨j, fixedRung_full_mass_forces_spike hist hfull hpos (hthreshold j) hmass⟩
 
+/-- Histogram-count form of the no-hidden-rung wall.  If `total` is an actual sample-count ceiling
+for every bin, then the same no-spike certificate proves every dyadic rung has **strictly less** than
+full mass.  This is the version consumed by finite probe reports, where `hist j ≤ total` is immediate
+from `hist` counting samples: no rung is an exact selector unless a visible spike exists. -/
+theorem hist_lt_total_of_no_fixedRungSpike {a : Nat} (hist : Fin a → Nat)
+    {total spikeNum spikeDen massNum massDen : Nat}
+    (hno : ¬ ∃ j : Fin a, FixedRungSpike hist total spikeNum spikeDen massNum massDen j)
+    (hpos : 0 < total)
+    (hthreshold : ∀ j : Fin a, spikeNum < spikeDen * 2 ^ (j.val + 1))
+    (hmass : massNum ≤ massDen) (hle : ∀ j : Fin a, hist j ≤ total) :
+    ∀ j : Fin a, hist j < total := by
+  intro j
+  exact lt_of_le_of_ne (hle j)
+    (no_full_mass_rung_of_no_fixedRungSpike hist hno hpos hthreshold hmass j)
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_fixedRungRule_of_two_rungs
@@ -154,3 +169,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.full_mass_exceeds_haar
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_full_mass_forces_spike
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_full_mass_rung_of_no_fixedRungSpike
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.hist_lt_total_of_no_fixedRungSpike
