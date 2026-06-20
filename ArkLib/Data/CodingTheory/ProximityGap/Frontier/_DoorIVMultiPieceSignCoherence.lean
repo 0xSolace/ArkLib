@@ -340,6 +340,36 @@ theorem multiPieceCoherence_le_iff_two_mul_minMass_ge {ι : Type*} [DecidableEq 
     field_simp [ne_of_gt htotal] at hmul ⊢
     linarith
 
+/-- Consumer-facing strict form: any subunit coherence certificate `coherence ≤ c < 1` for a real
+multi-piece refinement forces positive aggregate mass on both signs.  This is the exact obstruction
+for door-(iv) refinements at the adversarial frequency: a strict cap must first prove two-sided
+signed mass, not merely introduce more pieces. -/
+theorem two_sided_of_multiPieceCoherence_le_lt_one {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass)
+    (hle : multiPieceCoherence s A ≤ c) (hc : c < 1) :
+    0 < posMass ∧ 0 < negMass := by
+  have hlt : multiPieceCoherence s A < 1 := lt_of_le_of_lt hle hc
+  exact (multiPieceCoherence_lt_one_iff_two_sided s A hsum hden hposMass hnegMass htotal).mp hlt
+
+/-- Contrapositive interface: if one aggregate sign mass vanishes, no strict subunit bound can hold.
+Thus a same-sign or one-sided refined split cannot be used as a door-(iv) anti-concentration witness. -/
+theorem not_multiPieceCoherence_le_of_one_side_zero {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass)
+    (hzero : posMass = 0 ∨ negMass = 0) (hc : c < 1) :
+    ¬ multiPieceCoherence s A ≤ c := by
+  intro hle
+  have hone : multiPieceCoherence s A = 1 :=
+    (multiPieceCoherence_eq_one_iff_one_side_zero s A hsum hden hposMass hnegMass htotal).mpr hzero
+  linarith
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -362,3 +392,5 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
 #print axioms two_mul_minMass_ge_of_multiPieceCoherence_le
 #print axioms multiPieceCoherence_le_iff_two_mul_minMass_ge
+#print axioms two_sided_of_multiPieceCoherence_le_lt_one
+#print axioms not_multiPieceCoherence_le_of_one_side_zero
