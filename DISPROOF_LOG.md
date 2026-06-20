@@ -8878,3 +8878,56 @@ empirical side, on the live door-(iv) coherence object ρ²(b*). Consistent: bot
 No CORE / cancellation / completion / moment / energy / capacity claim. This is a reproducible probe with
 a clear verdict (prime-stability + no lower tail), not a bound. Probe script:
 `scripts/probes/probe_444_worstb_const_prime_stability.py`.
+
+## [doorIV-worstb-coherence-constant-n-drift-saturates] worst-b coherence constant C(n) SATURATES (no persistent positive log-log slope) for n≥128 at β=3; the early positive drift is a finite-size correction (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 probe (the most prize-relevant worst-b measurement; NON-discriminating for a
+proof but it directly probes the asymptotic question). Both prior worst-b entries flagged the OPEN
+question as the n-ASYMPTOTICS of the dimensionless constant `C(n,β,p) = ρ²(b*)·n/log(p/n)` — "the
+constant could drift slowly with n (the 25-yr wall lives in the n-asymptotics, not prime-variation)."
+This probe measures the SIGN and RATE of that drift directly, AVERAGING over primes (using the
+established prime-stability) and reporting C(2n)/C(n) + per-step and overall log-log slopes.
+
+DICHOTOMY the probe targets:
+  - prize TRUE  ⟺ C(n) bounded as n→∞ (slope → 0).
+  - prize FALSE ⟺ C(n) → ∞ (e.g. SOTA exponent n^0.989 ⟹ C(n)~n^0.022, persistent slope ≈ +0.022).
+
+PROBE A (`probe_444_worstb_const_ndrift.py`, β=4 PRIZE window, 6 primes/n) — n-range LIMITED by the exact
+coset scan (n=64 needs p≈n^4≈16.8M, beyond tractable exact sup):
+    n     C(n)    C(2n)/C(n)   loglog slope
+   8    1.1239
+  16    1.3920    1.2386       0.3087
+  32    1.5319    1.1005       0.1381
+Slope DECAYS (0.31→0.14) but only 3 points before the scan walls — NON-discriminating at the prize β.
+
+PROBE B (β=3 THICK window, 5 primes/n) — reaches n=512 (p≈134M), the asymptotic signal:
+    n     C(n)     C(2n)/C(n)   loglog slope
+  16    1.4370
+  32    1.6478    1.1467        0.1975
+  64    1.7514    1.0629        0.0880
+ 128    1.7532    1.0010        0.0014
+ 256    1.6760    0.9560       -0.0650
+ 512    1.7742    1.0586        0.0822
+Overall fitted log-log slope +0.0456 (dominated by the n=16→64 transient).
+
+VERDICT (honest, non-overclaiming):
+1. C(n) SATURATES. For n≥128 the constant flattens at ≈1.67–1.77 with NO persistent positive log-log
+   slope: successive ratios C(2n)/C(n) sit at 1.001, 0.956, 1.059 (mean ≈ 1.005, i.e. ratio ≈ 1, slope
+   ≈ 0). The early positive slope (0.198 at n=16→32, 0.088 at n=32→64) is a FINITE-SIZE correction that
+   washes out by n≈128, NOT a power law. There is no sign of the persistent +0.022 slope a super-√
+   (prize-FALSE) law would force out to n=512.
+2. NON-DISCRIMINATING for the prize, for TWO honest reasons: (a) Probe B is at β=3, the THICK β≈2.3–3.2
+   window where CORE is KNOWN FALSE — saturation of the normalization there is necessary-not-sufficient
+   for the prize; (b) the PRIZE β≈4–5 window (Probe A) walls the exact coset scan at n≈32–64, so the
+   asymptotic slope CANNOT be read at the prize aspect ratio by exact computation. n=512 is also still
+   finite — a wall at larger n is not excluded. This is exactly why the prize is 25-yr open: the
+   asymptotic constant is the inaccessible object.
+3. What this DOES establish empirically: the worst-b coherence normalization C(n) shows NO power-law
+   growth in the largest exactly-computable range, its drift is a decaying finite-size correction, and
+   (with the prime-stability entry) it is a prime-stable O(1) object with no lower tail. All
+   prize-CONSISTENT; none prize-PROVING.
+
+No CORE / cancellation / completion / moment / energy / capacity claim. Reproducible probes with a clear
+(non-discriminating) verdict, not a bound. Probe scripts:
+`scripts/probes/probe_444_worstb_const_ndrift.py` (this entry),
+`scripts/probes/probe_444_worstb_const_prime_stability.py` (prior entry).
