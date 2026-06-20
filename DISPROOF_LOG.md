@@ -1,3 +1,20 @@
+## door-(iv) index-factor equality occurs exactly at the degenerate index-one endpoint (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVIndexFactorOvershoot`. Prior bricks proved the weak
+and strict one-sided statements: `m=1` preserves the prize scale/constant, `m≥1` cannot improve it,
+and `m>1` strictly inflates it. This sweep closes the exact equality surface.
+
+New axiom-clean theorem:
+- `scaled_constant_eq_constant_iff` — for `0<C` and `0≤m`, `C*√m = C ↔ m = 1`.
+
+VERDICT: the naive incidence bridge has no hidden equality slack. Preserving the Shaw/prize constant
+through the index factor is equivalent to the degenerate index-one case; any genuine indexed regime
+must remove the factor by a separate door-(iv) argument rather than claiming it is bookkeeping. Pure
+scale arithmetic; no anti-concentration/cancellation/moment/completion/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`,
+axiom-clean. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) Lane-2 capstone — exact Shaw shave factor `1/(C/√L)=√L/C` (2026-06-19)
 
 Lens: Lane-2 citable capstone, extending `_ShawValueBGKBracket`. The previous sharp Shaw bracket

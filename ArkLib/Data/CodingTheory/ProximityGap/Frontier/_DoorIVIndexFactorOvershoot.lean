@@ -107,6 +107,24 @@ theorem scaled_constant_eq_constant_of_m_eq_one {C : ℝ} :
     C * Real.sqrt (1 : ℝ) = C := by
   simp
 
+/-- **Exact equality criterion for the index factor.**  With positive raw constant and nonnegative
+index, the normalized naive constant `C√m` equals the desired constant `C` if and only if the index is
+exactly `m = 1`.  Thus equality is not hidden bookkeeping slack: it is precisely the degenerate
+index-one endpoint, while every genuine indexed regime must either inflate or deflate away from that
+endpoint. -/
+theorem scaled_constant_eq_constant_iff {C m : ℝ} (hC : 0 < C) (hm : 0 ≤ m) :
+    C * Real.sqrt m = C ↔ m = 1 := by
+  constructor
+  · intro h
+    have hs : Real.sqrt m = 1 := by
+      have h' : Real.sqrt m * C = (1 : ℝ) * C := by simpa [mul_comm] using h
+      exact (mul_left_inj' (ne_of_gt hC)).mp h'
+    have hsq := congrArg (fun x : ℝ => x ^ 2) hs
+    simpa [Real.sq_sqrt hm] using hsq
+  · intro hm1
+    rw [hm1]
+    simp
+
 /-- In the actual indexed regime `1 ≤ m`, the naive incidence scale is never smaller than the
 prize scale.  Thus the bridge cannot secretly improve the Shaw normalization by the index step; it
 only preserves scale at `m = 1` and overshoots afterwards. -/
@@ -194,6 +212,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
