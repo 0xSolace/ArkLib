@@ -9411,3 +9411,25 @@ anti-concentration theorem. No CORE, completion, moment-saving, anti-concentrati
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
 new theorem `norm_lt_of_pos_normSq_deficit`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) single-defect first-power deficit has a sharp factor-2 sandwich (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleSingleDefectSandwich.lean`.
+Prior bricks proved the exact squared-deficit identity and the first-power lower floor for a one-site
+phase defect. This refinement adds the complementary ceiling and packages the sharp window:
+
+`(M-1)(1-Re w)/M ≤ M - ‖phaseSum γ‖ ≤ 2(M-1)(1-Re w)/M`.
+
+PROBE (`scripts/probes/probe_dooriv_singledefect_sandwich.py`): checked M=2..256 against a dense unit-circle
+mesh. The lower ratio tends to 1 near alignment and the upper ratio tends to 2 at the opposite phase, so
+the factor-2 window is tight.
+
+VERDICT: a lone off-aligned Jacobi-cocycle phase has no hidden superlinear first-power saving. Its entire
+first-power effect is the one phase's real-part defect up to a sharp constant factor. This is an audit
+constraint for proposed dispersion mechanisms, not a many-defect dispersion theorem. No CORE, cancellation,
+completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectSandwich.lean`,
+new theorems `sqrt_sub_deficit_le`, `single_defect_deficit_le`, and `single_defect_deficit_sandwich`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
