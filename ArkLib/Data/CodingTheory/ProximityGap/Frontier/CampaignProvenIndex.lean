@@ -19,6 +19,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVValueShiftHistogramObstruction
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -81,6 +82,9 @@ anything here; this index does not claim otherwise.
 | `charP_no_universal_positive_stepRatioMonotone_export` | obstruction | CharPStepRatioFails |
 | `rho_normalized_antitone_and_ceiling_incompatible_export` | obstruction | RhoAntitoneFails |
 | `rho_antitone_route_not_universal_export` | obstruction | RhoAntitoneFails |
+| `valueShift_nontrivial_forces_flat_histogram_export` | obstruction | DoorIVValueShiftHistogramObstruction |
+| `valueShift_step_zero_of_one_histogram_witness_export` | obstruction | DoorIVValueShiftHistogramObstruction |
+| `valueShift_route_vacuous_of_one_histogram_witness_export` | obstruction | DoorIVValueShiftHistogramObstruction |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -425,6 +429,54 @@ theorem rho_antitone_route_not_universal_export :
       pm1 * E5 < S5 :=
   ArkLib.ProximityGap.RhoAntitoneFails.antitone_route_not_universal
 
+/-! ## Door-IV value-shift histogram obstruction. Scope: **obstruction**.
+
+These exports make the finite anti-concentration no-go reusable from the permanent index. The
+value-shift mechanism is the one door-(iv) `L^∞` spreading idea that genuinely avoids the moment route,
+but its own necessary condition is stronger than value-set symmetry: a nontrivial shift must preserve
+the full fiber-cardinality histogram. In a prime field the realizable steps are all-or-nothing, so one
+nonzero histogram mismatch collapses the entire mechanism to step `0` and hence to the trivial
+`fiberCard val 0 ≤ #T` ceiling. Route refutation only; no CORE claim. -/
+
+/-- **[obstruction, DoorIVValueShiftHistogram]** In a prime field, a single nonzero realizable
+value-shift step forces the fiber histogram to be completely flat: every two residues have equal
+fiber cardinality. Thus a useful value-shift free part demands perfect residue equidistribution,
+not merely value-set invariance. -/
+theorem valueShift_nontrivial_forces_flat_histogram_export
+    {T : Type*} [Fintype T] [DecidableEq T] {p : ℕ} [Fact (Nat.Prime p)]
+    (val : T → ZMod p) {s : ZMod p} (hs : s ≠ 0)
+    (hreal : ∃ vs : ArkLib.ProximityGap.Frontier.NovelAntiConcentration.ValueShift val,
+      vs.s = s) :
+    ∀ a b : ZMod p,
+      ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val a =
+        ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val b :=
+  ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction.nontrivial_valueShift_forces_flat_histogram val hs hreal
+
+/-- **[obstruction, DoorIVValueShiftHistogram]** Single-witness collapse: in a prime field, one
+fiber-cardinality mismatch at one step rules out the all-steps case and forces every value-shift to
+have trivial step `0`. -/
+theorem valueShift_step_zero_of_one_histogram_witness_export
+    {T : Type*} [Fintype T] [DecidableEq T] {p : ℕ} [Fact (Nat.Prime p)]
+    (val : T → ZMod p) {s a : ZMod p}
+    (hne : ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val a ≠
+      ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val (a + s))
+    (vs : ArkLib.ProximityGap.Frontier.NovelAntiConcentration.ValueShift val) :
+    vs.s = 0 :=
+  ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction.valueShift_step_zero_of_one_histogram_witness val hne vs
+
+/-- **[obstruction, DoorIVValueShiftHistogram]** With one histogram mismatch, the value-shift
+spreading route gives only the trivial ceiling `fiberCard val 0 ≤ #T`; it cannot supply a useful
+wraparound anti-concentration bound for the prize value map without a flat periodic histogram. -/
+theorem valueShift_route_vacuous_of_one_histogram_witness_export
+    {T : Type*} [Fintype T] [DecidableEq T] {p : ℕ} [Fact (Nat.Prime p)]
+    (val : T → ZMod p) {s a : ZMod p}
+    (hne : ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val a ≠
+      ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val (a + s))
+    (vs : ArkLib.ProximityGap.Frontier.NovelAntiConcentration.ValueShift val) :
+    vs.s = 0 ∧
+      ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val 0 ≤ Fintype.card T :=
+  ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction.valueShift_route_vacuous_of_one_histogram_witness val hne vs
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -457,4 +509,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms charP_no_universal_positive_stepRatioMonotone_export
 #print axioms rho_normalized_antitone_and_ceiling_incompatible_export
 #print axioms rho_antitone_route_not_universal_export
+#print axioms valueShift_nontrivial_forces_flat_histogram_export
+#print axioms valueShift_step_zero_of_one_histogram_witness_export
+#print axioms valueShift_route_vacuous_of_one_histogram_witness_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
