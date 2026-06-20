@@ -1,3 +1,27 @@
+## door-(iv) the TRIVIAL cocycle OVERSHOOTS the prize target in the thin regime (2026-06-20, sol)
+
+Lens: Lane 2/3 constraint lemma extending `_JacobiCocycleDispersion`. That file proves the trivial
+cocycle is a full-mass `n`-spike (`trivial_cocycle_delta_fiber`) and names the open prize predicate
+`JacobiCocycleDispersion M C n m := M ≤ C·√(n·log m)`, asserting (in prose) that "the prize requires the
+cocycle to BREAK this concentration." This sweep kernel-checks that the trivial baseline `M = n`
+actually FAILS the predicate in the thin regime.
+
+New axiom-clean theorems (`_JacobiCocycleTrivialOvershoot.lean`):
+- `trivial_dispersion_iff_thin_le` — at the trivial baseline `M = n`, the dispersion predicate reduces
+  EXACTLY to `n ≤ C²·log m` (squaring `n ≤ C√(n log m)`).
+- `trivial_cocycle_overshoots_thin` — in the prize/thin regime `n > C²·log m` (where `m ≈ n^{β−1}`,
+  `log m ≈ (β−1)log n ≪ n`), `¬ JacobiCocycleDispersion n C n m`: the trivial concentration `n` STRICTLY
+  exceeds the prize ceiling `C√(n log m)`.
+
+VERDICT: the trivial cocycle is NOT a dispersion witness in the regime the prize lives in; it overshoots
+by the factor `√(n/(C² log m)) > 1`, which is exactly the gap the GENUINE cocycle must close. This pins
+the size of the open gap, kernel-checked, replacing the prose assertion. It does NOT prove the genuine
+cocycle satisfies the predicate (the open `JacobiCocycleDispersion`, untouched). NO CORE / cancellation
+/ completion / anti-concentration / moment-saving / capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleTrivialOvershoot.lean`,
+axiom-clean. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) the Cauchy–Schwarz / L²-budget deficit floor is VACUOUS in the all-defect regime (2026-06-20, sol)
 
 Lens: Lane 3 constraint lemma backing Shaw's Lever-B (additive-energy / L²) refutation, extending the
