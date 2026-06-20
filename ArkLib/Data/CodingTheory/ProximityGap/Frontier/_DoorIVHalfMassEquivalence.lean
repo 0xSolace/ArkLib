@@ -111,6 +111,53 @@ def normalizedPrizeFamilyBound {ι : Type*} (M scale : ι → ℝ) (C : ℝ) : P
 def normalizedHalfMassFamilyBound {ι : Type*} (H scale : ι → ℝ) (C : ℝ) : Prop :=
   ∀ i, H i / scale i ≤ C
 
+/-- Quantified wall-witness form for normalized prize ratios: every proposed absolute constant is
+beaten somewhere in the family.  This is the constructive-facing negation of bounded Shaw value. -/
+def normalizedPrizeFamilyUnbounded {ι : Type*} (M scale : ι → ℝ) : Prop :=
+  ∀ C : ℝ, ∃ i, C < M i / scale i
+
+/-- Quantified wall-witness form for normalized half-mass ratios: every proposed absolute constant is
+beaten somewhere in the family. -/
+def normalizedHalfMassFamilyUnbounded {ι : Type*} (H scale : ι → ℝ) : Prop :=
+  ∀ C : ℝ, ∃ i, C < H i / scale i
+
+/-- The negation of a bounded normalized prize-family constant is exactly the quantified
+counterexample form `∀ C, ∃ i, C < M i / scale i`.  No asymptotics or arithmetic estimate is hidden;
+this is only order logic over the normalized ratios. -/
+theorem not_exists_normalizedPrizeFamilyBound_iff_normalizedPrizeFamilyUnbounded {ι : Type*}
+    {M scale : ι → ℝ} :
+    (¬ ∃ C, normalizedPrizeFamilyBound M scale C) ↔
+      normalizedPrizeFamilyUnbounded M scale := by
+  constructor
+  · intro h C
+    by_contra hnone
+    have hbound : normalizedPrizeFamilyBound M scale C := by
+      intro i
+      exact le_of_not_gt (fun hi => hnone ⟨i, hi⟩)
+    exact h ⟨C, hbound⟩
+  · intro hun h
+    rcases h with ⟨C, hC⟩
+    rcases hun C with ⟨i, hi⟩
+    exact (not_lt_of_ge (hC i)) hi
+
+/-- The negation of a bounded normalized half-mass-family constant is exactly the quantified
+counterexample form `∀ C, ∃ i, C < H i / scale i`. -/
+theorem not_exists_normalizedHalfMassFamilyBound_iff_normalizedHalfMassFamilyUnbounded {ι : Type*}
+    {H scale : ι → ℝ} :
+    (¬ ∃ C, normalizedHalfMassFamilyBound H scale C) ↔
+      normalizedHalfMassFamilyUnbounded H scale := by
+  constructor
+  · intro h C
+    by_contra hnone
+    have hbound : normalizedHalfMassFamilyBound H scale C := by
+      intro i
+      exact le_of_not_gt (fun hi => hnone ⟨i, hi⟩)
+    exact h ⟨C, hbound⟩
+  · intro hun h
+    rcases h with ⟨C, hC⟩
+    rcases hun C with ⟨i, hi⟩
+    exact (not_lt_of_ge (hC i)) hi
+
 /-- **Normalized uniform-family half-mass reduction.**  Under one family-wide comparison constant
 `K` and positive scales, bounded normalized prize ratios are equivalent to bounded normalized half-mass
 ratios.  This is the Shaw-value version of
@@ -380,6 +427,22 @@ theorem not_exists_halfMassFamilyBound_iff_not_exists_normalizedPrizeFamilyBound
   exact not_congr (exists_halfMassFamilyBound_iff_exists_normalizedPrizeFamilyBound
     (M := M) (H := H) (scale := scale) hK hscale hMH hHM)
 
+/-- **Quantified wall-witness half-mass reduction.**  Under the family-wide comparison
+`M≤H≤K·M`, unbounded normalized prize Shaw ratios are equivalent to unbounded normalized half-mass
+Shaw ratios in the concrete `∀ C, ∃ i, C < ratio i` sense.  This is the witness-producing wall form of
+`prize ⇔ Sh_H(n)=O(1)`: if no absolute constant bounds one normalized ratio, then every proposed
+constant is beaten by the other as well.  It is a reduction only; it proves no cancellation estimate. -/
+theorem normalizedPrizeFamilyUnbounded_iff_normalizedHalfMassFamilyUnbounded {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    normalizedPrizeFamilyUnbounded M scale ↔
+      normalizedHalfMassFamilyUnbounded H scale := by
+  rw [← not_exists_normalizedPrizeFamilyBound_iff_normalizedPrizeFamilyUnbounded,
+    ← not_exists_normalizedHalfMassFamilyBound_iff_normalizedHalfMassFamilyUnbounded]
+  exact not_exists_normalizedPrizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
+    (M := M) (H := H) (scale := scale) hK hscale hMH hHM
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_of_halfMassBound
@@ -389,6 +452,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalized_prize_halfMass_sandwich
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedPrizeFamilyBound_iff_normalizedPrizeFamilyUnbounded
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedHalfMassFamilyBound_iff_normalizedHalfMassFamilyUnbounded
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound
@@ -401,3 +466,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedPrizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_prizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_halfMassFamilyBound_iff_not_exists_normalizedPrizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedPrizeFamilyUnbounded_iff_normalizedHalfMassFamilyUnbounded
