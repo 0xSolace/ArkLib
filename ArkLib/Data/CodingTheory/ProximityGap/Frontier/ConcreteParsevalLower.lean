@@ -218,6 +218,61 @@ theorem worstPeriod_ge_sqrt_three_quarters_card {ψ : AddChar F ℂ} (hψ : ψ.I
   rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
   exact Real.sqrt_le_sqrt hsq
 
+/-- **Quadratic thin-regime sharp floor (squared form).** Deep in the prize regime, where the field
+is QUADRATICALLY larger than the subgroup (`q ≥ n² − n + 1`, e.g. `q = n^β` with `β ≥ 2`), the exact
+Parseval ratio gives the essentially-FULL mean-square floor `M(μ_n)² ≥ n − 1`.
+
+This is sharper than every fixed-`C` rung above (`worstPeriod_sq_ge_const_card` only ever pays a
+constant fraction `(1−1/C)·n` because it assumes the LINEAR thinness `q ≥ C·n`). The quadratic
+hypothesis `q ≥ n²−n+1` lands the Plancherel floor at its true value `n−1` (i.e. `M ≳ √n` with the
+optimal constant `1`), so in the prize regime `q = n^β, β ≥ 2` the unconditional lower endpoint of
+the Shaw-value bracket is already the full `√n` up to an additive `1`.
+
+Thinness-essential: the hypothesis is FALSE in the thick window (`q` comparable to `n²`), so this is
+not a thickness-monotone statement. It is still only the LOWER/Johnson side — the gap to the BGK
+upper `C·√(n·log(q/n))` is exactly the open prize. -/
+theorem worstPeriod_sq_ge_card_pred {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hreg : (G.card : ℝ) ^ 2 - (G.card : ℝ) + 1 ≤ (Fintype.card F : ℝ)) :
+    ((G.card : ℝ) - 1) ≤ (worstPeriod ψ G hne) ^ 2 := by
+  have hsq := worstPeriod_sq_ge_parseval hψ G hne hq1
+  have hqm1 : (0 : ℝ) < (Fintype.card F : ℝ) - 1 := by linarith
+  have hnpos : (0 : ℝ) < (G.card : ℝ) := by linarith
+  -- ratio step: (q − n)/(q − 1) ≥ (n − 1)/n  ⟺  n(q − n) ≥ (n − 1)(q − 1)  ⟺  q ≥ n² − n + 1
+  have hratio : ((G.card : ℝ) - 1) / (G.card : ℝ)
+      ≤ ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    rw [div_le_div_iff₀ hnpos hqm1]
+    nlinarith [hreg]
+  have hfloor : ((G.card : ℝ) - 1)
+      ≤ (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+    have hmul : ((G.card : ℝ) - 1) / (G.card : ℝ) * (G.card : ℝ)
+        ≤ ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) * (G.card : ℝ) :=
+      mul_le_mul_of_nonneg_right hratio (le_of_lt hnpos)
+    calc ((G.card : ℝ) - 1)
+        = ((G.card : ℝ) - 1) / (G.card : ℝ) * (G.card : ℝ) := by
+          field_simp
+      _ ≤ ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) * (G.card : ℝ) := hmul
+      _ = (G.card : ℝ) * ((Fintype.card F : ℝ) - (G.card : ℝ)) / ((Fintype.card F : ℝ) - 1) := by
+          ring
+  linarith [hfloor, hsq]
+
+/-- **Quadratic thin-regime sharp floor (root form).** `√(n − 1) ≤ M(μ_n)` whenever
+`q ≥ n² − n + 1` and `n > 1`. In the prize regime `q = n^β` (`β ≥ 2`) the unconditional Parseval
+floor is the essentially-FULL `√n`, pinning the lower endpoint of the Shaw-value bracket at its true
+value. This sharpens every fixed-`C` constant floor (which only reach `√((1−1/C)·n)`) and is
+thinness-essential. Still the LOWER side only: the missing `√(log(q/n))` upper cancellation is the
+prize. -/
+theorem worstPeriod_ge_sqrt_card_pred {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hreg : (G.card : ℝ) ^ 2 - (G.card : ℝ) + 1 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((G.card : ℝ) - 1) ≤ worstPeriod ψ G hne := by
+  have hsq := worstPeriod_sq_ge_card_pred hψ G hne hq1 hG1 hreg
+  have hMnn : 0 ≤ worstPeriod ψ G hne := worstPeriod_nonneg ψ G hne
+  rw [show worstPeriod ψ G hne = Real.sqrt ((worstPeriod ψ G hne) ^ 2) from (Real.sqrt_sq hMnn).symm]
+  exact Real.sqrt_le_sqrt hsq
+
 end ProximityGap.Frontier.ConcreteParsevalLower
 
 /-! ## Axiom audit -/
@@ -228,5 +283,7 @@ end ProximityGap.Frontier.ConcreteParsevalLower
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_half_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_three_quarters_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_const_card
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_sq_ge_card_pred
+#print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_card_pred
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_const_card
 #print axioms ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_three_quarters_card
