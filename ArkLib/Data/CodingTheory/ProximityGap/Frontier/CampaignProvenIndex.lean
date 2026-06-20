@@ -16,6 +16,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G2_ResonanceCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_nogo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
@@ -320,6 +321,66 @@ theorem two_faces_are_one_wall_export {F : Type*} [Field F] [Fintype F] [Decidab
       ≤ ((Fintype.card F : ℝ) - 1) * M ^ (2 * r) :=
   _root_.ArkLib.ProximityGap.Frontier.BridgeOneWall.pincer_is_one_wall hψ G r hM hsup
 
+/-! ## NoFifthDoor — the Lane-2/3 tetrachotomy capstone (Shaw's "Shaw Value" essay, #444).
+Scope: **capstone**. The headline citable statement of the campaign: there is NO fifth door, every
+prize-scale certificate must pass through door (iv) (a genuinely new monomial-sum evaluation), and the
+remaining obligation is exactly to shave the `√L = √log(p/n)` factor separating the BGK ceiling
+`√(n·L)` that doors (i)-(iii) deliver from the prize floor `√n`. Pure scale algebra over the
+abstract `Mechanism`/`DoorType` model; the classical-overshoot hypothesis is the formal content of the
+proven Lever A-D refutations (indexed above as the obstruction-scope exports). -/
+
+/-- **[capstone, NoFifthDoor]** No fifth door: if every classical door (moment/completion/extreme-value)
+overshoots the BGK scale (the proven Lever A-D fate) in the regime `L > 1`, then any mechanism `m`
+certifying a prize-scale bound `m.certScale ≤ √n` has door `newEvaluation` — door (iv) is the ONLY
+door through which a prize-scale certificate can pass. -/
+theorem noFifthDoor_forces_doorIV_export
+    {m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism} {n L : ℝ}
+    (hn : 0 < n) (hL : 1 < L)
+    (hclassicalOvershoots :
+      ∀ m' : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK n L)
+    (hcert : m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n) :
+    m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.forces_doorIV hn hL
+    hclassicalOvershoots hcert
+
+/-- **[capstone, NoFifthDoor]** Existential form: under the classical-overshoot hypothesis, the set of
+prize-certifying mechanisms is contained in the door-(iv) mechanisms. Every prize-scale certificate is
+a door-(iv) certificate. -/
+theorem prizeCertifying_subset_doorIV_export {n L : ℝ} (hn : 0 < n) (hL : 1 < L)
+    (hclassicalOvershoots :
+      ∀ m' : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK n L) :
+    ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+      m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n →
+      m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hn hL
+    hclassicalOvershoots
+
+/-- **[capstone, NoFifthDoor]** The door-(iv) target corridor: the worst-frequency sup `M` lives in
+`[√n, √(n·L)]` — the prize floor (Plancherel/RMS) below and the BGK ceiling (what doors (i)-(iii)
+deliver) above. The entire remaining door-(iv) content is to descend from the ceiling to the floor. -/
+theorem doorIV_corridor_export {M n L : ℝ}
+    (hfloor : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n ≤ M)
+    (hceil : M ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L) :
+    _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n ≤ M ∧
+      M ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.mem_doorIV_corridor hfloor hceil
+
+/-- **[capstone, NoFifthDoor]** The corridor has positive width in the prize regime `L > 1`: the
+floor is strictly below the ceiling, so the door-(iv) shave is a real `√L`-factor gap, not a point. -/
+theorem doorIV_corridor_width_pos_export {n L : ℝ} (hn : 0 < n) (hL : 1 < L) :
+    _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n
+      < _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIV_corridor_width_pos hn hL
+
+/-- **[capstone, NoFifthDoor]** The exact factor door (iv) must remove: the BGK ceiling equals the
+prize floor scaled by `√L`, i.e. `√(n·L) = √L · √n`. Pins the door-(iv) obligation quantitatively. -/
+theorem bgkScale_eq_sqrtL_mul_prizeScale_export {n L : ℝ} (hn : 0 ≤ n) (hL : 0 ≤ L) :
+    _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L
+      = Real.sqrt L * _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale_eq_sqrtL_mul_prizeScale hn hL
+
 /-! ## ShawValue — the Lane-2 `prize ⟺ Sh(n)=O(1)` capstone (the citable normalization).
 Scope: **capstone**. The prize inequality `M ≤ C·√(n·L)` is exactly a bound on the normalized
 Shaw value `Sh(M) = M/√(n·L)`; the proven two-sided corridor `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` on
@@ -618,4 +679,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export
 #print axioms doorIV_index_le_sq_of_scaledConstant_le_export
 #print axioms two_faces_are_one_wall_export
+#print axioms noFifthDoor_forces_doorIV_export
+#print axioms prizeCertifying_subset_doorIV_export
+#print axioms doorIV_corridor_export
+#print axioms doorIV_corridor_width_pos_export
+#print axioms bgkScale_eq_sqrtL_mul_prizeScale_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
