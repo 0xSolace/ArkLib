@@ -202,6 +202,35 @@ theorem image_sigma_smul_superLevel
     refine ⟨g⁻¹ • σ b, hpre, ?_⟩
     simp [hσ.1 b]
 
+/-- A threshold set containing a point with a genuinely different coset mate cannot be a singleton.
+This is the finite selector obstruction in its sharpest local form: as soon as the action has a
+nontrivial mate `g • b ≠ b`, any super-level set containing `b` also contains another point. -/
+theorem superLevel_ne_singleton_of_nontrivial_smul
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) {b : β} (hb : b ∈ superLevel f c)
+    {g : G} (hmove : g • b ≠ b) :
+    superLevel f c ≠ ({b} : Set β) := by
+  intro hsingle
+  have hgb : g • b ∈ superLevel f c :=
+    smul_mem_superLevel_of_orbitConstant (G := G) hf c g hb
+  have hgb_mem_singleton : g • b ∈ ({b} : Set β) := by
+    simpa [hsingle] using hgb
+  exact hmove (by simpa using hgb_mem_singleton)
+
+/-- Combined coset/sign singleton obstruction.  If the signed coset mate `σ (g • b)` is genuinely
+different from `b`, then no super-level set containing `b` can be exactly `{b}`.  Thus a worst-`b`
+rule cannot isolate a frequency unless the whole generated coset/sign fiber has collapsed to that
+point. -/
+theorem superLevel_ne_singleton_of_nontrivial_sigma_smul
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f) (hσ : InvolutionConstant σ f)
+    (c : ℝ) {b : β} (hb : b ∈ superLevel f c) {g : G} (hmove : σ (g • b) ≠ b) :
+    superLevel f c ≠ ({b} : Set β) := by
+  intro hsingle
+  have hgb : σ (g • b) ∈ superLevel f c :=
+    sigma_smul_mem_superLevel_of_orbitConstant hf hσ c g hb
+  have hgb_mem_singleton : σ (g • b) ∈ ({b} : Set β) := by
+    simpa [hsingle] using hgb
+  exact hmove (by simpa using hgb_mem_singleton)
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
@@ -209,3 +238,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_of_orbitConstant
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.image_sigma_smul_superLevel
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_smul
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_sigma_smul
