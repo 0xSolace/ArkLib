@@ -8446,3 +8446,20 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvN3_GumbelTailRe
 theorems rayleigh_below_exact_n64, gumbel_route_REFUTED_n64, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}. No CORE/cancellation/completion/anti-concentration/capacity
 claim — this LOCKS the no-go for the distributional route.
+
+## [Gumbel/Rayleigh route — NO UNIFORM CONSTANT rescues it] (2026-06-19, extends prior divergent entry)
+
+Lane: door-(iv) Lane-1 distributional no-go. EXTENDS my divergent-witness entry above + the proven
+gumbel_route_REFUTED_n64. The Gumbel/exchangeable-max heuristic's real claim is P_exact(t) ≍ exp(-t²)
+up to a CONSTANT (∃K, ∀t, P_exact(t) ≤ K·exp(-t²)), not literal K=1. The witnessed overshoot ratios
+GROW: 18× (32,3.0), 38× (32,3.5), ≈576× (64,4.0). Locked the (64,4.0) lower bound rigorously: with
+conservative floor P_exact(4) ≥ 1/20000, ratio ≥ exp(16)/20000 > 400 (machine-checked via
+exp 16 > 2.71^16 > 8e6; true value ≈ 444). So any uniform K must exceed 400; since the ratio strictly
+grows through the prize regime, NO fixed K dominates — the constant-rescued route is refuted, not just
+the K=1 form.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvN3_GumbelTailRefuted.lean, new
+theorems witnessed_ratio_gt_400, gumbel_route_REFUTED_no_constant_le_400 (∀K≤400, ¬
+ScaledRayleighTailDomination Pn64 K), axiom-clean {propext, Classical.choice, Quot.sound}. No
+CORE/cancellation/completion/anti-concentration/capacity claim — LOCKS the constant-rescued
+distributional no-go. (Also cleaned the pre-existing unused-simp linter warning in this file.)

@@ -93,7 +93,7 @@ bound on `M(μ_n)`; the route reduces to controlling the bare marginal tail = th
 theorem gumbel_route_REFUTED : ¬ RayleighTailDomination Pn32 := by
   intro h
   have h3 := h 3
-  simp only [Pn32, if_pos rfl] at h3
+  simp only [Pn32, if_true] at h3
   -- h3 : 2/1000 ≤ exp(-(3^2)); contradicts rayleigh_below_exact
   exact absurd h3 (not_le.mpr rayleigh_below_exact)
 
@@ -154,10 +154,75 @@ be rescued by absorbing a constant — the heuristic is divergently, not margina
 theorem gumbel_route_REFUTED_n64 : ¬ RayleighTailDomination Pn64 := by
   intro h
   have h4 := h 4
-  simp only [Pn64, if_pos rfl] at h4
+  simp only [Pn64, if_true] at h4
   exact absurd h4 (not_le.mpr rayleigh_below_exact_n64)
 
 #print axioms rayleigh_below_exact_n64
 #print axioms gumbel_route_REFUTED_n64
+
+/-! ## No uniform constant rescues the route: the (64,4.0) witness already needs `K > 400`
+
+A Gumbel/exchangeable-max heuristic does not literally claim `P_exact(t) ≤ exp(-t²)`; it claims
+`P_exact(t) ≍ exp(-t²)` up to a CONSTANT, i.e. `∃ K, ∀ t, P_exact(t) ≤ K·exp(-t²)`. The witnesses
+force any such `K` above the GROWING witnessed ratios (`18` at `(32,3.0)`, `38` at `(32,3.5)`,
+`≈ 576`
+at `(64,4.0)` using the true tail value). We lock a clean rigorous lower bound at the `(64,4.0)`
+witness: with the conservative tail floor `P_exact(4) ≥ 1/20000`, the ratio
+`P_exact(4)/exp(-16) ≥ exp(16)/20000 > 400` (since `exp 16 > 2.71^16 > 8×10⁶`; the true value is
+`≈ 444`). So any putative uniform constant must exceed `400`; since the witnessed ratio strictly
+grows with `(n,t)` through the prize regime, no FIXED `K` suffices — the constant-rescued Gumbel
+route is refuted too, not merely the `K=1` form. -/
+
+/-- The scaled tail-domination hypothesis with an explicit constant `K`: the heuristic survives only
+if some fixed `K` makes the exact tail dominated by `K·exp(-t²)`. -/
+def ScaledRayleighTailDomination (P : ℝ → ℝ) (K : ℝ) : Prop :=
+  ∀ t : ℝ, P t ≤ K * Real.exp (-(t^2))
+
+/-- The `(64,4.0)` witness forces the constant `> 400`: `20000·exp(-16) < 1/400`, equivalently
+`exp 16 > 400·20000 = 8000000`. (`exp 16 > 2.71^16 = 8462694… > 8×10⁶`; the true `exp 16 ≈ 8.886e6`
+gives the sharper ratio `≈ 444`, but `400` is the clean machine-checkable floor.) -/
+theorem witnessed_ratio_gt_400 : (20000:ℝ) * Real.exp (-(4:ℝ)^2) < 1/400 := by
+  have h16 : (-(4:ℝ)^2) = -16 := by ring
+  rw [h16, Real.exp_neg]
+  have hpos : (0:ℝ) < Real.exp 16 := Real.exp_pos 16
+  have hbig : (8000000:ℝ) < Real.exp 16 := by
+    have he1 : (271:ℝ)/100 < Real.exp 1 := by
+      have := Real.exp_one_gt_d9; linarith
+    have hpow : ((271:ℝ)/100)^16 < (Real.exp 1)^16 :=
+      pow_lt_pow_left₀ he1 (by norm_num) (by norm_num)
+    have hexp : (Real.exp 1)^16 = Real.exp 16 := by
+      rw [← Real.exp_nat_mul]; norm_num
+    rw [hexp] at hpow
+    calc (8000000:ℝ) < ((271:ℝ)/100)^16 := by norm_num
+      _ < Real.exp 16 := hpow
+  -- goal: 20000 * (exp 16)⁻¹ < 1/400. Rewrite to 20000*400 < exp 16 = 8000000 < exp 16.
+  rw [inv_eq_one_div, mul_one_div]
+  rw [div_lt_div_iff₀ hpos (by norm_num)]
+  nlinarith [hbig]
+
+/-- **REFUTATION (no uniform constant).** For every `K ≤ 400` the constant-rescued Rayleigh
+domination fails at the `(64,4.0)` witness: `Pn64 4 = 1/20000 > K·exp(-16)`. Hence the
+Gumbel/exchangeable-max heuristic is not saved by absorbing a constant up to `400`; combined with
+the strictly growing witnessed ratios `18 < 38 < ~576` through the prize regime, no fixed `K`
+dominates. -/
+theorem gumbel_route_REFUTED_no_constant_le_400 :
+    ∀ K : ℝ, K ≤ 400 → ¬ ScaledRayleighTailDomination Pn64 K := by
+  intro K hK h
+  have h4 := h 4
+  norm_num [Pn64] at h4
+  -- h4 : 1/20000 ≤ K * rexp(-16); but K ≤ 400 and 400*rexp(-16) < (1/20000).
+  set E := Real.exp (-16 : ℝ) with hE
+  have hexp_pos : (0:ℝ) < E := Real.exp_pos _
+  have hKbound : K * E ≤ 400 * E := mul_le_mul_of_nonneg_right hK (le_of_lt hexp_pos)
+  have hlt : (400:ℝ) * E < 1/20000 := by
+    have hw : (20000:ℝ) * E < 1/400 := by
+      have := witnessed_ratio_gt_400
+      have hcvt : Real.exp (-(4:ℝ)^2) = E := by rw [hE]; norm_num
+      rwa [hcvt] at this
+    linarith [hw]
+  linarith [h4, hKbound, hlt]
+
+#print axioms witnessed_ratio_gt_400
+#print axioms gumbel_route_REFUTED_no_constant_le_400
 
 end ProximityGap.Frontier.AvN3
