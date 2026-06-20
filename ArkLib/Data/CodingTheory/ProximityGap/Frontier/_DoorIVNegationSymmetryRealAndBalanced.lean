@@ -132,4 +132,34 @@ theorem halfPlaneImbalance_eq_zero_of_conj_closed {S : Finset ℂ} (hS : ConjClo
     ((upperHalf S).card : ℤ) - (lowerHalf S).card = 0 := by
   rw [upperHalf_card_eq_lowerHalf_card_of_conj_closed hS]; ring
 
+/-! ## Signed `b ↦ -b` symmetry of the worst-b sum (the increment over `_DoorIVWorstBCosetClosed`)
+
+The in-tree fact (`_DoorIVWorstBCosetClosed`, DISPROOF_LOG `[door-iv-worstb-...]`) is that the
+ABSOLUTE prize statistic `|η_b|` is invariant under `b ↦ -b`, because `η_{-b} = conj(η_b)` (negation-
+closed `μ_n`) and `|conj w| = |w|`. Combined with `sum_isReal_of_conj_closed` above (`η_b` is REAL for
+every `b`), the symmetry upgrades from the absolute value to the SIGNED value: a real number is its own
+conjugate, so `η_{-b} = conj(η_b) = η_b` *exactly*. The two frequencies `b` and `-b` are therefore
+interchangeable for the ENTIRE prize problem, not merely for `|η|`. -/
+
+/-- **Signed `b ↦ -b` interchangeability.** If a frequency statistic `η : ι → ℂ` is REAL at `b`
+(`conj (η b) = η b`, e.g. via `sum_isReal_of_conj_closed`) and the negation symmetry gives
+`η (neg b) = conj (η b)` (the proven `η_{-b} = conj η_b`), then the SIGNED values coincide:
+`η (neg b) = η b`. This strengthens the absolute-value `b↦-b` closure of the worst-b set
+(`_DoorIVWorstBCosetClosed`) to a signed equality. -/
+theorem signed_neg_symmetry {ι : Type*} (η : ι → ℂ) (b nb : ι)
+    (hreal : (starRingEnd ℂ) (η b) = η b)
+    (hneg : η nb = (starRingEnd ℂ) (η b)) :
+    η nb = η b := by
+  rw [hneg, hreal]
+
+/-- The signed `b ↦ -b` symmetry, packaged for the conjugation-closed phase set: the real-ness comes
+from `sum_isReal_of_conj_closed`, so the only remaining hypothesis is the proven negation relation
+`η (neg b) = conj (η b)`. Consequently any frequency selector built on the SIGNED value (not just
+`|η|`) is already `±b`-blind. -/
+theorem signed_neg_symmetry_of_conjClosed {ι : Type*} (S : ι → Finset ℂ) (b nb : ι)
+    (hS : ConjClosed (S b))
+    (hneg : (∑ z ∈ S nb, z) = (starRingEnd ℂ) (∑ z ∈ S b, z)) :
+    (∑ z ∈ S nb, z) = ∑ z ∈ S b, z := by
+  rw [hneg, sum_isReal_of_conj_closed hS]
+
 end ArkLib.ProximityGap.Frontier.DoorIVNegationSymmetryRealAndBalanced

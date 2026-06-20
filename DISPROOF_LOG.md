@@ -8998,3 +8998,12 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVNegationSy
 axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Theorems: `sum_isReal_of_conj_closed`,
 `sum_im_eq_zero_of_conj_closed`, `upperHalf_card_eq_lowerHalf_card_of_conj_closed`,
 `halfPlaneImbalance_eq_zero_of_conj_closed`.
+
+### increment (same file, 2026-06-20, sol): SIGNED b↦−b symmetry η_{−b}=η_b (upgrades _DoorIVWorstBCosetClosed from |η| to signed)
+Combining `sum_isReal_of_conj_closed` (η_b REAL for every b, this file) with the proven negation
+relation `η_{−b}=conj(η_b)` (_DoorIVWorstBCosetClosed / DISPROOF [door-iv-worstb...]): a real number is
+its own conjugate, so `η_{−b}=conj(η_b)=η_b` EXACTLY. The worst-b set was known |η|-closed under b↦−b;
+this upgrades it to a SIGNED interchangeability (b and −b give the same signed η, not just same |η|), so
+any selector built on the signed value (not only |η|) is already ±b-blind. Theorems `signed_neg_symmetry`,
+`signed_neg_symmetry_of_conjClosed` in _DoorIVNegationSymmetryRealAndBalanced.lean, axiom-clean
+(⊆ {propext, Classical.choice, Quot.sound}). No CORE/cancellation/capacity claim.
