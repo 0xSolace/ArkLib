@@ -202,6 +202,16 @@ theorem coherence_eq_neg_one_of_real_mul_neg {a b : ℂ}
   rw [div_neg]
   exact congrArg Neg.neg (div_self (ne_of_lt hneg))
 
+/-- **A zero real-part product gives zero coherence.** This closes the sign-selector trichotomy for
+real canonical halves: positive product gives `+1`, negative product gives `-1`, and zero product gives
+`0` (with Lean's total division handling the zero denominator case). -/
+theorem coherence_eq_zero_of_real_mul_eq_zero {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hzero : a.re * b.re = 0) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = 0 := by
+  have hare : (a * conj b).re = a.re * b.re := by
+    simp [Complex.mul_re, Complex.conj_re, Complex.conj_im, ha, hb]
+  rw [hare, hzero, zero_div]
+
 end ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -210,3 +220,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_pm_one_of_real_ne
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_one_of_real_mul_pos
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_neg_one_of_real_mul_neg
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_zero_of_real_mul_eq_zero

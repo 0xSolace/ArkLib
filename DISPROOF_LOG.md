@@ -9533,3 +9533,18 @@ not a CORE/cancellation/completion/moment/anti-concentration/capacity claim. COR
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalHalfCoherenceQuantized.lean`,
 new theorems `coherence_eq_one_of_real_mul_pos` and `coherence_eq_neg_one_of_real_mul_neg`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) canonical-half coherence zero selector completes the trichotomy (2026-06-20, g55)
+
+Lane 1/3 refinement of `_DoorIVCanonicalHalfCoherenceQuantized`. After the positive and negative sign
+selectors, this adds the zero case: for real canonical half-sums, if the product of real parts is zero then
+the normalized coherence is exactly `0`.
+
+VERDICT: the real-halved canonical split has a complete sign trichotomy: positive product gives `+1`,
+negative product gives `-1`, and zero product gives `0`. Thus the canonical half-coherence object has no
+continuous slack parameter at all. This is a constraint lemma for coherence-slack proposals, not a
+CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalHalfCoherenceQuantized.lean`,
+new theorem `coherence_eq_zero_of_real_mul_eq_zero`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
