@@ -1,3 +1,32 @@
+## door-(iv) k-defect QUANTITATIVE deficit: additive-in-defect first-power floor (2026-06-20, sol)
+
+Lens: Lane 2/3 frontier-movement, generalizing the single-defect deficit to ALL defect cardinalities.
+The single-defect floor `M−‖∑γ‖ ≥ (M−1)(1−Re w)/M` (one off-aligned phase) is lifted to a defect SET `S`
+of size `k`: with total real-part defect `D = ∑_{i∈S}(1−Re w_i)` and `k = #S ≤ M`,
+
+  `M − ‖∑γ‖ ≥ (M−k)·D / M`.
+
+New axiom-clean theorems (`_JacobiCocycleKDefectQuantDeficit.lean`):
+- `kDefect_phaseSum_eq` / `kDefect_re_eq` / `kDefect_im_eq` — resultant `= (M−k) + ∑_{i∈S} w_i`, Re `= M−D`.
+- `kDefect_cs_collapse` — the two Cauchy–Schwarz bounds `(∑ Im)² ≤ k∑ Im²`, `D² ≤ k∑ d²`, plus the
+  unit-circle identity `Im² = 2d−d²`, collapsing to `D² + (∑ Im)² ≤ 2kD`.
+- `kDefect_normSq_le` — `normSq(∑γ) ≤ M² − 2(M−k)D`.
+- `kDefect_D_bounds` — `D ∈ [0, 2k]`.
+- `kDefect_deficit_ge` — the additive-in-defect first-power floor (above), via the concavity chord.
+
+Probes `probe_dooriv_{twodefect,kdefect}_quant_deficit.py` + `probe_dooriv_kdefect_normsq_bound.py`
+validate the floor and each rung (0 failures, M up to 256, k up to 10; tight, ratio→1).
+
+VERDICT: the first-power deficit grows at least linearly in the AGGREGATE real-part defect at FIXED
+defect cardinality. This is a genuine multi-defect generalization (a CLASS, all k). BUT it does NOT
+reach the `√(n log m)` prize scale: the adversarial worst coset has EVERY phase off-aligned (k→M,
+D=Θ(n)), where the `(M−k)` prefactor degenerates to 0 — the floor vanishes in the all-defect regime
+that the prize actually needs. Quantifying the dispersion there stays the open `JacobiCocycleDispersion`.
+NO CORE / cancellation / completion / anti-concentration / moment-saving / capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleKDefectQuantDeficit.lean`,
+axiom-clean. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) single-defect FIRST-POWER deficit lower bound: linear in the off-aligned phase's defect (2026-06-20, sol)
 
 Lens: Lane 2/3 frontier-movement, extending `_JacobiCocycleSingleDefectDeficit`. The prior kernel
