@@ -25,6 +25,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVValueShiftHistogramObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundMarkovVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -96,6 +97,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_index_le_sq_of_scaledConstant_le_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_cosetInvariant_blind_to_order_export` | obstruction | DoorIVCoherenceOrderBlind |
+| `doorIV_cosetHitting_selector_bound_iff_global_export` | obstruction | DoorIVCoherenceOrderBlind |
+| `doorIV_strict_selector_bound_misses_coset_export` | obstruction | DoorIVCoherenceOrderBlind |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -670,6 +674,49 @@ theorem doorIV_index_le_sq_of_scaledConstant_le_export {C m D : ℝ}
   ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
     hC hm hbound
 
+/-! ## Door-IV order-blindness / selector obstruction. Scope: **obstruction**.
+
+These exports make the Lane-1 `rho(b)` order-selector no-go permanent: a coset-invariant
+coherence statistic is a quotient-level function on `b·μₙ`, not a function of the raw
+multiplicative order of `b`. Any restricted selector can improve the worst coherence only
+by missing an entire coset; merely filtering element-level/order buckets that still hit
+every coset preserves the global bound problem. Route refutation only; no CORE claim. -/
+
+/-- **[obstruction, DoorIVCoherenceOrderBlind]** If a statistic is invariant on left `H`-cosets,
+then even same-coset elements with different multiplicative orders have the same statistic value.
+Thus a `rho(b)`-style coset-level coherence cannot be controlled by multiplicative order alone. -/
+theorem doorIV_cosetInvariant_blind_to_order_export {G : Type*} [Group G]
+    {H : Subgroup G} {β : Type*} {f : G → β}
+    (hf : _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.CosetInvariant H f)
+    {a b : G} (hab : a * b⁻¹ ∈ H)
+    (hord : orderOf a ≠ orderOf b) :
+    f a = f b :=
+  _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_blind_to_order
+    hf hab hord
+
+/-- **[obstruction, DoorIVCoherenceOrderBlind]** If a restricted frequency class `T` meets every
+left `H`-coset, then an upper bound for a coset-invariant statistic on `T` is exactly the global
+upper bound. Order buckets or element-level filters do not create a new anti-concentration lever
+unless they omit whole cosets. -/
+theorem doorIV_cosetHitting_selector_bound_iff_global_export {G : Type*} [Group G]
+    {H : Subgroup G} {β : Type*} [LE β] {f : G → β} {C : β}
+    (hf : _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.CosetInvariant H f) {T : Set G}
+    (hT : ∀ b : G, ∃ t ∈ T, t * b⁻¹ ∈ H) :
+    (∀ t ∈ T, f t ≤ C) ↔ ∀ b : G, f b ≤ C :=
+  _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.bound_on_cosetHitting_set_iff_global
+    (H := H) (f := f) (C := C) hf hT
+
+/-- **[obstruction, DoorIVCoherenceOrderBlind]** Positive selector no-go: if a restricted class
+claims a strict improvement below some global coset-invariant value, then it must miss an entire
+left `H`-coset. Any genuine improvement is quotient-level, not multiplicative-order-level. -/
+theorem doorIV_strict_selector_bound_misses_coset_export {G : Type*} [Group G]
+    {H : Subgroup G} {β : Type*} [Preorder β] {f : G → β} {T : Set G} {C : β}
+    (hf : _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.CosetInvariant H f)
+    (hbound : ∀ t ∈ T, f t ≤ C) (hstrict : ∃ b : G, C < f b) :
+    ∃ x : G, ∀ t ∈ T, t * x⁻¹ ∉ H :=
+  _root_.ProximityGap.Frontier.DoorIVCoherenceOrderBlind.exists_coset_missed_of_strict_selector_bound
+    (H := H) (f := f) hf hbound hstrict
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -711,6 +758,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export
 #print axioms doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export
 #print axioms doorIV_index_le_sq_of_scaledConstant_le_export
+#print axioms doorIV_cosetInvariant_blind_to_order_export
+#print axioms doorIV_cosetHitting_selector_bound_iff_global_export
+#print axioms doorIV_strict_selector_bound_misses_coset_export
 #print axioms two_faces_are_one_wall_export
 #print axioms noFifthDoor_forces_doorIV_export
 #print axioms prizeCertifying_subset_doorIV_export
