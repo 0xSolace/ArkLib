@@ -9050,3 +9050,22 @@ no cancellation, completion, moment, energy, anti-concentration, or capacity cla
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVNegationSymmetryRealAndBalanced.lean`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) half-mass strict-drop product budget is necessary (2026-06-20, g55)
+
+Lane 3 constraint extension in `_DoorIVHalfMassFactorization.lean`. Prior bricks proved exact factorization
+`‖A+B‖ = coherence(A,B) * halfMass(A,B)` on the positive half-mass branch, plus reciprocal-spend
+obstructions. This refinement packages the direct product-budget audit interface: if a period floor `T`,
+a coherence cap `rho`, and a half-mass cap `H` coexist, then necessarily `T ≤ rho * H`; in particular,
+a strict-drop claim `coherence ≤ 1-ε` paired with half-mass ceiling `H` is impossible whenever
+`(1-ε) * H < T`.
+
+VERDICT: a coset-half Door-IV coherence-saving certificate cannot be checked in isolation. Any advertised
+strict coherence drop must still have enough half-mass budget to cover the known period floor through the
+exact product identity. The algebra supplies no anti-concentration; it is a constraint gate for proposed
+half-split attacks. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`, new
+theorems `normFloor_le_product_of_coherence_le_of_halfMass_le` and
+`not_coherence_le_one_sub_of_normFloor_gt_drop_product`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
