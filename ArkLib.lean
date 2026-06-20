@@ -1522,6 +1522,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorridorIcc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoPieceAngularDeficit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVUnitPieceDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorTypeFiniteExhaustive
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DyadicCocycleLargeDeviation
