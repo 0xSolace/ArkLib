@@ -66,6 +66,19 @@ char-`p` period energies. -/
 def StepRatioMonotoneAt (s Er Er1 Er2 : ℝ) : Prop :=
   s * Er * Er2 ≤ (s + 2) * Er1 ^ 2
 
+/-- The monotonicity predicate is exactly nonnegativity of the transferred gap functional.  This
+connects probe-facing ratio statements to the algebraic `gap` used in the transfer decomposition. -/
+theorem stepRatioMonotoneAt_iff_gap_nonneg (s Er Er1 Er2 : ℝ) :
+    StepRatioMonotoneAt s Er Er1 Er2 ↔ 0 ≤ gap s Er Er1 Er2 := by
+  unfold StepRatioMonotoneAt gap
+  constructor <;> intro h <;> linarith
+
+/-- Equivalently, a negative gap is exactly a failure of the char-`p` step-ratio predicate. -/
+theorem not_stepRatioMonotoneAt_of_gap_neg {s Er Er1 Er2 : ℝ}
+    (hgap : gap s Er Er1 Er2 < 0) :
+    ¬ StepRatioMonotoneAt s Er Er1 Er2 := by
+  rw [stepRatioMonotoneAt_iff_gap_nonneg]
+  exact not_le_of_gt hgap
 
 /-- **Witness 1: the char-`p` step-ratio gap is negative at `n=32, p=786433, r=3`.** With the exact
 period energies `E₃=446720, E₄=92179360, E₅=24850732032` and `s = 2·3+1 = 7`, the gap
@@ -107,6 +120,11 @@ theorem charP_stepRatio_gap_neg_n64 :
     gap 5 12096 3750400 1666665280 < 0 := by
   unfold gap; norm_num
 
+/-- The independent `n=64` witness packaged as failure of the abstract monotonicity predicate. -/
+theorem not_stepRatioMonotoneAt_n64 :
+    ¬ StepRatioMonotoneAt 5 12096 3750400 1666665280 :=
+  not_stepRatioMonotoneAt_of_gap_neg charP_stepRatio_gap_neg_n64
+
 /-- **The dominance hypothesis of `gap_p_nonneg_of_dominance` is NOT universally satisfiable.** There
 exist real values `G₀ ≥ 0`, `L`, `Q ≥ 0` (the exact char-0 gap, linear term, and wraparound gap at
 `n=32, p=786433, r=3`) for which the assembled char-`p` gap `G₀ + L + Q < 0`. Hence one cannot
@@ -133,10 +151,13 @@ theorem not_forall_gap_nonneg_of_charZero_and_Q_nonneg :
 end ArkLib.ProximityGap.CharPStepRatioFails
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.stepRatioMonotoneAt_iff_gap_nonneg
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_of_gap_neg
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_forall_positive_stepRatioMonotoneAt
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_gap_neg_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_reversed_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_gap_neg_n64
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_n64
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.dominance_not_satisfiable_witness
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_forall_gap_nonneg_of_charZero_and_Q_nonneg

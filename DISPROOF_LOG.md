@@ -9658,3 +9658,37 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMo
 axiom-clean. New theorems: `not_stepRatioMonotoneAt_n32`, `not_forall_positive_stepRatioMonotoneAt`,
 and `not_forall_gap_nonneg_of_charZero_and_Q_nonneg`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) char-p step-ratio predicate is exactly the transfer gap sign (2026-06-20)
+
+Lens: Lane 3 API bridge extending `_CharPStepRatioMonotoneFails`. After packaging the refuting witness
+as `StepRatioMonotoneAt`, this refinement proves the predicate is equivalent to nonnegativity of the
+same `gap` functional used by `_CharPTransferDecomposition`, and converts negative-gap witnesses directly
+into predicate failures. The independent n=64 prize-regime witness is also packaged as
+`not_stepRatioMonotoneAt_n64`.
+
+VERDICT: the human-facing ratio monotonicity statement and the Lean transfer-gap algebra are the same
+obstruction, not two separate routes. Both exact prize-regime witnesses refute the predicate itself.
+No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
+axiom-clean. New theorems: `stepRatioMonotoneAt_iff_gap_nonneg`,
+`not_stepRatioMonotoneAt_of_gap_neg`, and `not_stepRatioMonotoneAt_n64`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) char-p step-ratio predicate is exactly the gap sign (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 constraint interface extending `_CharPStepRatioMonotoneFails`. The previous brick
+packaged the refuting energies as a no-go for universal positive-triple monotonicity. This refinement
+connects that probe-facing predicate back to the transfer algebra: `StepRatioMonotoneAt s Er Er1 Er2`
+is equivalent to `0 ≤ gap s Er Er1 Er2`, and a negative gap directly yields `¬ StepRatioMonotoneAt`.
+It also packages the independent `n=64, p=2752513, r=2` witness in the same predicate form.
+
+VERDICT: the refutation is not a naming artifact. The ratio inequality, the nonnegative gap condition,
+and the transfer-decomposition sign are the same obstruction. Both exact prize-regime witnesses violate
+that single condition. No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
+axiom-clean. New theorems: `stepRatioMonotoneAt_iff_gap_nonneg`,
+`not_stepRatioMonotoneAt_of_gap_neg`, and `not_stepRatioMonotoneAt_n64`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
