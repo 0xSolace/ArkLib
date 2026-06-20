@@ -305,6 +305,30 @@ theorem naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled {ι : Type*}
       (M := M i) (C := C i) (n := n i) (m := m i) (L := L i)
       (hn i) (hm i) (hL i)).2 (h i)
 
+/-- Wall-facing family form of the same exact bookkeeping.  Failure of the pointwise inflated
+Shaw-value bound is exactly failure of the corresponding naive-incidence family bound.  This is the
+contrapositive audit hook: a claimed passage through `sqrt(n*m*L)` cannot evade the `sqrt(m)` loss by
+switching normalizations. -/
+theorem not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled {ι : Type*}
+    {M n m L C : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hm : ∀ i, 0 ≤ m i) (hL : ∀ i, 0 < L i) :
+    ¬ (∀ i, M i ≤ C i * naiveIncidenceScale (n i) (m i) (L i)) ↔
+      ¬ (∀ i, shawValue (M i) (n i) (L i) ≤ C i * Real.sqrt (m i)) :=
+  not_congr (naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled hn hm hL)
+
+/-- Single-witness failure form: one index whose inflated Shaw-value inequality fails refutes the
+whole naive-incidence family certificate.  This is the probe-facing way to log an index-factor wall
+without scanning redundant instances after a bad member is found. -/
+theorem not_naiveIncidenceFamilyBound_of_exists_scaledShawValue_gt {ι : Type*}
+    {M n m L C : ι → ℝ}
+    (hn : ∀ i, 0 < n i) (hm : ∀ i, 0 ≤ m i) (hL : ∀ i, 0 < L i)
+    (hbad : ∃ i, C i * Real.sqrt (m i) < shawValue (M i) (n i) (L i)) :
+    ¬ ∀ i, M i ≤ C i * naiveIncidenceScale (n i) (m i) (L i) := by
+  rw [not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled hn hm hL]
+  intro hscaled
+  rcases hbad with ⟨i, hi⟩
+  exact (not_lt_of_ge (hscaled i)) hi
+
 end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_sqrt_mul_prizeScale
@@ -330,3 +354,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaled_constant_le_constant_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_naiveIncidenceFamilyBound_of_exists_scaledShawValue_gt
