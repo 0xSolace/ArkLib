@@ -102,6 +102,47 @@ theorem bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass {ι
   exact exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
     (M := M) (H := H) (scale := scale) hK hscale hMH hHM
 
+/-! ### The WALL (negative) characterization
+
+The prize is the boundedness of the normalized ratios; the WALL is their UNBOUNDEDNESS. These lemmas
+lock the dual side so the prize/wall dichotomy is a kernel-checked equivalence in both directions. The
+`n`-drift probe (`DISPROOF_LOG [..-n-drift-saturates]`) interrogates exactly this failure side: whether
+the family `C(n)=ρ²(b*)·n/log(p/n)` is unbounded (`∀ C, ∃ i, C(i) > C`). -/
+
+/-- A family of reals is NOT bounded above iff for every candidate constant some member exceeds it.
+This is the elementary unfolding of `¬ BddAbove (Set.range f)`. -/
+theorem not_bddAbove_range_iff_forall_exists_lt {ι : Type*} (f : ι → ℝ) :
+    ¬ BddAbove (Set.range f) ↔ ∀ C, ∃ i, C < f i := by
+  rw [bddAbove_range_iff_exists_forall_le]
+  push_neg
+  rfl
+
+/-- **The door-(iv) wall (no prize constant) characterization.**  With positive scales, the failure of
+the prize Big-O bound (no absolute `C` with `M ≤ C·scale`) is exactly the unboundedness of the
+normalized prize ratios: every candidate constant `C` is exceeded by `M i / scale i` for some index `i`.
+This is the kernel-checked dual of `bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound`. -/
+theorem not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize {ι : Type*}
+    {M scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (¬ ∃ C, prizeFamilyBound M scale C) ↔ ∀ C, ∃ i, C < M i / scale i := by
+  rw [← bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound (M := M) (scale := scale) hscale,
+      not_bddAbove_range_iff_forall_exists_lt]
+
+/-- **The door-(iv) prize/wall dichotomy in `BddAbove` form.**  Under the family-wide half-mass
+comparison and positive scales, the prize-side (normalized prize ratios bounded above) and the
+wall-side (normalized half-mass ratios unbounded) are exact negations of each other across the two
+objects: the prize holds for `M` iff the half-mass ratios are NOT unbounded. This packages the full
+two-sided `prize ⇔ Sh_H(n)=O(1)` / `wall ⇔ Sh_H(n)→∞` dichotomy as one kernel-checked statement. -/
+theorem bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ¬ ∀ C, ∃ i, C < H i / scale i := by
+  rw [bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      ← not_bddAbove_range_iff_forall_exists_lt (fun i => H i / scale i),
+      not_not]
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_forall_le
@@ -109,3 +150,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_iff_forall_exists_lt
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
