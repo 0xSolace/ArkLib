@@ -195,6 +195,23 @@ theorem halfMass_ge_normFloor_div_one_sub_of_coherence_drop {A B : E} {T ε : �
     T / (1 - ε) ≤ halfMass A B :=
   halfMass_ge_normFloor_div_of_coherence_le h hε hcoh hT
 
+/-- **Half-mass budget is necessary before any coherence saving.**  Any period floor `T` is already
+a half-mass floor, because `‖A+B‖ ≤ ‖A‖+‖B‖`.  Thus a coset-half route cannot pair the observed period
+floor with a half-mass ceiling below `T`, regardless of any later coherence bookkeeping. -/
+theorem normFloor_le_halfMass_of_normFloor_le_norm {A B : E} {T : ℝ}
+    (hT : T ≤ ‖A + B‖) :
+    T ≤ halfMass A B :=
+  le_trans hT (norm_le_halfMass A B)
+
+/-- **Half-mass ceiling obstruction.**  If an advertised half-mass cap `H` is below a known period
+floor `T`, then that cap is impossible.  This is the zero-order budget gate for Door-IV split claims:
+the half-mass alone must cover the period floor before a strict coherence drop can matter. -/
+theorem not_halfMass_le_of_normFloor_gt {A B : E} {T H : ℝ}
+    (hT : T ≤ ‖A + B‖) (hH : H < T) :
+    ¬ halfMass A B ≤ H := by
+  intro hmass
+  exact (not_lt_of_ge (le_trans (normFloor_le_halfMass_of_normFloor_le_norm hT) hmass)) hH
+
 /-- **Product budget is necessary.**  A period floor `T`, a coherence cap `rho`, and a half-mass cap
 `H` can coexist only if the advertised product budget still covers the floor: `T ≤ rho * H`.  This is
 the positive interface to `not_coherence_le_of_normFloor_gt_product`, used to audit coset-half claims
@@ -251,6 +268,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_of_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_of_coherence_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_one_sub_of_coherence_drop
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_halfMass_of_normFloor_le_norm
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_product_of_coherence_le_of_halfMass_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_one_sub_of_normFloor_gt_drop_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.norm_eq_zero_of_halfMass_eq_zero
