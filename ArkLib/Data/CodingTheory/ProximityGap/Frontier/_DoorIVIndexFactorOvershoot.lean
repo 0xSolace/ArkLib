@@ -149,6 +149,26 @@ theorem constant_le_scaled_constant_of_one_le_m {C m : ℝ} (hC : 0 ≤ C) (hm :
     exact Real.sqrt_le_sqrt hm
   nlinarith
 
+/-- Exact non-overshoot criterion for the normalized constant.  For a positive raw constant and
+nonnegative index, the naive bridge's inflated Shaw constant dominates the desired constant iff
+`m ≥ 1`.  Thus any indexed regime beyond the degenerate endpoint necessarily pays the named
+`sqrt(m)` factor; there is no extra normalization slack to hide it. -/
+theorem constant_le_scaled_constant_iff_one_le_m {C m : ℝ} (hC : 0 < C) (hm0 : 0 ≤ m) :
+    C ≤ C * Real.sqrt m ↔ 1 ≤ m := by
+  constructor
+  · intro h
+    have hsqrt_one : (1 : ℝ) ≤ Real.sqrt m := by
+      have hdiv : C / C ≤ (C * Real.sqrt m) / C :=
+        div_le_div_of_nonneg_right h (le_of_lt hC)
+      have hleft : C / C = (1 : ℝ) := div_self (ne_of_gt hC)
+      have hright : (C * Real.sqrt m) / C = Real.sqrt m := by
+        field_simp [ne_of_gt hC]
+      rwa [hleft, hright] at hdiv
+    have hsq : (1 : ℝ) ^ 2 ≤ (Real.sqrt m) ^ 2 :=
+      pow_le_pow_left₀ zero_le_one hsqrt_one 2
+    simpa [Real.sq_sqrt hm0] using hsq
+  · exact constant_le_scaled_constant_of_one_le_m (le_of_lt hC)
+
 /-- Strict scale form: once the index is genuinely nontrivial (`m > 1`), the naive incidence scale is
 strictly larger than the prize scale.  Equality of the two scales is therefore exactly the degenerate
 index-one case, not the thin prize regime. -/
@@ -172,6 +192,13 @@ theorem constant_lt_scaled_constant_of_one_lt_m {C m : ℝ} (hC : 0 < C) (hm : 1
     rw [← Real.sqrt_one]
     exact Real.sqrt_lt_sqrt zero_le_one hm
   nlinarith
+
+/-- Contrapositive-facing form: at a genuinely nontrivial index and positive raw constant, the naive
+normalized constant cannot stay below the desired constant.  Any proof of a constant Shaw bound that
+passes through the naive scale must therefore remove the index factor before this step. -/
+theorem not_scaled_constant_le_constant_of_one_lt_m {C m : ℝ} (hC : 0 < C) (hm : 1 < m) :
+    ¬ C * Real.sqrt m ≤ C := by
+  exact not_le_of_gt (constant_lt_scaled_constant_of_one_lt_m hC hm)
 
 /-- Uniform-family form of the same obstruction: pointwise naive incidence bounds normalize to a
 Shaw-value family bound whose pointwise constant is multiplied by `sqrt(m i)`.  This is only scale
@@ -215,7 +242,9 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_iff_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_of_one_lt_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaled_constant_le_constant_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled
