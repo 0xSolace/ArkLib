@@ -1,3 +1,19 @@
+## door-(iv) half-mass descent must pay any observed balance floor (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassBalanceAtArgmax`. Prior half-mass bricks showed
+that, under full coherence, the period norm is exactly the heavier half-norm times `1 + balance`, and
+that perfect balance forces the full factor `2`. This refinement packages the probe-facing finite-ratio
+form: if the lighter half is at least an `r`-fraction of the heavier half (`r ≤ balance A B`), then any
+single-half certificate must already pay `(1+r)·max(‖A‖,‖B‖)`.
+
+VERDICT: the dyadic "drop the lighter half" lever can only gain when the worst frequency is strongly
+imbalanced. The measured worst frequencies are balance-enriched, so the formal obligation is a constant
+near `2`, not a shrinking or square-root saving. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassBalanceAtArgmax.lean`,
+axiom-clean. New theorem: `single_half_bound_pays_balance_floor`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) small per-piece angular defects cannot certify a coherence drop (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVSectorCoherence`. Prior sector lemmas showed that if

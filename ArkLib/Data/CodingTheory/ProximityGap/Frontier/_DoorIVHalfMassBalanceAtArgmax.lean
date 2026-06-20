@@ -127,6 +127,26 @@ theorem coherent_norm_eq_max_mul_one_add_balance {A B : E}
       rw [hB, ← hA]; ring
     · field_simp
 
+/-- **Any positive balance floor forces the single-half certificate to pay `1 + r`.**  In the
+full-coherence regime, if the lighter half is at least an `r`-fraction of the heavier half
+(`r ≤ balance A B`), then any bound using only the heavier half must already allow
+`(1+r)·max(‖A‖,‖B‖)`.  The probed worst frequencies have `r` close to `1`, so this descent lever pays
+an order-one factor near `2`, not a shrinking factor that could supply square-root cancellation. -/
+theorem single_half_bound_pays_balance_floor {A B : E} {g : ℝ → ℝ} {r : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖) (hr : r ≤ balance A B)
+    (hbound : ‖A + B‖ ≤ g (max ‖A‖ ‖B‖)) :
+    (1 + r) * max ‖A‖ ‖B‖ ≤ g (max ‖A‖ ‖B‖) := by
+  have hmax_nonneg : 0 ≤ max ‖A‖ ‖B‖ := le_max_of_le_left (norm_nonneg A)
+  have hfactor : 1 + r ≤ 1 + balance A B := by linarith
+  have hmul : (1 + r) * max ‖A‖ ‖B‖ ≤ (1 + balance A B) * max ‖A‖ ‖B‖ := by
+    exact mul_le_mul_of_nonneg_right hfactor hmax_nonneg
+  have hmul' : (1 + r) * max ‖A‖ ‖B‖ ≤ max ‖A‖ ‖B‖ * (1 + balance A B) := by
+    simpa [mul_comm, mul_left_comm, mul_assoc] using hmul
+  calc
+    (1 + r) * max ‖A‖ ‖B‖ ≤ max ‖A‖ ‖B‖ * (1 + balance A B) := hmul'
+    _ = ‖A + B‖ := (coherent_norm_eq_max_mul_one_add_balance hcoh).symm
+    _ ≤ g (max ‖A‖ ‖B‖) := hbound
+
 /-- **The descent loss factor is bounded by `2`, uniformly.**  At any full-coherence frequency, the
 ratio of the true period norm to the heavier half-norm is `1 + balance ≤ 2`.  So no dyadic
 drop-a-half step can lose more than a constant factor `2`, and (by the probe) at the worst frequency it
@@ -144,6 +164,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.single_half_bound_pays_full_at_balanced
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.single_half_bound_pays_balance_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.descent_loss_le_two
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.coherent_norm_eq_max_mul_one_add_balance
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.balance_eq_one_iff
