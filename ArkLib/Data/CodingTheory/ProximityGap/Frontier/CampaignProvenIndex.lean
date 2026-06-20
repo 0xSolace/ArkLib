@@ -20,6 +20,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcave
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVValueShiftHistogramObstruction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundMarkovVacuity
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -85,6 +86,9 @@ anything here; this index does not claim otherwise.
 | `valueShift_nontrivial_forces_flat_histogram_export` | obstruction | DoorIVValueShiftHistogramObstruction |
 | `valueShift_step_zero_of_one_histogram_witness_export` | obstruction | DoorIVValueShiftHistogramObstruction |
 | `valueShift_route_vacuous_of_one_histogram_witness_export` | obstruction | DoorIVValueShiftHistogramObstruction |
+| `wraparound_markov_count_le_export` | obstruction | WraparoundMarkovVacuity |
+| `wraparound_markov_bound_vacuous_below_mean_export` | obstruction | WraparoundMarkovVacuity |
+| `wraparound_average_control_does_not_bound_sup_export` | obstruction | WraparoundMarkovVacuity |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -477,6 +481,42 @@ theorem valueShift_route_vacuous_of_one_histogram_witness_export
       ArkLib.ProximityGap.Frontier.NovelAntiConcentration.fiberCard val 0 ≤ Fintype.card T :=
   ArkLib.ProximityGap.Frontier.DoorIVValueShiftHistogramObstruction.valueShift_route_vacuous_of_one_histogram_witness val hne vs
 
+/-! ## Door-IV wraparound Markov vacuity. Scope: **obstruction**.
+
+These exports lock the average-to-sup no-go interface for the wraparound bad-prime route. The finite
+Markov/union bound is valid, but when the threshold is at or below the mean its right side is at least
+the whole prime set, so it cannot exclude even one heavy prime. Average wraparound control therefore
+does not supply a supremum bound through the union route. -/
+
+/-- **[obstruction, WraparoundMarkovVacuity]** Finite Markov inequality in multiplicative form:
+for nonnegative weights, `T * #{j ∈ S : T ≤ W j} ≤ ∑ W j`. This is the exact union-bound interface
+for the summed wraparound incidence. -/
+theorem wraparound_markov_count_le_export {ι : Type*} [DecidableEq ι]
+    (S : Finset ι) (W : ι → ℝ) (T : ℝ) (hW : ∀ j ∈ S, 0 ≤ W j) :
+    T * ((S.filter (fun j => T ≤ W j)).card : ℝ) ≤ ∑ j ∈ S, W j :=
+  ArkLib.ProximityGap.WraparoundMarkovVacuity.markov_count_le S W T hW
+
+/-- **[obstruction, WraparoundMarkovVacuity]** If `0 < T ≤ mean S W`, the Markov right-hand side
+`(∑ W)/T` is at least `|S|`, so the union bound is vacuous at that threshold. -/
+theorem wraparound_markov_bound_vacuous_below_mean_export {ι : Type*} [DecidableEq ι]
+    (S : Finset ι) (W : ι → ℝ) (T : ℝ)
+    (hne : S.Nonempty) (hT : 0 < T)
+    (hTmean : T ≤ ArkLib.ProximityGap.WraparoundMarkovVacuity.mean S W) :
+    (S.card : ℝ) ≤ (∑ j ∈ S, W j) / T :=
+  ArkLib.ProximityGap.WraparoundMarkovVacuity.markov_bound_vacuous_below_mean S W T hne hT hTmean
+
+/-- **[obstruction, WraparoundMarkovVacuity]** Combined interface: below the average, the Markov
+count bound still holds but its exclusion bound is already at least the full index-set size, so
+average-control does not bound the supremum through this route. -/
+theorem wraparound_average_control_does_not_bound_sup_export {ι : Type*} [DecidableEq ι]
+    (S : Finset ι) (W : ι → ℝ) (T : ℝ)
+    (hne : S.Nonempty) (hT : 0 < T) (hW : ∀ j ∈ S, 0 ≤ W j)
+    (hTmean : T ≤ ArkLib.ProximityGap.WraparoundMarkovVacuity.mean S W) :
+    T * ((S.filter (fun j => T ≤ W j)).card : ℝ) ≤ ∑ j ∈ S, W j
+      ∧ (S.card : ℝ) ≤ (∑ j ∈ S, W j) / T :=
+  ArkLib.ProximityGap.WraparoundMarkovVacuity.average_control_does_not_bound_sup
+    S W T hne hT hW hTmean
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -512,4 +552,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms valueShift_nontrivial_forces_flat_histogram_export
 #print axioms valueShift_step_zero_of_one_histogram_witness_export
 #print axioms valueShift_route_vacuous_of_one_histogram_witness_export
+#print axioms wraparound_markov_count_le_export
+#print axioms wraparound_markov_bound_vacuous_below_mean_export
+#print axioms wraparound_average_control_does_not_bound_sup_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
