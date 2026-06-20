@@ -15,6 +15,16 @@ Ramanujan bound at cancellation exponent **½**), open ~25 years.
 > (vacuous). In-tree: `Frontier/_PrizeFloorOfBGK.lean`, `CharSumBudgetVacuity.lean`. The prize-bearing
 > input is the **`√q`** (not `q`) incidence upgrade. (B1 resolved: a weaker bound gives no shortcut.)
 
+> **The two LANES (chain-audit 2026-06-20, both build-confirmed axiom-clean — distinct from the
+> two-input note above).** The in-tree reduction hits this same wall via TWO non-machine-linked faces:
+> **(A) the MOMENT/energy lane** — `SaddleEnergyBound` (`Σ_{t≠0}‖η_t‖^{2r} ≤ (p−1)·E_r^{char0}` = BGK@β=4),
+> now fully wired to a SINGLE open Prop in `Frontier/_PrizeCharZeroWired.lean`
+> (`prize_sup_of_saddle_charZeroWired`: char-0 anchor + sup-below-moment discharged ⟹ the prize sup-bound
+> `M ≤ 2√e·√(n·log p)`); and **(B) this INCIDENCE lane** — `WorstCaseIncidenceBounded` / BCHKS 1.12, carried
+> by `Frontier/_PrizeFloorOfBGK.lean` (which also sandwiches `δ*` against the UNCONDITIONAL KKH26 ceiling).
+> Same wall, not yet linked in Lean (the moment→incidence transfer is the `√q·B`-vs-`q·B` gap). This plan
+> targets lane (B). Don't claim "one open input" — it's one wall, two faces.
+
 This plan does **not** promise a proof. It promises the sharpest *honest* progress possible
 without new mathematics: a crisper reduction and a precisely-named missing fact.
 
