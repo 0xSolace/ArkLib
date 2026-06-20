@@ -76,7 +76,48 @@ theorem second_moment_does_not_decide_prize
   · -- a < √N · a since √N > 1 and a > 0
     nlinarith [hsqrt_gt_one, ha]
 
+/-- **B1 combined corollary, GENERAL DEPTH `r`: no bounded-depth moment decides the prize.**  This
+generalizes `second_moment_does_not_decide_prize` (its `r = 1` Parseval head) to *every* moment
+depth `r ≥ 1`.  For `N ≥ 2` frequencies and floor scale `a > 0`, the single-spike value
+`c = N^{1/(2r)}·a` has the **same** depth-`r` moment as the flat spectrum
+(`∑ |η|^{2r} = N·a^{2r} = c^{2r}`) yet a strictly larger maximum (`a < c`); and whenever the prize
+`target` satisfies `target < N^{1/(2r)}·a` (always true at the prize, where `N^{1/(2r)}` dominates
+the log scale), the spike's maximum **exceeds** the target while the flat spectrum's maximum is
+exactly `a`.  So two spectra share the *entire* depth-`r` moment `S_{2r}` yet straddle the target:
+**no** certificate reading only a fixed-depth moment (the whole bounded-depth moment family, bucket B1) can
+separate prize-satisfying from prize-violating spectra.  At `r = 1` this is exactly
+`second_moment_does_not_decide_prize` with `c = √N·a`.  Negative structural statement; no CORE,
+cancellation, completion, anti-concentration, or capacity claim. -/
+theorem depthR_moment_does_not_decide_prize
+    (N r : ℕ) (a target : ℝ) (ha : 0 < a) (hN : 2 ≤ N) (hr : 1 ≤ r)
+    (hgap : target < (N : ℝ) ^ ((1 : ℝ) / (2 * r)) * a) :
+    ∃ c : ℝ, 0 ≤ c ∧ (N : ℝ) * a ^ (2 * r) = c ^ (2 * r) ∧ a < c ∧ target < c := by
+  have hNpos : (0 : ℝ) < (N : ℝ) := by exact_mod_cast (lt_of_lt_of_le (by norm_num) hN)
+  have hrpos : (0 : ℝ) < (2 * r : ℝ) := by
+    have : (1 : ℝ) ≤ (r : ℝ) := by exact_mod_cast hr
+    linarith
+  -- the spike value c = N^{1/(2r)} * a
+  set t : ℝ := (N : ℝ) ^ ((1 : ℝ) / (2 * r)) with ht
+  have htpos : 0 < t := Real.rpow_pos_of_pos hNpos _
+  -- t^(2r) = N : raising N^{1/(2r)} to the natural power 2r recovers N.
+  have hpow : t ^ (2 * r) = (N : ℝ) := by
+    rw [ht, ← Real.rpow_natCast ((N : ℝ) ^ ((1 : ℝ) / (2 * r))) (2 * r),
+        ← Real.rpow_mul hNpos.le, Nat.cast_mul, Nat.cast_ofNat,
+        one_div, inv_mul_cancel₀ (ne_of_gt hrpos), Real.rpow_one]
+  -- t > 1 since N > 1 and the exponent is positive
+  have ht_gt_one : (1 : ℝ) < t := by
+    rw [ht]
+    refine (Real.one_lt_rpow_iff_of_pos hNpos).2 (Or.inl ⟨?_, ?_⟩)
+    · exact_mod_cast (lt_of_lt_of_le (by norm_num) hN)
+    · positivity
+  refine ⟨t * a, by positivity, ?_, ?_, hgap⟩
+  · -- N * a^(2r) = (t*a)^(2r) = t^(2r) * a^(2r) = N * a^(2r)
+    rw [mul_pow, hpow]
+  · -- a < t*a since t > 1, a > 0
+    nlinarith [ht_gt_one, ha]
+
 end ProximityGap.Frontier.TrichotomyCapstone
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.TrichotomyCapstone.second_moment_does_not_decide_prize
+#print axioms ProximityGap.Frontier.TrichotomyCapstone.depthR_moment_does_not_decide_prize

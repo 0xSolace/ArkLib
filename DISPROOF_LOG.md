@@ -8152,3 +8152,22 @@ completion, anti-concentration, moment-saving, or capacity claim — a NEGATIVE 
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoTighterBoundCapstone.lean, new
 definitions `etaPTEa`, `etaPTEb` and theorem `moments_through_five_do_not_determine_sup`, axiom-clean
 with axioms contained in {propext, Classical.choice, Quot.sound}.
+
+## [trichotomy B1 GENERAL-DEPTH] no bounded-depth moment decides the prize, all r (2026-06-19)
+
+Lane: door-(iv) trichotomy capstone — EXTENDS the proven `second_moment_does_not_decide_prize` (the
+r=1 Parseval head of bucket B1) in `_TrichotomyCapstone.lean` to EVERY moment depth r≥1. PROBE-FIRST
+(python, exact): the single-spike value c = N^{1/(2r)}·a shares the depth-r moment with the flat
+spectrum (Σ|η|^{2r} = N·a^{2r} = c^{2r}) and exceeds it in max (c > a for all N≥2, r≥1). Verified
+N∈{2,4,16,256}, r∈{1,2,3,5}: c^{2r}=N exactly, c>1 always.
+
+VERDICT: two spectra (flat, max a; single-spike, max c=N^{1/(2r)}·a) share the ENTIRE depth-r moment
+S_{2r} yet straddle any prize target with target < c. So no certificate reading only a fixed-depth
+moment — the whole bounded-depth moment family, bucket B1 — can separate prize-satisfying from
+prize-violating spectra. At r=1 this is exactly the existing √N·a witness. Makes B1 self-contained in
+the capstone (no longer deferred to _TrichotomyB1MomentBlind for r>1). Negative structural statement;
+no CORE, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_TrichotomyCapstone.lean, new theorem
+`depthR_moment_does_not_decide_prize`, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
