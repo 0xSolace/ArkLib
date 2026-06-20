@@ -291,6 +291,28 @@ theorem rawLowerBound_iff_shawValue_floor {B M n L : ℝ} (hs : 0 < prizeScale n
       _ ≤ (M / prizeScale n L) * prizeScale n L := hmul
       _ = M := by field_simp [hsne]
 
+/-- Strict lower-floor normalization.  Under positive prize scale, a strict raw floor
+`B < M` is equivalent to the normalized strict floor `B/scale < Sh(M)`.  This is the strict companion
+to `rawLowerBound_iff_shawValue_floor`, used when a Door-IV obstruction is recorded as a positive
+floor gap rather than a weak lower bound. -/
+theorem rawStrictLowerBound_iff_shawValue_strict_floor {B M n L : ℝ}
+    (hs : 0 < prizeScale n L) :
+    B < M ↔ B / prizeScale n L < shawValue M n L := by
+  constructor
+  · intro h
+    unfold shawValue
+    exact div_lt_div_of_pos_right h hs
+  · intro h
+    unfold shawValue at h
+    have hsne : prizeScale n L ≠ 0 := ne_of_gt hs
+    have hmul : (B / prizeScale n L) * prizeScale n L <
+        (M / prizeScale n L) * prizeScale n L :=
+      mul_lt_mul_of_pos_right h hs
+    calc
+      B = (B / prizeScale n L) * prizeScale n L := by field_simp [hsne]
+      _ < (M / prizeScale n L) * prizeScale n L := hmul
+      _ = M := by field_simp [hsne]
+
 /-- Uniform-family exact lower-floor normalization.  A pointwise raw floor `B_i ≤ M_i` is exactly
 the corresponding pointwise normalized Shaw floor `B_i/scale_i ≤ Sh_i`.  This packages the reversible
 floor side of the prize `↔` Shaw-value reduction for families. -/
@@ -306,6 +328,20 @@ theorem rawLowerBoundFamily_iff_shawValueFloorFamily {ι : Type*} {B M n L : ι 
     exact (rawLowerBound_iff_shawValue_floor (B := B i) (M := M i)
       (n := n i) (L := L i) (hs i)).2 (h i)
 
+/-- Uniform-family strict lower-floor normalization.  Pointwise strict raw floors are equivalent to
+pointwise strict Shaw-value floors after dividing by the positive prize scale. -/
+theorem rawStrictLowerBoundFamily_iff_shawValueStrictFloorFamily {ι : Type*}
+    {B M n L : ι → ℝ} (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∀ i, B i < M i) ↔
+      (∀ i, B i / prizeScale (n i) (L i) < shawValue (M i) (n i) (L i)) := by
+  constructor
+  · intro h i
+    exact (rawStrictLowerBound_iff_shawValue_strict_floor (B := B i) (M := M i)
+      (n := n i) (L := L i) (hs i)).1 (h i)
+  · intro h i
+    exact (rawStrictLowerBound_iff_shawValue_strict_floor (B := B i) (M := M i)
+      (n := n i) (L := L i) (hs i)).2 (h i)
+
 /-- Pointwise-positive parameter wrapper for the uniform lower-floor normalization.  In the prize
 regime the available hypotheses are normally `0 < n_i` and `0 < L_i`; this theorem exposes the
 same reversible floor rung without forcing each downstream reduction to rebuild positivity of
@@ -315,6 +351,13 @@ theorem rawLowerBoundFamily_iff_shawValueFloorFamily_of_pos {ι : Type*} {B M n 
     (∀ i, B i ≤ M i) ↔
       (∀ i, B i / prizeScale (n i) (L i) ≤ shawValue (M i) (n i) (L i)) :=
   rawLowerBoundFamily_iff_shawValueFloorFamily (fun i => prizeScale_pos (hn i) (hL i))
+
+/-- Pointwise-positive wrapper for uniform strict lower-floor normalization. -/
+theorem rawStrictLowerBoundFamily_iff_shawValueStrictFloorFamily_of_pos {ι : Type*}
+    {B M n L : ι → ℝ} (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    (∀ i, B i < M i) ↔
+      (∀ i, B i / prizeScale (n i) (L i) < shawValue (M i) (n i) (L i)) :=
+  rawStrictLowerBoundFamily_iff_shawValueStrictFloorFamily (fun i => prizeScale_pos (hn i) (hL i))
 
 /-- A Plancherel/RMS floor `sqrt n ≤ M` becomes the corresponding normalized lower bound for the
 Shaw value.  This records the easy Johnson-side floor in Shaw-value units. -/
@@ -600,8 +643,11 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBound_iff_shawValue_floor
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictLowerBound_iff_shawValue_strict_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictLowerBoundFamily_iff_shawValueStrictFloorFamily
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictLowerBoundFamily_iff_shawValueStrictFloorFamily_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_of_plancherel_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_of_trivial_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue_le_mul_shawValue_of_le_mul
