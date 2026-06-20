@@ -8706,3 +8706,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidis
 axiom-clean. New theorems: `prizeProxy_mul_one_sub_le_variance_of_pairResidual` and
 `abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane-2 exact `O(1/m)` pair-discrepancy raw corridor (2026-06-20)
+
+Lens: Lane 2 citable reduction rung extending `_PhasePairEquidistBudget`. The raw residual corridor
+`δ(2m-1)≤ε => |V-2m|≤(2m)ε` was landed first; this refinement packages the exact explicit
+small-residual interface: `δ≤ε/(2m-1)` gives both `(2m)(1-ε)≤V` and `|V-2m|≤(2m)ε`.
+
+VERDICT: the pair-equidistribution route has no hidden scale slack. The necessary analytic input is
+precisely an `O(1/m)` arithmetic anti-concentration theorem for the phase pairs. This records the
+reduction only; it proves no such residual estimate and makes no CORE/cancellation/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`,
+axiom-clean. New theorems: `prizeProxy_mul_one_sub_le_variance_of_delta_le_div` and
+`abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_delta_le_div`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.

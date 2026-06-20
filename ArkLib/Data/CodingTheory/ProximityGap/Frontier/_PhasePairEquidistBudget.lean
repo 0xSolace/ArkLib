@@ -265,6 +265,42 @@ theorem variance_le_prizeProxy_mul_one_add_of_delta_le_div {m : ℕ} (hm : 0 < m
     _ = ε := by
       exact div_mul_cancel₀ ε (ne_of_gt hden_pos)
 
+/-- **Pair-discrepancy budget, lower explicit `O(1/m)` form.**  If
+`δ ≤ ε/(2m-1)`, then the variance is bounded below by the prize proxy times `1-ε`. -/
+theorem prizeProxy_mul_one_sub_le_variance_of_delta_le_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ) (hδle : δ ≤ ε / (2 * (m : ℝ) - 1))
+    (hpair : PairEquidistributed φ δ) :
+    prizeVarianceProxy m * (1 - ε)
+      ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hden_pos : 0 < 2 * (m : ℝ) - 1 := by
+    nlinarith [hmR]
+  apply prizeProxy_mul_one_sub_le_variance_of_pairResidual (hm := hm) (φ := φ) (hδ := hδ)
+    (hpair := hpair)
+  calc
+    δ * (2 * (m : ℝ) - 1) ≤ (ε / (2 * (m : ℝ) - 1)) * (2 * (m : ℝ) - 1) :=
+      mul_le_mul_of_nonneg_right hδle (le_of_lt hden_pos)
+    _ = ε := by
+      exact div_mul_cancel₀ ε (ne_of_gt hden_pos)
+
+/-- **Pair-discrepancy budget, raw two-sided explicit `O(1/m)` form.**  If
+`δ ≤ ε/(2m-1)`, then the raw variance proxy differs from `2m` by at most `(2m)ε`. -/
+theorem abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_delta_le_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ) (hδle : δ ≤ ε / (2 * (m : ℝ) - 1))
+    (hpair : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) - prizeVarianceProxy m|
+      ≤ prizeVarianceProxy m * ε := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hden_pos : 0 < 2 * (m : ℝ) - 1 := by
+    nlinarith [hmR]
+  apply abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual (hm := hm) (φ := φ)
+    (hδ := hδ) (hpair := hpair)
+  calc
+    δ * (2 * (m : ℝ) - 1) ≤ (ε / (2 * (m : ℝ) - 1)) * (2 * (m : ℝ) - 1) :=
+      mul_le_mul_of_nonneg_right hδle (le_of_lt hden_pos)
+    _ = ε := by
+      exact div_mul_cancel₀ ε (ne_of_gt hden_pos)
+
 /-- **The ideal pair-equidistribution endpoint.**  At exact residual `δ = 0`, the variance proxy is
 bounded directly by the prize variance proxy `2m`.  This is only the endpoint specialization of the
 already-proven decoupling theorem; the hard analytic content is proving that a prize-regime phase set
@@ -302,6 +338,8 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.prizeProxy_mul_one_sub_le_variance_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_delta_le_div
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.prizeProxy_mul_one_sub_le_variance_of_delta_le_div
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_div_prizeProxy_eq_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.pairResidualCorrection_zero
