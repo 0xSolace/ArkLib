@@ -201,6 +201,19 @@ theorem scaled_constant_eq_constant_iff {C m : ℝ} (hC : 0 < C) (hm : 0 ≤ m) 
     rw [hm1]
     simp
 
+/-- Family endpoint criterion for exact no-loss normalization: with a fixed positive raw constant,
+a whole indexed family has normalized naive constants exactly equal to the desired constant iff every
+index is the degenerate no-overshoot endpoint `m_i = 1`.  This is the family audit hook for claims that
+the `sqrt(m)` factor disappears uniformly. -/
+theorem scaled_constant_family_eq_constant_iff {ι : Type*} {C : ℝ} {m : ι → ℝ}
+    (hC : 0 < C) (hm : ∀ i, 0 ≤ m i) :
+    (∀ i, C * Real.sqrt (m i) = C) ↔ ∀ i, m i = 1 := by
+  constructor
+  · intro h i
+    exact (scaled_constant_eq_constant_iff (C := C) (m := m i) hC (hm i)).1 (h i)
+  · intro h i
+    exact (scaled_constant_eq_constant_iff (C := C) (m := m i) hC (hm i)).2 (h i)
+
 /-- In the actual indexed regime `1 ≤ m`, the naive incidence scale is never smaller than the
 prize scale.  Thus the bridge cannot secretly improve the Shaw normalization by the index step; it
 only preserves scale at `m = 1` and overshoots afterwards. -/
@@ -346,6 +359,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_iff
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_family_eq_constant_iff
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_le_naiveIncidenceScale_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_of_one_le_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_le_scaled_constant_iff_one_le_m

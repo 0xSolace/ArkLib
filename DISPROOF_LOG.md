@@ -9891,3 +9891,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRay
 New theorems: `forall_not_sameRay_of_family_twoPieceNormCoherence_le_one_sub` and
 `forall_not_common_nonneg_ray_of_family_multiPieceNormCoherence_le_one_sub`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) naive index factor vanishes for a family only at the index-one endpoint (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 scale-loss constraint extending `_DoorIVIndexFactorOvershoot`. The pointwise exact
+criterion already said `C√m=C` iff `m=1` for positive `C`. This refinement packages the indexed family
+auditor: a whole family has normalized naive constants exactly equal to the desired constant iff every
+member is at the degenerate no-index endpoint `m_i=1`.
+
+VERDICT: the naive `sqrt(n*m*L)` bridge cannot uniformly hide the `sqrt(m)` overshoot in a genuine
+unbounded-index family. Exact no-loss normalization is precisely the member-by-member `m_i=1` endpoint,
+not a Door-IV cancellation theorem. No CORE/cancellation/moment/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`, axiom-clean.
+New theorem: `scaled_constant_family_eq_constant_iff`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
