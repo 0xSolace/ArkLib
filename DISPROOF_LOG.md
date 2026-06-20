@@ -9791,3 +9791,19 @@ This remains only a route obstruction, not a CORE counterexample or cancellation
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`,
 axiom-clean. New theorems: `rho5_gt_rho4_normalized` and `rho3_lt_rho4_lt_rho5_normalized`. Axioms are
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) half-mass family budget cannot hide a bad member (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 split-budget constraint refinement of `_DoorIVHalfMassFactorization`. The pointwise
+zero-order budget gate already said any period floor `T` is also a half-mass floor. This refinement lifts
+that gate to indexed families: every member must satisfy `T_i ≤ halfMass_i`, and one member with
+advertised cap `H_i<T_i` refutes a universal half-mass cap family.
+
+VERDICT: before coherence savings are even discussed, a Door-IV coset-half certificate must pay the
+`L¹` half-mass budget member-by-member. A family statement cannot hide a single failed half-mass cap.
+No CORE/cancellation/completion/moment/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`,
+axiom-clean. New theorems: `normFloorFamily_le_halfMass_of_normFloor_le_norm` and
+`not_family_halfMass_le_of_exists_normFloor_gt`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.

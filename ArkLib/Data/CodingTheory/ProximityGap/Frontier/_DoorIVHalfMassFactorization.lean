@@ -212,6 +212,26 @@ theorem not_halfMass_le_of_normFloor_gt {A B : E} {T H : ℝ}
   intro hmass
   exact (not_lt_of_ge (le_trans (normFloor_le_halfMass_of_normFloor_le_norm hT) hmass)) hH
 
+/-- Family zero-order half-mass budget necessity: every indexed period floor must already be covered by
+its own half-mass.  This is the family audit counterpart of `normFloor_le_halfMass_of_normFloor_le_norm`,
+before any coherence cap is even considered. -/
+theorem normFloorFamily_le_halfMass_of_normFloor_le_norm {ι : Type*} {A B : ι → E} {T : ι → ℝ}
+    (hT : ∀ i, T i ≤ ‖A i + B i‖) :
+    ∀ i, T i ≤ halfMass (A i) (B i) := by
+  intro i
+  exact normFloor_le_halfMass_of_normFloor_le_norm (hT i)
+
+/-- Family half-mass ceiling obstruction: one indexed member whose advertised half-mass cap is below
+its period floor refutes a universal half-mass cap family.  Thus a Door-IV split certificate cannot
+hide a failed `L¹` budget inside a family statement. -/
+theorem not_family_halfMass_le_of_exists_normFloor_gt {ι : Type*} {A B : ι → E} {T H : ι → ℝ}
+    (hT : ∀ i, T i ≤ ‖A i + B i‖) (hbad : ∃ i, H i < T i) :
+    ¬ ∀ i, halfMass (A i) (B i) ≤ H i := by
+  intro hmass
+  rcases hbad with ⟨i, hi⟩
+  exact (not_lt_of_ge (le_trans (normFloorFamily_le_halfMass_of_normFloor_le_norm hT i)
+    (hmass i))) hi
+
 /-- **Product budget is necessary.**  A period floor `T`, a coherence cap `rho`, and a half-mass cap
 `H` can coexist only if the advertised product budget still covers the floor: `T ≤ rho * H`.  This is
 the positive interface to `not_coherence_le_of_normFloor_gt_product`, used to audit coset-half claims
@@ -310,6 +330,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_one_sub_of_coherence_drop
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_halfMass_of_normFloor_le_norm
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloorFamily_le_halfMass_of_normFloor_le_norm
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_halfMass_le_of_exists_normFloor_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_product_of_coherence_le_of_halfMass_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_and_halfMass_caps_of_normFloor_gt_product
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloorFamily_le_product_of_caps
