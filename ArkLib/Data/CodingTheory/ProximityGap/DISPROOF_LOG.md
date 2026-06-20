@@ -18691,3 +18691,31 @@ SUFFICIENT condition (W-log-concavity) is a finite-size signal trending to margi
 r≈log p; the receipt phrasing "empirically forced in the prize regime, not larped" overstates its robustness
 (one loose point + a margin trend, not broad confirmation). This does NOT change the verdict — the route is
 already dead via input (1) in (A) — and the Lean theorems (pure algebra) are UNAFFECTED. CORE stays OPEN.
+
+## [verify-shaw-capstone-incidence-face] Adversarial audit of the Lane-2 Shaw-value capstone (f87267353): 4/4 clean, incidence face honestly consolidated, open residual pinned (2026-06-20, NubsCarson)
+
+VERIFY-DON'T-TRUST audit of the incidence-face capstone re-exports in `CampaignProvenIndex.lean`
+(`prizeBound_iff_shawValue_le_export`, `shawValue_worstPeriod_clean_corridor_export`,
+`shawValue_bracket_width_eq_sqrt_export`). 4 parallel adversarial probes (iff-algebra, floor,
+worstPeriod definition, ceiling/width), each flagged concern adversarially re-verified before counting.
+Result: **4/4 CLEAN, 0 confirmed concerns**; build axiom-clean `{propext,Classical.choice,Quot.sound}`.
+
+- iff `M ≤ C·√(nL) ↔ Sh(M) ≤ C`: genuine (non-rfl) division-by-positive-scalar normalization;
+  `hs : 0 < prizeScale` is load-bearing AND exposed (the iff is false without it — `s=0` gives
+  `M/0=0≤C` while `M≤0` can fail), not a smuggled estimate. `shawValue := M/√(nL)`, `prizeScale := √(nL)`.
+- FLOOR `1/√(2L) ≤ Sh(M(μ_n))`: genuine UNCONDITIONAL lower bound — exact Plancherel
+  `Σ_b‖η_b‖² = q·n` (char-orthogonality, **NO Weil**) + DC removal `Σ_{b≠0}=qn−n²` + max≥RMS
+  (`M² ≥ n(q−n)/(q−1)`) + thin-regime `q≥2n ⟹ M ≥ √(n/2)`. Genuinely n-INDEPENDENT (the cancellation
+  `√(n/2)/√(nL)=1/√(2L)`); thin regime satisfiable at `q=n^β, β>1`.
+- worstPeriod `= (nonzeroFreqs F).sup' hne ‖η_b‖ = max_{b≠0}‖η_b‖` (η_b=∑_{y∈G}ψ(b·y)): the GENUINE
+  prize object (real Gauss-period worst frequency), NOT a placeholder/constant/empty-max; `hne` (=`F*`
+  nonempty) satisfiable; the achieving b₀ is extracted via `exists_mem_eq_sup'`.
+- CEILING `√(n/L)`: genuine unconditional triangle bound `‖η_b‖ ≤ n` lifted by sup'; corridor
+  non-vacuous (floor<ceiling), width exactly `√n`.
+
+CONCLUSION: the incidence face (Lane-2, `√q·B` / BCHKS Conj 1.12) is honestly consolidated — floor
+unconditional (Plancherel, no Weil), ceiling trivial (triangle), and the open prize on this face is
+EXACTLY the demand to collapse the proven `√n`-wide corridor, i.e. `M(μ_n): n → O(√n)`, to an absolute
+constant. No overclaim, CORE OPEN. Complements the moment-face wiring (`_PrizeCharZeroWired`,
+`prize_sup_of_saddle_charZeroWired`): both open-core faces are now adversarially-confirmed honest, with
+the open residual precisely located on each (moment: `SaddleEnergyBound`/`S_r`; incidence: corridor-collapse).
