@@ -1190,6 +1190,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurMinorStaircase
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SchurRatioRotationEquivariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.SelfConsistencyCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShallowDiagonalRouteNonReach
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonClosure
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonListBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.BhSidonPairwiseBridge
