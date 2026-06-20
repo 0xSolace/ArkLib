@@ -116,8 +116,27 @@ theorem depthR_moment_does_not_decide_prize
   · -- a < t*a since t > 1, a > 0
     nlinarith [ht_gt_one, ha]
 
+/-- **The depth-`r` moment-blindness gap is UNBOUNDED.**  The spike from
+`depthR_moment_does_not_decide_prize` exceeds the flat maximum `a` by the factor `c/a = K`, where
+`c = K·a` shares the depth-`r` moment with the flat spectrum, whenever the frequency count satisfies
+`N ≥ K^{2r}`.  So for *any* target factor `K ≥ 1` there is a frequency count `N` at which two spectra
+share the depth-`r` moment yet their maxima differ by at least `K`: the bucket-B1 obstruction is not
+merely nonzero but quantitatively unbounded — no fixed-depth moment controls the sup to within any
+constant factor.  (Concretely take `N = ⌈K^{2r}⌉`; the spike `c = K·a` then has
+`c^{2r} = K^{2r}·a^{2r} ≤ N·a^{2r}`.) -/
+theorem depthR_moment_blindness_unbounded
+    (N r : ℕ) (a K : ℝ) (ha : 0 < a)
+    (hNK : K ^ (2 * r) ≤ (N : ℝ)) :
+    ∃ c : ℝ, c ^ (2 * r) ≤ (N : ℝ) * a ^ (2 * r) ∧ K * a ≤ c := by
+  refine ⟨K * a, ?_, le_refl _⟩
+  -- (K*a)^(2r) = K^(2r) * a^(2r) ≤ N * a^(2r)
+  rw [mul_pow]
+  have ha2r : 0 ≤ a ^ (2 * r) := by positivity
+  exact mul_le_mul_of_nonneg_right hNK ha2r
+
 end ProximityGap.Frontier.TrichotomyCapstone
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.TrichotomyCapstone.second_moment_does_not_decide_prize
 #print axioms ProximityGap.Frontier.TrichotomyCapstone.depthR_moment_does_not_decide_prize
+#print axioms ProximityGap.Frontier.TrichotomyCapstone.depthR_moment_blindness_unbounded

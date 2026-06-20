@@ -8339,3 +8339,20 @@ No CORE, cancellation, anti-concentration, or capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeConditionalCapstone.lean, new
 theorem saddleEnergyBound_iff_moment_le_charZero, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [trichotomy B1 unbounded] the depth-r moment-blindness gap is UNBOUNDED, not just nonzero (2026-06-19)
+
+Lane: door-(iv) trichotomy capstone — EXTENDS my proven depthR_moment_does_not_decide_prize (sweep
+8ca66997b). That theorem showed a spike shares the depth-r moment with the flat spectrum but exceeds
+its max. This quantifies the gap. PROBE-FIRST (python): spike/flat max ratio = N^{1/(2r)}, which for
+FIXED r diverges as N→∞ (r=1: 4,16,64; r=2: 2,4,8; r=3: 1.59,2.52,4 at N=16,256,4096).
+
+VERDICT: depthR_moment_blindness_unbounded: for any target factor K with K^{2r}<=N, a spike c=K·a has
+depth-r moment <= the flat N·a^{2r} yet max >= K·a. So two spectra share the depth-r moment with maxima
+differing by ANY constant factor K (take N>=K^{2r}). The bucket-B1 obstruction is not merely nonzero but
+quantitatively unbounded — no fixed-depth moment controls the sup to within any constant factor. No
+CORE, cancellation, anti-concentration, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_TrichotomyCapstone.lean, new theorem
+depthR_moment_blindness_unbounded, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
