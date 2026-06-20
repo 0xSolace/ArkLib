@@ -103,6 +103,31 @@ theorem no_incidence_to_moment_bridge :
      incidenceSuffices := fun _ => trivial },
    trivial, id, trivial⟩
 
+/-- **The sufficient faces are not necessary in the abstraction.** The open-core package records
+two PROVEN sufficiency arrows into the prize, but it intentionally does NOT claim either input is
+necessary. There is an `OpenCore` model in which the prize holds while both face inputs fail. This
+formalizes the corrected audit scope: the capstone is a routing theorem for the two known faces, not
+a hidden converse, no-fifth-door theorem, or proof that every prize proof must factor through one of
+the two named inputs. -/
+theorem no_prize_to_either_face_bridge :
+    ∃ C : OpenCore, C.Prize ∧ ¬ C.MomentFaceInput ∧ ¬ C.IncidenceFaceInput :=
+  ⟨{ Prize := True
+     MomentFaceInput := False
+     IncidenceFaceInput := False
+     momentSuffices := fun h => h.elim
+     incidenceSuffices := fun h => h.elim },
+   trivial, id, id⟩
+
+/-- **No biconditional is available from the two-face abstraction.** Even bundling the two known
+open inputs by disjunction, the prize does not imply that either named face holds. Equivalently, the
+abstract capstone gives `(MomentFaceInput ∨ IncidenceFaceInput) → Prize`, but not the reverse arrow.
+This is the machine-checked guard against reading `prize_of_either` as an equivalence or as a
+classification of all possible proofs. -/
+theorem no_prize_to_face_disjunction_bridge :
+    ∃ C : OpenCore, C.Prize ∧ ¬ (C.MomentFaceInput ∨ C.IncidenceFaceInput) :=
+  let ⟨C, hp, hm, hi⟩ := no_prize_to_either_face_bridge
+  ⟨C, hp, fun h => h.elim hm hi⟩
+
 end ArkLib.ProximityGap.Frontier.OneWallTwoFaces
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -110,3 +135,5 @@ end ArkLib.ProximityGap.Frontier.OneWallTwoFaces
 #print axioms ArkLib.ProximityGap.Frontier.OneWallTwoFaces.both_faces_open_of_prize_unreached
 #print axioms ArkLib.ProximityGap.Frontier.OneWallTwoFaces.no_moment_to_incidence_bridge
 #print axioms ArkLib.ProximityGap.Frontier.OneWallTwoFaces.no_incidence_to_moment_bridge
+#print axioms ArkLib.ProximityGap.Frontier.OneWallTwoFaces.no_prize_to_either_face_bridge
+#print axioms ArkLib.ProximityGap.Frontier.OneWallTwoFaces.no_prize_to_face_disjunction_bridge
