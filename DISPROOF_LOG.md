@@ -8171,3 +8171,19 @@ no CORE, cancellation, completion, anti-concentration, or capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_TrichotomyCapstone.lean, new theorem
 `depthR_moment_does_not_decide_prize`, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## door-(iv) coset-hitting selectors preserve the entire coherence value set (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint extension in `_DoorIVCoherenceOrderBlind`. The existing kernel proved
+that coset-hitting selectors make restricted pointwise bounds equivalent to global bounds for any
+`μ_n`-coset-invariant coherence statistic. This refinement packages the stronger value-set form: if a
+restricted frequency class `T` meets every multiplicative coset, then `f '' T = Set.range f`.
+
+VERDICT: an order bucket, element-level filter, or selector cannot even remove a coherence value unless
+it misses an entire `μ_n`-coset. Any genuine improvement must be quotient-level, not multiplicative-order
+bookkeeping inside the coset. No CORE, cancellation, completion, moment-saving, anti-concentration, or
+capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`, new
+theorem `image_cosetHitting_set_eq_range`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

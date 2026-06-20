@@ -162,6 +162,25 @@ theorem values_on_cosetHitting_set_cover_global {H : Subgroup G} {β : Type*}
   rcases hT b with ⟨t, ht, htb⟩
   exact ⟨t, ht, eq_of_cosetInvariant_of_sameCoset hf htb⟩
 
+
+/-- **Exact value-set preservation under coset-hitting selectors.**  If a restricted frequency
+class `T` meets every left `H`-coset, then restricting a coset-invariant door-(iv) statistic to `T`
+does not remove even a single value: the restricted image `f '' T` equals the global range.  This is
+the value-set version of the selector obstruction.  An order bucket or element-level filter can
+change the observed coherence spectrum only by missing whole `μₙ`-cosets; otherwise every global
+coherence value is already represented inside the restricted class. -/
+theorem image_cosetHitting_set_eq_range {H : Subgroup G} {β : Type*} {f : G → β}
+    (hf : CosetInvariant H f) {T : Set G}
+    (hT : ∀ b : G, ∃ t ∈ T, t * b⁻¹ ∈ H) :
+    f '' T = Set.range f := by
+  ext y
+  constructor
+  · rintro ⟨t, _ht, rfl⟩
+    exact ⟨t, rfl⟩
+  · rintro ⟨b, rfl⟩
+    rcases values_on_cosetHitting_set_cover_global (H := H) (f := f) hf hT b with ⟨t, ht, htb⟩
+    exact ⟨t, ht, htb⟩
+
 /-- **Restricted bounds are global exactly when the restriction hits every coset.**  For a
 coset-invariant door-(iv) statistic, any upper bound checked on a set `T` meeting every `H`-coset is
 already the global bound, and conversely the global bound trivially restricts to `T`.
@@ -220,6 +239,8 @@ end ProximityGap.Frontier.DoorIVCoherenceOrderBlind
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.cosetInvariant_iff_exists_factorThroughLeftCosets
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.values_on_cosetHitting_set_cover_global
+#print axioms
+  ProximityGap.Frontier.DoorIVCoherenceOrderBlind.image_cosetHitting_set_eq_range
 #print axioms
   ProximityGap.Frontier.DoorIVCoherenceOrderBlind.bound_on_cosetHitting_set_iff_global
 #print axioms
