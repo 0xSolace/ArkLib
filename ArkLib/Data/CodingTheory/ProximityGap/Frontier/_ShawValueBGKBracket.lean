@@ -178,4 +178,34 @@ theorem genuinePrizeFamilyBound_iff_shawValue {ι : Type*} {M n L : ι → ℝ} 
   · intro h i
     exact (prize_iff_shawValue_le_div_sqrtL (hn i) (hL i)).2 (h i)
 
+/-! ## One bundled door-(iv) corridor capstone (citable)
+
+The single citable statement assembling the whole sharp-bracket picture on the real worst-frequency
+size `M` in the thin prize regime: the Plancherel floor, the BGK ceiling (`shawValue ≤ 1`), the closed
+endpoints (`1/√L` and `1`), the `√L` width, and the prize obligation (`prize ⇔ shawValue ≤ C/√L`, which
+is strictly below the BGK ceiling).  Pure assembly of the proven rungs above — no new mathematics. -/
+
+/-- **Door-(iv) sharp-corridor capstone (bundled).**  In the thin prize regime (`0 < n`, `0 < L`,
+`C < √L`), given the proven Plancherel floor `√n ≤ M` and BGK ceiling `M ≤ √(n·L)`:
+
+* `shawValue M n L ∈ [√n/√(n·L), 1]` (the sharp BGK bracket),
+* its lower endpoint is `1/√L` and its width is `√L`,
+* the genuine prize `M ≤ C·√n` is equivalent to `shawValue M n L ≤ C/√L`, and
+* that prize level `C/√L` is *strictly below* the BGK ceiling `1`.
+
+One citation surface for "door (iv) = collapse the `√L`-wide Shaw bracket to a constant".  Assembly
+only. -/
+theorem doorIV_sharp_corridor_capstone {M C n L : ℝ} (hn : 0 < n) (hL : 0 < L)
+    (hCL : C < Real.sqrt L) (hfloor : Real.sqrt n ≤ M) (hceil : M ≤ prizeScale n L) :
+    (Real.sqrt n / prizeScale n L ≤ shawValue M n L ∧ shawValue M n L ≤ 1) ∧
+      Real.sqrt n / prizeScale n L = 1 / Real.sqrt L ∧
+      (1 : ℝ) / (Real.sqrt n / prizeScale n L) = Real.sqrt L ∧
+      (M ≤ C * Real.sqrt n ↔ shawValue M n L ≤ C / Real.sqrt L) ∧
+      C / Real.sqrt L < 1 := by
+  have hsL : 0 < Real.sqrt L := Real.sqrt_pos.2 hL
+  refine ⟨shawValue_sharp_bracket (prizeScale_pos hn hL) hfloor hceil,
+    shawValue_sharp_bracket_lower_eq hn, shawValue_sharp_bracket_width hn,
+    prize_iff_shawValue_le_div_sqrtL hn hL, ?_⟩
+  rw [div_lt_one hsL]; exact hCL
+
 end ArkLib.ProximityGap.Frontier.ShawValueBGKBracket

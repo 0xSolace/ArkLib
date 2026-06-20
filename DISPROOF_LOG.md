@@ -8356,3 +8356,16 @@ CORE, cancellation, anti-concentration, or capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_TrichotomyCapstone.lean, new theorem
 depthR_moment_blindness_unbounded, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## [door-(iv) sharp-corridor capstone bundled] one citable statement of the √L Shaw-shave (2026-06-19)
+
+Lane: door-(iv) Lane 2 — bundles my proven sharp-bracket rungs into ONE citable capstone. Pure assembly.
+doorIV_sharp_corridor_capstone: in the thin prize regime (0<n, 0<L, C<√L), given the proven Plancherel
+floor √n<=M and BGK ceiling M<=√(nL), bundles: (1) Sh∈[√n/√(nL), 1] sharp bracket; (2) lower endpoint
+=1/√L; (3) width=√L; (4) prize M<=C√n ⇔ Sh<=C/√L; (5) C/√L<1. One citation surface for "door (iv) =
+collapse the √L-wide Shaw bracket to a constant". No new mathematics; no CORE/cancellation/anti-
+concentration/capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorem
+doorIV_sharp_corridor_capstone, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
