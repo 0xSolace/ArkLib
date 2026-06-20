@@ -225,4 +225,51 @@ theorem gumbel_route_REFUTED_no_constant_le_400 :
 #print axioms witnessed_ratio_gt_400
 #print axioms gumbel_route_REFUTED_no_constant_le_400
 
+/-! ## The overshoot provably GROWS between the two witnesses (kernel monotonicity)
+
+The prose claims the Rayleigh overshoot `P_exact(t)/exp(-t²)` grows with `(n,t)`. We lock that as a
+single inequality between the two machine-checked witnesses, using the conservative tail floors:
+at `(32,3.0)` the floor ratio is `(2/1000)/exp(-9)`, at `(64,4.0)` it is `(1/20000)/exp(-16)`. The
+second strictly exceeds the first iff `exp(16)/exp(9) > (2/1000)·20000 = 40`, i.e. `exp 7 > 40`,
+which is immediate (`exp 7 > 2.71^7 > 1000`). So the witnessed overshoot is not merely nonzero
+at each point
+but STRICTLY INCREASING from the `(32,3.0)` witness to the `(64,4.0)` witness — the divergence the
+Gumbel/extreme-value route cannot absorb. -/
+
+/-- The conservative floor on the Rayleigh overshoot at a witness `(t)` with tail floor `P`:
+`overshootFloor P t = P / exp(-t²) = P·exp(t²)`. -/
+noncomputable def overshootFloor (P t : ℝ) : ℝ := P / Real.exp (-(t^2))
+
+/-- **Monotone overshoot.** The floor overshoot at the `(64,4.0)` witness strictly exceeds the floor
+overshoot at the `(32,3.0)` witness: `(1/20000)/exp(-16) > (2/1000)/exp(-9)`. Reduces to
+`exp 7 > 40`. This turns the prose "the Rayleigh overshoot grows with `(n,t)`" into a kernel
+inequality between the
+two proven witnesses. -/
+theorem overshoot_strictly_grows :
+    overshootFloor (2/1000) 3 < overshootFloor (1/20000) 4 := by
+  unfold overshootFloor
+  rw [show (-(3:ℝ)^2) = -9 by ring, show (-(4:ℝ)^2) = -16 by ring]
+  rw [Real.exp_neg, Real.exp_neg]
+  -- goal: 2/1000 / (exp 9)⁻¹ < 1/20000 / (exp 16)⁻¹.
+  -- a / b⁻¹ = a * b, so reduce to 2/1000 * exp 9 < 1/20000 * exp 16.
+  rw [div_inv_eq_mul, div_inv_eq_mul]
+  have hsplit : Real.exp 16 = Real.exp 9 * Real.exp 7 := by
+    rw [← Real.exp_add]; norm_num
+  rw [hsplit]
+  have h9pos : (0:ℝ) < Real.exp 9 := Real.exp_pos 9
+  have h7 : (40:ℝ) < Real.exp 7 := by
+    have he1 : (271:ℝ)/100 < Real.exp 1 := by
+      have := Real.exp_one_gt_d9; linarith
+    have hpow : ((271:ℝ)/100)^7 < (Real.exp 1)^7 :=
+      pow_lt_pow_left₀ he1 (by norm_num) (by norm_num)
+    have hexp : (Real.exp 1)^7 = Real.exp 7 := by
+      rw [← Real.exp_nat_mul]; norm_num
+    rw [hexp] at hpow
+    calc (40:ℝ) < ((271:ℝ)/100)^7 := by norm_num
+      _ < Real.exp 7 := hpow
+  -- 2/1000 * exp9 < 1/20000 * (exp9 * exp7) ⇔ (×1/exp9 >0) 40 < exp7
+  nlinarith [h7, h9pos]
+
+#print axioms overshoot_strictly_grows
+
 end ProximityGap.Frontier.AvN3

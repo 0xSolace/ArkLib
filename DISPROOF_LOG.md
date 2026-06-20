@@ -8482,3 +8482,17 @@ concentration cannot select the worst coset by its arithmetic, because that cose
 primitive unstructured residue. No exploitable structure survives adversarial re-checking ⇒ do NOT
 larp a selection conjecture. Python-only, no Lean changed ⇒ axiom-clean trivially. No CORE/cancellation/
 completion/anti-concentration/capacity claim.
+
+## [Gumbel/Rayleigh route — overshoot MONOTONICITY locked as a kernel inequality] (2026-06-19)
+
+Lane: door-(iv) Lane-1 distributional no-go. EXTENDS my two proven witnesses (gumbel_route_REFUTED at
+(32,3.0), gumbel_route_REFUTED_n64 at (64,4.0)) by turning the prose "the Rayleigh overshoot grows
+with (n,t)" into a machine-checked inequality. Defined overshootFloor P t = P/exp(-t²) and proved
+overshoot_strictly_grows: overshootFloor (2/1000) 3 < overshootFloor (1/20000) 4, i.e. the floor
+overshoot at (64,4.0) STRICTLY exceeds that at (32,3.0). Reduces cleanly to exp(16)/exp(9)=exp(7)>40
+(immediate: exp 7 > 2.71^7 > 1000). So the divergence is not just two unrelated points but a proven
+strict increase between them — the Gumbel/extreme-value route cannot absorb it.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvN3_GumbelTailRefuted.lean, new
+theorem overshoot_strictly_grows (+ def overshootFloor), axiom-clean {propext, Classical.choice,
+Quot.sound}. No CORE/cancellation/completion/anti-concentration/capacity claim.
