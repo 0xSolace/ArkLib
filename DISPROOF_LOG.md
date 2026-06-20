@@ -8965,3 +8965,36 @@ axiom-clean (theorems depend on NO axioms). New theorems `not_constant_mod_of_tw
 `not_constant_position_of_two_values`, `delocalized_excludes_fixed_selector`,
 `fixedResidue_forces_constant_mod`: a worst-index family witnessed delocalized (two residues mod d AND two
 distinct values) is excluded by every fixed-residue and every fixed-position prime-independent selector.
+
+## [door-iv-negation-symmetry-real-and-balanced] the negation symmetry −1∈μ_n forces η_b REAL and half-plane occupancy BALANCED for every b — the dilation-NON-invariant interval-occupancy selector is also b-blind (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 (worst-b selector hunt) + Lane 3 (constraint lemma). The dilation-invariance
+meta-theorem `_DoorIVPhaseSetDilationInvariant` proves every fixed additive-linear count of the phase
+set `S_b = {b·z : z∈μ_n}` is invariant under `b↦λ·b`, hence b-BLIND. The natural escape is a feature
+that genuinely BREAKS under dilation; the most basic is the half-plane occupancy
+`HP(b) = | #{z∈μ_n : (b·z mod p)∈[0,p/2)} − n/2 |` (equivalently the sign of `Re e_p(b·z)`), which IS
+dilation-non-invariant (dilation rotates the residues across the cut). This entry tests + closes it.
+
+PROBE `scripts/probes/probe_dooriv_worstb_halfplane_selector.py` (PROPER thin 2-power μ_n, prize regime
+p~n^4≫n^3, n=16 FULL F_p* scan, n=32,64 sampled, never n=q−1):
+ - −1∈μ_n and μ_n closed under y↦−y at every tested n (forced: n=2^a even ⟹ the order-n subgroup
+   contains the order-2 element −1).
+ - consequently max_b |Im η_b| ~ 1e-15 (float noise): η_b is REAL for every b.
+ - HP(b)=0 for 99.98% of all b at n=16 (the ±1 cases are float-boundary): half-plane occupancy is
+   EXACTLY balanced for every b, including the global argmax b*.
+ - corr(HP, |η|/√n) ≈ +0.05; the argmax is NOT selected by HP.
+
+MECHANISM (one fact behind both): μ_n closed under negation ⟹ the phase set {e_p(b·z):z∈μ_n} is closed
+under complex conjugation for every b. Pairing each point with its conjugate: imaginary parts cancel
+(sum is real) AND open-upper-half points biject with open-lower-half points (occupancy balanced).
+
+VERDICT (refutation with mechanism): the first-order interval-occupancy / real-part-sign feature — the
+most basic dilation-NON-invariant candidate worst-b selector — is itself FORCED b-blind (constant 0) by
+the −1∈μ_n negation symmetry, orthogonally to the dilation-invariance meta-theorem. Any surviving
+door-(iv) worst-b selector must be invariant under NEITHER dilation NOR conjugation: strictly finer than
+real-part / half-plane sign data. No CORE/cancellation/completion/moment/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVNegationSymmetryRealAndBalanced.lean`,
+axiom-clean (axioms ⊆ {propext, Classical.choice, Quot.sound}). Theorems: `sum_isReal_of_conj_closed`,
+`sum_im_eq_zero_of_conj_closed`, `upperHalf_card_eq_lowerHalf_card_of_conj_closed`,
+`halfPlaneImbalance_eq_zero_of_conj_closed`.
