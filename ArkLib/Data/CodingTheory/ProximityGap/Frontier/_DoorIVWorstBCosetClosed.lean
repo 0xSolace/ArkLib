@@ -91,6 +91,19 @@ theorem orbit_subset_superLevel
   rintro x ⟨g, rfl⟩
   exact smul_mem_superLevel_of_orbitConstant (G := G) hf c g hb
 
+/-- **Coset membership is exactly invariant.**  Multiplying a frequency by any group element neither
+creates nor destroys near-max membership for an orbit-constant statistic.  Thus a worst-`b` selector
+cannot distinguish points inside one multiplicative coset. -/
+theorem smul_mem_superLevel_iff_of_orbitConstant
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) (g : G) {b : β} :
+    g • b ∈ superLevel f c ↔ b ∈ superLevel f c := by
+  constructor
+  · intro hb
+    have hback := smul_mem_superLevel_of_orbitConstant (G := G) hf c g⁻¹ hb
+    simpa using hback
+  · intro hb
+    exact smul_mem_superLevel_of_orbitConstant (G := G) hf c g hb
+
 /-- **Argmax membership is coset-blind.**  If `b` attains the supremum value `Mval` of `f`
 (`f b = Mval` and `Mval` is an upper bound), then the ENTIRE coset `g • b` also attains it: the worst
 frequency is never an isolated point, it is a full `μ_n`-coset.  (Probe: worst-`b` row is one coset.) -/
@@ -124,6 +137,19 @@ theorem image_sigma_superLevel
   · intro hb
     exact ⟨σ b, sigma_mem_superLevel hσ c hb, hσ.1 b⟩
 
+/-- **Sign-pair membership is exactly invariant.**  The involution layer is not just closed in one
+direction: `b` is near-max exactly when `σ b` is near-max.  For the prize statistic this says `b` and
+`-b` cannot be separated by a worst-frequency selector. -/
+theorem sigma_mem_superLevel_iff
+    {f : β → ℝ} {σ : β → β} (hσ : InvolutionConstant σ f) (c : ℝ) {b : β} :
+    σ b ∈ superLevel f c ↔ b ∈ superLevel f c := by
+  constructor
+  · intro hb
+    have hback := sigma_mem_superLevel hσ c hb
+    simpa [hσ.1 b] using hback
+  · intro hb
+    exact sigma_mem_superLevel hσ c hb
+
 /-- **The combined symmetry group of the worst-`b` set.**  Putting the two layers together: the
 near-max set is closed under BOTH the `μ_n`-action AND the negation involution.  Any b-arithmetic lever
 sees the worst frequency only through these symmetries (coset + sign); the probe shows there is no
@@ -138,3 +164,6 @@ theorem superLevel_smul_and_sigma_closed
    fun _ hb => sigma_mem_superLevel hσ c hb⟩
 
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_mem_superLevel_iff

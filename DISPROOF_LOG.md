@@ -8221,3 +8221,21 @@ moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
 new theorem `not_addLinearPatternMaxFiber_scalar_improvement`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-coset-sign-membership-iff] worst-frequency membership cannot separate coset or sign partners (2026-06-19, g55)
+
+Lane: door-(iv) Lane 1/3 selector constraint extending `_DoorIVWorstBCosetClosed`. Prior kernel proved
+super-level sets are closed under the multiplicative coset action and under the sign involution. This
+refinement packages the exact membership equivalences:
+
+* `g • b ∈ superLevel f c ↔ b ∈ superLevel f c` for any orbit-constant statistic;
+* `σ b ∈ superLevel f c ↔ b ∈ superLevel f c` for any statistic respecting an involution.
+
+VERDICT: a worst-frequency selector cannot distinguish two frequencies inside one `μ_n`-coset, nor a
+sign pair such as `b` and `-b`. Any door-(iv) arithmetic of the worst `b` must therefore operate on the
+quotient-level coset/sign class, not on element-level order or representative bookkeeping. No CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new
+theorems `smul_mem_superLevel_iff_of_orbitConstant` and `sigma_mem_superLevel_iff`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.
