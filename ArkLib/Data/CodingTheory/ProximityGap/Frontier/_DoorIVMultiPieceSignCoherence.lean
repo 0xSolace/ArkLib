@@ -399,6 +399,37 @@ theorem not_multiPieceCoherence_le_of_one_side_zero {ι : Type*} [DecidableEq ι
     (multiPieceCoherence_eq_one_iff_one_side_zero s A hsum hden hposMass hnegMass htotal).mpr hzero
   linarith
 
+/-- Epsilon-slack two-sidedness interface: any advertised positive saving
+`coherence ≤ 1 - ε` for a real multi-piece refinement already forces positive aggregate mass on
+both signs.  This is the direct consumer form of the sign-obstruction constraint: before a
+door-(iv) anti-concentration proof can spend a fixed `ε`, it must exhibit genuine two-sided signed
+mass at the worst frequency. -/
+theorem two_sided_of_multiPieceCoherence_le_one_sub_eps {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass)
+    (hε : 0 < ε) (hle : multiPieceCoherence s A ≤ 1 - ε) :
+    0 < posMass ∧ 0 < negMass := by
+  exact two_sided_of_multiPieceCoherence_le_lt_one s A hsum hden hposMass hnegMass htotal hle
+    (by linarith)
+
+/-- Epsilon-slack contrapositive: if one aggregate sign mass vanishes, then no positive `ε`
+coherence saving can be certified by a real multi-piece refinement.  Refining into more real pieces
+does not create a door-(iv) anti-concentration witness unless the minority sign has nonzero mass. -/
+theorem not_multiPieceCoherence_le_one_sub_eps_of_one_side_zero {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass)
+    (hzero : posMass = 0 ∨ negMass = 0) (hε : 0 < ε) :
+    ¬ multiPieceCoherence s A ≤ 1 - ε := by
+  exact not_multiPieceCoherence_le_of_one_side_zero s A hsum hden hposMass hnegMass htotal hzero
+    (by linarith)
+
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -423,5 +454,7 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_le_iff_two_mul_minMass_ge
 #print axioms multiPieceCoherence_le_one_sub_iff_eps_mass_budget
 #print axioms not_multiPieceCoherence_le_one_sub_of_eps_mass_budget_lt
+#print axioms two_sided_of_multiPieceCoherence_le_one_sub_eps
+#print axioms not_multiPieceCoherence_le_one_sub_eps_of_one_side_zero
 #print axioms two_sided_of_multiPieceCoherence_le_lt_one
 #print axioms not_multiPieceCoherence_le_of_one_side_zero
