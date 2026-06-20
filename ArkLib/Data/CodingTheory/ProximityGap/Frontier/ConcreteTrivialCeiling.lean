@@ -88,4 +88,38 @@ theorem worstPeriod_bracket {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Fin
       ∧ worstPeriod ψ G hne ≤ (G.card : ℝ) :=
   ⟨worstPeriod_ge_sqrt_parseval hψ G hne hq1, worstPeriod_le_card ψ G hne⟩
 
+/-- **Concrete SHARP two-sided corridor in the prize regime.** Combining the new quadratic-regime
+sharp floor (`worstPeriod_ge_sqrt_card_pred_of_sq_le`) with the trivial ceiling, under `n² ≤ q`
+(`q = n^β, β ≥ 2`) the real worst period is sandwiched
+`√(n−1) ≤ M(μ_n) ≤ n` — the tightest unconditional corridor available, with the floor at its true
+`√n` value rather than a constant fraction. The prize bound `M ≤ C·√(n·log(q/n))` lives strictly
+inside this corridor; tightening the upper endpoint from `n` to `√(n·log(q/n))` is exactly the
+open prize. -/
+theorem worstPeriod_sharp_bracket {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((G.card : ℝ) - 1) ≤ worstPeriod ψ G hne
+      ∧ worstPeriod ψ G hne ≤ (G.card : ℝ) :=
+  ⟨worstPeriod_ge_sqrt_card_pred_of_sq_le hψ G hne hq1 hG1 hsq, worstPeriod_le_card ψ G hne⟩
+
+/-- **Concrete corridor width is `√n` (up to `√(n/(n−1)) → 1`).** The ratio of the proven endpoints
+of the sharp corridor `[√(n−1), n]` has the closed form `n / √(n−1) = √n · √(n/(n−1))`. The factor
+`√(n/(n−1)) → 1`, so the unconditional proven gap on the real worst period is exactly `√n`-wide in
+the prize regime — the concrete companion of the abstract `ShawValueCapstone.bracket_width_eq_sqrt`.
+Closing this `√n` gap to `O(√(log(q/n)))` is the open prize. (Probe: `n/√(n−1)/√n` =
+1.155,1.033,1.008,1.002 at `n=4,16,64,256`.) -/
+theorem sharp_bracket_width_eq {n : ℝ} (hn1 : (1 : ℝ) < n) :
+    n / Real.sqrt (n - 1) = Real.sqrt n * Real.sqrt (n / (n - 1)) := by
+  have hn0 : (0 : ℝ) < n := by linarith
+  have hnm1 : (0 : ℝ) < n - 1 := by linarith
+  -- √n · √(n/(n−1)) = √(n · n/(n−1)) = √(n²/(n−1)) = √(n²)/√(n−1) = n/√(n−1)
+  rw [← Real.sqrt_mul (le_of_lt hn0)]
+  have hmul : n * (n / (n - 1)) = n ^ 2 / (n - 1) := by ring
+  rw [hmul, Real.sqrt_div (by positivity) (n - 1), Real.sqrt_sq (le_of_lt hn0)]
+
 end ProximityGap.Frontier.ConcreteTrivialCeiling
+
+/-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ConcreteTrivialCeiling.worstPeriod_sharp_bracket
+#print axioms ProximityGap.Frontier.ConcreteTrivialCeiling.sharp_bracket_width_eq
