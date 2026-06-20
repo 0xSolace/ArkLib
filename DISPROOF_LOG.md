@@ -9586,3 +9586,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPWraparoundL
 axiom-clean (`{propext, Classical.choice, Quot.sound}`). New theorems: `gap_wrap_ge_two_mul_sq`
 (`Q ≥ 2·wb²` under log-concavity), `gap_wrap_nonneg_of_logConcave` (`Q ≥ 0`), `gap_wrap_pos_of_logConcave`
 (`Q > 0` when `wb ≠ 0`), `charP_transfer_of_dominance_logConcave` (assembled transfer with `Q` discharged).
+
+### CORRECTION NOTE (2026-06-20, sol) — to the char-p wraparound `Q≥0` entry above
+
+The original probe `probe_charp_wraparound_logconcave_Q.py` computed the char-0 energy `E_r(ℂ)` via a
+NAIVE integer-lift (Z-convolution of residue reps in [0,p)), which is WRONG at `r≥4`: it counts
+integer-sum coincidences of residue representatives, not the true cyclotomic vanishing-subset-sum count.
+It disagreed with RESULTS-444-RHO-ANTITONE (`E_4(ℂ)` naive=4650240 vs correct=4649680), so the recorded
+wraparound numbers (e.g. `W_4=3920`) were slightly off. Re-ran with the CORRECT antipodal-reduction
+`E_r(ℂ)` (`probe_charp_wraparound_logconcave_Q_v2.py`, using the in-tree `Er_C_2power`): corrected
+`W_4=4480, W_5=2923920, W_6=1248322944` at `n=16,p=65537`. **The verdict is ROBUST under the correction:**
+`W_r ≥ 0` everywhere, wraparound log-concavity `W_r·W_{r+2} ≤ W_{r+1}²` holds at every interior `r` every
+prize prime (incl. the non-vacuous post-onset cases), and `Q ≥ 0` throughout. The Lean theorems in
+`_CharPWraparoundLogConcaveQ.lean` are PURE ALGEBRA (the implication `wa·wc≤wb² ⟹ Q≥0`) and are UNAFFECTED
+by the probe-arithmetic correction. The v1 probe's `E_r(ℂ)` has been fixed in place to the antipodal
+reduction. CORE stays OPEN.

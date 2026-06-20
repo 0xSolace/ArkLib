@@ -29,15 +29,19 @@ the elementary `0 ≤ s`, true since `s = 2r+1`), the wraparound gap is not mere
 `Q = (s+2)·wb² − s·(wa·wc) ≥ (s+2)·wb² − s·wb² = 2·wb² ≥ 0`,
 using `wa·wc ≤ wb²` and `s ≥ 0` (so `−s·(wa·wc) ≥ −s·wb²`).
 
-## Probe receipt (`scripts/probes/probe_charp_wraparound_logconcave_Q.py`)
+## Probe receipt (`scripts/probes/probe_charp_wraparound_logconcave_Q_v2.py`)
 
-EXACT integer additive-energy ladders `E_r(F_p)` (modular conv) and `E_r(ℂ)` (Z conv, no
-wraparound) over `n = 8,16,32,64`, seven structured prize-regime primes `p ~ n⁴ ≫ n³`, proper
-subgroups `μ_n ⊊ F_p^*`. Result: `W_r ≥ 0` everywhere; **wraparound log-concavity
-`W_r·W_{r+2} ≤ W_{r+1}²` holds at every interior `r`, every prime** (including the non-vacuous
-post-onset cases `n=16,p=65537,r=3,4` and `n=32,r=3` with genuinely positive `W`); and the
-resulting `Q ≥ 0` matched the structural lower bound `2·W_{r+1}²` exactly. So the condition this
-file assumes is empirically forced in the prize regime, not larped.
+EXACT integer additive-energy ladders `E_r(F_p)` (modular conv) and `E_r(ℂ)` (CYCLOTOMIC
+ANTIPODAL reduction, the in-tree `Er_C_2power`) over `n = 8,16,32,64`, seven structured
+prize-regime primes `p ~ n⁴ ≫ n³`, proper subgroups `μ_n ⊊ F_p^*`. Result: `W_r ≥ 0` everywhere;
+**wraparound log-concavity `W_r·W_{r+2} ≤ W_{r+1}²` holds at every interior `r`, every prime**
+(including the non-vacuous post-onset cases `n=16,p=65537,r=3,4` with `W_4=4480, W_5=2923920,
+W_6=1248322944`, and `n=32,r=3` with genuinely positive `W`); and the resulting `Q ≥ 0`. So the
+condition this file assumes is empirically forced in the prize regime, not larped.
+
+NOTE: the original probe (`..._Q.py`, now fixed in place) used a naive integer-lift for `E_r(ℂ)`
+which is wrong at `r≥4`; the corrected antipodal `E_r(ℂ)` (v2) gives the robust verdict above. The
+theorems below are pure algebra (`wa·wc ≤ wb² ⟹ Q ≥ 0`) and are unaffected by the arithmetic fix.
 
 ## Honest scope
 

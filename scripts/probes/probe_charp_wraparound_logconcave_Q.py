@@ -92,18 +92,33 @@ def energy_Fp(S, p, r):
     return sum(c * c for c in a.values())
 
 def energy_C(S, r):
-    """E_r(C): char-0 energy = sum_t a_r(t)^2 with NO modular reduction (over Z).
-    Use the integer residues of S lifted to [0,p) as the additive support; the
-    char-0 (cyclotomic) energy is the same combinatorial count WITHOUT wraparound,
-    i.e. sums taken in Z. This equals the antipodal/cyclotomic E_r(C) for the
-    accessible r (matches RESULTS-444-RHO-ANTITONE E_r(C) column)."""
-    base = defaultdict(int)
-    for s in S:
-        base[s] += 1   # lift in Z (representatives 0..p-1)
-    a = dict(base)
-    for _ in range(r - 1):
-        a = conv_Z(a, base)
-    return sum(c * c for c in a.values())
+    """E_r(C): char-0 (cyclotomic) additive energy of mu_n via the ANTIPODAL REDUCTION.
+
+    CORRECTION (2026-06-20): the original naive integer-lift `conv_Z` of residue reps
+    in [0,p) was WRONG at r>=4 — it counts integer-sum coincidences of residue
+    representatives, NOT the true cyclotomic vanishing-subset-sum count. It disagreed
+    with RESULTS-444-RHO-ANTITONE (E_4(C) naive=4650240 vs correct=4649680). Replaced
+    with the in-tree antipodal reduction (see probe_444_rho_antitone_recompute.Er_C_2power
+    and probe_charp_wraparound_logconcave_Q_v2.py). The wraparound log-concavity verdict
+    is ROBUST: it holds under the corrected E_r(C) too (v2 confirms).
+
+    For n = 2^k, z^a -> +e_a (a<n/2) or -e_{a-n/2} (a>=n/2); E_r(C) = sum_v c_v^2 over the
+    r-fold convolution in Z^{n/2}. Requires S ordered by generator power so index a = exponent.
+    """
+    n = len(S)
+    half = n // 2
+    from collections import Counter
+    units = []
+    for a in range(n):
+        units.append((a, 1) if a < half else (a - half, -1))
+    c = Counter({tuple([0] * half): 1})
+    for _ in range(r):
+        nc = Counter()
+        for v, m in c.items():
+            for (idx, sgn) in units:
+                w = list(v); w[idx] += sgn; nc[tuple(w)] += m
+        c = nc
+    return sum(m * m for m in c.values())
 
 def main():
     # prize-regime instances: n = 2^a, p ~ n^4 (>> n^3), several structured primes
