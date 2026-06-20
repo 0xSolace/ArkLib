@@ -135,6 +135,66 @@ theorem diffTrace_re_lt_iff_norm_lt (hmul : ∀ a b, θ (a + b) = θ a * θ b) (
   rw [lt_iff_not_ge, lt_iff_not_ge, hle]
 
 
+
+/-- **`diffTrace_re_add_card_le_iff_norm_le`** — cardinality-shifted global bridge: for arbitrary
+piece counts, adding back the diagonal offset `#Rel` makes the variance-core trace rank configurations
+exactly by aggregate phase coherence.  This is the equal-cardinality-free version of the order bridge:
+`(DiffTrace).re + #Rel = ‖Σ Jphase‖²`. -/
+theorem diffTrace_re_add_card_le_iff_norm_le (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel₁ Rel₂ : Finset (Fin r → R)) :
+    (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ) ≤ (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ)
+      ↔ ‖∑ T ∈ Rel₁, Jphase θ T‖ ≤ ‖∑ T ∈ Rel₂, Jphase θ T‖ := by
+  rw [diffTrace_re_eq_normSq_sub_card hmul hone hunit Rel₁,
+      diffTrace_re_eq_normSq_sub_card hmul hone hunit Rel₂,
+      Complex.normSq_eq_norm_sq, Complex.normSq_eq_norm_sq]
+  have h1 : 0 ≤ ‖∑ T ∈ Rel₁, Jphase θ T‖ := norm_nonneg _
+  have h2 : 0 ≤ ‖∑ T ∈ Rel₂, Jphase θ T‖ := norm_nonneg _
+  set a := ‖∑ T ∈ Rel₁, Jphase θ T‖ with ha
+  set b := ‖∑ T ∈ Rel₂, Jphase θ T‖ with hb
+  constructor
+  · intro h
+    by_contra hlt
+    push_neg at hlt
+    have : b ^ 2 < a ^ 2 := by nlinarith
+    linarith
+  · intro h
+    have : a ^ 2 ≤ b ^ 2 := by nlinarith
+    linarith
+
+/-- Strict cardinality-shifted bridge. -/
+theorem diffTrace_re_add_card_lt_iff_norm_lt (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel₁ Rel₂ : Finset (Fin r → R)) :
+    (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ) < (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ)
+      ↔ ‖∑ T ∈ Rel₁, Jphase θ T‖ < ‖∑ T ∈ Rel₂, Jphase θ T‖ := by
+  have hle := diffTrace_re_add_card_le_iff_norm_le hmul hone hunit Rel₂ Rel₁
+  rw [lt_iff_not_ge, lt_iff_not_ge, hle]
+
+/-- Equality cardinality-shifted bridge. -/
+theorem diffTrace_re_add_card_eq_iff_norm_eq (hmul : ∀ a b, θ (a + b) = θ a * θ b)
+    (hone : θ 0 = 1) (hunit : ∀ s, Complex.normSq (θ s) = 1)
+    (Rel₁ Rel₂ : Finset (Fin r → R)) :
+    (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ) = (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ)
+      ↔ ‖∑ T ∈ Rel₁, Jphase θ T‖ = ‖∑ T ∈ Rel₂, Jphase θ T‖ := by
+  constructor
+  · intro h
+    have h12 : (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ)
+        ≤ (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ) := le_of_eq h
+    have h21 : (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ)
+        ≤ (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ) := ge_of_eq h
+    have hn12 := (diffTrace_re_add_card_le_iff_norm_le hmul hone hunit Rel₁ Rel₂).1 h12
+    have hn21 := (diffTrace_re_add_card_le_iff_norm_le hmul hone hunit Rel₂ Rel₁).1 h21
+    exact le_antisymm hn12 hn21
+  · intro h
+    have h12 : (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ)
+        ≤ (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ) :=
+      (diffTrace_re_add_card_le_iff_norm_le hmul hone hunit Rel₁ Rel₂).2 (le_of_eq h)
+    have h21 : (DiffTrace θ Rel₂).re + (Rel₂.card : ℝ)
+        ≤ (DiffTrace θ Rel₁).re + (Rel₁.card : ℝ) :=
+      (diffTrace_re_add_card_le_iff_norm_le hmul hone hunit Rel₂ Rel₁).2 (ge_of_eq h)
+    exact le_antisymm h12 h21
+
 /-- **`diffTrace_re_eq_iff_norm_eq`** — equality form of the fixed-piece-count bridge: at EQUAL
 piece count, two variance-core traces are equal exactly when their aggregate phase-sum norms are equal.
 This is the no-slack equality companion to the `≤` and `<` order-isomorphism lemmas. -/
@@ -174,5 +234,8 @@ end ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_envelope_endpoints
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_le_iff_norm_le
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_lt_iff_norm_lt
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_add_card_le_iff_norm_le
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_add_card_lt_iff_norm_lt
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_add_card_eq_iff_norm_eq
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_eq_iff_norm_eq
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceEnvelopeCapstone.diffTrace_re_ne_iff_norm_ne
