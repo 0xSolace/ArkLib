@@ -78,6 +78,18 @@ theorem deficit_ge_of_normSq_le {M t : ℝ} {z : ℂ} (hM : 0 < M) (ht0 : 0 ≤ 
   rw [hnorm]
   linarith
 
+/-- **Strict form of the squared-deficit bridge.** A positive squared deficit below the ceiling forces a
+strict first-power drop below `M`. This packages the audit use case: any nonzero certified squared saving is
+already enough to rule out exact triangle saturation, but only with the quantitative loss exposed by
+`deficit_ge_of_normSq_le`. -/
+theorem norm_lt_of_pos_normSq_deficit {M t : ℝ} {z : ℂ} (hM : 0 < M) (ht0 : 0 < t)
+    (htM : t ≤ M ^ 2) (hz : Complex.normSq z ≤ M ^ 2 - t) :
+    ‖z‖ < M := by
+  have hdef : t / (2 * M) ≤ M - ‖z‖ :=
+    deficit_ge_of_normSq_le hM (le_of_lt ht0) htM hz
+  have hpos : 0 < t / (2 * M) := by positivity
+  linarith
+
 /-- **Quantitative single-defect deficit (the explicit first-power drop).** Under the single-defect
 hypotheses (`γ ≡ 1` off one index `i₀`, `γ i₀ = w` unit, `w ≠ 1`, `M > 1`), the FIRST-POWER deficit
 is at least `(M − 1)(1 − Re w)/M`:
@@ -132,4 +144,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.sqrt_sub_le_linear
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.deficit_ge_of_normSq_le
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.norm_lt_of_pos_normSq_deficit
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.single_defect_deficit_ge

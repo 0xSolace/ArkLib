@@ -9371,3 +9371,18 @@ or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
 new theorem `deficit_ge_of_normSq_le`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) positive squared deficit rules out exact saturation (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleSingleDefectQuantDeficit.lean`.
+After exposing the reusable chord conversion from squared deficit to first-power deficit, this packages the
+strict audit face: a positive certified squared deficit `t>0` with `Complex.normSq z ≤ M²-t` forces
+`‖z‖ < M`.
+
+VERDICT: exact triangle saturation is impossible once any positive squared deficit is certified. This is a
+rigidity/endpoint constraint for proposed Door-IV dispersion mechanisms; it is not a quantitative prize-scale
+anti-concentration theorem. No CORE, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
+new theorem `norm_lt_of_pos_normSq_deficit`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
