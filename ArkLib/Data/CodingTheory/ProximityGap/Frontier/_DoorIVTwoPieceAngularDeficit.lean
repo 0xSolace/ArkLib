@@ -266,6 +266,25 @@ theorem angularDeficit_le_two_mul_norm_mul (z w : ℂ) :
   unfold angularDeficit
   linarith [neg_norm_mul_le_re_mul_conj z w]
 
+/-- **Global angular-deficit budget cap.**  The total pairwise angular deficit can never exceed
+one half of the squared `L¹` mass: `totalPairDeficit zs ≤ (l1Mass zs)² / 2`.
+
+This is the exact dual budget to the threshold reduction above.  Since
+`‖Σ z_i‖² = (L¹)² - 2D` is nonnegative, any Door-IV proof of √-cancellation must force `D` close
+to this absolute ceiling.  The lemma proves no such arithmetic lower bound; it only pins the
+available budget. -/
+theorem totalPairDeficit_le_l1Mass_sq_div_two (zs : List ℂ) :
+    totalPairDeficit zs ≤ (l1Mass zs) ^ 2 / 2 := by
+  have hid := norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit zs
+  have hn : 0 ≤ ‖zs.sum‖ ^ 2 := sq_nonneg ‖zs.sum‖
+  linarith
+
+/-- Equivalently, `2D ≤ L¹²`: the angular-deficit budget is at most the full squared half-mass. -/
+theorem two_mul_totalPairDeficit_le_l1Mass_sq (zs : List ℂ) :
+    2 * totalPairDeficit zs ≤ (l1Mass zs) ^ 2 := by
+  have h := totalPairDeficit_le_l1Mass_sq_div_two zs
+  linarith
+
 /-! ### Capstone: no-slack characterization
 
 The whole angular-deficit story collapses to one kernel-checked equivalence: the worst-frequency
@@ -320,6 +339,8 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.neg_norm_mul_le_re_mul_conj
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.angularDeficit_le_two_mul_norm_mul
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit_le_l1Mass_sq_div_two
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.two_mul_totalPairDeficit_le_l1Mass_sq
 #print axioms
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_eq_l1Mass_sq_iff_totalPairDeficit_eq_zero
 #print axioms
