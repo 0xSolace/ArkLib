@@ -9825,3 +9825,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFa
 axiom-clean. New theorems: `halfMassFamily_ge_normFloor_div_of_coherence_le` and
 `not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) two-piece same-ray obstruction in family form (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 geometric coherence constraint extending `_DoorIVComplexRayCoherence`. The pointwise
+kernel already identified two-piece coherence saturation with same-ray alignment. This refinement records
+the indexed form needed for worst-frequency families: a universal positive epsilon-drop
+`twoPieceNormCoherence_i ≤ 1 - ε_i` requires ruling out same-ray alignment at every member. One member with
+positive denominator and `SameRay ℝ x_i y_i` refutes the whole family of strict caps.
+
+VERDICT: subdividing the adversarial period into two vector pieces gives no family-level coherence saving
+unless the proof supplies genuine non-same-ray phase geometry member-by-member. This is pure
+triangle-equality bookkeeping, not a CORE/cancellation/moment/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`,
+axiom-clean. New theorem: `not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay`. Axioms are
+contained in `{propext, Classical.choice, Quot.sound}`.

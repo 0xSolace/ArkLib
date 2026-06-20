@@ -190,6 +190,18 @@ theorem sameRay_not_twoPieceNormCoherence_le_one_sub {x y : E} {ε : ℝ}
   exact (not_sameRay_of_twoPieceNormCoherence_le (x := x) (y := y) (θ := 1 - ε) hden
     (sub_lt_self 1 hε) hcoh) hsame
 
+/-- Family epsilon-drop obstruction: a universal positive coherence drop below `1` for two-piece
+Door-IV splits must rule out same-ray alignment at every indexed member.  One same-ray member with
+positive denominator refutes the whole family of strict `1 - ε_i` caps. -/
+theorem not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay {ι : Type*}
+    (x y : ι → E) {ε : ι → ℝ}
+    (hden : ∀ i, 0 < ‖x i‖ + ‖y i‖) (hε : ∀ i, 0 < ε i)
+    (hbad : ∃ i, SameRay ℝ (x i) (y i)) :
+    ¬ ∀ i, twoPieceNormCoherence (x i) (y i) ≤ 1 - ε i := by
+  intro hcoh
+  rcases hbad with ⟨i, hi⟩
+  exact sameRay_not_twoPieceNormCoherence_le_one_sub (hden i) (hε i) hi (hcoh i)
+
 end ProximityGap.Frontier.DoorIVComplexRayCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_le_one
@@ -198,6 +210,7 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_iff_not_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_le_one
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_common_nonneg_ray_of_multiPieceNormCoherence_le
