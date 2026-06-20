@@ -86,6 +86,19 @@ theorem sector_floor_le_complexPieceCoherence {zs : List ℂ} {u : ℂ} {c : ℝ
   have hdiv := (le_div_iff₀ hden).2 hmul
   simpa [mul_comm] using hdiv
 
+/-- Defect-budget form of the sector floor.  If, in one unit direction, every piece loses at
+most a `δ`-fraction of its norm in ray projection, then the total coherence is still at least
+`1 - δ`.  Therefore a Door-IV proof of a `1 - δ` drop must locate a genuinely larger angular defect,
+not merely subdivide the sum into many almost-ray-aligned pieces. -/
+theorem one_sub_defect_le_complexPieceCoherence_of_rayProj_deficit_le {zs : List ℂ} {u : ℂ} {δ : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hdef : ∀ z ∈ zs, ‖z‖ - rayProj u z ≤ δ * ‖z‖) :
+    1 - δ ≤ complexPieceCoherence zs := by
+  refine sector_floor_le_complexPieceCoherence (zs := zs) (u := u) (c := 1 - δ) hu hden ?_
+  intro z hz
+  have hzdef : ‖z‖ - rayProj u z ≤ δ * ‖z‖ := hdef z hz
+  nlinarith
+
 /-- Epsilon/threshold packaging: if the sector floor `c` is above a target `θ`, then the coherence
 cannot be bounded by `θ`. -/
 theorem not_complexPieceCoherence_le_of_sector_floor {zs : List ℂ} {u : ℂ} {c θ : ℝ}
@@ -157,6 +170,8 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.sector_projection_sum_lower
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.sector_floor_le_complexPieceCoherence
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.one_sub_defect_le_complexPieceCoherence_of_rayProj_deficit_le
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.not_complexPieceCoherence_le_of_sector_floor
 #print axioms

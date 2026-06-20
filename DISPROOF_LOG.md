@@ -1,3 +1,20 @@
+## door-(iv) small per-piece angular defects cannot certify a coherence drop (2026-06-19)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVSectorCoherence`. Prior sector lemmas showed that if
+all pieces stay inside a sector with projection floor `c`, then normalized coherence is at least `c`,
+and that a claimed coherence drop forces aggregate ray-projection deficit. This refinement packages the
+probe-facing defect-budget form: if every piece loses at most a `δ`-fraction of its norm in projection
+onto one unit ray, then the whole split still has coherence at least `1 - δ`.
+
+VERDICT: a Door-IV sector split cannot win by making many tiny almost-ray-aligned pieces. To prove a
+`1 - δ` coherence saving at the adversarial frequency, it must exhibit a larger angular defect than
+`δ` on some piece or an aggregate defect of that scale. Mere subdivision or bounded local angular noise
+remains trapped at the triangle-inequality baseline. No CORE/cancellation/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSectorCoherence.lean`,
+axiom-clean. New theorem: `one_sub_defect_le_complexPieceCoherence_of_rayProj_deficit_le`. Axioms are
+contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) Jacobi-cocycle gap — PRECISELY MAPPED WALL: size + mechanism + exclusion, dispersion stays open (2026-06-19, sol/cocyclegap)
 
 Lens: door-(iv) Lane-2/3 — the localized Jacobi-cocycle gap (Shaw's tetrachotomy door iv) characterized
