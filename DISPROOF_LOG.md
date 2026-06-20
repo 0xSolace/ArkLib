@@ -4003,8 +4003,7 @@ co-author wakesync.
 
 =========================================================================CONSTRAINT LEMMA (push CrossStepCeilingInsufficient.lean, lane m3r2, 2026-06-15):
 The LOOSE Lam-Leung ceiling alone CANNOT discharge M3CrossStepBound for r >= 2.
-=========================================================================
-The recursion-closure (_wf5M3_crossstep_ceiling) localized the prize energy ladder onto ONE open
+==================================================================The recursion-closure (_wf5M3_crossstep_ceiling) localized the prize energy ladder onto ONE open
 Prop: M3CrossStepBound G : forall r, crossMass G r <= 2r*(2r-1)!!*n^{r+1}, where
 crossMass G r = E_{r+1} - n*E_r (off-diagonal cross mass of the proven recursion E_{r+1}=n*E_r+cross_r).
 CrossStepRungOne discharged r=0,1 from the proven r<=2 energy ceilings. This entry maps the wall on
@@ -9433,3 +9432,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSin
 new theorems `sqrt_sub_deficit_le`, `single_defect_deficit_le`, and `single_defect_deficit_sandwich`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
 
+## door-(iv) single-defect first-power closed form exposed (2026-06-20, g55)
+
+Lane 3 multiplicative/Jacobi-cocycle constraint extension in `_JacobiCocycleSingleDefectQuantDeficit.lean`.
+The prior kernel had the exact squared formula and a chord lower bound for the first-power deficit. This
+adds the exact first-power norm closed form:
+`‖phaseSum γ‖ = sqrt(M² - 2(M-1)(1-Re w))` for the one-defect unit-phase model.
+
+VERDICT: the one-defect first-power object has no hidden arithmetic content beyond the real-part defect of
+the single off-aligned phase; the later lower bound is exactly the chord relaxation of this closed form.
+This is a normalization/audit identity, not a prize-scale dispersion theorem. No CORE, completion,
+moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleSingleDefectQuantDeficit.lean`,
+new theorem `single_defect_norm_eq_sqrt`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

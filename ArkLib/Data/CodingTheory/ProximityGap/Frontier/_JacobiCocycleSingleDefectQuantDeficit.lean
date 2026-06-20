@@ -90,6 +90,18 @@ theorem norm_lt_of_pos_normSq_deficit {M t : ℝ} {z : ℂ} (hM : 0 < M) (ht0 : 
   have hpos : 0 < t / (2 * M) := by positivity
   linarith
 
+/-- **Exact first-power closed form for a single defect.** The squared-deficit identity from
+`_JacobiCocycleSingleDefectDeficit` becomes an exact norm formula after taking the nonnegative square
+root. This exposes the precise first-power object before the chord lower bound below discards information. -/
+theorem single_defect_norm_eq_sqrt {M : ℕ} (hM : 1 ≤ M) (i₀ : Fin M) (w : ℂ)
+    (hw : ‖w‖ = 1) (γ : Fin M → ℂ)
+    (hi : γ i₀ = w) (hrest : ∀ j, j ≠ i₀ → γ j = 1) :
+    ‖phaseSum γ‖ =
+      Real.sqrt ((M : ℝ) ^ 2 - 2 * ((M : ℝ) - 1) * (1 - w.re)) := by
+  have hnorm : ‖phaseSum γ‖ = Real.sqrt (Complex.normSq (phaseSum γ)) := by
+    rw [Complex.normSq_eq_norm_sq, Real.sqrt_sq (norm_nonneg _)]
+  rw [hnorm, single_defect_normSq_eq hM i₀ w hw γ hi hrest]
+
 /-- **Quantitative single-defect deficit (the explicit first-power drop).** Under the single-defect
 hypotheses (`γ ≡ 1` off one index `i₀`, `γ i₀ = w` unit, `w ≠ 1`, `M > 1`), the FIRST-POWER deficit
 is at least `(M − 1)(1 − Re w)/M`:
@@ -145,4 +157,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.sqrt_sub_le_linear
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.deficit_ge_of_normSq_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.norm_lt_of_pos_normSq_deficit
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.single_defect_norm_eq_sqrt
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleSingleDefectQuantDeficit.single_defect_deficit_ge
