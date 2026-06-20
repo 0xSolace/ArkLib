@@ -9548,3 +9548,41 @@ CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalHalfCoherenceQuantized.lean`,
 new theorem `coherence_eq_zero_of_real_mul_eq_zero`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+---
+
+## door-(iv) Lane-2 char-p transfer — the wraparound gap `Q ≥ 0` is DISCHARGED by wraparound LOG-CONCAVITY (2026-06-20, sol)
+
+CONTEXT. `_CharPTransferDecomposition` reduced the open char-`p` step-ratio monotonicity wall to two
+localized wraparound-control inputs of `charP_transfer_of_dominance`:
+  (1) `0 ≤ G₀ + L`  (proven char-0 gap dominates the linear wraparound perturbation), and
+  (2) `0 ≤ Q`,  `Q = gap s wa wb wc = (s+2)·wb² − s·wa·wc`  (the wraparound's OWN log-convexity gap;
+       `wa=W_r, wb=W_{r+1}, wc=W_{r+2} ≥ 0` the wraparound excesses `W_r = E_r(F_p) − E_r(ℂ)`).
+Input (2) was carried as a BLIND machine-confirmed hypothesis. This entry converts it into a consequence
+of a strictly sharper, single-inequality arithmetic condition.
+
+STRUCTURAL FACT (kernel-proven). If `0 ≤ s` (true for `s=2r+1`) and the wraparound sequence is log-concave
+at this depth, `wa·wc ≤ wb²`, then
+        `Q = (s+2)·wb² − s·(wa·wc) ≥ (s+2)·wb² − s·wb² = 2·wb² ≥ 0`,
+i.e. `Q ≥ 2·wb²` (a STRICT margin whenever the middle wraparound `wb ≠ 0`). So `Q ≥ 0` is no longer
+assumed — it FOLLOWS from `wa·wc ≤ wb²`.
+
+PROBE (probe-first; `scripts/probes/probe_charp_wraparound_logconcave_Q.py`). EXACT integer additive-energy
+ladders `E_r(F_p)` (modular conv) and `E_r(ℂ)` (Z conv, no wraparound) over `n=8,16,32,64`, seven structured
+prize-regime primes `p ~ n⁴ ≫ n³`, PROPER subgroups `μ_n ⊊ F_p^*`. RESULT: `W_r ≥ 0` everywhere; wraparound
+log-concavity `W_r·W_{r+2} ≤ W_{r+1}²` holds at EVERY interior `r`, every prime — including the non-vacuous
+post-onset cases (`n=16,p=65537,r=3,4`; `n=32,r=3`) with genuinely positive `W` — and the resulting `Q`
+matched the structural floor `2·W_{r+1}²` exactly. The condition this lemma assumes is empirically FORCED in
+the prize regime.
+
+CONSTRAINT (what this rules out / what remains). The open wall no longer has two independent assumed inputs:
+the `Q ≥ 0` rung is now a theorem CONDITIONAL on the single inequality `wa·wc ≤ wb²`. So a door-(iv) closure
+of the char-`p` transfer needs only (a) the dominance `0 ≤ G₀ + L` and (b) wraparound log-concavity
+`W_r·W_{r+2} ≤ W_{r+1}²` — the latter being the relocated, cleaner single-inequality form of the deep-`r`
+BGK/Paley wall. NO cancellation / completion / moment-saving / anti-concentration / capacity claim is made;
+the deep-`r` wraparound log-concavity itself stays an UNPROVEN (probe-true) arithmetic input. CORE stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPWraparoundLogConcaveQ.lean`,
+axiom-clean (`{propext, Classical.choice, Quot.sound}`). New theorems: `gap_wrap_ge_two_mul_sq`
+(`Q ≥ 2·wb²` under log-concavity), `gap_wrap_nonneg_of_logConcave` (`Q ≥ 0`), `gap_wrap_pos_of_logConcave`
+(`Q > 0` when `wb ≠ 0`), `charP_transfer_of_dominance_logConcave` (assembled transfer with `Q` discharged).
