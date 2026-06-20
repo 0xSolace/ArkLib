@@ -9517,3 +9517,19 @@ moment/anti-concentration/capacity claim. CORE OPEN.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleTrivialOvershoot.lean`, new
 theorems `trivial_strict_overshoot_iff` and `trivial_overshoot_gap_pos`, axiom-clean with axioms contained
 in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) canonical-half coherence sign-selection selectors (2026-06-20, g55)
+
+Lane 1/3 refinement of `_DoorIVCanonicalHalfCoherenceQuantized`. The prior theorem quantized the
+canonical-half coherence to `±1` once the half-sums are real and nonzero. This adds the exact selector
+lemmas: a positive product of the two real parts forces coherence `+1`, and a negative product forces
+coherence `-1`.
+
+VERDICT: after the negation/conjugation mechanism makes the two half-sums real, the observed constructive
+versus destructive half-coherence is only the sign of the real-part product. There is no hidden continuous
+`1-ε` parameter in the canonical split to tune. This is an audit constraint for coherence-slack proposals,
+not a CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCanonicalHalfCoherenceQuantized.lean`,
+new theorems `coherence_eq_one_of_real_mul_pos` and `coherence_eq_neg_one_of_real_mul_neg`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.

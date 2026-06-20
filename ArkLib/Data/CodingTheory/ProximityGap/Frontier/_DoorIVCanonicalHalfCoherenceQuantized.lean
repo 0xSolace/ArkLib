@@ -168,4 +168,45 @@ theorem coherence_pm_one_of_real_ne {a b : ℂ}
     have hneg : x * y < 0 := lt_of_le_of_ne hsgn (mul_ne_zero hxr hyr)
     rw [habs, abs_of_neg hneg]; field_simp
 
+/-- **Constructive real-halves force coherence `+1`.** Once the canonical half-sums are real, a
+positive product of their real parts pins the quantized coherence to the constructive value exactly.
+This is the sign-selection companion to `coherence_pm_one_of_real_ne`. -/
+theorem coherence_eq_one_of_real_mul_pos {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hpos : 0 < a.re * b.re) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = 1 := by
+  have hare : (a * conj b).re = a.re * b.re := by
+    simp [Complex.mul_re, Complex.conj_re, Complex.conj_im, ha, hb]
+  have hna : ‖a‖ = |a.re| := by
+    rw [Complex.norm_def, Complex.normSq_apply, ha,
+      show a.re * a.re + 0 * 0 = a.re ^ 2 by ring, Real.sqrt_sq_eq_abs]
+  have hnb : ‖b‖ = |b.re| := by
+    rw [Complex.norm_def, Complex.normSq_apply, hb,
+      show b.re * b.re + 0 * 0 = b.re ^ 2 by ring, Real.sqrt_sq_eq_abs]
+  rw [hare, hna, hnb, ← abs_mul, abs_of_pos hpos]
+  exact div_self (ne_of_gt hpos)
+
+/-- **Destructive real-halves force coherence `-1`.** A negative product of the real parts pins the
+quantized coherence to the destructive value exactly. -/
+theorem coherence_eq_neg_one_of_real_mul_neg {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hneg : a.re * b.re < 0) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = -1 := by
+  have hare : (a * conj b).re = a.re * b.re := by
+    simp [Complex.mul_re, Complex.conj_re, Complex.conj_im, ha, hb]
+  have hna : ‖a‖ = |a.re| := by
+    rw [Complex.norm_def, Complex.normSq_apply, ha,
+      show a.re * a.re + 0 * 0 = a.re ^ 2 by ring, Real.sqrt_sq_eq_abs]
+  have hnb : ‖b‖ = |b.re| := by
+    rw [Complex.norm_def, Complex.normSq_apply, hb,
+      show b.re * b.re + 0 * 0 = b.re ^ 2 by ring, Real.sqrt_sq_eq_abs]
+  rw [hare, hna, hnb, ← abs_mul, abs_of_neg hneg]
+  rw [div_neg]
+  exact congrArg Neg.neg (div_self (ne_of_lt hneg))
+
 end ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence
+
+/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.sum_conjClosed_isReal
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_quantized_of_real
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_pm_one_of_real_ne
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_one_of_real_mul_pos
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_neg_one_of_real_mul_neg
