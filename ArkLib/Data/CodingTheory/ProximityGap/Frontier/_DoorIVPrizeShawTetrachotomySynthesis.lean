@@ -187,4 +187,39 @@ theorem floorRatio_bracketed_prize_iff_and_doorIV_only
   · exact prizeFloorBound_iff_floorPrizeRatio_le hnref
   · exact NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hnref hLref hclassicalOvershoots
 
+/-- **The BGK ceiling lands the floor-normalized ratio at `≤ √L`.**  A classical-door BGK ceiling
+`M ≤ √(n·L) = bgkScale n L` is, in `√n` units, exactly `M/√n ≤ √L`.  Together with the Plancherel
+floor `1 ≤ M/√n`, the floor-normalized ratio lives in the corridor `[1, √L]`. -/
+theorem floorPrizeRatio_le_sqrtL_of_bgk_ceiling {M n L : ℝ} (hn : 0 < n)
+    (hceil : M ≤ NoFifthDoorTetrachotomy.bgkScale n L) :
+    floorPrizeRatio M n ≤ Real.sqrt L := by
+  unfold floorPrizeRatio NoFifthDoorTetrachotomy.prizeScale
+  simp only [NoFifthDoorTetrachotomy.bgkScale] at hceil
+  rw [div_le_iff₀ (Real.sqrt_pos.2 hn)]
+  calc M ≤ Real.sqrt (n * L) := hceil
+    _ = Real.sqrt L * Real.sqrt n := by
+        rw [Real.sqrt_mul (le_of_lt hn), mul_comm]
+
+/-- **Floor-unit corridor `[1, √L]`, door-(iv)-only.**  Given the Plancherel floor `√n ≤ M` and a
+classical-door BGK ceiling `M ≤ √(n·L)`, the floor-normalized worst-frequency ratio `M/√n` lives in
+the corridor `[1, √L]`; the prize is exactly the demand to collapse it to `[1, C]` for an absolute
+`C`, and — by the no-fifth-door exclusion — only door (iv) can shave the `√L`.  This is the prize-floor
+(`√n`-unit) corridor, distinct from the absolute `[√n, √(n·L)]` corridor and the `√(n·L)`-unit Shaw
+bracket `[1/√L, √(n/L)]`. -/
+theorem floorUnit_corridor_one_sqrtL_doorIV_only
+    {M nref Lref : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale nref ≤ M)
+    (hceil : M ≤ NoFifthDoorTetrachotomy.bgkScale nref Lref)
+    (hclassicalOvershoots :
+      ∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK nref Lref) :
+    (1 ≤ floorPrizeRatio M nref ∧ floorPrizeRatio M nref ≤ Real.sqrt Lref) ∧
+      (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+        m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) := by
+  refine ⟨⟨?_, ?_⟩, ?_⟩
+  · exact one_le_floorPrizeRatio_of_plancherel_floor hnref hfloor
+  · exact floorPrizeRatio_le_sqrtL_of_bgk_ceiling hnref hceil
+  · exact NoFifthDoorTetrachotomy.prizeCertifying_subset_doorIV hnref hLref hclassicalOvershoots
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
