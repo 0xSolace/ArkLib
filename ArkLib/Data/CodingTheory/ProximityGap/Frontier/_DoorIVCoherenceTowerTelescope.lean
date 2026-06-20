@@ -176,6 +176,33 @@ theorem not_rootFamily_le_bound_of_exists_bound_div_leaf_lt_coherenceProduct {ι
   exact not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct (a i) (B i) (t i) (hpos i) hi
     (hroot i)
 
+/-- **Lower-product floor obstruction.**  If an external tower-collapse argument proves a product floor
+`c ≤ ∏ρ_j`, then any advertised raw root bound `a ≤ B` must have normalized target at least that floor:
+`c ≤ B/M_leaf`.  Equivalently, if `B/M_leaf < c`, the raw root bound is impossible.  This is the exact
+consumer for `_DoorIVCoherenceTowerCollapse`: fixed-width bottom damping leaves a constant product floor,
+so a target requiring a smaller product cannot be certified by the dyadic tower. -/
+theorem not_root_le_bound_of_bound_div_leaf_lt_product_floor (a B c : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hfloor : c ≤ coherenceProduct (a :: t))
+    (htarget : B / (a :: t).getLast (by simp) < c) :
+    ¬ a ≤ B := by
+  exact not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct a B t hpos
+    (htarget.trans_le hfloor)
+
+/-- Family version of the lower-product obstruction.  One tower with a product floor above its
+normalized target refutes the corresponding pointwise family root bound. -/
+theorem not_rootFamily_le_bound_of_exists_product_floor_above_target {ι : Type*}
+    (a B floor : ι → ℝ) (t : ι → List ℝ)
+    (hpos : ∀ i, ∀ x ∈ a i :: t i, 0 < x)
+    (hbad : ∃ i,
+      floor i ≤ coherenceProduct (a i :: t i) ∧
+        B i / (a i :: t i).getLast (by simp) < floor i) :
+    ¬ ∀ i, a i ≤ B i := by
+  intro hroot
+  rcases hbad with ⟨i, hfloor, htarget⟩
+  exact not_root_le_bound_of_bound_div_leaf_lt_product_floor (a i) (B i) (floor i) (t i)
+    (hpos i) hfloor htarget (hroot i)
+
 /-- Each consecutive ratio in a coherence tower is nonneg when the masses are positive; this is the
 sign discipline behind reading the ratios as coherences `∈ [0,1]` (the `≤ 1` half is the triangle
 inequality, supplied by `_DoorIVHalfMassFactorization`). -/
@@ -206,4 +233,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.rootFamily_le_bound_iff_coherenceProductFamily_le_bound_div_leaf
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_coherenceProduct
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_bound_div_leaf_lt_coherenceProduct
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_product_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_rootFamily_le_bound_of_exists_product_floor_above_target
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.stepRatios_nonneg
