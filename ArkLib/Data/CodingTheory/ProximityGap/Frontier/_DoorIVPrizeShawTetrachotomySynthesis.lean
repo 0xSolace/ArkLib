@@ -290,4 +290,30 @@ theorem prize_iff_shawBounded_nonneg_and_discharged_doorIV_only
       ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs
   · exact hdoor
 
+/-- **Fully-discharged wall-side synthesis.**  The negation of the Shaw-value reduction is packaged
+with the same discharged no-fifth-door conclusion: failure of every nonnegative raw prize constant is
+equivalent to failure of every nonnegative Shaw-value constant, and any actual prize-floor certificate
+past the SOTA threshold must still be door `(iv)` for ceiling-respecting mechanisms.  This is the
+wall-facing companion to
+`prize_iff_shawBounded_nonneg_and_discharged_doorIV_only`; it adds no estimate, only the exact
+contrapositive citation form. -/
+theorem no_prizeBound_iff_no_shawBound_nonneg_and_discharged_doorIV_only
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (L i))
+    {Lref q C δ : ℝ} (hLnn : 0 ≤ Lref) (hLref : 1 < Lref)
+    (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ,
+      (¬ (∃ K, 0 ≤ K ∧ ShawValueCapstone.rawPrizeFamilyBound M n L K) ↔
+          ¬ (∃ K, 0 ≤ K ∧ ShawValueCapstone.shawValueFamilyBound M n L K)) ∧
+        (∀ nref : ℝ, max N₀ 1 ≤ nref → nref * Lref ≤ q →
+          (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+            m'.door.isClassical →
+              m'.RespectsProvenScale q C δ nref) →
+          ∀ m : NoFifthDoorTetrachotomy.Mechanism,
+            m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+            m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) := by
+  obtain ⟨N₀, hred, hdoor⟩ :=
+    prize_iff_shawBounded_nonneg_and_discharged_doorIV_only hs hLnn hLref hC hδ
+  exact ⟨N₀, not_congr hred, hdoor⟩
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
