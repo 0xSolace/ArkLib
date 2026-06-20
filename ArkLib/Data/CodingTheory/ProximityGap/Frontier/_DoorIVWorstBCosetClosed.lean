@@ -163,7 +163,28 @@ theorem superLevel_smul_and_sigma_closed
   ⟨fun g _ hb => smul_mem_superLevel_of_orbitConstant hf c g hb,
    fun _ hb => sigma_mem_superLevel hσ c hb⟩
 
+/-- **Coset-plus-sign membership is exactly invariant.**  If the statistic is constant on `G`-orbits
+and under the involution `σ`, then applying any multiplicative coset move and then the sign involution
+neither creates nor destroys near-max membership.  This is the direct selector-facing form of the
+Lane-1 obstruction: the worst-`b` set cannot resolve points below the generated coset/sign fiber. -/
+theorem sigma_smul_mem_superLevel_iff
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f) (hσ : InvolutionConstant σ f)
+    (c : ℝ) (g : G) {b : β} :
+    σ (g • b) ∈ superLevel f c ↔ b ∈ superLevel f c := by
+  unfold superLevel
+  rw [Set.mem_setOf_eq, Set.mem_setOf_eq, hσ.2 (g • b), hf g b]
+
+/-- Closure form of the combined coset/sign fiber: from one near-max frequency `b`, every signed
+coset mate `σ (g • b)` is also near-max. -/
+theorem sigma_smul_mem_superLevel_of_orbitConstant
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f) (hσ : InvolutionConstant σ f)
+    (c : ℝ) (g : G) {b : β} (hb : b ∈ superLevel f c) :
+    σ (g • b) ∈ superLevel f c :=
+  (sigma_smul_mem_superLevel_iff hf hσ c g).mpr hb
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_mem_superLevel_iff
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_iff
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_of_orbitConstant
