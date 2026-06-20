@@ -128,6 +128,38 @@ theorem not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq {ι : Type*} {
     hC hm hbound i
   exact (not_lt_of_ge hindex) hi
 
+/-- Exact pointwise cap criterion for a nonnegative advertised Shaw cap.  With positive raw constant
+`C`, nonnegative index `m`, and nonnegative uniform cap `D`, the naive normalized cap
+`C sqrt(m) ≤ D` is equivalent to the finite index constraint `m ≤ (D/C)^2`.  Thus the index-factor
+obstruction is not merely one-way: every proposed cap is exactly a bound on the hidden index. -/
+theorem scaledConstant_le_iff_index_le_sq {C m D : ℝ}
+    (hC : 0 < C) (hm : 0 ≤ m) (hD : 0 ≤ D) :
+    C * Real.sqrt m ≤ D ↔ m ≤ (D / C) ^ 2 := by
+  constructor
+  · exact index_le_sq_of_scaledConstant_le hC hm
+  · intro hindex
+    have hDdiv : 0 ≤ D / C := div_nonneg hD (le_of_lt hC)
+    have hsqrt_le : Real.sqrt m ≤ D / C := by
+      have hsqrt_sq : Real.sqrt m ≤ Real.sqrt ((D / C) ^ 2) := Real.sqrt_le_sqrt hindex
+      rwa [Real.sqrt_sq_eq_abs, abs_of_nonneg hDdiv] at hsqrt_sq
+    have hmul : C * Real.sqrt m ≤ C * (D / C) :=
+      mul_le_mul_of_nonneg_left hsqrt_le (le_of_lt hC)
+    have hright : C * (D / C) = D := by
+      field_simp [ne_of_gt hC]
+    simpa [hright] using hmul
+
+/-- Family form of the exact cap criterion: for positive fixed raw constant `C` and nonnegative cap
+`D`, a uniform naive normalized Shaw cap is equivalent to bounding every index by `(D/C)^2`.  This is
+an axiom-clean audit hook for claims that the `sqrt(m)` loss has somehow disappeared. -/
+theorem scaledConstantFamily_le_uniform_iff_indexFamily_le_sq {ι : Type*} {C D : ℝ}
+    {m : ι → ℝ} (hC : 0 < C) (hm : ∀ i, 0 ≤ m i) (hD : 0 ≤ D) :
+    (∀ i, C * Real.sqrt (m i) ≤ D) ↔ ∀ i, m i ≤ (D / C) ^ 2 := by
+  constructor
+  · exact indexFamily_le_uniform_sq_of_scaledConstant_le hC hm
+  · intro hindex i
+    exact (scaledConstant_le_iff_index_le_sq (C := C) (m := m i) (D := D)
+      hC (hm i) hD).2 (hindex i)
+
 /-- Pointwise version of the same obstruction: if the index is already above `(D/C)^2`, then the
 normalized naive constant cannot be capped by `D`. -/
 theorem not_scaledConstant_le_of_index_gt_sq {C m D : ℝ}
@@ -284,6 +316,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.indexFamily_le_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.indexFamily_le_uniform_sq_of_scaledConstant_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_le_iff_index_le_sq
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstantFamily_le_uniform_iff_indexFamily_le_sq
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstant_le_of_index_gt_sq
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_prizeScale_of_m_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaled_constant_eq_constant_of_m_eq_one
