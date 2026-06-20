@@ -245,6 +245,27 @@ theorem norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit (zs : List ℂ) :
   -- 2·(L¹² − D − ‖Σ‖·L¹) = L¹² + ‖Σ‖² − 2‖Σ‖L¹ = (L¹ − ‖Σ‖)² ≥ 0, using ‖Σ‖² = L¹² − 2D.
   nlinarith [sq_nonneg (l1Mass zs - ‖zs.sum‖), hid, norm_nonneg zs.sum, l1Mass_nonneg zs]
 
+/-! ### Dual cap on the angular deficit (the L²-method ceiling)
+
+The angular deficit is also bounded *above*: `angularDeficit z w ≤ 2‖z‖‖w‖` (since
+`Re(z·conj w) ≥ −‖z‖‖w‖`, antipodal saturation).  Summed, this caps the total pairwise deficit and
+hence gives a coherence *floor* — but for many pieces the floor is the trivial/Plancherel one and
+cannot reach √-cancellation by itself.  Recording the cap pins precisely why a second-moment / L²
+argument alone tops out: it controls `totalPairDeficit` only up to the antipodal bound. -/
+
+/-- The real alignment is bounded below by minus the norm product: `−‖z‖‖w‖ ≤ Re(z·conj w)`. -/
+theorem neg_norm_mul_le_re_mul_conj (z w : ℂ) : -(‖z‖ * ‖w‖) ≤ (z * starRingEnd ℂ w).re := by
+  have hb : |(z * starRingEnd ℂ w).re| ≤ ‖z * starRingEnd ℂ w‖ := Complex.abs_re_le_norm _
+  rw [Complex.norm_mul, Complex.norm_conj] at hb
+  exact (abs_le.1 hb).1
+
+/-- **Per-pair angular-deficit cap.**  `angularDeficit z w ≤ 2‖z‖‖w‖`, saturated at antipodal
+pieces (`w = -t·z`).  This is the dual of `angularDeficit_nonneg`. -/
+theorem angularDeficit_le_two_mul_norm_mul (z w : ℂ) :
+    angularDeficit z w ≤ 2 * (‖z‖ * ‖w‖) := by
+  unfold angularDeficit
+  linarith [neg_norm_mul_le_re_mul_conj z w]
+
 end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_le_norm_mul
@@ -271,3 +292,5 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass_nonneg
 #print axioms
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.neg_norm_mul_le_re_mul_conj
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.angularDeficit_le_two_mul_norm_mul
