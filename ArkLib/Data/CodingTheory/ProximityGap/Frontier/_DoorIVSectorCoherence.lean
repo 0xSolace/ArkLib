@@ -163,6 +163,31 @@ theorem aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le {zs : List ℂ}
   rw [rayProj_deficit_sum]
   nlinarith
 
+/-- Epsilon-specialized aggregate sector-defect obligation.  A positive coherence saving
+`ρ ≤ 1 - ε` forces at least an `ε` fraction of the total `L¹` mass to appear as aggregate
+ray-projection defect in every unit direction.  This is the exact budget a Door-IV angular-spread
+argument must pay; a smaller total defect cannot certify the claimed drop. -/
+theorem aggregate_rayProj_deficit_ge_eps_of_complexPieceCoherence_le_one_sub {zs : List ℂ} {u : ℂ}
+    {ε : ℝ} (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hcoh : complexPieceCoherence zs ≤ 1 - ε) :
+    ε * (zs.map norm).sum ≤ (zs.map (fun z => ‖z‖ - rayProj u z)).sum := by
+  have h := aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le
+    (zs := zs) (u := u) (θ := 1 - ε) hu hden hcoh
+  simpa [sub_sub_cancel] using h
+
+/-- Contrapositive budget form: if some unit direction has aggregate ray-projection defect below
+the `ε · L¹` budget, then the pieces cannot have coherence at most `1 - ε`.  Thus a proposed
+sector/angle proof must produce the full aggregate defect, not merely one locally tilted piece. -/
+theorem not_complexPieceCoherence_le_one_sub_of_aggregate_rayProj_deficit_lt {zs : List ℂ} {u : ℂ}
+    {ε : ℝ} (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hdef : (zs.map (fun z => ‖z‖ - rayProj u z)).sum < ε * (zs.map norm).sum) :
+    ¬ complexPieceCoherence zs ≤ 1 - ε := by
+  intro hcoh
+  have hbudget : ε * (zs.map norm).sum ≤ (zs.map (fun z => ‖z‖ - rayProj u z)).sum :=
+    aggregate_rayProj_deficit_ge_eps_of_complexPieceCoherence_le_one_sub
+      (zs := zs) (u := u) (ε := ε) hu hden hcoh
+  linarith
+
 end ProximityGap.Frontier.DoorIVSectorCoherence
 
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_list_sum
@@ -181,3 +206,7 @@ end ProximityGap.Frontier.DoorIVSectorCoherence
 #print axioms ProximityGap.Frontier.DoorIVSectorCoherence.rayProj_deficit_sum
 #print axioms
   ProximityGap.Frontier.DoorIVSectorCoherence.aggregate_rayProj_deficit_ge_of_complexPieceCoherence_le
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.aggregate_rayProj_deficit_ge_eps_of_complexPieceCoherence_le_one_sub
+#print axioms
+  ProximityGap.Frontier.DoorIVSectorCoherence.not_complexPieceCoherence_le_one_sub_of_aggregate_rayProj_deficit_lt
