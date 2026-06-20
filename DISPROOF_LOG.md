@@ -8275,3 +8275,20 @@ bookkeeping; no cancellation, anti-concentration, or capacity estimate.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorems
 prize_iff_shawValue_le_div_sqrtL and doorIV_obligation_below_bgk_ceiling, axiom-clean with axioms
 contained in {propext, Classical.choice, Quot.sound}.
+
+## [resonance lever floor-incapable in Sh units] door-(i) c·√n lands at the floor endpoint 1/√L (2026-06-19)
+
+Lane: door-(iv) Lane 2/3 bridge — EXTENDS my proven sharp Shaw bracket (_ShawValueBGKBracket.lean) and
+restates _NamedLeverRefutationCapstone.resonanceLever_le_prizeFloor in Shaw-value language. The door-(i)
+resonance/Parseval-RMS lever certifies a per-frequency value c·√n. PROBE-FIRST (python exact):
+shawValue(c·√n)=c/√L, and for c≤1 this is ≤ 1/√L = the floor endpoint. Verified n∈{16,64}, L∈{4,8}.
+
+VERDICT: in Shaw-value units the resonance lever lands at c/√L, exactly the lower (Plancherel) bracket
+endpoint 1/√L scaled by c. For c≤1 it sits AT or BELOW the floor and gives no separation above it — it
+is floor-incapable, cannot reach (let alone shave below) the door-(iv) corridor. This confirms the
+door-(i) refutation in the sharp-bracket language. No CORE, cancellation, anti-concentration, or
+capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new theorems
+shawValue_resonanceLever_eq and shawValue_resonanceLever_le_floor, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.

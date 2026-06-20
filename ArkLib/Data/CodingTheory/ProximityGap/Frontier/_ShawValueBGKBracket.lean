@@ -118,4 +118,36 @@ theorem doorIV_obligation_below_bgk_ceiling {M C n L : ℝ} (hn : 0 < n) (hL : 0
     prize_iff_shawValue_le_div_sqrtL hn hL, ?_⟩
   rw [div_lt_one hsL]; exact hCL
 
+/-! ## The door-(i) resonance lever sits at the floor endpoint (floor-incapable, in Sh units)
+
+The named door-(i) resonance / Parseval-RMS lever certifies a per-frequency value of the form
+`c·√n` (see `_NamedLeverRefutationCapstone.resonanceLever_le_prizeFloor`).  In Shaw-value units that
+is `shawValue (c·√n) n L = c/√L` — exactly the lower (Plancherel) bracket endpoint `1/√L` scaled by
+`c`.  So for `c ≤ 1` the resonance lever lands at or below the floor endpoint and gives no separation
+above it: it is *floor-incapable* in the sharp bracket, confirming the door-(i) refutation in
+Shaw-value language. -/
+
+/-- **Resonance lever in Shaw-value units.**  The door-(i) resonance certificate value `c·√n`
+normalizes to `shawValue (c·√n) n L = c/√L`. -/
+theorem shawValue_resonanceLever_eq {c n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    shawValue (c * Real.sqrt n) n L = c / Real.sqrt L := by
+  have hsn : 0 < Real.sqrt n := Real.sqrt_pos.2 hn
+  have hsL : 0 < Real.sqrt L := Real.sqrt_pos.2 hL
+  unfold shawValue prizeScale
+  rw [Real.sqrt_mul hn.le]
+  field_simp
+
+/-- **The resonance lever is floor-incapable.**  For `c ≤ 1`, the door-(i) resonance lever's Shaw value
+`c/√L` is at most the floor endpoint `1/√L` (`= √n/prizeScale n L`).  So the resonance / Parseval-RMS
+lever never separates above the Plancherel floor in the sharp bracket; it cannot reach, let alone
+shave below, the door-(iv) corridor.  (Shaw-value restatement of
+`_NamedLeverRefutationCapstone.resonanceLever_le_prizeFloor`.) -/
+theorem shawValue_resonanceLever_le_floor {c n L : ℝ} (hn : 0 < n) (hL : 0 < L) (hc : c ≤ 1) :
+    shawValue (c * Real.sqrt n) n L ≤ Real.sqrt n / prizeScale n L := by
+  have hsL : 0 < Real.sqrt L := Real.sqrt_pos.2 hL
+  rw [shawValue_resonanceLever_eq hn hL]
+  rw [show Real.sqrt n / prizeScale n L = 1 / Real.sqrt L from floor_bracket_eq hn]
+  rw [div_le_div_iff₀ hsL hsL]
+  nlinarith [hc, hsL]
+
 end ArkLib.ProximityGap.Frontier.ShawValueBGKBracket
