@@ -163,6 +163,36 @@ theorem norm_sum_sq_le_iff_deficitFraction_ge_of_unit {zs : List ℂ} (T : ℝ)
   rw [sub_le_sub_iff_left]
   rw [div_le_div_iff_of_pos_right hlsq]
 
+/-- The complement of the deficit fraction is exactly the normalized squared resultant.  For the
+worst monomial sum this is the dimensionless coherence square `|η_b|²/n²`; the prize target is
+therefore equivalently an upper bound on `1 - deficitFraction`. -/
+theorem one_sub_deficitFraction_eq_norm_sum_sq_div (zs : List ℂ) :
+    1 - deficitFraction zs = ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 := by
+  unfold deficitFraction
+  ring
+
+/-- Dimensionless ceiling form: bounding the normalized squared resultant by `ε` is exactly the
+same as forcing the deficit fraction above `1-ε`.  This is the no-slack normalized form of the
+worst-b prize burden. -/
+theorem norm_sum_sq_div_le_iff_deficitFraction_ge {zs : List ℂ} (ε : ℝ) :
+    ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 ≤ ε ↔ 1 - ε ≤ deficitFraction zs := by
+  unfold deficitFraction
+  constructor <;> intro h <;> linarith
+
+/-- Strict dimensionless form: a strict normalized coherence-square saving is exactly a strict
+lower bound on the complementary deficit fraction. -/
+theorem norm_sum_sq_div_lt_iff_deficitFraction_gt {zs : List ℂ} (ε : ℝ) :
+    ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 < ε ↔ 1 - ε < deficitFraction zs := by
+  unfold deficitFraction
+  constructor <;> intro h <;> linarith
+
+/-- Equality dimensionless form: the deficit fraction is precisely complementary to normalized
+squared coherence. -/
+theorem norm_sum_sq_div_eq_iff_deficitFraction_eq {zs : List ℂ} (ε : ℝ) :
+    ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 = ε ↔ deficitFraction zs = 1 - ε := by
+  unfold deficitFraction
+  constructor <;> intro h <;> linarith
+
 end ProximityGap.Frontier.DoorIVUnitPieceDeficit
 
 #print axioms
@@ -183,3 +213,11 @@ end ProximityGap.Frontier.DoorIVUnitPieceDeficit
 #print axioms ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_le_one
 #print axioms
   ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_le_iff_deficitFraction_ge_of_unit
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.one_sub_deficitFraction_eq_norm_sum_sq_div
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_le_iff_deficitFraction_ge
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_lt_iff_deficitFraction_gt
+#print axioms
+  ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_eq_iff_deficitFraction_eq
