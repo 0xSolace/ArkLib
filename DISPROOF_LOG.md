@@ -9007,3 +9007,26 @@ this upgrades it to a SIGNED interchangeability (b and −b give the same signed
 any selector built on the signed value (not only |η|) is already ±b-blind. Theorems `signed_neg_symmetry`,
 `signed_neg_symmetry_of_conjClosed` in _DoorIVNegationSymmetryRealAndBalanced.lean, axiom-clean
 (⊆ {propext, Classical.choice, Quot.sound}). No CORE/cancellation/capacity claim.
+
+## door-(iv) fixed-position worst-index selectors are already killed by residue delocalization (2026-06-20, g55)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVWorstIndexDelocalized`. The prior probe showed the
+worst-frequency quotient index `j*(p)` is prime-independently delocalized: it hits multiple residues
+modulo small `d` and is not pinned to one position. This increment locks the nesting relation between
+the two selector hopes.
+
+New axiom-clean theorems:
+- `fixedPosition_forces_constant_values` — a fixed-position selector makes the worst-index family
+  literally constant across primes.
+- `fixedPosition_to_fixedResidue` — any fixed-position selector reduces to a fixed-residue selector
+  modulo every `d`, with residue `c % d`.
+- `residue_delocalized_excludes_fixedPosition` — residue spread alone rules out every fixed-position
+  selector, without needing a separate raw-value witness.
+
+VERDICT: pinned-index and fixed-residue selector hopes are not independent. Once the door-(iv) worst
+index is observed to spread across residues, every prime-independent fixed-position rule is already
+dead after reduction modulo `d`. This tightens the no-go around targeted worst-b selectors; it proves no
+CORE bound and uses no cancellation, completion, moment, energy, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexDelocalized.lean`,
+axiom-clean. New theorem axioms are empty (contained in `{propext, Classical.choice, Quot.sound}`).

@@ -113,10 +113,39 @@ theorem fixedResidue_forces_constant_mod {P : Type*} (J : P → ℕ) (d r : ℕ)
     (hr : FixedResidueRule J d r) : ∀ p₁ p₂, J p₁ % d = J p₂ % d := by
   intro p₁ p₂; exact (hr p₁).trans (hr p₂).symm
 
+/-- Contrapositive convenience for the other selector axis: if a fixed-position rule fits, the worst-index
+family is literally constant across primes. Thus a single pair of distinct measured indices is already a
+complete obstruction to every prime-independent fixed-position selector. -/
+theorem fixedPosition_forces_constant_values {P : Type*} (J : P → ℕ) (c : ℕ)
+    (hc : FixedPositionRule J c) : ∀ p₁ p₂, J p₁ = J p₂ := by
+  intro p₁ p₂; exact (hc p₁).trans (hc p₂).symm
+
+/-- A fixed-position selector automatically gives a fixed-residue selector modulo every `d`, with residue
+`c % d`. So the two probe axes are nested: any literal fixed position would also look residue-constant.
+The observed residue delocalization therefore already rules out fixed-position selectors after reducing
+modulo `d`, independently of the raw-value witness. -/
+theorem fixedPosition_to_fixedResidue {P : Type*} (J : P → ℕ) (d c : ℕ)
+    (hc : FixedPositionRule J c) : FixedResidueRule J d (c % d) := by
+  intro p
+  rw [hc p]
+
+/-- If a family is residue-delocalized modulo `d`, no fixed-position selector can fit it. This packages the
+probe-facing implication "residue spread alone kills a pinned index" without requiring a separate raw-value
+witness. -/
+theorem residue_delocalized_excludes_fixedPosition {P : Type*} (J : P → ℕ) (d : ℕ)
+    (h : ∃ p₁ p₂, J p₁ % d ≠ J p₂ % d) : ∀ c, ¬ FixedPositionRule J c := by
+  intro c hc
+  obtain ⟨p₁, p₂, hp⟩ := h
+  exact hp (fixedResidue_forces_constant_mod J d (c % d)
+    (fixedPosition_to_fixedResidue J d c hc) p₁ p₂)
+
 -- Axiom check: the kernel theorems must be axiom-clean.
 #print axioms delocalized_excludes_fixed_selector
 #print axioms not_constant_mod_of_two_residues
 #print axioms not_constant_position_of_two_values
 #print axioms fixedResidue_forces_constant_mod
+#print axioms fixedPosition_forces_constant_values
+#print axioms fixedPosition_to_fixedResidue
+#print axioms residue_delocalized_excludes_fixedPosition
 
 end ProximityGap.Frontier.DoorIVWorstIndexDelocalized
