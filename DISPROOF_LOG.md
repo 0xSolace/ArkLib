@@ -9103,3 +9103,35 @@ No CORE, cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new
 theorems `isSubMaximizer_iff_not_exists_lt` and `not_isSubMaximizer_iff_exists_gap_pos`, axiom-clean
 with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-rep-set-Sidon-no-energy-excess] worst-frequency rep set is additively Sidon — no additive-energy budget to grip (2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 PROBE + Lane 3 constraint lemma. The brief's door-(iv) requirement is an
+arithmetic anti-concentration for the phase set {b·x^m mod p} that does NOT route through additive
+energy / sum-product. This entry refutes-with-mechanism the dual lever: an additive-energy / sum-product
+attack on the worst-b OBJECT itself, by showing the object carries no additive structure to grip.
+
+PROBE (`scripts/probes/probe_Wenergy_floor.py`, `scripts/probes/probe_Wenergy2.py`, EXACT integer
+additive energy `E(W)=#{(a,b,c,d)∈W⁴:a+b=c+d}` over the door-(iv) worst-FREQUENCY rep set W = one min-rep
+per near-max μ_n-coset, PROPER 2-power μ_n ⊊ F_p^*, prize regime p=k·n+1 ≫ n³, multiple structured
+primes, τ∈{2%,5%}, never n=q−1): at EVERY instance with |W|≥3 the additive energy landed EXACTLY on the
+Sidon floor `E(W) = 2|W|² − |W|` (E/floor = 1.000, and E/E_random = 1.000) — the worst-frequency rep set
+is an additive SIDON set, additively poorer than (≤) a random same-size set, longest AP ≤ 4, |W+W|/|W|
+growing ~n (sumset near-maximal). [Complementary to `_AttackB1_BadSetCosetNonSidon`: the FULL
+negation-closed bad set is non-Sidon via forced antipodal {a,−a} zero-sums; the QUOTIENT rep set drops
+those pairs and lands exactly Sidon.]
+
+VERDICT (refutation with mechanism, brief rule 4 = WIN): the additive-energy EXCESS above the Sidon floor,
+`excess(W) := additiveEnergy W − (2|W|²−|W|)`, is structurally `0` on the worst-frequency rep set (Sidon).
+Hence NO strictly positive additive-energy budget is attainable there: any door-(iv) certificate that
+demands additive energy above the Sidon floor (an additive-combinatorics / sum-product lever on the
+worst-b object) is VACUOUS. The only structure surviving on the worst-b object is the bare multiplicative
+μ_n-coset union (orthogonal to additive energy), consistent with the brief's "anti-concentration must NOT
+route through additive energy". CORE OPEN. No CORE / cancellation / completion / moment / anti-concentration
+/ capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBSidonNoEnergyExcess.lean`,
+axiom-clean. New def `additiveEnergyExcess`; theorems `swap_floor_add_excess`,
+`additiveEnergyExcess_eq_zero_iff_sidon`, `no_positive_additiveEnergyExcess_of_sidon`,
+`additiveEnergy_eq_floor_of_sidon`, `not_sidon_of_positive_additiveEnergyExcess`. Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
