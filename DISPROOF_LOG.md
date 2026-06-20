@@ -8721,3 +8721,18 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidis
 axiom-clean. New theorems: `prizeProxy_mul_one_sub_le_variance_of_delta_le_div` and
 `abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_delta_le_div`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane-2 raw ideal pair-discrepancy endpoint is exactly the prize proxy (2026-06-20)
+
+Lens: Lane 2 citable reduction rung extending `_PhasePairEquidistBudget`. Prior endpoint packaging had
+normalized equality `V/(2m)=1` and raw upper inequality at `δ=0`. This refinement adds the raw equality
+and zero absolute-error endpoint: exact pair-equidistribution gives `V=2m` and `|V-2m|=0`.
+
+VERDICT: the pair-discrepancy reduction now has matching raw and normalized endpoints/corridors. The
+hard remaining door-(iv) work is proving the residual is small for the actual monomial phase set; this
+is not a CORE/cancellation/anti-concentration proof.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`,
+axiom-clean. New theorems: `variance_eq_prizeProxy_of_ideal_pairEquidist` and
+`abs_variance_sub_prizeProxy_eq_zero_of_ideal_pairEquidist`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.

@@ -311,6 +311,24 @@ theorem variance_le_prizeProxy_of_ideal_pairEquidist {m : ℕ} (φ : Fin m → B
   have hbase := variance_le_of_pairEquidist (B := B) φ 0 (by norm_num) hpair
   simpa [prizeVarianceProxy] using hbase
 
+/-- **The raw ideal pair-equidistribution endpoint.**  At exact residual `δ = 0`, the raw
+variance proxy is exactly the prize variance proxy `2m`. -/
+theorem variance_eq_prizeProxy_of_ideal_pairEquidist {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) (hpair : PairEquidistributed φ 0) :
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) = prizeVarianceProxy m := by
+  apply le_antisymm
+  · exact variance_le_prizeProxy_of_ideal_pairEquidist (m := m) φ hpair
+  · have hlower := prizeProxy_mul_one_sub_le_variance_of_pairResidual (hm := hm) (φ := φ)
+      (δ := 0) (ε := 0) (hδ := by norm_num) (hε := by norm_num) (hpair := hpair)
+    simpa using hlower
+
+/-- The raw absolute-error form also vanishes at the ideal endpoint. -/
+theorem abs_variance_sub_prizeProxy_eq_zero_of_ideal_pairEquidist {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) (hpair : PairEquidistributed φ 0) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) - prizeVarianceProxy m| = 0 := by
+  have h := variance_eq_prizeProxy_of_ideal_pairEquidist (hm := hm) (φ := φ) hpair
+  simp [h]
+
 /-- **The normalized correction is exactly `δ(2m-1)`.**  This pins the anti-concentration target with
 no asymptotic handwaving: after division by the prize variance proxy `2m`, the pair-discrepancy
 correction from `_PhaseLinearFormDecoupling` is precisely `δ(2m-1)`. -/
@@ -341,5 +359,7 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.prizeProxy_mul_one_sub_le_variance_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_of_ideal_pairEquidist
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_eq_prizeProxy_of_ideal_pairEquidist
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_eq_zero_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_div_prizeProxy_eq_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.pairResidualCorrection_zero
