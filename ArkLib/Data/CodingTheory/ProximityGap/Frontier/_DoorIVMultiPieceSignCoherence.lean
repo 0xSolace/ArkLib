@@ -340,6 +340,35 @@ theorem multiPieceCoherence_le_iff_two_mul_minMass_ge {ι : Type*} [DecidableEq 
     field_simp [ne_of_gt htotal] at hmul ⊢
     linarith
 
+
+/-- Epsilon-budget form of the exact multi-piece obstruction.  A real refined split has coherence
+at most `1 - ε` iff the aggregate minority-sign mass pays the full denominator-cleared budget
+`ε * (posMass + negMass) ≤ 2 * min posMass negMass`.  This is the sharp consumer-facing form of the
+constraint: an advertised `ε` coherence saving is exactly an `ε/2` minority-mass obligation. -/
+theorem multiPieceCoherence_le_one_sub_iff_eps_mass_budget {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A ≤ 1 - ε ↔
+      ε * (posMass + negMass) ≤ 2 * min posMass negMass := by
+  rw [multiPieceCoherence_le_iff_two_mul_minMass_ge s A hsum hden htotal]
+  ring_nf
+
+/-- Contrapositive epsilon-budget form: if the aggregate minority-sign mass is too small for the
+claimed `ε` saving, then the real multi-piece refinement cannot certify coherence `≤ 1 - ε`. -/
+theorem not_multiPieceCoherence_le_one_sub_of_eps_mass_budget_lt {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass)
+    (hfail : 2 * min posMass negMass < ε * (posMass + negMass)) :
+    ¬ multiPieceCoherence s A ≤ 1 - ε := by
+  intro hle
+  have hbudget : ε * (posMass + negMass) ≤ 2 * min posMass negMass :=
+    (multiPieceCoherence_le_one_sub_iff_eps_mass_budget s A hsum hden htotal).mp hle
+  exact not_le_of_gt hfail hbudget
+
 /-- Consumer-facing strict form: any subunit coherence certificate `coherence ≤ c < 1` for a real
 multi-piece refinement forces positive aggregate mass on both signs.  This is the exact obstruction
 for door-(iv) refinements at the adversarial frequency: a strict cap must first prove two-sided
@@ -392,5 +421,7 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
 #print axioms two_mul_minMass_ge_of_multiPieceCoherence_le
 #print axioms multiPieceCoherence_le_iff_two_mul_minMass_ge
+#print axioms multiPieceCoherence_le_one_sub_iff_eps_mass_budget
+#print axioms not_multiPieceCoherence_le_one_sub_of_eps_mass_budget_lt
 #print axioms two_sided_of_multiPieceCoherence_le_lt_one
 #print axioms not_multiPieceCoherence_le_of_one_side_zero
