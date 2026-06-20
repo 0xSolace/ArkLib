@@ -15,6 +15,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wfL4_char0_nonprincipal_e
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G2_ResonanceCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_nogo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -66,6 +67,20 @@ anything here; this index does not claim otherwise.
 | `resonance_ceiling_below_prize_floor` | obstruction | G2 |
 | `coeff_route_loose_export` | obstruction | G3 |
 | `roughness_does_not_add_bad_primes_export` | obstruction | G4 |
+| `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
+| `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
+| `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
+
+## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
+
+The **capstone** scope tag marks the Lane-2 deliverable of the door-(iv) phase (#444,
+Shaw-value essay 2026-06-18): the axiom-clean reduction of the prize inequality to a bounded
+normalized *Shaw value* `Sh(M) = M / √(n·L)`, together with the proven two-sided corridor
+`1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` on the REAL Gauss-period worst frequency `M(μ_n)`. The floor is
+unconditional (thin-regime Parseval, `q ≥ 2n`); the ceiling is unconditional (triangle
+inequality); the open prize is *exactly* the demand to collapse this `√n`-wide corridor to an
+absolute constant. These are normalization/consolidation only — no anti-concentration, completion,
+moment, or capacity claim is hidden, and CORE stays OPEN.
 -/
 
 open scoped Nat
@@ -78,6 +93,9 @@ open ArkLib.ProximityGap.Frontier
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.SubgroupGaussSumMomentLadder
 open ArkLib.ProximityGap.NegationClosedWalk
+open ArkLib.ProximityGap.Frontier.ShawValueCapstone
+open ProximityGap.Frontier.ConcreteShawValueThinFloor
+open ProximityGap.Frontier.WorstPeriodSqrtNFloor
 
 /-! ## B2 — char-0 Wick step-ratio antitonicity (log-concavity), reduced to the classical
 `SharpNewtonBessel` (Laguerre–Pólya type-I) input. Scope: **char-0**. -/
@@ -256,6 +274,53 @@ theorem roughness_does_not_add_bad_primes_export (N : ℕ) (rough : ℕ → Prop
     {p : ℕ | p ∣ N ∧ rough p} ⊆ {p : ℕ | p ∣ N} :=
   G4RoughnessNotTheDriver.roughness_does_not_add_bad_primes N rough
 
+/-! ## ShawValue — the Lane-2 `prize ⟺ Sh(n)=O(1)` capstone (the citable normalization).
+Scope: **capstone**. The prize inequality `M ≤ C·√(n·L)` is exactly a bound on the normalized
+Shaw value `Sh(M) = M/√(n·L)`; the proven two-sided corridor `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` on
+the REAL Gauss-period worst frequency brackets the open prize at multiplicative width `√n`. -/
+
+/-- **[capstone, ShawValue]** The prize normalization equivalence: under a positive prize scale,
+the raw prize-shaped bound `M ≤ C·√(n·L)` is *exactly* the statement that the normalized Shaw
+value is at most `C`. This removes the arithmetic wrapper, so the prize reads as “bound the
+normalized object by an absolute constant” (`Sh(n)=O(1)`). Pure normalization — no cancellation
+estimate is hidden. -/
+theorem prizeBound_iff_shawValue_le_export {M C n L : ℝ} (hs : 0 < prizeScale n L) :
+    M ≤ C * prizeScale n L ↔ shawValue M n L ≤ C :=
+  prizeBound_iff_shawValue_le hs
+
+/-- **[capstone, ShawValue]** THE Lane-2 corridor. For the actual primitive-character Gauss-period
+worst frequency `M(μ_n) = worstPeriod ψ G` in the thin prize regime `q ≥ 2n` (automatic at
+`q = n^β`, `β > 1`), the normalized Shaw value is sandwiched
+`1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)`, both endpoints in closed form. The lower endpoint is the
+`n`-independent thin-regime Parseval floor `1/√(2L)`; the upper is the trivial-ceiling scale
+`√(n/L)`. The open prize `Sh(M(μ_n)) = O(1)` lives strictly inside this proven corridor.
+
+(All identifiers in the statement are FULLY QUALIFIED: restating them unqualified in this
+heavily-`open`ed index context resolves `worstPeriod`/`shawValue` to a different overload, so we pin
+the exact source declarations to inherit the clean proof term verbatim.) -/
+theorem shawValue_worstPeriod_clean_corridor_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    (hn1 : 1 ≤ (G.card : ℝ))
+    (hq2n : 2 * (G.card : ℝ) ≤ (Fintype.card F : ℝ)) {L : ℝ} (hL : 0 < L)
+    (hs : 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale (G.card : ℝ) L) :
+    1 / Real.sqrt (2 * L) ≤
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ G hne) (G.card : ℝ) L
+      ∧ _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ G hne) (G.card : ℝ) L
+          ≤ Real.sqrt ((G.card : ℝ) / L) :=
+  _root_.ProximityGap.Frontier.ConcreteShawValueThinFloor.shawValue_worstPeriod_clean_corridor
+    hψ G hne hn1 hq2n hL hs
+
+/-- **[capstone, ShawValue]** The corridor width is exactly `√n`: the ratio of the trivial-ceiling
+endpoint to the Plancherel-floor endpoint equals `√n`. So the open prize is precisely the demand to
+collapse this `√n`-wide normalized bracket to an absolute constant. -/
+theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
+  bracket_width_eq_sqrt hn hL
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -277,4 +342,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms resonance_ceiling_below_prize_floor
 #print axioms coeff_route_loose_export
 #print axioms roughness_does_not_add_bad_primes_export
+#print axioms prizeBound_iff_shawValue_le_export
+#print axioms shawValue_worstPeriod_clean_corridor_export
+#print axioms shawValue_bracket_width_eq_sqrt_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
