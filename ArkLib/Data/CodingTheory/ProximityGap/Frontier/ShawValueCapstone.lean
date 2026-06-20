@@ -101,6 +101,14 @@ theorem rawPrizeFamilyBound_iff_shawValueFamilyBound {ι : Type*} {M n L : ι �
   · intro h i
     exact (prizeBound_iff_shawValue_le (hs i)).2 (h i)
 
+/-- Uniform-family capstone in pointwise-positive parameters.  In applications the hypotheses are
+usually `0 < n i` and `0 < L i`; this wrapper exposes the same raw-prize/Shaw-value equivalence
+without forcing downstream files to build the positive scale assumption by hand. -/
+theorem rawPrizeFamilyBound_iff_shawValueFamilyBound_of_pos {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    rawPrizeFamilyBound M n L C ↔ shawValueFamilyBound M n L C :=
+  rawPrizeFamilyBound_iff_shawValueFamilyBound (fun i => prizeScale_pos (hn i) (hL i))
+
 /-- Existential constant form of the uniform-family capstone: there is an absolute raw prize constant
 iff there is an absolute normalized Shaw-value constant, with the same witness. -/
 theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} {M n L : ι → ℝ}
@@ -405,6 +413,7 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound_mono_const
