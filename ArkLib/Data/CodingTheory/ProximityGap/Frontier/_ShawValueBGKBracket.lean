@@ -118,6 +118,25 @@ theorem doorIV_obligation_below_bgk_ceiling {M C n L : ℝ} (hn : 0 < n) (hL : 0
     prize_iff_shawValue_le_div_sqrtL hn hL, ?_⟩
   rw [div_lt_one hsL]; exact hCL
 
+/-- **Exact door-(iv) shave factor.**  The BGK ceiling in Shaw units is `1`, while the genuine-prize
+threshold is `C/√L`.  Their ratio is exactly `√L/C`.  This is the kernel-checked version of the
+docstring phrase "door (iv) must shave by the factor `√L/C` past the BGK ceiling"; it is pure
+normalization arithmetic and contains no cancellation estimate. -/
+theorem doorIV_shave_factor_eq {C L : ℝ} (hC : 0 < C) (hL : 0 < L) :
+    (1 : ℝ) / (C / Real.sqrt L) = Real.sqrt L / C := by
+  have hsL : Real.sqrt L ≠ 0 := ne_of_gt (Real.sqrt_pos.2 hL)
+  have hC0 : C ≠ 0 := ne_of_gt hC
+  field_simp [hsL, hC0]
+
+/-- **The door-(iv) shave factor is genuinely larger than one** whenever the prize constant lies
+below the BGK ceiling endpoint (`C < √L`).  Thus the `C/√L` target is not just below `1`; the exact
+gap to close is a strict multiplicative factor `√L/C`. -/
+theorem one_lt_doorIV_shave_factor {C L : ℝ} (hC : 0 < C)
+    (hCL : C < Real.sqrt L) :
+    1 < Real.sqrt L / C := by
+  rw [one_lt_div hC]
+  exact hCL
+
 /-! ## The door-(i) resonance lever sits at the floor endpoint (floor-incapable, in Sh units)
 
 The named door-(i) resonance / Parseval-RMS lever certifies a per-frequency value of the form
@@ -196,16 +215,22 @@ is strictly below the BGK ceiling).  Pure assembly of the proven rungs above —
 One citation surface for "door (iv) = collapse the `√L`-wide Shaw bracket to a constant".  Assembly
 only. -/
 theorem doorIV_sharp_corridor_capstone {M C n L : ℝ} (hn : 0 < n) (hL : 0 < L)
-    (hCL : C < Real.sqrt L) (hfloor : Real.sqrt n ≤ M) (hceil : M ≤ prizeScale n L) :
+    (hC : 0 < C) (hCL : C < Real.sqrt L) (hfloor : Real.sqrt n ≤ M)
+    (hceil : M ≤ prizeScale n L) :
     (Real.sqrt n / prizeScale n L ≤ shawValue M n L ∧ shawValue M n L ≤ 1) ∧
       Real.sqrt n / prizeScale n L = 1 / Real.sqrt L ∧
       (1 : ℝ) / (Real.sqrt n / prizeScale n L) = Real.sqrt L ∧
       (M ≤ C * Real.sqrt n ↔ shawValue M n L ≤ C / Real.sqrt L) ∧
-      C / Real.sqrt L < 1 := by
+      C / Real.sqrt L < 1 ∧ (1 : ℝ) / (C / Real.sqrt L) = Real.sqrt L / C := by
   have hsL : 0 < Real.sqrt L := Real.sqrt_pos.2 hL
   refine ⟨shawValue_sharp_bracket (prizeScale_pos hn hL) hfloor hceil,
     shawValue_sharp_bracket_lower_eq hn, shawValue_sharp_bracket_width hn,
-    prize_iff_shawValue_le_div_sqrtL hn hL, ?_⟩
-  rw [div_lt_one hsL]; exact hCL
+    prize_iff_shawValue_le_div_sqrtL hn hL, ?_, ?_⟩
+  · rw [div_lt_one hsL]; exact hCL
+  · exact doorIV_shave_factor_eq hC hL
 
 end ArkLib.ProximityGap.Frontier.ShawValueBGKBracket
+
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_shave_factor_eq
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.one_lt_doorIV_shave_factor
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueBGKBracket.doorIV_sharp_corridor_capstone

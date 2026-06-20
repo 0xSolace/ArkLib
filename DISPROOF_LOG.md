@@ -1,3 +1,24 @@
+## door-(iv) Lane-2 capstone — exact Shaw shave factor `1/(C/√L)=√L/C` (2026-06-19)
+
+Lens: Lane-2 citable capstone, extending `_ShawValueBGKBracket`. The previous sharp Shaw bracket
+proved the genuine prize threshold sits below the BGK ceiling as `C/√L < 1`, but the docstring's
+"shave by `√L/C`" factor was not kernel-checked. This sweep formalizes the exact ratio between the
+BGK ceiling `1` and the genuine-prize Shaw target `C/√L`.
+
+New axiom-clean theorems:
+- `doorIV_shave_factor_eq` — for `0<C`, `0<L`, `(1 : ℝ)/(C/√L) = √L/C`.
+- `one_lt_doorIV_shave_factor` — if `0<C<√L`, the required shave factor is strictly larger than one.
+- `doorIV_sharp_corridor_capstone` now bundles that exact shave-factor identity with the existing
+  sharp bracket, prize equivalence, and strict-below-BGK statement.
+
+VERDICT: the door-(iv) normalization obligation is now exact, not prose: after doors (i)-(iii) leave
+`Sh ≤ 1`, the genuine prize asks for `Sh ≤ C/√L`, a strict multiplicative improvement by exactly
+`√L/C`. Pure arithmetic assembly; no anti-concentration/cancellation/moment/completion/capacity claim.
+CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean`, axiom-clean.
+Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) participation-ratio savings are exactly squared-L2 budget savings (2026-06-19)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVWorstBParticipationGeneric`. Prior participation bricks proved the Cauchy-Schwarz ceiling `PR≤1` and the L2 floor forced by a coherent aligned-mass certificate. This refinement denominator-clears the threshold itself: `PR≤θ` is equivalent to `(Σw_j)^2 ≤ θ·(|s|·Σw_j^2)`, with the strict analogue as well.
