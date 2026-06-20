@@ -170,6 +170,31 @@ theorem shawValue_mem_corridor_of_mem_raw_corridor_of_pos_lt {q n M L U : ℝ}
   exact shawValue_mem_corridor_of_mem_raw_corridor (q := q) (n := n) (M := M) (L := L) (U := U)
     (shawScale_pos_of_pos_lt hn hnq) hlo hhi
 
+
+/-- Exact two-sided interval capstone for Shaw normalization.  A normalized interval
+`L ≤ Sh(q,n) ≤ U` is equivalent, under the positive-scale guard, to the raw interval obtained by
+multiplying both endpoints by the prize scale.  This is the bidirectional consumer-facing form of the
+reduction: every Shaw corridor is exactly the corresponding raw Gauss-period corridor, with no hidden
+loss and no analytic input. -/
+theorem shawValue_mem_interval_iff_raw_mem_scaled_interval {q n M L U : ℝ}
+    (hscale : 0 < shawScale q n) :
+    (L ≤ shawValue q n M ∧ shawValue q n M ≤ U) ↔
+      L * shawScale q n ≤ M ∧ M ≤ U * shawScale q n := by
+  unfold shawValue
+  constructor
+  · rintro ⟨hlo, hhi⟩
+    exact ⟨(le_div_iff₀ hscale).mp hlo, (div_le_iff₀ hscale).mp hhi⟩
+  · rintro ⟨hlo, hhi⟩
+    exact ⟨(le_div_iff₀ hscale).mpr hlo, (div_le_iff₀ hscale).mpr hhi⟩
+
+/-- Prize-regime specialization of the exact two-sided Shaw interval equivalence. -/
+theorem shawValue_mem_interval_iff_raw_mem_scaled_interval_of_pos_lt {q n M L U : ℝ}
+    (hn : 0 < n) (hnq : n < q) :
+    (L ≤ shawValue q n M ∧ shawValue q n M ≤ U) ↔
+      L * shawScale q n ≤ M ∧ M ≤ U * shawScale q n := by
+  exact shawValue_mem_interval_iff_raw_mem_scaled_interval (q := q) (n := n) (M := M)
+    (L := L) (U := U) (shawScale_pos_of_pos_lt hn hnq)
+
 /-- The explicit Johnson-floor/trivial-ceiling corridor in Shaw units: from
 `sqrt n ≤ M ≤ n` one gets
 `sqrt n / sqrt(n log(q/n)) ≤ Sh(q,n) ≤ n / sqrt(n log(q/n))`.  This records exactly where the
@@ -204,5 +229,7 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_trivial_ceiling_of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_corridor_of_mem_raw_corridor
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_corridor_of_mem_raw_corridor_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_interval_iff_raw_mem_scaled_interval
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_interval_iff_raw_mem_scaled_interval_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor_of_pos_lt
