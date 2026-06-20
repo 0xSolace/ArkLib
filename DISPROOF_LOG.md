@@ -9729,3 +9729,18 @@ CORE stays OPEN.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`,
 axiom-clean (`{propext, Classical.choice, Quot.sound}`). Theorems: `energy_cross_reversed_r3`,
 `rho_antitone_step_fails_r3`, `rho_ceiling_fails_r5`, `antitone_route_not_universal`.
+
+## door-(iv) ρ refutation packaged in normalized coordinates (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 constraint interface extending `_RhoAntitoneFailsThinPrime`. The previous brick
+proved the n=32, p=786433 witness by cross-multiplied energy inequalities. This refinement records the
+same obstruction in literal `ρ(r)=S_r/((p−1)E_r)` coordinates and exposes a reusable conjunction no-go for
+arguments that assume the whole ρ ladder is both antitone and bounded by 1.
+
+VERDICT: at the same proper thin prize-regime prime, the normalized statements themselves are kernel-checked:
+`ρ(4)>ρ(3)` and `ρ(5)>1`. Therefore the common route hypothesis `ρ(4)≤ρ(3) ∧ ρ(5)≤1` is false as stated, not
+just after a human-side cross-multiplication translation. No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`, axiom-clean.
+New theorems: `rho4_gt_rho3_normalized`, `rho5_gt_one_normalized`, and
+`not_normalized_antitone_and_ceiling`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.

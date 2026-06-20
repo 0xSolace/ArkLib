@@ -79,6 +79,26 @@ theorem rho_antitone_step_fails_r3 : ¬ (S4 * E3 ≤ S3 * E4) := by
 theorem rho_ceiling_fails_r5 : (pm1) * E5 < S5 := by
   unfold pm1 E5 S5; norm_num
 
+/-- The strict normalized statement of `ρ(4) > ρ(3)` at the thin-prime witness.  This is the same
+refutation as `energy_cross_reversed_r3`, but packaged in the literal `ρ = S/((p−1)E)` coordinates used
+by `_OpenCoreRhoMonotone`, so downstream files need not re-open the cross-multiplication algebra. -/
+theorem rho4_gt_rho3_normalized : S3 / (pm1 * E3) < S4 / (pm1 * E4) := by
+  unfold S3 S4 E3 E4 pm1; norm_num
+
+/-- The strict normalized statement of `ρ(5) > 1` at the thin-prime witness.  This pins the exact failure
+of the Wick/char-0 ceiling in `ρ` coordinates, not merely as an unnormalized energy inequality. -/
+theorem rho5_gt_one_normalized : (1 : ℝ) < S5 / (pm1 * E5) := by
+  unfold S5 E5 pm1; norm_num
+
+/-- The two advertised route hypotheses fail simultaneously in literal normalized form: neither the
+`r=3` antitone step `ρ(4) ≤ ρ(3)` nor the order-5 ceiling `ρ(5) ≤ 1` holds at this prize-regime thin
+prime.  This is a reusable no-go interface for arguments that assume the whole `ρ` ladder is antitone
+and bounded by `1`. -/
+theorem not_normalized_antitone_and_ceiling :
+    ¬ (S4 / (pm1 * E4) ≤ S3 / (pm1 * E3) ∧ S5 / (pm1 * E5) ≤ (1 : ℝ)) := by
+  intro h
+  exact (not_le.mpr rho4_gt_rho3_normalized) h.1
+
 /-- **The antitone-route hypotheses are NOT simultaneously satisfiable in general.** There is a
 prize-regime instance (real values `S₃,S₄,S₅ > 0`, `E₃,E₄,E₅ > 0`, `p−1 > 0`) at which the energy
 cross-inequality at `r=3` is reversed AND the order-5 char-`p` energy exceeds `(p−1)·E₅`. Hence one
@@ -103,4 +123,7 @@ end ArkLib.ProximityGap.RhoAntitoneFails
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.energy_cross_reversed_r3
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho_antitone_step_fails_r3
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho_ceiling_fails_r5
+#print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho4_gt_rho3_normalized
+#print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho5_gt_one_normalized
+#print axioms ArkLib.ProximityGap.RhoAntitoneFails.not_normalized_antitone_and_ceiling
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.antitone_route_not_universal
