@@ -8239,3 +8239,21 @@ cancellation, completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new
 theorems `smul_mem_superLevel_iff_of_orbitConstant` and `sigma_mem_superLevel_iff`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+## [shaw-value SHARP BGK bracket] door-(iv) corridor in Shaw-value units is [1/√L, 1], width √L (2026-06-19)
+
+Lane: door-(iv) Lane 2 capstone — BRIDGES two proven anchors. ShawValueCapstone proves the Shaw-value
+bracket with the TRIVIAL ceiling M≤n: Sh ∈ [1/√L, √(n/L)], width √n. The no-fifth-door tetrachotomy
+shows doors (i)-(iii) actually deliver the BGK ceiling M≤√(nL), which in the Shaw normalization
+Sh=M/√(nL) is exactly Sh≤1. PROBE-FIRST (python, exact): n∈{16,64,256}, L∈{2,4,8}: lower=√n/√(nL)=1/√L,
+upper=1, width=upper/lower=√L, all matched to 1e-12.
+
+VERDICT: the REAL door-(iv) corridor that doors (i)-(iii) bound is the SHARP bracket [1/√L, 1] of
+multiplicative width √L — a √(n/L)-factor improvement on the trivial √n-wide bracket. The open prize,
+in Shaw-value language, is to collapse this √L-wide bracket to an absolute constant (push Sh from its
+BGK ceiling 1 down to the floor 1/√L). Pure normalization bookkeeping on the proven Plancherel floor +
+proven BGK ceiling; no cancellation, anti-concentration, or capacity estimate asserted.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean (new file),
+theorems shawValue_le_one_of_bgk_ceiling, shawValue_sharp_bracket, shawValue_sharp_bracket_lower_eq,
+shawValue_sharp_bracket_width, sharp_width_lt_trivial_width, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
