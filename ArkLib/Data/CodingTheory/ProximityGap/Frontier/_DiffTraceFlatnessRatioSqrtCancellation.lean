@@ -117,6 +117,47 @@ theorem normSq_le_card_of_flatnessRatio_le_one (Rel : Finset (Fin r → R))
     Complex.normSq (∑ T ∈ Rel, Jphase θ T) ≤ (Rel.card : ℝ) :=
   (flatnessRatio_le_one_iff_normSq_le_card Rel hne).1 h
 
+
+/-! ## §3 Excess-over-diagonal prize slack -/
+
+/-- **`flatnessExcess`** — the dimensionless excess of the flatness ratio above the diagonal
+square-root-cancellation floor `1`.  The prize-scale target is `flatnessExcess = o(1)`. -/
+noncomputable def flatnessExcess (θ : R → ℂ) (Rel : Finset (Fin r → R)) : ℝ :=
+  flatnessRatio θ Rel - 1
+
+/-- **`flatnessExcess_le_iff_normSq_le_one_add_mul_card`** — the exact excess-slack dictionary:
+`ρ_flat - 1 ≤ ε` iff `‖Σ Jphase‖² ≤ (1+ε) * #Rel`. -/
+theorem flatnessExcess_le_iff_normSq_le_one_add_mul_card (Rel : Finset (Fin r → R)) (ε : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel ≤ ε
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) ≤ (1 + ε) * (Rel.card : ℝ) := by
+  unfold flatnessExcess flatnessRatio
+  rw [sub_le_iff_le_add]
+  rw [div_le_iff₀ hne]
+  ring_nf
+
+/-- **`flatnessExcess_lt_iff_normSq_lt_one_add_mul_card`** — strict excess-slack dictionary:
+`ρ_flat - 1 < ε` iff `‖Σ Jphase‖² < (1+ε) * #Rel`. -/
+theorem flatnessExcess_lt_iff_normSq_lt_one_add_mul_card (Rel : Finset (Fin r → R)) (ε : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel < ε
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) < (1 + ε) * (Rel.card : ℝ) := by
+  unfold flatnessExcess flatnessRatio
+  rw [sub_lt_iff_lt_add]
+  rw [div_lt_iff₀ hne]
+  ring_nf
+
+/-- **`flatnessExcess_eq_iff_normSq_eq_one_add_mul_card`** — equality excess-slack dictionary:
+`ρ_flat - 1 = ε` iff `‖Σ Jphase‖² = (1+ε) * #Rel`. -/
+theorem flatnessExcess_eq_iff_normSq_eq_one_add_mul_card (Rel : Finset (Fin r → R)) (ε : ℝ)
+    (hne : 0 < (Rel.card : ℝ)) :
+    flatnessExcess θ Rel = ε
+      ↔ Complex.normSq (∑ T ∈ Rel, Jphase θ T) = (1 + ε) * (Rel.card : ℝ) := by
+  unfold flatnessExcess flatnessRatio
+  rw [sub_eq_iff_eq_add]
+  rw [div_eq_iff (ne_of_gt hne)]
+  ring_nf
+
 end ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation
 
 /-! ## Axiom audit (expected: propext, Classical.choice, Quot.sound — no sorryAx) -/
@@ -128,3 +169,6 @@ end ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_eq_const_iff_normSq_eq_const_mul_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessRatio_le_one_of_normSq_le_card
 #print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.normSq_le_card_of_flatnessRatio_le_one
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessExcess_le_iff_normSq_le_one_add_mul_card
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessExcess_lt_iff_normSq_lt_one_add_mul_card
+#print axioms ArkLib.ProximityGap.Frontier.DiffTraceFlatnessRatioSqrtCancellation.flatnessExcess_eq_iff_normSq_eq_one_add_mul_card
