@@ -102,6 +102,46 @@ theorem bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass {ι
   exact exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
     (M := M) (H := H) (scale := scale) hK hscale hMH hHM
 
+
+/-- With positive scales, `BddAbove` of the normalized half-mass ratios is equivalent to the RAW
+half-mass Big-O statement `∃ C, ∀ i, H i ≤ C · scale i`. This completes the standard-library
+`BddAbove` bridge for the half-mass Shaw value, parallel to
+`bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound`. -/
+theorem bddAbove_range_normalizedHalfMass_iff_exists_halfMassFamilyBound {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, halfMassFamilyBound H scale C := by
+  rw [bddAbove_range_iff_exists_normalizedHalfMassFamilyBound]
+  exact (exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+    (H := H) (scale := scale) hscale).symm
+
+/-- **Door-(iv) reduction, normalized-prize `BddAbove` versus raw half-mass Big-O.**  Under the
+family-wide half-mass comparison and positive scales, bounded normalized prize ratios are equivalent
+to a raw uniform half-mass bound. This is the `BddAbove` form of the mixed capstone with the half-mass
+side left in the original unnormalized Big-O language. -/
+theorem bddAbove_range_normalizedPrize_iff_exists_halfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, halfMassFamilyBound H scale C := by
+  rw [bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      bddAbove_range_normalizedHalfMass_iff_exists_halfMassFamilyBound (H := H) (scale := scale) hscale]
+
+/-- **Door-(iv) reduction, normalized-half-mass `BddAbove` versus raw prize Big-O.**  Under the same
+comparison hypotheses, bounded normalized half-mass ratios are equivalent to the raw uniform prize
+bound. This is the opposite mixed `BddAbove`/raw face of the `prize ⇔ Sh_H(n)=O(1)` capstone. -/
+theorem bddAbove_range_normalizedHalfMass_iff_exists_prizeFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, prizeFamilyBound M scale C := by
+  rw [← bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound (M := M) (scale := scale) hscale]
+
 /-! ### The WALL (negative) characterization
 
 The prize is the boundedness of the normalized ratios; the WALL is their UNBOUNDEDNESS. These lemmas
@@ -150,6 +190,10 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_iff_forall_exists_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
