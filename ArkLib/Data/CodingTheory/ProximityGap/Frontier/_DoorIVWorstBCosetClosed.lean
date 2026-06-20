@@ -297,6 +297,31 @@ theorem card_group_le_superLevelFinset_of_free_sigma_orbit
       exact Finset.card_image_of_injective Finset.univ hφinj
     _ ≤ (superLevelFinset f c).card := Finset.card_le_card hsubset
 
+/-- Small-threshold contrapositive of the orbit-size floor.  If a finite super-level set has cardinal
+strictly smaller than `|G|`, then it contains no point whose `G`-orbit injects.  This is the audit form
+for any proposed worst-`b` selector that advertises a sub-coset-sized near-max set. -/
+theorem not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group
+    [Fintype G] [Fintype β]
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ)
+    (hcard : (superLevelFinset f c).card < Fintype.card G) :
+    ¬ ∃ b : β, b ∈ superLevel f c ∧ ∀ {g h : G}, g • b = h • b → g = h := by
+  rintro ⟨b, hb, hfree⟩
+  have hle := card_group_le_superLevelFinset_of_free_orbit (G := G) hf c hb hfree
+  exact (not_lt_of_ge hle) hcard
+
+/-- Signed-fiber small-threshold contrapositive.  A sub-`|G|` threshold set cannot contain a point whose
+signed coset fiber `g ↦ σ(g•b)` injects.  Thus any genuinely free signed coset action forces the
+near-max set to pay at least one whole signed fiber. -/
+theorem not_exists_free_sigma_orbit_mem_of_card_superLevelFinset_lt_group
+    [Fintype G] [Fintype β]
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f)
+    (hσ : InvolutionConstant σ f) (c : ℝ)
+    (hcard : (superLevelFinset f c).card < Fintype.card G) :
+    ¬ ∃ b : β, b ∈ superLevel f c ∧ ∀ {g h : G}, σ (g • b) = σ (h • b) → g = h := by
+  rintro ⟨b, hb, hfree⟩
+  have hle := card_group_le_superLevelFinset_of_free_sigma_orbit (G := G) hf hσ c hb hfree
+  exact (not_lt_of_ge hle) hcard
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant
@@ -308,3 +333,5 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_sigma_smul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_sigma_orbit
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_exists_free_sigma_orbit_mem_of_card_superLevelFinset_lt_group

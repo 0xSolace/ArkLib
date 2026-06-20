@@ -9923,3 +9923,18 @@ and does not use moment, completion, or capacity reasoning.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new theorems
 `card_group_le_superLevelFinset_of_free_orbit` and `card_group_le_superLevelFinset_of_free_sigma_orbit`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) sub-coset-sized worst-b thresholds force non-free fibers (2026-06-20, g55)
+
+Lane: Door-IV Lane 1 selector-cardinality constraint extending `_DoorIVWorstBCosetClosed`. After the
+finite orbit-size floor, this adds the contrapositive audit hook: if a finite near-max threshold set has
+cardinality strictly below `|G|`, then it cannot contain a point with an injective `G`-orbit, and likewise
+cannot contain a point with an injective signed coset fiber `g ↦ σ(g•b)`.
+
+VERDICT: any claimed sub-coset-sized worst-b selector must prove stabilizer/fiber collapse; otherwise the
+coset/sign closure alone forces at least one whole `|G|`-sized fiber. No CORE/cancellation/moment/completion
+or anti-concentration claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new theorems
+`not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group` and
+`not_exists_free_sigma_orbit_mem_of_card_superLevelFinset_lt_group`, axiom-clean.
