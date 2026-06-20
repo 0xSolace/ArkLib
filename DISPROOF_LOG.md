@@ -9601,3 +9601,40 @@ prize prime (incl. the non-vacuous post-onset cases), and `Q ≥ 0` throughout. 
 `_CharPWraparoundLogConcaveQ.lean` are PURE ALGEBRA (the implication `wa·wc≤wb² ⟹ Q≥0`) and are UNAFFECTED
 by the probe-arithmetic correction. The v1 probe's `E_r(ℂ)` has been fixed in place to the antipodal
 reduction. CORE stays OPEN.
+
+---
+
+## REFUTATION — char-p step-ratio MONOTONICITY FAILS in the prize regime (2026-06-20, sol)
+
+CONTEXT. `_CharZeroStepRatioMonotone` proves the step-ratio gap `G(r)=(2r+3)E_{r+1}²−(2r+1)E_r E_{r+2}≥0`
+in CHAR 0, and `_CharPTransferDecomposition` set up the conditional char-p transfer `G_p=G₀+L+Q` with
+prose asserting the dominance `0≤G₀+L` was "machine-confirmed with growing margin" and `G₀` "dominates
+|L+Q| at every depth (so G_p>0)". THAT PROSE IS FALSE — it rested on a probe with an incorrect char-0
+energy `E_r(ℂ)` (naive integer-lift, wrong at r≥4).
+
+RE-PROBE with the CORRECT cyclotomic/antipodal `E_r(ℂ)` (`Er_C_2power`; `probe_charp_dominance_GL_v2.py`):
+the char-p step-ratio gap `G_p` itself is NEGATIVE at concrete prize-regime points. EXACT integer period
+energies `E_k(F_p)=#{(x,y)∈μ_n^{2k}:Σx≡Σy mod p}` (modular convolution, reproduced in the probe):
+
+  WITNESS 1: n=32, p=786433 (=3·2^18+1, prize regime p~n⁴), r=3, s=7.
+    E₃(F_p)=446720, E₄(F_p)=92179360, E₅(F_p)=24850732032.
+    G_p = 9·E₄² − 7·E₃·E₅ = −1235923403258880 < 0   ⟹ char-p monotonicity 7·E₃·E₅≤9·E₄² REVERSES.
+    (char-0 gap at same r: 9·E₄(ℂ)²−7·E₃(ℂ)·E₅(ℂ)=+2385085198648320>0, as proven. Decomposition checks:
+     G₀=2385085198648320, L=−3635991075225600, Q=14982473318400, G₀+L+Q=G_p=−1235923403258880. So BOTH
+     the dominance 0≤G₀+L AND the assembled G_p≥0 FAIL; the wraparound excesses W₄=1290240, W₅=1837785600
+     drive the reversal via the linear term L overwhelming G₀.)
+  WITNESS 2: n=64, p=2752513, r=2, s=5. E₂=12096, E₃=3750400, E₄=1666665280.
+    G_p = 7·E₃² − 5·E₂·E₄ = −2341415014400 < 0   ⟹ char-p monotonicity 5·E₂·E₄≤7·E₃² REVERSES (here Q=0).
+
+CONSEQUENCE (constraint). Door-(iv) CANNOT be closed by char-p step-ratio monotonicity: that inequality
+is FALSE in the prize regime. The conditional transfer `charP_transfer_of_dominance`/`gap_p_nonneg_of_
+dominance` has UNSATISFIABLE hypotheses there (`0≤G₀+L` is false), so it cannot discharge CORE — and the
+`Q≥0` lemma (`_CharPWraparoundLogConcaveQ`, still valid algebra) has no satisfiable partner on this route.
+The ρ-antitone-via-energy-cross program (needs the same Cauchy–Schwarz structure transferred to char-p)
+is therefore NOT available unconditionally; a prize proof must control the full char-p quantity directly.
+The char-0 result is untouched (still proven). No cancellation/completion/moment/anti-concentration/
+capacity claim. This REFUTES one assumed route. CORE stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
+axiom-clean (`{propext, Classical.choice, Quot.sound}`). Theorems: `charP_stepRatio_gap_neg_n32`,
+`charP_stepRatio_reversed_n32`, `charP_stepRatio_gap_neg_n64`, `dominance_not_satisfiable_witness`.

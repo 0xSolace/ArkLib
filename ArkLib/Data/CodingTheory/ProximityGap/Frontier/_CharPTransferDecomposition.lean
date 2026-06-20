@@ -29,6 +29,15 @@ char-0 gap dominates the linear wraparound perturbation) **and `Q ≥ 0`** (the 
 monotonicity). Both are data-favorable and strictly sharper than "bound `E_r(F_p)` directly". So the open
 wall is reduced to these two localized wraparound-control inequalities, with the char-0 backbone already
 proven.
+
+⚠ CORRECTION (2026-06-20): the "data-favorable" / "`G₀` dominates `|L+Q|` at every depth" claims above
+rested on a probe with an INCORRECT char-0 energy `E_r(ℂ)` (naive integer-lift, wrong at `r ≥ 4`). With the
+CORRECT cyclotomic/antipodal `E_r(ℂ)`, the dominance `0 ≤ G₀ + L` is FALSE and the assembled char-`p` gap
+`G_p = G₀ + L + Q` is NEGATIVE at prize-regime points (e.g. `n=32, p=786433, r=3`: `G_p = −1235923403258880`;
+`n=64, p=2752513, r=2`: `G_p = −2341415014400`). See `_CharPStepRatioMonotoneFails.lean` for the
+kernel-checked refuting witnesses. So `gap_p_nonneg_of_dominance`/`charP_transfer_of_dominance` below are
+VALID conditional lemmas but their hypotheses are UNSATISFIABLE in the prize regime: this route does NOT
+close CORE. The `gap_decompose` ring identity is correct and unaffected.
 -/
 
 set_option autoImplicit false

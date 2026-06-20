@@ -48,9 +48,15 @@ theorems below are pure algebra (`wa·wc ≤ wb² ⟹ Q ≥ 0`) and are unaffect
 This converts ONE of the two open wraparound hypotheses (`Q ≥ 0`) into a consequence of the
 sharper `wa·wc ≤ wb²`. It does NOT close CORE: the wraparound log-concavity `wa·wc ≤ wb²` itself
 remains a measured (probe-true) but UNPROVEN arithmetic input at deep `r` — exactly the BGK/Paley
-char-`p` wall, now relocated to a cleaner single-inequality form — and the dominance input
-`0 ≤ G₀ + L` is untouched. No cancellation / completion / moment-saving / capacity claim. CORE
-stays OPEN. This is a constraint/reduction sharpening (door-iv Lane-2/Lane-3).
+char-`p` wall, now relocated to a cleaner single-inequality form. No cancellation / completion /
+moment-saving / capacity claim. CORE stays OPEN. This is a constraint/reduction sharpening
+(door-iv Lane-2/Lane-3).
+
+⚠ ROUTE STATUS (2026-06-20): although `Q ≥ 0` is a valid algebraic lemma, its PARTNER hypothesis in
+the `charP_transfer_of_dominance` assembly — the dominance `0 ≤ G₀ + L` — is FALSE in the prize regime
+(`_CharPStepRatioMonotoneFails.lean`: the char-`p` step-ratio gap `G_p = G₀ + L + Q` is NEGATIVE at
+`n=32, p=786433, r=3` and `n=64, p=2752513, r=2`). So this char-`p`-transfer ROUTE does NOT close CORE;
+the `Q ≥ 0` lemma here stands as a kernel identity but has no satisfiable partner on this route.
 -/
 
 namespace ArkLib.ProximityGap.CharPTransferDecomposition
