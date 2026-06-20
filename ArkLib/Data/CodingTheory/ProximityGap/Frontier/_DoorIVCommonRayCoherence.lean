@@ -88,6 +88,27 @@ theorem complexPieceCoherence_eq_one_of_commonRay_nonneg {xs : List ℝ} {u : �
   rw [habs_sum]
   exact div_self (ne_of_gt hsum)
 
+
+/-- Strict-threshold form of the common-ray obstruction: a nonzero list of nonnegative pieces
+on a fixed unit ray cannot have coherence below `1`. -/
+theorem commonRay_not_complexPieceCoherence_lt_one {xs : List ℝ} {u : ℂ}
+    (hu : ‖u‖ = 1) (hxs : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) :
+    ¬ complexPieceCoherence (xs.map fun x => (x : ℂ) * u) < 1 := by
+  intro hlt
+  have hone := complexPieceCoherence_eq_one_of_commonRay_nonneg hu hxs hsum
+  rw [hone] at hlt
+  linarith
+
+/-- Target-threshold form: any claimed common-ray certificate below a strict target `theta < 1`
+is impossible before proving angular spread away from the common ray. -/
+theorem commonRay_not_complexPieceCoherence_le_of_lt_one {xs : List ℝ} {u : ℂ} {theta : ℝ}
+    (hu : ‖u‖ = 1) (hxs : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) (htheta : theta < 1) :
+    ¬ complexPieceCoherence (xs.map fun x => (x : ℂ) * u) ≤ theta := by
+  intro hcoh
+  have hone := complexPieceCoherence_eq_one_of_commonRay_nonneg hu hxs hsum
+  rw [hone] at hcoh
+  linarith
+
 /-- Epsilon-drop contrapositive for common-ray lists: if nonnegative pieces on a fixed unit ray are
 nonzero, then no positive `1 - ε` coherence improvement can hold. A useful door-(iv) theorem must
 prove angular spread before it can obtain a strict drop. -/
@@ -107,5 +128,9 @@ end ProximityGap.Frontier.DoorIVCommonRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence_le_one
 #print axioms
   ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence_eq_one_of_commonRay_nonneg
+#print axioms
+  ProximityGap.Frontier.DoorIVCommonRayCoherence.commonRay_not_complexPieceCoherence_lt_one
+#print axioms
+  ProximityGap.Frontier.DoorIVCommonRayCoherence.commonRay_not_complexPieceCoherence_le_of_lt_one
 #print axioms
   ProximityGap.Frontier.DoorIVCommonRayCoherence.commonRay_not_complexPieceCoherence_le_one_sub

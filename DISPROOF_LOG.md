@@ -8090,3 +8090,21 @@ completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVRealSignMassSlack.lean`, new
 theorems `signMassCoherence_lt_one_iff_min_pos` and `signMassCoherence_eq_one_of_min_eq_zero`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+
+## door-(iv) common-ray strict targets are impossible before angular spread (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint extension in `_DoorIVCommonRayCoherence`. The existing kernel proved
+that any nonzero list of nonnegative pieces on a fixed unit complex ray has coherence exactly `1`, and
+ruled out explicit `1-eps` drops. This refinement packages the two probe-facing target forms: common-ray
+pieces cannot satisfy `complexPieceCoherence < 1`, nor can they satisfy `complexPieceCoherence <= theta`
+for any `theta < 1`.
+
+VERDICT: a multi-piece Door-IV split has zero strict saving while the pieces remain on one ray. Any
+strict target below `1` must first prove genuine angular spread; subdivision alone is a no-op. No CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCommonRayCoherence.lean`, new
+theorems `commonRay_not_complexPieceCoherence_lt_one` and
+`commonRay_not_complexPieceCoherence_le_of_lt_one`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
