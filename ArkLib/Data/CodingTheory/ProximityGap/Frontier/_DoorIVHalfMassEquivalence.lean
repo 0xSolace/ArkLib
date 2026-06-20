@@ -294,6 +294,49 @@ theorem prizeFamilyBound_iff_all_halfMassShaw_forms {ι : Type*}
     exact (exists_prizeFamilyBound_iff_exists_normalizedPrizeFamilyBound
       (M := M) (scale := scale) hscale).2 hAll.2.1
 
+
+/-! ## Wall-side family reductions
+
+The positive capstones above state the prize side (`∃ C`) as an equivalence.  The wall side is the
+failure of those existential bounds.  These lemmas expose that failure directly so downstream door-(iv)
+statements can cite `no prize constant ⇔ no half-mass constant` without unfolding negations by hand.
+-/
+
+/-- **Raw wall-side door-(iv) reduction.**  Under one family-wide half-mass comparison, failure of a
+raw uniform prize Big-O bound is equivalent to failure of a raw uniform half-mass Big-O bound. This is
+only the negated form of the already-proven positive reduction; it makes no arithmetic estimate. -/
+theorem not_exists_prizeFamilyBound_iff_not_exists_halfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ ∃ C, prizeFamilyBound M scale C) ↔
+      ¬ ∃ C, halfMassFamilyBound H scale C := by
+  exact not_congr (exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
+    (M := M) (H := H) (scale := scale) hK hMH hHM)
+
+/-- **Normalized wall-side door-(iv) reduction.**  With positive scales, failure of bounded normalized
+prize Shaw values is equivalent to failure of bounded normalized half-mass Shaw values. This is the
+wall form of `exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound`. -/
+theorem not_exists_normalizedPrizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ ∃ C, normalizedPrizeFamilyBound M scale C) ↔
+      ¬ ∃ C, normalizedHalfMassFamilyBound H scale C := by
+  exact not_congr (exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+    (M := M) (H := H) (scale := scale) hK hscale hMH hHM)
+
+/-- **Mixed wall-side capstone.**  With positive scales and the family-wide half-mass comparison,
+failure of a raw uniform prize Big-O bound is equivalent to failure of bounded normalized half-mass
+Shaw value. This is the negative form of the citable `prize ⇔ Sh_H(n)=O(1)` reduction. -/
+theorem not_exists_prizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ ∃ C, prizeFamilyBound M scale C) ↔
+      ¬ ∃ C, normalizedHalfMassFamilyBound H scale C := by
+  exact not_congr (exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+    (M := M) (H := H) (scale := scale) hK hscale hMH hHM)
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeBound_of_halfMassBound
@@ -310,3 +353,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_halfMassFamilyBound_iff_exists_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_all_halfMassShaw_forms
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_prizeFamilyBound_iff_not_exists_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedPrizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_prizeFamilyBound_iff_not_exists_normalizedHalfMassFamilyBound
