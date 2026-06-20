@@ -9135,3 +9135,23 @@ axiom-clean. New def `additiveEnergyExcess`; theorems `swap_floor_add_excess`,
 `additiveEnergyExcess_eq_zero_iff_sidon`, `no_positive_additiveEnergyExcess_of_sidon`,
 `additiveEnergy_eq_floor_of_sidon`, `not_sidon_of_positive_additiveEnergyExcess`. Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-worstb-Sidon-floor-thickness-invariant] the worst-b rep-set Sidon-floor is THICKNESS-INVARIANT (honest caveat, 2026-06-20, sol)
+
+Lane: door-(iv) Lane 1 PROBE follow-up to [doorIV-worstb-rep-set-Sidon-no-energy-excess]. Brief rule 3:
+any CORE-relevant fact must be FALSE in the thick β≈2.3-3.2 window; a thickness-monotone fact cannot be
+the thin mechanism.
+
+PROBE (`scripts/probes/probe_Wsidon_thin.py`, EXACT additive energy of the worst-b rep set across
+β∈{2.4,3.0,4.0}, n∈{16,32}, p=k·n+1 near target β, never n=q−1): wherever |Wb|≥3, E(Wb)=2|Wb|²−|Wb|
+EXACTLY (E/floor=1.000) in BOTH the THICK (β=2.4,3.0) and the THIN (β=4) regime.
+
+VERDICT (honest caveat, NOT a new theorem): the Sidon-floor attainment of the worst-b rep set is
+THICKNESS-INVARIANT. This is fully CONSISTENT with the refutation: additive energy is itself a
+thickness-monotone method (brief rule 3), so it was never a candidate thin mechanism, and the
+[no-energy-excess] kernel correctly classifies the additive-energy lever as dead WITHOUT claiming a thin
+crack. The worst-b object's additive structurelessness is a thickness-invariant feature; the thin
+mechanism (if any) must live OUTSIDE additive energy / sum-product, exactly as the brief's door-(iv)
+"anti-concentration NOT through additive energy" requires. No CORE / cancellation / completion / moment /
+anti-concentration / capacity claim. (Probe-only caveat; the formal kernel _DoorIVWorstBSidonNoEnergyExcess
+is unaffected and remains axiom-clean.)
