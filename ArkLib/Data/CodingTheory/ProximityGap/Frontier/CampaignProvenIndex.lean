@@ -17,6 +17,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_no
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
@@ -381,6 +382,38 @@ theorem bgkScale_eq_sqrtL_mul_prizeScale_export {n L : ℝ} (hn : 0 ≤ n) (hL :
       = Real.sqrt L * _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n :=
   _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale_eq_sqrtL_mul_prizeScale hn hL
 
+/-! ## NoTighterBound — the #407/#444 "no tighter bound from any direction" capstone (Lane-2).
+Scope: **capstone**. The negative structural theorem: any functional bounding the per-frequency core
+`M(n) = max_{b≠0}‖η_b‖` must be simultaneously b-sensitive, deterministic-archimedean, and genuinely
+`L∞`. The two machine-checkable failure faces — a b-symmetric (moment-determined) statistic CANNOT
+determine the sup, and an only-`L²`/depth-`r`-moment method is floored at the trivial `√S` — are
+bundled into one citation point. (The third property, deterministic-archimedean, is named in prose; it
+is the absence of an ensemble/freeness the fixed subgroup lacks.) -/
+
+/-- **[capstone, NoTighterBound]** A `b`-symmetric statistic cannot determine the sup: two explicit
+real families on `Fin 4` with IDENTICAL first and second moments but a strictly larger coordinate in
+one. So any functional determined by the (permutation-invariant) moment data is blind to the worst
+`b`. Failure mode (1) of the 3-property necessary condition. -/
+theorem noTighterBound_secondMoment_blind_export :
+    ∃ (η η' : Fin 4 → ℝ) (b₀ : Fin 4),
+      (∑ i, η i = ∑ i, η' i) ∧ (∑ i, (η i) ^ 2 = ∑ i, (η' i) ^ 2) ∧
+      (∀ j, |η' j| < |η b₀|) :=
+  _root_.ProximityGap.Frontier.NoTighterBoundCapstone.secondMoment_does_not_determine_sup
+
+/-- **[capstone, NoTighterBound]** The packaged no-tighter-bound capstone: BOTH machine-checkable
+faces in one conjunction — (1) a moment-determined `b`-symmetric statistic cannot see the worst `b`,
+and (3) any only-`L²`/depth-`r`-moment method `g` is floored at `√S` (cannot reach
+`√(n·log m) ≪ √S`). Every classical and fresh tool fails at least one. The structural reason no
+tighter bound on `M` is reachable from the symmetric / `L²` directions. -/
+theorem noTighterBound_from_symmetric_or_L2_export :
+    (∃ (η η' : Fin 4 → ℝ) (b₀ : Fin 4),
+        (∑ i, η i = ∑ i, η' i) ∧ (∑ i, (η i) ^ 2 = ∑ i, (η' i) ^ 2) ∧
+        (∀ j, |η' j| < |η b₀|)) ∧
+    (∀ {ι : Type*} [Fintype ι] [DecidableEq ι] [Nonempty ι] {r : ℕ}, 1 ≤ r → ∀ (g : ℝ → ℝ),
+        (∀ (η : ι → ℝ) (b : ι), |η b| ≤ g (∑ i, (η i) ^ (2 * r))) →
+        ∀ {S : ℝ}, 0 ≤ S → Real.sqrt S ≤ g (S ^ r)) :=
+  _root_.ProximityGap.Frontier.NoTighterBoundCapstone.noTighterBound_from_symmetric_or_L2
+
 /-! ## ShawValue — the Lane-2 `prize ⟺ Sh(n)=O(1)` capstone (the citable normalization).
 Scope: **capstone**. The prize inequality `M ≤ C·√(n·L)` is exactly a bound on the normalized
 Shaw value `Sh(M) = M/√(n·L)`; the proven two-sided corridor `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` on
@@ -684,4 +717,6 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_corridor_export
 #print axioms doorIV_corridor_width_pos_export
 #print axioms bgkScale_eq_sqrtL_mul_prizeScale_export
+#print axioms noTighterBound_secondMoment_blind_export
+#print axioms noTighterBound_from_symmetric_or_L2_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
