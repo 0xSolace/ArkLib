@@ -27,6 +27,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundMarkovVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassEquivalence
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -104,6 +105,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_additiveEnergyExcess_eq_zero_iff_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
 | `doorIV_no_positive_additiveEnergyExcess_of_subset_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
 | `doorIV_positive_additiveEnergyExcess_iff_not_sidon_export` | obstruction | DoorIVWorstBSidonNoEnergyExcess |
+| `doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
+| `doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
+| `doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export` | capstone | DoorIVHalfMassEquivalence |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -758,6 +762,48 @@ theorem doorIV_positive_additiveEnergyExcess_iff_not_sidon_export {F : Type*}
       ¬ ArkLib.ProximityGap.SubgroupGaussSumMoment.IsSidonSet G :=
   ArkLib.ProximityGap.SubgroupGaussSumMoment.positive_additiveEnergyExcess_iff_not_sidon G
 
+/-! ## Door-IV half-mass equivalence capstone. Scope: **capstone**.
+
+These exports make the half-mass reduction citable: under the pointwise comparison `M ≤ H ≤ K*M`
+with one family-wide `K`, the original uniform prize bound is equivalent to a uniform half-mass
+bound and to bounded normalized half-mass Shaw value. This is normalization/reduction only; the
+analytic half-mass cancellation estimate remains the open door-(iv) problem. -/
+
+/-- **[capstone, DoorIVHalfMassEquivalence]** Uniform-family reduction: with one comparison
+constant `K`, the existence of an absolute prize constant is equivalent to the existence of an
+absolute half-mass constant. -/
+theorem doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C) ↔
+      (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound H scale C) :=
+  ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
+    hK hMH hHM
+
+/-- **[capstone, DoorIVHalfMassEquivalence]** Mixed Shaw-value form: with positive scales, the
+raw uniform prize Big-O bound is equivalent to bounded normalized half-mass Shaw value `H/scale`. -/
+theorem doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C) ↔
+      (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedHalfMassFamilyBound H scale C) :=
+  ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedHalfMassFamilyBound
+    hK hscale hMH hHM
+
+/-- **[capstone, DoorIVHalfMassEquivalence]** Four-way packaging: the raw prize bound is equivalent
+to simultaneous raw half-mass, normalized prize, and normalized half-mass formulations. -/
+theorem doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C) ↔
+      (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound H scale C) ∧
+        (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedPrizeFamilyBound M scale C) ∧
+          (∃ C, ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedHalfMassFamilyBound H scale C) :=
+  ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_all_halfMassShaw_forms
+    hK hscale hMH hHM
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -805,6 +851,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_additiveEnergyExcess_eq_zero_iff_sidon_export
 #print axioms doorIV_no_positive_additiveEnergyExcess_of_subset_sidon_export
 #print axioms doorIV_positive_additiveEnergyExcess_iff_not_sidon_export
+#print axioms doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export
+#print axioms doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export
+#print axioms doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export
 #print axioms two_faces_are_one_wall_export
 #print axioms noFifthDoor_forces_doorIV_export
 #print axioms prizeCertifying_subset_doorIV_export
