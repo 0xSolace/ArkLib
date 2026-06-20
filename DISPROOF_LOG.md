@@ -8543,3 +8543,32 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVLargestGap
 axiom-clean. Theorems `emptyArc_bound_trivial`, `emptyArc_deficit_zero`,
 `largestGap_yields_only_trivial_ceiling`, `largestGap_ceiling_independent_of_gap`; axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-worstb-2adic-unstructured] worst-b is 2-adically Haar-random — dyadic-selection walled (2026-06-20, sol)
+
+Lane: door-(iv) Lane-1, the brief's open "is the worst-b SET itself structured?" question — the DYADIC
+refinement of the already-walled mod-e argmax (bdb0405d6: c*=dlog(worst-b) mod e is random in [0,e) at
+generic primes). Since the prize regime is DEFINED by n=2^a (a dyadic tower), the natural remaining
+structure to test is 2-ADIC: does the worst-b consistently sit at a fixed dyadic subtower level?
+
+PROBE (scripts/probes/probe_dooriv_worstb_2adic_valuation.py, EXACT, β=4, PROPER μ_n n=2^a a∈[4,7],
+24 primes per n, p≫n³, incl Fermat-type): for the worst b, set k* = dlog_g(worst-b) mod n (its index
+in Z_n) and measure v_2(k*) (which dyadic subtower rung worst-b's coset occupies).
+
+RESULT: v_2(k*) follows the HAAR-UNIFORM null P(v_2=j)=2^-(j+1) at EVERY n. Observed vs Haar-expected:
+- n=16: {0:12, 1:7, 2:3, in_μ:2} vs {12,6,3,1.5} — no spike.
+- n=32: {0:11, 1:6, 2:3, 3:3, 4:1} vs {12,6,3,1.5,0.8} — no spike.
+- n=64: {0:12, 1:7, 2:4, 3:1} vs {12,6,3,1.5} — no spike.
+- n=128:{0:13, 1:6, 2:2, 3:2, in_μ:1} vs {12,6,3,1.5} — no spike.
+No fixed-level spike (> 2.5x null and ≥40% mass) at ANY n. The worst-b lands at a Haar-RANDOM dyadic
+level, exactly as a uniformly-random index in Z_n would.
+
+VERDICT: the worst-b coset is NOT 2-adically structured. The dyadic-tower-rung SELECTION hope (pin the
+adversarial coset to a fixed subtower level, then grip it with a 2-adic / tower-recursion method) is
+WALLED — jointly with the already-walled mod-e argmax (bdb0405d6) and the No-Recursion tower transfer
+obstruction (00aab4774). This closes the "structured worst-b" question along its last natural axis (the
+2-adic one, the most promising given n=2^a): there is no arithmetic of b — mod e OR 2-adic — that
+pre-selects the worst coset. Any worst-b-selection-based attack is walled. No CORE, cancellation,
+completion, anti-concentration, moment, or capacity claim.
+
+Probe-only (Python, EXACT) ⇒ axiom-clean trivially; only DISPROOF_LOG.md + the probe script change.
