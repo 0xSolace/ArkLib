@@ -9187,3 +9187,32 @@ new `def addSystemPatternCount` + theorems `addSystemPatternCount_smul_eq`,
 `addSystemPatternCount_phaseSet_indep_of_scalar` (subsumes the single-form indep at m=1), and
 `not_addSystemPatternCount_scalar_improvement`. Axiom-clean, axioms ⊆ {propext, Classical.choice,
 Quot.sound}. Pushed 592c1bedf.
+
+## [doorIV-target-optimized-multiform-smallball-blindness] vector-target max/range/histogram Halász statistics are scalar-blind (2026-06-20, g55)
+
+Lane: door-(iv) Lane 1 constraint extension in `_DoorIVPhaseSetDilationInvariant`. The prior
+multi-form theorem `addSystemPatternCount_smul_eq` closed fixed rescaled vector targets for systems of
+additive linear forms. This entry locks the actual target-optimized small-ball use case: after fixing a
+system `A : Fin m → Fin k → F`, a Halász/Littlewood-Offord argument may choose the best vector target,
+or inspect the full histogram of vector-target fiber sizes.
+
+Formal kernel added:
+* `addSystemPatternFiberCounts_smul_eq` and `_phaseSet_indep_of_scalar`: the range of joint-system
+  fiber sizes over all vector targets is invariant under nonzero dilation.
+* `addSystemPatternMaxFiber_smul_eq` and `_phaseSet_indep_of_scalar`: the max-over-vector-target
+  joint-system small-ball statistic is invariant.
+* `addSystemPatternFiberMultiplicity_smul_eq` and `_phaseSet_indep_of_scalar`: every histogram bin,
+  i.e. the number of vector targets with fiber size exactly `N`, is invariant.
+* `not_addSystemPatternMaxFiber_scalar_improvement` and
+  `not_addSystemPatternFiberMultiplicity_scalar_improvement`: no strict worst-frequency improvement can
+  be certified from these target-optimized or histogram-sensitive additive small-ball statistics.
+
+VERDICT: the full finite-dimensional additive small-ball/Halász profile of the Door-IV phase set
+`b·μ_n` is just target relabeling under scalar dilation. This closes the remaining target-optimized and
+histogram-sensitive additive small-ball variants without invoking moment/completion estimates. Any live
+Door-IV crack must use genuinely multiplicative/phase-alignment information beyond additive linear
+system fiber statistics. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
+commits `9350e6f7f` and `233131fa5`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
