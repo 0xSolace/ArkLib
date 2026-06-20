@@ -109,9 +109,28 @@ theorem shawValue_worstPeriod_torsion_full_corridor {d : ℕ}
   rw [hcard] at hceil ⊢
   rwa [ceiling_sqrt_card_eq (lt_of_lt_of_le one_pos hd1) hL hqpos] at hceil
 
+/-- **The SHARP thin-regime floor on the canonical prize object `μ_d`.**  On the actual torsion
+subgroup `μ_d = torsion F d` (`card = d`), in the prize regime `d² ≤ q` (`q = d^β, β ≥ 2`), the
+worst period satisfies `√(d − 1) ≤ M(μ_d)` — the sharp quadratic-regime Parseval floor specialized
+to the exact prize object.  This is strictly stronger than the clean `1/√(2L)`-normalized floor
+(`shawValue_worstPeriod_torsion_clean_floor`), which only reaches a constant fraction: here the floor
+is at its TRUE value `√d`.  Still the LOWER/Johnson side only — the gap to the BGK upper
+`C·√(d·log(q/d))` is exactly the open prize. -/
+theorem worstPeriod_torsion_sharp_floor {d : ℕ}
+    (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (hne : (nonzeroFreqs F).Nonempty)
+    (hq1 : (1 : ℝ) < (Fintype.card F : ℝ)) (hd1 : (1 : ℝ) < (d : ℝ))
+    (hsq : (d : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((d : ℝ) - 1) ≤ worstPeriod ψ (torsion F d) hne := by
+  have hcard : ((torsion F d).card : ℝ) = (d : ℝ) := by rw [card_torsion hd hd0]
+  have hbase := ProximityGap.Frontier.ConcreteParsevalLower.worstPeriod_ge_sqrt_card_pred_of_sq_le
+    hψ (torsion F d) hne hq1 (by rw [hcard]; exact hd1) (by rw [hcard]; exact hsq)
+  rwa [hcard] at hbase
+
 end ProximityGap.Frontier.ConcreteShawCompletionCorridorFull
 
 /-! ## Axiom audit -/
+#print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.worstPeriod_torsion_sharp_floor
 #print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.ceiling_sqrt_card_eq
 #print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.shawValue_worstPeriod_torsion_clean_floor
 #print axioms ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.shawValue_worstPeriod_torsion_full_corridor
