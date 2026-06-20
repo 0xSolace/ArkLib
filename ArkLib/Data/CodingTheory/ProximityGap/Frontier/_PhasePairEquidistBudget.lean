@@ -392,6 +392,58 @@ theorem correction_div_prizeProxy_eq_pairResidual {m : ℕ} (hm : 0 < m) (δ : �
   unfold pairResidualCorrection prizeVarianceProxy
   field_simp [hm2]
 
+/-- **Raw correction budget iff dimensionless residual budget.**  Since the correction divided by
+the prize proxy is exactly `δ(2m-1)`, a raw correction spend `≤ (2m)ε` is equivalent to the
+normalized residual spend `≤ ε`.  This is a reduction identity only; it proves no residual estimate. -/
+theorem correction_le_prizeProxy_mul_iff_pairResidual_le {m : ℕ} (hm : 0 < m) {δ ε : ℝ} :
+    pairResidualCorrection m δ ≤ prizeVarianceProxy m * ε ↔
+      δ * (2 * (m : ℝ) - 1) ≤ ε := by
+  have hp : 0 < prizeVarianceProxy m := by
+    unfold prizeVarianceProxy
+    positivity
+  constructor
+  · intro h
+    have hdiv : pairResidualCorrection m δ / prizeVarianceProxy m ≤
+        (prizeVarianceProxy m * ε) / prizeVarianceProxy m :=
+      div_le_div_of_nonneg_right h (le_of_lt hp)
+    simpa [correction_div_prizeProxy_eq_pairResidual (hm := hm) δ, ne_of_gt hp, mul_comm,
+      mul_left_comm, mul_assoc] using hdiv
+  · intro h
+    have hmul : (pairResidualCorrection m δ / prizeVarianceProxy m) * prizeVarianceProxy m ≤
+        ε * prizeVarianceProxy m := by
+      have h' := h
+      rw [← correction_div_prizeProxy_eq_pairResidual (hm := hm) δ] at h'
+      exact mul_le_mul_of_nonneg_right h' (le_of_lt hp)
+    calc
+      pairResidualCorrection m δ =
+          (pairResidualCorrection m δ / prizeVarianceProxy m) * prizeVarianceProxy m := by
+        field_simp [ne_of_gt hp]
+      _ ≤ ε * prizeVarianceProxy m := hmul
+      _ = prizeVarianceProxy m * ε := by ring
+
+/-- Equality form of the raw-correction/normalized-residual bridge.  Spending exactly `(2m)ε` of
+raw correction is the same as having exact dimensionless residual `ε`. -/
+theorem correction_eq_prizeProxy_mul_iff_pairResidual_eq {m : ℕ} (hm : 0 < m) {δ ε : ℝ} :
+    pairResidualCorrection m δ = prizeVarianceProxy m * ε ↔
+      δ * (2 * (m : ℝ) - 1) = ε := by
+  have hp : prizeVarianceProxy m ≠ 0 := ne_of_gt (by
+    unfold prizeVarianceProxy
+    positivity)
+  constructor
+  · intro h
+    have hdiv : pairResidualCorrection m δ / prizeVarianceProxy m =
+        (prizeVarianceProxy m * ε) / prizeVarianceProxy m := by rw [h]
+    simpa [correction_div_prizeProxy_eq_pairResidual (hm := hm) δ, hp, mul_comm, mul_left_comm,
+      mul_assoc] using hdiv
+  · intro h
+    calc
+      pairResidualCorrection m δ =
+          (pairResidualCorrection m δ / prizeVarianceProxy m) * prizeVarianceProxy m := by
+        field_simp [hp]
+      _ = ε * prizeVarianceProxy m := by
+        rw [correction_div_prizeProxy_eq_pairResidual (hm := hm) δ, h]
+      _ = prizeVarianceProxy m * ε := by ring
+
 /-- The pair-discrepancy correction itself vanishes at the ideal residual `δ = 0`. -/
 theorem pairResidualCorrection_zero (m : ℕ) : pairResidualCorrection m 0 = 0 := by
   unfold pairResidualCorrection
@@ -419,4 +471,6 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_eq_prizeProxy_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_variance_sub_prizeProxy_eq_zero_of_ideal_pairEquidist
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_div_prizeProxy_eq_pairResidual
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_le_prizeProxy_mul_iff_pairResidual_le
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.correction_eq_prizeProxy_mul_iff_pairResidual_eq
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.pairResidualCorrection_zero
