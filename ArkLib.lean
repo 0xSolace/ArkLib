@@ -1509,6 +1509,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceVarianceRouteCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceSecondMomentEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceSecondMomentSubCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessExcessRange
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessExcessSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessRatio
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessRatioRange
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DiffTraceFlatnessRatioSqrtCancellation
