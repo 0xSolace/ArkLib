@@ -9216,3 +9216,29 @@ system fiber statistics. No CORE, cancellation, completion, moment-saving, or ca
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
 commits `9350e6f7f` and `233131fa5`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-fiber-rigidity] the trivial-cocycle Fourier fiber is RIGID — full mass `n` forces `r=1` (2026-06-20, sol)
+
+Lane: door-(iv) Lane 3, multiplicative side, extends the proven anchor `trivial_cocycle_delta_fiber`
+in `_JacobiCocycleDispersion`. That file proved the FORWARD delta pattern: the length-`n` geometric
+Fourier fiber `∑_{g<n} r^g` of an `n`-th root of unity `r` is `n` if `r=1` and `0` otherwise. What was
+MISSING is the CONVERSE / rigidity: that the maximally-bad full-concentration value `n` is attained
+ONLY at `r=1` (the genuine-character / trivial-cocycle ratio), so a nontrivial projective phase `r≠1`
+is forced strictly below the triangle ceiling.
+
+PROBE (`scripts/probes/probe_dooriv_fiber_rigidity.py`; 510 roots of unity, n=2,4,8,…,256, every
+`n`-th root `r=e^{2πij/n}`): the fiber modulus equals `n` iff `j=0` (`r=1`); zero otherwise. No
+mismatch. The full-concentration spike is a unique attainer — rigid.
+
+VERDICT (constraint lemma, no-fifth-door rigidity): on a single Fourier fiber, the only ratio that
+saturates the triangle ceiling `n` (zero dispersion, the maximally-bad trivial bound) is the trivial
+ratio `r=1`. Mechanism: off support (`r≠1`) the geometric sum is exactly `0` (`mul_neg_geom_sum` +
+`r^n=1`), and `(n:ℂ)≠0` for `0<n`, so the value `n` and the value `0` are incompatible. This is the
+RIGIDITY counterpart of the named-open `JacobiCocycleDispersion` (the prize): it does NOT bound the
+Jacobi-cocycle dispersion, it certifies that the ONLY way to fail dispersion all the way up to `n` on
+a fiber is the degenerate genuine-character case. Any sub-`n` single-fiber value is forced by a
+nontrivial cocycle phase. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`,
+4 theorems (`fiber_eq_card_iff_one`, `norm_fiber_eq_card_iff_one`, `norm_fiber_lt_card_of_ne_one`,
+`fiber_full_mass_forces_trivial_cocycle`), axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
