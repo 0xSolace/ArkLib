@@ -318,6 +318,28 @@ theorem two_mul_minMass_ge_of_multiPieceCoherence_le {ι : Type*} [DecidableEq �
   rw [sub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt htotal)] at hmul
   linarith
 
+/-- Exact budget interface for real multi-piece coherence.  A bound `coherence ≤ c` is equivalent to
+paying the denominator-cleared minority-sign budget `(1-c)·total ≤ 2·minority`.  This is the sharp
+constraint form a probe can cite: every claimed `1-c` coherence saving must appear as actual
+minority-sign mass. -/
+theorem multiPieceCoherence_le_iff_two_mul_minMass_ge {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass c : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A ≤ c ↔
+      (1 - c) * (posMass + negMass) ≤ 2 * min posMass negMass := by
+  rw [multiPieceCoherence_eq_one_sub_two_mul_min_ratio s A hsum hden htotal]
+  constructor
+  · intro hle
+    have hmul := mul_le_mul_of_nonneg_right hle (le_of_lt htotal)
+    rw [sub_mul, one_mul, div_mul_cancel₀ _ (ne_of_gt htotal)] at hmul
+    linarith
+  · intro hbudget
+    have hmul := mul_le_mul_of_nonneg_right hbudget (inv_nonneg.mpr (le_of_lt htotal))
+    field_simp [ne_of_gt htotal] at hmul ⊢
+    linarith
+
 end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
@@ -339,3 +361,4 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms abs_signedMass_ratio_eq_one_sub_two_mul_min_ratio
 #print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
 #print axioms two_mul_minMass_ge_of_multiPieceCoherence_le
+#print axioms multiPieceCoherence_le_iff_two_mul_minMass_ge

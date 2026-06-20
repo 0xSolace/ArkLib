@@ -8187,3 +8187,21 @@ capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceOrderBlind.lean`, new
 theorem `image_cosetHitting_set_eq_range`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-multipiece-sign-budget-iff] real multi-piece coherence bound is exactly a denominator-cleared minority-sign budget (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVMultiPieceSignCoherence`. Prior kernel already
+compressed real negation-stable refinements to aggregate positive/negative sign masses and showed that
+coherence slack is paid by the minority sign mass. This refinement packages the exact probe-facing
+threshold:
+
+`multiPieceCoherence s A ≤ c ↔ (1-c) * (posMass + negMass) ≤ 2 * min posMass negMass`.
+
+VERDICT: subdividing the adversarial period into many real pieces gives no hidden anti-concentration
+lever. Every claimed `1-c` coherence saving is precisely equivalent to a denominator-cleared minority
+mass obligation; absent that actual two-sided mass at the worst frequency, the multi-piece real route
+saturates. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`,
+new theorem `multiPieceCoherence_le_iff_two_mul_minMass_ge`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
