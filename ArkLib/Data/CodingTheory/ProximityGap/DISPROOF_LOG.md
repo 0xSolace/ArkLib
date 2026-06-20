@@ -18662,3 +18662,32 @@ They are the same √n-vs-√p dispersion wall in two languages, but no machine-
 discharging one would not formally discharge the other. Honest statement: the moment face is fully reduced to
 `S_r`; the incidence face is separately open; the prize needs one of the two faces proven (and a bridge, if via
 the other). Do not describe the campaign as having "a single open input."
+
+## [verify-charp-stepratio-refute + lc-margin] Independent confirmation of the char-p step-ratio refutation, + the wraparound-LC margin trend the v2 receipt understates (2026-06-20, NubsCarson)
+
+VERIFY-DON'T-TRUST receipt for the char-p-transfer refutation sweep (`_CharPStepRatioMonotoneFails`,
+`_RhoAntitoneFailsThinPrime`; commits `29acc887a`/`2b89d4504`) plus an honesty refinement to the
+`_CharPWraparoundLogConcaveQ` v2 probe receipt. Independent probe (different code path — Counter-based
+convolution — exact bignum, correct antipodal `E_r(C)`):
+`scripts/probes/probe_charp_stepratio_refute_and_lc_margin.py`.
+
+(A) REFUTATION CONFIRMED. A second independent implementation reproduces the Lean witnesses EXACTLY: the
+char-p energy step-ratio gap `G_p = (2r+3)·E_{r+1}² − (2r+1)·E_r·E_{r+2}` is NEGATIVE while the char-0 gap
+is POSITIVE at both prize-regime points —
+  - n=32, p=786433, r=3:  E=(446720, 92179360, 24850732032),  G_p = −1235923403258880 < 0 < G_0 = +2385085198648320
+  - n=64, p=2752513, r=2:  E=(12096, 3750400, 1666665280),     G_p = −2341415014400 < 0 < G_0 = +1553767936000
+So char-0 step-ratio monotonicity genuinely does NOT transfer to char-p; the dominance route is soundly dead
+(not a probe artifact — reproduced from scratch).
+
+(B) HONESTY REFINEMENT to the v2 receipt's input-(2) claim. The v2 probe
+(`probe_charp_wraparound_logconcave_Q_v2.py`) reports "wraparound log-concavity holds at every interior r,
+every prime, incl. non-vacuous post-onset cases n=16,p=65537,r=3 and n=32,r=3". But `W_1=W_2=W_3=0` in EVERY
+case in that suite, so the cited **r=3 LC tests are VACUOUS** (`W_3·W_5 = 0 ≤ W_4²`); the ONLY genuinely
+non-vacuous LC test in the v2 suite is n=16,p=65537,r=4. (Q>0 at r=3 comes from the onset term `9·W_4² > 0`,
+NOT from log-concavity.) Pushing r to 8 at n=16 over four p≈n⁴ primes gives genuine non-vacuous tests at
+r=4,5,6: log-concavity HOLDS at every one, but the ratio `W_r·W_{r+2}/W_{r+1}²` climbs MONOTONICALLY toward
+the borderline 1 (p=65537: 0.654 → 0.830 → 0.901), consistent with `W_r ~ n^{2r}/p ⟹ ratio → 1`. So even the
+SUFFICIENT condition (W-log-concavity) is a finite-size signal trending to marginality at saddle depth
+r≈log p; the receipt phrasing "empirically forced in the prize regime, not larped" overstates its robustness
+(one loose point + a margin trend, not broad confirmation). This does NOT change the verdict — the route is
+already dead via input (1) in (A) — and the Lean theorems (pure algebra) are UNAFFECTED. CORE stays OPEN.
