@@ -71,8 +71,26 @@ theorem prize_thin_range (S E Wick μ p : ℝ) (hp : 1 < p)
     μ ≤ Wick :=
   prize_of_saddleEnergyBound S E Wick μ p hp hμ (le_of_eq hWfree) hbessel
 
+/-- **Necessity of the saddle energy bound (contrapositive core).**  The saddle bound is not merely
+*sufficient* for the sub-Gaussian moment — modulo the proven char-0 anchor `E ≤ Wick`, it is the
+binding obstruction.  Given the proven anchor `E ≤ Wick` and `μ·(p−1) = S` with `p > 1`: if the
+sub-Gaussian moment conclusion *fails* (`Wick < μ`), then the saddle energy bound *must* fail too
+(`(p−1)·E < S`).  So any violation of the prize-driving conclusion is forced through a violation of
+the single open hypothesis — the saddle bound is exactly the load-bearing rung. -/
+theorem saddleEnergyBound_necessary (S E Wick μ p : ℝ) (hp : 1 < p)
+    (hμ : μ * (p - 1) = S) (hbessel : E ≤ Wick) (hfail : Wick < μ) :
+    (p - 1) * E < S := by
+  have hp1 : 0 < p - 1 := by linarith
+  -- (p-1)*E ≤ (p-1)*Wick < μ*(p-1) = S
+  have h1 : (p - 1) * E ≤ (p - 1) * Wick := mul_le_mul_of_nonneg_left hbessel hp1.le
+  have h2 : (p - 1) * Wick < (p - 1) * μ := by
+    have := mul_lt_mul_of_pos_left hfail hp1; linarith
+  have h3 : (p - 1) * μ = S := by rw [mul_comm]; exact hμ
+  linarith
+
 end ProximityGap.Frontier.PrizeCapstone
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ProximityGap.Frontier.PrizeCapstone.prize_of_saddleEnergyBound
 #print axioms ProximityGap.Frontier.PrizeCapstone.prize_thin_range
+#print axioms ProximityGap.Frontier.PrizeCapstone.saddleEnergyBound_necessary

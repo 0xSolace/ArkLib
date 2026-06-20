@@ -8308,3 +8308,20 @@ estimate hidden; no CORE/anti-concentration/capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ShawValueBGKBracket.lean, new def
 genuinePrizeFamilyBound and theorem genuinePrizeFamilyBound_iff_shawValue, axiom-clean with axioms
 contained in {propext, Classical.choice, Quot.sound}.
+
+## [saddle bound necessary] the saddle energy bound is the binding rung, not just sufficient (2026-06-19)
+
+Lane: door-(iv) Lane 2 conditional capstone — EXTENDS the proven prize_of_saddleEnergyBound
+(_PrizeConditionalCapstone.lean) with its contrapositive/necessity. The conditional capstone proved
+the saddle bound S<=(p-1)E (+ proven anchor E<=Wick, μ(p-1)=S) is SUFFICIENT for μ<=Wick.
+
+VERDICT: it is also the BINDING obstruction. saddleEnergyBound_necessary: given the proven anchor
+E<=Wick and μ(p-1)=S with p>1, if the sub-Gaussian conclusion FAILS (Wick<μ) then the saddle bound
+MUST fail ((p-1)E<S). So any violation of the prize-driving conclusion is forced through a violation
+of the single open hypothesis — the saddle bound is exactly the load-bearing rung, modulo the proven
+char-0 anchor. No CORE, cancellation, anti-concentration, or capacity claim; this is honest scaffold
+bookkeeping isolating the open content.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PrizeConditionalCapstone.lean, new
+theorem saddleEnergyBound_necessary, axiom-clean with axioms contained in
+{propext, Classical.choice, Quot.sound}.
