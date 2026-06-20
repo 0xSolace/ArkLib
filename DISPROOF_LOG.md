@@ -8496,3 +8496,21 @@ strict increase between them — the Gumbel/extreme-value route cannot absorb it
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvN3_GumbelTailRefuted.lean, new
 theorem overshoot_strictly_grows (+ def overshootFloor), axiom-clean {propext, Classical.choice,
 Quot.sound}. No CORE/cancellation/completion/anti-concentration/capacity claim.
+
+## [Lane-1 PROBE — worst-b growth-rate measurement is INCONCLUSIVE at small n; prize-norm ratio CREEPS UP] (2026-06-19, Python-only)
+
+Lane: door-(iv) Lane-1 "is ρ(b)→1 forced or is there slack?" / growth-exponent crux. PROBE (exact
+DFT over coset reps, β=4, n=16,32,64):
+  n=16 p=65521  M=13.76  log_n M=0.946  M/√n=3.44  M/√(n ln(p/n))=1.19
+  n=32 p=1048609 M=22.98 log_n M=0.905  M/√n=4.06  M/√(n ln(p/n))=1.26
+  n=64 p=16777153 M=37.44 log_n M=0.871 M/√n=4.68  M/√(n ln(p/n))=1.32
+  empirical M~n^α: α=0.740 (16→32), α=0.703 (32→64).
+READING (honesty-strict, per the ASYMPTOTIC-CLAIM GUARD): log_n M decreases (0.946→0.905→0.871) and
+α≈0.70, which is BELOW the BGK SOTA exponent 0.989 — but this is NOT evidence of a beyond-BGK/prize
+law. The √(log) factor makes α at small n a poor estimator; the GUARD warns a sub-leading O(log n) dip
+is NOT a sub-linear law. CRUCIALLY the prize-normalized ratio M/√(n ln(p/n)) is INCREASING (1.19→1.26→
+1.32), the WRONG direction for a clean C·√(n log) prize bound — consistent with a slow approach to the
+wall, NOT a crack. So the growth-rate measurement at accessible n is INCONCLUSIVE and leans toward the
+wall (ratio creeping up). Do NOT assert capacity/beyond-Johnson from this combinatorial face (cliff-at-
+n/2). No exploitable slack survives. Python-only, no Lean changed ⇒ axiom-clean trivially. No CORE/
+cancellation/completion/anti-concentration/capacity claim.
