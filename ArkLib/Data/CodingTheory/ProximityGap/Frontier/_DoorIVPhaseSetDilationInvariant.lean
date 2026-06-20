@@ -570,6 +570,20 @@ theorem addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar {k : ℕ}
   rw [addLinearPatternFiberMultiplicity_smul_eq S coeff N hb₁,
     addLinearPatternFiberMultiplicity_smul_eq S coeff N hb₂]
 
+/-- **No strict scalar improvement for full fiber-histogram small-ball bounds.**  If one nonzero
+frequency dilate has more than `C` targets whose additive-linear fiber size is exactly `N`, then no
+other nonzero dilate can satisfy the histogram bound `≤ C` at that same fiber size.  Passing from the
+maximum fiber to the whole Littlewood-Offord/Halász fiber histogram still cannot select or improve the
+adversarial `b`; dilation only relabels the targets. -/
+theorem not_addLinearPatternFiberMultiplicity_scalar_improvement {k : ℕ}
+    (S : Finset F) (coeff : Fin k → F) (N : ℕ) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addLinearPatternFiberMultiplicity (S.image (fun x => b₁ * x)) coeff N) :
+    ¬ addLinearPatternFiberMultiplicity (S.image (fun x => b₂ * x)) coeff N ≤ C := by
+  intro hgood
+  have heq := addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar
+    (S := S) (coeff := coeff) (N := N) hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
 /-- Dilation by a NONZERO scalar `λ` is an additive-energy-preserving bijection on the quadruple
 solution set: `(a,b,c,d) ↦ (λa,λb,λc,λd)` maps `addQuadruples S` bijectively onto
 `addQuadruples (λ • S)`, because `a+b=c+d ⟺ λa+λb=λc+λd` for `λ ≠ 0`. Hence the additive energy is
@@ -657,6 +671,8 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addLinearPatternFiberMultiplicity_phaseSet_indep_of_scalar
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addLinearPatternFiberMultiplicity_scalar_improvement
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_phaseSet_indep_of_scalar

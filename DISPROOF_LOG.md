@@ -8655,3 +8655,20 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFa
 new theorems `coherence_ge_normFloor_div_of_halfMass_le` and
 `not_coherence_le_of_normFloor_gt_product`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [door-iv fiber-histogram scalar-blindness] full small-ball histograms cannot select the worst frequency (2026-06-20, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVPhaseSetDilationInvariant`. The existing
+kernel proved that additive-linear fiber counts, max fibers, and full fiber-size multiplicities are
+invariant under nonzero dilation of the phase set `S_b = b·S`. This refinement adds the direct
+strict-threshold obstruction for the full Littlewood-Offord/Halász fiber histogram.
+
+VERDICT: if one nonzero dilate has more than `C` targets with fiber size exactly `N`, then no other
+nonzero dilate can satisfy the histogram bound `≤ C` at that same `N`. Passing from a max-fiber
+small-ball statistic to the full fiber histogram still does not create a worst-`b` selector: the scalar
+`b` only relabels target fibers. No CORE, cancellation, completion, anti-concentration theorem,
+moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseSetDilationInvariant.lean`,
+new theorem `not_addLinearPatternFiberMultiplicity_scalar_improvement`, axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.
