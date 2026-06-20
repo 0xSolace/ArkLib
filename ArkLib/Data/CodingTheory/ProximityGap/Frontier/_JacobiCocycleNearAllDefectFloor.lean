@@ -84,6 +84,26 @@ theorem kDefect_floor_lt_of_twice_complement_lt {T : ℝ} (hM : 1 ≤ M) (hk : S
   have hfloor := kDefect_floor_le_twice_complement S w hM hk hunit
   nlinarith
 
+/-- **Normalized near-all-defect obstruction.** Dividing the CS floor by `M`, the certificate is bounded
+by twice the missing-index fraction `(M-#S)/M`. Hence if the complement is `o(M)`, this entire normalized
+Cauchy–Schwarz budget vanishes; any fixed normalized saving needs a fixed complement fraction. -/
+theorem normalized_floor_le_twice_complement_fraction (hM : 1 ≤ M) (hk : S.card ≤ M)
+    (hunit : ∀ i ∈ S, ‖w i‖ = 1) :
+    (((M : ℝ) - S.card) * (∑ i ∈ S, (1 - (w i).re)) / (M : ℝ)) / (M : ℝ)
+      ≤ 2 * (((M : ℝ) - S.card) / (M : ℝ)) := by
+  have hM0 : (0 : ℝ) < (M : ℝ) := by exact_mod_cast hM
+  have hfloor := kDefect_floor_le_twice_complement S w hM hk hunit
+  exact (div_le_div_of_nonneg_right hfloor (le_of_lt hM0)).trans_eq (by ring)
+
+/-- **Fractional target spend.** A normalized floor target `eps` forces the complement fraction to be at
+least `eps/2`. This is the scale-free version of the near-all-defect obstruction. -/
+theorem complement_fraction_ge_half_of_normalized_floor_ge {eps : ℝ} (hM : 1 ≤ M)
+    (hk : S.card ≤ M) (hunit : ∀ i ∈ S, ‖w i‖ = 1)
+    (hfloor : eps ≤ (((M : ℝ) - S.card) * (∑ i ∈ S, (1 - (w i).re)) / (M : ℝ)) / (M : ℝ)) :
+    eps / 2 ≤ ((M : ℝ) - S.card) / (M : ℝ) := by
+  have hnorm := normalized_floor_le_twice_complement_fraction S w hM hk hunit
+  nlinarith
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -91,3 +111,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.kDefect_floor_le_of_complement_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.complement_ge_half_floor_of_floor_ge
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.kDefect_floor_lt_of_twice_complement_lt
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.normalized_floor_le_twice_complement_fraction
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.complement_fraction_ge_half_of_normalized_floor_ge

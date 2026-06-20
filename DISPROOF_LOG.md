@@ -9503,3 +9503,14 @@ VERDICT: a near-all-defect Cauchy-Schwarz/L2-budget certificate cannot hide priz
 the defect mass. The missing complement must itself pay the target scale, so this route remains a
 bookkeeping obstruction rather than arithmetic anti-concentration. No CORE/cancellation/completion/
 moment/capacity claim. CORE OPEN.
+
+## door-(iv) normalized near-all-defect CS floor is bounded by complement fraction (2026-06-20, g55)
+
+Lens: Lane 3 scale-free refinement of `_JacobiCocycleNearAllDefectFloor`. After bounding the absolute
+floor by twice the complement size, this normalizes by `M`: the CS floor per index is at most twice the
+missing-index fraction `(M-#S)/M`, and any normalized target `eps` forces complement fraction at least
+`eps/2`.
+
+VERDICT: the near-all-defect Cauchy-Schwarz/L2 route has no asymptotic normalized saving when the
+complement is sublinear. A fixed `eps`-saving demands a fixed complement fraction before any arithmetic
+phase structure enters. No CORE/cancellation/completion/moment/capacity claim. CORE OPEN.
