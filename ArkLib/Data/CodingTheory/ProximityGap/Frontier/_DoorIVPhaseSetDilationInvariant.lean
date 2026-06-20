@@ -1024,6 +1024,58 @@ theorem addSystemPatternMaxFiber_phaseSet_indep_of_scalar {m k : ℕ}
   rw [addSystemPatternMaxFiber_smul_eq S A hb₁,
     addSystemPatternMaxFiber_smul_eq S A hb₂]
 
+/-- Histogram bin for joint-system target-fiber multiplicities: the number of vector targets whose
+fiber has size exactly `N`.  This records the full multi-dimensional small-ball histogram, not merely
+its support or maximum. -/
+def addSystemPatternFiberMultiplicity {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (N : ℕ) : ℕ :=
+  ((Finset.univ : Finset (Fin m → F)).filter (fun t => addSystemPatternCount S A t = N)).card
+
+/-- Nonzero dilation preserves the full histogram of joint-system fiber sizes.  The map
+`t ↦ λ • t` is a bijection on vector targets, so every histogram bin is unchanged. -/
+theorem addSystemPatternFiberMultiplicity_smul_eq {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (N : ℕ) {lam : F} (hlam : lam ≠ 0) :
+    addSystemPatternFiberMultiplicity (S.image (fun x => lam * x)) A N =
+      addSystemPatternFiberMultiplicity S A N := by
+  classical
+  unfold addSystemPatternFiberMultiplicity
+  refine Finset.card_nbij'
+    (fun t r => lam⁻¹ * t r)
+    (fun t r => lam * t r)
+    ?_ ?_ ?_ ?_
+  · intro t ht
+    have htN : addSystemPatternCount (S.image (fun x => lam * x)) A t = N := by
+      simpa using ht
+    have hcount := (addSystemPatternCount_smul_eq S A (fun r => lam⁻¹ * t r) hlam).symm
+    have htarget : (fun r => lam * (lam⁻¹ * t r)) = t := by
+      ext r
+      rw [← mul_assoc, mul_inv_cancel₀ hlam, one_mul]
+    have hcount' : addSystemPatternCount (S.image (fun x => lam * x)) A t =
+        addSystemPatternCount S A (fun r => lam⁻¹ * t r) := by
+      simpa [htarget] using hcount.symm
+    simpa using hcount'.symm.trans htN
+  · intro t ht
+    have htN : addSystemPatternCount S A t = N := by
+      simpa using ht
+    have hcount := addSystemPatternCount_smul_eq S A t hlam
+    simpa using hcount.trans htN
+  · intro t _
+    ext r
+    simp [hlam]
+  · intro t _
+    ext r
+    simp [hlam]
+
+/-- Two nonzero frequency dilates have the same full joint-system fiber histogram.  Thus even
+histogram-sensitive multi-dimensional small-ball inputs are scalar-blind. -/
+theorem addSystemPatternFiberMultiplicity_phaseSet_indep_of_scalar {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (N : ℕ) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) :
+    addSystemPatternFiberMultiplicity (S.image (fun x => b₁ * x)) A N =
+      addSystemPatternFiberMultiplicity (S.image (fun x => b₂ * x)) A N := by
+  rw [addSystemPatternFiberMultiplicity_smul_eq S A N hb₁,
+    addSystemPatternFiberMultiplicity_smul_eq S A N hb₂]
+
 /-- **No strict scalar improvement for the multi-dimensional small-ball count.** If one nonzero
 frequency dilate makes the joint system fiber exceed a proposed threshold `C`, no other nonzero
 dilate can satisfy `≤ C` at the rescaled target. The adversarial worst `b` cannot tune the
@@ -1050,6 +1102,18 @@ theorem not_addSystemPatternMaxFiber_scalar_improvement {m k : ℕ}
     ¬ addSystemPatternMaxFiber (S.image (fun x => b₂ * x)) A ≤ C := by
   intro hgood
   have heq := addSystemPatternMaxFiber_phaseSet_indep_of_scalar (S := S) A hb₁ hb₂
+  exact not_lt_of_ge hgood (by simpa [heq] using hbad)
+
+/-- **No strict scalar improvement for full joint-system fiber-histogram bounds.** If one nonzero
+frequency has more than `C` vector targets with fiber size exactly `N`, no other nonzero frequency can
+satisfy the histogram-bin bound `≤ C`. Dilation only relabels vector targets. -/
+theorem not_addSystemPatternFiberMultiplicity_scalar_improvement {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) (N : ℕ) {b₁ b₂ : F}
+    (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < addSystemPatternFiberMultiplicity (S.image (fun x => b₁ * x)) A N) :
+    ¬ addSystemPatternFiberMultiplicity (S.image (fun x => b₂ * x)) A N ≤ C := by
+  intro hgood
+  have heq := addSystemPatternFiberMultiplicity_phaseSet_indep_of_scalar (S := S) A N hb₁ hb₂
   exact not_lt_of_ge hgood (by simpa [heq] using hbad)
 
 end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
@@ -1109,7 +1173,12 @@ end ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant
 #print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber_smul_eq
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber_phaseSet_indep_of_scalar
+#print axioms ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternFiberMultiplicity_smul_eq
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternFiberMultiplicity_phaseSet_indep_of_scalar
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternCount_scalar_improvement
 #print axioms
   ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternMaxFiber_scalar_improvement
+#print axioms
+  ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternFiberMultiplicity_scalar_improvement
