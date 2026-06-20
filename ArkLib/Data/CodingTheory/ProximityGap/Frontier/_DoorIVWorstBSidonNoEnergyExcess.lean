@@ -110,6 +110,27 @@ theorem not_sidon_of_positive_additiveEnergyExcess (G : Finset F)
   exact (Nat.lt_irrefl 0)
     (by rwa [(additiveEnergyExcess_eq_zero_iff_sidon G).mpr hG] at h)
 
+/-- **Positive excess is exactly non-Sidon-ness.**  The energy-excess audit has no hidden middle
+case: a set has strictly positive additive-energy budget above the Sidon floor iff it fails to be
+Sidon.  Thus the measured Sidon worst-frequency rep set is not merely low-energy; it has exactly
+zero usable additive-energy excess, while every positive-excess certificate would be a certificate
+of non-Sidon structure. -/
+theorem positive_additiveEnergyExcess_iff_not_sidon (G : Finset F) :
+    0 < additiveEnergyExcess G ↔ ¬ IsSidonSet G := by
+  constructor
+  · exact not_sidon_of_positive_additiveEnergyExcess G
+  · intro hnot
+    exact Nat.pos_of_ne_zero fun hzero =>
+      hnot ((additiveEnergyExcess_eq_zero_iff_sidon G).mp hzero)
+
+/-- **No-excess iff Sidon, inequality form.**  Since the excess is natural-valued, the
+probe-facing statement `excess ≤ 0` is equivalent to Sidon-ness.  This packages failed
+additive-energy probes that report a zero budget as the exact Sidon-floor obstruction. -/
+theorem additiveEnergyExcess_le_zero_iff_sidon
+    (G : Finset F) :
+    additiveEnergyExcess G ≤ 0 ↔ IsSidonSet G := by
+  rw [Nat.le_zero, additiveEnergyExcess_eq_zero_iff_sidon]
+
 /-- **Hereditarity: no sub-collection escape.**  Since Sidon-ness is hereditary
 (`IsSidonSet.subset`), every subset `H ⊆ W` of the (Sidon) worst-frequency rep set is itself Sidon,
 hence has additive-energy excess `0`.  A door-(iv) attack cannot recover additive structure by
@@ -133,5 +154,9 @@ end ArkLib.ProximityGap.SubgroupGaussSumMoment
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_sidon
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergy_eq_floor_of_sidon
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.not_sidon_of_positive_additiveEnergyExcess
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_eq_zero_of_subset_sidon
-#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_subset_sidon
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.positive_additiveEnergyExcess_iff_not_sidon
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_le_zero_iff_sidon
+#print axioms
+  ArkLib.ProximityGap.SubgroupGaussSumMoment.additiveEnergyExcess_eq_zero_of_subset_sidon
+#print axioms
+  ArkLib.ProximityGap.SubgroupGaussSumMoment.no_positive_additiveEnergyExcess_of_subset_sidon
