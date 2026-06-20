@@ -16,6 +16,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G2_ResonanceCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_nogo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -70,6 +72,11 @@ anything here; this index does not claim otherwise.
 | `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
+| `charP_stepRatioMonotoneAt_iff_gap_nonneg_export` | obstruction | CharPStepRatioFails |
+| `charP_stepRatioMonotone_false_n32_export` | obstruction | CharPStepRatioFails |
+| `charP_no_universal_positive_stepRatioMonotone_export` | obstruction | CharPStepRatioFails |
+| `rho_normalized_antitone_and_ceiling_incompatible_export` | obstruction | RhoAntitoneFails |
+| `rho_antitone_route_not_universal_export` | obstruction | RhoAntitoneFails |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -321,6 +328,62 @@ theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 
     (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
   bracket_width_eq_sqrt hn hL
 
+/-! ## Door-IV char-p transfer / ρ-antitone refutations. Scope: **obstruction**.
+
+These exports make the newest door-(iv) Lane-3 no-go results permanent: char-`p` step-ratio
+monotonicity is exactly the sign of the transfer gap, and explicit prize-regime witnesses
+refute both the universal step-ratio route and the normalized `ρ`-antitone-and-bounded route. These are route
+refutations only; they do not disprove CORE. -/
+
+/-- **[obstruction, CharPStepRatioFails]** The abstract char-`p` step-ratio monotonicity predicate
+`s·E_r·E_{r+2} ≤ (s+2)·E_{r+1}²` is exactly nonnegativity of the transfer gap functional used in
+`_CharPTransferDecomposition`. This pins the step-ratio route to one sign condition. -/
+theorem charP_stepRatioMonotoneAt_iff_gap_nonneg_export (s Er Er1 Er2 : ℝ) :
+    ArkLib.ProximityGap.CharPStepRatioFails.StepRatioMonotoneAt s Er Er1 Er2 ↔
+      0 ≤ ArkLib.ProximityGap.CharPTransferDecomposition.gap s Er Er1 Er2 :=
+  ArkLib.ProximityGap.CharPStepRatioFails.stepRatioMonotoneAt_iff_gap_nonneg s Er Er1 Er2
+
+/-- **[obstruction, CharPStepRatioFails]** Exact prize-regime witness (`n=32`, `p=786433`, `r=3`)
+refuting char-`p` step-ratio monotonicity: `7·E₃·E₅ ≤ 9·E₄²` is false for
+the exact period energies. -/
+theorem charP_stepRatioMonotone_false_n32_export :
+    ¬ ArkLib.ProximityGap.CharPStepRatioFails.StepRatioMonotoneAt
+        7 446720 92179360 24850732032 :=
+  ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_n32
+
+/-- **[obstruction, CharPStepRatioFails]** No theorem using only positivity of
+`s,E_r,E_{r+1},E_{r+2}` can prove universal char-`p` step-ratio monotonicity; the exact positive
+`n=32` witness violates it. -/
+theorem charP_no_universal_positive_stepRatioMonotone_export :
+    ¬ (∀ s Er Er1 Er2 : ℝ,
+      0 < s → 0 < Er → 0 < Er1 → 0 < Er2 →
+        ArkLib.ProximityGap.CharPStepRatioFails.StepRatioMonotoneAt s Er Er1 Er2) :=
+  ArkLib.ProximityGap.CharPStepRatioFails.not_forall_positive_stepRatioMonotoneAt
+
+/-- **[obstruction, RhoAntitoneFails]** In normalized `ρ = S/((p−1)E)` coordinates, the `n=32`,
+`p=786433` witness cannot satisfy both the antitone step `ρ(4)≤ρ(3)` and the order-5 ceiling
+`ρ(5)≤1`. This is the probe-facing no-go interface for the `ρ`-antitone-and-bounded route. -/
+theorem rho_normalized_antitone_and_ceiling_incompatible_export :
+    ¬ (ArkLib.ProximityGap.RhoAntitoneFails.S4 /
+          (ArkLib.ProximityGap.RhoAntitoneFails.pm1 * ArkLib.ProximityGap.RhoAntitoneFails.E4)
+        ≤ ArkLib.ProximityGap.RhoAntitoneFails.S3 /
+          (ArkLib.ProximityGap.RhoAntitoneFails.pm1 * ArkLib.ProximityGap.RhoAntitoneFails.E3) ∧
+      ArkLib.ProximityGap.RhoAntitoneFails.S5 /
+          (ArkLib.ProximityGap.RhoAntitoneFails.pm1 * ArkLib.ProximityGap.RhoAntitoneFails.E5)
+        ≤ (1 : ℝ)) :=
+  ArkLib.ProximityGap.RhoAntitoneFails.not_normalized_antitone_and_ceiling
+
+/-- **[obstruction, RhoAntitoneFails]** The `ρ`-antitone route is not universally satisfiable:
+there are positive exact witness values with the `r=3` cross-inequality reversed and the `r=5`
+normalized ceiling broken. Hence `open_core_of_rho_antitone` remains a conditional sufficient route,
+not a universal proof strategy. -/
+theorem rho_antitone_route_not_universal_export :
+    ∃ S3 S4 S5 E3 E4 E5 pm1 : ℝ,
+      (0 < pm1 ∧ 0 < E3 ∧ 0 < E4 ∧ 0 < E5) ∧
+      S3 * E4 < S4 * E3 ∧
+      pm1 * E5 < S5 :=
+  ArkLib.ProximityGap.RhoAntitoneFails.antitone_route_not_universal
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -345,4 +408,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms prizeBound_iff_shawValue_le_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
 #print axioms shawValue_bracket_width_eq_sqrt_export
+#print axioms charP_stepRatioMonotoneAt_iff_gap_nonneg_export
+#print axioms charP_stepRatioMonotone_false_n32_export
+#print axioms charP_no_universal_positive_stepRatioMonotone_export
+#print axioms rho_normalized_antitone_and_ceiling_incompatible_export
+#print axioms rho_antitone_route_not_universal_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
