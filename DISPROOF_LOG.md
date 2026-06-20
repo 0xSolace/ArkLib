@@ -9638,3 +9638,23 @@ capacity claim. This REFUTES one assumed route. CORE stays OPEN.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
 axiom-clean (`{propext, Classical.choice, Quot.sound}`). Theorems: `charP_stepRatio_gap_neg_n32`,
 `charP_stepRatio_reversed_n32`, `charP_stepRatio_gap_neg_n64`, `dominance_not_satisfiable_witness`.
+
+## door-(iv) char-p step-ratio monotonicity refutation packaged as universal no-go (2026-06-20)
+
+Lens: Lane 3 constraint lemma extending `_CharPStepRatioMonotoneFails`. The prior witness gave exact
+prize-regime integer energies where the char-`p` step-ratio gap is negative. This refinement turns the
+witness into reusable theorem-shape no-go statements: define `StepRatioMonotoneAt s Er Er1 Er2` as
+`s*Er*Er2 ≤ (s+2)*Er1^2`; then even under strict positivity of all four inputs there is no universal
+char-`p` step-ratio monotonicity principle. It also packages the transfer obstruction: `Q ≥ 0` plus
+`G₀ ≥ 0` alone cannot force `0 ≤ G₀+L+Q`; the dominance input is genuinely necessary and is false at
+the refuting prize-regime witness.
+
+VERDICT: the char-`p` transfer route cannot be repaired by appealing only to positivity of period energies,
+char-zero nonnegativity, or the already-discharged `Q ≥ 0` algebra. Any door-(iv) proof must supply new
+arithmetic control of the linear wraparound term/dominance, not a generic step-ratio monotonicity lemma.
+No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_CharPStepRatioMonotoneFails.lean`,
+axiom-clean. New theorems: `not_stepRatioMonotoneAt_n32`, `not_forall_positive_stepRatioMonotoneAt`,
+and `not_forall_gap_nonneg_of_charZero_and_Q_nonneg`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.

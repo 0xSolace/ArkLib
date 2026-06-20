@@ -60,6 +60,13 @@ namespace ArkLib.ProximityGap.CharPStepRatioFails
 
 open ArkLib.ProximityGap.CharPTransferDecomposition (gap)
 
+/-- The abstract char-`p` step-ratio monotonicity shape at one depth: `s·E_r·E_{r+2} ≤ (s+2)·E_{r+1}²`.
+The refuting witnesses below show this plausible transfer target is not a theorem of positive
+char-`p` period energies. -/
+def StepRatioMonotoneAt (s Er Er1 Er2 : ℝ) : Prop :=
+  s * Er * Er2 ≤ (s + 2) * Er1 ^ 2
+
+
 /-- **Witness 1: the char-`p` step-ratio gap is negative at `n=32, p=786433, r=3`.** With the exact
 period energies `E₃=446720, E₄=92179360, E₅=24850732032` and `s = 2·3+1 = 7`, the gap
 `gap 7 E₃ E₄ E₅ = 9·E₄² − 7·E₃·E₅` is strictly negative. So the char-`p` step-ratio monotonicity
@@ -72,6 +79,25 @@ theorem charP_stepRatio_gap_neg_n32 :
 theorem charP_stepRatio_reversed_n32 :
     (7 + 2 : ℝ) * (92179360 : ℝ) ^ 2 < 7 * (446720 : ℝ) * 24850732032 := by
   norm_num
+
+
+/-- The `n=32` witness packaged as failure of the abstract monotonicity predicate. -/
+theorem not_stepRatioMonotoneAt_n32 :
+    ¬ StepRatioMonotoneAt 7 446720 92179360 24850732032 := by
+  unfold StepRatioMonotoneAt
+  norm_num
+
+/-- **No universal positive-triple char-`p` step-ratio monotonicity principle can hold.**
+Even with `s, E_r, E_{r+1}, E_{r+2}` all strictly positive, the witness
+`(s,E_r,E_{r+1},E_{r+2})=(7,446720,92179360,24850732032)` violates
+`s·E_r·E_{r+2} ≤ (s+2)·E_{r+1}²`.  Any door-(iv) transfer proof must therefore
+use extra arithmetic structure beyond positivity and char-0 log-convexity. -/
+theorem not_forall_positive_stepRatioMonotoneAt :
+    ¬ (∀ s Er Er1 Er2 : ℝ,
+      0 < s → 0 < Er → 0 < Er1 → 0 < Er2 → StepRatioMonotoneAt s Er Er1 Er2) := by
+  intro h
+  have hbad := h 7 446720 92179360 24850732032 (by norm_num) (by norm_num) (by norm_num) (by norm_num)
+  exact not_stepRatioMonotoneAt_n32 hbad
 
 /-- **Witness 2: the char-`p` step-ratio gap is negative at `n=64, p=2752513, r=2`.** With the exact
 period energies `E₂=12096, E₃=3750400, E₄=1666665280` and `s = 2·2+1 = 5`, the gap
@@ -94,10 +120,23 @@ theorem dominance_not_satisfiable_witness :
   · norm_num
   · norm_num
 
+
+/-- `Q ≥ 0` plus a nonnegative char-0 gap is insufficient to force the transferred char-`p` gap.
+This is the theorem-form no-go behind the dominance witness: the missing input cannot be replaced
+by only the already-proven `Q ≥ 0` algebra. -/
+theorem not_forall_gap_nonneg_of_charZero_and_Q_nonneg :
+    ¬ (∀ G₀ L Q : ℝ, 0 ≤ G₀ → 0 ≤ Q → 0 ≤ G₀ + L + Q) := by
+  intro h
+  rcases dominance_not_satisfiable_witness with ⟨G₀, L, Q, hG₀, hQ, hneg⟩
+  exact not_le_of_gt hneg (h G₀ L Q hG₀ hQ)
+
 end ArkLib.ProximityGap.CharPStepRatioFails
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_stepRatioMonotoneAt_n32
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_forall_positive_stepRatioMonotoneAt
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_gap_neg_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_reversed_n32
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.charP_stepRatio_gap_neg_n64
 #print axioms ArkLib.ProximityGap.CharPStepRatioFails.dominance_not_satisfiable_witness
+#print axioms ArkLib.ProximityGap.CharPStepRatioFails.not_forall_gap_nonneg_of_charZero_and_Q_nonneg
