@@ -9087,3 +9087,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorems `not_participation_ratio_le_of_sq_aligned_gt` and
 `not_participation_ratio_lt_of_sq_aligned_ge`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) recursive-ascent nesting is exactly no positive witness gap (2026-06-20, g55)
+
+Lane 3 constraint extension in `_DoorIVWorstBNonNested.lean`. The existing kernel proved that a transfer
+ratio below one is equivalent to a positive missed-subargmax gap and that non-maximality is witnessed by
+some strictly better sub-frequency. This refinement packages the dual audit forms: `IsSubMaximizer b`
+is exactly the absence of any strict better witness, and `¬ IsSubMaximizer b` is exactly the existence
+of a positive raw witness gap `0 < subMag c - subMag b`.
+
+VERDICT: high percentile evidence remains insufficient for recursive ascent. A nesting claim must rule
+out every positive witness gap; a single positive gap is exactly the kernel-checkable failure certificate.
+No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`, new
+theorems `isSubMaximizer_iff_not_exists_lt` and `not_isSubMaximizer_iff_exists_gap_pos`, axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`.
