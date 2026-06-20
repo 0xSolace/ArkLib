@@ -389,4 +389,38 @@ theorem no_prizeBound_iff_no_shawBound_nonneg_and_floorPrizeRatio
     · exact le_trans (le_max_right _ _) hn
   exact hfloorPack nref hnfloor hq hrespAll M K hfloor
 
+/-- **Positive-side reduction plus floor-ratio discharged door-(iv) package.**  This is the
+positive companion to `no_prizeBound_iff_no_shawBound_nonneg_and_floorPrizeRatio`: existence of a
+nonnegative raw prize constant is exactly existence of a nonnegative Shaw-value constant, and past a
+single threshold the pointwise prize-floor certificate problem is expressed in floor units `M/√n` with
+all honest classical doors excluded.  It is pure Lane-2/3 synthesis/bookkeeping, not a new estimate. -/
+theorem prize_iff_shawBounded_nonneg_and_floorPrizeRatio
+    {ι : Type*} {Mfam n Lfam : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Lfam i))
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ,
+      ((∃ K, 0 ≤ K ∧ ShawValueCapstone.rawPrizeFamilyBound Mfam n Lfam K) ↔
+          (∃ K, 0 ≤ K ∧ ShawValueCapstone.shawValueFamilyBound Mfam n Lfam K)) ∧
+        (∀ nref : ℝ, max N₀ 1 ≤ nref → nref * L ≤ q →
+          (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+            m'.door.isClassical → m'.RespectsProvenScale q C δ nref) →
+          ∀ M K : ℝ, NoFifthDoorTetrachotomy.prizeScale nref ≤ M →
+            (1 ≤ floorPrizeRatio M nref) ∧
+              (M ≤ K * NoFifthDoorTetrachotomy.prizeScale nref ↔ floorPrizeRatio M nref ≤ K) ∧
+              (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+                m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+                m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation)) := by
+  obtain ⟨Nred, hred, _hdoor⟩ :=
+    prize_iff_shawBounded_nonneg_and_discharged_doorIV_only
+      (q := q) hs hLnn hL hC hδ
+  obtain ⟨Nfloor, hfloorPack⟩ :=
+    ceilingRespecting_classical_excluded_floorPrizeRatio hLnn hL hC hδ
+  refine ⟨max Nred Nfloor, hred, ?_⟩
+  intro nref hn hq hrespAll M K hfloor
+  have hnfloor : max Nfloor 1 ≤ nref := by
+    refine max_le ?_ ?_
+    · exact le_trans (le_trans (le_max_right Nred Nfloor) (le_max_left _ _)) hn
+    · exact le_trans (le_max_right _ _) hn
+  exact hfloorPack nref hnfloor hq hrespAll M K hfloor
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
