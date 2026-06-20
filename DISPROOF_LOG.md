@@ -9242,3 +9242,27 @@ nontrivial cocycle phase. No CORE, cancellation, completion, moment-saving, or c
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`,
 4 theorems (`fiber_eq_card_iff_one`, `norm_fiber_eq_card_iff_one`, `norm_fiber_lt_card_of_ne_one`,
 `fiber_full_mass_forces_trivial_cocycle`), axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-fiber-parseval-extremal] the trivial-cocycle transform is the unique Parseval-extremal delta (2026-06-20, sol)
+
+Lane: door-(iv) Lane 3, multiplicative side, the Parseval/ℓ² face of the fiber-rigidity result above
+(`_JacobiCocycleFiberRigidity`). The pointwise rigidity says a single fiber reaches the ceiling `n` only
+at `r=1`. This extends it to the FULL transform over the `n` frequency offsets.
+
+PROBE (`scripts/probes/probe_dooriv_fiber_parseval.py`; n=2..128, every shift c, model the n offsets as
+n-th roots with one trivial entry): the trivial-cocycle (genuine-character) transform's total ℓ² mass
+`∑_b ‖T(b)‖² = n²` sits ENTIRELY on one frequency; support size exactly 1; sup² = n². Zero off-support
+leakage. No mismatch across all (n,c).
+
+VERDICT (constraint lemma, extremal-concentration baseline): the trivial cocycle achieves the Parseval
+extremal — concentration ratio sup²/total = 1 (a perfect delta), the maximally-bad zero-dispersion case.
+Mechanism: every off-support offset gives the zero geometric fiber (orthogonality), so the n² mass never
+leaves the matching frequency. This pins the BASELINE the prize must beat: the genuine Jacobi cocycle
+must MOVE the n² Parseval mass off the single fiber, spreading it across ~n frequencies to bring sup down
+to √(n·log m). The trivial cocycle does NO such dispersion. Counterpart of the named-open
+JacobiCocycleDispersion — does NOT prove dispersion, certifies the unique extremal concentrator.
+No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleFiberRigidity.lean`,
+`trivial_transform_l2_delta` (∑_i ‖fiber‖² = n²) + `trivial_transform_offSupport_all_zero`,
+axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.

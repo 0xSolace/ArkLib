@@ -32,6 +32,11 @@ ratio is trivial. This file locks that rigidity as kernel statements:
 * `fiber_full_mass_forces_trivial_cocycle` — the Door-IV reading: full Fourier concentration (fiber `= n`,
   the maximally-bad trivial bound) is attainable **only** by the genuine-character / trivial-cocycle ratio,
   so any genuine `r ≠ 1` (a nontrivial projective phase) is forced strictly below `n`.
+* `trivial_transform_l2_delta` — the Parseval / `ℓ²` face: over the `n` frequency offsets the trivial-cocycle
+  transform's total squared mass `∑_i ‖fiber‖² = n²` sits ENTIRELY on the single on-support fiber
+  (`sup² = n² = total mass`, concentration ratio `1`, zero dispersion — the extremal worst case).
+* `trivial_transform_offSupport_all_zero` — every off-support fiber is empty: the trivial cocycle moves
+  NO mass off the matching frequency, so it does zero dispersion (the prize must break this).
 
 This is the rigidity counterpart of the named open `JacobiCocycleDispersion`: it does NOT prove that the
 Jacobi cocycle disperses (the prize); it proves that the *only* way to fail dispersion all the way up to the
@@ -104,5 +109,53 @@ theorem fiber_full_mass_forces_trivial_cocycle {n : ℕ} (hn : 0 < n) {r : ℂ}
     (hrpow : r ^ n = 1) (hfull : ‖∑ g ∈ range n, r ^ g‖ = (n : ℝ)) :
     r = 1 :=
   (norm_fiber_eq_card_iff_one hn hrpow).mp hfull
+
+/-! ## The Parseval / ℓ² face: the trivial-cocycle transform is the extremal delta
+
+The trivial-cocycle (genuine-character) Fourier transform, evaluated over the `n` frequency offsets, is a
+perfect delta: ALL of its `ℓ²` mass sits on the single on-support fiber. We model the `n` offsets by an
+indexed family of `n`-th roots `r : Fin n → ℂ` with exactly one trivial entry (`r i₀ = 1`, the matching
+frequency) and all others a nontrivial `n`-th root (off support). The squared fiber norms then sum to
+`n²`, entirely concentrated in the `i₀` term — the maximally-bad, zero-dispersion concentration that the
+prize must break down to `√n·polylog`. -/
+
+/-- **The trivial-cocycle transform is a Parseval-extremal delta.** Given the `n` frequency offsets as a
+family `r : Fin n → ℂ` of `n`-th roots of unity with a single on-support entry `r i₀ = 1` and every other
+entry a nontrivial root, the total `ℓ²` mass `∑_i ‖fiber(r i)‖²` equals `n²` and is carried ENTIRELY by
+the `i₀` term (every other term is `0`). This is the maximally-concentrated baseline: a single fiber holds
+the full Parseval mass `n²`, so `sup² = n² = total mass` (concentration ratio `1`, zero dispersion). -/
+theorem trivial_transform_l2_delta {n : ℕ} (hn : 0 < n) (r : Fin n → ℂ)
+    (hroot : ∀ i, (r i) ^ n = 1) (i₀ : Fin n) (hi₀ : r i₀ = 1)
+    (hoff : ∀ i, i ≠ i₀ → r i ≠ 1) :
+    ∑ i, ‖∑ g ∈ range n, (r i) ^ g‖ ^ 2 = ((n : ℝ)) ^ 2 := by
+  -- every off-support term has zero fiber, the on-support term has fiber `n`.
+  have hterm : ∀ i, ‖∑ g ∈ range n, (r i) ^ g‖ ^ 2
+      = if i = i₀ then ((n : ℝ)) ^ 2 else 0 := by
+    intro i
+    by_cases hi : i = i₀
+    · have hcard : (∑ g ∈ range n, (r i) ^ g) = (n : ℂ) := by
+        rw [hi, hi₀]; simp
+      rw [hcard, if_pos hi, Complex.norm_natCast]
+    · have hne : r i ≠ 1 := hoff i hi
+      have hzero : (∑ g ∈ range n, (r i) ^ g) = 0 :=
+        ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.geom_sum_zero_of_pow_eq_one_of_ne_one
+          (r i) (hroot i) hne
+      rw [hzero, norm_zero]
+      simp [hi]
+  rw [Finset.sum_congr rfl (fun i _ => hterm i)]
+  rw [Finset.sum_ite_eq' Finset.univ i₀ (fun _ => ((n : ℝ)) ^ 2)]
+  simp
+
+/-- **The off-support fibers are exactly the dispersion-carriers, all empty for the trivial cocycle.** In
+the trivial-cocycle delta, every frequency offset other than the matching one contributes ZERO to the
+Fourier transform. So the trivial cocycle does NO dispersion: the `n²` Parseval mass never leaves the
+single on-support fiber. The prize requires the genuine Jacobi cocycle to MOVE mass off this fiber. -/
+theorem trivial_transform_offSupport_all_zero {n : ℕ} {r : Fin n → ℂ}
+    (hroot : ∀ i, (r i) ^ n = 1) (i₀ : Fin n)
+    (hoff : ∀ i, i ≠ i₀ → r i ≠ 1) :
+    ∀ i, i ≠ i₀ → (∑ g ∈ range n, (r i) ^ g) = 0 := by
+  intro i hi
+  exact ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.geom_sum_zero_of_pow_eq_one_of_ne_one
+    (r i) (hroot i) (hoff i hi)
 
 end ArkLib.ProximityGap.Frontier.JacobiCocycleFiberRigidity
