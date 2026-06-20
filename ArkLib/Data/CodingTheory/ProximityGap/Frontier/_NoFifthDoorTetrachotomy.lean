@@ -287,6 +287,17 @@ theorem momentEVT_mechanism_overshootsBGK_eventually
   obtain ⟨N₀, hN₀⟩ := momentEVT_scale_eventually_ge_bgkScale hC hL hδ
   exact ⟨N₀, fun n hn => hN₀ n hn⟩
 
+/-- **Door-(iii) overshoot, discharged for large `n`.**  The extreme-value/equidistribution door uses
+that same SOTA scale `C·n^{1−δ}` as the moment door in this capstone model.  Hence it has the same
+large-`n` BGK overshoot certificate, now named separately so the classical-side closure has an explicit
+door-(iii) theorem rather than only a door-(i) representative. -/
+theorem extremeValue_mechanism_overshootsBGK_eventually
+    {C L δ : ℝ} (hC : 0 < C) (hL : 0 ≤ L) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n →
+      (⟨DoorType.extremeValue, C * n ^ (1 - δ)⟩ : Mechanism).OvershootsBGK n L := by
+  obtain ⟨N₀, hN₀⟩ := momentEVT_scale_eventually_ge_bgkScale hC hL hδ
+  exact ⟨N₀, fun n hn => hN₀ n hn⟩
+
 /-! ## Classical side closed: doors (i)/(ii)/(iii) all FAIL the prize certificate at their proven scales
 
 The three discharges above (`completion_not_certifies_prizeScale` for door (ii);
@@ -316,6 +327,29 @@ theorem classicalSide_closed
   have hm2 : (2 : ℝ) ≤ m := le_trans (le_max_right _ _) hm
   have hmpos : 0 < m := by linarith
   exact not_certifies_prizeScale_of_overshoot hmpos hL (hN₀ m hmN₀)
+
+/-- **Classical side closed, all three doors named.**  This strengthens `classicalSide_closed` by
+returning both the door-(i) moment obstruction and the door-(iii) extreme-value/equidistribution
+obstruction at their common SOTA scale, alongside the door-(ii) completion obstruction.  It is a
+bookkeeping capstone only: the conclusion is still that the named classical scales fail to certify the
+prize floor; it supplies no new monomial-sum cancellation. -/
+theorem classicalSide_closed_all
+    {n L q C δ : ℝ} (hn : 0 < n) (hL : 1 < L)
+    (hq : n * L ≤ q) (hC : 0 < C) (hLnn : 0 ≤ L) (hδ : δ < 1 / 2) :
+    (¬ (completionScale q ≤ prizeScale n)) ∧
+    (∃ N₀ : ℝ, ∀ m : ℝ, N₀ ≤ m →
+        (¬ ((⟨DoorType.moment, C * m ^ (1 - δ)⟩ : Mechanism).certScale ≤ prizeScale m)) ∧
+        (¬ ((⟨DoorType.extremeValue, C * m ^ (1 - δ)⟩ : Mechanism).certScale ≤ prizeScale m))) := by
+  refine ⟨completion_not_certifies_prizeScale hn hL hq, ?_⟩
+  obtain ⟨N₁, hN₁⟩ := momentEVT_mechanism_overshootsBGK_eventually hC hLnn hδ
+  obtain ⟨N₂, hN₂⟩ := extremeValue_mechanism_overshootsBGK_eventually hC hLnn hδ
+  refine ⟨max (max N₁ N₂) 2, fun m hm => ?_⟩
+  have hmN₁ : N₁ ≤ m := le_trans (le_trans (le_max_left _ _) (le_max_left _ _)) hm
+  have hmN₂ : N₂ ≤ m := le_trans (le_trans (le_max_right _ _) (le_max_left _ _)) hm
+  have hm2 : (2 : ℝ) ≤ m := le_trans (le_max_right _ _) hm
+  have hmpos : 0 < m := by linarith
+  exact ⟨not_certifies_prizeScale_of_overshoot hmpos hL (hN₁ m hmN₁),
+    not_certifies_prizeScale_of_overshoot hmpos hL (hN₂ m hmN₂)⟩
 
 /-! ## Discharging the `forces_doorIV` quantifier from the proven ceilings (not a postulate)
 

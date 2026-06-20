@@ -1,3 +1,13 @@
+## [nofifthdoor-extremevalue-classical-closure] door-(iii) concrete closure named explicitly (2026-06-19, g55)
+
+Lane: door-(iv) Lane 2/3 capstone extension in `_NoFifthDoorTetrachotomy`. The existing `classicalSide_closed` prose advertised moment / extreme-value closure, but the returned concrete large-`n` obstruction named only the door-(i) moment representative.
+
+FIX: added `extremeValue_mechanism_overshootsBGK_eventually` and `classicalSide_closed_all`, bundling all three classical doors at their concrete scales: completion fails at `√q`, moment fails eventually at `C·n^(1-δ)`, and extreme-value/equidistribution fails eventually at the same SOTA scale.
+
+VERDICT: the citable classical-side closure now names doors (i), (ii), and (iii) separately. This is bookkeeping for the no-fifth-door reduction only; it proves no CORE, cancellation, anti-concentration, completion-saving, or capacity estimate.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoFifthDoorTetrachotomy.lean`, kernel-clean. New theorems: `extremeValue_mechanism_overshootsBGK_eventually`, `classicalSide_closed_all`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## [nofifthdoor-pointwise-regime-fix] fixed-q forall premise removed from the no-fifth-door discharge (2026-06-19, g55)
 
 Lane: door-(iv) Lane 2/3 capstone repair extending `_NoFifthDoorTetrachotomy`. Round-2 audit found that the prior `ceilingRespecting_classical_overshoots` / `forces_doorIV_ceilingRespecting` discharge carried a fixed-field premise `∀ n, n·L ≤ q`, which is impossible for `0<L` and therefore made the advertised large-`n` discharge vacuous.
