@@ -9491,3 +9491,15 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleNea
 new theorems `kDefect_floor_le_twice_complement` and `kDefect_floor_le_of_complement_le`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
 
+
+## door-(iv) near-all-defect CS floor forces complement spend (2026-06-20, g55)
+
+Lens: Lane 3 constraint lemma extending `_JacobiCocycleNearAllDefectFloor`. The prior near-all-defect
+bound showed the k-defect Cauchy-Schwarz floor is at most `2*(M-#S)`. This refinement packages the
+inverse obstruction: any claimed floor target `T` forces complement size at least `T/2`; equivalently if
+`T` is larger than twice the complement, the CS floor is strictly below `T`.
+
+VERDICT: a near-all-defect Cauchy-Schwarz/L2-budget certificate cannot hide prize-scale cancellation in
+the defect mass. The missing complement must itself pay the target scale, so this route remains a
+bookkeeping obstruction rather than arithmetic anti-concentration. No CORE/cancellation/completion/
+moment/capacity claim. CORE OPEN.

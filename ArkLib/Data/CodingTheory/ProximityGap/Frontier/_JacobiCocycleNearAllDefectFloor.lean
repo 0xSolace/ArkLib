@@ -66,8 +66,28 @@ theorem kDefect_floor_le_of_complement_le {R : ℝ} (hM : 1 ≤ M) (hk : S.card 
   have hfloor := kDefect_floor_le_twice_complement S w hM hk hunit
   nlinarith [hfloor, hR]
 
+/-- **Inverse spend obligation for near-all-defect CS floors.** Any claimed lower certificate `T` from the
+k-defect CS floor forces at least `T/2` missing indices outside the defect set. Thus a prize-sized floor
+cannot be hidden in a near-all-defect configuration unless the complement itself is prize-sized. -/
+theorem complement_ge_half_floor_of_floor_ge {T : ℝ} (hM : 1 ≤ M) (hk : S.card ≤ M)
+    (hunit : ∀ i ∈ S, ‖w i‖ = 1)
+    (hT : T ≤ ((M : ℝ) - S.card) * (∑ i ∈ S, (1 - (w i).re)) / (M : ℝ)) :
+    T / 2 ≤ (M : ℝ) - S.card := by
+  have hfloor := kDefect_floor_le_twice_complement S w hM hk hunit
+  nlinarith
+
+/-- **Strict inverse spend obligation.** If a target `T` is larger than twice the complement size, then the
+k-defect CS floor is strictly below `T`; the Cauchy–Schwarz route cannot certify that target. -/
+theorem kDefect_floor_lt_of_twice_complement_lt {T : ℝ} (hM : 1 ≤ M) (hk : S.card ≤ M)
+    (hunit : ∀ i ∈ S, ‖w i‖ = 1) (hT : 2 * ((M : ℝ) - S.card) < T) :
+    ((M : ℝ) - S.card) * (∑ i ∈ S, (1 - (w i).re)) / (M : ℝ) < T := by
+  have hfloor := kDefect_floor_le_twice_complement S w hM hk hunit
+  nlinarith
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.kDefect_floor_le_twice_complement
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.kDefect_floor_le_of_complement_le
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.complement_ge_half_floor_of_floor_ge
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleNearAllDefectFloor.kDefect_floor_lt_of_twice_complement_lt
