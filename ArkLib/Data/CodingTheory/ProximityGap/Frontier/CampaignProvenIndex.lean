@@ -22,6 +22,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFai
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVValueShiftHistogramObstruction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundMarkovVacuity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoot
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -90,6 +91,9 @@ anything here; this index does not claim otherwise.
 | `wraparound_markov_count_le_export` | obstruction | WraparoundMarkovVacuity |
 | `wraparound_markov_bound_vacuous_below_mean_export` | obstruction | WraparoundMarkovVacuity |
 | `wraparound_average_control_does_not_bound_sup_export` | obstruction | WraparoundMarkovVacuity |
+| `doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_index_le_sq_of_scaledConstant_le_export` | obstruction | DoorIVIndexFactorOvershoot |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -540,6 +544,38 @@ theorem wraparound_average_control_does_not_bound_sup_export {ι : Type*} [Decid
   ArkLib.ProximityGap.WraparoundMarkovVacuity.average_control_does_not_bound_sup
     S W T hne hT hW hTmean
 
+/-! ## Door-IV index-factor overshoot. Scope: **obstruction**.
+
+These exports make the naive-incidence scale loss citable from the permanent index: replacing the prize
+scale `sqrt(n L)` by the incidence bridge scale `sqrt(n m L)` multiplies the normalized Shaw constant
+by exactly `sqrt m`. A bounded normalized naive constant therefore bounds the index itself; an unbounded
+index family cannot pass through this bridge without a genuinely new argument removing the factor. -/
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** The naive incidence bridge scale
+`sqrt(n*m*L)` is exactly `sqrt(m)` times the prize scale `sqrt(n*L)`. -/
+theorem doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export {n m L : ℝ}
+    (hm : 0 ≤ m) :
+    ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale n m L =
+      Real.sqrt m * ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale_eq_sqrt_mul_prizeScale hm
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** A raw bound at the naive incidence scale is
+exactly a Shaw-value bound with the constant multiplied by `sqrt(m)`. -/
+theorem doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export {M C n m L : ℝ}
+    (hn : 0 < n) (hm : 0 ≤ m) (hL : 0 < L) :
+    M ≤ C * ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale n m L ↔
+      ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue M n L ≤ C * Real.sqrt m :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceBound_iff_shawValue_le_scaled hn hm hL
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Contrapositive-facing form: with fixed positive
+raw constant `C`, any uniform cap `D` on `C*sqrt(m)` forces `m ≤ (D/C)^2`; hence the naive bridge
+cannot give a bounded Shaw constant on an unbounded-index family. -/
+theorem doorIV_index_le_sq_of_scaledConstant_le_export {C m D : ℝ}
+    (hC : 0 < C) (hm : 0 ≤ m) (hbound : C * Real.sqrt m ≤ D) :
+    m ≤ (D / C) ^ 2 :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
+    hC hm hbound
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -578,5 +614,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms wraparound_markov_count_le_export
 #print axioms wraparound_markov_bound_vacuous_below_mean_export
 #print axioms wraparound_average_control_does_not_bound_sup_export
+#print axioms doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export
+#print axioms doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export
+#print axioms doorIV_index_le_sq_of_scaledConstant_le_export
 #print axioms two_faces_are_one_wall_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
