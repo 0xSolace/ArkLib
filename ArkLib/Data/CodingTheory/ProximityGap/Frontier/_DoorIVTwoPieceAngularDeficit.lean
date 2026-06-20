@@ -199,6 +199,33 @@ theorem norm_sum_sq_le_l1Mass_sq (zs : List ℂ) : ‖zs.sum‖ ^ 2 ≤ (l1Mass 
   have := totalPairDeficit_nonneg zs
   linarith
 
+/-! ### Door-(iv) reduction: the prize is exactly a total-angular-deficit lower bound
+
+The worst-frequency obstruction asks for a *small* resultant `‖Σ z_i‖` (the √-cancellation).  The
+exact multi-piece identity turns any squared-resultant ceiling into an exactly equivalent lower bound
+on the total pairwise angular deficit: a small resultant **is** a large accumulated phase
+misalignment.  This pinpoints the arithmetic input door-(iv) needs — a near-extremal total angular
+deficit — with no slack. -/
+
+/-- **Exact threshold reduction.**  For any ceiling `T`, the squared resultant satisfies
+`‖Σ z_i‖² ≤ T` **iff** the total pairwise angular deficit satisfies
+`totalPairDeficit zs ≥ ((l1Mass zs)² − T)/2`.  Thus a √-cancellation ceiling on the coset sum is
+exactly a lower bound on the accumulated pairwise phase misalignment. -/
+theorem norm_sum_sq_le_iff_totalPairDeficit_ge (zs : List ℂ) (T : ℝ) :
+    ‖zs.sum‖ ^ 2 ≤ T ↔ ((l1Mass zs) ^ 2 - T) / 2 ≤ totalPairDeficit zs := by
+  rw [norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit]
+  constructor
+  · intro h; linarith
+  · intro h; linarith
+
+/-- Strict form of the threshold reduction. -/
+theorem norm_sum_sq_lt_iff_totalPairDeficit_gt (zs : List ℂ) (T : ℝ) :
+    ‖zs.sum‖ ^ 2 < T ↔ ((l1Mass zs) ^ 2 - T) / 2 < totalPairDeficit zs := by
+  rw [norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit]
+  constructor
+  · intro h; linarith
+  · intro h; linarith
+
 end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_le_norm_mul
@@ -220,3 +247,5 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 #print axioms
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_l1Mass_sq
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_iff_totalPairDeficit_ge
+#print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_lt_iff_totalPairDeficit_gt
