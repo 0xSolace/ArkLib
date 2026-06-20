@@ -106,6 +106,60 @@ theorem abs_normalized_variance_sub_one_le_pairResidual {m : ℕ} (hm : 0 < m)
       (hpair := hpair)
     linarith
 
+/-- **Pair-discrepancy budget, exact normalized `ε/(2m-1)` upper form.**  If the residual satisfies
+`δ ≤ ε/(2m-1)`, then the normalized variance is at most `1+ε`.  This is the exact-scale companion
+to the coarser `C/m` interface. -/
+theorem normalized_variance_le_one_add_of_delta_le_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ)
+    (hδle : δ ≤ ε / (2 * (m : ℝ) - 1)) (hpair : PairEquidistributed φ δ) :
+    avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m
+      ≤ 1 + ε := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hden_pos : 0 < 2 * (m : ℝ) - 1 := by nlinarith [hmR]
+  have hres : δ * (2 * (m : ℝ) - 1) ≤ ε := by
+    calc
+      δ * (2 * (m : ℝ) - 1) ≤ (ε / (2 * (m : ℝ) - 1)) * (2 * (m : ℝ) - 1) :=
+        mul_le_mul_of_nonneg_right hδle (le_of_lt hden_pos)
+      _ = ε := by field_simp [ne_of_gt hden_pos]
+  have hbase := normalized_variance_le_one_add_pairResidual (hm := hm) (φ := φ)
+    (hδ := hδ) (hpair := hpair)
+  linarith
+
+/-- **Pair-discrepancy budget, exact normalized `ε/(2m-1)` lower form.**  The same exact residual
+scale gives the lower corridor endpoint `1-ε`. -/
+theorem one_sub_le_normalized_variance_of_delta_le_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ)
+    (hδle : δ ≤ ε / (2 * (m : ℝ) - 1)) (hpair : PairEquidistributed φ δ) :
+    1 - ε ≤ avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hden_pos : 0 < 2 * (m : ℝ) - 1 := by nlinarith [hmR]
+  have hres : δ * (2 * (m : ℝ) - 1) ≤ ε := by
+    calc
+      δ * (2 * (m : ℝ) - 1) ≤ (ε / (2 * (m : ℝ) - 1)) * (2 * (m : ℝ) - 1) :=
+        mul_le_mul_of_nonneg_right hδle (le_of_lt hden_pos)
+      _ = ε := by field_simp [ne_of_gt hden_pos]
+  have hbase := one_sub_pairResidual_le_normalized_variance (hm := hm) (φ := φ)
+    (hδ := hδ) (hpair := hpair)
+  linarith
+
+/-- **Pair-discrepancy budget, exact normalized `ε/(2m-1)` two-sided form.**  The normalized
+variance error is at most `ε` exactly when the named residual is driven to the explicit scale
+`δ ≤ ε/(2m-1)`.  This proves only the reduction/corridor, not the arithmetic residual estimate. -/
+theorem abs_normalized_variance_sub_one_le_of_delta_le_div {m : ℕ} (hm : 0 < m)
+    (φ : Fin m → B → ℝ) {δ ε : ℝ} (hδ : 0 ≤ δ)
+    (hδle : δ ≤ ε / (2 * (m : ℝ) - 1)) (hpair : PairEquidistributed φ δ) :
+    |avg (fun b => (∑ k : Fin m, 2 * Real.cos (φ k b)) ^ 2) / prizeVarianceProxy m - 1|
+      ≤ ε := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+  have hden_pos : 0 < 2 * (m : ℝ) - 1 := by nlinarith [hmR]
+  have hres : δ * (2 * (m : ℝ) - 1) ≤ ε := by
+    calc
+      δ * (2 * (m : ℝ) - 1) ≤ (ε / (2 * (m : ℝ) - 1)) * (2 * (m : ℝ) - 1) :=
+        mul_le_mul_of_nonneg_right hδle (le_of_lt hden_pos)
+      _ = ε := by field_simp [ne_of_gt hden_pos]
+  exact le_trans (abs_normalized_variance_sub_one_le_pairResidual (hm := hm) (φ := φ)
+    (hδ := hδ) (hpair := hpair)) hres
+
 /-- **Ideal normalized endpoint.**  Exact pair-equidistribution (`δ = 0`) pins the normalized
 variance to the Shaw/prize floor exactly:
 
@@ -350,6 +404,9 @@ end ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.one_sub_pairResidual_le_normalized_variance
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_pairResidual
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_eq_one_of_ideal_pairEquidist
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_of_delta_le_div
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.one_sub_le_normalized_variance_of_delta_le_div
+#print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_of_delta_le_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.abs_normalized_variance_sub_one_le_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.normalized_variance_le_one_add_two_mul_of_delta_le_const_div
 #print axioms ArkLib.ProximityGap.Frontier.PhasePairEquidistBudget.variance_le_prizeProxy_mul_one_add_of_pairResidual
