@@ -350,17 +350,32 @@ def Mechanism.RespectsProvenScale (m : Mechanism) (q C δ n : ℝ) : Prop :=
   | .extremeValue => C * n ^ (1 - δ) ≤ m.certScale
   | .newEvaluation => True
 
+/-- **Fixed-field linear dominance is impossible.**  For any positive thinness index `L`, no fixed
+field-size parameter `q` can dominate `n·L` for every real `n`.  This is the formal audit guard against
+using a vacuous premise `∀ n, n·L ≤ q` to discharge the classical-door overshoot quantifier; the regime
+witness must be threaded at the single conclusion index instead. -/
+theorem not_forall_linear_le_fixed_field {L q : ℝ} (hL : 0 < L) :
+    ¬ (∀ n : ℝ, n * L ≤ q) := by
+  intro h
+  have hq1 : ((q + 1) / L) * L ≤ q := h ((q + 1) / L)
+  have hLne : L ≠ 0 := ne_of_gt hL
+  have hcontr : q + 1 ≤ q := by
+    simpa [div_mul_cancel₀ (q + 1) hLne] using hq1
+  linarith
+
 /-- **Every ceiling-respecting classical mechanism overshoots BGK** at a fixed `n` past the SOTA
 threshold, in the prize regime.  This is the discharge of the `forces_doorIV` overshoot quantifier
 restricted to the honest subclass: no postulate, only the proven `√q` and `C·n^{1−δ}` floors plus the
-regime facts `n·L ≤ q` and `δ < 1/2`.  Returns the SOTA threshold `N₀`; at any single `n ≥ N₀` the
-implication holds for *all* ceiling-respecting classical mechanisms simultaneously. -/
+regime facts `n·L ≤ q` and `δ < 1/2`.  Returns the SOTA threshold `N₀`; at any single `n ≥ N₀` with its
+own pointwise regime witness `n·L ≤ q`, the implication holds for *all* ceiling-respecting classical
+mechanisms simultaneously.  The pointwise `n·L ≤ q` hypothesis is essential: a fixed finite `q` cannot
+satisfy `∀ n, n·L ≤ q` in a nontrivial large-`n` statement. -/
 theorem ceilingRespecting_classical_overshoots
-    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hq : ∀ n : ℝ, n * L ≤ q) (hC : 0 < C) (hδ : δ < 1 / 2) :
-    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n → ∀ m : Mechanism,
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n → n * L ≤ q → ∀ m : Mechanism,
       m.door.isClassical → m.RespectsProvenScale q C δ n → m.OvershootsBGK n L := by
   obtain ⟨N₀, hN₀⟩ := momentEVT_scale_eventually_ge_bgkScale (C := C) (L := L) (δ := δ) hC hLnn hδ
-  refine ⟨N₀, fun n hn m hcl hresp => ?_⟩
+  refine ⟨N₀, fun n hn hq m hcl hresp => ?_⟩
   -- `OvershootsBGK` ⇔ `bgkScale n L ≤ m.certScale`; split on the door class.
   unfold Mechanism.OvershootsBGK
   unfold Mechanism.RespectsProvenScale at hresp
@@ -368,7 +383,7 @@ theorem ceilingRespecting_classical_overshoots
   | completion =>
       rw [hd] at hresp
       -- proven completion floor: completionScale q ≤ certScale, and bgkScale ≤ completionScale q.
-      exact le_trans (completion_overshootsBGK_of_prizeRegime (hq n)) hresp
+      exact le_trans (completion_overshootsBGK_of_prizeRegime hq) hresp
   | moment =>
       rw [hd] at hresp
       exact le_trans (hN₀ n hn) hresp
@@ -384,23 +399,24 @@ prize regime (`L > 1`, `n·L ≤ q`, `C > 0`, `δ < 1/2`): if every classical me
 proven ceiling*, then **any** mechanism `m` certifying a prize-scale bound `m.certScale ≤ √n` must be
 door (iv).  Unlike `forces_doorIV`, the overshoot of the classical doors is here a **theorem**
 (`ceilingRespecting_classical_overshoots`), not a hypothesis — it is discharged from the proven `√q`
-completion ceiling and the SOTA `C·n^{1−δ}` value.  The only remaining hypothesis is the honest
-structural one that the classical mechanisms are *real* instances of their door (respect their proven
-floor), not degenerate `Mechanism` values with an arbitrarily small `certScale` field. -/
+completion ceiling and the SOTA `C·n^{1−δ}` value.  The field-size dominance assumption is threaded at
+the single conclusion index `n` as `n·L ≤ q`, avoiding the vacuous fixed-`q` premise `∀ n, n·L ≤ q`.
+The only remaining hypothesis is the honest structural one that the classical mechanisms are *real*
+instances of their door (respect their proven floor), not degenerate `Mechanism` values with an
+arbitrarily small `certScale` field. -/
 theorem forces_doorIV_ceilingRespecting
-    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hq : ∀ n : ℝ, n * L ≤ q)
-    (hC : 0 < C) (hδ : δ < 1 / 2) :
-    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n →
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q →
       (∀ m' : Mechanism, m'.door.isClassical → m'.RespectsProvenScale q C δ n) →
       ∀ m : Mechanism, m.certScale ≤ prizeScale n → m.door = DoorType.newEvaluation := by
-  obtain ⟨N₀, hN₀⟩ := ceilingRespecting_classical_overshoots hLnn hq hC hδ
-  refine ⟨N₀, fun n hn hrespAll m hcert => ?_⟩
+  obtain ⟨N₀, hN₀⟩ := ceilingRespecting_classical_overshoots hLnn hC hδ
+  refine ⟨N₀, fun n hn hq hrespAll m hcert => ?_⟩
   have hnN₀ : N₀ ≤ n := le_trans (le_max_left _ _) hn
   have hn1 : (1 : ℝ) ≤ n := le_trans (le_max_right _ _) hn
   have hnpos : 0 < n := lt_of_lt_of_le one_pos hn1
   -- discharge the abstract quantifier of `forces_doorIV` from the proven overshoot.
   refine forces_doorIV hnpos hL ?_ hcert
   intro m' hcl'
-  exact hN₀ n hnN₀ m' hcl' (hrespAll m' hcl')
+  exact hN₀ n hnN₀ hq m' hcl' (hrespAll m' hcl')
 
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy

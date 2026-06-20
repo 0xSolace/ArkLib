@@ -1,3 +1,13 @@
+## [nofifthdoor-pointwise-regime-fix] fixed-q forall premise removed from the no-fifth-door discharge (2026-06-19, g55)
+
+Lane: door-(iv) Lane 2/3 capstone repair extending `_NoFifthDoorTetrachotomy`. Round-2 audit found that the prior `ceilingRespecting_classical_overshoots` / `forces_doorIV_ceilingRespecting` discharge carried a fixed-field premise `∀ n, n·L ≤ q`, which is impossible for `0<L` and therefore made the advertised large-`n` discharge vacuous.
+
+FIX: added the audit guard theorem `not_forall_linear_le_fixed_field` and threaded the field-size dominance hypothesis pointwise at the conclusion index: `∀ n, N₀≤n → n·L≤q → ...`. The overshoot discharge now uses the completion floor only with the actual `n` under discussion, while the moment/EVT threshold remains the genuine large-`n` threshold. Also softened `_ShawValueBGKBracket` prose from 'proven doors deliver M≤√(nL)' to the honest conditional statement: if an argument supplies the explicit BGK-shaped hypothesis `M≤√(nL)`, then the Shaw bracket is `[1/√L,1]`.
+
+VERDICT: the no-fifth-door quantifier discharge is now non-vacuous with respect to field size. It remains exactly a Lane-2/3 reduction/backbone statement: classical ceiling-respecting mechanisms at a single admissible thin instance are forced out of prize-scale certification, so any such certificate must be door (iv). No CORE, cancellation, completion-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_NoFifthDoorTetrachotomy.lean`, with prose repair in `_ShawValueBGKBracket.lean`; kernel-clean. New/updated theorems: `not_forall_linear_le_fixed_field`, `ceilingRespecting_classical_overshoots`, `forces_doorIV_ceilingRespecting`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 # Disproof Log — ABF26 Proximity Prize Grand Challenge 1 (Issue #232)
 
 ## 2026-06-17 — SYNTHESIS CAP: DEEP/EXOTIC DIRECT-SUP-NORM SWEEP (18 techniques H1–L5, energy route DEAD) — 0 NEW-DIRECT-HANDLE, 17 REDUCES-TO-FENCE, 1 VACUOUS-AT-PRIZE
