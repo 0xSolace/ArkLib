@@ -266,6 +266,32 @@ theorem angularDeficit_le_two_mul_norm_mul (z w : ℂ) :
   unfold angularDeficit
   linarith [neg_norm_mul_le_re_mul_conj z w]
 
+/-! ### Capstone: no-slack characterization
+
+The whole angular-deficit story collapses to one kernel-checked equivalence: the worst-frequency
+coset sum saturates the `L¹` half-mass (`‖Σ z_i‖² = (L¹)²`, i.e. coherence `ρ = 1`, no
+anti-concentration slack) **iff** the total pairwise angular deficit is zero, and it has strict slack
+iff that deficit is strictly positive.  Mere subdivision (adding collinear, zero-deficit pieces) never
+moves the deficit, so it never creates slack. -/
+
+/-- **No-slack iff zero total deficit.**  `‖Σ z_i‖² = (L¹)² ↔ totalPairDeficit zs = 0`. -/
+theorem norm_sum_sq_eq_l1Mass_sq_iff_totalPairDeficit_eq_zero (zs : List ℂ) :
+    ‖zs.sum‖ ^ 2 = (l1Mass zs) ^ 2 ↔ totalPairDeficit zs = 0 := by
+  rw [norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit]
+  constructor
+  · intro h; linarith
+  · intro h; rw [h]; ring
+
+/-- **Strict slack iff positive total deficit.**  `‖Σ z_i‖² < (L¹)² ↔ 0 < totalPairDeficit zs`.
+The only source of two/multi-piece anti-concentration slack is genuine accumulated pairwise phase
+misalignment. -/
+theorem norm_sum_sq_lt_l1Mass_sq_iff_totalPairDeficit_pos (zs : List ℂ) :
+    ‖zs.sum‖ ^ 2 < (l1Mass zs) ^ 2 ↔ 0 < totalPairDeficit zs := by
+  rw [norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit]
+  constructor
+  · intro h; linarith
+  · intro h; linarith
+
 end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
 
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.re_mul_conj_le_norm_mul
@@ -294,3 +320,7 @@ end ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit
   ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_mul_l1Mass_le_l1Mass_sq_sub_totalPairDeficit
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.neg_norm_mul_le_re_mul_conj
 #print axioms ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.angularDeficit_le_two_mul_norm_mul
+#print axioms
+  ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_eq_l1Mass_sq_iff_totalPairDeficit_eq_zero
+#print axioms
+  ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_lt_l1Mass_sq_iff_totalPairDeficit_pos
