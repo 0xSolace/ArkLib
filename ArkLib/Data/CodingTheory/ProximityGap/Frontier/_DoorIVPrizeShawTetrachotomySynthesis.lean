@@ -316,4 +316,43 @@ theorem no_prizeBound_iff_no_shawBound_nonneg_and_discharged_doorIV_only
     prize_iff_shawBounded_nonneg_and_discharged_doorIV_only hs hLnn hLref hC hδ
   exact ⟨N₀, not_congr hred, hdoor⟩
 
+/-! ## Fully-discharged classical side in floor units
+
+The previous discharged rung names only the completion door.  The tetrachotomy file now also proves
+that, past the SOTA threshold, every ceiling-respecting moment/extreme-value mechanism overshoots BGK
+at the same time as completion (`forces_doorIV_ceilingRespecting`).  This final synthesis rung feeds
+that theorem back into the floor-normalized API: no abstract `hclassicalOvershoots` postulate remains
+for real classical mechanisms, and the remaining prize burden is exactly the floor-ratio cap.
+-/
+
+/-- **Discharged classical-side synthesis in floor units.**  For `L > 1`, `C > 0`, and a SOTA
+exponent `δ < 1/2`, there is a threshold `N₀` such that at every fixed prize-regime index `n ≥ N₀`
+(with its pointwise field-size witness `n·L ≤ q`), if the classical mechanisms are honest instances
+of their doors (they respect the proven completion/SOTA ceilings), then any mechanism certifying the
+prize floor is forced to be door `(iv)`.  Simultaneously, the worst-frequency sup `M` is expressed in
+floor units: the Plancherel floor is `1 ≤ M/√n`, and `M ≤ K√n` is exactly `M/√n ≤ K`.
+
+This is Lane-2/3 bookkeeping only: it discharges the classical-door exclusion from already-proven
+ceilings and restates the remaining target in `√n` units.  It proves no new monomial-sum cancellation. -/
+theorem ceilingRespecting_classical_excluded_floorPrizeRatio
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q →
+      (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.RespectsProvenScale q C δ n) →
+      ∀ M K : ℝ, NoFifthDoorTetrachotomy.prizeScale n ≤ M →
+        (1 ≤ floorPrizeRatio M n) ∧
+          (M ≤ K * NoFifthDoorTetrachotomy.prizeScale n ↔ floorPrizeRatio M n ≤ K) ∧
+          (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+            m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale n →
+            m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) := by
+  obtain ⟨N₀, hN₀⟩ :=
+    NoFifthDoorTetrachotomy.forces_doorIV_ceilingRespecting hLnn hL hC hδ
+  refine ⟨N₀, fun n hn hq hrespAll M K hfloor => ?_⟩
+  have hn1 : (1 : ℝ) ≤ n := le_trans (le_max_right _ _) hn
+  have hnpos : 0 < n := lt_of_lt_of_le one_pos hn1
+  refine ⟨?_, ?_, ?_⟩
+  · exact one_le_floorPrizeRatio_of_plancherel_floor hnpos hfloor
+  · exact prizeFloorBound_iff_floorPrizeRatio_le hnpos
+  · exact hN₀ n hn hq hrespAll
+
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
