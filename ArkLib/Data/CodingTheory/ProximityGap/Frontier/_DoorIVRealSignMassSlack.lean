@@ -124,6 +124,32 @@ theorem not_coherence_le_one_sub_of_minority_mass_lt {P N eps : ℝ}
   have hge := minority_mass_ge_of_coherence_le_one_sub hden hcoh
   linarith
 
+
+/-- Exact strict-slack criterion for the real sign-mass compression: with nonnegative
+sign masses and positive total mass, real coherence is strictly below `1` if and only if
+the minority sign mass is positive. -/
+theorem signMassCoherence_lt_one_iff_min_pos {P N : ℝ} (hden : 0 < P + N) :
+    signMassCoherence P N < 1 ↔ 0 < min P N := by
+  rw [signMassCoherence_eq_one_sub_twice_min hden]
+  constructor
+  · intro hlt
+    have hpos : 0 < 2 * min P N / (P + N) := by linarith
+    have hmul : 0 < 2 * min P N := by
+      exact (div_pos_iff_of_pos_right hden).mp hpos
+    have htwo : (0 : ℝ) < 2 := by norm_num
+    exact (mul_pos_iff_of_pos_left htwo).mp hmul
+  · intro hmin
+    have hterm : 0 < 2 * min P N / (P + N) := by
+      exact div_pos (mul_pos (by norm_num) hmin) hden
+    linarith
+
+/-- Zero minority sign mass is exactly the no-slack real Door-IV case. -/
+theorem signMassCoherence_eq_one_of_min_eq_zero {P N : ℝ}
+    (hden : 0 < P + N) (hmin : min P N = 0) :
+    signMassCoherence P N = 1 := by
+  rw [signMassCoherence_eq_one_sub_twice_min hden, hmin]
+  ring
+
 /-- Strict real sign-mass improvement below `1` forces both signs to be present with positive
 mass.  In particular, any real/collinear Door-IV refinement with zero minority sign mass is
 incapable of proving a threshold `theta < 1`. -/
@@ -151,4 +177,6 @@ open ProximityGap.Frontier.DoorIVRealSignMassSlack
 #print axioms signMassCoherence_eq_one_sub_twice_min
 #print axioms signMassCoherence_le_iff_minority_mass_ge
 #print axioms not_coherence_le_one_sub_of_minority_mass_lt
+#print axioms signMassCoherence_lt_one_iff_min_pos
+#print axioms signMassCoherence_eq_one_of_min_eq_zero
 #print axioms positive_sign_masses_of_coherence_lt_one_threshold

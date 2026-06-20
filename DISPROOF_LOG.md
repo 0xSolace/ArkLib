@@ -8073,3 +8073,20 @@ anti-concentration, or capacity claim.
 Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/ConcreteBGKCompletionCorridor.lean,
 new theorem card_le_completionCeiling_of_sq_le, axiom-clean with axioms contained in
 {propext, Classical.choice, Quot.sound}.
+
+## door-(iv) real sign-mass strict slack is exactly positive minority mass (2026-06-19, g55)
+
+Lane: door-(iv) Lane 3 constraint extension in `_DoorIVRealSignMassSlack`. The existing kernel proved
+the exact formula `rho = 1 - 2*min(P,N)/(P+N)` for real sign-mass compression and the threshold form
+for `rho <= 1-eps`. This refinement packages the strict probe interface directly: for positive total mass,
+`signMassCoherence P N < 1` if and only if `0 < min P N`; if the minority mass is zero, coherence is
+exactly `1`.
+
+VERDICT: a real, negation-stable Door-IV refinement obtains strict coherence saving exactly by proving
+positive minority sign mass. Decomposing the phase set into real/collinear pieces supplies no hidden
+anti-concentration unless it forces a genuine minority-sign contribution. No CORE, cancellation,
+completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVRealSignMassSlack.lean`, new
+theorems `signMassCoherence_lt_one_iff_min_pos` and `signMassCoherence_eq_one_of_min_eq_zero`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
