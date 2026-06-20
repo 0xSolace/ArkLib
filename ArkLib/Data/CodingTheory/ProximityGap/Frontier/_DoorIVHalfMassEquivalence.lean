@@ -158,6 +158,33 @@ theorem not_exists_normalizedHalfMassFamilyBound_iff_normalizedHalfMassFamilyUnb
     rcases hun C with ⟨i, hi⟩
     exact (not_lt_of_ge (hC i)) hi
 
+/-- Direct normalized transfer from prize to half-mass: if the normalized prize ratios are bounded
+by `C`, then the normalized half-mass ratios are bounded by `K*C` under the comparison `H ≤ K*M`.
+This is the named constant-tracking rung behind the Shaw-value reduction. -/
+theorem normalizedHalfMassFamilyBound_of_normalizedPrizeFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K C : ℝ} (hK : 0 ≤ K) (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i)
+    (hC : normalizedPrizeFamilyBound M scale C) :
+    normalizedHalfMassFamilyBound H scale (K * C) := by
+  intro i
+  have h1 : H i / scale i ≤ K * (M i / scale i) :=
+    (normalized_prize_halfMass_sandwich (hscale i) (hMH i) (hHM i)).2
+  have h2 : K * (M i / scale i) ≤ K * C :=
+    mul_le_mul_of_nonneg_left (hC i) hK
+  exact le_trans h1 h2
+
+/-- Direct normalized transfer from half-mass to prize: the always-true comparison `M ≤ H` sends any
+normalized half-mass bound with constant `C` to the same normalized prize bound.  This is the easy
+half of the Door-IV half-mass equivalence. -/
+theorem normalizedPrizeFamilyBound_of_normalizedHalfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {C : ℝ} (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hC : normalizedHalfMassFamilyBound H scale C) :
+    normalizedPrizeFamilyBound M scale C := by
+  intro i
+  have h1 : M i / scale i ≤ H i / scale i :=
+    div_le_div_of_nonneg_right (hMH i) (le_of_lt (hscale i))
+  exact le_trans h1 (hC i)
+
 /-- **Normalized uniform-family half-mass reduction.**  Under one family-wide comparison constant
 `K` and positive scales, bounded normalized prize ratios are equivalent to bounded normalized half-mass
 ratios.  This is the Shaw-value version of
@@ -171,12 +198,8 @@ theorem exists_normalizedPrizeFamilyBound_iff_exists_normalizedHalfMassFamilyBou
       (∃ C, normalizedHalfMassFamilyBound H scale C) := by
   constructor
   · rintro ⟨C, hC⟩
-    refine ⟨K * C, fun i => ?_⟩
-    have h1 : H i / scale i ≤ K * (M i / scale i) :=
-      (normalized_prize_halfMass_sandwich (hscale i) (hMH i) (hHM i)).2
-    have h2 : K * (M i / scale i) ≤ K * C :=
-      mul_le_mul_of_nonneg_left (hC i) hK
-    exact le_trans h1 h2
+    exact ⟨K * C, normalizedHalfMassFamilyBound_of_normalizedPrizeFamilyBound
+      hK hscale hMH hHM hC⟩
   · rintro ⟨C, hC⟩
     refine ⟨C, fun i => ?_⟩
     have h1 : M i / scale i ≤ H i / scale i :=
@@ -454,6 +477,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound_iff_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedPrizeFamilyBound_iff_normalizedPrizeFamilyUnbounded
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.not_exists_normalizedHalfMassFamilyBound_iff_normalizedHalfMassFamilyUnbounded
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedHalfMassFamilyBound_of_normalizedPrizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.normalizedPrizeFamilyBound_of_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_prizeFamilyBound_iff_exists_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.exists_halfMassFamilyBound_iff_exists_normalizedHalfMassFamilyBound
