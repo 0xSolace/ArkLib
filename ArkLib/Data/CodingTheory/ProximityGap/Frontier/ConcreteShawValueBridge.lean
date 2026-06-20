@@ -174,8 +174,29 @@ theorem shawValue_worstPeriod_sharp_bracket {ψ : AddChar F ℂ} (hψ : ψ.IsPri
   have hceil := shawValue_worstPeriod_le_of_card (ψ := ψ) G hne hs
   rwa [ceiling_bracket_eq hnpos hL] at hceil
 
+/-- **Concrete Shaw-value capstone on the REAL worst period.**  In the quadratic thin regime
+`n² ≤ q`, the raw prize-shaped bound on the actual period supremum `M(μ_n)` is equivalent to a
+Shaw-value bound with the same constant, and the same normalized object lies in the sharp closed
+corridor `√(1-1/n)/√L ≤ Sh(M(μ_n)) ≤ √(n/L)`.  This bundles the Lane-2 reduction and the
+sharp unconditional bracket into one citable statement.  The theorem is pure normalization plus
+previously proven floor/ceiling rungs: it does not prove the missing `O(1)` upper bound. -/
+theorem concrete_worstPeriod_shawValue_capstone {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (nonzeroFreqs F).Nonempty) (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) {C L : ℝ} (hL : 0 < L) :
+    (worstPeriod ψ G hne ≤ C * prizeScale (G.card : ℝ) L
+        ↔ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L ≤ C)
+      ∧ Real.sqrt (1 - 1 / (G.card : ℝ)) / Real.sqrt L
+          ≤ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L
+      ∧ shawValue (worstPeriod ψ G hne) (G.card : ℝ) L
+          ≤ Real.sqrt ((G.card : ℝ) / L) := by
+  have hnpos : (0 : ℝ) < (G.card : ℝ) := by linarith
+  exact ⟨prizeBound_worstPeriod_iff_shawValue_le_of_pos G hne hnpos hL,
+    shawValue_worstPeriod_sharp_bracket hψ G hne hq1 hG1 hsq hL⟩
+
 end ProximityGap.Frontier.ConcreteShawValueBridge
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ConcreteShawValueBridge.shawValue_worstPeriod_sharp_floor
 #print axioms ProximityGap.Frontier.ConcreteShawValueBridge.shawValue_worstPeriod_sharp_bracket
+#print axioms ProximityGap.Frontier.ConcreteShawValueBridge.concrete_worstPeriod_shawValue_capstone
