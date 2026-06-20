@@ -116,6 +116,27 @@ def DoorType.isClassical : DoorType → Prop
   | .extremeValue => True
   | .newEvaluation => False
 
+/-- The finite tetrachotomy has an exact complement: a door is classical iff it is not the live
+door `(iv)`. This packages the "no fifth door" bookkeeping as a kernel statement, so later capstones
+can use `d.isClassical` and `d ≠ newEvaluation` interchangeably without re-case-splitting. -/
+theorem DoorType.isClassical_iff_ne_newEvaluation (d : DoorType) :
+    d.isClassical ↔ d ≠ DoorType.newEvaluation := by
+  cases d <;> simp [DoorType.isClassical]
+
+/-- Dual form of the finite tetrachotomy complement: the only non-classical door is door `(iv)`. -/
+theorem DoorType.not_classical_iff_eq_newEvaluation (d : DoorType) :
+    ¬ d.isClassical ↔ d = DoorType.newEvaluation := by
+  rw [DoorType.isClassical_iff_ne_newEvaluation]
+  constructor
+  · exact Classical.not_not.mp
+  · intro h hne
+    exact hne h
+
+/-- A mechanism is non-classical exactly when its door is the live door `(iv)`. -/
+theorem Mechanism.not_classical_iff_doorIV (m : Mechanism) :
+    ¬ m.door.isClassical ↔ m.door = DoorType.newEvaluation :=
+  DoorType.not_classical_iff_eq_newEvaluation m.door
+
 /-- **Overshoot ⇒ above the prize floor.**  In the regime `L > 1`, a mechanism whose certified scale
 is at least the BGK scale has a certified scale strictly above the prize scale: it certifies only
 `M ≤ certScale` with `certScale > √n`, never a prize-scale bound. -/
