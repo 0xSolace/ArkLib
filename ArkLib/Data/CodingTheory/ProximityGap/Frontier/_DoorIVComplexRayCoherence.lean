@@ -125,6 +125,21 @@ theorem common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub {ι : Type*}
   intro hcoh
   exact not_common_nonneg_ray_of_multiPieceNormCoherence_le s A (sub_lt_self 1 hε) hcoh hray
 
+/-- Family audit form: a universal positive epsilon-drop for finite refinements forces every
+indexed split to exclude common nonnegative-ray alignment.  This is the forward constraint interface
+for Door-IV certificates: the claimed strict coherence saving carries a member-by-member geometric
+obligation before any arithmetic anti-concentration can be used. -/
+theorem forall_not_common_nonneg_ray_of_family_multiPieceNormCoherence_le_one_sub
+    {κ ι : Type*} (s : κ → Finset ι) (A : κ → ι → E) {ε : κ → ℝ}
+    (hε : ∀ k, 0 < ε k)
+    (hcoh : ∀ k, multiPieceNormCoherence (s k) (A k) ≤ 1 - ε k) :
+    ∀ k, ¬ ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ s k, A k i = c i • u) ∧
+      (∀ i ∈ s k, 0 ≤ c i) ∧
+      0 < (∑ i ∈ s k, c i) ∧ u ≠ 0 := by
+  intro k hk
+  exact common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub (s k) (A k) (hε k) hk (hcoh k)
+
 /-- Family multi-piece ray obstruction: a universal positive epsilon-drop for finite refinements must
 exclude common nonnegative-ray alignment at every indexed split.  One aligned member, even after further
 subdivision into many pieces, refutes the whole strict-coherence family. -/
@@ -138,7 +153,7 @@ theorem not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ra
     ¬ ∀ k, multiPieceNormCoherence (s k) (A k) ≤ 1 - ε k := by
   intro hcoh
   rcases hbad with ⟨k, hk⟩
-  exact common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub (s k) (A k) (hε k) hk (hcoh k)
+  exact (forall_not_common_nonneg_ray_of_family_multiPieceNormCoherence_le_one_sub s A hε hcoh k) hk
 
 variable [StrictConvexSpace ℝ E]
 
@@ -205,6 +220,16 @@ theorem sameRay_not_twoPieceNormCoherence_le_one_sub {x y : E} {ε : ℝ}
   exact (not_sameRay_of_twoPieceNormCoherence_le (x := x) (y := y) (θ := 1 - ε) hden
     (sub_lt_self 1 hε) hcoh) hsame
 
+/-- Family audit form: a universal positive coherence drop below `1` for two-piece Door-IV
+splits forces non-same-ray geometry at every indexed member. -/
+theorem forall_not_sameRay_of_family_twoPieceNormCoherence_le_one_sub {ι : Type*}
+    (x y : ι → E) {ε : ι → ℝ}
+    (hden : ∀ i, 0 < ‖x i‖ + ‖y i‖) (hε : ∀ i, 0 < ε i)
+    (hcoh : ∀ i, twoPieceNormCoherence (x i) (y i) ≤ 1 - ε i) :
+    ∀ i, ¬ SameRay ℝ (x i) (y i) := by
+  intro i hi
+  exact sameRay_not_twoPieceNormCoherence_le_one_sub (hden i) (hε i) hi (hcoh i)
+
 /-- Family epsilon-drop obstruction: a universal positive coherence drop below `1` for two-piece
 Door-IV splits must rule out same-ray alignment at every indexed member.  One same-ray member with
 positive denominator refutes the whole family of strict `1 - ε_i` caps. -/
@@ -215,7 +240,7 @@ theorem not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay {ι : Type
     ¬ ∀ i, twoPieceNormCoherence (x i) (y i) ≤ 1 - ε i := by
   intro hcoh
   rcases hbad with ⟨i, hi⟩
-  exact sameRay_not_twoPieceNormCoherence_le_one_sub (hden i) (hε i) hi (hcoh i)
+  exact (forall_not_sameRay_of_family_twoPieceNormCoherence_le_one_sub x y hden hε hcoh i) hi
 
 end ProximityGap.Frontier.DoorIVComplexRayCoherence
 
@@ -225,9 +250,11 @@ end ProximityGap.Frontier.DoorIVComplexRayCoherence
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_iff_not_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_sameRay_of_twoPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.sameRay_not_twoPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.forall_not_sameRay_of_family_twoPieceNormCoherence_le_one_sub
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_family_twoPieceNormCoherence_le_one_sub_of_exists_sameRay
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_le_one
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_common_nonneg_ray_of_multiPieceNormCoherence_le
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.common_nonneg_ray_not_multiPieceNormCoherence_le_one_sub
+#print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.forall_not_common_nonneg_ray_of_family_multiPieceNormCoherence_le_one_sub
 #print axioms ProximityGap.Frontier.DoorIVComplexRayCoherence.not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray

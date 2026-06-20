@@ -9873,3 +9873,21 @@ Lane: door-(iv) Lane 3 constraint extension in `_DoorIVIndexFactorOvershoot.lean
 VERDICT: switching from the raw naive-incidence scale to normalized Shaw units does not hide the index loss. Failure of the inflated Shaw inequality is exactly failure of the naive-incidence family certificate, and a single indexed witness with `C_i*sqrt(m_i) < Sh_i` refutes the whole family. No CORE, cancellation, completion, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean`, new theorems `not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled` and `not_naiveIncidenceFamilyBound_of_exists_scaledShawValue_gt`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) family coherence certificates carry pointwise ray-exclusion obligations (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 geometric coherence constraint extending `_DoorIVComplexRayCoherence`. The previous
+kernel gave one-bad-member refutations for two-piece same-ray and multi-piece common-nonnegative-ray
+alignment. This refinement adds the forward audit interfaces: any universal positive epsilon-drop family
+immediately implies pointwise exclusion of same-ray alignment for every two-piece member, and exclusion of
+common nonnegative-ray certificates for every multi-piece member.
+
+VERDICT: a Door-IV coherence-saving certificate cannot postpone the geometry obligation to an aggregate
+or family average. Strict coherence slack below `1` forces member-by-member non-ray geometry before any
+arithmetic anti-concentration theorem can even enter. This is pure triangle-equality bookkeeping, not a
+CORE/cancellation/moment/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`, axiom-clean.
+New theorems: `forall_not_sameRay_of_family_twoPieceNormCoherence_le_one_sub` and
+`forall_not_common_nonneg_ray_of_family_multiPieceNormCoherence_le_one_sub`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
