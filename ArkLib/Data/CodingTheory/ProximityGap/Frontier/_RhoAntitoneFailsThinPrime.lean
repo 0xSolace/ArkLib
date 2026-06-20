@@ -90,6 +90,19 @@ of the Wick/char-0 ceiling in `ρ` coordinates, not merely as an unnormalized en
 theorem rho5_gt_one_normalized : (1 : ℝ) < S5 / (pm1 * E5) := by
   unfold S5 E5 pm1; norm_num
 
+/-- At the same witness, `ρ(4)` is still below the Wick/char-0 ceiling `1`.  Thus the first antitone
+failure is not itself a CORE counterexample or even a `ρ≤1` counterexample; the ceiling only breaks one
+rung later at `r=5`. -/
+theorem rho4_lt_one_normalized : S4 / (pm1 * E4) < (1 : ℝ) := by
+  unfold S4 E4 pm1; norm_num
+
+/-- Exact local picture at the break: `ρ(3) < ρ(4) < 1`.  The antitone route fails strictly while the
+normalized moment ceiling is still true at `r=4`, so antitone failure and ceiling failure are distinct
+obstructions rather than one algebraic artifact. -/
+theorem rho3_lt_rho4_lt_one_normalized :
+    S3 / (pm1 * E3) < S4 / (pm1 * E4) ∧ S4 / (pm1 * E4) < (1 : ℝ) := by
+  exact ⟨rho4_gt_rho3_normalized, rho4_lt_one_normalized⟩
+
 /-- The two advertised route hypotheses fail simultaneously in literal normalized form: neither the
 `r=3` antitone step `ρ(4) ≤ ρ(3)` nor the order-5 ceiling `ρ(5) ≤ 1` holds at this prize-regime thin
 prime.  This is a reusable no-go interface for arguments that assume the whole `ρ` ladder is antitone
@@ -125,5 +138,7 @@ end ArkLib.ProximityGap.RhoAntitoneFails
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho_ceiling_fails_r5
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho4_gt_rho3_normalized
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho5_gt_one_normalized
+#print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho4_lt_one_normalized
+#print axioms ArkLib.ProximityGap.RhoAntitoneFails.rho3_lt_rho4_lt_one_normalized
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.not_normalized_antitone_and_ceiling
 #print axioms ArkLib.ProximityGap.RhoAntitoneFails.antitone_route_not_universal

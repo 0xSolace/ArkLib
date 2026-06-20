@@ -9744,3 +9744,17 @@ just after a human-side cross-multiplication translation. No CORE/cancellation/c
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`, axiom-clean.
 New theorems: `rho4_gt_rho3_normalized`, `rho5_gt_one_normalized`, and
 `not_normalized_antitone_and_ceiling`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) ρ antitone break occurs before the ceiling break (2026-06-20, g55)
+
+Lane: Door-IV Lane 3 constraint refinement of the normalized ρ refutation. The exact witness separates
+two possible interpretations of the failure: the first antitone break at `r=3→4` happens while the `ρ≤1`
+ceiling still holds at `r=4`; the actual ceiling break occurs one rung later at `r=5`.
+
+VERDICT: antitone failure is not itself a CORE counterexample or even a normalized moment-ceiling counterexample.
+It is a distinct route obstruction: `ρ(3)<ρ(4)<1`, followed by `ρ(5)>1`. Any repaired Door-IV ρ argument must
+control both phenomena, not conflate them. No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_RhoAntitoneFailsThinPrime.lean`, axiom-clean.
+New theorems: `rho4_lt_one_normalized` and `rho3_lt_rho4_lt_one_normalized`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
