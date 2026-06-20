@@ -407,6 +407,35 @@ theorem shawValueFamily_bracket_width_eq_sqrt {ι : Type*} {n L : ι → ℝ}
   intro i
   exact bracket_width_eq_sqrt (hn i) (hL i)
 
+/-- Equality is preserved and reflected by Shaw-value normalization.  Under positive prize scale,
+two raw door-(iv) targets are equal exactly when their normalized Shaw values are equal.  This is
+only division-by-scale bookkeeping, but it prevents equality rungs in the reduction chain from being
+reproved ad hoc. -/
+theorem rawEq_iff_shawValue_eq {M H n L : ℝ} (hs : 0 < prizeScale n L) :
+    H = M ↔ shawValue H n L = shawValue M n L := by
+  constructor
+  · intro h
+    rw [h]
+  · intro h
+    unfold shawValue at h
+    have hsne : prizeScale n L ≠ 0 := ne_of_gt hs
+    calc
+      H = (H / prizeScale n L) * prizeScale n L := by field_simp [hsne]
+      _ = (M / prizeScale n L) * prizeScale n L := by rw [h]
+      _ = M := by field_simp [hsne]
+
+/-- Uniform-family equality version of the Shaw normalization wrapper.  Pointwise equality of raw
+targets is exactly pointwise equality of their Shaw values. -/
+theorem rawEqFamily_iff_shawValueEqFamily {ι : Type*} {M H n L : ι → ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∀ i, H i = M i) ↔
+      (∀ i, shawValue (H i) (n i) (L i) = shawValue (M i) (n i) (L i)) := by
+  constructor
+  · intro h i
+    exact (rawEq_iff_shawValue_eq (M := M i) (H := H i) (n := n i) (L := L i) (hs i)).1 (h i)
+  · intro h i
+    exact (rawEq_iff_shawValue_eq (M := M i) (H := H i) (n := n i) (L := L i) (hs i)).2 (h i)
+
 end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
@@ -437,3 +466,5 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_endpoints
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamily_bracket_width_eq_sqrt
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawEq_iff_shawValue_eq
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawEqFamily_iff_shawValueEqFamily
