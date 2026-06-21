@@ -155,6 +155,9 @@ anything here; this index does not claim otherwise.
 | `shawOOne_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
 | `corePrize_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
 | `corePrize_bddAbove_range_shawValue_of_pos_lt_export` | capstone | ShawValueCapstone |
+| `shawOOne_unbounded_shawValue_drift_export` | capstone | ShawValueCapstone |
+| `corePrize_unbounded_shawValue_drift_export` | capstone | ShawValueCapstone |
+| `corePrize_unbounded_shawValue_drift_of_pos_lt_export` | capstone | ShawValueCapstone |
 | `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
 | `doorIV_shawOOne_of_coreMajorant_export` | capstone | ShawValueCapstone |
 | `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
@@ -1275,6 +1278,34 @@ theorem corePrize_bddAbove_range_shawValue_of_pos_lt_export {ι : Type*} {q n M 
   _root_.ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt
     hn hnq
 
+/-- **[capstone, ShawValueCapstone]** Negative `BddAbove` face of the Shaw slogan: failure of
+`Sh(n)=O(1)` is exactly explicit drift of the Shaw values past every proposed constant. -/
+theorem shawOOne_unbounded_shawValue_drift_export {ι : Type*} {q n M : ι → ℝ} :
+    ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M ↔
+      ∀ C : ℝ, ∃ i : ι,
+        C < _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.not_shawOOneOn_iff_forall_exists_lt_shawValue
+
+/-- **[capstone, ShawValueCapstone]** Negative prize-reduction face: under positive Shaw scale,
+failure of `CorePrizeBoundOn` is exactly explicit unbounded drift of the dimensionless Shaw values. -/
+theorem corePrize_unbounded_shawValue_drift_export {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < _root_.ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i)) :
+    ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M ↔
+      ∀ C : ℝ, ∃ i : ι,
+        C < _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.not_corePrizeBoundOn_iff_forall_exists_lt_shawValue
+    hscale
+
+/-- **[capstone, ShawValueCapstone]** Prize-regime negative face of the Shaw drift criterion,
+discharging positive scale from `0 < n_i < q_i`. -/
+theorem corePrize_unbounded_shawValue_drift_of_pos_lt_export {ι : Type*} {q n M : ι → ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M ↔
+      ∀ C : ℝ, ∃ i : ι,
+        C < _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.not_corePrizeBoundOn_iff_forall_exists_lt_shawValue_of_pos_lt
+    hn hnq
+
 /-- **[capstone, ShawValueCapstone]** Elementary dominated-majorant transfer: a campaign
 `CorePrizeBoundOn` theorem for a pointwise majorant gives the same raw prize-scale bound for every
 smaller target.  This is pure monotonicity of the sup norm, with no new analytic estimate. -/
@@ -2178,6 +2209,9 @@ theorem doorIV_levelWorst_base_corrected_of_gate_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_of_pos_lt_export
+#print axioms shawOOne_unbounded_shawValue_drift_export
+#print axioms corePrize_unbounded_shawValue_drift_export
+#print axioms corePrize_unbounded_shawValue_drift_of_pos_lt_export
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export

@@ -322,6 +322,47 @@ theorem corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt {ι : Type*} {q 
   exact corePrizeBoundOn_iff_bddAbove_range_shawValue (q := q) (n := n) (M := M)
     (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
 
+/-- Failure of `BddAbove` for a real range is exactly explicit drift past every proposed constant.
+This is the standard-library negation form used by empirical door-(iv) probes: to refute an `O(1)`
+claim, it suffices to produce, for every candidate bound `C`, some family member above `C`. -/
+theorem not_bddAbove_range_iff_forall_exists_lt {ι : Type*} (f : ι → ℝ) :
+    ¬ BddAbove (Set.range f) ↔ ∀ C : ℝ, ∃ i : ι, C < f i := by
+  constructor
+  · intro hnot C
+    by_contra hno
+    apply hnot
+    refine ⟨C, ?_⟩
+    rintro x ⟨i, rfl⟩
+    exact le_of_not_gt (fun hgt => hno ⟨i, hgt⟩)
+  · intro hdrift hbdd
+    rcases hbdd with ⟨C, hC⟩
+    rcases hdrift C with ⟨i, hi⟩
+    exact not_lt_of_ge (hC ⟨i, rfl⟩) hi
+
+/-- **Failure of `Sh(n)=O(1)` as explicit Shaw-value drift.**  The negation of the campaign
+`ShawOOneOn` predicate is exactly: every candidate constant `C` is beaten by some indexed Shaw value.
+No estimate is claimed; this is the consumer-facing failure/drift form of the `BddAbove` capstone. -/
+theorem not_shawOOneOn_iff_forall_exists_lt_shawValue {ι : Type*} {q n M : ι → ℝ} :
+    ¬ ShawOOneOn q n M ↔ ∀ C : ℝ, ∃ i : ι, C < shawValue (q i) (n i) (M i) := by
+  rw [shawOOneOn_iff_bddAbove_range_shawValue,
+    not_bddAbove_range_iff_forall_exists_lt]
+
+/-- **Failure of the raw prize bound as explicit Shaw-value drift.**  Under positive Shaw scale,
+`¬ CorePrizeBoundOn` is exactly unbounded growth of the dimensionless Shaw values.  This is the
+negative companion to the citable `prize ⇔ Sh(n)=O(1)` reduction. -/
+theorem not_corePrizeBoundOn_iff_forall_exists_lt_shawValue {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i)) :
+    ¬ CorePrizeBoundOn q n M ↔ ∀ C : ℝ, ∃ i : ι, C < shawValue (q i) (n i) (M i) := by
+  rw [corePrizeBoundOn_iff_bddAbove_range_shawValue hscale,
+    not_bddAbove_range_iff_forall_exists_lt]
+
+/-- Prize-regime specialization of the explicit Shaw-value drift form. -/
+theorem not_corePrizeBoundOn_iff_forall_exists_lt_shawValue_of_pos_lt {ι : Type*}
+    {q n M : ι → ℝ} (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    ¬ CorePrizeBoundOn q n M ↔ ∀ C : ℝ, ∃ i : ι, C < shawValue (q i) (n i) (M i) := by
+  exact not_corePrizeBoundOn_iff_forall_exists_lt_shawValue (q := q) (n := n) (M := M)
+    (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
+
 /-! ### Dominated-majorant transfer in elementary campaign predicates -/
 
 /-- A uniform prize-scale bound for a pointwise majorant transfers to any dominated target with the
@@ -377,6 +418,10 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_bddAbove_range_shawValue
 #print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue
 #print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.not_bddAbove_range_iff_forall_exists_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.not_shawOOneOn_iff_forall_exists_lt_shawValue
+#print axioms ProximityGap.Frontier.ShawValueCapstone.not_corePrizeBoundOn_iff_forall_exists_lt_shawValue
+#print axioms ProximityGap.Frontier.ShawValueCapstone.not_corePrizeBoundOn_iff_forall_exists_lt_shawValue_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.UniformCoreBound.of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_corePrizeBoundOn
