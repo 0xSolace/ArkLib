@@ -1,3 +1,31 @@
+## [door-iv-qv-cauchy-schwarz-circular] the Freedman/Azuma QV route is CIRCULAR — Cauchy–Schwarz on the proven predictable-quadratic-variation bound recovers ONLY the trivial linear drift ceiling (2026-06-20, sol)
+
+Lane: Door-(iv) Lane-3 (refuted-lever constraint). `LogRatioTowerBoundedIncrement` already landed the
+Freedman/Azuma PREREQUISITE for the log-ratio tower `S_a := log M(μ_{2^a}) − log M(μ_1) = Σ_{i<a} Δ_i`:
+bounded increments `Δ_i ∈ [0, log 2]` and the predictable quadratic variation `Σ Δ_i² ≤ (log 2)·S_a`
+(`logTower_sq_le_log2_mul`). The prize is equivalent (`logTower_excess_eq`) to the excess sum being
+SUBLINEAR (`S_a ≤ ½·a·log2 + O(log a)`). The §1.2 Azuma/Freedman lever's natural move is to combine
+the proven QV bound with Cauchy–Schwarz on the increments. This entry locks that combination as
+SELF-DEFEATING:
+  `S_a² = (Σ Δ_i)² ≤(Cauchy–Schwarz) a·Σ Δ_i² ≤(proven QV) a·log2·S_a`  ⟹ (S_a ≥ 0)  `S_a ≤ a·log2`,
+EXACTLY the trivial linear drift ceiling (`M(μ_{2^a}) ≤ 2^a·M(μ_1)`, the trivial n-ceiling) already
+given by the bounded-increment sum (`logTower_le_card_mul_log2`). The QV route is CIRCULAR — its own
+`√S_a` reappears on the RHS via the QV–drift coupling, and unwinding returns the bound it started from.
+
+VERDICT: bounded increments + their predictable quadratic variation (the full martingale-concentration
+input) are CONSISTENT with the entire trivial linear ceiling and therefore cannot force the prize. The
+Freedman/Azuma lever alone supplies NO sublinear (prize) saving; the open object is unchanged — an
+INDEPENDENT mean-drift control `Σ Δ_i = O(log a)` (the binding-frequency phase law), which neither the
+increment envelope nor its quadratic variation provide. Probe-anchoring: the QV input is a deductive
+consequence of the prize-regime-validated envelope `ρ_i ∈ [√2,2]` on PROPER thin subgroups `p ≫ n³`
+(`probe_rho_increment_bounded.py`, `probe_rho_excess_growth.py`), inherited from `logTower_sq_le_log2_mul`;
+the circularity is a pure arithmetic identity on top of that input. No CORE / cancellation / completion /
+moment / anti-concentration / capacity claim. CORE `M(μ_n) ≤ C·√(n·log(p/n))` stays OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVQVCauchySchwarzCircular.lean`,
+5 theorems (cauchy_schwarz_increments, drift_sq_le_card_mul_log2_mul_drift, qv_route_recovers_trivial_ceiling,
+qv_route_no_sublinear_saving, tower_mono_zero_le), axiom-clean — all axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
 ## [door-iv-twodilate-no-joint-extreme] the two-dilate sub-period coupling H(n)=max_b(S(b)+S(gb)) is STRUCTURELESS — no co-peak (H<2maxS, gap grows with n) and ≤ an independent-pairing surrogate (2026-06-20, sol)
 
 Lane: Door-(iv) Lane-1 (probe) + Lane-3 (refuted-lever constraint). Continues the dilation form
