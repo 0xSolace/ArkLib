@@ -10634,3 +10634,23 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCollisionE
 theorems `image_card_le_source` (Ψ_p ≤ Ψ_0), `image_card_le_codomain` (Ψ_p ≤ p),
 `defect_ge_of_source_gt_card` (defect ≥ N_r − p), `defect_pos_of_source_gt_card`,
 `image_card_le_min` (Ψ_p ≤ min(N_r, p)). Axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
+
+## door-(iv) real multi-piece sign slack and finite multi-window occupancy have exact budgets (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint hardening. Two citable budget interfaces were locked in `CampaignProvenIndex`.
+
+1. `_DoorIVMultiPieceSignCoherence`: for any real refined split compressed to aggregate positive/negative masses,
+   `1 - coherence = 2*min(posMass,negMass)/(posMass+negMass)`, and equality `coherence = 1-ε` is exactly
+   `ε*(posMass+negMass) = 2*min(posMass,negMass)`. Therefore a claimed refined-split coherence saving is
+   paid precisely by actual minority-sign mass; subdivision alone contributes no hidden door-(iv) cancellation.
+2. `_DoorIVWindowConcentrationTrivial`: finite disjoint multi-window occupancy certificates force the trivial
+   cardinality budget `|s| ≤ B`, and no pure occupancy split can fit a strict budget `B < |s|`. Window counts
+   can only help if supplemented by genuine phase cancellation inside/between pieces.
+
+VERDICT: two common door-(iv) bookkeeping routes are exact-budget-only. Refined real sign splits and finite
+small-ball window partitions are useful diagnostics, not independent anti-concentration proofs. No CORE,
+completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean` and
+`ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, commits `268d560ff` and `05e805629`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
