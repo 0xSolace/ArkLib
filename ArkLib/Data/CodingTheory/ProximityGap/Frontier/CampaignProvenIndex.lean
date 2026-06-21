@@ -86,6 +86,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_ResonatorRatioLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_MomentRatioLadderGeneral
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SumProductCensusStallBeta4
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
@@ -4032,5 +4033,48 @@ theorem doorIV_avFloorLadder_energy_moment_floor_general_export
 
 #print axioms doorIV_avFloorLadder_momentSucc_le_sup_moment_export
 #print axioms doorIV_avFloorLadder_energy_moment_floor_general_export
+
+
+/-! ## Door-IV Lane 3 sum-product/incidence census-stall exports.
+Scope: **obstruction/capstone**.
+
+These exports make the beta-four incidence-threshold obstruction permanent. They record that
+newer sum-product and incidence levers either point in the wrong direction, sit on the `θ = 1/4`
+boundary at beta four, or deliver only the best-case `κ = 1/15`, far short of the prize `κ = 1`.
+-/
+
+/-- **[obstruction, SumProductCensusStall]** The Stevens-de Zeeuw best-case exponent saving is
+`κ = 1/15`, positive but strictly below the prize saving `κ = 1`. -/
+theorem doorIV_sumProduct_sdz_does_not_reach_prize_export :
+    (0 : ℝ) < 1 / 15 ∧ (1 : ℝ) / 15 < 1 :=
+  _root_.ArkLib.ProximityGap.SP0Scratch.sdz_does_not_reach_prize
+
+/-- **[obstruction, SumProductCensusStall]** At beta four the point-plane/SdZ threshold is exactly
+met, not strictly exceeded: `¬ (1/4 > 1/4)`. Thus the strict-saving incidence engine is boundary
+blocked in the prize regime. -/
+theorem doorIV_sumProduct_pointplane_boundary_beta4_export :
+    ¬ ((1 : ℝ) / 4 > 1 / 4) :=
+  _root_.ArkLib.ProximityGap.SP0Scratch.pointplane_threshold_boundary_at_beta4
+
+/-- **[obstruction, SumProductCensusStall]** The census-stall capstone: all `0 ≤ κ < 1` savings are
+vacuous for the prize target, `κ = 1/15` is in that vacuous range, and the prize `κ = 1` is not
+delivered by the cluster. -/
+theorem doorIV_sumProduct_census_stall_confirmed_export :
+    (∀ κ : ℝ, 0 ≤ κ → κ < 1 →
+        _root_.ArkLib.ProximityGap.SP0Scratch.SumProductEnergyVacuousAtBeta4 κ) ∧
+      _root_.ArkLib.ProximityGap.SP0Scratch.SumProductEnergyVacuousAtBeta4 (1 / 15) ∧
+      ¬ _root_.ArkLib.ProximityGap.SP0Scratch.SumProductEnergyVacuousAtBeta4 1 :=
+  _root_.ArkLib.ProximityGap.SP0Scratch.census_stall_confirmed
+
+/-- **[obstruction, SumProductCensusStall]** Kurihara-style valuation data does not determine the
+archimedean energy count: the same total count can be compatible with energies `T` and `T²`, and for
+`T ≥ 2` these differ strictly. -/
+theorem doorIV_kurihara_valuation_not_count_export (T : ℝ) (hT : 2 ≤ T) : T < T ^ 2 :=
+  _root_.ArkLib.ProximityGap.SP0Scratch.kurihara_is_valuation_not_count T hT
+
+#print axioms doorIV_sumProduct_sdz_does_not_reach_prize_export
+#print axioms doorIV_sumProduct_pointplane_boundary_beta4_export
+#print axioms doorIV_sumProduct_census_stall_confirmed_export
+#print axioms doorIV_kurihara_valuation_not_count_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

@@ -11292,3 +11292,22 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenInd
 `doorIV_avFloorLadder_momentSucc_le_sup_moment_export` and
 `doorIV_avFloorLadder_energy_moment_floor_general_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-sumproduct-census-stall-index-exports] permanent exports for beta-four incidence threshold obstruction (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint consolidation. The beta-four sum-product/incidence stall facts in
+`_SumProductCensusStallBeta4.lean` were proven axiom-clean but not indexed. This entry exports the
+citable obstruction facts from `CampaignProvenIndex`: SdZ best-case `κ = 1/15 < 1`, point-plane boundary
+`¬(1/4 > 1/4)`, the `census_stall_confirmed` capstone, and the Kurihara valuation-vs-count split.
+
+VERDICT: at the prize thinness beta four, the incidence/sum-product cluster cannot supply the prize
+saving `κ = 1`: threshold-blocked routes give no strict saving, the best-case SdZ saving is only
+`1/15`, and Kurihara controls p-adic valuation/multiplicity rather than the archimedean energy count.
+No CORE, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports
+`doorIV_sumProduct_sdz_does_not_reach_prize_export`,
+`doorIV_sumProduct_pointplane_boundary_beta4_export`,
+`doorIV_sumProduct_census_stall_confirmed_export`, and
+`doorIV_kurihara_valuation_not_count_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
