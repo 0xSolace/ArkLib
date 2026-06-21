@@ -56,6 +56,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReductio
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetCountSingleton
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawGrandSynthesis
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -536,6 +537,66 @@ theorem noFifthDoor_prize_certificate_doorIV_or_violates_provenScale_export
             ¬ m.RespectsProvenScale q C δ n :=
   _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prize_certificate_doorIV_or_violates_provenScale
     hLnn hL hC hδ
+
+/-! ## ShawGrandSynthesis — the composed Lane-2/Lane-3 headline. Scope: **capstone**.
+These exports make permanent the newly landed synthesis module: the prize is exactly Shaw boundedness,
+and any proof at the prize floor must pass through door (iv). Pure composition, no CORE bound. -/
+
+/-- **[capstone, ShawGrandSynthesis]** Conjoined headline: `ShawOOneOn ↔ CorePrizeBoundOn` and,
+at a proven-scale mechanism instance, a prize-floor certificate forces door (iv). -/
+theorem shawGrand_prize_reduces_to_doorIV_export
+    {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι,
+      0 < _root_.ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i))
+    {m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism}
+    {n₀ L₀ q₀ C δ : ℝ}
+    (hn₀ : 0 < n₀) (hL₀ : 1 < L₀) (hq₀ : n₀ * L₀ ≤ q₀)
+    (hsota : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n₀ L₀ ≤
+      C * n₀ ^ (1 - δ))
+    (hatScale : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorDischarged.AtProvenScale
+      m n₀ q₀ C δ) :
+    (_root_.ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M ↔
+      _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M) ∧
+      (m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n₀ →
+        m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation) :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawGrandSynthesis.prize_reduces_to_doorIV
+    hscale hn₀ hL₀ hq₀ hsota hatScale
+
+/-- **[capstone, ShawGrandSynthesis]** Same synthesis with Shaw-scale positivity discharged from
+`0 < n_i < q_i` on the family. -/
+theorem shawGrand_prize_reduces_to_doorIV_of_pos_lt_export
+    {ι : Type*} {q n M : ι → ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i)
+    {m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism}
+    {n₀ L₀ q₀ C δ : ℝ}
+    (hn₀ : 0 < n₀) (hL₀ : 1 < L₀) (hq₀ : n₀ * L₀ ≤ q₀)
+    (hsota : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n₀ L₀ ≤
+      C * n₀ ^ (1 - δ))
+    (hatScale : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorDischarged.AtProvenScale
+      m n₀ q₀ C δ) :
+    (_root_.ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M ↔
+      _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M) ∧
+      (m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n₀ →
+        m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation) :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawGrandSynthesis.prize_reduces_to_doorIV_of_pos_lt
+    hn hnq hn₀ hL₀ hq₀ hsota hatScale
+
+/-- **[capstone, ShawGrandSynthesis]** Eventual family headline: Shaw boundedness is exactly the
+CORE prize bound, and past the SOTA threshold every proven-scale prize-floor certificate is door (iv). -/
+theorem shawGrand_prize_reduces_to_doorIV_eventually_export
+    {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι,
+      0 < _root_.ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i))
+    {L q₀ C δ : ℝ} (hC : 0 < C) (hL : 1 < L) (hLnn : 0 ≤ L) (hδ : δ < 1 / 2) :
+    (_root_.ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M ↔
+      _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M) ∧
+      ∃ N₀ : ℝ, ∀ n' : ℝ, N₀ ≤ n' → 2 ≤ n' → n' * L ≤ q₀ →
+        ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+          _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorDischarged.AtProvenScale m n' q₀ C δ →
+          m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n' →
+            m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawGrandSynthesis.prize_reduces_to_doorIV_eventually
+    hscale hC hL hLnn hδ
 
 /-! ## NoTighterBound — the #407/#444 "no tighter bound from any direction" capstone (Lane-2).
 Scope: **capstone**. The negative structural theorem: any functional bounding the per-frequency core
@@ -1686,6 +1747,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms noFifthDoor_forces_doorIV_ceilingRespecting_export
 #print axioms noFifthDoor_classical_prize_certificate_violates_provenScale_export
 #print axioms noFifthDoor_prize_certificate_doorIV_or_violates_provenScale_export
+#print axioms shawGrand_prize_reduces_to_doorIV_export
+#print axioms shawGrand_prize_reduces_to_doorIV_of_pos_lt_export
+#print axioms shawGrand_prize_reduces_to_doorIV_eventually_export
 #print axioms noTighterBound_secondMoment_blind_export
 #print axioms noTighterBound_from_symmetric_or_L2_export
 #print axioms doorIV_object_moment_corridor_export
