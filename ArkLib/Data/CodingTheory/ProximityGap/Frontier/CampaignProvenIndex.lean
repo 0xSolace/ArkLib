@@ -207,6 +207,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_no_multiWindow_split_rhs_le_strict_budget_export` | obstruction | DoorIVWindowConcentrationTrivial |
 | `doorIV_argmaxDecoupled_const_ge_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_absolute_const_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_collision_defect_eq_zero_iff_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
 | `doorIV_collision_defect_pos_iff_not_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
@@ -1825,6 +1827,26 @@ theorem doorIV_argmaxDecoupled_no_control_below_ratio_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_control_below_measured_ratio
     hFpos hbelow
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Endpoint no-go: for any nonnegative absolute
+constant `C`, if the candidate functional is nonpositive at a strictly-positive target peak, then no
+uniform multiplicative control exists. This covers the zero/small-window endpoint of the measured
+argmax-decoupling obstruction. -/
+theorem doorIV_argmaxDecoupled_no_nonpos_candidate_control_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {bstar : ι} (hC : 0 ≤ C)
+    (hFnonpos : F bstar ≤ 0) (htpos : 0 < target bstar) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_nonpos_candidate_at_positive_target
+    hC hFnonpos htpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Zero endpoint no-go: a nonnegative constant
+cannot control a positive target peak through a candidate functional that vanishes at that peak. -/
+theorem doorIV_argmaxDecoupled_no_zero_candidate_control_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {bstar : ι} (hC : 0 ≤ C)
+    (hFzero : F bstar = 0) (htpos : 0 < target bstar) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_zero_candidate_at_positive_target
+    hC hFzero htpos
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Family no-go: if the per-`n` worst-frequency
 witness ratio is UNBOUNDED above (decoupling: the target peaks where `F` is small), then NO single
 absolute constant `C` uniformly controls every family member — for each `C` some member fails. -/
@@ -2759,6 +2781,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_no_multiWindow_split_rhs_le_strict_budget_export
 #print axioms doorIV_argmaxDecoupled_const_ge_ratio_export
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
+#print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
+#print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_absolute_const_export
 #print axioms doorIV_collision_defect_eq_zero_iff_injOn_export
 #print axioms doorIV_collision_defect_pos_iff_not_injOn_export

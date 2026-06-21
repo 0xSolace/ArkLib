@@ -10717,3 +10717,25 @@ new theorems `defect_eq_zero_iff_injOn` and `defect_pos_iff_not_injOn`, exported
 `CampaignProvenIndex` as `doorIV_collision_defect_eq_zero_iff_injOn_export` and
 `doorIV_collision_defect_pos_iff_not_injOn_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupling-zero-endpoint] zero/nonpositive candidate at target peak gives no nonnegative control (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVArgmaxDecouplingNoControl`. The prior kernel
+proved the positive-ratio obstruction: if a candidate functional `F` is positive but small at the target
+worst frequency `b*`, any uniform control `target ≤ C·F` forces `C ≥ target(b*)/F(b*)`, so an unbounded
+witness ratio rules out absolute constants.
+
+This sweep adds the endpoint needed for small-ball/window probes where the candidate vanishes or is
+nonpositive at the target peak: for any nonnegative constant `C`, if `target(b*) > 0` and `F(b*) ≤ 0`,
+then no uniform multiplicative control exists at all; the zero case `F(b*) = 0` is exported separately.
+
+VERDICT: a decoupled anti-concentration/window functional that is zero/nonpositive at the true `M`-argmax
+is dead immediately, not merely by forcing a large ratio. This is a lever constraint only. It gives no
+CORE upper bound and makes no cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`,
+new theorems `not_uniformControl_of_nonpos_candidate_at_positive_target` and
+`not_uniformControl_of_zero_candidate_at_positive_target`, exported from `CampaignProvenIndex` as
+`doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` and
+`doorIV_argmaxDecoupled_no_zero_candidate_control_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

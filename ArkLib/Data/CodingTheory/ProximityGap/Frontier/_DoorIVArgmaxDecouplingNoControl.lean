@@ -80,6 +80,32 @@ theorem not_uniformControl_of_ratio_gt {target F : ι → ℝ} {C : ℝ} {bstar 
   intro hctrl
   exact absurd (const_ge_ratio_at_argmax hctrl hFpos) (not_le.2 hgt)
 
+/-- **Endpoint obstruction: a nonpositive candidate at a positive target peak cannot control.**  For the
+nonnegative constants relevant to absolute upper bounds, if the target is strictly positive at the
+worst frequency but the proposed control functional is nonpositive there, then even pointwise control at
+that one frequency is impossible.
+
+This is the zero/nonpositive endpoint of the ratio obstruction above: probes that produce a vanishing
+small-ball/window functional at the `M`-argmax are not merely forcing a large constant; they force **no
+nonnegative multiplicative control at all**. -/
+theorem not_uniformControl_of_nonpos_candidate_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {bstar : ι} (hC : 0 ≤ C) (hFnonpos : F bstar ≤ 0)
+    (htpos : 0 < target bstar) :
+    ¬ UniformControl target F C := by
+  intro hctrl
+  have htarget_le_mul : target bstar ≤ C * F bstar := hctrl bstar
+  have hmul_nonpos : C * F bstar ≤ 0 := mul_nonpos_of_nonneg_of_nonpos hC hFnonpos
+  have htarget_nonpos : target bstar ≤ 0 := le_trans htarget_le_mul hmul_nonpos
+  exact (not_lt_of_ge htarget_nonpos) htpos
+
+/-- **Zero endpoint packaging.**  If a nonnegative constant tries to control a strictly-positive target
+peak using a candidate functional that vanishes at that peak, the control is impossible. -/
+theorem not_uniformControl_of_zero_candidate_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {bstar : ι} (hC : 0 ≤ C) (hFzero : F bstar = 0)
+    (htpos : 0 < target bstar) :
+    ¬ UniformControl target F C :=
+  not_uniformControl_of_nonpos_candidate_at_positive_target hC (le_of_eq hFzero) htpos
+
 /-- **Family form: an unbounded witness ratio rules out every absolute constant.**  Suppose for each
 member `n` of a family we have a target `target n`, a candidate functional `F n`, a worst frequency
 `bstar n` where `F n (bstar n) > 0`, and the per-`n` witness ratio
