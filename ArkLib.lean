@@ -2489,6 +2489,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.PairPinnedScalarAntipodal
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumRigidityModP
 import ArkLib.Data.CodingTheory.ProximityGap.PairSumsWiring
 import ArkLib.Data.CodingTheory.ProximityGap.PairingResidualFailsAtPrize
+import ArkLib.Data.CodingTheory.ProximityGap.ParsevalFloorSqrtN
 import ArkLib.Data.CodingTheory.ProximityGap.PartialDFTClosure
 import ArkLib.Data.CodingTheory.ProximityGap.PastJohnsonThresholdArith
 import ArkLib.Data.CodingTheory.ProximityGap.PencilAgreementUnique
