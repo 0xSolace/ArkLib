@@ -11493,3 +11493,34 @@ Lane: Door-IV Lane 3 constraint/reduction export. The proved brick `_ResonanceLo
 VERDICT: the proposed Montgomery/Euler-product log cannot come from the diagonal of a unit-modulus coset resonator. Any logarithmic gain must live entirely in the off-diagonal Gauss-period spectral autocorrelation, which is the BGK phase-correlation wall itself. This is a localization/obstruction only, not a CORE upper bound or cancellation theorem.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_cosetResonator_lower_bound_export`, `doorIV_cosetResonator_diagonal_numerator_export`, `doorIV_cosetResonator_diagonal_ratio_export`, and `doorIV_cosetResonator_diagonal_floor_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [resonance-phase-aligned-resonator-non-realizable] the Stickelberger phase-aligned (√q-completion) resonator is NON-REALIZABLE in the prize regime (2026-06-21, sol)
+
+Lane: door-(iv) Lane 3 constraint lemma LOCKING the door-(ii) refuted lever (√q-completion resonator
+overshoots) as a kernel-checked no-go, closing a residual that `_ResonanceStickelbergerCeilingDiagnostic`
+(commit 9ab9bb682, Shaw) had stated in prose but left OPEN.
+
+The diagnostic proved Candidate 3's phase-aligned resonator's coherent value is the triangle SATURATION
+`((m−1)√q+1)/m ≈ √q` (an UPPER extreme, not a floor; `m=(q−1)/d`), and defined the residual
+`PhaseCoherentUniform ψ d` = "some FIXED nonnegative weight makes the completion sum coherent at every
+b≠0 simultaneously, forcing every period to attain the saturation value". It proved only the forward
+direction (coherence ⇒ every ‖η_b‖ = saturation) and asserted the residual FALSE in prose (Parseval
+average) without closing it.
+
+VERDICT (now kernel-checked): in the prize regime `4d ≤ q−1` (always true since q≈d^β, β≈4–5),
+`PhaseCoherentUniform ψ d` is FALSE. Lever = the EXACT second moment `∑_b‖η_b‖² = q·d`
+(`subgroup_gaussSum_secondMoment`). If every b≠0 saturated, then `m²·‖η_b‖² ≥ (m−1)²·q`; summing over
+the q−1 nonzero frequencies and using `∑_{b≠0}‖η_b‖² = qd − d² ≤ qd` gives `(q−1)(m−1)² ≤ m²d`;
+substituting q−1 = m·d and cancelling the positive m·d forces `(m−1)² ≤ m`, i.e. `m ≤ (3+√5)/2 ≈ 2.62`,
+contradicting m ≥ 4 (from `4d ≤ q−1 = m·d`). So the phase-aligned resonator CANNOT be a b-uniform
+weight; the √q-completion route overshoots, exactly as the tetrachotomy door-(ii) demands. No CORE
+upper bound, no cancellation, no anti-concentration claim.
+
+PROBE: `scripts/probes/probe_phasecoherent_refute.py` (exact complex η, thin μ_n, p≫n³, n=8,16,32):
+the claimed-coherent second moment `(q−1)·sat²` exceeds the true `qn−n²` by a factor ≈ q/n GROWING in n
+(70, 257, 1025); measured M (6.9, 11.1, 17.2) sits far below sat (23.5, 64, 181). Reproducible.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseCoherentNonRealizable.lean`,
+axiom-clean. Theorems: `eta_zero`, `norm_eta_zero_sq`, `secondMoment_nonzero` (the exact
+`∑_{b≠0}‖η_b‖² = qd − d²`), `not_phaseCoherentUniform_of_prizeRegime`. Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
