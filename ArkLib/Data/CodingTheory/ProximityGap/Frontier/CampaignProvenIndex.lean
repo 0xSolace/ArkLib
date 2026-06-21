@@ -143,6 +143,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_bddAbove_nonneg_normalizedHalfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_nonneg_rawPrize_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_prize_iff_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
@@ -1039,6 +1041,30 @@ theorem doorIV_bddAbove_nonneg_rawHalfMass_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
     hscale
 
+/-- **[capstone, DoorIVPrizeBddAbove]** Mixed sign-normalized face: bounded normalized prize/Shaw
+ratios are exactly the existence of a conventional nonnegative raw half-mass family constant. -/
+theorem doorIV_bddAbove_prize_iff_nonneg_rawHalfMass_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound H scale C :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_nonneg_halfMassFamilyBound
+    hK hscale hMH hHM
+
+/-- **[capstone, DoorIVPrizeBddAbove]** Symmetric mixed sign-normalized face: bounded normalized
+half-mass Shaw ratios are exactly the existence of a conventional nonnegative raw prize constant. -/
+theorem doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_prizeFamilyBound
+    hK hscale hMH hHM
+
 /-- **[capstone, DoorIVPrizeBddAbove]** The door-(iv) wall is invariant under the half-mass
 reduction: failure of `BddAbove` for normalized prize ratios is exactly failure for normalized
 half-mass Shaw ratios. -/
@@ -1504,6 +1530,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_bddAbove_nonneg_normalizedHalfMass_export
 #print axioms doorIV_bddAbove_nonneg_rawPrize_export
 #print axioms doorIV_bddAbove_nonneg_rawHalfMass_export
+#print axioms doorIV_bddAbove_prize_iff_nonneg_rawHalfMass_export
+#print axioms doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export
 #print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
 #print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
 #print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export

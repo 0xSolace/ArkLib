@@ -202,6 +202,34 @@ theorem bddAbove_range_normalizedHalfMass_iff_exists_prizeFamilyBound {ι : Type
         hK hscale hMH hHM,
       bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound (M := M) (scale := scale) hscale]
 
+/-- **Door-(iv) reduction, normalized-prize `BddAbove` versus raw half-mass Big-O with a
+nonnegative constant.**  This is the sign-normalized mixed face of the Lane-2 capstone: bounded
+normalized prize ratios are exactly the existence of a conventional `C ≥ 0` half-mass family bound. -/
+theorem bddAbove_range_normalizedPrize_iff_exists_nonneg_halfMassFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ halfMassFamilyBound H scale C := by
+  rw [bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
+        (H := H) (scale := scale) hscale]
+
+/-- **Door-(iv) reduction, normalized-half-mass `BddAbove` versus raw prize Big-O with a
+nonnegative constant.**  This is the symmetric sign-normalized mixed face: bounded normalized
+half-mass Shaw ratios are exactly the existence of a conventional `C ≥ 0` prize-family bound. -/
+theorem bddAbove_range_normalizedHalfMass_iff_exists_nonneg_prizeFamilyBound {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ prizeFamilyBound M scale C := by
+  rw [← bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
+        hK hscale hMH hHM,
+      bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound
+        (M := M) (scale := scale) hscale]
+
 /-! ### The WALL (negative) characterization
 
 The prize is the boundedness of the normalized ratios; the WALL is their UNBOUNDEDNESS. These lemmas
@@ -363,6 +391,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_prizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_nonneg_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_iff_forall_exists_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass
