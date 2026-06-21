@@ -80,6 +80,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialSta
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkDoobMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9OrderedWalkMajorant
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3435,6 +3436,28 @@ theorem doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
     ‖S n‖ ≤ C :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_bound_of_maximalExcursion_bound h
 
+/-- **[obstruction, AvDIR9OrderedWalkMajorant]** In the ordered-walk formulation, the endpoint
+period is one of the prefixes, so its norm is dominated by the maximal excursion `R`. -/
+theorem doorIV_avDIR9_endpoint_le_R_export {n : ℕ} (a : Fin n → ℂ) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.AvDIR9.endpoint a‖ ≤
+      _root_.ArkLib.ProximityGap.Frontier.AvDIR9.R a :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9.endpoint_le_R a
+
+/-- **[obstruction, AvDIR9OrderedWalkMajorant]** Per-pair summed cancellation of the ordered
+signed-area contributions forces the whole signed-area family sum to vanish. This is a global
+phase-blind statement only, not per-worst-frequency cancellation. -/
+theorem doorIV_avDIR9_pairAntisym_sum_zero_export {n : ℕ} {B : Type*} [Fintype B]
+    (c : B → Fin n → Fin n → ℝ) (hpair : ∀ k l, ∑ b, c b k l = 0) :
+    ∑ b, ((1 / 2 : ℝ) *
+      ∑ k : Fin n, ∑ l ∈ Finset.univ.filter (fun l : Fin n => (l : ℕ) < (k : ℕ)), c b k l) = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9.pairAntisym_sum_zero c hpair
+
+/-- **[obstruction, AvDIR9OrderedWalkMajorant]** The abstract DIR9 reduction theorem is exactly
+`endpoint≤R`: the unconditional handle is the majorant direction, not a new upper bound. -/
+theorem doorIV_avDIR9_majorant_reduces_export :
+    _root_.ArkLib.ProximityGap.Frontier.AvDIR9.DIR9MajorantReducesToWall :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9.dir9_majorant_reduces
+
 /-- **[obstruction, PhaseBlindRadialStats]** Every finite `normSq`-radial statistic is invariant
 under arbitrary pointwise unit twists. This is the kerneled radial side of Shaw's phase-blindness
 probe: a `b`-summed moment/radial summary cannot see the adversarial phase alignment Door (iv) needs. -/
@@ -3557,6 +3580,9 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_geomMean_le_max_export
 #print axioms doorIV_orderedWalk_endpoint_le_maximalExcursion_export
 #print axioms doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
+#print axioms doorIV_avDIR9_endpoint_le_R_export
+#print axioms doorIV_avDIR9_pairAntisym_sum_zero_export
+#print axioms doorIV_avDIR9_majorant_reduces_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_orderedWalk_corePrize_endpoint_of_majorant_export
 #print axioms doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export
