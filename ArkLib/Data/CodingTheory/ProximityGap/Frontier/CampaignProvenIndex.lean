@@ -482,6 +482,33 @@ theorem bgkScale_eq_sqrtL_mul_prizeScale_export {n L : ℝ} (hn : 0 ≤ n) (hL :
       = Real.sqrt L * _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n :=
   _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale_eq_sqrtL_mul_prizeScale hn hL
 
+/-- **[capstone/obstruction, NoFifthDoor]** Local contrapositive of the discharged classical side:
+past the SOTA threshold, a classical mechanism that certifies the prize scale must violate its own
+proven door-scale (`√q` for completion, `C·n^{1−δ}` for moment/EVT). This blocks the degenerate
+`certScale` loophole without assuming every mechanism globally respects its ceiling. -/
+theorem noFifthDoor_classical_prize_certificate_violates_provenScale_export
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q →
+      ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m.door.isClassical →
+        m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n →
+        ¬ m.RespectsProvenScale q C δ n :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.classical_prize_certificate_violates_provenScale
+    hLnn hL hC hδ
+
+/-- **[capstone, NoFifthDoor]** Local no-fifth-door alternative: past the SOTA threshold, any
+prize-scale certificate is either a genuine door-(iv) mechanism, or it violates the proven scale of
+its own classical door. This is the discharged, single-mechanism form of the no-fifth-door capstone. -/
+theorem noFifthDoor_prize_certificate_doorIV_or_violates_provenScale_export
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q →
+      ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n →
+          m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation ∨
+            ¬ m.RespectsProvenScale q C δ n :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prize_certificate_doorIV_or_violates_provenScale
+    hLnn hL hC hδ
+
 /-! ## NoTighterBound — the #407/#444 "no tighter bound from any direction" capstone (Lane-2).
 Scope: **capstone**. The negative structural theorem: any functional bounding the per-frequency core
 `M(n) = max_{b≠0}‖η_b‖` must be simultaneously b-sensitive, deterministic-archimedean, and genuinely
@@ -1627,6 +1654,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_corridor_export
 #print axioms doorIV_corridor_width_pos_export
 #print axioms bgkScale_eq_sqrtL_mul_prizeScale_export
+#print axioms noFifthDoor_classical_prize_certificate_violates_provenScale_export
+#print axioms noFifthDoor_prize_certificate_doorIV_or_violates_provenScale_export
 #print axioms noTighterBound_secondMoment_blind_export
 #print axioms noTighterBound_from_symmetric_or_L2_export
 #print axioms doorIV_object_moment_corridor_export

@@ -474,4 +474,49 @@ theorem forces_doorIV_ceilingRespecting
   intro m' hcl'
   exact hN₀ n hnN₀ hq m' hcl' (hrespAll m' hcl')
 
+/-! ## Local contrapositive: a classical prize certificate must violate its proven ceiling
+
+The previous theorem is the global, all-mechanisms form: if *every* classical mechanism respects its
+proven scale, then a prize certificate is forced through door (iv).  For citations it is often cleaner
+to use the pointwise contrapositive: at a fixed large `n`, a mechanism that certifies the prize is
+either door (iv), or else it is a classical mechanism that has cheated its own proven scale.  This is
+the precise formal guard against smuggling a classical door through a too-small `certScale` field. -/
+
+/-- **Classical prize certificates violate their proven scale.**  Past the SOTA threshold, in the
+prize regime, any *classical* mechanism that claims a prize-scale certificate `certScale ≤ √n` cannot
+also respect the proven scale of its door (`√q` for completion, `C·n^{1−δ}` for moment/EVT).  Thus a
+classical-looking prize certificate is necessarily a misclassified/degenerate mechanism, not a real
+classical-door proof. -/
+theorem classical_prize_certificate_violates_provenScale
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q → ∀ m : Mechanism,
+      m.door.isClassical → m.certScale ≤ prizeScale n → ¬ m.RespectsProvenScale q C δ n := by
+  obtain ⟨N₀, hN₀⟩ := ceilingRespecting_classical_overshoots hLnn hC hδ
+  refine ⟨N₀, fun n hn hq m hcl hcert hresp => ?_⟩
+  have hnN₀ : N₀ ≤ n := le_trans (le_max_left _ _) hn
+  have hn1 : (1 : ℝ) ≤ n := le_trans (le_max_right _ _) hn
+  have hnpos : 0 < n := lt_of_lt_of_le one_pos hn1
+  exact not_certifies_prizeScale_of_overshoot hnpos hL (hN₀ n hnN₀ hq m hcl hresp) hcert
+
+/-- **Local no-fifth-door alternative, no global premise.**  Past the SOTA threshold, in the prize
+regime, any prize-scale certificate is either genuinely door (iv), or it violates the proven scale of
+its own classical door.  This removes the global hypothesis that *all* classical mechanisms respect
+their ceilings and replaces it by the sharp local dichotomy for the single mechanism under inspection. -/
+theorem prize_certificate_doorIV_or_violates_provenScale
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q → ∀ m : Mechanism,
+      m.certScale ≤ prizeScale n →
+        m.door = DoorType.newEvaluation ∨ ¬ m.RespectsProvenScale q C δ n := by
+  obtain ⟨N₀, hN₀⟩ := ceilingRespecting_classical_overshoots hLnn hC hδ
+  refine ⟨N₀, fun n hn hq m hcert => ?_⟩
+  by_cases hcl : m.door.isClassical
+  · right
+    intro hresp
+    have hnN₀ : N₀ ≤ n := le_trans (le_max_left _ _) hn
+    have hn1 : (1 : ℝ) ≤ n := le_trans (le_max_right _ _) hn
+    have hnpos : 0 < n := lt_of_lt_of_le one_pos hn1
+    exact not_certifies_prizeScale_of_overshoot hnpos hL (hN₀ n hnN₀ hq m hcl hresp) hcert
+  · left
+    exact (Mechanism.not_classical_iff_doorIV m).mp hcl
+
 end ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy
