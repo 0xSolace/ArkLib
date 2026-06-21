@@ -1,3 +1,22 @@
+## [jacobi-early-turnover-gap] form (D): free turnover ceiling is O(n), prize needs O(log p) — the gap is kernel-backed (2026-06-21, sol)
+
+Lane: door-(iv) Lane-2 bridge connecting the two PROVEN Jacobi modules
+(`_AvJB_JacobiEdgeBoundedSupportCeiling` + `_AvJB_HermiteTurnoverReduction`). Combining the support
+ceiling M ≤ 3n with the edge-turnover model M²=2nk* gives the FREE turnover bound 2nk*=M² ≤ 9n² ⇒
+k* ≤ (9/2)n. So the OP-recurrence turnover always happens by depth O(n), free of deep arithmetic.
+
+VERDICT: the prize asks for the FAR STRONGER early turnover k* ≤ log p. Whenever log p < (9/2)n
+(the prize regime q≈n^β, β=O(1), so log p=O(log n)≪n), the prize target is STRICTLY below the free
+ceiling — a genuine O(n)→O(log p) gap the support bound cannot close. Kernel-backed: if the free
+ceiling were tight (k*=(9/2)n) and log p<(9/2)n then the prize FAILS at scale L=log p
+(free_ceiling_insufficient_for_prize). The missing input is exactly the fine sub-Gaussian decay of
+b_k (= the wall). No CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvJB_TurnoverSupportGap.lean`,
+axiom-clean. Theorems `turnover_le_free_ceiling`, `free_ceiling_insufficient_for_prize`.
+Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
 ## [jacobi-hermite-turnover-reduction] form (D): prize ⇔ turnover depth k* ≤ log p (CONDITIONAL on the measured edge–turnover model) (2026-06-21, sol)
 
 Lane: door-(iv) Lane-2 reduction capstone for Shaw's form (D) (commit e1f04a449,
