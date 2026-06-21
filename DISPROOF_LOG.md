@@ -10151,3 +10151,36 @@ VERDICT (rule-4 mapped-frontier WIN; CORE stays OPEN):
 - Does NOT prove a uniform-in-field bound on M (that bound IS the open prize/BGK wall). No CORE/
   cancellation/completion/moment-saving/anti-concentration/capacity claim. Reproducible probe + this
   entry are the deliverable.
+
+## RULE-6 RE-AUDIT confirms the |.|-leak (630e2198f): thin's f_r advantage is NUMERATOR-driven (genuine signed cancellation), NOT absolute-moment inflation (2026-06-21, sol)
+
+Adversarial re-audit of my own commit 630e2198f (the |.|-leak f_r = 1 − |A_r|/Σ|η_b|^r, thin > thick).
+WORRY (the most natural objection): f_r high in thin could be DRIVEN BY the known thin moment inflation
+(companion to 6feb11b53 even-energy inflation, and the odd-profile entry which found |A_r| PINNED HIGH in
+thin by Sidon rigidity below d_odd). If Δf_r>0 were just the denominator Σ|η_b|^r inflating, my "thin
+discards more" framing would be a RESTATEMENT of moment inflation, not a new cancellation lever.
+
+DECOMPOSITION (`scripts/probes/probe_dooriv_leak_decomp_audit.py`, EXACT, PROPER μ_n, never n=q−1, ODD r).
+M-normalized to kill scale/count: gA = |A_r|/((p−1)M^r) (signed), gmom = Σ|η_b|^r/((p−1)M^r) (absolute):
+| n  | r  | gA thin/thick | gmom thin/thick |
+|----|----|---------------|-----------------|
+| 16 | 3  | 0.004         | 0.252           |
+| 16 | 9  | 0.071         | 0.044           |
+| 32 | 3  | 0.004         | 0.621           |
+| 32 | 7  | 0.003         | 0.193           |
+| 32 | 11 | 0.001         | 0.063           |
+
+VERDICT (rule-6 re-audit PASS; 630e2198f STANDS):
+- The NORMALIZED SIGNED sum gA is 0.001–0.14 × thick (100–1000× SMALLER in thin) at every odd r — the
+  NUMERATOR |A_r| genuinely cancels far more in thin. The absolute moment gmom is itself SMALLER in thin
+  (0.04–0.62×, NOT inflated under M-normalization). So the f_r advantage is driven by genuine signed
+  cancellation in the numerator, NOT by denominator inflation. The objection is refuted; the |.|-leak
+  thinness-essentiality is real.
+- RECONCILIATION with the 2026-06-15 odd-profile entry (eff_r=|A_r|/√E_2r, thin "worse" vs NEG-CLOSED-
+  RANDOM): different contrast (thin-vs-thick here; thin-vs-neg-closed-random there) and different regime
+  (that entry's rigidity |A_r|=n^r holds BELOW d_odd where W_r=0; this probe is BEYOND d_odd where W_r>0
+  and real cancellation appears). No contradiction; I do NOT claim a thin advantage over the neg-closed
+  random control (that remains as the odd-profile entry mapped it). The defensible claim is exactly the
+  measured one: thin-vs-thick, the M-normalized signed sum cancels more in thin.
+- Does NOT bound M (the uniform-in-field deep signed-cancellation bound IS the open prize/BGK wall). No
+  CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
