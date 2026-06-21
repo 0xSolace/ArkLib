@@ -50,6 +50,9 @@ Axiom-clean: field arithmetic + `Polynomial.card_roots'` (the same idiom as
 `ProofSystem/Whir/SchwartzZippelCore.card_listEval_eq_le`). No `sorry`, no extra axioms.
 -/
 
+set_option linter.unusedSectionVars false
+set_option linter.unusedDecidableInType false
+
 namespace ArkLib.ProximityGap.EvenOddDescent
 
 open Finset Polynomial
@@ -109,5 +112,35 @@ theorem descentZ_indicator_sum_le_natDegree {Pp Qp : F[X]}
     rw [Finset.card_filter]
   rw [hsum]
   exact descentZ_card_le_natDegree hR B
+
+/-- **Degree law of the descent quadform.** `deg R ≤ 1 + 2·max(deg Pp, deg Qp)`. The `X·Qp²`
+term carries the odd, exponent-`(1 + 2·deg Qp)` head; the `Pp²` term the even `2·deg Pp` head. This
+is the explicit handle by which the WORD's exponent enters the descent: a low-weight word with
+max half-degree `d` has `deg R ≤ 2d + 1`. -/
+theorem descentQuadform_natDegree_le (Pp Qp : F[X]) :
+    (descentQuadform Pp Qp).natDegree ≤ 1 + 2 * max Pp.natDegree Qp.natDegree := by
+  have h2 : (X * Qp ^ 2).natDegree ≤ 1 + 2 * max Pp.natDegree Qp.natDegree := by
+    calc (X * Qp ^ 2).natDegree ≤ (X : F[X]).natDegree + (Qp ^ 2).natDegree := natDegree_mul_le
+      _ ≤ 1 + 2 * max Pp.natDegree Qp.natDegree := by
+          rw [natDegree_X, natDegree_pow]
+          have := le_max_right Pp.natDegree Qp.natDegree; omega
+  calc (descentQuadform Pp Qp).natDegree
+      ≤ max (Pp ^ 2).natDegree (X * Qp ^ 2).natDegree := by
+        rw [descentQuadform]; exact natDegree_sub_le _ _
+    _ ≤ 1 + 2 * max Pp.natDegree Qp.natDegree := by
+        rw [natDegree_pow]
+        have := le_max_left Pp.natDegree Qp.natDegree; omega
+
+/-- **Exponent-controlled bound on the non-symmetric descent term** (the G1→G2 bridge). Chaining
+the Lagrange bound `Z ≤ deg R` with the degree law gives the explicit
+`Z ≤ 1 + 2·max(deg Pp, deg Qp)`: the non-symmetric single-fibre count of the even/odd descent is
+bounded by twice the word's max half-degree plus one. So the worst-word exponent (`≈ n/4`,
+maximising `deg R` inside `μ_N`) is exactly what governs `Z` — no Gauss-sum equidistribution,
+no sup-norm. (Probe `probe_444_g1_quadform_degree_law.py`: `deg R ≤ 1 + 2·max(deg Pp, deg Qp)` and
+`Z ≤ 1 + 2·max(deg Pp, deg Qp)` hold over proper `μ_N`, `p ≫ n³`, n=8..64.) -/
+theorem descentZ_card_le_degBound {Pp Qp : F[X]} (hR : descentQuadform Pp Qp ≠ 0) (B : Finset F) :
+    (B.filter (fun y => (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2)).card
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  le_trans (descentZ_card_le_natDegree hR B) (descentQuadform_natDegree_le Pp Qp)
 
 end ArkLib.ProximityGap.EvenOddDescent
