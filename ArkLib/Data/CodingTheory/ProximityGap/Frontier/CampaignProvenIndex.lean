@@ -33,6 +33,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorrido
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodMomentCensus
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
@@ -1303,6 +1304,56 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms coreReduction_mStar_le_iff_BCHKS_export
 #print axioms coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
 
+
+
+/-! ## Door-IV odd signed moment census bridge. Scope: **obstruction/capstone**.
+
+These exports make the exact algebra behind the odd-`r` signed-deep probes permanent: full period
+moments equal a zero-sum census, deleting the principal `b = 0` term gives the prize-relevant
+`b ≠ 0` identity, and vanishing census forces the rigid value `A_r = -|G|^r`. This pins the
+sign-rigidity wall as an exact census identity, not a numerical artifact. -/
+
+/-- **[capstone, GaussPeriodMomentCensus]** Full all-frequency moment ↔ additive zero-sum census
+identity, valid at every depth `r` by character orthogonality. -/
+theorem gaussPeriod_sum_eta_pow_eq_card_mul_zeroSumCensus_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ) :
+    ∑ b : F,
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b) ^ r
+      = (Fintype.card F : ℂ) *
+        (_root_.ProximityGap.Frontier.GaussPeriodMomentCensus.zeroSumCensus G r : ℂ) :=
+  _root_.ProximityGap.Frontier.GaussPeriodMomentCensus.sum_eta_pow_eq_card_mul_zeroSumCensus
+    hψ G r
+
+/-- **[capstone, GaussPeriodMomentCensus]** Deleted `b ≠ 0` moment ↔ census identity: the
+prize-relevant signed moment equals `|F|·W_r - |G|^r`, with the principal term removed exactly. -/
+theorem gaussPeriod_sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ) :
+    ∑ b ∈ (Finset.univ.erase (0 : F)),
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b) ^ r
+      = (Fintype.card F : ℂ) *
+          (_root_.ProximityGap.Frontier.GaussPeriodMomentCensus.zeroSumCensus G r : ℂ)
+        - (G.card : ℂ) ^ r :=
+  _root_.ProximityGap.Frontier.GaussPeriodMomentCensus.sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub
+    hψ G r
+
+/-- **[obstruction, GaussPeriodMomentCensus]** Rigid odd-depth value: if the additive zero-sum
+census is zero, the deleted signed moment is exactly `-|G|^r`. Thus the observed odd-`r` sign
+rigidity is a census identity, not a sup-norm bound. -/
+theorem gaussPeriod_sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ)
+    (hcensus : _root_.ProximityGap.Frontier.GaussPeriodMomentCensus.zeroSumCensus G r = 0) :
+    ∑ b ∈ (Finset.univ.erase (0 : F)),
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b) ^ r
+      = -((G.card : ℂ) ^ r) :=
+  _root_.ProximityGap.Frontier.GaussPeriodMomentCensus.sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero
+    hψ G r hcensus
+
+#print axioms gaussPeriod_sum_eta_pow_eq_card_mul_zeroSumCensus_export
+#print axioms gaussPeriod_sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub_export
+#print axioms gaussPeriod_sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero_export
 
 /-! ## Door-IV sixth marginal cumulant collapse. Scope: **obstruction**.
 
