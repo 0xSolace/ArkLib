@@ -10040,3 +10040,35 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCocycleNoR
 theorems `no_cocycle_edge_of_surrogate_le`, `real_bound_transfers_to_surrogate`,
 `no_sub_surrogate_certificate`, `real_not_le_of_lt_surrogate`, `cocycle_dispersion_is_surrogate_dominated`,
 `surrogate_le_iff_no_edge` (a falsifiable iff). Axiom-clean: axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-excess-is-moment] the cocycle dispersion excess IS an additive-energy (4th-moment) excess => door (i) BGK (2026-06-21, sol)
+
+Lane: door-(iv) Lane-1 follow-up to [doorIV-cocycle-no-random-edge]. That entry found the real
+Jacobi-cocycle sup exceeds the random-iid-phase surrogate (`real/iid = 1.15..1.44`); the excess was the
+last place a cocycle-specific non-moment signal could hide. New probe
+`scripts/probes/probe_dooriv_cocycle_excess_structure.py` (+ `.NOTE`) measured its SOURCE.
+
+MEASURED (exact |η_b|² field, proper μ_n, p ~ n^4..n^4.3 ≫ n^3, multiple primes, never q-1, n=16..128):
+the period field's normalized 4th moment `m4 = E‖η‖⁴/(E‖η‖²)²` is SYSTEMATICALLY heavy: `m4_real ≈
+2.81..3.02` vs the iid Rayleigh value `2.0`; ratio `m4_r/m4_i = 1.44 → 1.52` grows slowly with n; real
+excess kurtosis 0.42 → 0.94 grows while iid stays ~0.2. meanSq both ~1.000 (Parseval holds; no bug).
+
+DECISIVE re-check (HARD RULE 6): the period 4th moment IS the ADDITIVE ENERGY. Verified exactly —
+`E₄(μ_n) = #{(a,b,c,d)∈μ_n⁴ : a+b=c+d}`, and `Σ_b‖η_b‖⁴ = p·E₄`. At n=16,p=65617: `E₄=720`, `E₄/n²=2.812`
+— IDENTICAL to the measured `m4_real=2.810`. So the +15..44% sup excess is exactly μ_n's additive energy
+above the random-set baseline (the standard fact that a multiplicative subgroup has E₄ > random).
+
+VERDICT: the cocycle's residual structure is a MOMENT (additive energy E₄), NOT a non-moment lever. HARD
+RULE 5 / §6: additive-moment/energy bounds are PROVEN non-proving (door (i)=BGK, Johnson-capped, saturates
+at structured primes). So the dispersion excess re-enters through the dead door (i). This CLOSES the last
+door-(iv) Lane-1 sub-hope (dispersion excess = exploitable structure): the excess is a moment. Combined
+with [doorIV-cocycle-no-random-edge] (no edge over random) and the two worst-b NOTEs (delocalized index,
+extreme-value tail), the door-(iv) Lane-1 object is characterized from every side and routes ENTIRELY into
+the proven-dead doors (i) [moment/energy] + (iii) [extreme-value].
+
+NON-CLAIM: refutation-with-mechanism of the non-moment-excess hope. CORE stays OPEN. No CORE/cancellation/
+completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVExcessIsMoment.lean`, theorems
+`advantage_le_moment_excess`, `advantage_within_moment_bound`, `no_advantage_beyond_moment`,
+`no_nonmoment_lever`, `moment_sourced_iff_le` (falsifiable iff). Axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
