@@ -160,11 +160,28 @@ theorem descent_loss_le_two {A B : E} (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
         exact mul_le_mul_of_nonneg_left this (le_of_lt h)
     _ = 2 * max ‖A‖ ‖B‖ := by ring
 
+/-- **At coherent perfect balance, the single-half loss ratio is exactly `2`.**  This is the sharp
+endpoint behind `descent_loss_le_two`: when the two halves are same-ray and equally large, normalizing
+by the heavier half gives precisely a factor of two.  Thus a dyadic descent that keeps only one half is
+not hiding any shrinking `n`-dependent gain at the probed balanced worst frequencies; the obstruction is
+already saturated at the constant endpoint. -/
+theorem descent_loss_eq_two_of_coherent_balanced {A B : E}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖) (hbal : ‖A‖ = ‖B‖)
+    (hpos : 0 < max ‖A‖ ‖B‖) :
+    ‖A + B‖ / max ‖A‖ ‖B‖ = 2 := by
+  have hnorm : ‖A + B‖ = 2 * max ‖A‖ ‖B‖ := by
+    calc
+      ‖A + B‖ = 2 * ‖A‖ := norm_eq_two_mul_of_coherent_balanced hcoh hbal
+      _ = 2 * max ‖A‖ ‖B‖ := by rw [hbal, max_self]
+  rw [hnorm]
+  field_simp [ne_of_gt hpos]
+
 end ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.single_half_bound_pays_full_at_balanced
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.single_half_bound_pays_balance_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.descent_loss_le_two
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.descent_loss_eq_two_of_coherent_balanced
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.coherent_norm_eq_max_mul_one_add_balance
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.balance_eq_one_iff

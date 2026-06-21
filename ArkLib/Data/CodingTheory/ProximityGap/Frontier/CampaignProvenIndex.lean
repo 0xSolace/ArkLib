@@ -52,6 +52,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTripleCorrelationVa
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassBalanceAtArgmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
@@ -242,6 +243,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_crossHalf_norm_add_eq_halfMass_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
+| `doorIV_halfMassBalance_single_half_pays_floor_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
+| `doorIV_halfMassBalance_descent_loss_eq_two_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
+| `doorIV_halfMassBalance_descent_loss_le_two_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
 | `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
@@ -2582,6 +2586,38 @@ theorem doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.fixed_multiplier_fails_of_ratio_gt
     ht hA h hgt
 
+/-- **[obstruction, DoorIVHalfMassBalanceAtArgmax]** A positive balance floor `r` forces any
+single-half certificate at a coherent frequency to pay `(1+r)` times the heavier half.  This is the
+formal version of the probed worst-b balance enrichment: keeping one dyadic half cannot manufacture a
+shrinking anti-concentration gain. -/
+theorem doorIV_halfMassBalance_single_half_pays_floor_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {g : ℝ → ℝ} {r : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hr : r ≤ _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.balance A B)
+    (hbound : ‖A + B‖ ≤ g (max ‖A‖ ‖B‖)) :
+    (1 + r) * max ‖A‖ ‖B‖ ≤ g (max ‖A‖ ‖B‖) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.single_half_bound_pays_balance_floor
+    hcoh hr hbound
+
+/-- **[obstruction, DoorIVHalfMassBalanceAtArgmax]** At coherent perfect balance the normalized loss
+from keeping only the heavier half is exactly `2`, the sharp endpoint of the drop-a-half obstruction. -/
+theorem doorIV_halfMassBalance_descent_loss_eq_two_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖) (hbal : ‖A‖ = ‖B‖)
+    (hpos : 0 < max ‖A‖ ‖B‖) :
+    ‖A + B‖ / max ‖A‖ ‖B‖ = 2 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.descent_loss_eq_two_of_coherent_balanced
+    hcoh hbal hpos
+
+/-- **[obstruction, DoorIVHalfMassBalanceAtArgmax]** In any coherent two-half split, dropping to the
+heavier half loses at most the constant factor `2`.  The balanced worst-b probes saturate this endpoint,
+so this descent shape is constant-factor bookkeeping, not a square-root cancellation lever. -/
+theorem doorIV_halfMassBalance_descent_loss_le_two_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖) (hpos : 0 < max ‖A‖ ‖B‖) :
+    ‖A + B‖ ≤ 2 * max ‖A‖ ‖B‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassBalanceAtArgmax.descent_loss_le_two hcoh hpos
+
 /-- **[capstone, DoorIVHalfMassDilationForm]** The second coset half is exactly the same
 sub-period evaluated at the dilated frequency: `eta(gH,b)=eta(H,g*b)`. -/
 theorem doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
@@ -3136,6 +3172,9 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_crossHalf_norm_add_eq_halfMass_export
 #print axioms doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export
 #print axioms doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
+#print axioms doorIV_halfMassBalance_single_half_pays_floor_export
+#print axioms doorIV_halfMassBalance_descent_loss_eq_two_export
+#print axioms doorIV_halfMassBalance_descent_loss_le_two_export
 #print axioms doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
 #print axioms doorIV_halfMass_eta_index_two_split_dilate_export
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export

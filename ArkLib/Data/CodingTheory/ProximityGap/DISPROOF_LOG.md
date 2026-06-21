@@ -1,3 +1,13 @@
+## door-(iv) balanced half-mass descent saturates the single-half loss at exactly two (2026-06-21)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassBalanceAtArgmax`. Prior bricks proved the coherent half-mass identity and the constant-factor `≤2` loss for dropping to the heavier dyadic half. This refinement pins the sharp endpoint used by the balance probes: at coherent perfect balance,
+
+`‖A+B‖ / max(‖A‖,‖B‖) = 2`.
+
+VERDICT: the worst-b balance-enriched regime does not hide a shrinking descent gain. A one-half dyadic descent is saturated at the constant factor two when the two coherent halves are equally large, so the missing square-root cancellation cannot come from discarding one half. No CORE/cancellation/moment/completion/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassBalanceAtArgmax.lean`, axiom-clean. New theorem `descent_loss_eq_two_of_coherent_balanced`; permanent exports in `CampaignProvenIndex`: `doorIV_halfMassBalance_single_half_pays_floor_export`, `doorIV_halfMassBalance_descent_loss_eq_two_export`, `doorIV_halfMassBalance_descent_loss_le_two_export`. Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## [nofifthdoor-extremevalue-classical-closure] door-(iii) concrete closure named explicitly (2026-06-19, g55)
 
 Lane: door-(iv) Lane 2/3 capstone extension in `_NoFifthDoorTetrachotomy`. The existing `classicalSide_closed` prose advertised moment / extreme-value closure, but the returned concrete large-`n` obstruction named only the door-(i) moment representative.
