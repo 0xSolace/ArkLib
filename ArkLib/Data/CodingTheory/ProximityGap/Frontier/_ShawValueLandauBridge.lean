@@ -192,4 +192,32 @@ theorem shawOOneOn_iff_shawSeq_isBigO_one {q n M : ℕ → ℝ}
     ShawOOneOn q n M ↔ (shawSeq q n M) =O[atTop] (fun _ => (1 : ℝ)) :=
   ⟨shawSeq_isBigO_one_of_shawOOneOn hnn, shawOOneOn_of_shawSeq_isBigO_one hnn⟩
 
+/-- Under the prize-regime guard, a nonnegative sup norm gives a nonnegative Shaw value
+`shawValue = M / scale` (quotient of `M ≥ 0` by `scale > 0`). -/
+theorem shawValue_nonneg_of_prizeRegime {q n M : ℝ}
+    (hMnn : 0 ≤ M) (hscale : 0 < shawScale q n) : 0 ≤ shawValue q n M := by
+  unfold shawValue
+  exact div_nonneg hMnn (le_of_lt hscale)
+
+/-- **HEADLINE Landau capstone (Lane-2): `prize ⇔ Sh(n)=O(1)`, entirely in Landau notation.**
+In the prize regime (`0 < shawScale`, e.g. `n_i < q_i`, `0 < n_i`) with nonnegative sup norm, the
+literal prize bound `M =O[atTop] √(n·log(q/n))` is equivalent to the literal `Sh(n)=O(1)` statement
+`(M/√(n·log(q/n))) =O[atTop] 1`.  This is the campaign's headline reduction stated wholly in Mathlib's
+`Asymptotics.IsBigO` symbol — the form a number theorist cites.  Composes the prize-side bridge, the
+Shaw-side bridge, and the campaign equivalence `shawOOneOn_iff_corePrizeBoundOn`.  No new analytic
+estimate; CORE stays OPEN. -/
+theorem prize_isBigO_iff_shaw_isBigO_one {q n M : ℕ → ℝ}
+    (hMnn : ∀ i, 0 ≤ M i)
+    (hscale : ∀ i, 0 < shawScale (q i) (n i)) :
+    ((supSeq M) =O[atTop] (scaleSeq q n)) ↔
+      (shawSeq q n M) =O[atTop] (fun _ => (1 : ℝ)) := by
+  have hShnn : ∀ i, 0 ≤ shawValue (q i) (n i) (M i) :=
+    fun i => shawValue_nonneg_of_prizeRegime (hMnn i) (hscale i)
+  calc ((supSeq M) =O[atTop] (scaleSeq q n))
+      ↔ CorePrizeBoundOn q n M :=
+        (corePrizeBoundOn_iff_supSeq_isBigO_scaleSeq hMnn hscale).symm
+    _ ↔ ShawOOneOn q n M := (shawOOneOn_iff_corePrizeBoundOn hscale).symm
+    _ ↔ (shawSeq q n M) =O[atTop] (fun _ => (1 : ℝ)) :=
+        shawOOneOn_iff_shawSeq_isBigO_one hShnn
+
 end ProximityGap.Frontier.ShawValueCapstone
