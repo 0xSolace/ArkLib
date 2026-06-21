@@ -60,6 +60,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawGrandSynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GKPhaseCoboundaryNonLinear
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackMarkoffCouplingNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvTannakianNonTorsionPump
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarriesAll
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2304,6 +2305,38 @@ theorem doorIV_tannakian_coprime_twisted_period_eq_original_export {G H A : Type
 #print axioms doorIV_tannakian_twist_det_eq_export
 #print axioms doorIV_tannakian_twist_det_zero_iff_export
 #print axioms doorIV_tannakian_coprime_order_trivial_export
+
+/-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
+period magnitude equals the half-mass exactly. Thus the cross-half coherence factor contributes no
+saving. -/
+theorem doorIV_worstB_norm_add_eq_halfMass_of_coherence_one_export {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {A B : E}
+    (hden : 0 < ‖A‖ + ‖B‖)
+    (hρ : _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence A B = 1) :
+    ‖A + B‖ = ‖A‖ + ‖B‖ :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.norm_add_eq_halfMass_of_coherence_one
+    hden hρ
+
+/-- **[obstruction, WorstBHalfMass]** A strict magnitude saving below half-mass requires the two
+canonical halves to be non-`SameRay`; same-ray worst-b halves rule out this coherence-saving lever. -/
+theorem doorIV_worstB_not_sameRay_of_magnitude_lt_halfMass_export {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {A B : E}
+    (hlt : ‖A + B‖ < ‖A‖ + ‖B‖) :
+    ¬ _root_.SameRay ℝ A B :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.not_sameRay_of_magnitude_lt_halfMass hlt
+
+/-- **[obstruction, WorstBHalfMass]** Positive-half-mass capstone: saturated two-piece coherence
+`ρ=1` is equivalent to equality of period magnitude and half-mass. -/
+theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {A B : E}
+    (hden : 0 < ‖A‖ + ‖B‖) :
+    _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence A B = 1 ↔
+      ‖A + B‖ = ‖A‖ + ‖B‖ :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_magnitude_eq_halfMass
+    hden
+#print axioms doorIV_worstB_norm_add_eq_halfMass_of_coherence_one_export
+#print axioms doorIV_worstB_not_sameRay_of_magnitude_lt_halfMass_export
+#print axioms doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
