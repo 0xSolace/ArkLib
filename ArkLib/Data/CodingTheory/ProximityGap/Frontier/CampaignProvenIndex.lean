@@ -23,6 +23,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTrivialCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteBGKCompletionCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueBracketCenter
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
@@ -3513,6 +3514,43 @@ theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
         F'.natDegree < M * B.card :=
   _root_.ProximityGap.Frontier.StepanovAtBstar.bstar_saving_iff_degenerate
 
+/-- **[capstone, ShawValueBracketCenter]** The product of the normalized floor endpoint
+`√n/√(nL)` and ceiling endpoint `n/√(nL)` is the closed-form midpoint datum `√n/L`. -/
+theorem shawValue_bracket_endpoint_product_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.floorEndpoint n L *
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.ceilingEndpoint n L =
+      Real.sqrt n / L :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.endpoint_product hn hL
+
+/-- **[capstone, ShawValueBracketCenter]** The geometric center of the Shaw-value prize bracket has
+the closed form `sqrt (sqrt n) / sqrt L`, i.e. `n^(1/4)/sqrt L`. -/
+theorem shawValue_bracket_geomCenter_eq_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter n L =
+      Real.sqrt (Real.sqrt n) / Real.sqrt L :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter_eq hn hL
+
+/-- **[capstone, ShawValueBracketCenter]** The geometric center is the multiplicative midpoint of
+the Shaw-value floor/ceiling bracket: `ceiling / center = center / floor`. -/
+theorem shawValue_bracket_ratio_symmetric_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.ceilingEndpoint n L /
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter n L =
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter n L /
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.floorEndpoint n L :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.ratio_symmetric hn hL
+
+/-- **[capstone, ShawValueBracketCenter]** For `1 ≤ n`, the geometric center is an honest point
+inside the normalized Shaw-value prize bracket. -/
+theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL : 0 < L) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.floorEndpoint n L ≤
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter n L ∧
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.geomCenter n L ≤
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.ceilingEndpoint n L :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueBracketCenter.center_between hn hL
+
+#print axioms shawValue_bracket_endpoint_product_export
+#print axioms shawValue_bracket_geomCenter_eq_export
+#print axioms shawValue_bracket_ratio_symmetric_export
+#print axioms shawValue_bracket_center_between_export
 #print axioms doorIV_arithMean_le_max_export
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
