@@ -9967,3 +9967,20 @@ prove total stabilizer/fiber collapse. No CORE/cancellation/completion/moment/an
 Formal kernel: `_DoorIVWorstBCosetClosed.lean`, theorems
 `orbitImage_card_eq_one_of_superLevelFinset_card_eq_one` and
 `sigmaOrbitImage_card_eq_one_of_superLevelFinset_card_eq_one`, axiom-clean.
+
+## door-(iv) Jacobi-cocycle capstone nonnegative O(1) witness equivalence (2026-06-20, g55)
+
+Lane: Door-IV Lane 2 capstone extension in `_JacobiCocycleDispersion.lean`. The existing Jacobi-cocycle
+reduction proved that a uniform dispersion constant for the normalized-Jacobi cocycle is equivalent to a
+uniform Shaw-value bound. This refinement packages the sign-normalized `O(1)` form used in the prize prose:
+there exists a nonnegative absolute Jacobi-dispersion constant iff there exists a nonnegative absolute
+Shaw-value constant, with the same witness; and the corresponding wall-facing negated form is equivalent too.
+
+VERDICT: the named missing theorem `JacobiCocycleDispersion` is now tied to the standard nonnegative
+absolute-constant convention. This is normalization/capstone bookkeeping only; no CORE, cancellation,
+completion, moment, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDispersion.lean`, new theorems
+`exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound` and
+`not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound`, axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`.

@@ -180,6 +180,31 @@ theorem exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBoun
   · rintro ⟨C, hC⟩
     exact ⟨C, (jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
 
+/-- Nonnegative-constant form of the Jacobi-cocycle capstone. The usual `O(1)` witness is taken
+with `0 ≤ C`; in that sign convention too, a uniform Jacobi-cocycle dispersion theorem is exactly a
+uniform Shaw-value bound with the same absolute constant. This is still only Lane-2 normalization:
+the hard arithmetic content remains the named dispersion predicate. -/
+theorem exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound
+    {ι : Type*} {M n m : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Real.log (m i))) :
+    (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) := by
+  constructor
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound hs).1 hC⟩
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound hs).2 hC⟩
+
+/-- Wall-facing nonnegative form: failing to prove any nonnegative absolute Jacobi-dispersion
+constant is exactly failing to prove any nonnegative absolute Shaw-value constant. This gives a
+citable contrapositive interface for Door-IV probes without smuggling in cancellation. -/
+theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound
+    {ι : Type*} {M n m : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Real.log (m i))) :
+    ¬ (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      ¬ (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) :=
+  not_congr (exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs)
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -192,3 +217,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound
