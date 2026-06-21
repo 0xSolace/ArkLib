@@ -188,6 +188,36 @@ theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_jaco
       ¬ (∃ C, jacobiCocycleDispersionFamilyBound M n m C) :=
   not_congr exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
 
+/-- A pointwise raw comparison transfers a Jacobi-cocycle dispersion family bound with the same
+multiplicative loss. This lets downstream Door-IV targets cite a comparison to the named Jacobi
+predicate without reopening the Shaw-value normalization layer. -/
+theorem jacobiCocycleDispersionFamilyBound_of_rawComparison
+    {ι : Type*} {M H n m : ι → ℝ} {K C : ℝ}
+    (hK : 0 ≤ K) (hHM : ∀ i, H i ≤ K * M i)
+    (hM : jacobiCocycleDispersionFamilyBound M n m C) :
+    jacobiCocycleDispersionFamilyBound H n m (K * C) := by
+  intro i
+  calc
+    H i ≤ K * M i := hHM i
+    _ ≤ K * (C * Real.sqrt (n i * Real.log (m i))) :=
+      mul_le_mul_of_nonneg_left (hM i) hK
+    _ = (K * C) * Real.sqrt (n i * Real.log (m i)) := by ring
+
+/-- Sandwich equivalence for the named Jacobi-cocycle dispersion family. If a Door-IV target `H`
+is uniformly between `M` and `K*M`, then boundedness of the Jacobi dispersion family is invariant
+up to constants. This is only comparison bookkeeping; the hard content remains the dispersion
+predicate for either sandwiched target. -/
+theorem exists_jacobiCocycleDispersionFamilyBound_iff_of_rawSandwich
+    {ι : Type*} {M H n m : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, jacobiCocycleDispersionFamilyBound H n m C) := by
+  constructor
+  · rintro ⟨C, hC⟩
+    exact ⟨K * C, jacobiCocycleDispersionFamilyBound_of_rawComparison hK hHM hC⟩
+  · rintro ⟨C, hC⟩
+    exact ⟨C, fun i => le_trans (hMH i) (hC i)⟩
+
 /-- **Uniform bridge to Shaw values.** A single constant bounding the Jacobi-cocycle dispersion target
 throughout a family is exactly a single constant bounding the corresponding Shaw values with `L_i = log m_i`.
 This is the family-level version of the Door-IV reduction: no cancellation estimate is hidden in the wrapper. -/
@@ -275,6 +305,8 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_jacobiCocycleDispersionFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_of_rawComparison
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
