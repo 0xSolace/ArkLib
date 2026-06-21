@@ -145,6 +145,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_bddAbove_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_not_nonneg_rawPrize_iff_prizeDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_not_nonneg_rawHalfMass_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
@@ -1065,6 +1067,26 @@ theorem doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_prizeFamilyBound
     hK hscale hMH hHM
 
+/-- **[capstone, DoorIVPrizeBddAbove]** Failure of a conventional nonnegative raw prize constant is
+exactly explicit normalized-prize drift past every candidate constant. -/
+theorem doorIV_not_nonneg_rawPrize_iff_prizeDrift_export {ι : Type*}
+    {M scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (¬ ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C) ↔
+      ∀ C, ∃ i, C < M i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_nonneg_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
+    hscale
+
+/-- **[capstone, DoorIVPrizeBddAbove]** Failure of a conventional nonnegative raw half-mass constant
+is exactly explicit normalized half-mass Shaw drift past every candidate constant. -/
+theorem doorIV_not_nonneg_rawHalfMass_iff_halfMassDrift_export {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (¬ ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound H scale C) ↔
+      ∀ C, ∃ i, C < H i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_nonneg_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass
+    hscale
+
 /-- **[capstone, DoorIVPrizeBddAbove]** The door-(iv) wall is invariant under the half-mass
 reduction: failure of `BddAbove` for normalized prize ratios is exactly failure for normalized
 half-mass Shaw ratios. -/
@@ -1532,6 +1554,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_bddAbove_nonneg_rawHalfMass_export
 #print axioms doorIV_bddAbove_prize_iff_nonneg_rawHalfMass_export
 #print axioms doorIV_bddAbove_halfMass_iff_nonneg_rawPrize_export
+#print axioms doorIV_not_nonneg_rawPrize_iff_prizeDrift_export
+#print axioms doorIV_not_nonneg_rawHalfMass_iff_halfMassDrift_export
 #print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
 #print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
 #print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export

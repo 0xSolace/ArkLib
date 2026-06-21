@@ -265,6 +265,26 @@ theorem not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass {
   rw [← bddAbove_range_normalizedHalfMass_iff_exists_halfMassFamilyBound (H := H) (scale := scale) hscale,
       not_bddAbove_range_iff_forall_exists_lt]
 
+/-- **Sign-normalized prize wall characterization.**  With positive scales, failure of a raw uniform
+prize Big-O bound with conventional `C ≥ 0` is exactly unboundedness of the normalized prize ratios.
+This is the wall-facing dual of `bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound`. -/
+theorem not_exists_nonneg_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize {ι : Type*}
+    {M scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (¬ ∃ C, 0 ≤ C ∧ prizeFamilyBound M scale C) ↔ ∀ C, ∃ i, C < M i / scale i := by
+  rw [← bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound
+        (M := M) (scale := scale) hscale,
+      not_bddAbove_range_iff_forall_exists_lt]
+
+/-- **Sign-normalized half-mass wall characterization.**  With positive scales, failure of a raw
+uniform half-mass Big-O bound with conventional `C ≥ 0` is exactly unboundedness of the normalized
+half-mass Shaw ratios. -/
+theorem not_exists_nonneg_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    (¬ ∃ C, 0 ≤ C ∧ halfMassFamilyBound H scale C) ↔ ∀ C, ∃ i, C < H i / scale i := by
+  rw [← bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
+        (H := H) (scale := scale) hscale,
+      not_bddAbove_range_iff_forall_exists_lt]
+
 /-- **Cross wall form, raw prize failure versus normalized half-mass unboundedness.**  Under the
 family-wide half-mass comparison, failing the raw prize Big-O bound is equivalent to the half-mass
 Shaw ratios exceeding every constant. -/
@@ -396,6 +416,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_iff_forall_exists_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_nonneg_prizeFamilyBound_iff_forall_exists_lt_normalizedPrize
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_nonneg_halfMassFamilyBound_iff_forall_exists_lt_normalizedHalfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_prizeFamilyBound_iff_forall_exists_lt_normalizedHalfMass
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_exists_halfMassFamilyBound_iff_forall_exists_lt_normalizedPrize
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_not_bddAbove_range_normalizedHalfMass
