@@ -129,11 +129,25 @@ theorem coherence_one_iff_magnitude_eq_halfMass {A B : E} (hden : 0 < ‖A‖ + 
     unfold twoPieceNormCoherence
     rw [hM, div_self (ne_of_gt hden)]
 
+/-- **Zero-deficit criterion.**  At positive half-mass, saying the cross-half coherence is saturated
+is exactly saying the strict-triangle deficit budget is zero.  This is the scalar audit hook for the
+worst-`b` probe verdict `ρ = 1`: the coherence route has room only when this named deficit is
+positive; at zero deficit it contributes no saving term. -/
+theorem coherence_one_iff_zero_deficit {A B : E} (hden : 0 < ‖A‖ + ‖B‖) :
+    twoPieceNormCoherence A B = 1 ↔ (‖A‖ + ‖B‖) - ‖A + B‖ = 0 := by
+  rw [coherence_one_iff_magnitude_eq_halfMass (A := A) (B := B) hden]
+  constructor
+  · intro hM
+    rw [← hM, sub_self]
+  · intro hzero
+    exact (sub_eq_zero.mp hzero).symm
+
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.norm_add_eq_halfMass_of_coherence_one
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.worstB_magnitude_eq_halfMass_of_sameRay
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.magnitude_eq_coherence_mul_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.not_sameRay_of_magnitude_lt_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_magnitude_eq_halfMass
+#print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_zero_deficit
 
 end ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll
