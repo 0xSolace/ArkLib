@@ -33,6 +33,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorrido
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvershoot
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -122,6 +123,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
+| `trivial_cocycle_overshoots_thin_export` | obstruction | JacobiCocycleTrivialOvershoot |
+| `trivial_overshoot_gap_pos_export` | obstruction | JacobiCocycleTrivialOvershoot |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -980,6 +983,31 @@ theorem doorIV_abs_moment_bound_transfers_export {ι : Type*}
     s η r hB
 
 
+/-! ## JacobiCocycleTrivialOvershoot — the trivial baseline fails the thin prize target.
+Scope: **obstruction**. The trivial cocycle's full `n`-spike is not a dispersion witness in the
+prize regime `n > C² log m`; it overshoots the target `C√(n log m)` by a positive amount.
+These exports pin the gap the genuine Jacobi cocycle must close, without proving it closes it. -/
+
+/-- **[obstruction, JacobiCocycleTrivialOvershoot]** In the thin prize regime
+`C² log m < n`, the trivial-cocycle baseline `M = n` fails the named Jacobi dispersion predicate.
+This is the kernel-checked version of "the genuine cocycle must break the full `n`-spike." -/
+theorem trivial_cocycle_overshoots_thin_export {C n logm : ℝ}
+    (hn : 0 ≤ n) (hC : 0 ≤ C) (hlogm : 0 ≤ logm) (hthin : C ^ 2 * logm < n) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.JacobiCocycleDispersion
+      n C n (Real.exp logm) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_cocycle_overshoots_thin
+    hn hC hlogm hthin
+
+/-- **[obstruction, JacobiCocycleTrivialOvershoot]** In the same thin regime, the additive
+overshoot gap `n - C√(n log m)` of the trivial spike is strictly positive. The open Door-IV
+work is exactly to make the genuine cocycle disperse enough to remove this gap. -/
+theorem trivial_overshoot_gap_pos_export {C n logm : ℝ}
+    (hn : 0 ≤ n) (hC : 0 ≤ C) (hlogm : 0 ≤ logm) (hthin : C ^ 2 * logm < n) :
+    0 < n - C * Real.sqrt (n * logm) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleTrivialOvershoot.trivial_overshoot_gap_pos
+    hn hC hlogm hthin
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1049,4 +1077,6 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_abs_signed_le_abs_moment_export
 #print axioms doorIV_leak_nonneg_export
 #print axioms doorIV_abs_moment_bound_transfers_export
+#print axioms trivial_cocycle_overshoots_thin_export
+#print axioms trivial_overshoot_gap_pos_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
