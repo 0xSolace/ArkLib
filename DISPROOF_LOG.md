@@ -1,3 +1,28 @@
+## [door-iv-xgated-base-threshold-concrete] The gate-threshold base correction, on the REAL levelWorst character sum — levelWorst μ ≤ 2^{k*}·(√2)^r·levelWorst 0 = √(2^{k*})·√n·levelWorst 0, with the k* thin base levels paying the PROVEN (unconditional) factor 2 (2026-06-21, sol)
+
+Lane: Door-(iv) Lane-3 (XGate-reduction constraint, on the concrete object). Instantiates the abstract
+gate-threshold split telescope [door-iv-xgated-base-threshold] (02b179c9d) on the ACTUAL Gauss-period
+worst-period `levelWorst ψ G ζ k = ⨆_{c≠0} ‖eta ψ (levelTower ψ G ζ k) c‖`. Honest because both ingredients
+are real: (1) the base factor-2 step `levelWorst (k+1) ≤ 2·levelWorst k` is UNCONDITIONAL (proven here via
+`levelTower_succ_eq` + triangle on the c≠0 sup — `_TowerSpikeBetaGate.levelTower_succ_le_of_bound` shape),
+so the k* thin base levels (where the XGate x-gate is unsatisfiable) pay the PROVEN factor 2, no
+assumption; (2) the cancellation levels carry the open `LevelRatioBoundNZ … √2` gate. Result:
+`levelWorst (k*+r) ≤ 2^{k*}·(√2)^r·levelWorst 0 = √(2^{k*})·(√2)^{k*+r}·levelWorst 0` — the concrete
+base-corrected prize floor on the real character sum (at 2^{k*+r}=n: √(2^{k*})·√n·levelWorst 0). The
+√2-saving covers only the r=μ−k* cancelling levels; the k* thin base is proven-non-cancelling.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVXGatedBaseThresholdConcrete.lean`,
+4 theorems, all axioms ⊆ {propext, Classical.choice, Quot.sound}:
+- `levelWorst_step_two`: UNCONDITIONAL `levelWorst (k+1) ≤ 2·levelWorst k` (proven base step).
+- `levelWorst_step_sqrt2_shifted`: the open √2 gate gives the shifted cancellation step.
+- `levelWorst_le_base_corrected_of_gate`: ★ `levelWorst (k*+r) ≤ 2^{k*}·(√2)^r·levelWorst 0`.
+- `levelWorst_base_corrected_eq_sqrt_form`: √(2^{k*})·(√2)^{k*+r} form (= √(2^{k*})·√n at 2^{k*+r}=n).
+
+Distinct from the abstract [door-iv-xgated-base-threshold]: that bounded an abstract M:ℕ→ℝ; this lands the
+SAME base-correction on the REAL Gauss-period worst period, with the base factor-2 step PROVEN
+unconditional (not assumed). NO CORE / cancellation / completion / moment / anti-concentration /
+capacity claim. CORE OPEN.
+
 ## [door-iv-xgated-base-threshold] The XGatedRatio descent's √2-saving CANNOT reach the thin base — the saving is (√2)^{μ−k*}, NOT (√2)^μ; the k* base levels are non-cancelling (trivial doubling), costing an extra √(2^{k*}) over the clean prize floor (2026-06-21, sol)
 
 Lane: Door-(iv) Lane-3 (XGate-reduction constraint companion). The end-to-end reduction
