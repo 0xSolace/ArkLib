@@ -242,4 +242,34 @@ theorem supSeq_isBigO_scaleSeq_of_le {q n M M' : ℕ → ℝ}
   rw [show M i = ‖supSeq M i‖ from (abs_of_nonneg (le_trans (hM'nn i) (hle i))).symm]
   exact hi
 
+/-- **Dominated-majorant transfer into Shaw language.**  If a majorant `M` satisfies the literal
+Landau prize bound and the target sup norm `M'` is pointwise sandwiched `0 ≤ M' ≤ M`, then the Shaw
+value of `M'` is literally `O(1)`.  This packages the two citable rungs in one theorem: first transfer
+`M = O(scale)` through domination, then use the headline `prize ⇔ Sh(n)=O(1)` Landau capstone.  No
+new analytic estimate is asserted; CORE remains exactly the missing majorant bound. -/
+theorem shawSeq_isBigO_one_of_le_prizeBigO {q n M M' : ℕ → ℝ}
+    (hM'nn : ∀ i, 0 ≤ M' i) (hscale : ∀ i, 0 < shawScale (q i) (n i))
+    (hle : ∀ i, M' i ≤ M i)
+    (h : (supSeq M) =O[atTop] (scaleSeq q n)) :
+    (shawSeq q n M') =O[atTop] (fun _ => (1 : ℝ)) := by
+  exact (prize_isBigO_iff_shaw_isBigO_one hM'nn hscale).mp
+    (supSeq_isBigO_scaleSeq_of_le hM'nn hle h)
+
+/-- **Dominated-majorant transfer into the campaign `ShawOOneOn` predicate.**  Under the prize-regime
+positive-scale guard, a Landau prize bound for any pointwise majorant `M` immediately gives the global
+uniform `Sh(n)=O(1)` statement for every nonnegative dominated target `M'`.  This is normalization and
+order bookkeeping only, useful for citing a future closed-form majorant without redoing the reduction. -/
+theorem shawOOneOn_of_le_prizeBigO {q n M M' : ℕ → ℝ}
+    (hM'nn : ∀ i, 0 ≤ M' i) (hscale : ∀ i, 0 < shawScale (q i) (n i))
+    (hle : ∀ i, M' i ≤ M i)
+    (h : (supSeq M) =O[atTop] (scaleSeq q n)) :
+    ShawOOneOn q n M' := by
+  have hShnn : ∀ i, 0 ≤ shawValue (q i) (n i) (M' i) :=
+    fun i => shawValue_nonneg_of_prizeRegime (hM'nn i) (hscale i)
+  exact (shawOOneOn_iff_shawSeq_isBigO_one hShnn).mpr
+    (shawSeq_isBigO_one_of_le_prizeBigO hM'nn hscale hle h)
+
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawSeq_isBigO_one_of_le_prizeBigO
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_prizeBigO
+
 end ProximityGap.Frontier.ShawValueCapstone

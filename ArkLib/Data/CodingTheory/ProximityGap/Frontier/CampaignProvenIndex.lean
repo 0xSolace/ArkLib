@@ -32,6 +32,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
@@ -150,6 +151,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
+| `doorIV_shawOOne_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
 | `trivial_cocycle_full_concentration_export` | obstruction | JacobiCocycleDispersion |
 | `trivial_cocycle_offSupport_zero_export` | obstruction | JacobiCocycleDispersion |
 | `jacobiCocycleDispersion_iff_shawValue_le_export` | capstone | JacobiCocycleDispersion |
@@ -209,6 +212,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 open ProximityGap.PrizeWorkbench
 open ArkLib.ProximityGap.Frontier
+open Asymptotics Filter
 -- `eta` (the subgroup Gauss-sum period) lives here; needed for the L4/P1 exports below.
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.SubgroupGaussSumMomentLadder
@@ -1121,6 +1125,33 @@ theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
     hK hscale hMH hHM
 
+/-- **[capstone, ShawValueLandauBridge]** A literal Landau prize bound for any nonnegative
+pointwise majorant transfers directly to the Shaw-value `O(1)` statement for the dominated target.
+This is the consumer-facing majorant composition rung for the Lane-2 `prize ⇔ Sh(n)=O(1)` reduction;
+it is pure order/normalization bookkeeping and proves no new Gauss-period estimate. -/
+theorem doorIV_landau_shaw_of_dominated_majorant_export {q n M M' : ℕ → ℝ}
+    (hM'nn : ∀ i, 0 ≤ M' i)
+    (hscale : ∀ i, 0 < ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i))
+    (hle : ∀ i, M' i ≤ M i)
+    (h : (ProximityGap.Frontier.ShawValueCapstone.supSeq M) =O[atTop]
+      (ProximityGap.Frontier.ShawValueCapstone.scaleSeq q n)) :
+    (ProximityGap.Frontier.ShawValueCapstone.shawSeq q n M') =O[atTop]
+      (fun _ => (1 : ℝ)) :=
+  ProximityGap.Frontier.ShawValueCapstone.shawSeq_isBigO_one_of_le_prizeBigO
+    hM'nn hscale hle h
+
+/-- **[capstone, ShawValueLandauBridge]** The same dominated-majorant transfer in the campaign's
+`ShawOOneOn` predicate: a Landau prize-scale bound for a pointwise majorant gives a global uniform
+`Sh(n)=O(1)` bound for every nonnegative dominated target. -/
+theorem doorIV_shawOOne_of_dominated_majorant_export {q n M M' : ℕ → ℝ}
+    (hM'nn : ∀ i, 0 ≤ M' i)
+    (hscale : ∀ i, 0 < ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i))
+    (hle : ∀ i, M' i ≤ M i)
+    (h : (ProximityGap.Frontier.ShawValueCapstone.supSeq M) =O[atTop]
+      (ProximityGap.Frontier.ShawValueCapstone.scaleSeq q n)) :
+    ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M' :=
+  ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_prizeBigO hM'nn hscale hle h
+
 
 /-! ## JacobiCocycleDispersion — the named door-(iv) missing theorem, permanently indexed.
 Scope: **capstone**. The point of this section is discoverability: the #444 reduction does not
@@ -1559,6 +1590,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
 #print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
 #print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export
+#print axioms doorIV_landau_shaw_of_dominated_majorant_export
+#print axioms doorIV_shawOOne_of_dominated_majorant_export
 #print axioms trivial_cocycle_full_concentration_export
 #print axioms trivial_cocycle_offSupport_zero_export
 #print axioms jacobiCocycleDispersion_iff_shawValue_le_export
