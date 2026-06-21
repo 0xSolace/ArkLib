@@ -147,6 +147,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_index_le_sq_of_scaledConstant_le_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_scaledConstant_le_iff_index_le_sq_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_constant_lt_scaledConstant_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_not_scaledConstant_le_constant_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_cosetInvariant_blind_to_order_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_cosetHitting_selector_bound_iff_global_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_strict_selector_bound_misses_coset_export` | obstruction | DoorIVCoherenceOrderBlind |
@@ -1082,6 +1085,34 @@ theorem doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export
     ¬ ∀ i, C * Real.sqrt (m i) ≤ D :=
   ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq
     hC hm hlarge
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Strict nontrivial-index scale loss: if the
+hidden index satisfies `1 < m`, the naive incidence bridge scale is strictly larger than the prize
+scale. The no-loss endpoint is exactly degenerate index one. -/
+theorem doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export {n m L : ℝ}
+    (hn : 0 < n) (hm : 1 < m) (hL : 0 < L) :
+    ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L <
+      ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale n m L :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
+    hn hm hL
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Strict normalized-constant loss: with positive raw
+constant and genuinely nontrivial index, the normalized naive Shaw constant is strictly larger than the
+desired constant. -/
+theorem doorIV_constant_lt_scaledConstant_of_one_lt_m_export {C m : ℝ}
+    (hC : 0 < C) (hm : 1 < m) :
+    C < C * Real.sqrt m :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_of_one_lt_m
+    hC hm
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Contrapositive strict form: at a nontrivial index,
+the inflated naive Shaw constant cannot remain below the desired constant. A route through
+`sqrt(n*m*L)` must remove the index factor before claiming a constant Shaw bound. -/
+theorem doorIV_not_scaledConstant_le_constant_of_one_lt_m_export {C m : ℝ}
+    (hC : 0 < C) (hm : 1 < m) :
+    ¬ C * Real.sqrt m ≤ C :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaled_constant_le_constant_of_one_lt_m
+    hC hm
 
 /-! ## Door-IV order-blindness / selector obstruction. Scope: **obstruction**.
 
@@ -2897,6 +2928,9 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_candidate_pos_export
 #print axioms doorIV_argmaxDecoupled_positive_support_subset_export
 #print axioms doorIV_argmaxDecoupled_no_absolute_const_export
+#print axioms doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export
+#print axioms doorIV_constant_lt_scaledConstant_of_one_lt_m_export
+#print axioms doorIV_not_scaledConstant_le_constant_of_one_lt_m_export
 #print axioms doorIV_collision_defect_eq_zero_iff_injOn_export
 #print axioms doorIV_collision_defect_pos_iff_not_injOn_export
 #print axioms doorIV_sixPoint_lever_vacuous_export

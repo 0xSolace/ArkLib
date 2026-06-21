@@ -10812,3 +10812,24 @@ VERDICT: a claimed uniform Shaw cap through the naive `sqrt(n*m*L)` bridge is ex
 bound on the index `m`. One family member with `m > (D/C)^2` refutes the cap. Thus the index-factor
 route cannot support unbounded thin-regime families unless a genuinely new door-(iv) argument removes
 `sqrt(m)`. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+## [doorIV-index-factor-strict-nontrivial-loss] nontrivial index strictly overshoots the prize scale (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2/3 capstone constraint, permanent export hardening for `_DoorIVIndexFactorOvershoot`.
+The earlier exact index-factor cap criterion showed that a naive bridge through `sqrt(n*m*L)` normalizes
+with a `sqrt(m)` loss and that bounded normalized constants are exactly finite-index bounds. This update
+exports the strict nontrivial-index forms from the permanent `CampaignProvenIndex`:
+
+- `doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export`
+- `doorIV_constant_lt_scaledConstant_of_one_lt_m_export`
+- `doorIV_not_scaledConstant_le_constant_of_one_lt_m_export`
+
+VERDICT: the no-loss endpoint is exactly the degenerate `m = 1` case. In every genuinely indexed regime
+`1 < m`, the naive incidence scale is strictly larger than the prize scale and the normalized naive Shaw
+constant `C*sqrt(m)` is strictly larger than `C`; equivalently, it cannot remain below the desired constant.
+Thus any constant-Shaw/prize route passing through the naive `sqrt(n*m*L)` bridge must remove the index
+factor before claiming a uniform bound. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, axiom-clean exports
+of the strict forms already proven in `_DoorIVIndexFactorOvershoot.lean`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
