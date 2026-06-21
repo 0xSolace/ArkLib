@@ -92,8 +92,42 @@ theorem rs_restrict_injOn_of_k_le
   have : p = q := sub_eq_zero.mp hzero
   rw [this]
 
+/-- **RS list at a `k`-agreement is a subsingleton (proven).** For any target assignment `t : ι → F`,
+the set of RS codewords (degree `< k`) that agree with `t` on every point of a finset `S` with
+`k ≤ S.card` has at most one element: a fixed assignment on `k` coordinates is consistent with at most
+one codeword. The list-decoding consequence of `k`-projection rigidity. -/
+theorem rs_agreeOn_subsingleton
+    (domain : ι ↪ F) (k : ℕ) (S : Finset ι) (hk : k ≤ S.card) (t : ι → F) :
+    Set.Subsingleton
+      {c : ι → F | c ∈ ReedSolomon.code domain k ∧ ∀ i ∈ S, c i = t i} := by
+  intro c₁ hc₁ c₂ hc₂
+  obtain ⟨hmem₁, hagree₁⟩ := hc₁
+  obtain ⟨hmem₂, hagree₂⟩ := hc₂
+  refine rs_restrict_injOn_of_k_le domain k S hk hmem₁ hmem₂ ?_
+  funext i
+  have h₁ : c₁ (i : ι) = t (i : ι) := hagree₁ (i : ι) i.2
+  have h₂ : c₂ (i : ι) = t (i : ι) := hagree₂ (i : ι) i.2
+  simp only [h₁, h₂]
+
+/-- **RS list-count at a `k`-subset is `≤ 1` (proven).** Filtering any finset `L` of RS codewords by
+agreement with a fixed target `t` on a `k`-subset `S` (with `k ≤ S.card`) leaves at most one element.
+The concrete list-size bound — and the certificate that Shearer / entropy sub-additivity is *vacuous*
+on RS list-counts at block size `≥ k` (per-block information = global information). -/
+theorem rs_listCount_le_one
+    (domain : ι ↪ F) (k : ℕ) (S : Finset ι) (hk : k ≤ S.card) (t : ι → F)
+    (L : Finset (ι → F)) (hL : ∀ c ∈ L, c ∈ ReedSolomon.code domain k) :
+    (L.filter (fun c => ∀ i ∈ S, c i = t i)).card ≤ 1 := by
+  rw [Finset.card_le_one]
+  intro c₁ h₁ c₂ h₂
+  simp only [Finset.mem_filter] at h₁ h₂
+  refine rs_agreeOn_subsingleton domain k S hk t ?_ ?_
+  · exact ⟨hL c₁ h₁.1, h₁.2⟩
+  · exact ⟨hL c₂ h₂.1, h₂.2⟩
+
 end ArkLib.ProximityGap.Frontier.RSRestrictInjOn
 
 /-! ## Axiom audit (expected: only `propext, Classical.choice, Quot.sound`; no `sorryAx`) -/
 #print axioms ArkLib.ProximityGap.Frontier.RSRestrictInjOn.degreeLT_eq_zero_of_eval_eq_zero
 #print axioms ArkLib.ProximityGap.Frontier.RSRestrictInjOn.rs_restrict_injOn_of_k_le
+#print axioms ArkLib.ProximityGap.Frontier.RSRestrictInjOn.rs_agreeOn_subsingleton
+#print axioms ArkLib.ProximityGap.Frontier.RSRestrictInjOn.rs_listCount_le_one
