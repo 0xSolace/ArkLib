@@ -1062,6 +1062,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoCompose
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation

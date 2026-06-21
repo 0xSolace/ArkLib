@@ -153,6 +153,45 @@ theorem positiveMass_le_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G
     exact total_doublingMass_le hψ G hζ
   linarith
 
+/-- The cancelling/opposite-sign mass obeys the same half-budget cap as the positive same-sign mass.
+Together with `positiveMass_le_half_card`, this records that neither side of the sign cocycle can
+occupy more than half of the Cauchy--Schwarz cross budget. -/
+theorem negativeMass_le_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0) (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) ≤
+      ((Fintype.card F : ℝ) * G.card) / 2 := by
+  rw [← sign_positiveMass_eq_negativeMass hψ G hG hdisj]
+  exact positiveMass_le_half_card hψ G hG hζ hdisj
+
+/-- Exact half-splitting form of the sign-cocycle balance: under the door-IV disjoint-dilate
+hypotheses, the positive same-sign mass is exactly one half of the total positive-plus-negative mass. -/
+theorem positiveMass_eq_half_totalParts {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) =
+      ((∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) +
+        ∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) / 2 := by
+  have hPN := sign_positiveMass_eq_negativeMass hψ G hG hdisj
+  linarith
+
+/-- Exact half-splitting form for the cancelling/opposite-sign mass. The sign-cocycle budget is split
+evenly between the same-sign and opposite-sign branches. -/
+theorem negativeMass_eq_half_totalParts {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) =
+      ((∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) +
+        ∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) / 2 := by
+  have hPN := sign_positiveMass_eq_negativeMass hψ G hG hdisj
+  linarith
+
+/-- The total sign-cross mass itself is bounded by the Cauchy--Schwarz budget `q·|G|`. -/
+theorem totalParts_le_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0) :
+    (∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) +
+        (∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) ≤
+      (Fintype.card F : ℝ) * G.card := by
+  rw [sign_totalParts_eq_total_doublingMass G hG ζ]
+  exact total_doublingMass_le hψ G hζ
+
 end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posMass_eq_negMass_of_sum_zero
@@ -161,3 +200,7 @@ end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_totalParts_eq_total_doublingMass
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_le_half_card
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_le_half_card
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_eq_half_totalParts
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_eq_half_totalParts
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.totalParts_le_card

@@ -10465,3 +10465,22 @@ This is `positiveMass_le_half_card`, obtained from exact positive/negative balan
 `total_doublingMass_le`. It formalizes the older prose claim that the `+`-mass equals the `−`-mass and so
 is capped by `½ q|G|`. It is a global mass constraint only; it does not control the single adversarial
 frequency sign word, so CORE remains open.
+
+## door-(iv) Lane 3 — sign-cocycle budget half-splitting is exact (2026-06-21, g55)
+
+Follow-up to `_DoorIVSignCocycleMassBalance`: the positive same-sign and negative cancelling branches are
+not merely equal as abstract masses, they each occupy exactly half of the total sign-cross variation, and
+neither branch can exceed half of the Cauchy--Schwarz budget. New kernel-checked theorems:
+
+- `negativeMass_le_half_card`
+- `positiveMass_eq_half_totalParts`
+- `negativeMass_eq_half_totalParts`
+- `totalParts_le_card`
+
+VERDICT: a door-(iv) proof using the dilation real-sign cocycle cannot allocate the global cross budget
+asymmetrically. The same-sign/doubling and opposite-sign/cancelling branches are an exact 50/50 split at
+the mass level; a worst-frequency theorem must therefore be genuinely local and cannot come from spending
+only the positive branch. No CORE bound, no completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSignCocycleMassBalance.lean`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
