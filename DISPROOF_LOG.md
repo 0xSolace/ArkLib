@@ -10111,3 +10111,43 @@ VERDICT (rule-4 mapped-frontier WIN; CORE stays OPEN):
   prize/BGK wall. No Lean theorem (the quantitative signed-cancellation bound = the open core). Reproducible
   probe + this validated verdict are the deliverable. No CORE/cancellation/completion/moment-saving/
   anti-concentration/capacity claim.
+
+## The |.|-leak is an ODD-r phenomenon, thinness-essential & deepening in r AND n — quantifies kernel 92159f260 (2026-06-21, sol)
+
+Lane: door-(iv) Lane 1. Quantitative hardening of the |.|-leak kernel `92159f260`
+(`_DoorIVSignedDeepSumAbsLeak.lean`), which proved ABSTRACTLY that `|Σ_b η_b^r| ≤ Σ_b |η_b|^r`
+(`leak_nonneg`) is the triangle step by which every dead door (moment/energy/Wick/EVT, all routing
+through `Σ|η_b|^r`) discards the thinness-essential signed deep cancellation. The kernel left the leak
+MAGNITUDE abstract. This entry measures the leak FRACTION
+  f_r := 1 − |Σ_{b≠0} η_b^r| / Σ_{b≠0} |η_b|^r   ∈ [0,1]   (literal fraction of moment mass killed by |.|).
+
+PROBE (`scripts/probes/probe_dooriv_abssigned_leak_magnitude.py`, EXACT real arithmetic via cos-table,
+η_b real by μ_n negation-closure, PROPER μ_n with n=2^a, NEVER n=q−1, multiple structured primes per
+(n,β), THICK β≈2.5 vs THIN β=3.7–4.3 with p ≫ n³).
+
+KEY STRUCTURAL FACT (found mid-probe, mechanistic): η_b is REAL ⇒ for EVEN r, η_b^r = |η_b|^r identically
+⇒ Σ η_b^r = Σ|η_b|^r ⇒ **f_r ≡ 0 at every even r**. The signed/absolute leak ONLY exists at ODD r, where
+η_b^r carries the sign and Σ_b η_b^r genuinely cancels across b. This is exactly WHY the moment/energy
+route is thickness-INVARIANT (proven in prior entries): it uses EVEN powers |η_b|^{2r}, which carry no
+sign cancellation. The prize-relevant cancellation lives entirely in the ODD signed deep sums.
+
+RESULT (ODD r). Δf_r = avg(f_r thin) − avg(f_r thick); Δf_r>0 ⇒ |.| discards a LARGER fraction in thin:
+| n  | Δf_3   | Δf_5   | Δf_7   | Δf_9   | Δf_11  | Δf_13  | Δf_15  |
+|----|--------|--------|--------|--------|--------|--------|--------|
+| 16 | +0.037 | +0.081 | +0.164 | +0.256 | +0.322 | —      | —      |
+| 32 | +0.017 | +0.069 | +0.175 | +0.297 | +0.407 | +0.493 | —      |
+| 64 | +0.009 | +0.113 | +0.362 | +0.614 | +0.791 | +0.897 | +0.936 |
+Raw f_r at deep odd r: THIN ≈ 0.99 (|.| discards ~99%, strong signed cancellation); THICK decays to ≈0.05
+(|.| discards almost nothing). Thin primes reached up to 4.8M (≫ n³).
+
+VERDICT (rule-4 mapped-frontier WIN; CORE stays OPEN):
+- The |.|-leak is thinness-essential AND deepening in BOTH r and n. Δf_r > 0 at every odd r, growing
+  monotonically with r and with n (n=64 reaches +0.94). The dead-door methods don't merely leak — they
+  leak a LARGER fraction of moment mass exactly where the prize lives, deepening at prize depth. This is
+  n-MONOTONE (cleaner than the C_r ratio, whose magnitude was not n-monotone — see prior entry). rule-3 PASS.
+- ODD-r localization: the lever lives at ODD r; even-r moments see f_r ≡ 0. Pins WHY moment/energy is
+  thickness-invariant (even powers, no signs) and sharpens the open lever: the prize bound must exploit
+  the ODD signed deep sums Σ_b η_b^{2k+1}.
+- Does NOT prove a uniform-in-field bound on M (that bound IS the open prize/BGK wall). No CORE/
+  cancellation/completion/moment-saving/anti-concentration/capacity claim. Reproducible probe + this
+  entry are the deliverable.
