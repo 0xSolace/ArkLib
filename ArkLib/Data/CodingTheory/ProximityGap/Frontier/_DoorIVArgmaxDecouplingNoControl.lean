@@ -106,6 +106,28 @@ theorem not_uniformControl_of_zero_candidate_at_positive_target {target F : ι �
     ¬ UniformControl target F C :=
   not_uniformControl_of_nonpos_candidate_at_positive_target hC (le_of_eq hFzero) htpos
 
+/-- **Positive controls force positive candidate support.**  If `target ≤ C·F` with a strictly positive
+constant `C`, then every frequency where the target is positive must also have positive candidate value.
+Equivalently, a multiplicative door-(iv) control cannot ignore any positive target peak: the support
+of `{target > 0}` is contained in the support of `{F > 0}`. -/
+theorem candidate_pos_of_positive_control_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {i : ι} (hCpos : 0 < C) (hctrl : UniformControl target F C)
+    (htpos : 0 < target i) :
+    0 < F i := by
+  by_contra hnot
+  exact not_uniformControl_of_nonpos_candidate_at_positive_target (le_of_lt hCpos)
+    (le_of_not_gt hnot) htpos hctrl
+
+/-- **Support-inclusion form.**  A strictly-positive multiplicative control constant forces
+`{i | target i > 0} ⊆ {i | F i > 0}`.  This is the probe-facing support constraint behind the
+zero/nonpositive endpoint: if a candidate functional vanishes anywhere the target is positive, it cannot
+be a positive-constant control. -/
+theorem positiveTarget_subset_positiveCandidate_of_positive_control {target F : ι → ℝ}
+    {C : ℝ} (hCpos : 0 < C) (hctrl : UniformControl target F C) :
+    {i | 0 < target i} ⊆ {i | 0 < F i} := by
+  intro i hi
+  exact candidate_pos_of_positive_control_at_positive_target hCpos hctrl hi
+
 /-- **Family form: an unbounded witness ratio rules out every absolute constant.**  Suppose for each
 member `n` of a family we have a target `target n`, a candidate functional `F n`, a worst frequency
 `bstar n` where `F n (bstar n) > 0`, and the per-`n` witness ratio

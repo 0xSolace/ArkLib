@@ -10739,3 +10739,21 @@ new theorems `not_uniformControl_of_nonpos_candidate_at_positive_target` and
 `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` and
 `doorIV_argmaxDecoupled_no_zero_candidate_control_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupling-support] positive multiplicative control forces candidate positive support to cover target positive support (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 support-level companion to the zero/nonpositive endpoint obstruction. A positive
+absolute multiplicative control `target ≤ C·F` with `C > 0` cannot have the candidate functional vanish
+or go nonpositive at any frequency where the target is positive.
+
+VERDICT: any proposed door-(iv) anti-concentration/window functional must satisfy the support inclusion
+`{b | target(b) > 0} ⊆ {b | F(b) > 0}` before ratio estimates even matter. If probe data show the
+candidate's positive support misses a positive target frequency (in particular the true worst `b*`),
+the lever is dead immediately. This is a constraint on candidate controls only, not a CORE bound.
+
+Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
+`candidate_pos_of_positive_control_at_positive_target` and
+`positiveTarget_subset_positiveCandidate_of_positive_control`, exported from `CampaignProvenIndex` as
+`doorIV_argmaxDecoupled_candidate_pos_export` and
+`doorIV_argmaxDecoupled_positive_support_subset_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

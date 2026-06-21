@@ -209,6 +209,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_candidate_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_positive_support_subset_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_absolute_const_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_collision_defect_eq_zero_iff_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
 | `doorIV_collision_defect_pos_iff_not_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
@@ -1847,6 +1849,26 @@ theorem doorIV_argmaxDecoupled_no_zero_candidate_control_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_zero_candidate_at_positive_target
     hC hFzero htpos
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Positive-control support constraint: if
+`target ≤ C·F` with `C > 0`, then `F` must be positive at every positive target frequency. -/
+theorem doorIV_argmaxDecoupled_candidate_pos_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {i : ι} (hCpos : 0 < C)
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C)
+    (htpos : 0 < target i) :
+    0 < F i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.candidate_pos_of_positive_control_at_positive_target
+    hCpos hctrl htpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Set-level form: a positive multiplicative
+control forces `{i | target i > 0} ⊆ {i | F i > 0}`.  A candidate whose positive support misses the
+true target support is dead before any ratio estimate. -/
+theorem doorIV_argmaxDecoupled_positive_support_subset_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} (hCpos : 0 < C)
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C) :
+    {i | 0 < target i} ⊆ {i | 0 < F i} :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.positiveTarget_subset_positiveCandidate_of_positive_control
+    hCpos hctrl
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Family no-go: if the per-`n` worst-frequency
 witness ratio is UNBOUNDED above (decoupling: the target peaks where `F` is small), then NO single
 absolute constant `C` uniformly controls every family member — for each `C` some member fails. -/
@@ -2783,6 +2805,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export
+#print axioms doorIV_argmaxDecoupled_candidate_pos_export
+#print axioms doorIV_argmaxDecoupled_positive_support_subset_export
 #print axioms doorIV_argmaxDecoupled_no_absolute_const_export
 #print axioms doorIV_collision_defect_eq_zero_iff_injOn_export
 #print axioms doorIV_collision_defect_pos_iff_not_injOn_export
