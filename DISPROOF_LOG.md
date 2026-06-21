@@ -1,3 +1,29 @@
+## door-(iv) Lane-2 capstone — the half-mass is an EXACT two-dilate sub-period sum: B_b = A_{g·b}, H(n)=max_b(‖A_b‖+‖A_{g·b}‖) (2026-06-20, sol)
+
+Lens: Lane-2 citable capstone rung (SAFE/certain). The half-mass thread ([door-iv-halfmass-equivalence],
+prize ⟺ H(n)=O(√(n·log))) and the cross-half-phase constraint ([door-iv-crosshalf-phase-unstructured])
+both LEAN ON the structural identity B_b = A_{g·b} (the second index-2 coset-half is the SAME sub-period
+A=eta ψ H at the DILATED frequency g·b), but it was used in PROSE only — never kernel-anchored as a
+standalone reindex identity on the in-tree `eta` primitive. This file anchors it.
+
+Identity (exact, over a field, on the disjoint index-2 cover G=μ_n=H⊔g·H, H=μ_{n/2}, g=coset rep≠0):
+  eta ψ (g·H) b = eta ψ H (g·b)                          [coset-half = dilated sub-period]
+  eta ψ (H∪g·H) b = eta ψ H b + eta ψ H (g·b)            [index-2 dilation split: η_b = A_b + A_{g·b}]
+  ‖A_b‖+‖B_b‖ = ‖eta ψ H b‖ + ‖eta ψ H (g·b)‖            [half-mass = two-dilate sub-period magnitude sum]
+  ‖η_b‖ ≤ ‖eta ψ H b‖ + ‖eta ψ H (g·b)‖                  [period ≤ two-dilate half-mass]
+  (+ the coherent-equality form at the proven same-ray worst-b).
+
+CONSEQUENCE (no escape, faithful restatement): the open prize H(n)=max_b(‖eta ψ H b‖+‖eta ψ H (g·b)‖)
+is a max over a SINGLE sub-period magnitude at TWO multiplicatively-dilated frequencies b and g·b. This
+is the dilation form of the half-mass equivalence; it kernel-anchors WHERE the burden sits (the joint
+two-frequency {b, g·b} object — consistent with [door-iv-worstb-non-nested] and the cross-half-phase
+refutation). No CORE/cancellation/completion/moment/anti-concentration/capacity claim.
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+Frontier/_DoorIVHalfMassDilationForm.lean — eta_image_smul_eq_eta_dilate, eta_index_two_split_dilate,
+halfMass_eq_two_dilate, norm_eta_le_two_dilate, norm_eta_eq_two_dilate_of_coherent. Builds on the
+in-tree `eta` primitive (SubgroupGaussSumSecondMoment) + the coset-reindex idea behind eta_smul_invariant.
+
 ## [door-iv-crosshalf-phase-unstructured] the cross-half phase factorization is dead: B_b = A_{bg} is REAL-collinear (no nontrivial root-of-unity) but its magnitude ratio |B|/|A| is UNSTRUCTURED (2026-06-20, sol)
 
 Lane: Door-(iv) Lane-1 (probe) + Lane-3 (refuted-lever constraint). Continues the half-mass thread
