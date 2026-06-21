@@ -152,6 +152,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `shawOOne_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
+| `corePrize_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
+| `corePrize_bddAbove_range_shawValue_of_pos_lt_export` | capstone | ShawValueCapstone |
 | `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
 | `doorIV_shawOOne_of_coreMajorant_export` | capstone | ShawValueCapstone |
 | `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
@@ -1243,6 +1246,35 @@ theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
     hK hscale hMH hHM
 
+/-- **[capstone, ShawValueCapstone]** Standard-library boundedness form of the Shaw slogan:
+`Sh(n)=O(1)` is exactly `BddAbove` of the dimensionless Shaw-value range. The nonnegative constant in
+`ShawOOneOn` is obtained by replacing any upper bound `C` with `max C 0`. -/
+theorem shawOOne_bddAbove_range_shawValue_export {ι : Type*} {q n M : ι → ℝ} :
+    _root_.ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M ↔
+      BddAbove (Set.range fun i : ι =>
+        _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i)) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_bddAbove_range_shawValue
+
+/-- **[capstone, ShawValueCapstone]** Positive-scale prize bound as a bounded Shaw-value range:
+`CorePrizeBoundOn` is equivalent to `BddAbove (range Sh)`. This is the standard-library `BddAbove`
+face of the literal `prize ⇔ Sh(n)=O(1)` reduction, with no new analytic estimate. -/
+theorem corePrize_bddAbove_range_shawValue_export {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < _root_.ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i)) :
+    _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M ↔
+      BddAbove (Set.range fun i : ι =>
+        _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i)) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue hscale
+
+/-- **[capstone, ShawValueCapstone]** Prize-regime version of the `BddAbove (range Sh)` capstone,
+discharging scale positivity from `0 < n_i < q_i`. -/
+theorem corePrize_bddAbove_range_shawValue_of_pos_lt_export {ι : Type*} {q n M : ι → ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M ↔
+      BddAbove (Set.range fun i : ι =>
+        _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i)) :=
+  _root_.ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt
+    hn hnq
+
 /-- **[capstone, ShawValueCapstone]** Elementary dominated-majorant transfer: a campaign
 `CorePrizeBoundOn` theorem for a pointwise majorant gives the same raw prize-scale bound for every
 smaller target.  This is pure monotonicity of the sup norm, with no new analytic estimate. -/
@@ -2143,6 +2175,9 @@ theorem doorIV_levelWorst_base_corrected_of_gate_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThresholdConcrete.levelWorst_le_base_corrected_of_gate
     hζ kstar r hdisj hgate
 
+#print axioms shawOOne_bddAbove_range_shawValue_export
+#print axioms corePrize_bddAbove_range_shawValue_export
+#print axioms corePrize_bddAbove_range_shawValue_of_pos_lt_export
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export

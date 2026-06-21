@@ -276,6 +276,52 @@ theorem shawValue_floor_ceiling_corridor_of_pos_lt {q n M : ℝ}
   exact shawValue_floor_ceiling_corridor (q := q) (n := n) (M := M)
     (shawScale_pos_of_pos_lt hn hnq) hfloor hceil
 
+/-! ### Standard-library boundedness form of `Sh(n)=O(1)` -/
+
+/-- **Shaw `O(1)` is exactly `BddAbove` of the Shaw-value range.**  The campaign predicate
+`ShawOOneOn q n M` uses an explicit nonnegative constant.  Mathlib's standard-library boundedness
+predicate only asks for some upper bound on the range.  These are equivalent because any upper bound
+`C` can be harmlessly enlarged to the nonnegative bound `max C 0`.
+
+This is pure API bookkeeping for the `prize ⇔ Sh(n)=O(1)` capstone: no arithmetic estimate or
+cancellation input is introduced. -/
+theorem shawOOneOn_iff_bddAbove_range_shawValue {ι : Type*} {q n M : ι → ℝ} :
+    ShawOOneOn q n M ↔
+      BddAbove (Set.range fun i : ι => shawValue (q i) (n i) (M i)) := by
+  constructor
+  · rintro ⟨C, _hCnonneg, hC⟩
+    refine ⟨C, ?_⟩
+    rintro x ⟨i, rfl⟩
+    exact hC i
+  · rintro ⟨C, hC⟩
+    refine ⟨max C 0, le_max_right C 0, fun i => ?_⟩
+    exact le_trans (hC ⟨i, rfl⟩) (le_max_left C 0)
+
+/-- **Prize bound as bounded Shaw-value range.**  Under the positive-scale guard, the raw prize
+predicate `CorePrizeBoundOn` is equivalent to the standard-library statement that the dimensionless
+Shaw values form a bounded-above range.  This composes the original Shaw capstone with
+`shawOOneOn_iff_bddAbove_range_shawValue`, keeping the exact same normalization and no hidden loss. -/
+theorem corePrizeBoundOn_iff_bddAbove_range_shawValue {ι : Type*} {q n M : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i)) :
+    CorePrizeBoundOn q n M ↔
+      BddAbove (Set.range fun i : ι => shawValue (q i) (n i) (M i)) := by
+  constructor
+  · intro hCore
+    exact shawOOneOn_iff_bddAbove_range_shawValue.mp
+      ((shawOOneOn_iff_corePrizeBoundOn hscale).2 hCore)
+  · intro hBdd
+    exact (shawOOneOn_iff_corePrizeBoundOn hscale).1
+      (shawOOneOn_iff_bddAbove_range_shawValue.mpr hBdd)
+
+/-- Prize-regime specialization of `corePrizeBoundOn_iff_bddAbove_range_shawValue`, discharging the
+positive Shaw-scale hypothesis from `0 < n_i < q_i`. -/
+theorem corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt {ι : Type*} {q n M : ι → ℝ}
+    (hn : ∀ i : ι, 0 < n i) (hnq : ∀ i : ι, n i < q i) :
+    CorePrizeBoundOn q n M ↔
+      BddAbove (Set.range fun i : ι => shawValue (q i) (n i) (M i)) := by
+  exact corePrizeBoundOn_iff_bddAbove_range_shawValue (q := q) (n := n) (M := M)
+    (fun i => shawScale_pos_of_pos_lt (hn i) (hnq i))
+
 /-! ### Dominated-majorant transfer in elementary campaign predicates -/
 
 /-- A uniform prize-scale bound for a pointwise majorant transfers to any dominated target with the
@@ -328,6 +374,9 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_interval_iff_raw_mem_scaled_interval_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_iff_bddAbove_range_shawValue
+#print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue
+#print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_iff_bddAbove_range_shawValue_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.UniformCoreBound.of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_of_le
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_corePrizeBoundOn
