@@ -63,6 +63,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GKPhaseCoboundaryNonLinea
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackMarkoffCouplingNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvTannakianNonTorsionPump
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarriesAll
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZDegreeEnvelope
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2423,6 +2424,40 @@ theorem doorIV_tannakian_coprime_twisted_period_eq_original_export {G H A : Type
 #print axioms doorIV_tannakian_twist_det_eq_export
 #print axioms doorIV_tannakian_twist_det_zero_iff_export
 #print axioms doorIV_tannakian_coprime_order_trivial_export
+
+/-- **[descent, ZDegreeEnvelope]** The even/odd descent quadform
+`R = Pp^2 - X·Qp^2` has degree at most the larger of the two branch support budgets
+`2 deg Pp` and `1 + 2 deg Qp`. -/
+theorem doorIV_descent_quadform_degreeEnvelope_export {F : Type*} [Field F]
+    (Pp Qp : Polynomial F) :
+    (_root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp).natDegree ≤
+      max (2 * Pp.natDegree) (1 + 2 * Qp.natDegree) :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform_natDegree_le_max Pp Qp
+
+/-- **[descent, ZDegreeEnvelope]** Consumer form: the non-symmetric descent `Z` count is
+bounded by `max (2 deg Pp) (1 + 2 deg Qp)`, the explicit support envelope. -/
+theorem doorIV_descent_Z_card_le_degreeEnvelope_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F}
+    (hR : _root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (B.filter (fun y => (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2)).card
+      ≤ max (2 * Pp.natDegree) (1 + 2 * Qp.natDegree) :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_card_le_degreeEnvelope hR B
+
+/-- **[descent, ZDegreeEnvelope]** Indicator-sum form matching the descent identity's
+`Z` term. -/
+theorem doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export {F : Type*} [Field F]
+    [DecidableEq F]
+    {Pp Qp : Polynomial F}
+    (hR : _root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (∑ y ∈ B, (if (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2 then 1 else 0))
+      ≤ max (2 * Pp.natDegree) (1 + 2 * Qp.natDegree) :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_indicator_sum_le_degreeEnvelope hR B
+
+#print axioms doorIV_descent_quadform_degreeEnvelope_export
+#print axioms doorIV_descent_Z_card_le_degreeEnvelope_export
+#print axioms doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export
 
 /-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
 period magnitude equals the half-mass exactly. Thus the cross-half coherence factor contributes no
