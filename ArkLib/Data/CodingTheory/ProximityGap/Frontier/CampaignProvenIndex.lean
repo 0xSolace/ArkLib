@@ -196,6 +196,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_multiPiece_exact_saving_export` | obstruction | DoorIVMultiPieceSignCoherence |
+| `doorIV_multiPiece_eps_budget_eq_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_eps_budget_iff_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_no_eps_slack_one_side_zero_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
@@ -1712,6 +1714,32 @@ theorem doorIV_decomposition_no_partition_beats_one_export
         (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) ≤ θ :=
   _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.no_partition_beats_one_of_common_ray_terms t s f hθ hray g hcover
 
+/-- **[obstruction, DoorIVMultiPieceSignCoherence]** Exact saving identity for real refined
+piece coherence. After compression to aggregate positive/negative masses, the slack below saturation
+is precisely `2·minority/total`; refinement alone creates no hidden cancellation term. -/
+theorem doorIV_multiPiece_exact_saving_export {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    1 - _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence s A =
+      (2 * min posMass negMass) / (posMass + negMass) :=
+  _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.one_sub_multiPieceCoherence_eq_two_mul_min_ratio
+    s A hsum hden htotal
+
+/-- **[obstruction, DoorIVMultiPieceSignCoherence]** Exact epsilon-budget equality interface for real
+refined piece coherence. A certificate `coherence = 1 - ε` is equivalent to the exact
+minority-sign payment `ε·total = 2·minority`. -/
+theorem doorIV_multiPiece_eps_budget_eq_export {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence s A = 1 - ε ↔
+      ε * (posMass + negMass) = 2 * min posMass negMass :=
+  _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence_eq_one_sub_iff_eps_mass_budget_eq
+    s A hsum hden htotal
+
 /-- **[obstruction, DoorIVMultiPieceSignCoherence]** Exact epsilon-budget interface for real refined
 piece coherence. A certificate `coherence ≤ 1 - ε` is equivalent to the denominator-cleared minority
 sign-mass obligation `ε·total ≤ 2·minority`; subdivision alone cannot create door-(iv) slack. -/
@@ -2638,6 +2666,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
+#print axioms doorIV_multiPiece_exact_saving_export
+#print axioms doorIV_multiPiece_eps_budget_eq_export
 #print axioms doorIV_multiPiece_eps_budget_iff_export
 #print axioms doorIV_multiPiece_no_eps_slack_one_side_zero_export
 #print axioms doorIV_sixPoint_lever_vacuous_export

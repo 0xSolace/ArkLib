@@ -341,6 +341,45 @@ theorem multiPieceCoherence_le_iff_two_mul_minMass_ge {ι : Type*} [DecidableEq 
     linarith
 
 
+/-- Exact saving identity for real multi-piece coherence.  After compression to aggregate sign
+masses, the slack below saturation is precisely twice the minority-sign mass divided by the total
+`L¹` mass.  This packages the door-(iv) obligation in the form used by probes: every unit of claimed
+coherence saving must be paid by actual minority mass, not by the refinement itself. -/
+theorem one_sub_multiPieceCoherence_eq_two_mul_min_ratio {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    1 - multiPieceCoherence s A = (2 * min posMass negMass) / (posMass + negMass) := by
+  rw [multiPieceCoherence_eq_one_sub_two_mul_min_ratio s A hsum hden htotal]
+  ring
+
+/-- Exact epsilon-budget equality form.  A real refined split has coherence exactly `1 - ε` iff the
+advertised saving `ε` is exactly the denominator-normalized minority-sign budget.  This is the sharp
+equality companion to the `≤` budget theorem below. -/
+theorem multiPieceCoherence_eq_one_sub_iff_eps_mass_budget_eq {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    multiPieceCoherence s A = 1 - ε ↔
+      ε * (posMass + negMass) = 2 * min posMass negMass := by
+  rw [multiPieceCoherence_eq_one_sub_two_mul_min_ratio s A hsum hden htotal]
+  constructor
+  · intro h
+    have hx : (2 * min posMass negMass) / (posMass + negMass) = ε := by linarith
+    calc
+      ε * (posMass + negMass)
+          = ((2 * min posMass negMass) / (posMass + negMass)) * (posMass + negMass) := by rw [hx]
+      _ = 2 * min posMass negMass := div_mul_cancel₀ _ (ne_of_gt htotal)
+  · intro h
+    have hx : (2 * min posMass negMass) / (posMass + negMass) = ε := by
+      calc
+        (2 * min posMass negMass) / (posMass + negMass)
+            = (ε * (posMass + negMass)) / (posMass + negMass) := by rw [← h]
+        _ = ε := mul_div_cancel_right₀ ε (ne_of_gt htotal)
+    linarith
+
 /-- Epsilon-budget form of the exact multi-piece obstruction.  A real refined split has coherence
 at most `1 - ε` iff the aggregate minority-sign mass pays the full denominator-cleared budget
 `ε * (posMass + negMass) ≤ 2 * min posMass negMass`.  This is the sharp consumer-facing form of the
@@ -452,6 +491,8 @@ open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 #print axioms multiPieceCoherence_eq_one_sub_two_mul_min_ratio
 #print axioms two_mul_minMass_ge_of_multiPieceCoherence_le
 #print axioms multiPieceCoherence_le_iff_two_mul_minMass_ge
+#print axioms one_sub_multiPieceCoherence_eq_two_mul_min_ratio
+#print axioms multiPieceCoherence_eq_one_sub_iff_eps_mass_budget_eq
 #print axioms multiPieceCoherence_le_one_sub_iff_eps_mass_budget
 #print axioms not_multiPieceCoherence_le_one_sub_of_eps_mass_budget_lt
 #print axioms two_sided_of_multiPieceCoherence_le_one_sub_eps
