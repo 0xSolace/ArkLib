@@ -10880,3 +10880,24 @@ This entry imports that brick into `CampaignProvenIndex` and exposes the three c
 VERDICT: permanent index now has a single axiom-clean citation for Shaw's prize⇔Sh(n)=O(1) reduction
 plus door-(iv)-only mechanism routing. No new estimate, no anti-concentration, no CORE claim; the open
 obligation remains the door-(iv) coherence bound.
+
+## [doorIV-argmax-decoupling-finite-support-ratio-envelope] finite probe support control is exactly finite ratio control (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVArgmaxDecouplingNoControl`. The prior kernel
+proved the global positive-candidate ratio-envelope criterion `UniformControl target F C ↔ ∀ i, target i/F i ≤ C`.
+This sweep adds the probe-faithful finite-support form used by actual enumerations over `b ∈ F_pˣ`:
+
+- `UniformControlOn s target F C` means `target i ≤ C*F i` only on the measured finite support `s`.
+- If `F` is positive on `s`, then `UniformControlOn s target F C` is equivalent to `∀ i ∈ s, target i/F i ≤ C`.
+- A single measured support witness `C < target i/F i` refutes `C`-control even on that finite support.
+
+VERDICT: finite door-(iv) small-ball/window probes need no ambient/unmeasured-frequency assumption: their
+candidate controls live or die exactly by the pointwise ratio envelope on the enumerated support. This
+locks the finite-enumeration version of the argmax-decoupling obstruction. No CORE, cancellation,
+completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new definition `UniformControlOn` and theorems
+`uniformControlOn_iff_ratio_le_on` and `not_uniformControlOn_of_exists_ratio_gt_on`, exported from
+`CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export` and
+`doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

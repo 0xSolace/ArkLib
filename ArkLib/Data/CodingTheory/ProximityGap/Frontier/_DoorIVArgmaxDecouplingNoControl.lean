@@ -58,6 +58,12 @@ small-ball functional `F` controls the sup-norm `M` up to an absolute constant".
 def UniformControl (target F : ι → ℝ) (C : ℝ) : Prop :=
   ∀ i, target i ≤ C * F i
 
+/-- A finite-frequency version of `UniformControl`: the candidate functional controls the target on the
+probe support `s`.  Door-(iv) probes always enumerate a finite frequency set (for example
+`b ∈ F_pˣ`), so this avoids silently strengthening a finite certificate to all ambient indices. -/
+def UniformControlOn (s : Finset ι) (target F : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i ∈ s, target i ≤ C * F i
+
 /-- **Control at the target's argmax forces a multiplicative lower bound on the constant.**  If `target`
 is maximised at `b*` and `F` is *strictly positive* there, then any uniform multiplicative control of
 `target` by `F` must use a constant `C ≥ target b* / F b*`.
@@ -158,6 +164,37 @@ theorem not_uniformControl_of_exists_ratio_gt {target F : ι → ℝ} {C : ℝ}
   obtain ⟨i, hi⟩ := hwit
   have hle : target i / F i ≤ C := (uniformControl_iff_ratio_le hFpos).1 hctrl i
   exact (not_lt_of_ge hle) hi
+
+/-- **Finite-support ratio-envelope characterization.**  On a finite probe support `s`, if the candidate
+functional is strictly positive on `s`, then control on exactly that support is equivalent to bounding
+the pointwise ratio envelope on exactly that support.
+
+This is the probe-faithful form of the decoupling obstruction: finite computations may certify a
+ratio outlier on the enumerated frequency set without making any claim about ambient frequencies that
+were not part of the probe. -/
+theorem uniformControlOn_iff_ratio_le_on {target F : ι → ℝ} {C : ℝ} {s : Finset ι}
+    (hFpos : ∀ i ∈ s, 0 < F i) :
+    UniformControlOn s target F C ↔ ∀ i ∈ s, target i / F i ≤ C := by
+  constructor
+  · intro hctrl i hi
+    have h : target i ≤ C * F i := hctrl i hi
+    rw [div_le_iff₀ (hFpos i hi)]
+    exact h
+  · intro hratio i hi
+    have h : target i / F i ≤ C := hratio i hi
+    rwa [div_le_iff₀ (hFpos i hi)] at h
+
+/-- **Finite-support ratio witness obstruction.**  For a positive candidate on a finite probe support,
+a single support frequency whose witness ratio exceeds `C` refutes `C`-control on that support.  This
+is the exact finite-enumeration version used by door-(iv) small-ball/window probes. -/
+theorem not_uniformControlOn_of_exists_ratio_gt_on {target F : ι → ℝ} {C : ℝ}
+    {s : Finset ι} (hFpos : ∀ i ∈ s, 0 < F i)
+    (hwit : ∃ i ∈ s, C < target i / F i) :
+    ¬ UniformControlOn s target F C := by
+  intro hctrl
+  obtain ⟨i, hi, hgt⟩ := hwit
+  have hle : target i / F i ≤ C := (uniformControlOn_iff_ratio_le_on hFpos).1 hctrl i hi
+  exact (not_lt_of_ge hle) hgt
 
 /-- **A nonzero positive target forces the control constant itself to be positive.**  If the
 candidate is positive at some frequency and the target is positive there, then any multiplicative

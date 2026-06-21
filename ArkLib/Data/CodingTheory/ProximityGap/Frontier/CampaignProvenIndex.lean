@@ -222,6 +222,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_uniformControl_iff_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_control_constant_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
@@ -2040,6 +2042,27 @@ theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_exists_ratio_gt
     hFpos hwit
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support exact ratio-envelope
+characterization: on the enumerated probe support `s`, positive-candidate control is equivalent to
+bounding every support ratio `target i / F i`. This is the finite-frequency form used by door-(iv)
+small-ball/window probes, without silently claiming control outside the measured support. -/
+theorem doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} (hFpos : ∀ i ∈ s, 0 < F i) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn s target F C
+      ↔ ∀ i ∈ s, target i / F i ≤ C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.uniformControlOn_iff_ratio_le_on
+    hFpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support ratio witness no-go: if one
+measured frequency in the probe support has ratio above `C`, then there is no `C`-control even on that
+finite support. -/
+theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} (hFpos : ∀ i ∈ s, 0 < F i)
+    (hwit : ∃ i ∈ s, C < target i / F i) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn s target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_exists_ratio_gt_on
+    hFpos hwit
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Nontrivial positive control forces the
 constant positive: if `target ≤ C·F`, `F i > 0`, and `target i > 0` at even one frequency, then
 `C > 0`. Thus positive-control support constraints require no extra sign assumption in the nonzero
@@ -3035,6 +3058,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
 #print axioms doorIV_argmaxDecoupled_uniformControl_iff_ratio_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
+#print axioms doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export
+#print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export
 #print axioms doorIV_argmaxDecoupled_control_constant_pos_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export
