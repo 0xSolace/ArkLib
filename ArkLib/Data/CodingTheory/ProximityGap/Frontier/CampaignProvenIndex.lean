@@ -86,6 +86,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_ResonatorRatioLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3899,5 +3900,45 @@ theorem doorIV_rudnev_prize_needs_r_linear_saving_export (β κ : ℝ) (r : ℕ)
 #print axioms doorIV_resonator_one_gives_moment_floor_export
 #print axioms doorIV_rudnev_theta_at_beta_four_export
 #print axioms doorIV_rudnev_prize_needs_r_linear_saving_export
+
+
+/-! ## Door-IV Lane 1 rule-3 thickness-invariance exports.
+Scope: **obstruction**.
+
+These exports make the recent near-worst coherence-deficit and half-mass rule-3 negatives permanent:
+if the thin and thick regime values of a scalar lever remain comparable within a factor below two,
+that lever cannot supply the factor-two regime separation required of a thinness-essential CORE
+route.
+-/
+
+/-- **[obstruction, DoorIVCoherenceDeficitThicknessInvariant]** If a lever's thin and thick values
+are comparable within `K < 2` and the thin value is positive, then it admits no factor-two thin-side
+separation. This is the reusable kernel behind the near-worst coherence-deficit rule-3 failure. -/
+theorem doorIV_regimeLever_not_factor2_thin_of_comparable_export
+    (L : _root_.ProximityGap.Frontier.DoorIVCoherenceDeficitThicknessInvariant.RegimeLever)
+    {K : ℝ} (hK : K < 2) (hthin_pos : 0 < L.thin)
+    (hcomp : L.Comparable K) : ¬ L.Factor2ThinSeparation :=
+  L.not_factor2_thin_of_comparable hK hthin_pos hcomp
+
+/-- **[obstruction, DoorIVCoherenceDeficitThicknessInvariant]** The exact probe-facing equivalence:
+no factor-two thin separation is the same as `thick < 2*thin`. -/
+theorem doorIV_regimeLever_no_factor2_thin_iff_export
+    (L : _root_.ProximityGap.Frontier.DoorIVCoherenceDeficitThicknessInvariant.RegimeLever) :
+    (¬ L.Factor2ThinSeparation) ↔ L.thick < 2 * L.thin :=
+  L.no_factor2_thin_iff_thick_lt_two_thin
+
+/-- **[obstruction, DoorIVCoherenceDeficitThicknessInvariant]** The half-mass companion:
+comparability within the measured factor `1.07 < 2` forbids both thin- and thick-side factor-two
+separation. The worst-`b` half-mass is therefore thickness-blind, not a thin-specific leak. -/
+theorem doorIV_halfMass_lever_not_separating_either_side_export
+    (L : _root_.ProximityGap.Frontier.DoorIVCoherenceDeficitThicknessInvariant.RegimeLever)
+    (hthin_pos : 0 < L.thin) (hthick_pos : 0 < L.thick)
+    (hcomp : L.Comparable (107 / 100 : ℝ)) :
+    (¬ L.Factor2ThinSeparation) ∧ (¬ L.Factor2ThickSeparation) :=
+  L.halfMass_lever_not_separating_either_side hthin_pos hthick_pos hcomp
+
+#print axioms doorIV_regimeLever_not_factor2_thin_of_comparable_export
+#print axioms doorIV_regimeLever_no_factor2_thin_iff_export
+#print axioms doorIV_halfMass_lever_not_separating_either_side_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
