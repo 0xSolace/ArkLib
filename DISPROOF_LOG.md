@@ -10001,3 +10001,42 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDis
 `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos` and
 `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+## [doorIV-cocycle-no-random-edge] the Jacobi cocycle gives NO dispersion edge over random phases (2026-06-21, sol)
+
+Lane: door-(iv) Lane-1 PROBE → Lane-3 constraint lemma. The SINGLE live open object
+`JacobiCocycleDispersion` (`_JacobiCocycleDispersion.lean`) has only its two ENDPOINTS proved
+(Parseval floor `M ≥ √n`, trivial-cocycle baseline `M = n`); the dispersion MAGNITUDE of the
+actual cocycle was never measured. New probe
+`scripts/probes/probe_dooriv_jacobi_cocycle_dispersion_magnitude.py` (+ `.NOTE`) measures it
+directly: exact complex `η`, PROPER `μ_n`, `p ~ n^4..n^4.3 ≫ n^3`, multiple primes per `n`,
+uniform-sampled cosets (no scan-stride bias), never `n = q-1`, `n = 16..128`.
+
+MEASURED:
+  Q1 — DISPERSES: `M/n` falls 0.84 → 0.71 → 0.51 → 0.37 across `n = 16,32,64,128`. The cocycle DOES
+       disperse the sup below the trivial concentration `n`; factor grows with `n`. (Prize plausible.)
+  Q2 — `M ~ c·n^α` with `α ≈ 0.585..0.60`; `M/√n` drifts up 3.3 → 4.2 (the `√(log m)` polylog).
+       Scaling is prize-CONSISTENT (sub-`n`, super-`√n`, polylog gap).
+  Q3 — *** `real/iid = 1.15..1.44 > 1` at every `n`, gap does not close *** (the killer). The actual
+       multiplicative Jacobi cocycle disperses the sup LESS than a random-iid-unit-phase surrogate of
+       identical count + magnitude. The cocycle gives NO dispersion edge over random phases — it is
+       marginally worse. Conservative: true full-coset real `M ≥` subsampled `M` ⟹ true `real/iid` is
+       even larger ⟹ Q3 only strengthens.
+
+VERDICT: the brief's door-(iv) Lane-1 hope (a non-moment, non-sum-product anti-concentration lever
+exploiting the MULTIPLICATIVE structure of `{b·x^m}`) is DEAD at the level of the named open object
+itself. The observed dispersion (Q1) is FULLY accounted for by generic `√`-cancellation of `n` unit
+phases (the iid surrogate disperses the same — in fact more). So the worst-case `M` is governed by the
+EXTREME-VALUE / moment distribution of `n` random-like unit phases = doors (i)+(iii), BOTH PROVEN DEAD.
+No cocycle-specific edge for an anti-concentration bound to grip. This is the object-level confirmation
+of the two newest worst-b probes (crossprime_index: worst-`b` DELOCALIZED; plateau: worst-`b` is a
+TYPICAL EXTREME-VALUE TAIL) — same verdict from the dispersion-magnitude side.
+
+NON-CLAIM: refutation-WITH-mechanism of the cocycle-non-moment-edge PROOF ROUTE. CORE
+(`M ≤ C·√(n·log(p/n))`) stays OPEN; Q1+Q2 are consistent with the prize being TRUE — but true for the
+same reason a sum of `n` random unit phases is `~√(n·log m)` (the moment / extreme-value regime = door
+(i)/(iii) = BGK). No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCocycleNoRandomEdge.lean`,
+theorems `no_cocycle_edge_of_surrogate_le`, `real_bound_transfers_to_surrogate`,
+`no_sub_surrogate_certificate`, `real_not_le_of_lt_surrogate`, `cocycle_dispersion_is_surrogate_dominated`,
+`surrogate_le_iff_no_edge` (a falsifiable iff). Axiom-clean: axioms ⊆ {propext, Classical.choice, Quot.sound}.
