@@ -151,6 +151,35 @@ admissible thin instances. This is only the arithmetic wrapper for the named mis
 def jacobiCocycleDispersionFamilyBound {ι : Type*} (M n m : ι → ℝ) (C : ℝ) : Prop :=
   ∀ i, JacobiCocycleDispersion (M i) C (n i) (m i)
 
+/-- Increasing the absolute constant preserves a pointwise Jacobi-cocycle dispersion bound. This is
+only constant bookkeeping: the nonnegative factor is the prize scale `sqrt (n log m)`, not a new
+cancellation estimate. -/
+theorem jacobiCocycleDispersion_mono_const {M C D n m : ℝ} (hCD : C ≤ D)
+    (h : JacobiCocycleDispersion M C n m) :
+    JacobiCocycleDispersion M D n m := by
+  exact le_trans h (mul_le_mul_of_nonneg_right hCD (Real.sqrt_nonneg _))
+
+/-- Uniform-family constant monotonicity for the named Jacobi-cocycle dispersion target. Once a
+family is bounded by `C`, any larger absolute constant `D` bounds it too. -/
+theorem jacobiCocycleDispersionFamilyBound_mono_const {ι : Type*} {M n m : ι → ℝ} {C D : ℝ}
+    (hCD : C ≤ D) (h : jacobiCocycleDispersionFamilyBound M n m C) :
+    jacobiCocycleDispersionFamilyBound M n m D :=
+  fun i => jacobiCocycleDispersion_mono_const hCD (h i)
+
+/-- Nonnegative constants are no loss for the uniform Jacobi-cocycle dispersion target. If some
+absolute constant works, then `max C 0` works. This pins the Door-IV capstone to the usual `O(1)`
+sign convention without adding any analytic input. -/
+theorem exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
+    {ι : Type*} {M n m : ι → ℝ} :
+    (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, jacobiCocycleDispersionFamilyBound M n m C) := by
+  constructor
+  · rintro ⟨C, _hCnonneg, hC⟩
+    exact ⟨C, hC⟩
+  · rintro ⟨C, hC⟩
+    refine ⟨max C 0, le_max_right C 0, ?_⟩
+    exact jacobiCocycleDispersionFamilyBound_mono_const (le_max_left C 0) hC
+
 /-- **Uniform bridge to Shaw values.** A single constant bounding the Jacobi-cocycle dispersion target
 throughout a family is exactly a single constant bounding the corresponding Shaw values with `L_i = log m_i`.
 This is the family-level version of the Door-IV reduction: no cancellation estimate is hidden in the wrapper. -/
@@ -234,6 +263,9 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_delta_fiber
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_offSupport_zero
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.prize_floor_iff_dispersion
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_mono_const
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_mono_const
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
