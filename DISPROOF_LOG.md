@@ -11423,3 +11423,25 @@ Lane: door-(iv) Lane 2 conditional reduction/capstone consolidation. The Hermite
 VERDICT: under the explicit measured edge-turnover model, the prize is exactly early turnover `kstar = O(log p)`. The support-bound/Gershgorin input only proves an `O(n)` turnover ceiling, so it cannot close the prize-scale gap. Conditional reduction/constraint only: the edge-turnover model and early-turnover theorem are not asserted. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_hermite_prize_iff_turnover_le_export`, `doorIV_hermite_prize_iff_turnover_le_logp_export`, `doorIV_hermite_turnover_le_free_ceiling_export`, and `doorIV_hermite_free_ceiling_insufficient_for_prize_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+
+## door-(iv) Lane 2 — Hankel/Toda form-(D) target routes back to deep moments (2026-06-21, g55)
+
+Lane: Door-IV form-(D) Jacobi/recurrence-coefficient constraint export. The proved brick
+`_AvJB_HankelRoutesToMoments` is now exported from `CampaignProvenIndex`: under the explicit
+Hankel-functional model, the bounded Jacobi target `max_k b_k` satisfies `maxb ≤ T` iff the
+associated deep-moment functional satisfies `F m ≤ T`; two configurations with the same deep-moment
+vector determine the same `maxb`; and any prize-scale Jacobi certificate is therefore a deep-moment
+statement.
+
+VERDICT: the Hankel/Toda structure reorganizes the form-(A) deep moments into the bounded Jacobi
+recurrence coefficients, but it does not bypass them. Form (D) relocates the wall to a stable object;
+without an independent theorem controlling the moment functional through depth `≈ log p`, it is not a
+new door. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or
+capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports
+`doorIV_hankelRoutes_maxb_le_iff_moment_functional_le_export`,
+`doorIV_hankelRoutes_maxb_determined_by_moments_export`, and
+`doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

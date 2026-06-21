@@ -96,6 +96,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelian
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_JacobiEdgeBoundedSupportCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HermiteTurnoverReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_TurnoverSupportGap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HankelRoutesToMoments
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2421,6 +2422,47 @@ theorem doorIV_strict_peak_Ncos_eq_one_export
       = {Quotient.mk (MulAction.orbitRel G β) b₀} :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.orbitQuot_image_argmaxSet_eq_singleton
     hb₀ hsingle
+
+
+/-! ## Door-IV Lane 2 Hankel/Toda route-to-moments exports.
+Scope: **obstruction/capstone**.
+
+These exports make the form-(D) Hankel-ratio honesty constraint permanent. The Jacobi
+recurrence target `max_k b_k` is bounded and numerically stable, but under the classical
+Hankel-functional model it is a function of the moment vector through depth `2*k*`. Thus a
+certificate for `maxb` is exactly a certificate for that deep-moment functional. The Jacobi
+repackaging relocates the wall but does not create an independent fifth door.
+-/
+
+/-- **[obstruction, HankelRoutes]** Under the Hankel-functional model, bounding the Jacobi
+recurrence target `maxb` by `T` is exactly the deep-moment sublevel statement `F m ≤ T`. -/
+theorem doorIV_hankelRoutes_maxb_le_iff_moment_functional_le_export {kstar : ℕ} {maxb T : ℝ}
+    {F : (Fin (2 * kstar + 1) → ℝ) → ℝ} {m : Fin (2 * kstar + 1) → ℝ}
+    (h : _root_.ProximityGap.Frontier.HankelRoutes.HankelFunctional kstar maxb F m) :
+    maxb ≤ T ↔ F m ≤ T :=
+  _root_.ProximityGap.Frontier.HankelRoutes.maxb_le_iff_moment_functional_le h
+
+/-- **[obstruction, HankelRoutes]** Same deep-moment vector, same Hankel functional, same `maxb`:
+the bounded Jacobi target contains no independent information beyond the moment vector it consumes. -/
+theorem doorIV_hankelRoutes_maxb_determined_by_moments_export {kstar : ℕ} {maxb maxb' : ℝ}
+    {F : (Fin (2 * kstar + 1) → ℝ) → ℝ} {m : Fin (2 * kstar + 1) → ℝ}
+    (h : _root_.ProximityGap.Frontier.HankelRoutes.HankelFunctional kstar maxb F m)
+    (h' : _root_.ProximityGap.Frontier.HankelRoutes.HankelFunctional kstar maxb' F m) :
+    maxb = maxb' :=
+  _root_.ProximityGap.Frontier.HankelRoutes.maxb_determined_by_moments h h'
+
+/-- **[obstruction, HankelRoutes]** A prize-scale Jacobi certificate routed through `maxb` is a
+deep-moment statement `F m ≤ T`. Form (D)'s bounded `b_k` object therefore routes back through
+form (A)'s deep moments rather than bypassing them. -/
+theorem doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export {kstar : ℕ} {maxb T : ℝ}
+    {F : (Fin (2 * kstar + 1) → ℝ) → ℝ} {m : Fin (2 * kstar + 1) → ℝ}
+    (h : _root_.ProximityGap.Frontier.HankelRoutes.HankelFunctional kstar maxb F m)
+    (hprize : maxb ≤ T) : F m ≤ T :=
+  _root_.ProximityGap.Frontier.HankelRoutes.prize_via_jacobi_is_moment_statement h hprize
+
+#print axioms doorIV_hankelRoutes_maxb_le_iff_moment_functional_le_export
+#print axioms doorIV_hankelRoutes_maxb_determined_by_moments_export
+#print axioms doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
