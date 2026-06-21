@@ -11234,3 +11234,26 @@ new theorem `halfMass_lever_not_separating_either_side` (a lever comparable with
 NEITHER a factor-2 thin- nor thick-separation), reusing the RegimeLever abstraction. Axioms ⊆ {propext,
 Classical.choice, Quot.sound}.
 
+
+## [floor-sqrt7-moment-ratio-r4] M ≥ √7·√n — the r=4 rung of the moment-ratio floor ladder (2026-06-21, sol)
+Lane: Lane-2 floor hardening — extend the PROVEN moment-ratio floor ladder one rung (r=4). The
+ladder `M² ≥ Aᵣ/Aᵣ₋₁` (Aᵣ = ∑_{b≠0}‖η_b‖^{2r}) gave M≥√n (Parseval r=1), √3·√n (r=2,
+`_AvFloor_MomentRatioLowerBound`), √5·√n (r=3, `_AvFloor_SqrtFiveMomentRatio`). This sweep lands the
+NEXT rung r=4 → M≥√7·√n via the SAME abstract engine `weighted_sum_le_sup'_mul_sum` (h=‖η‖², g=‖η‖⁶,
+so M²·A₃ ≥ A₄) and the SAME substrate `nonzero_moment` (Aᵣ = q·Eᵣ − n^{2r}). No new kernel machinery.
+
+PROBE (exact, reproducible): `scripts/probes/probe_444_E4_moment_ratio_sqrt7_floor.py` computes E₄(μ_n)
+= rEnergy(μ_n,4) over PROPER thin subgroups μ_n ⊆ F_p^*, p>n⁴, n|p−1, n=4..64. RESULT: E₂=3n²−3n and
+E₃=15n³−45n²+40n match the closed forms EXACTLY; E₄/(105n⁴) = 0.182,0.442,0.676,0.831,0.917 → 1 and
+A₄/A₃ → 7n (0.96 at n=64), confirming the double-factorial law Eᵣ~(2r−1)!!·nʳ (3,15,105 = 3!!,5!!,7!!).
+HONESTY: E₄ is NOT a clean degree-4 polynomial in n (large lower-order corrections), so the "→7n" value
+is recorded as ASYMPTOTIC COMPUTATIONAL EVIDENCE in the docstring, NOT an exact closed-form theorem.
+
+VERDICT: this is a FLOOR (LOWER bound) sharpening, not a CORE (UPPER bound) result — it does NOT close
+CORE. It sharpens the honest-value lower certificate from √5·√n to √7·√n, narrowing the gap to the
+conjectured √(n·log(p/n)). r=4 is the last clean integer rung below Shaw's DC-crossover cap (r₀~5). No
+CORE/cancellation/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvFloor_SqrtSevenMomentRatio.lean`, new
+theorems `eighthSum_le_sup'_sixthSum` and `energy_moment_floor_sqrt7`. Both axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}; no sorry/opaque/native_decide.
