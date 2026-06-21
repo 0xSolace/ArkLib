@@ -28,6 +28,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassEquivalence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -804,6 +807,56 @@ theorem doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_all_halfMassShaw_forms
     hK hscale hMH hHM
 
+/-! ## DoorIVObject — the single live door-(iv) open object is moment-trapped (Lane-1 close-out).
+Scope: **capstone**. The worst-frequency coset-half coherence sup of the monomial sum (the sole live
+open object of the tetrachotomy) is, in every measurement (n=16..128, multiple structured primes),
+moment-trapped: bounded below by the iid-unit-phase (extreme-value) surrogate floor `iidSup`, with the
+gap above it bounded by the additive-energy (moment) excess `Δ`. Equivalently the object sup is pinned
+to the corridor `[iidSup, iidSup + Δ]`. No non-moment, non-extreme-value slack survives. CORE stays
+open; no cancellation/anti-concentration/capacity claim. (#444, probes
+`probe_dooriv_jacobi_cocycle_dispersion_magnitude.py`, `probe_dooriv_cocycle_excess_structure.py`.) -/
+
+/-- **[capstone, DoorIVObject]** The door-(iv) object sup is pinned to the moment-corridor: under the
+no-edge floor (`iidSup ≤ realSup`) and the excess-is-moment bound (`realSup − iidSup ≤ Δ`), the real
+sup satisfies `iidSup ≤ realSup ≤ iidSup + Δ`. -/
+theorem doorIV_object_moment_corridor_export {iidSup realSup Δ : ℝ}
+    (hEdge : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup)
+    (hExcess : _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentCorridor.gap iidSup realSup ≤ Δ) :
+    iidSup ≤ realSup ∧ realSup ≤ iidSup + Δ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentCorridor.realSup_in_moment_corridor
+    hEdge hExcess
+
+/-- **[capstone, DoorIVObject]** The grand three-pillar statement of the #444 structural result: from
+the standard thin-instance positivity, the proven classical-overshoot refutations, and the two measured
+facts about the door-(iv) object, ALL THREE pillars hold simultaneously — (1) the prize ⇔ `Sh=O(1)`
+reduction, (2) the door-(iv)-only mechanism exclusion, and (3) the object moment-corridor
+`[iidSup, iidSup + Δ]`. The single citable statement: the prize is a bounded Shaw value, deliverable
+only through door (iv), whose open object is moment-trapped. CORE stays open. -/
+theorem prize_iff_shawBounded_doorIV_only_and_object_moment_trapped_export
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale (n i) (L i))
+    {nref Lref : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hclassicalOvershoots :
+      ∀ m' : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK nref Lref)
+    {iidSup realSup Δ : ℝ}
+    (hEdge : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup)
+    (hExcess :
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentCorridor.gap iidSup realSup ≤ Δ) :
+    ((∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound M n L C) ↔
+        (∃ C, 0 ≤ C ∧
+          _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound M n L C)) ∧
+      (∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale nref →
+        m.door =
+          _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation) ∧
+      (iidSup ≤ realSup ∧ realSup ≤ iidSup + Δ) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVPrizeObjectGrandCapstone.prize_iff_shawBounded_doorIV_only_and_object_moment_trapped
+    hs hnref hLref hclassicalOvershoots hEdge hExcess
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -862,4 +915,6 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms bgkScale_eq_sqrtL_mul_prizeScale_export
 #print axioms noTighterBound_secondMoment_blind_export
 #print axioms noTighterBound_from_symmetric_or_L2_export
+#print axioms doorIV_object_moment_corridor_export
+#print axioms prize_iff_shawBounded_doorIV_only_and_object_moment_trapped_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
