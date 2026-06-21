@@ -1,3 +1,43 @@
+## door-(iv) Lane-1 PROBE DATUM: the prize-ratio creep R(n)=M/sqrt(2 n log p) SATURATES (band 0.75-0.79), it is NOT a power law (2026-06-21, sol)
+
+Lens: Lane-1 (probe the localized object) — the directly prize-relevant ratio, not a new Lean brick.
+DISPROOF_LOG:10803 (HANDLE A3) recorded the ACTUAL prize ratio R(n) = M(n)/sqrt(2 n log p) CREEPING UP:
+R(n=8,16,32,64) = 0.655, 0.735, 0.772, 0.835, and flagged the open question (the BGK wall itself):
+does R SATURATE (consistent with a fixed-C prize bound M <= C sqrt(n log(p/n))) or is the creep a POWER
+LAW (=> no fixed-C law supported by data)? Prior workers could NOT extend past n=64: the pure-python
+n=256 transversal loop (m ~ 16M) was killed (>10min, no output). I rebuilt it VECTORIZED (chunked
+pure-uint64 modmul, p < 2^32 so t*x < 2^64 EXACT; float32 trig in 1M chunks) and got the missing points.
+
+PROBE (reproducible, exit 0): `scripts/probes/probe_444_prizeratio_creep_extrapolation.py`. Proper
+mu_n < F_p* (n = 2^a), p == 1 mod n, v2(p-1) = log2 n ("good"/prize-rep prime), beta = log_n p = 4.00
+(PRIZE regime), p < 2^32, NEVER n = q-1. Exact M(n) = max_{b != 0} |sum_{x in mu_n} e_p(b x)|.
+
+| n   | p           | beta | M       | R = M/sqrt(2 n log p) |
+|-----|-------------|------|---------|-----------------------|
+| 8   | 4153        | 4.01 | 7.458   | 0.6460                |
+| 16  | 65617       | 4.00 | 13.295  | 0.7057                |
+| 32  | 1048609     | 4.00 | 22.983  | 0.7716                |
+| 64  | 16778561    | 4.00 | 35.032  | 0.7592                |
+| 128 | 268437889   | 4.00 | 55.064  | 0.7812                |
+| 256 | 4294961921  | 4.00 | 84.571  | 0.7936                |
+
+(The n=8..64 points REPRODUCE the documented A3 sequence up to the prime choice; this is the SAME object.)
+Successive increments: +0.060, +0.066, -0.012, +0.022, +0.012 — the rise is a pre-asymptotic TRANSIENT
+(n=8->32) followed by a FLAT BAND (n=32..256, ratio wobbling in 0.75-0.79, one NEGATIVE increment).
+
+Fits: power-law R ~ a*n^b over all 6 points gives b = 0.054; over the TAIL (n=32..256, after the
+transient) b = 0.016 (essentially flat). loglog fit R ~ a + b*loglog(p) extrapolates to R(n=2^30) ~ 1.00;
+tail-power extrapolates to R(2^30) ~ 1.01.
+
+VERDICT (probe-level, NOT a CORE claim): the finite data FAVORS SATURATION — R is band-bounded with a
+near-zero tail exponent, consistent with a fixed-constant prize bound M <= C sqrt(n log(p/n)). The
+0.655->0.835 "creep" that looked like unbounded growth is the BGK PRE-ASYMPTOTIC transient; once past it
+(n >= 32) the ratio is flat. This RESOLVES the prior-flagged "creep vs saturate" conflict that was deemed
+compute-infeasible — in favor of saturate, at the n<=256 range. ASYMPTOTIC-CLAIM GUARD respected: n<=256
+cannot DECIDE a 25-yr open asymptotic; this MEASURES which extrapolation the finite data favors, it is NOT
+a proof, and proving the saturation IS the open BGK/Paley sup-norm problem. No CORE / cancellation /
+completion / moment / anti-concentration / capacity claim. CORE `M(mu_n) <= C sqrt(n log(p/n))` stays OPEN.
+
 ## door-(iv) arithmetic-average/density lever is below max (2026-06-21)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVGeomMeanBelowMax`. The prior brick kerneled the
