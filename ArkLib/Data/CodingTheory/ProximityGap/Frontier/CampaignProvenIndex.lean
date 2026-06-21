@@ -93,6 +93,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_JacobiEdgeBoundedSupportCeiling
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4147,5 +4148,46 @@ theorem doorIV_A5_monodromy_abelian_all_orders_export
 #print axioms doorIV_A1SOS_window_export
 #print axioms doorIV_A3_depth_order_mismatch_export
 #print axioms doorIV_A5_monodromy_abelian_all_orders_export
+
+
+/-! ## Door-IV Lane 2 Jacobi bounded-edge relocation exports.
+Scope: **capstone/obstruction**.
+
+These exports make the char-`p` Jacobi recurrence-coefficient relocation citable from the permanent
+index. The tool is real: support-bounded Jacobi coefficients give a uniformly bounded edge, unlike
+the exploding char-0 Wick edge. The honesty brake is equally real: the unconditional Gershgorin
+ceiling is only `3S`, hence support-trivial; any prize-scale improvement must use fine arithmetic
+structure of the recurrence coefficients, not the support bound alone.
+-/
+
+/-- **[capstone, JacobiBounded]** Support-bounded char-`p` Jacobi recurrence coefficients have
+uniformly bounded edge terms: `edge a b k ≤ 3S` for every level `k`. This packages the real
+relocation from an unbounded char-0 Wick edge to a bounded char-`p` object. -/
+theorem doorIV_jacobi_edge_le_three_S_export {a b : ℕ → ℝ} {S : ℝ}
+    (h : _root_.ProximityGap.Frontier.JacobiBounded.SupportBounded a b S) (k : ℕ) :
+    _root_.ProximityGap.Frontier.JacobiBounded.edge a b k ≤ 3 * S :=
+  _root_.ProximityGap.Frontier.JacobiBounded.edge_le_three_S h k
+
+/-- **[capstone, JacobiBounded]** Gershgorin consumption form: if the prize quantity `M` is
+controlled by one bounded Jacobi edge, then `M ≤ 3S`. With `S = n` this is the unconditional
+support-trivial ceiling produced by the recurrence-coefficient tool. -/
+theorem doorIV_jacobi_M_le_three_S_export {a b : ℕ → ℝ} {S M : ℝ}
+    (h : _root_.ProximityGap.Frontier.JacobiBounded.SupportBounded a b S)
+    {k₀ : ℕ} (hM : M ≤ _root_.ProximityGap.Frontier.JacobiBounded.edge a b k₀) :
+    M ≤ 3 * S :=
+  _root_.ProximityGap.Frontier.JacobiBounded.M_le_three_S h hM
+
+/-- **[obstruction, JacobiBounded]** Honesty brake: for positive support radius, the uniform
+`3S` Gershgorin ceiling is strictly above the support radius itself. Thus the unconditional bounded
+edge fact alone cannot supply the sub-radius/prize-scale cancellation; the remaining content is the
+fine arithmetic of the coefficients. -/
+theorem doorIV_jacobi_three_S_strictly_above_support_export {a b : ℕ → ℝ} {S : ℝ}
+    (h : _root_.ProximityGap.Frontier.JacobiBounded.SupportBounded a b S) (hS : 0 < S) :
+    S < 3 * S :=
+  _root_.ProximityGap.Frontier.JacobiBounded.three_S_strictly_above_support h hS
+
+#print axioms doorIV_jacobi_edge_le_three_S_export
+#print axioms doorIV_jacobi_M_le_three_S_export
+#print axioms doorIV_jacobi_three_S_strictly_above_support_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

@@ -19006,3 +19006,11 @@ Lane: door-(iv) Lane 3 constraint consolidation. The latest every-angle failure-
 VERDICT: these are refuted-lever constraints only. The SOS route lacks a positive-measure Hankel/SOS extension, the sum-product cluster is confined to vacuous depth two at beta four, and the monodromy escape remains abelian lattice-count bookkeeping with no non-abelian `sqrt(q)` term. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_A1SOS_hankel_minor2_negative_export`, `doorIV_A1SOS_window_export`, `doorIV_A3_depth_order_mismatch_export`, and `doorIV_A5_monodromy_abelian_all_orders_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-jacobi-bounded-edge-index-exports] permanent exports for char-p Jacobi bounded-edge relocation (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 capstone/constraint consolidation. The new char-p Jacobi recurrence-coefficient bounded-edge brick was proven axiom-clean but not indexed. This sweep exports the uniform support-bounded edge ceiling, its Gershgorin consumption form for `M`, and the honesty brake that `3S` remains strictly above support for `S>0`.
+
+VERDICT: the Jacobi tool genuinely relocates the half-power from an exploding char-0 Wick edge to a bounded char-p recurrence object, but the unconditional support-bound ceiling is only `M <= 3S`, hence support-trivial. Prize-scale improvement still requires fine arithmetic control of the recurrence coefficients. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_jacobi_edge_le_three_S_export`, `doorIV_jacobi_M_le_three_S_export`, and `doorIV_jacobi_three_S_strictly_above_support_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
