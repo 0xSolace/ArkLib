@@ -11032,3 +11032,13 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCrossHalfPhaseUnstructur
 VERDICT: the cross-half phase-factorization route has no hidden slack or auxiliary arithmetic content. It is precisely the task of uniformly bounding the measured real magnitude-ratio envelope `1+t_i`; if that envelope grows, the fixed single-subperiod recursion fails, and if it is bounded, that bound is the whole certificate. No CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCrossHalfPhaseUnstructured.lean`, new theorem `uniform_fixed_multiplier_iff_ratio_envelope`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-epsilon-deficit-budget] epsilon coherence saving is exactly paid by strict-triangle deficit (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVWorstBHalfMassCarriesAll`. Previous bricks pinned the index-2 half-mass factorization `M = ρ·H`, the exact deficit identity `H-M = (1-ρ)·H`, and the zero-deficit criterion for `ρ=1`. This sweep packages the quantitative epsilon form:
+
+- at positive half-mass `H = ‖A‖ + ‖B‖`, a claimed cross-half coherence saving `ρ ≤ 1 - ε` is equivalent to the strict-triangle deficit satisfying `ε·H ≤ H - ‖A+B‖`.
+
+VERDICT: an advertised epsilon saving in the worst-b cross-half route must be paid linearly by measured deficit mass. Since the worst-b probe/previous kernel gives zero deficit on the canonical split, this route cannot produce any positive epsilon saving there. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorem `coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit`, exported from `CampaignProvenIndex` as `doorIV_worstB_eps_halfMass_deficit_iff_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

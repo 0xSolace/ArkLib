@@ -142,6 +142,22 @@ theorem coherence_one_iff_zero_deficit {A B : E} (hden : 0 < ‖A‖ + ‖B‖) 
   · intro hzero
     exact (sub_eq_zero.mp hzero).symm
 
+/-- **Epsilon coherence-saving budget.**  At positive half-mass, a claimed saving
+`ρ ≤ 1 - ε` is exactly the same as paying an `ε`-fraction of the half-mass in the named
+strict-triangle deficit.  Thus an index-2 cross-half route cannot advertise an `ε` saving unless the
+measured deficit budget is at least `ε · H`; at worst `b`, the zero-deficit probe verdict rules this
+out for every positive `ε`. -/
+theorem coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit {A B : E} (hden : 0 < ‖A‖ + ‖B‖)
+    (ε : ℝ) :
+    twoPieceNormCoherence A B ≤ 1 - ε ↔
+      ε * (‖A‖ + ‖B‖) ≤ (‖A‖ + ‖B‖) - ‖A + B‖ := by
+  rw [halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass (A := A) (B := B) hden]
+  constructor
+  · intro hρ
+    nlinarith [mul_le_mul_of_nonneg_right hρ (le_of_lt hden)]
+  · intro hdef
+    nlinarith [hden, hdef]
+
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.norm_add_eq_halfMass_of_coherence_one
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.worstB_magnitude_eq_halfMass_of_sameRay
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.magnitude_eq_coherence_mul_halfMass
@@ -149,5 +165,6 @@ theorem coherence_one_iff_zero_deficit {A B : E} (hden : 0 < ‖A‖ + ‖B‖) 
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.not_sameRay_of_magnitude_lt_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_magnitude_eq_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_zero_deficit
+#print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit
 
 end ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll

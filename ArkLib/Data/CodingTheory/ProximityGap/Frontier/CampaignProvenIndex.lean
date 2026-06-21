@@ -3171,9 +3171,20 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
       ‖A + B‖ = ‖A‖ + ‖B‖ :=
   _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_magnitude_eq_halfMass
     hden
+
+/-- **[obstruction, WorstBHalfMass]** Positive-half-mass epsilon budget: a coherence saving
+`ρ ≤ 1 - ε` is exactly an `ε·H` lower bound on the strict-triangle deficit. -/
+theorem doorIV_worstB_eps_halfMass_deficit_iff_export {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E] {A B : E}
+    (hden : 0 < ‖A‖ + ‖B‖) (ε : ℝ) :
+    _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence A B ≤ 1 - ε ↔
+      ε * (‖A‖ + ‖B‖) ≤ (‖A‖ + ‖B‖) - ‖A + B‖ :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit
+    hden ε
 #print axioms doorIV_worstB_norm_add_eq_halfMass_of_coherence_one_export
 #print axioms doorIV_worstB_not_sameRay_of_magnitude_lt_halfMass_export
 #print axioms doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export
+#print axioms doorIV_worstB_eps_halfMass_deficit_iff_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export

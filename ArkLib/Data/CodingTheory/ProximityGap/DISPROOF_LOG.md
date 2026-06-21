@@ -18805,3 +18805,13 @@ This sweep adds the exact budget identity `M = ρ·H` and therefore `H - M = (1 
 VERDICT: the index-2 cross-half lever is fully budgeted. At worst `b`, probes/previous kernel give `ρ = 1`, so the cross-half loss budget is zero and all possible saving must move into the self-similar half-mass recursion. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorems `magnitude_eq_coherence_mul_halfMass` and `halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-epsilon-deficit-budget] epsilon coherence saving is exactly paid by strict-triangle deficit (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVWorstBHalfMassCarriesAll`. Previous bricks pinned the index-2 half-mass factorization `M = ρ·H`, the exact deficit identity `H-M = (1-ρ)·H`, and the zero-deficit criterion for `ρ=1`. This sweep packages the quantitative epsilon form:
+
+- at positive half-mass `H = ‖A‖ + ‖B‖`, a claimed cross-half coherence saving `ρ ≤ 1 - ε` is equivalent to the strict-triangle deficit satisfying `ε·H ≤ H - ‖A+B‖`.
+
+VERDICT: an advertised epsilon saving in the worst-b cross-half route must be paid linearly by measured deficit mass. Since the worst-b probe/previous kernel gives zero deficit on the canonical split, this route cannot produce any positive epsilon saving there. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorem `coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit`, exported from `CampaignProvenIndex` as `doorIV_worstB_eps_halfMass_deficit_iff_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
