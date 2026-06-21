@@ -11151,3 +11151,38 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. The p
 VERDICT: murmuration/density/truncated-average evidence cannot hide or manufacture adversarial worst-case upper control. An average above a threshold is only a lower witness for the max, not a mechanism bounding the worst frequency from above. Refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorems `exists_gt_of_lt_weightedMean` and `exists_gt_of_lt_weightedSubmean`; exported from `CampaignProvenIndex` as `doorIV_weightedMean_gt_forces_point_gt_export` and `doorIV_weightedSubmean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+## [doorIV-coherence-deficit-thickness-invariant] near-worst coherence DEFICIT is thickness-invariant => DEAD as a CORE lever (rule-3), 2026-06-21 (sol opus-4-8)
+
+Lane: door-(iv) Lane 1. First RULE-3 (thinness-essentiality) test applied to the NEAR-WORST coset-half
+coherence deficit object itself. Prior probes established only that AT THE EXACT argmax b*, rho(b*)≡1
+(deficit≡0, halves phase-add, no slack). The brief's measured rho≈0.89..0.99 lives in the NEAR-WORST
+(high-percentile, off-argmax) band, and the open Lane-1 question was whether THAT band's deficit has a
+non-sum-product anti-concentration structure to grip.
+
+PROBE (`scripts/probes/probe_dooriv_deficit_thickness_discriminant.py`, proper mu_n<F_p*, p>>n^3 in BOTH
+regimes, EXACT scans, uniform-random subsample (NOT strided — avoids the j-mod-d artifact that deprecated
+worstb_class_structure v1), matched coset counts m=(p-1)/n so the near-band is not sample-starved):
+ran the IDENTICAL coherence-measurement engine at THIN (beta≈4.0) and THICK (beta≈3.05, inside the
+CORE-FALSE thick window 2.3-3.2) and compared the near-worst deficit 1-rho_near(n).
+
+RESULT (decisive LARGE-n end, where asymptotics live):
+  n=64 : deficit THIN 0.006565 vs THICK 0.005748  → ratio 1.14  (INVARIANT, inside [0.5,2])
+  n=128: deficit THIN 0.007456 vs THICK 0.006320  → ratio 1.18  (INVARIANT)
+Both regimes converge to the SAME small constant deficit ≈0.006-0.0075 and the same micro-exponent.
+The apparent "discrimination" at small n=16,32 is a finite-size artifact: the thick top-decile band is
+sample-starved there (dominated by the O(log p) geometric integer head), NOT signal. argmax deficit ≡0
+in BOTH regimes (re-confirmed as a control, not a new brick).
+
+VERDICT: the near-worst coherence-deficit is THICKNESS-INVARIANT at the asymptotic end. By HARD RULE 3
+(a CORE lever must be thinness-essential; CORE is FALSE in the thick window, so any thickness-monotone
+signal is the WRONG object) the coherence-deficit is DEAD as a CORE lever — a thickness-blind quantity
+cannot certify a thinness-essential separation. This closes the LAST open Lane-1 hope that the
+NEAR-worst (not just argmax) coherence band held exploitable anti-concentration slope. The √-cancellation
+burden remains on the COLLECTIVE BGK aggregate, not the per-frequency coherence deficit. No CORE,
+cancellation, completion, moment, anti-concentration, or capacity claim; CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceDeficitThicknessInvariant.lean`,
+axiom-clean. The abstract rule-3 obstruction: a scalar lever `L : {thin,thick}→ℝ` comparable with factor
+`K<2` admits NO factor-2 thin-separation (`not_factor2_thin_of_comparable`), with the exact equivalence
+`(¬Factor2ThinSeparation) ↔ thick < 2·thin` (`no_factor2_thin_iff_thick_lt_two_thin`) and the probe-datum
+specialization at K=1.18 (`deficit_lever_not_separating`). Axioms ⊆ {propext, Classical.choice, Quot.sound}.
