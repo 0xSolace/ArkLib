@@ -98,6 +98,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HermiteTurnoverReduc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_TurnoverSupportGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HankelRoutesToMoments
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NonTensorWrapCrossResidual
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4345,5 +4346,83 @@ theorem doorIV_hermite_free_ceiling_insufficient_for_prize_export {n M kstar : �
 #print axioms doorIV_hermite_prize_iff_turnover_le_logp_export
 #print axioms doorIV_hermite_turnover_le_free_ceiling_export
 #print axioms doorIV_hermite_free_ceiling_insufficient_for_prize_export
+
+
+/-! ## Door-IV Lane 3 coset-resonator diagonal/off-diagonal localization exports.
+Scope: **obstruction/reduction**.
+
+These exports make the coset-multiplicative resonator verdict permanent. The diagonal part of any
+unit-modulus coset resonator is exactly the Parseval floor and is independent of the resonator
+coefficients. Therefore any logarithmic gain must live entirely in the off-diagonal Gauss-period
+spectral autocorrelation, i.e. in the same phase-correlation/BGK wall rather than in a free
+Euler-product diagonal contribution.
+-/
+
+/-- **[reduction, AvResonatorCand1]** The coset-resonator lower-bound engine specialized to the
+unit-coset resonator weight `‖∑ r_j φ_j(b)‖²`. This is a valid lower-bound identity for `M²`, but
+it does not by itself supply a logarithmic gain. -/
+theorem doorIV_cosetResonator_lower_bound_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type*} (ψ : AddChar F ℂ) (G : Finset F)
+    (J : Finset ι) (r : ι → ℂ) (phi : ι → F → ℂ)
+    (hne : (Finset.univ.erase (0 : F)).Nonempty) :
+    (∑ b ∈ Finset.univ.erase (0 : F),
+        ‖_root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.cosetResonator J r phi b‖ ^ 2
+          * ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2)
+      ≤ ((Finset.univ.erase (0 : F)).sup' hne
+            (fun b => ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2))
+          * (∑ b ∈ Finset.univ.erase (0 : F),
+              ‖_root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.cosetResonator J r phi b‖ ^ 2) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_lower_bound
+    ψ G J r phi hne
+
+/-- **[obstruction, AvResonatorCand1]** The diagonal numerator of any unit-modulus coset resonator
+is phase-free: it is just `‖r‖²` times the nonzero Parseval mass. Thus the resonator's diagonal part
+cannot be the source of the missing logarithm. -/
+theorem doorIV_cosetResonator_diagonal_numerator_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type*} (ψ : AddChar F ℂ) (G : Finset F)
+    (J : Finset ι) (r : ι → ℂ) (phi : ι → F → ℂ)
+    (hphi : ∀ j ∈ J, ∀ b ∈ Finset.univ.erase (0 : F), ‖phi j b‖ = 1) :
+    (∑ j ∈ J, r j * (starRingEnd ℂ) (r j)
+        * (∑ b ∈ Finset.univ.erase (0 : F),
+            phi j b * (starRingEnd ℂ) (phi j b)
+              * ((‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2 : ℝ) : ℂ)))
+      = ((∑ j ∈ J, (‖r j‖ ^ 2 : ℝ)) : ℂ)
+          * ((∑ b ∈ Finset.univ.erase (0 : F),
+                ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2 : ℝ) : ℂ) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_diagonal_numerator
+    ψ G J r phi hphi
+
+/-- **[obstruction, AvResonatorCand1]** The diagonal-only coset-resonator ratio cancels the
+coefficient mass `‖r‖²`, so it is independent of the resonator. This algebraic cancellation is the
+kernel statement behind the no-free-log verdict. -/
+theorem doorIV_cosetResonator_diagonal_ratio_export
+    {ι : Type*} (J : Finset ι) (r : ι → ℂ) (A₁ Q : ℝ)
+    (hr : 0 < ∑ j ∈ J, ‖r j‖ ^ 2) :
+    ((∑ j ∈ J, ‖r j‖ ^ 2) * A₁) / (Q * (∑ j ∈ J, ‖r j‖ ^ 2)) = A₁ / Q :=
+  _root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_diagonal_ratio J r A₁ Q hr
+
+/-- **[obstruction, AvResonatorCand1]** Instantiating the diagonal ratio with the subgroup second
+moment gives exactly the Parseval floor `(q*n - n²)/(q-1)`. Any logarithmic improvement must therefore
+come from the off-diagonal Gauss-period spectral autocorrelation, not from the diagonal resonator
+Euler product. -/
+theorem doorIV_cosetResonator_diagonal_floor_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ι : Type*} {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (J : Finset ι) (r : ι → ℂ)
+    (hr : 0 < ∑ j ∈ J, ‖r j‖ ^ 2) :
+    ((∑ j ∈ J, ‖r j‖ ^ 2)
+        * (∑ b ∈ Finset.univ.erase (0 : F),
+            ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2))
+        / (((Fintype.card F : ℝ) - 1) * (∑ j ∈ J, ‖r j‖ ^ 2))
+      = ((Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2) / ((Fintype.card F : ℝ) - 1) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_diagonal_floor
+    hψ G J r hr
+
+#print axioms doorIV_cosetResonator_lower_bound_export
+#print axioms doorIV_cosetResonator_diagonal_numerator_export
+#print axioms doorIV_cosetResonator_diagonal_ratio_export
+#print axioms doorIV_cosetResonator_diagonal_floor_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

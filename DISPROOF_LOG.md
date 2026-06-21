@@ -11485,3 +11485,11 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenInd
 `doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export`, and
 `doorIV_nonTensor_tensor_dilution_strict_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-coset-resonator-diagonal-index-exports] permanent exports for the coset-resonator diagonal/off-diagonal localization (2026-06-21, g55)
+
+Lane: Door-IV Lane 3 constraint/reduction export. The proved brick `_ResonanceLogLocalizedOffDiagonal` is now indexed from `CampaignProvenIndex`: the coset-multiplicative resonator engine is valid, its diagonal numerator is exactly phase-free Parseval mass, the diagonal ratio cancels the resonator coefficient mass, and the substrate-instantiated diagonal floor is `(q*n-n^2)/(q-1)`.
+
+VERDICT: the proposed Montgomery/Euler-product log cannot come from the diagonal of a unit-modulus coset resonator. Any logarithmic gain must live entirely in the off-diagonal Gauss-period spectral autocorrelation, which is the BGK phase-correlation wall itself. This is a localization/obstruction only, not a CORE upper bound or cancellation theorem.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_cosetResonator_lower_bound_export`, `doorIV_cosetResonator_diagonal_numerator_export`, `doorIV_cosetResonator_diagonal_ratio_export`, and `doorIV_cosetResonator_diagonal_floor_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
