@@ -110,6 +110,19 @@ theorem not_all_nonneg_of_positiveMass_pos {ψ : AddChar F ℂ} (hψ : ψ.IsPrim
   have hzero := positiveMass_zero_of_all_nonneg hψ G hG hdisj hall
   linarith
 
+/-- Local witness form of the sign-cocycle obstruction: if the same-sign/doubling branch has positive
+mass, then some frequency has an actually negative sign-cross product. This rules out interpreting the
+balance theorem as merely abstract cancellation of totals: nonzero positive alignment forces a concrete
+opposite-sign frequency in the same finite spectrum. -/
+theorem exists_negative_cross_of_positiveMass_pos {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (dilate ζ G))
+    (hpos : 0 < ∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) :
+    ∃ b : F, (eta ψ G b).re * (eta ψ G (ζ * b)).re < 0 := by
+  have hnot := not_all_nonneg_of_positiveMass_pos hψ G hG hdisj hpos
+  push_neg at hnot
+  exact hnot
+
 lemma posPart_add_negPart_eq_abs (x : ℝ) : posPart x + negPart x = |x| := by
   unfold posPart negPart
   by_cases hx : 0 ≤ x
@@ -215,6 +228,7 @@ end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_positiveMass_eq_negativeMass
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_zero_of_all_nonneg
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.exists_negative_cross_of_positiveMass_pos
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_totalParts_eq_total_doublingMass
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_le_half_card
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_le_half_card
