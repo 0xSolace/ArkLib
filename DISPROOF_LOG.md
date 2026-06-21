@@ -9984,3 +9984,20 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDis
 `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound` and
 `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound`, axiom-clean
 with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Jacobi-cocycle capstone under pointwise prize-regime positivity (2026-06-20, g55)
+
+Lane: Door-IV Lane 2 capstone extension in `_JacobiCocycleDispersion.lean`. The prior nonnegative
+absolute-constant bridge required a positive prize scale hypothesis. This refinement packages the exact
+pointwise-positive form used by thin-instance applications: if `0 < n_i` and `0 < log m_i`, then the existence
+(or nonexistence) of a nonnegative uniform Jacobi-cocycle dispersion constant is equivalent to the existence
+(or nonexistence) of a nonnegative uniform Shaw-value constant.
+
+VERDICT: the Jacobi-cocycle missing theorem is now citable directly from standard prize-regime positivity
+hypotheses. This is capstone normalization only; no CORE, cancellation, completion, moment, anti-concentration,
+or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDispersion.lean`, new theorems
+`exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos` and
+`not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

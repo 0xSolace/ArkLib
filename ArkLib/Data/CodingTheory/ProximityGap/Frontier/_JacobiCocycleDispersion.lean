@@ -205,6 +205,26 @@ theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonn
       ¬ (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) :=
   not_congr (exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs)
 
+/-- Pointwise-positive parameter form of the nonnegative Jacobi-cocycle capstone. In prize-regime
+applications one normally proves `0 < n_i` and `0 < log m_i`; this wrapper builds the positive scale
+hypothesis and exposes the same nonnegative absolute-constant equivalence directly. -/
+theorem exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos
+    {ι : Type*} {M n m : ι → ℝ} (hn : ∀ i, 0 < n i) (hlog : ∀ i, 0 < Real.log (m i)) :
+    (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) :=
+  exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound
+    (fun i => ShawValueCapstone.prizeScale_pos (hn i) (hlog i))
+
+/-- Pointwise-positive wall-facing form. Under the standard prize-regime positivity hypotheses,
+absence of a nonnegative Jacobi-dispersion absolute constant is exactly absence of a nonnegative
+Shaw-value absolute constant. -/
+theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos
+    {ι : Type*} {M n m : ι → ℝ} (hn : ∀ i, 0 < n i) (hlog : ∀ i, 0 < Real.log (m i)) :
+    ¬ (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      ¬ (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n (fun i => Real.log (m i)) C) :=
+  not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound
+    (fun i => ShawValueCapstone.prizeScale_pos (hn i) (hlog i))
+
 end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
@@ -219,3 +239,5 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos
