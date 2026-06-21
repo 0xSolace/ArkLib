@@ -28,6 +28,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVIndexFactorOvershoo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassEquivalence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
@@ -111,6 +112,10 @@ anything here; this index does not claim otherwise.
 | `doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
 | `doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
 | `doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export` | capstone | DoorIVHalfMassEquivalence |
+| `jacobiCocycleDispersion_iff_shawValue_le_export` | capstone | JacobiCocycleDispersion |
+| `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
+| `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
+| `exists_jacobiCocycleDispersionFamilyBound_iff_rawSandwich_export` | capstone | JacobiCocycleDispersion |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -807,6 +812,60 @@ theorem doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound_iff_all_halfMassShaw_forms
     hK hscale hMH hHM
 
+
+/-! ## JacobiCocycleDispersion — the named door-(iv) missing theorem, permanently indexed.
+Scope: **capstone**. The point of this section is discoverability: the #444 reduction does not
+leave an anonymous anti-concentration obligation, but the explicit predicate
+`JacobiCocycleDispersion M C n m`, exactly equivalent to a bounded Shaw value with `L = log m`.
+These exports are direct aliases of the proven Lane-2 wrappers; they do NOT prove the missing
+Jacobi dispersion theorem, and make no CORE/cancellation/completion/moment/capacity claim. -/
+
+/-- **[capstone, JacobiCocycleDispersion]** Pointwise form of the named door-(iv) target: the
+Jacobi-cocycle dispersion predicate is exactly a Shaw-value bound with logarithmic thinness
+parameter `L = log m`. -/
+theorem jacobiCocycleDispersion_iff_shawValue_le_export {M C n m : ℝ}
+    (hs : 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n (Real.log m)) :
+    _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.JacobiCocycleDispersion M C n m ↔
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue M n (Real.log m) ≤ C :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le hs
+
+/-- **[capstone, JacobiCocycleDispersion]** Uniform nonnegative-constant form under the standard
+thin-instance positivity hypotheses `0 < n_i` and `0 < log m_i`: bounded Jacobi-cocycle dispersion
+is equivalent to `Sh=O(1)`. -/
+theorem exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export
+    {ι : Type*} {M n m : ι → ℝ} (hn : ∀ i, 0 < n i) (hlog : ∀ i, 0 < Real.log (m i)) :
+    (∃ C, 0 ≤ C ∧
+      _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound M n
+          (fun i => Real.log (m i)) C) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_of_pos
+    hn hlog
+
+/-- **[capstone, JacobiCocycleDispersion]** Wall-facing uniform form: under the standard positivity
+hypotheses, failing to find any nonnegative Jacobi-dispersion constant is exactly failing to find any
+nonnegative Shaw-value constant. -/
+theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export
+    {ι : Type*} {M n m : ι → ℝ} (hn : ∀ i, 0 < n i) (hlog : ∀ i, 0 < Real.log (m i)) :
+    ¬ (∃ C, 0 ≤ C ∧
+      _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound M n m C) ↔
+      ¬ (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound M n
+          (fun i => Real.log (m i)) C) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_of_pos
+    hn hlog
+
+/-- **[capstone, JacobiCocycleDispersion]** Raw-sandwich invariance for the named Jacobi target:
+if a downstream door-(iv) quantity `H` is uniformly between `M` and `K*M`, then boundedness of
+Jacobi-cocycle dispersion transfers exactly up to constants. -/
+theorem exists_jacobiCocycleDispersionFamilyBound_iff_rawSandwich_export
+    {ι : Type*} {M H n m : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (∃ C, _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound M n m C) ↔
+      (∃ C, _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound H n m C) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_of_rawSandwich
+    hK hMH hHM
+
 /-! ## DoorIVObject — the single live door-(iv) open object is moment-trapped (Lane-1 close-out).
 Scope: **capstone**. The worst-frequency coset-half coherence sup of the monomial sum (the sole live
 open object of the tetrachotomy) is, in every measurement (n=16..128, multiple structured primes),
@@ -907,6 +966,10 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export
 #print axioms doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export
 #print axioms doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export
+#print axioms jacobiCocycleDispersion_iff_shawValue_le_export
+#print axioms exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export
+#print axioms not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export
+#print axioms exists_jacobiCocycleDispersionFamilyBound_iff_rawSandwich_export
 #print axioms two_faces_are_one_wall_export
 #print axioms noFifthDoor_forces_doorIV_export
 #print axioms prizeCertifying_subset_doorIV_export
