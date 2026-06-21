@@ -110,6 +110,30 @@ theorem coprime_order_trivial_on_mu {G H : Type*} [Group G] [Group H] [Fintype G
   rw [Nat.dvd_one] at this
   exact orderOf_eq_one_iff.mp this
 
+/-- **Concrete period consequence: a trivial twist does nothing to the period.** If the
+row-weight/character is `1` on every `x ∈ G`, the twisted period `Σ χ(x) f(x)` is exactly the
+untwisted period `Σ f(x)`. This is the period-level form of the coprime non-torsion no-go: once
+the character restricts trivially to `μ_n`, there is no new object and no new cancellation. -/
+theorem twist_period_eq_original_of_trivial {ι A : Type*} [Semiring A]
+    (G : Finset ι) (χ f : ι → A) (hχ : ∀ x ∈ G, χ x = 1) :
+    (∑ x ∈ G, χ x * f x) = ∑ x ∈ G, f x := by
+  refine Finset.sum_congr rfl ?_
+  intro x hx
+  rw [hχ x hx, one_mul]
+
+/-- **Coprime-order twist period identity.** If a multiplicative twist has image orders dividing
+`d` with `gcd(d, |G|)=1`, then it is trivial on `G`; consequently the twisted period over all of
+`G` equals the original untwisted period. This packages Fact 2 at the actual finite-sum level. -/
+theorem coprime_order_twisted_period_eq_original {G H A : Type*} [Group G] [Group H]
+    [Fintype G] [Semiring A] (χ : G →* H) {d : ℕ}
+    (hdiv : ∀ g : G, orderOf (χ g) ∣ d) (hcop : Nat.Coprime d (Fintype.card G))
+    (embed : H → A) (hembed_one : embed 1 = 1) (f : G → A) :
+    (∑ x : G, embed (χ x) * f x) = ∑ x : G, f x := by
+  refine Finset.sum_congr rfl ?_
+  intro x hx
+  have hχx : χ x = 1 := coprime_order_trivial_on_mu χ hdiv hcop x
+  rw [hχx, hembed_one, one_mul]
+
 end ArkLib.ProximityGap.Frontier.Tannakian
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx). -/
@@ -117,3 +141,5 @@ end ArkLib.ProximityGap.Frontier.Tannakian
 #print axioms ArkLib.ProximityGap.Frontier.Tannakian.twist_det_eq_zero_iff
 #print axioms ArkLib.ProximityGap.Frontier.Tannakian.twist_det_isUnit_mul
 #print axioms ArkLib.ProximityGap.Frontier.Tannakian.coprime_order_trivial_on_mu
+#print axioms ArkLib.ProximityGap.Frontier.Tannakian.twist_period_eq_original_of_trivial
+#print axioms ArkLib.ProximityGap.Frontier.Tannakian.coprime_order_twisted_period_eq_original

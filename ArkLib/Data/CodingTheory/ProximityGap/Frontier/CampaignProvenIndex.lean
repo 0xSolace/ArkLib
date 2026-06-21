@@ -2279,6 +2279,24 @@ theorem doorIV_tannakian_coprime_order_trivial_export {G H : Type*} [Group G] [G
     ∀ g : G, χ g = 1 :=
   ArkLib.ProximityGap.Frontier.Tannakian.coprime_order_trivial_on_mu χ hdiv hcop
 
+/-- **[obstruction, TannakianTwist]** If a twist is trivial on the support, the twisted period
+`Σ χ(x)f(x)` is literally the original period `Σ f(x)`. -/
+theorem doorIV_tannakian_twist_period_eq_original_export {ι A : Type*} [Semiring A]
+    (G : Finset ι) (χ f : ι → A) (hχ : ∀ x ∈ G, χ x = 1) :
+    (∑ x ∈ G, χ x * f x) = ∑ x ∈ G, f x :=
+  ArkLib.ProximityGap.Frontier.Tannakian.twist_period_eq_original_of_trivial G χ f hχ
+
+/-- **[obstruction, TannakianTwist]** A coprime-order multiplicative twist has no period-level
+effect: after embedding its values into any semiring with `1 ↦ 1`, the twisted period equals the
+untwisted period. -/
+theorem doorIV_tannakian_coprime_twisted_period_eq_original_export {G H A : Type*}
+    [Group G] [Group H] [Fintype G] [Semiring A] (χ : G →* H) {d : ℕ}
+    (hdiv : ∀ g : G, orderOf (χ g) ∣ d) (hcop : Nat.Coprime d (Fintype.card G))
+    (embed : H → A) (hembed_one : embed 1 = 1) (f : G → A) :
+    (∑ x : G, embed (χ x) * f x) = ∑ x : G, f x :=
+  ArkLib.ProximityGap.Frontier.Tannakian.coprime_order_twisted_period_eq_original
+    χ hdiv hcop embed hembed_one f
+
 #print axioms doorIV_gk_coboundary_phase_eq_export
 #print axioms doorIV_gk_nontrivial_coboundary_not_linearizable_export
 #print axioms doorIV_markoff_weighted_period_factors_export
@@ -2286,6 +2304,8 @@ theorem doorIV_tannakian_coprime_order_trivial_export {G H : Type*} [Group G] [G
 #print axioms doorIV_tannakian_twist_det_eq_export
 #print axioms doorIV_tannakian_twist_det_zero_iff_export
 #print axioms doorIV_tannakian_coprime_order_trivial_export
+#print axioms doorIV_tannakian_twist_period_eq_original_export
+#print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_of_pos_lt_export
