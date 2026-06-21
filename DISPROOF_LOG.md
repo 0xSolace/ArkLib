@@ -10452,3 +10452,16 @@ VERDICT: the dilation sign-cocycle is not a free positive alignment budget. The 
 globally paid for by equal cancellation mass. This does not bound the single worst-frequency descent
 word (the BGK/CORE wall remains), but it locks the constraint that a mass-level door-(iv) proof cannot
 keep only the same-sign side. No CORE/cancellation/completion/moment/capacity claim.
+
+### half-budget corollary for the sign-cocycle mass balance (2026-06-21, g55)
+
+Follow-up formal corollary in `Frontier/_DoorIVSignCocycleMassBalance.lean`: the total positive-plus-
+negative sign-cross mass equals the total norm cross-mass (`sign_totalParts_eq_total_doublingMass`), and
+therefore the same-sign/doubling mass is at most half the Cauchy--Schwarz budget:
+
+`Σ_b max(Re(η_b)Re(η_{ζb}),0) ≤ (|F|·|G|)/2`.
+
+This is `positiveMass_le_half_card`, obtained from exact positive/negative balance plus the already-proven
+`total_doublingMass_le`. It formalizes the older prose claim that the `+`-mass equals the `−`-mass and so
+is capped by `½ q|G|`. It is a global mass constraint only; it does not control the single adversarial
+frequency sign word, so CORE remains open.

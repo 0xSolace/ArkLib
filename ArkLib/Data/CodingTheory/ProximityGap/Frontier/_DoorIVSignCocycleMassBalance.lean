@@ -110,9 +110,54 @@ theorem not_all_nonneg_of_positiveMass_pos {ψ : AddChar F ℂ} (hψ : ψ.IsPrim
   have hzero := positiveMass_zero_of_all_nonneg hψ G hG hdisj hall
   linarith
 
+lemma posPart_add_negPart_eq_abs (x : ℝ) : posPart x + negPart x = |x| := by
+  unfold posPart negPart
+  by_cases hx : 0 ≤ x
+  · have hmx : max x 0 = x := max_eq_left hx
+    have hmneg : max (-x) 0 = 0 := max_eq_right (by linarith)
+    rw [hmx, hmneg, abs_of_nonneg hx]
+    ring
+  · have hxle : x ≤ 0 := le_of_not_ge hx
+    have hmx : max x 0 = 0 := max_eq_right hxle
+    have hmneg : max (-x) 0 = -x := max_eq_left (by linarith)
+    rw [hmx, hmneg, abs_of_nonpos hxle]
+    ring
+
+/-- The total positive-plus-negative sign-cross mass is the total norm cross-mass. Reality of the
+negation-closed child periods turns `|Re η_b · Re η_{ζb}|` into `‖η_b‖‖η_{ζb}‖`. -/
+theorem sign_totalParts_eq_total_doublingMass {ψ : AddChar F ℂ} (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) (ζ : F) :
+    (∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) +
+        (∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) =
+      ∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖ := by
+  rw [← Finset.sum_add_distrib]
+  refine Finset.sum_congr rfl (fun b _ => ?_)
+  rw [posPart_add_negPart_eq_abs, norm_eta_eq_abs_re G hG b, norm_eta_eq_abs_re G hG (ζ * b), abs_mul]
+
+/-- **Half-budget corollary.** The same-sign/doubling mass is at most half of the total Cauchy--Schwarz
+cross budget, hence at most `q·|G|/2`. This formalizes the narrative consequence of
+`sign_balance_zero` plus `total_doublingMass_le`: positive alignment mass is globally capped by an equal
+cancellation mass and cannot occupy the whole L² budget. -/
+theorem positiveMass_le_half_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0) (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) ≤
+      ((Fintype.card F : ℝ) * G.card) / 2 := by
+  set P := ∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re) with hP
+  set N := ∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re) with hN
+  set C := (Fintype.card F : ℝ) * G.card with hC
+  have hPN : P = N := by
+    rw [hP, hN]
+    exact sign_positiveMass_eq_negativeMass hψ G hG hdisj
+  have htotal : P + N ≤ C := by
+    rw [hP, hN, hC, sign_totalParts_eq_total_doublingMass G hG ζ]
+    exact total_doublingMass_le hψ G hζ
+  linarith
+
 end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posMass_eq_negMass_of_sum_zero
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_positiveMass_eq_negativeMass
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_zero_of_all_nonneg
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_totalParts_eq_total_doublingMass
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_le_half_card
