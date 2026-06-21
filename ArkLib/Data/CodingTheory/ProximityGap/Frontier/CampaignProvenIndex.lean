@@ -47,6 +47,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanish
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -158,6 +159,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_crossHalf_norm_add_eq_halfMass_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
+| `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1599,6 +1603,41 @@ theorem doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.fixed_multiplier_fails_of_ratio_gt
     ht hA h hgt
 
+/-- **[capstone, DoorIVHalfMassDilationForm]** The second coset half is exactly the same
+sub-period evaluated at the dilated frequency: `eta(gH,b)=eta(H,g*b)`. -/
+theorem doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (H : Finset F) {g b : F} (hg : g ≠ 0) :
+    _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+        (H.image (fun y => g * y)) b =
+      _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.eta_image_smul_eq_eta_dilate H hg
+
+/-- **[capstone, DoorIVHalfMassDilationForm]** On a disjoint index-two split, the full period is
+the sum of one sub-period at `b` and the same sub-period at the dilated frequency `g*b`. -/
+theorem doorIV_halfMass_eta_index_two_split_dilate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (H : Finset F) {g b : F} (hg : g ≠ 0)
+    (hdisj : Disjoint H (H.image (fun y => g * y))) :
+    _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+        (H ∪ H.image (fun y => g * y)) b =
+      _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b +
+        _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.eta_index_two_split_dilate
+    H hg hdisj
+
+/-- **[capstone, DoorIVHalfMassDilationForm]** The open half-mass burden is a bound on a single
+sub-period magnitude at two multiplicatively dilated frequencies, `b` and `g*b`. -/
+theorem doorIV_halfMass_norm_eta_le_two_dilate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (H : Finset F) {g b : F} (hg : g ≠ 0)
+    (hdisj : Disjoint H (H.image (fun y => g * y))) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+        (H ∪ H.image (fun y => g * y)) b‖ ≤
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.norm_eta_le_two_dilate H hg hdisj
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
@@ -1611,4 +1650,7 @@ theorem doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
 #print axioms doorIV_crossHalf_norm_add_eq_halfMass_export
 #print axioms doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export
 #print axioms doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
+#print axioms doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
+#print axioms doorIV_halfMass_eta_index_two_split_dilate_export
+#print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
