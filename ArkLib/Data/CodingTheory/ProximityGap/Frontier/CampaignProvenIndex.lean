@@ -38,6 +38,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSV
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvariantCoherence
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -139,6 +140,9 @@ anything here; this index does not claim otherwise.
 | `coreReduction_mStar_gt_of_BCHKS_fails_export` | capstone | CoreReductionNecessity |
 | `coreReduction_mStar_le_iff_BCHKS_export` | capstone | CoreReductionNecessity |
 | `coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export` | capstone | CoreReductionNecessity |
+| `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1165,6 +1169,55 @@ theorem dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export
     off Em Ephi target hoff_nonneg htarget_nonneg hoff_gt hCS
 
 
+/-! ## DoorIVDecompositionInvariantCoherence — partition-invariant coherence saturation.
+Scope: **obstruction**. These exports make the newest Lane-1 partition no-go permanent: if the
+underlying terms already lie on a common nonnegative ray at the adversarial frequency, then every
+partition of those terms has multi-piece coherence exactly `1`. Non-negation-stable / asymmetric /
+finer partitions cannot create a coherence saving; any useful theorem must break term-level co-ray
+alignment, i.e. the original CORE sup-norm problem. -/
+
+/-- **[obstruction, DoorIVDecompositionInvariant]** Common-ray terms group to common-ray
+block-sums under any partition map. -/
+theorem doorIV_decomposition_block_sum_common_ray_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {ι κ : Type*} [DecidableEq κ]
+    (t : Finset ι) (f : ι → E) (u : E) (c : ι → ℝ)
+    (hf : ∀ i ∈ t, f i = c i • u) (hc : ∀ i ∈ t, 0 ≤ c i)
+    (g : ι → κ) (k : κ) :
+    (∑ i ∈ t.filter (fun i => g i = k), f i)
+      = (∑ i ∈ t.filter (fun i => g i = k), c i) • u
+    ∧ 0 ≤ (∑ i ∈ t.filter (fun i => g i = k), c i) :=
+  _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.block_sum_common_ray
+    t f u c hf hc g k
+
+/-- **[obstruction, DoorIVDecompositionInvariant]** Headline partition-invariance theorem:
+common-ray term alignment forces grouped multi-piece coherence to equal `1` for every partition. -/
+theorem doorIV_decomposition_partition_invariant_coherence_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {ι κ : Type*} [DecidableEq κ]
+    (t : Finset ι) (s : Finset κ) (f : ι → E) (u : E) (c : ι → ℝ)
+    (hf : ∀ i ∈ t, f i = c i • u) (hc : ∀ i ∈ t, 0 ≤ c i)
+    (g : ι → κ) (hcover : ∀ i ∈ t, g i ∈ s)
+    (hmass : 0 < ∑ i ∈ t, c i) (hu : u ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence s
+      (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) = 1 :=
+  _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.multiPieceNormCoherence_block_eq_one_of_common_ray t s f u c hf hc g hcover hmass hu
+
+/-- **[obstruction, DoorIVDecompositionInvariant]** Constraint form: while the terms are
+common-ray aligned, no partition can certify a strict coherence bound `≤ θ < 1`. -/
+theorem doorIV_decomposition_no_partition_beats_one_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {ι κ : Type*} [DecidableEq κ]
+    (t : Finset ι) (s : Finset κ) (f : ι → E) {θ : ℝ}
+    (hθ : θ < 1)
+    (hray : ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ t, f i = c i • u) ∧ (∀ i ∈ t, 0 ≤ c i) ∧
+      0 < (∑ i ∈ t, c i) ∧ u ≠ 0)
+    (g : ι → κ) (hcover : ∀ i ∈ t, g i ∈ s) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence s
+        (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) ≤ θ :=
+  _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.no_partition_beats_one_of_common_ray_terms t s f hθ hray g hcover
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1246,4 +1299,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms coreReduction_mStar_gt_of_BCHKS_fails_export
 #print axioms coreReduction_mStar_le_iff_BCHKS_export
 #print axioms coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
+#print axioms doorIV_decomposition_block_sum_common_ray_export
+#print axioms doorIV_decomposition_partition_invariant_coherence_export
+#print axioms doorIV_decomposition_no_partition_beats_one_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
