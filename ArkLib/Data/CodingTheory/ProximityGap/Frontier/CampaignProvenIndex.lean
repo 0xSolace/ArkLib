@@ -226,6 +226,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_candidate_pos_on_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_positive_support_on_subset_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_nonpos_candidate_controlOn_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_zero_candidate_controlOn_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_control_constant_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
@@ -2086,6 +2088,28 @@ theorem doorIV_argmaxDecoupled_positive_support_on_subset_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.positiveTargetOn_subset_positiveCandidate_of_positive_controlOn
     hCpos hctrl
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support endpoint no-go: for any
+nonnegative constant `C`, if a measured support frequency has positive target value but nonpositive
+candidate value, then no `C`-control holds even on that finite support. -/
+theorem doorIV_argmaxDecoupled_no_nonpos_candidate_controlOn_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} {i : ι} (hC : 0 ≤ C) (hi : i ∈ s)
+    (hFnonpos : F i ≤ 0) (htpos : 0 < target i) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      s target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_nonpos_candidate_at_positive_target
+    hC hi hFnonpos htpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support zero endpoint: a nonnegative
+constant cannot control a positive measured target point through a candidate that vanishes at that
+support point. -/
+theorem doorIV_argmaxDecoupled_no_zero_candidate_controlOn_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} {i : ι} (hC : 0 ≤ C) (hi : i ∈ s)
+    (hFzero : F i = 0) (htpos : 0 < target i) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      s target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_zero_candidate_at_positive_target
+    hC hi hFzero htpos
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Nontrivial positive control forces the
 constant positive: if `target ≤ C·F`, `F i > 0`, and `target i > 0` at even one frequency, then
 `C > 0`. Thus positive-control support constraints require no extra sign assumption in the nonzero
@@ -3085,6 +3109,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export
 #print axioms doorIV_argmaxDecoupled_candidate_pos_on_export
 #print axioms doorIV_argmaxDecoupled_positive_support_on_subset_export
+#print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_controlOn_export
+#print axioms doorIV_argmaxDecoupled_no_zero_candidate_controlOn_export
 #print axioms doorIV_argmaxDecoupled_control_constant_pos_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export

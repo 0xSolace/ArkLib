@@ -219,6 +219,32 @@ theorem positiveTargetOn_subset_positiveCandidate_of_positive_controlOn {target 
   intro i hi
   exact candidate_pos_of_positive_controlOn_at_positive_target hCpos hctrl hi.1 hi.2
 
+/-- **Finite-support nonpositive endpoint.**  For nonnegative constants, a candidate functional that is
+nonpositive at a measured support frequency where the target is strictly positive cannot even control
+the target on the finite probe support `s`.
+
+This is the finite-enumeration endpoint companion to the ratio-envelope obstruction: if a window,
+small-ball, or coherence statistic vanishes (or goes negative after centering) at a positive target
+frequency inside the enumerated support, the proposed `C`-control is dead on the measured data itself,
+without any ambient-frequency claim. -/
+theorem not_uniformControlOn_of_nonpos_candidate_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {s : Finset ι} {i : ι} (hC : 0 ≤ C) (hi : i ∈ s)
+    (hFnonpos : F i ≤ 0) (htpos : 0 < target i) :
+    ¬ UniformControlOn s target F C := by
+  intro hctrl
+  have htarget_le_mul : target i ≤ C * F i := hctrl i hi
+  have hmul_nonpos : C * F i ≤ 0 := mul_nonpos_of_nonneg_of_nonpos hC hFnonpos
+  have htarget_nonpos : target i ≤ 0 := le_trans htarget_le_mul hmul_nonpos
+  exact (not_lt_of_ge htarget_nonpos) htpos
+
+/-- **Finite-support zero endpoint.**  A nonnegative constant cannot control a positive measured target
+point through a candidate functional that is zero at that same support point. -/
+theorem not_uniformControlOn_of_zero_candidate_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {s : Finset ι} {i : ι} (hC : 0 ≤ C) (hi : i ∈ s)
+    (hFzero : F i = 0) (htpos : 0 < target i) :
+    ¬ UniformControlOn s target F C :=
+  not_uniformControlOn_of_nonpos_candidate_at_positive_target hC hi (le_of_eq hFzero) htpos
+
 /-- **A nonzero positive target forces the control constant itself to be positive.**  If the
 candidate is positive at some frequency and the target is positive there, then any multiplicative
 control `target ≤ C·F` must have `C > 0`.  Thus the `C > 0` hypotheses in the support lemmas are not

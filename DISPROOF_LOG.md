@@ -10922,3 +10922,11 @@ Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
 `doorIV_argmaxDecoupled_candidate_pos_on_export` and
 `doorIV_argmaxDecoupled_positive_support_on_subset_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupled-finite-endpoint] finite probe support endpoint kills zero/nonpositive candidates on measured data (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint lemma extending `_DoorIVArgmaxDecouplingNoControl`. Previous finite-support bricks packaged the ratio envelope and positive-support inclusion for `UniformControlOn s target F C`. This rung locks the endpoint used by finite Lane-1 probes: for a nonnegative candidate constant `C`, if a measured support frequency `i ∈ s` has `target i > 0` while the proposed functional has `F i ≤ 0` (in particular `F i = 0`), then there is no multiplicative control even on the enumerated support `s`.
+
+VERDICT: a finite small-ball/window/coherence probe cannot rescue an argmax-decoupled functional by appealing to ambient frequencies once it vanishes or is nonpositive at a positive measured target point. The obstruction is local to the finite support and does not assert any CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorems `not_uniformControlOn_of_nonpos_candidate_at_positive_target` and `not_uniformControlOn_of_zero_candidate_at_positive_target`, with permanent exports `doorIV_argmaxDecoupled_no_nonpos_candidate_controlOn_export` and `doorIV_argmaxDecoupled_no_zero_candidate_controlOn_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
