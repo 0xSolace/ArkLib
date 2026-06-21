@@ -297,6 +297,66 @@ theorem card_group_le_superLevelFinset_of_free_sigma_orbit
       exact Finset.card_image_of_injective Finset.univ hφinj
     _ ≤ (superLevelFinset f c).card := Finset.card_le_card hsubset
 
+/-- **Actual-orbit cardinal floor.**  Even without freeness, a near-max point forces the finite
+super-level set to contain the whole image of its orbit map `g ↦ g • b`.  Thus any proposed
+worst-frequency selector must pay the cardinality of the *actual* coset fiber; stabilizers are the only
+way to shrink the coset bill below `|G|`. -/
+theorem card_orbitImage_le_superLevelFinset
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c) :
+    (Finset.univ.image (fun g : G => g • b)).card ≤ (superLevelFinset f c).card := by
+  classical
+  apply Finset.card_le_card
+  intro x hx
+  rcases Finset.mem_image.mp hx with ⟨g, _hg, rfl⟩
+  exact (mem_superLevelFinset (f := f) (c := c)).2
+    (smul_mem_superLevel_of_orbitConstant (G := G) hf c g hb)
+
+/-- **Actual signed-fiber cardinal floor.**  With sign symmetry included, a near-max point forces the
+finite super-level set to contain the full image of `g ↦ σ (g • b)`.  This is the non-free version of
+the signed coset floor: any sub-fiber-sized selector must exhibit collisions in the signed orbit map,
+not merely invoke the worst-`b` statistic. -/
+theorem card_sigmaOrbitImage_le_superLevelFinset
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f)
+    (hσ : InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c) :
+    (Finset.univ.image (fun g : G => σ (g • b))).card ≤ (superLevelFinset f c).card := by
+  classical
+  apply Finset.card_le_card
+  intro x hx
+  rcases Finset.mem_image.mp hx with ⟨g, _hg, rfl⟩
+  exact (mem_superLevelFinset (f := f) (c := c)).2
+    (sigma_smul_mem_superLevel_of_orbitConstant hf hσ c g hb)
+
+/-- Small-threshold contrapositive of the actual-orbit floor.  If a finite super-level set has
+cardinality below the actual orbit image of `b`, then `b` cannot be near-max.  This is the sharp
+selector audit hook when the action has a stabilizer: the required budget is the observed fiber size,
+not the ambient group size. -/
+theorem not_mem_superLevel_of_card_superLevelFinset_lt_orbitImage
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hcard : (superLevelFinset f c).card <
+      (Finset.univ.image (fun g : G => g • b)).card) :
+    ¬ b ∈ superLevel f c := by
+  intro hb
+  have hle := card_orbitImage_le_superLevelFinset (G := G) hf c hb
+  exact (not_lt_of_ge hle) hcard
+
+/-- Signed-fiber version of the sharp small-threshold contrapositive.  If the reported threshold set
+is smaller than the actual signed-coset image of `b`, then `b` is not in that threshold set. -/
+theorem not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f)
+    (hσ : InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hcard : (superLevelFinset f c).card <
+      (Finset.univ.image (fun g : G => σ (g • b))).card) :
+    ¬ b ∈ superLevel f c := by
+  intro hb
+  have hle := card_sigmaOrbitImage_le_superLevelFinset (G := G) hf hσ c hb
+  exact (not_lt_of_ge hle) hcard
+
 /-- Small-threshold contrapositive of the orbit-size floor.  If a finite super-level set has cardinal
 strictly smaller than `|G|`, then it contains no point whose `G`-orbit injects.  This is the audit form
 for any proposed worst-`b` selector that advertises a sub-coset-sized near-max set. -/
@@ -331,6 +391,10 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.image_sigma_smul_superLevel
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_smul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_sigma_smul
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_orbitImage_le_superLevelFinset
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_sigmaOrbitImage_le_superLevelFinset
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_orbitImage
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_sigma_orbit
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group

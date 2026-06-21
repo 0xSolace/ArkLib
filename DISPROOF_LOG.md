@@ -9938,3 +9938,20 @@ or anti-concentration claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new theorems
 `not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group` and
 `not_exists_free_sigma_orbit_mem_of_card_superLevelFinset_lt_group`, axiom-clean.
+
+## door-(iv) actual orbit-image floor for worst-b selectors (2026-06-20, g55)
+
+Lane: Door-IV Lane 1 selector-granularity constraint extending `_DoorIVWorstBCosetClosed`. Prior
+kernelized floors covered the free case (`|G|` points forced by one free orbit). This refinement removes
+the freeness over-approximation and names the exact finite obstruction: if a super-level / near-worst
+frequency set contains `b`, then it contains the whole actual image of `g ↦ g•b`; with sign symmetry it
+contains the whole image of `g ↦ σ(g•b)`. Therefore any sub-fiber-sized worst-b selector must prove real
+stabilizer or signed-fiber collisions. It cannot shrink the set by looking harder at the same
+orbit-constant statistic.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCosetClosed.lean`, new
+theorems `card_orbitImage_le_superLevelFinset`, `card_sigmaOrbitImage_le_superLevelFinset`,
+`not_mem_superLevel_of_card_superLevelFinset_lt_orbitImage`, and
+`not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`. No CORE, cancellation, completion, moment, anti-concentration,
+or capacity claim.
