@@ -34,6 +34,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrapped
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvershoot
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSVacuous
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -125,6 +126,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `trivial_cocycle_overshoots_thin_export` | obstruction | JacobiCocycleTrivialOvershoot |
 | `trivial_overshoot_gap_pos_export` | obstruction | JacobiCocycleTrivialOvershoot |
+| `allDefect_cs_floor_vacuous_export` | obstruction | JacobiCocycleAllDefectCSVacuous |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1008,6 +1010,26 @@ theorem trivial_overshoot_gap_pos_export {C n logm : ℝ}
     hn hC hlogm hthin
 
 
+/-! ## JacobiCocycleAllDefectCSVacuous — Cauchy--Schwarz has zero floor at full defect.
+Scope: **obstruction**. The k-defect deficit floor degenerates exactly in the adversarial
+all-defect regime `k = M`: its lower bound is `0`, leaving only the trivial ceiling. This locks
+Shaw's Lever-B / L²-budget refutation as a permanent indexed constraint lemma. -/
+
+/-- **[obstruction, JacobiCocycleAllDefectCSVacuous]** In the all-defect regime, the
+Cauchy--Schwarz k-defect floor is exactly zero and the only remaining consequence is the
+trivial ceiling on the phase sum. Thus the metric L²-budget route cannot certify prize-scale
+cancellation at `k = M`. -/
+theorem allDefect_cs_floor_vacuous_export (M : ℕ) (hM : 1 ≤ M) (w : Fin M → ℂ)
+    (hunit : ∀ i, ‖w i‖ = 1) :
+    ((M : ℝ) - (Finset.univ : Finset (Fin M)).card)
+        * (∑ i ∈ (Finset.univ : Finset (Fin M)), (1 - (w i).re)) / (M : ℝ) = 0
+      ∧ ‖_root_.ProximityGap.Frontier.DyadicJacobiCocycleNonContraction.phaseSum
+            (_root_.ArkLib.ProximityGap.Frontier.JacobiCocycleKDefectQuantDeficit.kDefectFamily
+              (Finset.univ : Finset (Fin M)) w)‖ ≤ (M : ℝ) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleAllDefectCSVacuous.allDefect_cs_floor_vacuous
+    M hM w hunit
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1079,4 +1101,5 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_abs_moment_bound_transfers_export
 #print axioms trivial_cocycle_overshoots_thin_export
 #print axioms trivial_overshoot_gap_pos_export
+#print axioms allDefect_cs_floor_vacuous_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
