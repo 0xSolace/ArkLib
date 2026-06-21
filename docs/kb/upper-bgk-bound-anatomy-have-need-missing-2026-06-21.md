@@ -15,19 +15,22 @@ will refine the exponent table.*
 | Parseval floor (lower) | `M ≥ √n` | proven | max ≥ RMS, `Σ_{b≠0}|η_b|²=qn−n²` |
 | **prize target** | `M ≤ C√(n log m) = n^{1/2+o(1)}` | **OPEN** | the upper BGK/Paley bound |
 | Weil / Deligne | `M ≤ (m−1)√p ≈ n^{5/4}` | proven but **vacuous** | `μ_n` is 0-dimensional ⟹ main term = the count |
-| di Benedetto–Solymosi–White | β=4 endpoint: **DISPUTED** — `n^{73/72}>n` (careful retraction) vs `n^{0.989}` (BGK-floor run) | proven shape, **endpoint exponent contested** | saving `δ(β)` affine; whether the `p^{1/72}` prefactor eats it at β=4 is unresolved |
+| di Benedetto et al. (arXiv 2003.06165) | `H^{1−31/2880+o(1)} = n^{0.989+o(1)}` for **β<4**; **β=4 is the excluded boundary** | **RESOLVED** (`_DiBenedettoBetaFourResolution`, axiom-clean) | validity is `H>p^{1/4} ⟺ β<4`; clean power of H, **no `p^{1/72}` prefactor** |
 | **BGK (sum-product)** | `M ≤ n^{1−o(1)}` | **proven (SOTA)** | Bourgain–Glibichuk–Konyagin; the only nontrivial bound at β≥4 |
 
 The gap is **`n^{1−o(1)} → n^{1/2+o(1)}`** — a full half-power. BGK is a *working* bound (a theorem),
 and the task is to drive its `o(1)` down to `1/2`.
 
-> **DISPUTE FLAG (di Benedetto at β=4):** the campaign's careful (double-)retraction computed the
-> realised bound at `p=n^4` as `n^{23/24}·p^{1/72}=n^{73/72}>n` (vacuous — the `p^{1/72}` prefactor
-> pushes it over trivial). The 2026-06-21 BGK-floor run's `_BGK_2` instead read it as
-> `δ=31/2880 ⟹ n^{2849/2880}≈n^{0.989}<n` (a tiny nontrivial saving). These conflict on the exact
-> exponent and the discrepancy is **unresolved** (it needs an exact re-derivation tracking the
-> prefactor). Either way `α≈0.99` is a full half-power above the prize, so **the conclusion is
-> unchanged**; `_BGK_2` was *excluded* from commit pending resolution.
+> **RESOLVED (di Benedetto at β=4 — `_DiBenedettoBetaFourResolution`, axiom-clean):** the actual
+> theorem (di Benedetto–Garaev–García–González-Sánchez–Shparlinski–Trujillo 2020, arXiv 2003.06165)
+> is `max_{(a,p)=1}|Σ_{x∈H}e_p(ax)| ≤ H^{1−31/2880+o(1)}` **valid for `H>p^{1/4}`** — a *clean power of
+> H, with NO `p^{1/72}` prefactor*. So the campaign's retracted `n^{73/72}>n` was a **mis-derivation**
+> (phantom prefactor); where the theorem applies the bound is genuinely `n^{0.989}<n`. The validity
+> `H>p^{1/4}` is **exactly `β<4`** (machine-checked: `n>n^{β/4} ⟺ β<4`), and at `β=4` we have
+> `H=p^{1/4}` exactly — the strict hypothesis fails. **Verdict:** di Benedetto gives `n^{0.989+o(1)}`
+> uniformly for every `β<4`, and is silent at the prize point `β=4` *for the boundary reason* (the
+> endpoint is excluded), not because the bound exceeds `n`. `α≈0.99` is a full half-power above the
+> prize, so the upper-bound conclusion is unchanged.
 
 > **DEPTH-EXPONENT LAW (proven, `_BgkDepthExponentLawBootstrapNoGo`):** a Wick-shape budget
 > `M^{2r} ≤ q·(cn)^r` at depth `r` yields the EXACT exponent `α(r) = 1/2 + β/(2r)`. So `α(β)=1`
