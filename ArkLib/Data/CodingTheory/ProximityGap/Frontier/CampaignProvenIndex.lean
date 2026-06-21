@@ -99,6 +99,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_TurnoverSupportGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HankelRoutesToMoments
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NonTensorWrapCrossResidual
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HDCocyclePhaseCoupling
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4424,5 +4425,103 @@ theorem doorIV_cosetResonator_diagonal_floor_export
 #print axioms doorIV_cosetResonator_diagonal_numerator_export
 #print axioms doorIV_cosetResonator_diagonal_ratio_export
 #print axioms doorIV_cosetResonator_diagonal_floor_export
+
+
+/-! ## Door-IV Lane 2 Hasse-Davenport cocycle phase-coupling exports.
+Scope: **conditional reduction/obstruction**.
+
+These exports make the new re-randomization-asymmetric HD cocycle machinery citable. They do not
+prove the missing contraction theorem. They pin the exact escape criterion: phase-blind or
+re-randomization-invariant functionals are average-pinned, while the HD cocycle is not invariant and
+reduces the prize to a concrete cocycle-contraction/off-diagonal-deficit input.
+-/
+
+/-- **[obstruction, HDCocycle]** Universal re-randomization no-go: a re-randomization-invariant
+functional has the same value on `u` and on any coordinatewise phase twist of `u`. Such a functional
+cannot distinguish the arithmetic Gauss phases from a randomized phase vector. -/
+theorem doorIV_hd_rerandom_invariant_forces_average_export
+    {m : ℕ} {Phi : (Fin m → ℂ) → ℝ}
+    (hPhi : _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.RerandomInvariant Phi)
+    (u eps : Fin m → ℂ) :
+    Phi (_root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.rerandom eps u) = Phi u :=
+  _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.rerandom_invariant_forces_average
+    hPhi u eps
+
+/-- **[escape criterion, HDCocycle]** The Hasse-Davenport cocycle is re-randomization-asymmetric:
+if one cocycle value is nonzero, a genuine unit-modulus phase twist breaks the same cocycle relation.
+Thus any tool that genuinely consumes the HD identity lies outside the phase-blind class. -/
+theorem doorIV_hd_cocycle_breaks_rerandom_export
+    {m : ℕ} (u : Fin m → ℂ) (dbl lag : Fin m → Fin m) (w : Fin m → ℂ)
+    (hcoc : _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.HDCocycle u dbl lag w)
+    (j0 : Fin m) (hne : w j0 * u (dbl j0) ≠ 0) :
+    ∃ eps : Fin m → ℂ,
+      (∀ j, ‖eps j‖ = 1) ∧
+        ¬ _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.HDCocycle
+          (_root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.rerandom eps u) dbl lag w := by
+  refine ⟨fun _ => -1, ?_, ?_⟩
+  · intro j
+    norm_num [Complex.normSq]
+  · intro hbad
+    have h := hbad j0
+    simp only [_root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.rerandom] at h
+    have horig := hcoc j0
+    have hzero : (2 : ℂ) * (w j0 * u (dbl j0)) = 0 := by
+      have e : (-1 : ℂ) * u j0 * ((-1 : ℂ) * u (lag j0)) = u j0 * u (lag j0) := by
+        ring
+      rw [e, horig] at h
+      linear_combination h
+    have h2 : (w j0 * u (dbl j0)) = 0 := by
+      rcases mul_eq_zero.mp hzero with h' | h'
+      · norm_num at h'
+      · exact h'
+    exact hne h2
+
+/-- **[identity, HDCocycle]** The exact self-similarity: under the HD cocycle, the bilinear lag
+sum `Σ_j (u_j u_lag(j)) z_j` collapses termwise to the twisted linear sum
+`Σ_j (w_j u_dbl(j)) z_j`. -/
+theorem doorIV_hd_selfSimilarity_is_linear_in_phases_export
+    {m : ℕ} (u : Fin m → ℂ) (dbl lag : Fin m → Fin m) (w z : Fin m → ℂ)
+    (hcoc : _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.HDCocycle u dbl lag w) :
+    ∑ j, (u j * u (lag j)) * z j = ∑ j, (w j * u (dbl j)) * z j :=
+  _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.selfSimilarity_is_linear_in_phases
+    u dbl lag w z hcoc
+
+/-- **[conditional reduction, HDCocycle]** A per-level cocycle contraction telescopes down the
+2-adic tower: if every `S (a+1) ≤ theta*S a` and `S` is nonnegative, then
+`S a ≤ theta^a*S 0`. This is the transfer-operator spectral-radius shape of the proposed route. -/
+theorem doorIV_hd_doubling_defect_telescope_export
+    {theta : ℝ} {S : ℕ → ℝ} (hS : ∀ a, 0 ≤ S a)
+    (hc : _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.CocycleContraction theta S) :
+    ∀ a, S a ≤ theta ^ a * S 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.doubling_defect_telescope hS hc
+
+/-- **[conditional reduction, HDCocycle]** If the cocycle contraction telescope clears the target
+budget at depth `a`, then the level-`a` worst-frequency sup meets that target. The only remaining
+input is the contraction theorem itself. -/
+theorem doorIV_hd_prizeSup_of_cocycleContraction_export
+    {theta : ℝ} {S : ℕ → ℝ} {a : ℕ} {target : ℝ}
+    (hS : ∀ a, 0 ≤ S a)
+    (hc : _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.CocycleContraction theta S)
+    (hbudget : theta ^ a * S 0 ≤ target) :
+    S a ≤ target :=
+  _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.prizeSup_of_cocycleContraction
+    hS hc hbudget
+
+/-- **[reduction, HDCocycle]** One contraction step follows from the exact self-similarity value
+`S(a+1)=T` plus an off-diagonal deficit `T≤theta*S(a)`. This exposes the missing theorem as a
+worst-frequency cocycle-twisted off-diagonal bound, not a moment or completion estimate. -/
+theorem doorIV_hd_contractionStep_of_offDiagonalDeficit_export
+    {theta : ℝ} {S : ℕ → ℝ} {a : ℕ} {T : ℝ}
+    (hSS : S (a + 1) = T) (hdef : T ≤ theta * S a) :
+    S (a + 1) ≤ theta * S a :=
+  _root_.ArkLib.ProximityGap.Frontier.HDCocyclePhaseCoupling.contractionStep_of_offDiagonalDeficit
+    hSS hdef
+
+#print axioms doorIV_hd_rerandom_invariant_forces_average_export
+#print axioms doorIV_hd_cocycle_breaks_rerandom_export
+#print axioms doorIV_hd_selfSimilarity_is_linear_in_phases_export
+#print axioms doorIV_hd_doubling_defect_telescope_export
+#print axioms doorIV_hd_prizeSup_of_cocycleContraction_export
+#print axioms doorIV_hd_contractionStep_of_offDiagonalDeficit_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

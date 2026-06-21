@@ -11524,3 +11524,11 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseCo
 axiom-clean. Theorems: `eta_zero`, `norm_eta_zero_sq`, `secondMoment_nonzero` (the exact
 `∑_{b≠0}‖η_b‖² = qd − d²`), `not_phaseCoherentUniform_of_prizeRegime`. Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-hd-cocycle-phase-coupling-index-exports] permanent exports for the Hasse-Davenport cocycle reduction (2026-06-21, g55)
+
+Lane: Door-IV Lane 2/3 conditional reduction export. The proved brick `_HDCocyclePhaseCoupling` is now indexed from `CampaignProvenIndex`: re-randomization-invariant phase functionals are average-pinned, the HD cocycle is re-randomization-asymmetric, the bilinear lag sum collapses to a twisted linear sum under the cocycle, and a per-level cocycle contraction telescopes to the target if its budget is strong enough.
+
+VERDICT: this does not prove CORE. It makes the escape-or-relocate statement citable: phase-blind/magnitude-only methods stay pinned to the Parseval/random average, while the HD identity escapes that class but relocates the prize to the explicit cocycle-contraction/off-diagonal-deficit theorem. The contraction `theta<1` is not asserted.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_hd_rerandom_invariant_forces_average_export`, `doorIV_hd_cocycle_breaks_rerandom_export`, `doorIV_hd_selfSimilarity_is_linear_in_phases_export`, `doorIV_hd_doubling_defect_telescope_export`, `doorIV_hd_prizeSup_of_cocycleContraction_export`, and `doorIV_hd_contractionStep_of_offDiagonalDeficit_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
