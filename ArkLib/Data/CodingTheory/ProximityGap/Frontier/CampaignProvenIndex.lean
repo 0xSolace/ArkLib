@@ -131,6 +131,8 @@ anything here; this index does not claim otherwise.
 | `strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_export` | capstone | ShawValue |
 | `exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound_export` | capstone | ShawValue |
 | `not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound_export` | capstone | ShawValue |
+| `exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound_export` | capstone | ShawValue |
+| `not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
 | `shawValue_clean_corridor_width_eq_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
@@ -773,6 +775,30 @@ theorem not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamil
     ¬ (∃ C, _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound M n L C) ↔
       ¬ (∃ C, _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictShawValueFamilyBound M n L C) :=
   _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound hs
+
+/-- **[capstone, ShawValue]** Nonnegative strict-family form of the Lane-2 reduction: with positive
+pointwise prize scale, existence of one nonnegative absolute strict raw-prize constant is exactly
+existence of one nonnegative absolute strict Shaw-value constant. Pure normalization bookkeeping. -/
+theorem exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound_export
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale (n i) (L i)) :
+    (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound M n L C) ↔
+      (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictShawValueFamilyBound M n L C) :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound hs
+
+/-- **[capstone, ShawValue]** Wall-facing nonnegative strict-family form: failure of every
+nonnegative absolute strict raw-prize constant is exactly failure of every nonnegative absolute strict
+Shaw-value constant. Pure normalization bookkeeping for strict-margin obstructions. -/
+theorem not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound_export
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale (n i) (L i)) :
+    ¬ (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound M n L C) ↔
+      ¬ (∃ C, 0 ≤ C ∧
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictShawValueFamilyBound M n L C) :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound hs
 
 /-- **[capstone, ShawValue]** THE Lane-2 corridor. For the actual primitive-character Gauss-period
 worst frequency `M(μ_n) = worstPeriod ψ G` in the thin prize regime `q ≥ 2n` (automatic at
@@ -2379,6 +2405,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_export
 #print axioms exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound_export
 #print axioms not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound_export
+#print axioms exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound_export
+#print axioms not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
 #print axioms shawValue_clean_corridor_width_eq_export
 #print axioms shawValue_bracket_width_eq_sqrt_export

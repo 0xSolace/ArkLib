@@ -205,6 +205,68 @@ theorem not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamil
   not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound
     (fun i => prizeScale_pos (hn i) (hL i))
 
+/-- Monotonicity of the strict raw family constant: increasing the absolute constant preserves a
+strict raw prize family bound, because the prize scale is nonnegative pointwise. -/
+theorem strictRawPrizeFamilyBound_mono_const {ι : Type*} {M n L : ι → ℝ} {C D : ℝ}
+    (hs : ∀ i, 0 ≤ prizeScale (n i) (L i)) (hCD : C ≤ D)
+    (hC : strictRawPrizeFamilyBound M n L C) :
+    strictRawPrizeFamilyBound M n L D := by
+  intro i
+  exact lt_of_lt_of_le (hC i) (mul_le_mul_of_nonneg_right hCD (hs i))
+
+/-- Monotonicity of the strict normalized Shaw-value constant. -/
+theorem strictShawValueFamilyBound_mono_const {ι : Type*} {M n L : ι → ℝ} {C D : ℝ}
+    (hCD : C ≤ D) (hC : strictShawValueFamilyBound M n L C) :
+    strictShawValueFamilyBound M n L D := by
+  intro i
+  exact lt_of_lt_of_le (hC i) hCD
+
+/-- Nonnegative-constant form of the strict Lane-2 capstone.  Under positive prize scale, existence
+of an absolute strict raw prize constant is equivalent to existence of a nonnegative absolute strict
+raw prize constant: replace any witness `C` by `max C 0`. -/
+theorem exists_nonneg_strictRawPrizeFamilyBound_iff_exists_strictRawPrizeFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∃ C, 0 ≤ C ∧ strictRawPrizeFamilyBound M n L C) ↔
+      (∃ C, strictRawPrizeFamilyBound M n L C) := by
+  constructor
+  · rintro ⟨C, _hCnonneg, hC⟩
+    exact ⟨C, hC⟩
+  · rintro ⟨C, hC⟩
+    refine ⟨max C 0, le_max_right C 0, ?_⟩
+    exact strictRawPrizeFamilyBound_mono_const (fun i => le_of_lt (hs i)) (le_max_left C 0) hC
+
+/-- Nonnegative-constant form for strict Shaw values: any strict bounded family has a nonnegative
+strict bounding constant, again by replacing `C` with `max C 0`. -/
+theorem exists_nonneg_strictShawValueFamilyBound_iff_exists_strictShawValueFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} :
+    (∃ C, 0 ≤ C ∧ strictShawValueFamilyBound M n L C) ↔
+      (∃ C, strictShawValueFamilyBound M n L C) := by
+  constructor
+  · rintro ⟨C, _hCnonneg, hC⟩
+    exact ⟨C, hC⟩
+  · rintro ⟨C, hC⟩
+    refine ⟨max C 0, le_max_right C 0, ?_⟩
+    exact strictShawValueFamilyBound_mono_const (le_max_left C 0) hC
+
+/-- **Nonnegative strict-uniform Lane-2 capstone.**  Under positive prize scale, a strict raw prize
+family has a nonnegative absolute constant exactly when the strict normalized Shaw-value family has
+one.  This is the sign-normalized strict-margin version of `prize ⇔ Sh(n)=O(1)`. -/
+theorem exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    (∃ C, 0 ≤ C ∧ strictRawPrizeFamilyBound M n L C) ↔
+      (∃ C, 0 ≤ C ∧ strictShawValueFamilyBound M n L C) := by
+  rw [exists_nonneg_strictRawPrizeFamilyBound_iff_exists_strictRawPrizeFamilyBound hs,
+    exists_nonneg_strictShawValueFamilyBound_iff_exists_strictShawValueFamilyBound,
+    exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound hs]
+
+/-- Wall-facing nonnegative strict capstone.  Failure of every nonnegative strict raw prize constant
+is exactly failure of every nonnegative strict Shaw-value constant. -/
+theorem not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    ¬ (∃ C, 0 ≤ C ∧ strictRawPrizeFamilyBound M n L C) ↔
+      ¬ (∃ C, 0 ≤ C ∧ strictShawValueFamilyBound M n L C) :=
+  not_congr (exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound hs)
+
 /-- Existential constant form of the uniform-family capstone: there is an absolute raw prize constant
 iff there is an absolute normalized Shaw-value constant, with the same witness. -/
 theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} {M n L : ι → ℝ}
@@ -792,6 +854,12 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound_mono_const
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictShawValueFamilyBound_mono_const
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_strictRawPrizeFamilyBound_iff_exists_strictRawPrizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_strictShawValueFamilyBound_iff_exists_strictShawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_strictRawPrizeFamilyBound_iff_exists_nonneg_strictShawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_nonneg_strictRawPrizeFamilyBound_iff_not_exists_nonneg_strictShawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound
