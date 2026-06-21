@@ -18839,3 +18839,11 @@ Lane: door-(iv) Lane 1 / Lane 3 constraint refinement of `_DoorIVCoherenceSatura
 VERDICT: saturation turns every finite half-mass excess witness into a direct no-go for that proposed prize constant. This is a constraint lemma only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSaturationInsufficient.lean`, new theorem `not_prizeBound_of_saturation_and_halfMass_gt`, exported from `CampaignProvenIndex` as `doorIV_coherenceSaturation_halfMass_excess_refutes_prize_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-weighted-average-below-max] weighted density / truncation averages still lie below worst-case max (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. The previous brick pinned the average-not-max obstruction for uniform arithmetic means and geometric/Mahler means. This sweep strengthens the density/murmuration side to arbitrary finite probability and subprobability weights.
+
+VERDICT: changing the averaging measure does not create a worst-case max bound. If `lam i ≤ M` entrywise and `w_i ≥ 0` has total mass `1`, then `Σ w_i lam_i ≤ M`; if the total mass is only `≤ 1` and `0 ≤ M`, the same bound holds. Thus weighted murmuration densities, sampled conjugacy-class averages, and truncated averaging windows remain lower-resolution average-side objects. They cannot by themselves control the adversarial worst frequency `M = max_b |η_b|`. Refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorems `weightedMean_le_max` and `weightedSubmean_le_max`; exported from `CampaignProvenIndex` as `doorIV_weightedMean_le_max_export` and `doorIV_weightedSubmean_le_max_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

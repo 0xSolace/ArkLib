@@ -86,6 +86,36 @@ theorem arithMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ) {M
     div_le_div_of_nonneg_right hsum (le_of_lt hcardpos)
   simpa [mul_comm, ne_of_gt hcardpos] using hdiv
 
+/-- **Weighted average ≤ max.**  Any probability-weighted average of entries bounded by `M` is
+bounded by the same `M`.  This is the exact finite form of the density/no-transfer obstruction:
+changing the averaging measure (murmuration weights, sampled conjugacy classes, or a biased literature
+statistic) still leaves the object below the adversarial worst-case maximum. -/
+theorem weightedMean_le_max (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) = 1)
+    {M : ℝ} (hM : ∀ i ∈ s, lam i ≤ M) :
+    ∑ i ∈ s, w i * lam i ≤ M := by
+  calc
+    ∑ i ∈ s, w i * lam i ≤ ∑ i ∈ s, w i * M :=
+      Finset.sum_le_sum (fun i hi => mul_le_mul_of_nonneg_left (hM i hi) (hw_nonneg i hi))
+    _ = (∑ i ∈ s, w i) * M := by rw [Finset.sum_mul]
+    _ = M := by simp [hw_sum]
+
+/-- **Subprobability weighted average ≤ max.**  If the nonnegative weights have total mass at most
+one and `0 ≤ M`, a weighted density statistic is still bounded by `M`.  This covers truncated or
+partial averaging windows: losing mass cannot turn an average-side lever into a worst-case max lever. -/
+theorem weightedSubmean_le_max (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) ≤ 1)
+    {M : ℝ} (hM_nonneg : 0 ≤ M) (hM : ∀ i ∈ s, lam i ≤ M) :
+    ∑ i ∈ s, w i * lam i ≤ M := by
+  have hweighted : ∑ i ∈ s, w i * lam i ≤ (∑ i ∈ s, w i) * M := by
+    calc
+      ∑ i ∈ s, w i * lam i ≤ ∑ i ∈ s, w i * M :=
+        Finset.sum_le_sum (fun i hi => mul_le_mul_of_nonneg_left (hM i hi) (hw_nonneg i hi))
+      _ = (∑ i ∈ s, w i) * M := by rw [Finset.sum_mul]
+  have hmass : (∑ i ∈ s, w i) * M ≤ 1 * M :=
+    mul_le_mul_of_nonneg_right hw_sum hM_nonneg
+  simpa using le_trans hweighted hmass
+
 /-- **Geometric mean ≤ max (the Mahler / log-average no-transfer constraint).**  For a nonempty
 finset `s` and nonnegative `lam` with entrywise bound `lam i ≤ M` (so `0 ≤ M`), the geometric mean
 satisfies `(∏_{i∈s} lam i)^{1/card s} ≤ M`.
@@ -119,4 +149,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.prod_le_max_pow_card
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.sum_le_card_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedMean_le_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedSubmean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max
