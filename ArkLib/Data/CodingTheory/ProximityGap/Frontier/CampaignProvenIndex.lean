@@ -68,6 +68,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZDegreeEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWeight2QuadformGcd
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVArgmaxDecouplingNoControl
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCollisionExcessPigeonhole
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -207,6 +208,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_argmaxDecoupled_const_ge_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_absolute_const_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_collision_defect_eq_zero_iff_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
+| `doorIV_collision_defect_pos_iff_not_injOn_export` | obstruction | DoorIVCollisionExcessPigeonhole |
 | `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_sixPoint_vacuous_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_m33_eq_wick_export` | obstruction | DoorIVTripleCorrelationVanishes |
@@ -1833,6 +1836,21 @@ theorem doorIV_argmaxDecoupled_no_absolute_const_export {ι N : Type*}
       (target n) (F n) C :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_absolute_constant_of_unbounded_ratio
     hFpos hunbdd
+/-- **[obstruction, DoorIVCollisionExcessPigeonhole]** Collision-free mod-`p` reduction is
+exactly injectivity on the char-0 source classes. The zero-defect regime is therefore an elementary
+no-merge certificate, not a phase-coherence estimate. -/
+theorem doorIV_collision_defect_eq_zero_iff_injOn_export {α β : Type*} [DecidableEq β]
+    (s : Finset α) (f : α → β) :
+    s.card - (s.image f).card = 0 ↔ Set.InjOn f s :=
+  _root_.ProximityGap.Frontier.DoorIVCollisionExcessPigeonhole.defect_eq_zero_iff_injOn s f
+
+/-- **[obstruction, DoorIVCollisionExcessPigeonhole]** Positive collision excess is exactly
+non-injectivity of the reduction map on the source classes. Thus `Ψ₀ - Ψ_p > 0` certifies a merge
+witness only; by itself it is not a cancellation or CORE upper-bound lever. -/
+theorem doorIV_collision_defect_pos_iff_not_injOn_export {α β : Type*} [DecidableEq β]
+    (s : Finset α) (f : α → β) :
+    0 < s.card - (s.image f).card ↔ ¬ Set.InjOn f s :=
+  _root_.ProximityGap.Frontier.DoorIVCollisionExcessPigeonhole.defect_pos_iff_not_injOn s f
 
 /-- **[obstruction, door-(iv) Lane-1]** The STRICT worst-frequency peak is a SINGLE coset
 (`Ncos(τ→0)=1`).  For an orbit-constant statistic `f` (the `μ_n`-invariant `|η_·|`) whose maximum
@@ -2742,6 +2760,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_const_ge_ratio_export
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
 #print axioms doorIV_argmaxDecoupled_no_absolute_const_export
+#print axioms doorIV_collision_defect_eq_zero_iff_injOn_export
+#print axioms doorIV_collision_defect_pos_iff_not_injOn_export
 #print axioms doorIV_sixPoint_lever_vacuous_export
 #print axioms doorIV_correlation_hierarchy_no_lever_export
 #print axioms doorIV_correlation_hierarchy_closed_through_six_export

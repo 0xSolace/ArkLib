@@ -117,4 +117,36 @@ theorem image_card_le_min {β : Type*} [DecidableEq β] [Fintype β]
     (s.image φ).card ≤ min s.card (Fintype.card β) :=
   le_min (image_card_le_source s φ) (image_card_le_codomain s φ)
 
+/-- Collision-free reduction is exactly injectivity of the reduction map on the char-0 classes.
+This is the probe-facing form for the dilute `N_r ≪ p` regime: zero defect is not a phase
+coherence estimate; it is precisely the elementary no-two-classes-merge condition. -/
+theorem defect_eq_zero_iff_injOn {β : Type*} [DecidableEq β]
+    (s : Finset α) (φ : α → β) :
+    s.card - (s.image φ).card = 0 ↔ Set.InjOn φ s := by
+  rw [Nat.sub_eq_zero_iff_le]
+  constructor
+  · intro h
+    have hle : (s.image φ).card ≤ s.card := image_card_le_source s φ
+    have heq : (s.image φ).card = s.card := le_antisymm hle h
+    exact (Finset.card_image_iff).mp heq
+  · intro h
+    have heq : (s.image φ).card = s.card := Finset.card_image_of_injOn h
+    rw [heq]
+
+/-- Positive collision excess is exactly non-injectivity on the source classes. Thus the formal
+content of `Ψ₀ - Ψ_p > 0` is a merge/collision witness, not an independent cancellation bound. -/
+theorem defect_pos_iff_not_injOn {β : Type*} [DecidableEq β]
+    (s : Finset α) (φ : α → β) :
+    0 < s.card - (s.image φ).card ↔ ¬ Set.InjOn φ s := by
+  rw [Nat.pos_iff_ne_zero]
+  exact not_congr (defect_eq_zero_iff_injOn s φ)
+
+#print axioms image_card_le_source
+#print axioms image_card_le_codomain
+#print axioms defect_ge_of_source_gt_card
+#print axioms defect_pos_of_source_gt_card
+#print axioms image_card_le_min
+#print axioms defect_eq_zero_iff_injOn
+#print axioms defect_pos_iff_not_injOn
+
 end ProximityGap.Frontier.DoorIVCollisionExcessPigeonhole

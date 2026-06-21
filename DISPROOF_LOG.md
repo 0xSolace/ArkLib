@@ -10697,3 +10697,23 @@ it does not bound M(n)). CORE stays OPEN.
 
 Probe: `scripts/probes/probe_dooriv_witness_ratio_growth.py` (+ `.NOTE` with the n=256 sampling caveat).
 Backing kernel: `_DoorIVArgmaxDecouplingNoControl.lean` (commit 434795470).
+## [doorIV-collision-excess-injectivity-iff] collision defect is exactly non-injectivity, not a phase lever (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCollisionExcessPigeonhole`. The prior kernel
+proved the pure cardinality ceilings `Ψ_p ≤ Ψ_0` and `Ψ_p ≤ p`, and the probe verdict showed the
+subset-sum collision excess is a thinness-essential but wrong-direction lever. This sweep adds the exact
+probe-facing iff:
+
+* `Ψ_0 - Ψ_p = 0` iff the reduction map is injective on the char-0 source classes.
+* `0 < Ψ_0 - Ψ_p` iff the reduction map is not injective on those classes.
+
+VERDICT: positive collision excess is precisely a merge/collision witness. Zero defect in the dilute
+`N_r ≪ p` regime is precisely a no-merge certificate. Neither statement supplies phase coherence,
+cancellation, completion, moment-saving, or a CORE upper bound. The collision-excess route remains a
+cardinality/injectivity obstruction, not a live door-(iv) anti-concentration lever.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCollisionExcessPigeonhole.lean`,
+new theorems `defect_eq_zero_iff_injOn` and `defect_pos_iff_not_injOn`, exported from
+`CampaignProvenIndex` as `doorIV_collision_defect_eq_zero_iff_injOn_export` and
+`doorIV_collision_defect_pos_iff_not_injOn_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
