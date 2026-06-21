@@ -54,6 +54,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetCountSingleton
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -1401,6 +1402,36 @@ theorem doorIV_decomposition_no_partition_beats_one_export
         (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) ≤ θ :=
   _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.no_partition_beats_one_of_common_ray_terms t s f hθ hray g hcover
 
+/-- **[obstruction, door-(iv) Lane-1]** The STRICT worst-frequency peak is a SINGLE coset
+(`Ncos(τ→0)=1`).  For an orbit-constant statistic `f` (the `μ_n`-invariant `|η_·|`) whose maximum
+value `Mval` is attained at `b₀`, IF every strict maximizer lies in the orbit `G • b₀` (the measured
+fact `Ncos(2%)=1`, n=16,32,64), then the exact argmax set is PRECISELY that single orbit.  The worst
+frequency peak is isolated, not spread; any door-(iv) Lane-1 'spread the worst-b set' slack lives only
+in the near-peak shell `τ>0` = a moment average = dead door (i). -/
+theorem doorIV_strict_peak_single_coset_export
+    {G : Type*} [Group G] {β : Type*} [MulAction G β] {f : β → ℝ}
+    (hf : _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.OrbitConstant (G := G) f)
+    {Mval : ℝ} {b₀ : β} (hb₀ : f b₀ = Mval)
+    (hsingle : _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet f Mval
+      ⊆ MulAction.orbit G b₀) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet f Mval
+      = MulAction.orbit G b₀ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet_eq_single_orbit
+    hf hb₀ hsingle
+
+/-- **[obstruction, door-(iv) Lane-1]** Every strict maximizer is a coset translate of `b₀`:
+`f b = Mval ↔ ∃ g, g • b₀ = b`.  No NEW arithmetic frequency outside the one peak coset is ever a
+strict maximizer — the worst-b selector is coset-blind at the peak. -/
+theorem doorIV_strict_maximizer_iff_translate_export
+    {G : Type*} [Group G] {β : Type*} [MulAction G β] {f : β → ℝ}
+    (hf : _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.OrbitConstant (G := G) f)
+    {Mval : ℝ} {b₀ : β} (hb₀ : f b₀ = Mval)
+    (hsingle : _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet f Mval
+      ⊆ MulAction.orbit G b₀) (b : β) :
+    f b = Mval ↔ ∃ g : G, g • b₀ = b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.isMaximizer_iff_translate
+    hf hb₀ hsingle b
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1892,4 +1923,6 @@ theorem doorIV_levelWorst_base_corrected_of_gate_export
 #print axioms doorIV_gateThreshold_strictly_above_clean_export
 #print axioms doorIV_levelWorst_base_step_two_export
 #print axioms doorIV_levelWorst_base_corrected_of_gate_export
+#print axioms doorIV_strict_peak_single_coset_export
+#print axioms doorIV_strict_maximizer_iff_translate_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
