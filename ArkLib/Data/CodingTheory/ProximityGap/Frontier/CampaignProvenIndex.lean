@@ -48,6 +48,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
@@ -165,6 +166,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_sign_positiveMass_eq_negativeMass_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_not_all_nonneg_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_gappedMinor125_159_eq_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
@@ -1645,6 +1648,40 @@ theorem doorIV_halfMass_norm_eta_le_two_dilate_export
         ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.norm_eta_le_two_dilate H hg hdisj
 
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** The positive same-sign/doubling cross-mass
+is exactly balanced by the negative opposite-sign/cancellation cross-mass. This is the indexed
+mass-level constraint behind the real dilation sign-cocycle: the `+` branch is not a free budget. -/
+theorem doorIV_sign_positiveMass_eq_negativeMass_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G)) :
+    (∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) =
+      ∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negPart
+        ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+          (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re)) :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.sign_positiveMass_eq_negativeMass
+    hψ G hG hdisj
+
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** Nonzero positive same-sign mass rules out
+a globally nonnegative sign cocycle. Any nontrivial doubling mass forces an opposite-sign/cancelling
+contribution somewhere else; the remaining open problem is only the single worst-frequency word. -/
+theorem doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G))
+    (hpos : 0 < ∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) :
+    ¬ ∀ b : F, 0 ≤
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
+    hψ G hG hdisj hpos
+
 /-- **[obstruction, DoorIVAlgebraicFloorCyclotomicWall]** The concrete `μ₁₆` gapped minor
 (rows `(1,2,5)`, powers `(1,5,9)`) vanishes under the dyadic relation `ζ^8=-1`. This is the
 formal cyclotomic wall behind the algebraic-floor probe: generic nonzero-minor reasoning is not
@@ -1705,6 +1742,8 @@ theorem doorIV_levelWorst_le_prize_budget_of_xgate_export
 #print axioms doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
 #print axioms doorIV_halfMass_eta_index_two_split_dilate_export
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
+#print axioms doorIV_sign_positiveMass_eq_negativeMass_export
+#print axioms doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
 #print axioms doorIV_gappedMinor125_159_eq_zero_export
 #print axioms doorIV_not_gappedMinor125_159_ne_zero_export
 #print axioms doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
