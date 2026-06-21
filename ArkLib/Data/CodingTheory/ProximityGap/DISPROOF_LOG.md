@@ -18815,3 +18815,12 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVWorstBHalfMassCarriesAll
 VERDICT: an advertised epsilon saving in the worst-b cross-half route must be paid linearly by measured deficit mass. Since the worst-b probe/previous kernel gives zero deficit on the canonical split, this route cannot produce any positive epsilon saving there. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorem `coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit`, exported from `CampaignProvenIndex` as `doorIV_worstB_eps_halfMass_deficit_iff_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+
+## [doorIV-coherence-saturation-halfmass-excess] measured over-budget half-mass refutes prize under saturation (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1 / Lane 3 constraint refinement of `_DoorIVCoherenceSaturationInsufficient`. The prior brick transferred the prize burden under worst-b coherence saturation (`M=H`) to the half-mass bound `H ≤ C·prizeScale n L`. This sweep adds the probe-facing contrapositive: if the measured half-mass exceeds the prize target, then the corresponding prize bound for `M` fails. Once `ρ(b*)=1`, cross-half coherence cannot rescue an over-budget half-mass.
+
+VERDICT: saturation turns every finite half-mass excess witness into a direct no-go for that proposed prize constant. This is a constraint lemma only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSaturationInsufficient.lean`, new theorem `not_prizeBound_of_saturation_and_halfMass_gt`, exported from `CampaignProvenIndex` as `doorIV_coherenceSaturation_halfMass_excess_refutes_prize_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

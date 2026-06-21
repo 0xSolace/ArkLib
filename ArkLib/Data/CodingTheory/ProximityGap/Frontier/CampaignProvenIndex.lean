@@ -3233,6 +3233,20 @@ theorem doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export {C n L 
   _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.prizeTarget_lt_trivial_ceiling
     hscale hC0 hC1
 
+/-- **[obstruction, CoherenceSaturationInsufficient]** Under coherence saturation, any measured
+half-mass excess over the prize target immediately refutes the corresponding prize bound for `M`.
+This is the contrapositive probe-facing form: once `ρ(b*) = 1`, cross-half coherence cannot rescue an
+over-budget half-mass. -/
+theorem doorIV_coherenceSaturation_halfMass_excess_refutes_prize_export {M H C n L : ℝ}
+    (hsat : M = H)
+    (hH : C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L < H) :
+    ¬ M ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L := by
+  intro hM
+  have hHle : H ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L :=
+    (_root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.prizeBound_iff_halfMassBound_of_saturation
+      hsat).mp hM
+  exact not_le_of_gt hH hHle
+
 /-- **[obstruction, CoherenceSaturationInsufficient]** Coherence-insufficiency transfer capstone:
 at coherence saturation (`M = H`) with the trivial ceiling (`H ≤ n`) in the thin prize regime
 (`prizeScale n L < n`), for any prize constant `0 < C ≤ 1` the prize-shaped bound is exactly a
@@ -3256,6 +3270,7 @@ theorem doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_expor
 #print axioms doorIV_worstB_eps_halfMass_deficit_iff_export
 #print axioms doorIV_coherenceSaturation_prizeBound_iff_halfMassBound_export
 #print axioms doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export
+#print axioms doorIV_coherenceSaturation_halfMass_excess_refutes_prize_export
 #print axioms doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_export
 
 /-- **[obstruction, FractionalMomentNoMaxGain]** The moment-to-max envelope multiplier `c^{1/r}`

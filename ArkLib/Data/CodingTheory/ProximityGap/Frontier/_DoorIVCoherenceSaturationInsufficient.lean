@@ -108,6 +108,18 @@ theorem prizeTarget_lt_trivial_ceiling {C n L : ℝ}
     _ = prizeScale n L := one_mul _
     _ < n := hscale
 
+/-- **Measured half-mass excess is a direct obstruction under saturation.**  If coherence is
+saturated (`M = H`) and the half-mass exceeds the prize target `C·prizeScale n L`, then the prize
+bound for `M` fails.  This is the probe-facing contrapositive of the transfer equivalence: once
+`ρ(b*) = 1`, no cross-half coherence term can rescue an over-budget half-mass. -/
+theorem not_prizeBound_of_saturation_and_halfMass_gt {M H C n L : ℝ}
+    (hsat : M = H) (hH : C * prizeScale n L < H) :
+    ¬ M ≤ C * prizeScale n L := by
+  intro hM
+  have hHle : H ≤ C * prizeScale n L :=
+    (prizeBound_iff_halfMassBound_of_saturation hsat).mp hM
+  exact not_le_of_gt hH hHle
+
 /-- **Coherence-insufficiency transfer (door-(iv) Lane 1 capstone of this file).**  Suppose at the
 worst frequency the coset-half coherence is saturated (`M = H`), the half-mass obeys the trivial
 ceiling (`H ≤ n`), and we are in the thin prize regime (`prizeScale n L < n`).  Then for any prize
@@ -132,5 +144,7 @@ theorem coherenceSaturation_transfers_to_strict_subTrivial_halfMass
 
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient
 
+#print axioms
+  ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.not_prizeBound_of_saturation_and_halfMass_gt
 #print axioms
   ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.coherenceSaturation_transfers_to_strict_subTrivial_halfMass
