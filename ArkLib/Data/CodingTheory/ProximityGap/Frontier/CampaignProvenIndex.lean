@@ -2465,6 +2465,16 @@ theorem doorIV_descent_Z_card_le_degBound_export {F : Type*} [Field F] [Decidabl
       ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
   _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_card_le_degBound hR B
 
+/-- **[descent, ZLagrangeBound]** Indicator-sum exponent-controlled form matching the
+summed `A + Z` notation: the `Z` indicator sum obeys the same G1→G2 exponent budget. -/
+theorem doorIV_descent_Z_indicator_sum_le_degBound_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F}
+    (hR : _root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (∑ y ∈ B, (if (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2 then 1 else 0))
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_indicator_sum_le_degBound hR B
+
 /-- **[descent, even-spine]** Global symmetric backbone: summing the even fibre identity over the
 base gives exactly twice the lower-level agreement count. -/
 theorem doorIV_descentAgreement_even_eq_two_mul_export {F : Type*} [Field F] [DecidableEq F]
@@ -2478,6 +2488,7 @@ theorem doorIV_descentAgreement_even_eq_two_mul_export {F : Type*} [Field F] [De
 #print axioms doorIV_descent_Z_card_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_card_le_degBound_export
+#print axioms doorIV_descent_Z_indicator_sum_le_degBound_export
 #print axioms doorIV_descentAgreement_even_eq_two_mul_export
 
 /-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
