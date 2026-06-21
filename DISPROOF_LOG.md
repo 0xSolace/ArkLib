@@ -10678,3 +10678,22 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDeco
 (`doorIV_argmaxDecoupled_const_ge_ratio_export`, `doorIV_argmaxDecoupled_no_control_below_ratio_export`,
 `doorIV_argmaxDecoupled_no_absolute_const_export`), axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-witness-ratio-growth] the small-ball witness ratio R(n)=|η(b*)|/C(b*) GROWS ~n^0.88 — small-ball control is DEAD (2026-06-21, sol)
+
+Lane: door-(iv) Lane-1 probe instantiating kernel 434795470 (`_DoorIVArgmaxDecouplingNoControl`).
+The kernel proves a uniform control `|η_b| ≤ K·C_b` forces `K ≥ |η(b*)|/C(b*)` at the prize-worst
+frequency b*, and an unbounded family ratio rules out every absolute constant. This probe MEASURES
+that ratio (EXACT complex sums, proper μ_n<F_p*, p≫n³, p≡1 mod n, never n=q-1, FULL enum n=16..128):
+
+  R(16)=1.15, R(32)=2.87, R(64)=8.29, R(128)=13.22 (monotone), fit R(n)~n^0.876.
+  (n=256 sub-sampled => conservative lower bound R(256)≥11.2; growth conclusion is not inflated.)
+
+VERDICT: the witness ratio GROWS super-linearly in √n (R/√n: 0.29→1.04→1.17). The unbounded-ratio
+hypothesis of the decoupling kernel is EMPIRICALLY INSTANTIATED for the small-ball/window-occupancy
+functional: no absolute constant K satisfies `|η|≤K·C` across the family. The small-ball control is
+DEAD, not merely decoupled. Refutation-with-mechanism. NO CORE bound (this kills a candidate LEVER,
+it does not bound M(n)). CORE stays OPEN.
+
+Probe: `scripts/probes/probe_dooriv_witness_ratio_growth.py` (+ `.NOTE` with the n=256 sampling caveat).
+Backing kernel: `_DoorIVArgmaxDecouplingNoControl.lean` (commit 434795470).
