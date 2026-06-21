@@ -159,6 +159,25 @@ theorem reflection_bound_second_half {a : ℕ → ℂ} {h : ℕ}
     _ ≤ R1 a h + R1 a h := add_le_add (norm_half_le_R1 a h) (norm_S_le_R1 hm)
     _ = 2 * R1 a h := by ring
 
+/-- Endpoint specialization of the antipodal reflection identity:
+`η_b = S_{2h} = S_h + conj(S_h)`.  This isolates the endpoint obstruction created by the
+reflection lane: even the full period is controlled only through the half-period partial Gauss sum. -/
+theorem endpoint_reflection_id {a : ℕ → ℂ} {h : ℕ}
+    (hanti : AntipodalIncrements a h) :
+    endpoint a (2 * h) = S a h + (starRingEnd ℂ) (S a h) := by
+  unfold endpoint
+  rw [show 2 * h = h + h by omega]
+  exact antipodal_reflection_id hanti (le_refl h)
+
+/-- Endpoint-only consequence of reflection: `‖η_b‖ ≤ 2·R₁`.  This is still a wall
+certificate, not a prize bound, because `R₁` contains the half-period partial Gauss sum itself. -/
+theorem endpoint_norm_le_two_R1 {a : ℕ → ℂ} {h : ℕ}
+    (hanti : AntipodalIncrements a h) :
+    ‖endpoint a (2 * h)‖ ≤ 2 * R1 a h := by
+  unfold endpoint
+  rw [show 2 * h = h + h by omega]
+  exact reflection_bound_second_half hanti (le_refl h)
+
 /-- **The full reflection majorant `R ≤ 2·R₁`** on `[0, 2h]` (`n = 2h`).
 Any partial sum index `k ≤ 2h` is either `≤ h` (bounded by `R₁`) or of the form `h+m` with `m ≤ h`
 (bounded by `2·R₁` via reflection).  Since `R₁ ≥ ‖S_0‖ = 0 ≥ 0`, `R₁ ≤ 2·R₁`, so the sup is
@@ -203,6 +222,8 @@ theorem dir9_reflection_reduces : DIR9ReflectionReducesToWall :=
 
 -- Axiom audit (must be {propext, Classical.choice, Quot.sound} — no sorryAx).
 #print axioms antipodal_reflection_id
+#print axioms endpoint_reflection_id
+#print axioms endpoint_norm_le_two_R1
 #print axioms reflection_bound_two_R1
 #print axioms endpoint_le_R
 #print axioms dir9_reflection_reduces

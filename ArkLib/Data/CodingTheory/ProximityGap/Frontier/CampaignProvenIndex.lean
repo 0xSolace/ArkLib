@@ -223,6 +223,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_orderedWalk_endpoint_le_maximalExcursion_export` | obstruction | DoorIVOrderedWalkMajorant |
 | `doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export` | obstruction | DoorIVOrderedWalkMajorant |
 | `doorIV_avDIR9Reflection_endpoint_le_R_export` | obstruction | AvDIR9Reflection |
+| `doorIV_avDIR9Reflection_endpoint_id_export` | obstruction | AvDIR9Reflection |
+| `doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_bound_two_R1_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_reduces_export` | obstruction | AvDIR9Reflection |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3612,6 +3614,25 @@ theorem doorIV_avDIR9Reflection_endpoint_le_R_export (a : ℕ → ℂ) (n : ℕ)
       _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R a n :=
   _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint_le_R a n
 
+/-- **[obstruction, AvDIR9Reflection]** Endpoint specialization of the antipodal reflection
+identity: the full endpoint is `S_h + conj(S_h)`, so the reflection lane exposes the half-period
+partial Gauss sum rather than eliminating it. -/
+theorem doorIV_avDIR9Reflection_endpoint_id_export {a : ℕ → ℂ} {h : ℕ}
+    (hanti : _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.AntipodalIncrements a h) :
+    _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint a (2 * h) =
+      _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.S a h +
+        (starRingEnd ℂ) (_root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.S a h) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint_reflection_id hanti
+
+/-- **[obstruction, AvDIR9Reflection]** Endpoint-only reflection bound `‖η_b‖ ≤ 2·R₁`.
+This is a wall certificate, not a prize upper bound, because `R₁` contains the half-period partial
+Gauss sum. -/
+theorem doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export {a : ℕ → ℂ} {h : ℕ}
+    (hanti : _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.AntipodalIncrements a h) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint a (2 * h)‖ ≤
+      2 * _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R1 a h :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint_norm_le_two_R1 hanti
+
 /-- **[obstruction, AvDIR9Reflection]** Exact antipodal reflection gives the full-walk maximal
 function bound `R(2h) ≤ 2 R₁(h)`. Iterating this bound loses cancellation and recurses into the
 half-scale Gauss-sum wall, so it is a reduction certificate rather than a prize upper bound. -/
@@ -3675,6 +3696,8 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_avDIR9_pairAntisym_sum_zero_export
 #print axioms doorIV_avDIR9_majorant_reduces_export
 #print axioms doorIV_avDIR9Reflection_endpoint_le_R_export
+#print axioms doorIV_avDIR9Reflection_endpoint_id_export
+#print axioms doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export
 #print axioms doorIV_avDIR9Reflection_bound_two_R1_export
 #print axioms doorIV_avDIR9Reflection_reduces_export
 #print axioms doorIV_jacAutocorr_wienerKhinchin_export
