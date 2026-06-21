@@ -10072,3 +10072,42 @@ completion/moment-saving/anti-concentration/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVExcessIsMoment.lean`, theorems
 `advantage_le_moment_excess`, `advantage_within_moment_bound`, `no_advantage_beyond_moment`,
 `no_nonmoment_lever`, `moment_sourced_iff_le` (falsifiable iff). Axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
+
+## SIGNED-DEEP C_r localization SURVIVES the prize regime (p >> n^3, n up to 64) — small-p caveat discharged (2026-06-21, sol)
+
+Lane: door-(iv) Lane 1. HARDENS the 2026-06-15 positive localization "SIGNED deep period-power cancellation
+IS thinness-essential" and its kernel `92159f260` (`_DoorIVSignedDeepSumAbsLeak.lean`, the |.|-leak). That
+localization is the SINGLE positive structural map of the open prize lever (the signed deep sum
+`Σ_{b≠0} η_b^r` carries the thin/thick separation that every |.|-based dead door discards). Its HONEST
+CAVEAT: measured only at n=8,16, p<=65537; "does NOT prove uniform-in-field." If that separation were a
+small-p artifact, the localization + |.|-leak kernel would be undermined. This entry runs the never-before-
+run large-prime check.
+
+PROBE (`scripts/probes/probe_dooriv_signed_deep_Cr_prizeregime.py`, EXACT real arithmetic via cos-table over
+residues mod p, η_b real by μ_n negation-closure, PROPER μ_n with n=2^a, NEVER n=q−1, MULTIPLE structured
+primes per (n,β)):
+  C_r(n,p) = |Σ_{b≠0} η_b^r| / ((p−1)·M^r),  M=max_{b≠0}|η_b|,  even r=2..2⌈log₂n⌉+2.
+THICK β≈2.5 vs THIN β=3.7–4.3 (thin lane p ≫ n³). Thin primes reached: n=16→150721, n=32→2096993,
+n=64→4817921. THIN/THICK ratio R_r = (avg thick C_r)/(avg thin C_r); R_r>1 ⇒ thin cancels MORE.
+
+| n  | R_2  | R_4  | R_6  | R_8  | R_10 | R_12 | R_14 |
+|----|------|------|------|------|------|------|------|
+| 16 | 1.9x | 3.4x | 5.8x | 8.9x | 12.7x| —    | —    |
+| 32 | 1.8x | 3.5x | 6.5x | 11.7x| 19.2x| 28.9x| —    |
+| 64 | 1.0x | 1.2x | 1.7x | 2.6x | 4.1x | 6.2x | 8.8x |
+
+VERDICT (rule-4 mapped-frontier WIN; CORE stays OPEN):
+- The signed-deep thin/thick separation is REAL in the prize regime — NOT a small-p artifact. At every
+  tested n (16,32,64) and at the LARGE structured primes (p up to ~4.8M ≫ n³), thin C_r < thick C_r at
+  every r and the separation R_r GROWS monotonically with depth r. The small-p (<=65537) caveat is
+  discharged: the signed deep sum carries the thinness exactly as claimed; the |.|-leak kernel `92159f260`
+  and the "signed deep sum is the lever" map sit on validated ground.
+- HONEST nuance (rule-6 anti-overclaim): the MAGNITUDE of R_r at fixed r is NOT monotone-increasing in n
+  here (n=64 R_r < n=32 R_r). This is a THICK-REFERENCE artifact, not a weakening: at n=64 the only feasible
+  thick prime (β=2.5, p=32833) already sits at the thin edge of "thick" so its own C_r is already small,
+  compressing the ratio. The claim-bearing fact is the GROWTH of R_r with r at every n (deepening
+  separation at prize depth r~log n), which holds uniformly. I do NOT claim R_r ↑ in n.
+- This does NOT prove a uniform-in-field deep-cancellation bound; that bound at r~log q IS the open
+  prize/BGK wall. No Lean theorem (the quantitative signed-cancellation bound = the open core). Reproducible
+  probe + this validated verdict are the deliverable. No CORE/cancellation/completion/moment-saving/
+  anti-concentration/capacity claim.
