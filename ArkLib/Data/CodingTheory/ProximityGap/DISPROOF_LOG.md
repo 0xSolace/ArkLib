@@ -18958,3 +18958,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVOrderedWal
 axiom-clean. New theorems: `corePrizeBoundOn_endpoint_of_orderedWalkMajorant`,
 `shawOOne_endpoint_of_orderedWalkMajorant`, and `not_corePrizeBoundOn_radius_of_endpoint_not_core`.
 Axioms are contained in `{propext, Classical.choice, Quot.sound}`.
+
+### finite maximal-prefix scaffold consumes into the prize predicate (2026-06-21)
+
+Follow-up to the ordered-walk/Doob exact-formulation target. The prior finite scaffold
+`maximalExcursion S N = max_{k≤N} ‖S k‖` proves `‖S N‖ ≤ maximalExcursion S N`; the capstone now
+composes that scaffold with `CorePrizeBoundOn`/`ShawOOneOn`. Thus a uniform prize-scale bound for the
+actual ordered maximal-prefix object transfers to endpoint periods, and conversely endpoint failure
+precludes such a maximal-prefix bound.
+
+VERDICT: this locks the concrete consumption interface for DIR9. The only unresolved content is an
+analytic ordered-walk maximal inequality strong enough at worst `b*`. No new cancellation/CORE/capacity
+claim.
+
+Formal additions: `corePrizeBoundOn_endpoint_of_maximalExcursion_bound`,
+`shawOOne_endpoint_of_maximalExcursion_bound`,
+`not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core`, plus two CampaignProvenIndex exports.

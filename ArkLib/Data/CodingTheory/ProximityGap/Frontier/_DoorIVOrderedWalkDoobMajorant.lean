@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors (#444)
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 
 set_option linter.style.longLine false
 
@@ -67,9 +68,58 @@ theorem not_corePrizeBoundOn_radius_of_endpoint_not_core {ι E : Type*} [Seminor
   intro hR
   exact hnot (corePrizeBoundOn_endpoint_of_orderedWalkMajorant hdom hR)
 
+/-- Concrete DIR9 consumer for the finite maximal-prefix scaffold already formalized as
+`maximalExcursion`: a prize-scale theorem for the ordered prefix maximum transfers directly to the
+endpoint period. -/
+theorem corePrizeBoundOn_endpoint_of_maximalExcursion_bound {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
+    (hR : CorePrizeBoundOn q n
+      (fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+        (S i) (N i))) :
+    CorePrizeBoundOn q n (fun i : ι => ‖S i (N i)‖) := by
+  exact corePrizeBoundOn_endpoint_of_orderedWalkMajorant
+    (endpoint := fun i : ι => S i (N i))
+    (R := fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+      (S i) (N i))
+    (fun i => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_norm_le_maximalExcursion
+      (S i) (N i)) hR
+
+/-- Positive-scale Shaw-value version of the concrete finite maximal-prefix consumer. -/
+theorem shawOOne_endpoint_of_maximalExcursion_bound {ι E : Type*} [SeminormedAddCommGroup E]
+    {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i))
+    (hR : CorePrizeBoundOn q n
+      (fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+        (S i) (N i))) :
+    ShawOOneOn q n (fun i : ι => ‖S i (N i)‖) := by
+  exact shawOOne_endpoint_of_orderedWalkMajorant
+    (endpoint := fun i : ι => S i (N i))
+    (R := fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+      (S i) (N i)) hscale
+    (fun i => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_norm_le_maximalExcursion
+      (S i) (N i)) hR
+
+/-- Contrapositive concrete DIR9 form: if endpoint periods are not prize-bounded, the finite ordered
+maximal prefix excursion cannot be prize-bounded either. -/
+theorem not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
+    (hnot : ¬ CorePrizeBoundOn q n (fun i : ι => ‖S i (N i)‖)) :
+    ¬ CorePrizeBoundOn q n
+      (fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+        (S i) (N i)) := by
+  exact not_corePrizeBoundOn_radius_of_endpoint_not_core
+    (endpoint := fun i : ι => S i (N i))
+    (R := fun i : ι => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+      (S i) (N i))
+    (fun i => ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_norm_le_maximalExcursion
+      (S i) (N i)) hnot
+
 end ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant
 
 #print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.endpoint_norm_le_radius
 #print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.corePrizeBoundOn_endpoint_of_orderedWalkMajorant
 #print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.shawOOne_endpoint_of_orderedWalkMajorant
 #print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_radius_of_endpoint_not_core
+#print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.corePrizeBoundOn_endpoint_of_maximalExcursion_bound
+#print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.shawOOne_endpoint_of_maximalExcursion_bound
+#print axioms ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core

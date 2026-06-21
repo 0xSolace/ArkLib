@@ -3469,6 +3469,31 @@ theorem doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export {ι E :
   _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_radius_of_endpoint_not_core
     hdom hnot
 
+/-- **[capstone, OrderedWalkDoobMajorant]** Concrete finite-prefix DIR9 consumer: a prize-scale
+bound for the ordered maximal excursion `max_{k≤N_i} ‖S_i k‖` transfers to the endpoint periods
+`‖S_i N_i‖`. This composes the finite prefix-max scaffold with the Shaw prize predicate. -/
+theorem doorIV_orderedWalk_corePrize_endpoint_of_maximalExcursion_export {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
+    (hR : _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+        (S i) (N i))) :
+    _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => ‖S i (N i)‖) :=
+  _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.corePrizeBoundOn_endpoint_of_maximalExcursion_bound
+    hR
+
+/-- **[obstruction, OrderedWalkDoobMajorant]** Concrete contrapositive: if the endpoint periods are
+not prize-bounded, then the finite ordered maximal-prefix excursion cannot be prize-bounded either. -/
+theorem doorIV_orderedWalk_not_maximalExcursion_bound_of_endpoint_not_bound_export {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
+    (hnot : ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => ‖S i (N i)‖)) :
+    ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion
+        (S i) (N i)) :=
+  _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core
+    hnot
+
 /-- **[obstruction, StepanovAtBstar]** Per-`b*` Stepanov supplies only the counting inequality:
 if a nonzero auxiliary vanishes to order `M` on the major-arc set `B`, then `M * |B| ≤ deg F`. -/
 theorem doorIV_stepanov_bstar_bound_export {F : Type*} [Field F]
@@ -3497,6 +3522,8 @@ theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_orderedWalk_corePrize_endpoint_of_majorant_export
 #print axioms doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export
+#print axioms doorIV_orderedWalk_corePrize_endpoint_of_maximalExcursion_export
+#print axioms doorIV_orderedWalk_not_maximalExcursion_bound_of_endpoint_not_bound_export
 #print axioms doorIV_stepanov_bstar_bound_export
 #print axioms doorIV_bstar_saving_iff_degenerate_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
