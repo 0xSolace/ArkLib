@@ -10184,3 +10184,33 @@ VERDICT (rule-6 re-audit PASS; 630e2198f STANDS):
   measured one: thin-vs-thick, the M-normalized signed sum cancels more in thin.
 - Does NOT bound M (the uniform-in-field deep signed-cancellation bound IS the open prize/BGK wall). No
   CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+## The odd signed deep sum A_r is SIGN-RIGID (negative) in the thin regime — no alternating-series lever (2026-06-21, sol)
+
+Lane: door-(iv) Lane 1, sharpening the ODD-r localization (commits 630e2198f/39dd95cb4). The open wall is
+A_r = Sum_{b!=0} eta_b^r = q*W_r - n^r small at r~log q (signedPeriodPow identity; the cancellation lives
+at ODD r). The odd-profile entry (DISPROOF 1790) established A_r = -n^r RIGID below d_odd. UNMAPPED hope:
+BEYOND d_odd (W_r>0), does A_r FLIP SIGN / OSCILLATE across odd r in the thin regime? A genuine alternating-
+series structure would be a lever an odd-r cancellation argument could grip (distinct from magnitude).
+
+PROBE (`scripts/probes/probe_dooriv_odd_signedsum_sign.py`, EXACT real arithmetic, THIN mu_n beta>=3.7
+p>>n^3, PROPER mu_n, NEVER n=q-1, multiple structured primes). sign(A_r) and |A_r|/n^r (1=rigidity floor):
+  n=16 p=65521: -1.00 -1.00 -1.00 -1.00 -0.95 -0.86            (r=3..13: SIGN-RIGID negative, magnitude relaxing)
+  n=32 p=1048609/897: - - - then |A_r|/n^r -> ~0 by r=13-15   (sign-rigid until magnitude hits the noise floor)
+  n=64 p=4817921: -1.00 -1.00 -0.41 -0.09 -0.01 -0.00 (r=3..13) then |A_r|/n^r ~ 0 (r=15,17 sign = noise at 0)
+  n=16 p=65537 (Fermat): r5..r13 shows +4.0 -- the KNOWN Fermat finite-size artifact (p/n=4096); the other
+    n=16 prime 65521 is cleanly sign-rigid, so the "+" is NOT real structure (consistent with all prior
+    65537 artifact flags).
+
+VERDICT (rule-4 mapped wall; closes the oscillation hope; CORE OPEN):
+- A_r is SIGN-RIGID (negative) in the thin regime. The deep cancellation is a MONOTONE magnitude
+  relaxation of the -n^r rigidity floor toward 0 (|A_r|/n^r: 1 -> 0 smoothly), NOT an alternating-series
+  oscillation. Every apparent sign "flip" occurs only where |A_r|/n^r ~ 0 (the value is numerically zero,
+  sign is noise) or at the Fermat artifact prime 65537. At the clean large primes (n=64, p~4.8M) the sign
+  stays - until the magnitude vanishes.
+- CONSEQUENCE for an odd-r lever: it must bound a SIGN-DEFINITE quantity decaying smoothly to zero (q*W_r
+  approaching n^r from below, A_r = q*W_r - n^r <= 0 relaxing to 0), NOT exploit sign alternation. The
+  hope "odd-r cancellation = alternating-series structure" is dead; the surviving object is the smooth
+  approach W_r -> n^r/q, i.e. the deep Wick-deficit going to zero -- which IS the open BGK wall (bounding
+  the RATE of that approach at r~log q). No new lever; the alternating-series escape is mapped + closed.
+- Does NOT bound M. No CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
