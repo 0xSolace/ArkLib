@@ -45,6 +45,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvariantCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultiPieceSignCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTripleCorrelationVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
@@ -195,6 +196,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_multiPiece_eps_budget_iff_export` | obstruction | DoorIVMultiPieceSignCoherence |
+| `doorIV_multiPiece_no_eps_slack_one_side_zero_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_sixPoint_vacuous_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_m33_eq_wick_export` | obstruction | DoorIVTripleCorrelationVanishes |
@@ -1709,6 +1712,33 @@ theorem doorIV_decomposition_no_partition_beats_one_export
         (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) ≤ θ :=
   _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.no_partition_beats_one_of_common_ray_terms t s f hθ hray g hcover
 
+/-- **[obstruction, DoorIVMultiPieceSignCoherence]** Exact epsilon-budget interface for real refined
+piece coherence. A certificate `coherence ≤ 1 - ε` is equivalent to the denominator-cleared minority
+sign-mass obligation `ε·total ≤ 2·minority`; subdivision alone cannot create door-(iv) slack. -/
+theorem doorIV_multiPiece_eps_budget_iff_export {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (htotal : 0 < posMass + negMass) :
+    _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence s A ≤ 1 - ε ↔
+      ε * (posMass + negMass) ≤ 2 * min posMass negMass :=
+  _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence_le_one_sub_iff_eps_mass_budget
+    s A hsum hden htotal
+
+/-- **[obstruction, DoorIVMultiPieceSignCoherence]** One-sided aggregate sign mass forbids any
+positive epsilon saving for a real refined split. This is the consumer-facing contrapositive of the
+exact budget: if one side has zero mass, no bound `coherence ≤ 1 - ε` with `ε > 0` can hold. -/
+theorem doorIV_multiPiece_no_eps_slack_one_side_zero_export {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) {posMass negMass ε : ℝ}
+    (hsum : (∑ i ∈ s, A i) = posMass - negMass)
+    (hden : (∑ i ∈ s, |A i|) = posMass + negMass)
+    (hposMass : 0 ≤ posMass) (hnegMass : 0 ≤ negMass)
+    (htotal : 0 < posMass + negMass)
+    (hzero : posMass = 0 ∨ negMass = 0) (hε : 0 < ε) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence s A ≤ 1 - ε :=
+  _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.not_multiPieceCoherence_le_one_sub_eps_of_one_side_zero
+    s A hsum hden hposMass hnegMass htotal hzero hε
+
 /-- **[obstruction, door-(iv) Lane-1]** The STRICT worst-frequency peak is a SINGLE coset
 (`Ncos(τ→0)=1`).  For an orbit-constant statistic `f` (the `μ_n`-invariant `|η_·|`) whose maximum
 value `Mval` is attained at `b₀`, IF every strict maximizer lies in the orbit `G • b₀` (the measured
@@ -2608,6 +2638,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
+#print axioms doorIV_multiPiece_eps_budget_iff_export
+#print axioms doorIV_multiPiece_no_eps_slack_one_side_zero_export
 #print axioms doorIV_sixPoint_lever_vacuous_export
 #print axioms doorIV_correlation_hierarchy_no_lever_export
 #print axioms doorIV_correlation_hierarchy_closed_through_six_export
