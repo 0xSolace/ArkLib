@@ -482,6 +482,34 @@ theorem bgkScale_eq_sqrtL_mul_prizeScale_export {n L : ℝ} (hn : 0 ≤ n) (hL :
       = Real.sqrt L * _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n :=
   _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale_eq_sqrtL_mul_prizeScale hn hL
 
+/-- **[obstruction, NoFifthDoor]** Discharged classical overshoot quantifier for honest mechanisms:
+past the SOTA threshold, every classical mechanism that respects its proven scale (`√q` for completion,
+`C·n^{1−δ}` for moment/EVT) overshoots BGK. This is the theorem replacing the abstract
+`hclassicalOvershoots` postulate on the physically meaningful subclass. -/
+theorem noFifthDoor_ceilingRespecting_classical_overshoots_export
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, N₀ ≤ n → n * L ≤ q →
+      ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m.door.isClassical → m.RespectsProvenScale q C δ n →
+          m.OvershootsBGK n L :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.ceilingRespecting_classical_overshoots
+    hLnn hC hδ
+
+/-- **[capstone, NoFifthDoor]** Discharged no-fifth-door capstone: past the SOTA threshold, if
+classical mechanisms are real instances of their doors (they respect the proven completion/moment/EVT
+scales), then any prize-scale certificate is forced through door (iv). The classical overshoot input is
+proved from the concrete ceilings, not assumed. -/
+theorem noFifthDoor_forces_doorIV_ceilingRespecting_export
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ, ∀ n : ℝ, max N₀ 1 ≤ n → n * L ≤ q →
+      (∀ m' : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.RespectsProvenScale q C δ n) →
+      ∀ m : _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n →
+          m.door = _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.DoorType.newEvaluation :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.forces_doorIV_ceilingRespecting
+    hLnn hL hC hδ
+
 /-- **[capstone/obstruction, NoFifthDoor]** Local contrapositive of the discharged classical side:
 past the SOTA threshold, a classical mechanism that certifies the prize scale must violate its own
 proven door-scale (`√q` for completion, `C·n^{1−δ}` for moment/EVT). This blocks the degenerate
@@ -1654,6 +1682,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_corridor_export
 #print axioms doorIV_corridor_width_pos_export
 #print axioms bgkScale_eq_sqrtL_mul_prizeScale_export
+#print axioms noFifthDoor_ceilingRespecting_classical_overshoots_export
+#print axioms noFifthDoor_forces_doorIV_ceilingRespecting_export
 #print axioms noFifthDoor_classical_prize_certificate_violates_provenScale_export
 #print axioms noFifthDoor_prize_certificate_doorIV_or_violates_provenScale_export
 #print axioms noTighterBound_secondMoment_blind_export
