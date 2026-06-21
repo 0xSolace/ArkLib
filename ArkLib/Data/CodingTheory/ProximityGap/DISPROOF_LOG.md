@@ -54,6 +54,27 @@ open note ("rising toward beta=5 => upper end worse"): for the DIRECT object M t
 worse — the mild beta=4.5 bump at n=64 (0.830) is within-band, not a divergence. Saturation verdict holds
 across the whole prize regime. Same caveats: probe datum, n<=64 (uint64 cap), NOT a CORE claim, CORE OPEN.
 
+ADDENDUM 2 (same session) — the SHARPEST FORM: the LITERAL CORE prize constant saturates.
+The CORE inequality is M(n) <= C*sqrt(n*log(p/n)); the directly-bounded object is
+Cprize(n) = M(n)/sqrt(n*log(p/n)). Probe `scripts/probes/probe_444_core_constant_prizeform.py` (beta=4,
+good prime, exact M):
+
+| n   | Cprize = M/sqrt(n log(p/n)) |
+|-----|------------------------------|
+| 8   | 1.0546                       |
+| 16  | 1.1524                       |
+| 32  | 1.2600                       |
+| 64  | 1.2397                       |
+| 128 | 1.2757                       |
+| 256 | 1.2959                       |
+
+Increments +0.098, +0.108, -0.020, +0.036, +0.020 — same transient-then-flat shape. Tail (n=32..256)
+power-law exponent b = +0.009 (≈ 0); tail band [1.24, 1.30]. So the LITERAL prize constant C that the CORE
+statement asks to be absolute is, on prize-faithful instances n<=256, SATURATING to ~1.3. This is the
+cleanest statement of the finding: not a proxy ratio but the exact object of the inequality. Same caveats:
+probe datum, n<=256 (uint64 cap), NOT a CORE claim, and PROVING the saturation IS the open BGK/Paley wall.
+CORE M(mu_n) <= C sqrt(n log(p/n)) stays OPEN. No cancellation/completion/moment/anti-conc/capacity claim.
+
 ## door-(iv) arithmetic-average/density lever is below max (2026-06-21)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVGeomMeanBelowMax`. The prior brick kerneled the
