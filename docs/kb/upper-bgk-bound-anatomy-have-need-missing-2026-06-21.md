@@ -129,6 +129,29 @@ vacuous, di Benedetto vanishes at the endpoint).
 4. **Phase-aware / cyclotomic-sensitive** new machinery satisfying all four §4 properties — the
    genuinely-new tool the no-go's say is *required* (does not yet exist).
 
+## 5b. The DILUTION THEOREM — why the sum-product route provably stalls (proven, `_RudnevDilutionFixedSavingStall`)
+
+Tested the full Rudnev sum-product / incidence cluster (cross-ratio 8/5, doubling 14/9,
+Stevens–de Zeeuw point-line 11/15, Rudnev point-plane) + Kurihara discriminant-divisibility +
+Lewko Weil-Roth against the `μ_n` additive energy at β=4. **All vacuous at θ=1/4**, with a proven
+structural reason — the dilution theorem:
+
+> Even granting an *idealized* fixed second-energy saving `E_2 ≤ n^{3−κ}` (any `κ`), the only
+> literature `E_2 → E_r` lift is the trivial tensor iterate `E_r ≤ |G|^{2(r−2)}·E_2`, which carries
+> a **fixed** `κ` (not multiplied by `r`). Hence `M ≤ n^{1+(β−1−κ)/(2r)} → n^1` from above as `r→∞`
+> (a real `Tendsto`), the census stall. The prize `α=1/2` requires `κ = β+r−1` — an **`r`-linear
+> (growing) saving** that a fixed-energy incidence engine structurally cannot produce.
+
+So the sum-product engine doesn't merely *fail to reach* `1/2`; it is *proven* to converge to `α=1`.
+Supporting exact facts (all axiom-clean): HBK threshold `θ>1/3` and point-plane `θ>1/4` both fail at
+`θ=1/4` (`_SumProductCensusStallBeta4`); SdZ gives `E_+ ≤ n^{44/15}` (`κ=1/15`, nontrivial) but `>n²`
+and bounds only the off-diagonal (which is `N^4/p=O(1)`, already collapsed at β=4 — the residual is the
+incidence-blind diagonal `N²`); Kurihara is valuation-valued + shift-blind while the resultant target is
+count-valued + shift-dependent (`_KuriharaDiscriminantShiftBlind`); Lewko needs `β≤6/5`, misses by `n^{7/3}`.
+
+**Net:** the most-promising route (sum-product, "BGK is the floor") is now *proven* to stall at `α=1` —
+the missing input is not more sum-product but the `r`-linear / char-p Wick / archimedean-phase control.
+
 ## 6. Honest bottom line
 
 The upper bound is one inequality short: **`E_r ≤ Wick` at `r ≈ log p`**, i.e. control of the
