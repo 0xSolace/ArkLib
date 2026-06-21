@@ -143,4 +143,26 @@ theorem descentZ_card_le_degBound {Pp Qp : F[X]} (hR : descentQuadform Pp Qp ≠
       ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
   le_trans (descentZ_card_le_natDegree hR B) (descentQuadform_natDegree_le Pp Qp)
 
+/-- **Global even-spine descent identity** (the symmetric backbone, summed). `Sweep_A41`'s
+`fiber_agreement_even` gives the PER-FIBRE even count `2·⟦P=0⟧`; summed over the base `B = μ_N`
+(with chosen square roots `ρ y ≠ 0`) this is the GLOBAL even-spine identity
+
+  `agreement(even f, even u) = 2 · #{y ∈ B : P(y) = 0}`,
+
+i.e. an even codeword against an even word agrees on `μ_n` at EXACTLY twice its level-`μ−1`
+agreement `#{y : F(y) = u_e(y)}` (here `P = F − u_e`). This is the rigorous backbone of the
+descent spine: even members biject (at half threshold) with the level-`μ−1` window list, so the
+spine branching is exactly `1`. Together with `descentZ_card_le_degBound` (the non-symmetric `Z`
+bounded by `1 + 2·max(deg Pp, deg Qp)`) this splits the full descent into a doubled symmetric
+spine plus an exponent-controlled non-symmetric correction. -/
+theorem descentAgreement_even_eq_two_mul (B : Finset F) (ρ Pf : F → F)
+    (hρ0 : ∀ y ∈ B, ρ y ≠ 0) (h2 : (2 : F) ≠ 0) :
+    (∑ y ∈ B, (({ρ y, -ρ y} : Finset F).filter (fun x => Pf y + x * 0 = 0)).card)
+      = 2 * (B.filter (fun y => Pf y = 0)).card := by
+  have hstep : (∑ y ∈ B, (({ρ y, -ρ y} : Finset F).filter (fun x => Pf y + x * 0 = 0)).card)
+      = ∑ y ∈ B, 2 * (if Pf y = 0 then 1 else 0) := by
+    refine Finset.sum_congr rfl (fun y hy => ?_)
+    exact fiber_agreement_even (ρ y) (Pf y) (hρ0 y hy) h2
+  rw [hstep, ← Finset.mul_sum, Finset.card_filter]
+
 end ArkLib.ProximityGap.EvenOddDescent
