@@ -49,6 +49,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacui
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -165,6 +167,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_gappedMinor125_159_eq_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
+| `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
+| `doorIV_levelWorst_le_prize_budget_of_xgate_export` | capstone | DoorIVXGatePrizeBudget |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1657,6 +1661,35 @@ theorem doorIV_not_gappedMinor125_159_ne_zero_export {ζ : ℂ} (hζ : ζ ^ 8 = 
   _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.not_gappedMinor125_159_ne_zero_of_pow8_eq_neg_one
     hζ
 
+/-- **[capstone, DoorIVXGatedPrizeReduction]** The named open `XGatedRatio` hypothesis, plus its
+levelwise `x`-gate, telescopes to the explicit square-root tower factor `√(2^μ)·M₀`. This is the
+end-to-end Lane-2 reduction of the corrected door-(iv) scalar to the geometric prize scale; the
+`XGatedRatio` input itself remains open. -/
+theorem doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} {μ : ℕ} {x₀ lnm : ℝ}
+    (hx : _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.XGatedRatio ψ G ζ μ x₀ lnm)
+    (hgate : ∀ k : ℕ, k ≤ μ → x₀ * lnm ≤ ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.levelTower ψ G ζ k).card : ℝ)) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ μ ≤
+      Real.sqrt ((2 : ℝ) ^ μ) *
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedPrizeReduction.levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio
+    hx hgate
+
+/-- **[capstone, DoorIVXGatePrizeBudget]** The corrected `√2` per-level gate, a base bound
+`M₀≤C√L`, and the dimension registration `(√2)^μ≤√n` compose to the exact prize-shaped budget
+`M_μ≤C√(nL)`. This is pure reduction algebra: no proof of the open gate, no CORE claim. -/
+theorem doorIV_levelWorst_le_prize_budget_of_xgate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} {C L n : ℝ} {μ : ℕ}
+    (hr : _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.LevelRatioBoundNZ ψ G ζ μ (Real.sqrt 2))
+    (h_dim : (Real.sqrt 2) ^ μ ≤ Real.sqrt n)
+    (h_base : _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ 0 ≤ C * Real.sqrt L)
+    (hC : 0 ≤ C) (hL : 0 ≤ L) (hn : 0 ≤ n) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ μ ≤ C * Real.sqrt (n * L) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatePrizeBudget.levelWorst_le_prize_budget_of_xgate
+    hr h_dim h_base hC hL hn
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
@@ -1674,4 +1707,6 @@ theorem doorIV_not_gappedMinor125_159_ne_zero_export {ζ : ℂ} (hζ : ζ ^ 8 = 
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
 #print axioms doorIV_gappedMinor125_159_eq_zero_export
 #print axioms doorIV_not_gappedMinor125_159_ne_zero_export
+#print axioms doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
+#print axioms doorIV_levelWorst_le_prize_budget_of_xgate_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
