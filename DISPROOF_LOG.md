@@ -1,3 +1,24 @@
+## [jacobi-hermite-turnover-reduction] form (D): prize ⇔ turnover depth k* ≤ log p (CONDITIONAL on the measured edge–turnover model) (2026-06-21, sol)
+
+Lane: door-(iv) Lane-2 reduction capstone for Shaw's form (D) (commit e1f04a449,
+`docs/kb/deltastar-444-JACOBI-RECURRENCE-TOOL`). Form (D) restates the wall via the OP recurrence
+coefficients b_k of μ_η: b_k follow the Hermite law b_k²=nk until a TURNOVER depth k*, after which they
+fall (sub-Hermite, bounded support); the edge is realized at turnover with M=√(2 n k*); Wall ⇔ k*=O(log p).
+
+VERDICT: formalized the REDUCTION ALGEBRA of form (D) as an axiom-clean conditional equivalence.
+Taking the measured relation M²=2nk* as an EXPLICIT hypothesis (EdgeTurnover structure — NOT asserted;
+it is the empirical Jacobi-matrix model), the prize bound M ≤ √2·√(n·L) is EXACTLY equivalent to the
+turnover-depth bound k* ≤ L. So the prize M ≤ √2·√(n log p) ⇔ k* ≤ log p: the open content is
+concentrated into ONE scalar (the turnover depth). Does NOT prove k*=O(log p) (that IS the wall).
+Probe-first: scripts/probes/probe_444_jacobi_hermite_turnover.py (exact, thin μ_n, p≫n³, n=16,32)
+verified Hermite R_k=b_k²/(nk)→1→0 with argmax b_k at k*=5,7 ≈ (log p)/2=5.5,6.9 and M/√(2nk*)=1.09.
+The edge–turnover model is a HYPOTHESIS not a theorem; the reduction is conditional on it (honesty).
+No CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim. CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvJB_HermiteTurnoverReduction.lean`,
+axiom-clean. Theorems `prize_iff_turnover_le`, `turnover_le_of_prize`, `prize_of_turnover_le`,
+`prize_iff_turnover_le_logp`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
 ## [jacobi-tool-charp-edge-bounded-but-support-trivial] the NEW Jacobi/recurrence-coefficient relocation is BOUNDED (vs char-0 UNBOUNDED) yet support-trivial (2026-06-21, sol)
 
 Lane: door-(iv) Lane-2 hardening of Shaw's genuinely-new Jacobi tool
