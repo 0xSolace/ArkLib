@@ -48,6 +48,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarch
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -162,6 +163,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_gappedMinor125_159_eq_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
+| `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1638,6 +1641,22 @@ theorem doorIV_halfMass_norm_eta_le_two_dilate_export
         ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.norm_eta_le_two_dilate H hg hdisj
 
+/-- **[obstruction, DoorIVAlgebraicFloorCyclotomicWall]** The concrete `μ₁₆` gapped minor
+(rows `(1,2,5)`, powers `(1,5,9)`) vanishes under the dyadic relation `ζ^8=-1`. This is the
+formal cyclotomic wall behind the algebraic-floor probe: generic nonzero-minor reasoning is not
+valid on the actual dyadic subgroup without handling these relations. -/
+theorem doorIV_gappedMinor125_159_eq_zero_export {ζ : ℂ} (hζ : ζ ^ 8 = -1) :
+    _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.gappedMinor125_159 ζ = 0 :=
+  _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.gappedMinor125_159_eq_zero_of_pow8_eq_neg_one
+    hζ
+
+/-- **[obstruction, DoorIVAlgebraicFloorCyclotomicWall]** Contradiction form: any hypothesis that
+this explicit dyadic gapped minor is nonzero is false. -/
+theorem doorIV_not_gappedMinor125_159_ne_zero_export {ζ : ℂ} (hζ : ζ ^ 8 = -1) :
+    ¬ _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.gappedMinor125_159 ζ ≠ 0 :=
+  _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.not_gappedMinor125_159_ne_zero_of_pow8_eq_neg_one
+    hζ
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
@@ -1653,4 +1672,6 @@ theorem doorIV_halfMass_norm_eta_le_two_dilate_export
 #print axioms doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
 #print axioms doorIV_halfMass_eta_index_two_split_dilate_export
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
+#print axioms doorIV_gappedMinor125_159_eq_zero_export
+#print axioms doorIV_not_gappedMinor125_159_ne_zero_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
