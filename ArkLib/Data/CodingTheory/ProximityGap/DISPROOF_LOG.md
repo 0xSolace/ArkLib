@@ -18974,3 +18974,19 @@ claim.
 Formal additions: `corePrizeBoundOn_endpoint_of_maximalExcursion_bound`,
 `shawOOne_endpoint_of_maximalExcursion_bound`,
 `not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core`, plus two CampaignProvenIndex exports.
+
+## [doorIV-weighted-average-excess-exposes-point] density averages are lower witnesses, not max upper controls (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. The previous kernel pinned that uniform, weighted, and subprobability averages lie below an entrywise max. This sweep adds the converse probe-facing witness form: if a probability-weighted density statistic is strictly above a threshold `C`, then some sampled value is already above `C`; likewise for subprobability weights when `0 ≤ C`.
+
+VERDICT: murmuration/density/truncated-average evidence cannot hide or manufacture adversarial worst-case upper control. An average above a threshold is only a lower witness for the max, not a mechanism bounding the worst frequency from above. Refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorems `exists_gt_of_lt_weightedMean` and `exists_gt_of_lt_weightedSubmean`; exported from `CampaignProvenIndex` as `doorIV_weightedMean_gt_forces_point_gt_export` and `doorIV_weightedSubmean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-geometric-average-excess-exposes-point] Mahler excess is a lower max witness, not an upper control (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. After the weighted-average excess lemmas, this sweep adds the geometric/Mahler analogue: if the geometric mean of a nonnegative finite spectrum is strictly above a threshold `C`, then some entry of the spectrum is already strictly above `C`.
+
+VERDICT: a Mahler-measure/log-average excess cannot hide an upper bound on the adversarial worst conjugate. It only witnesses that the max is at least as large as the excess threshold. This locks the geometric-average side of the average-not-max obstruction: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorem `exists_gt_of_lt_geomMean`; exported from `CampaignProvenIndex` as `doorIV_geomMean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

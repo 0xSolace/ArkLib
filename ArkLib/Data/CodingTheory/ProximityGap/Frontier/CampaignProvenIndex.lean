@@ -3446,6 +3446,16 @@ theorem doorIV_geomMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonem
     (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max s hs lam hnn hM
 
+/-- **[obstruction, GeomMeanBelowMax]** A Mahler/geometric-mean excess above a threshold exposes
+an entry above that threshold. The log-average object is a lower witness for the worst conjugate,
+not an upper-control mechanism for the adversarial max. -/
+theorem doorIV_geomMean_gt_forces_point_gt_export {ι : Type*} (s : Finset ι) (hs : s.Nonempty)
+    (lam : ι → ℝ) (hnn : ∀ i ∈ s, 0 ≤ lam i) {C : ℝ}
+    (hgt : C < (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card)) :
+    ∃ i ∈ s, C < lam i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_geomMean
+    s hs lam hnn hgt
+
 /-- **[obstruction, DoorIVOrderedWalkMajorant]** DIR9 ordered-walk scaffold: the endpoint
 norm is bounded by the finite maximal prefix excursion. This makes the ordered Doob/van-der-Corput
 object a genuine majorant of the Gauss-period endpoint while making no cancellation claim. -/
@@ -3721,6 +3731,7 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_weightedMean_gt_forces_point_gt_export
 #print axioms doorIV_weightedSubmean_gt_forces_point_gt_export
 #print axioms doorIV_geomMean_le_max_export
+#print axioms doorIV_geomMean_gt_forces_point_gt_export
 #print axioms doorIV_orderedWalk_endpoint_le_maximalExcursion_export
 #print axioms doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
 #print axioms doorIV_avDIR9_endpoint_le_R_export

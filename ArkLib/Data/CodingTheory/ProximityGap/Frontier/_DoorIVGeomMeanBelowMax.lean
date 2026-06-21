@@ -175,6 +175,21 @@ theorem geomMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
     rw [mul_one_div, div_self (ne_of_gt hcardpos), Real.rpow_one]
   rwa [hcollapse] at hmono
 
+/-- **A geometric mean above a threshold exposes a point above that threshold.**  Mahler-measure /
+log-average excess is a lower witness for the worst conjugate, not an upper-control mechanism: if the
+geometric mean is strictly above `C`, then at least one entry is strictly above `C`. -/
+theorem exists_gt_of_lt_geomMean (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
+    (hnn : ∀ i ∈ s, 0 ≤ lam i) {C : ℝ}
+    (hgt : C < (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card)) :
+    ∃ i ∈ s, C < lam i := by
+  by_contra hno
+  have hC : ∀ i ∈ s, lam i ≤ C := by
+    intro i hi
+    exact le_of_not_gt (fun hlt => hno ⟨i, hi, hlt⟩)
+  have hle : (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ C :=
+    geomMean_le_max s hs lam hnn hC
+  exact not_lt_of_ge hle hgt
+
 end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.prod_le_max_pow_card
@@ -185,3 +200,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedMean
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedSubmean
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_geomMean
