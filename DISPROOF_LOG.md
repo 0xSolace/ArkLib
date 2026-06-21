@@ -11445,3 +11445,43 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenInd
 `doorIV_hankelRoutes_maxb_determined_by_moments_export`, and
 `doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+
+## door-(iv) non-tensor wraparound-cross residual split indexed (2026-06-21, g55)
+
+Lane: Door-IV non-tensor energy-step reduction. The proved brick `_NonTensorWrapCrossResidual` is now
+exported from `CampaignProvenIndex`: the char-`p` cross term is exactly the char-`0` cross term plus
+the wraparound cross `ΔW`; the full `r`-linear Wick rung follows from the proven char-`0` step plus
+the single open residual `WrapCrossBounded`; below wraparound onset that residual is vacuous; and the
+non-tensor target is strictly stronger than the fixed-saving tensor ceiling when `2r+1 < n`.
+
+VERDICT: this is a sharper localization, not a closure. The char-0 half is discharged and the only
+remaining input is the wraparound-cross inequality, which is the BGK/Lam-Leung char-p wall at the
+saddle. No CORE upper bound, no moment/completion/capacity claim, and no assertion that
+`WrapCrossBounded` holds in the prize regime.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports
+`doorIV_nonTensor_cross_succ_split_export`,
+`doorIV_nonTensor_charP_wickStep_of_char0_and_wrap_export`,
+`doorIV_nonTensor_energyStep_of_char0_and_wrap_export`,
+`doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export`, and
+`doorIV_nonTensor_tensor_dilution_strict_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane 3 — non-tensor wrap-cross residual reduction indexed (2026-06-21, g55)
+
+Lane: Door-IV refuted-lever/constraint export. `_NonTensorWrapCrossResidual` is now indexed from
+`CampaignProvenIndex`: the char-p cross term splits exactly into char-0 cross plus wraparound cross;
+the full r-linear Wick step follows from the proven char-0 step plus the open wraparound residual;
+the residual is vacuous below onset; and the r-linear target is strictly below the tensor ceiling.
+
+VERDICT: this locks the reduction, not CORE. The only remaining non-tensor content is the
+wraparound-cross residual at saddle depth, which is precisely the BGK/Lam-Leung wall. No completion,
+Parseval, moment-closure, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports
+`doorIV_nonTensor_cross_succ_split_export`,
+`doorIV_nonTensor_charP_wickStep_of_char0_and_wrap_export`,
+`doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export`, and
+`doorIV_nonTensor_tensor_dilution_strict_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

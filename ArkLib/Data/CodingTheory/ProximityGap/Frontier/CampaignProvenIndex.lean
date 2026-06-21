@@ -97,6 +97,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_JacobiEdgeBoundedSup
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HermiteTurnoverReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_TurnoverSupportGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HankelRoutesToMoments
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NonTensorWrapCrossResidual
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2463,6 +2464,68 @@ theorem doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export {kstar :
 #print axioms doorIV_hankelRoutes_maxb_le_iff_moment_functional_le_export
 #print axioms doorIV_hankelRoutes_maxb_determined_by_moments_export
 #print axioms doorIV_hankelRoutes_prize_via_jacobi_is_moment_statement_export
+
+
+/-! ## Door-IV non-tensor wraparound-cross residual exports.
+Scope: **reduction/obstruction**.
+
+These exports make the newest non-tensor split citable: the char-`p` cross term is exactly the
+char-`0` cross term plus the wraparound cross `ΔW`; the full `r`-linear Wick rung follows from
+the proven char-`0` step plus the single open wraparound residual; and below wraparound onset the
+residual is vacuous. This isolates the remaining BGK/Lam-Leung wall without claiming it.
+-/
+
+/-- **[reduction, NT5WrapCrossSplit]** Exact non-tensor cross decomposition:
+`crossP = crossC0 + wrapStep`. The char-`p` residual is precisely the wraparound cross. -/
+theorem doorIV_nonTensor_cross_succ_split_export (n : ℕ) (Ec Ep : ℕ → ℕ) (r : ℕ) :
+    _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.crossP n Ep r =
+      _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.crossC0 n Ec r +
+        _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.wrapStep n Ec Ep r :=
+  _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.cross_succ_split n Ec Ep r
+
+/-- **[reduction, NT5WrapCrossSplit]** The full char-`p` `r`-linear Wick cross step follows from
+the char-`0` non-tensor step plus the single open wraparound-cross residual. -/
+theorem doorIV_nonTensor_charP_wickStep_of_char0_and_wrap_export
+    (n : ℕ) (Ec Ep : ℕ → ℕ) (r : ℕ)
+    (hc0 : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.Char0WickStep n Ec r)
+    (hwrap : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.WrapCrossBounded n Ec Ep r) :
+    _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.crossP n Ep r ≤
+      2 * r * (n * Ep r) :=
+  _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.charP_wickStep_of_char0_and_wrap
+    n Ec Ep r hc0 hwrap
+
+/-- **[reduction, NT5WrapCrossSplit]** Consumable energy-rung form:
+`E_{r+1}^{Fp} ≤ (2r+1)nE_r^{Fp}` from the char-`0` step and wraparound residual. -/
+theorem doorIV_nonTensor_energyStep_of_char0_and_wrap_export
+    (n : ℕ) (Ec Ep : ℕ → ℕ) (r : ℕ)
+    (hc0 : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.Char0WickStep n Ec r)
+    (hwrap : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.WrapCrossBounded n Ec Ep r) :
+    (Ep (r + 1) : ℤ) ≤ (2 * r + 1) * n * Ep r :=
+  _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.energyStep_of_char0_and_wrap
+    n Ec Ep r hc0 hwrap
+
+/-- **[obstruction, NT5WrapCrossSplit]** Below wraparound onset (`W_r = W_{r+1} = 0`) the
+wraparound residual is vacuous, so the split reduces to the char-`0` step alone. -/
+theorem doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export
+    (n : ℕ) (Ec Ep : ℕ → ℕ) (r : ℕ)
+    (hWr : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.W Ec Ep r = 0)
+    (hWr1 : _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.W Ec Ep (r + 1) = 0) :
+    _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.WrapCrossBounded n Ec Ep r :=
+  _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.wrapCross_vacuous_of_noWraparound
+    n Ec Ep r hWr hWr1
+
+/-- **[obstruction, NT5WrapCrossSplit]** The `r`-linear non-tensor target is strictly below the
+fixed-saving tensor ceiling whenever `2r+1 < n`; the split target is genuinely stronger. -/
+theorem doorIV_nonTensor_tensor_dilution_strict_export
+    (n : ℕ) (Ep : ℕ → ℕ) (r : ℕ) (hr : 1 ≤ r) (hrn : 2 * r + 1 < n) (hE : 0 < Ep r) :
+    2 * (r : ℤ) * (n * Ep r) < n * (n - 1) * Ep r :=
+  _root_.ArkLib.ProximityGap.Frontier.NT5WrapCrossSplit.tensor_dilution_strict n Ep r hr hrn hE
+
+#print axioms doorIV_nonTensor_cross_succ_split_export
+#print axioms doorIV_nonTensor_charP_wickStep_of_char0_and_wrap_export
+#print axioms doorIV_nonTensor_energyStep_of_char0_and_wrap_export
+#print axioms doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export
+#print axioms doorIV_nonTensor_tensor_dilution_strict_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
