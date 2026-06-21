@@ -3397,6 +3397,15 @@ theorem doorIV_arithMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.None
     (∑ i ∈ s, lam i) / (s.card : ℝ) ≤ M :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max s hs lam hM
 
+/-- **[obstruction, GeomMeanBelowMax]** Uniform arithmetic/density averages above a threshold
+expose an entry above that threshold. Density excess is a lower witness for the max, not an upper
+control of the adversarial worst frequency. -/
+theorem doorIV_arithMean_gt_forces_point_gt_export {ι : Type*} (s : Finset ι) (hs : s.Nonempty)
+    (lam : ι → ℝ) {C : ℝ} (hgt : C < (∑ i ∈ s, lam i) / (s.card : ℝ)) :
+    ∃ i ∈ s, C < lam i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_arithMean
+    s hs lam hgt
+
 /-- **[obstruction, GeomMeanBelowMax]** Probability-weighted density averages also lie below the
 max. This strengthens the murmuration-density obstruction from uniform averages to arbitrary finite
 probability weights: changing the averaging measure does not control the adversarial worst frequency. -/
@@ -3726,6 +3735,7 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms shawValue_bracket_ratio_symmetric_export
 #print axioms shawValue_bracket_center_between_export
 #print axioms doorIV_arithMean_le_max_export
+#print axioms doorIV_arithMean_gt_forces_point_gt_export
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
 #print axioms doorIV_weightedMean_gt_forces_point_gt_export

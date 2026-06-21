@@ -18990,3 +18990,11 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. After
 VERDICT: a Mahler-measure/log-average excess cannot hide an upper bound on the adversarial worst conjugate. It only witnesses that the max is at least as large as the excess threshold. This locks the geometric-average side of the average-not-max obstruction: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorem `exists_gt_of_lt_geomMean`; exported from `CampaignProvenIndex` as `doorIV_geomMean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-arithmetic-average-excess-exposes-point] uniform density excess is a lower max witness, not an upper control (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. Completing the converse forms for the finite mean family, this sweep adds the uniform arithmetic/density analogue: if a nonempty finite arithmetic mean is strictly above a threshold `C`, then some entry is already strictly above `C`.
+
+VERDICT: uniform density excess is only a lower witness for the adversarial max. It cannot certify a worst-case upper bound for Door-IV periods, and it cannot bypass the worst-b coherence problem. No CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorem `exists_gt_of_lt_arithMean`; exported from `CampaignProvenIndex` as `doorIV_arithMean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

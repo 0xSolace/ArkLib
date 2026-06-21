@@ -86,6 +86,20 @@ theorem arithMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ) {M
     div_le_div_of_nonneg_right hsum (le_of_lt hcardpos)
   simpa [mul_comm, ne_of_gt hcardpos] using hdiv
 
+/-- **An arithmetic mean above a threshold exposes a point above that threshold.**  Uniform density
+excess cannot hide a worst-case upper-control certificate: if the average is strictly above `C`, at
+least one entry already exceeds `C`. -/
+theorem exists_gt_of_lt_arithMean (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
+    {C : ℝ} (hgt : C < (∑ i ∈ s, lam i) / (s.card : ℝ)) :
+    ∃ i ∈ s, C < lam i := by
+  by_contra hno
+  have hC : ∀ i ∈ s, lam i ≤ C := by
+    intro i hi
+    exact le_of_not_gt (fun hlt => hno ⟨i, hi, hlt⟩)
+  have hle : (∑ i ∈ s, lam i) / (s.card : ℝ) ≤ C :=
+    arithMean_le_max s hs lam hC
+  exact not_lt_of_ge hle hgt
+
 /-- **Weighted average ≤ max.**  Any probability-weighted average of entries bounded by `M` is
 bounded by the same `M`.  This is the exact finite form of the density/no-transfer obstruction:
 changing the averaging measure (murmuration weights, sampled conjugacy classes, or a biased literature
@@ -195,6 +209,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.prod_le_max_pow_card
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.sum_le_card_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_arithMean
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedMean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedSubmean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedMean

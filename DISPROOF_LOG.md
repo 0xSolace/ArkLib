@@ -11195,6 +11195,14 @@ axiom-clean. The abstract rule-3 obstruction: a scalar lever `L : {thin,thick}�
 `(¬Factor2ThinSeparation) ↔ thick < 2·thin` (`no_factor2_thin_iff_thick_lt_two_thin`) and the probe-datum
 specialization at K=1.18 (`deficit_lever_not_separating`). Axioms ⊆ {propext, Classical.choice, Quot.sound}.
 
+
+## [doorIV-arithmetic-average-excess-exposes-point] uniform density excess is a lower max witness, not an upper control (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. Completing the converse forms for the finite mean family, this sweep adds the uniform arithmetic/density analogue: if a nonempty finite arithmetic mean is strictly above a threshold `C`, then some entry is already strictly above `C`.
+
+VERDICT: uniform density excess is only a lower witness for the adversarial max. It cannot certify a worst-case upper bound for Door-IV periods, and it cannot bypass the worst-b coherence problem. No CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorem `exists_gt_of_lt_arithMean`; exported from `CampaignProvenIndex` as `doorIV_arithMean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
 ## [doorIV-halfmass-thickness-invariant] worst-b HALF-MASS H(b*) is thickness-invariant => the BGK wall, not a leak (rule-3), 2026-06-21 (sol opus-4-8)
 
 Lane: door-(iv) Lane 1. Companion to [doorIV-coherence-deficit-thickness-invariant]. At b*, coherence
@@ -11225,3 +11233,4 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceD
 new theorem `halfMass_lever_not_separating_either_side` (a lever comparable with factor K≈1.07<2 admits
 NEITHER a factor-2 thin- nor thick-separation), reusing the RegimeLever abstraction. Axioms ⊆ {propext,
 Classical.choice, Quot.sound}.
+
