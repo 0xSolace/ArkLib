@@ -1,3 +1,40 @@
+## [door-iv-crosshalf-phase-unstructured] the cross-half phase factorization is dead: B_b = A_{bg} is REAL-collinear (no nontrivial root-of-unity) but its magnitude ratio |B|/|A| is UNSTRUCTURED (2026-06-20, sol)
+
+Lane: Door-(iv) Lane-1 (probe) + Lane-3 (refuted-lever constraint). Continues the half-mass thread
+([door-iv-halfmass-equivalence], prize ⟺ H(n)=O(√(n·log))).
+
+The index-2 split η_b = A_b + B_b along μ_{n/2}<μ_n has the EXACT structural identity, with coset rep g
+(a generator of μ_n): B_b = Σ_{z∈μ_{n/2}} e_p(b·g·z) = A_{b·g} — the SAME sub-period at the DILATED
+frequency b·g. A natural lever: hope the worst-b second half is a FIXED phase rotation of the first,
+B_{b*} = ω·A_{b*} (fixed root of unity ω), so ‖η_{b*}‖ = ‖1+ω‖·‖A_{b*}‖ inherits a bound from ONE
+thinner sub-period (recursive √-saving).
+
+PROBES (probe_dooriv_crosshalf_phase.py + _control.py; EXACT ℂ, PROPER 2-power μ_n n=16/32/64, p≫n³,
+structured+generic primes incl. 65537=F4 / 163841=5·2^15+1 / 786433=3·2^18+1, FULL F_p* coset-rep scan
+at n=16, sampled larger, NEVER n=q-1):
+ - arg(B/A) ≡ 0 to MACHINE PRECISION (~1e-16) at EVERY top frequency including worst-b*, every (n,p).
+   MECHANISM: μ_{n/2} is negation-stable (contains -1=g_n^{n/2}) ⇒ A_b, B_b are REAL ⇒ B/A is a REAL
+   scalar. No nontrivial root-of-unity phase; the rotation is trivially in the ±1 direction (consistent
+   with the proven same-ray ρ(b*)=1).
+ - BUT |B|/|A| is UNSTRUCTURED: across the top-√m band it ranges [0.07, 10.16], std up to 1.6, growing
+   with n (n=16: [0.26,3.79]; n=32: [0.18,5.07]; n=64: [0.07,7.05]…[0.24,10.16]). worst-b* |η|/√n≈3.46–4.09.
+
+VERDICT (does NOT close CORE): the cross-half ratio B/A is REAL (no angular degree of freedom — the
+negation-stable halves force it), and its magnitude t=|B|/|A| is a frequency-dependent real with NO
+concentration. There is no fixed ω (equivalently no fixed t) with B_b=ω·A_b across frequencies. So the
+worst-b half-mass ‖A_b‖+‖B_b‖=(1+t)·‖A_b‖ cannot be factored through a SINGLE sub-period times a fixed
+multiplier; it irreducibly couples the sub-period magnitude at the TWO INDEPENDENT dilated frequencies
+b and bg — exactly the recursive-ascent/non-nesting wall ([door-iv-worstb-non-nested]). Any fixed-
+multiplier bound ‖A+B‖≤c·‖A‖ is FORCED to satisfy 1+t≤c, which the unbounded t refutes. A surviving
+door-(iv) descent must act on the JOINT two-frequency object {b,bg}, not on a fixed cross-half phase.
+Refuted-lever brick only: no CORE cancellation, no completion, no moment, no anti-concentration, no capacity.
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+Frontier/_DoorIVCrossHalfPhaseUnstructured.lean — norm_add_eq_of_real_collinear (B=t•A ⇒ ‖A+B‖=(1+t)‖A‖),
+halfMass_eq_of_real_collinear, norm_add_eq_halfMass_of_real_collinear (coherence 1),
+fixed_multiplier_forces_ratio_le (‖A+B‖≤c‖A‖ ⇒ 1+t≤c), fixed_multiplier_fails_of_ratio_gt,
+distinct_ratios_give_distinct_multipliers (no single ω across frequencies), norm_add_ge_of_ratio_ge.
+
 ## door-(iv) the TRIVIAL cocycle OVERSHOOTS the prize target in the thin regime (2026-06-20, sol)
 
 Lens: Lane 2/3 constraint lemma extending `_JacobiCocycleDispersion`. That file proves the trivial
