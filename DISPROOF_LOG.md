@@ -1,3 +1,30 @@
+## [jacobi-tool-charp-edge-bounded-but-support-trivial] the NEW Jacobi/recurrence-coefficient relocation is BOUNDED (vs char-0 UNBOUNDED) yet support-trivial (2026-06-21, sol)
+
+Lane: door-(iv) Lane-2 hardening of Shaw's genuinely-new Jacobi tool
+(`docs/kb/deltastar-444-JACOBI-RECURRENCE-TOOL-2026-06-21.md`), companion to the PROVEN
+`_AvJD_JacobiEdgeUnbounded`. That file proved the **char-0 (Wick)** Jacobi matrix of the *moment
+sequence* `{E_K}` has an UNBOUNDED spectral edge (`α_k=(4k+1)n→∞`). Shaw's new tool instead uses the
+**char-`p`** Jacobi matrix of the *actual* empirical `η`-measure, whose support is the bounded
+interval `[−n,n]` (`|η_b|≤n` trivially). By the classical Stieltjes fact (Jacobi entries bounded by
+the support radius `S`), the char-`p` edge `e_k = a_k + b_{k+1} + b_k ≤ 3S` is BOUNDED — the
+relocation Shaw describes (half-power moves off the exploding ladder onto a bounded, stable,
+prime-discriminating `max_k b_k ~ 6–12`).
+
+VERDICT: the relocation is real (BOUNDED vs char-0's UNBOUNDED, kernel-checked) but its UNCONDITIONAL
+ceiling is only the **support-trivial** `M ≤ 3S = 3n` — the uniform Gershgorin bound `3S` strictly
+EXCEEDS the support radius `S` (so it cannot even recover the trivial `M ≤ n`, let alone the
+conjectured `M ≤ √2·√(n log p)`). The conjecture needs the FINE sub-Gaussian decay of `b_k` (peak at
+depth `k≈(log p)/2`, still encoding the deep arithmetic) = the wall. "Relocates but does NOT escape",
+now kernel-backed. Probe-first: `scripts/probes/probe_444_jacobi_supbound_unconditional.py` (exact,
+thin `μ_n ⊆ 𝔽_p^×`, `p≫n³`, n=8,16,32) verified F1 `topeig(J)=M` (ratio 1.0000), F2 `|a_k|,b_k≤S`,
+F3 Gershgorin row-sum ≥ topeig. No CORE/cancellation/completion/moment-saving/anti-concentration/
+capacity claim. CORE (the UPPER bound) remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvJB_JacobiEdgeBoundedSupportCeiling.lean`,
+axiom-clean. Theorems `edge_le_three_S`, `not_exists_edge_gt_three_S`, `M_le_three_S`,
+`three_S_ceiling_ge_support`, `three_S_strictly_above_support`. Axioms ⊆ {propext, Classical.choice,
+Quot.sound}.
+
 ## door-(iv) arithmetic-average/density lever is below max (2026-06-21)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVGeomMeanBelowMax`. The prior brick kerneled the
