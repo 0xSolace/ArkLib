@@ -330,6 +330,35 @@ theorem card_sigmaOrbitImage_le_superLevelFinset
   exact (mem_superLevelFinset (f := f) (c := c)).2
     (sigma_smul_mem_superLevel_of_orbitConstant hf hσ c g hb)
 
+/-- **Singleton selector collapse criterion.**  If a finite super-level set containing `b` is a
+singleton, then the actual orbit image of `b` has cardinal one.  Equivalently, a point-sized worst-`b`
+selector is possible only after the coset fiber has completely collapsed. -/
+theorem orbitImage_card_eq_one_of_superLevelFinset_card_eq_one
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c) (hcard : (superLevelFinset f c).card = 1) :
+    (Finset.univ.image (fun g : G => g • b)).card = 1 := by
+  classical
+  have hle := card_orbitImage_le_superLevelFinset (G := G) hf c hb
+  have hnonempty : 0 < (Finset.univ.image (fun g : G => g • b)).card := by
+    exact Finset.card_pos.mpr ⟨(1 : G) • b, Finset.mem_image.mpr ⟨1, Finset.mem_univ 1, rfl⟩⟩
+  omega
+
+/-- Signed singleton collapse criterion.  A singleton near-max set containing `b` forces the signed
+coset image `g ↦ σ(g•b)` to have cardinal one.  Thus sign/coset symmetries cannot coexist with an
+isolated worst frequency unless the entire signed fiber is degenerate. -/
+theorem sigmaOrbitImage_card_eq_one_of_superLevelFinset_card_eq_one
+    [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : OrbitConstant (G := G) f)
+    (hσ : InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ superLevel f c) (hcard : (superLevelFinset f c).card = 1) :
+    (Finset.univ.image (fun g : G => σ (g • b))).card = 1 := by
+  classical
+  have hle := card_sigmaOrbitImage_le_superLevelFinset (G := G) hf hσ c hb
+  have hnonempty : 0 < (Finset.univ.image (fun g : G => σ (g • b))).card := by
+    exact Finset.card_pos.mpr ⟨σ ((1 : G) • b), Finset.mem_image.mpr ⟨1, Finset.mem_univ 1, rfl⟩⟩
+  omega
+
 /-- Small-threshold contrapositive of the actual-orbit floor.  If a finite super-level set has
 cardinality below the actual orbit image of `b`, then `b` cannot be near-max.  This is the sharp
 selector audit hook when the action has a stabilizer: the required budget is the observed fiber size,
@@ -393,6 +422,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.superLevel_ne_singleton_of_nontrivial_sigma_smul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_orbitImage_le_superLevelFinset
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_sigmaOrbitImage_le_superLevelFinset
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.orbitImage_card_eq_one_of_superLevelFinset_card_eq_one
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.sigmaOrbitImage_card_eq_one_of_superLevelFinset_card_eq_one
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_orbitImage
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit

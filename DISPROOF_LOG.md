@@ -9955,3 +9955,15 @@ theorems `card_orbitImage_le_superLevelFinset`, `card_sigmaOrbitImage_le_superLe
 `not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`. No CORE, cancellation, completion, moment, anti-concentration,
 or capacity claim.
+
+## door-(iv) singleton worst-b selector forces orbit collapse (2026-06-20, g55)
+
+Lane: Door-IV Lane 1 selector-granularity constraint extending the actual orbit-image floor. If a
+finite near-max set is point-sized and contains `b`, then the actual coset image `g ↦ g•b` has cardinal
+one; with sign symmetry, the signed image `g ↦ σ(g•b)` also has cardinal one. Hence an isolated worst
+frequency is not compatible with a nontrivial coset/sign fiber. Any point-selector claim must first
+prove total stabilizer/fiber collapse. No CORE/cancellation/completion/moment/anti-concentration claim.
+
+Formal kernel: `_DoorIVWorstBCosetClosed.lean`, theorems
+`orbitImage_card_eq_one_of_superLevelFinset_card_eq_one` and
+`sigmaOrbitImage_card_eq_one_of_superLevelFinset_card_eq_one`, axiom-clean.
