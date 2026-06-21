@@ -75,6 +75,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCollisionExcessPige
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturationInsufficient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialStats
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -208,6 +209,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_arithMean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
 | `doorIV_weightedMean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
 | `doorIV_weightedSubmean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
+| `doorIV_radialSum_invariant_under_unit_twist_export` | obstruction | DoorIVPhaseBlindRadialStats |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3395,10 +3397,21 @@ theorem doorIV_geomMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonem
     (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max s hs lam hnn hM
 
+/-- **[obstruction, PhaseBlindRadialStats]** Every finite `normSq`-radial statistic is invariant
+under arbitrary pointwise unit twists. This is the kerneled radial side of Shaw's phase-blindness
+probe: a `b`-summed moment/radial summary cannot see the adversarial phase alignment Door (iv) needs. -/
+theorem doorIV_radialSum_invariant_under_unit_twist_export {ι : Type*} (s : Finset ι)
+    (F : ℝ → ℝ) (tw A : ι → ℂ) (htw : ∀ i ∈ s, Complex.normSq (tw i) = 1) :
+    (∑ i ∈ s, F (Complex.normSq (tw i * A i))) =
+      ∑ i ∈ s, F (Complex.normSq (A i)) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVPhaseBlindRadialStats.radialSum_invariant_under_unit_twist
+    s F tw A htw
+
 #print axioms doorIV_arithMean_le_max_export
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
 #print axioms doorIV_geomMean_le_max_export
+#print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
