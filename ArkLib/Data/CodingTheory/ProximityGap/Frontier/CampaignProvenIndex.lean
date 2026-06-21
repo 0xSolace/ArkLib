@@ -151,6 +151,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
+| `doorIV_shawOOne_of_coreMajorant_export` | capstone | ShawValueCapstone |
 | `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
 | `doorIV_shawOOne_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
 | `trivial_cocycle_full_concentration_export` | obstruction | JacobiCocycleDispersion |
@@ -1125,6 +1127,25 @@ theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
     hK hscale hMH hHM
 
+/-- **[capstone, ShawValueCapstone]** Elementary dominated-majorant transfer: a campaign
+`CorePrizeBoundOn` theorem for a pointwise majorant gives the same raw prize-scale bound for every
+smaller target.  This is pure monotonicity of the sup norm, with no new analytic estimate. -/
+theorem doorIV_corePrize_of_dominated_majorant_export {ι : Type*} {q n M M' : ι → ℝ}
+    (hle : ∀ i : ι, M' i ≤ M i)
+    (h : ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M) :
+    ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M' :=
+  ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_of_le hle h
+
+/-- **[capstone, ShawValueCapstone]** Non-Landau citation form of the dominated-majorant Lane-2
+reduction: under positive scale, a campaign raw prize bound for a majorant implies `Sh(n)=O(1)` for
+any dominated target. -/
+theorem doorIV_shawOOne_of_coreMajorant_export {ι : Type*} {q n M M' : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < ProximityGap.Frontier.ShawValueCapstone.shawScale (q i) (n i))
+    (hle : ∀ i : ι, M' i ≤ M i)
+    (h : ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n M) :
+    ProximityGap.Frontier.ShawValueCapstone.ShawOOneOn q n M' :=
+  ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_corePrizeBoundOn hscale hle h
+
 /-- **[capstone, ShawValueLandauBridge]** A literal Landau prize bound for any nonnegative
 pointwise majorant transfers directly to the Shaw-value `O(1)` statement for the dominated target.
 This is the consumer-facing majorant composition rung for the Lane-2 `prize ⇔ Sh(n)=O(1)` reduction;
@@ -1590,6 +1611,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
 #print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
 #print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export
+#print axioms doorIV_corePrize_of_dominated_majorant_export
+#print axioms doorIV_shawOOne_of_coreMajorant_export
 #print axioms doorIV_landau_shaw_of_dominated_majorant_export
 #print axioms doorIV_shawOOne_of_dominated_majorant_export
 #print axioms trivial_cocycle_full_concentration_export

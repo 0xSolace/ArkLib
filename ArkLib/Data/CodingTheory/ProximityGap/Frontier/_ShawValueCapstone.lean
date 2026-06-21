@@ -276,6 +276,34 @@ theorem shawValue_floor_ceiling_corridor_of_pos_lt {q n M : ℝ}
   exact shawValue_floor_ceiling_corridor (q := q) (n := n) (M := M)
     (shawScale_pos_of_pos_lt hn hnq) hfloor hceil
 
+/-! ### Dominated-majorant transfer in elementary campaign predicates -/
+
+/-- A uniform prize-scale bound for a pointwise majorant transfers to any dominated target with the
+same constant.  This is the elementary `∀/∃` counterpart of the Landau dominated-majorant bridge:
+no analytic estimate is introduced, only monotonicity of the raw sup norm. -/
+theorem UniformCoreBound.of_le {ι : Type*} {q n M M' : ι → ℝ} {C : ℝ}
+    (hle : ∀ i : ι, M' i ≤ M i) (h : UniformCoreBound q n M C) :
+    UniformCoreBound q n M' C := by
+  intro i
+  exact le_trans (hle i) (h i)
+
+/-- Existential prize-scale bounds are monotone under pointwise domination of the sup norm.  Thus a
+closed majorant theorem would immediately cover every smaller target without re-normalizing constants. -/
+theorem corePrizeBoundOn_of_le {ι : Type*} {q n M M' : ι → ℝ}
+    (hle : ∀ i : ι, M' i ≤ M i) (h : CorePrizeBoundOn q n M) :
+    CorePrizeBoundOn q n M' := by
+  rcases h with ⟨C, hC, hCore⟩
+  exact ⟨C, hC, hCore.of_le hle⟩
+
+/-- **Elementary dominated-majorant Shaw transfer.**  Under the positive-scale guard, any
+`CorePrizeBoundOn` theorem for a pointwise majorant `M` gives the campaign `ShawOOneOn` conclusion for
+any target `M' ≤ M`.  This is the non-Landau citation form of the same Lane-2 reduction rung. -/
+theorem shawOOneOn_of_le_corePrizeBoundOn {ι : Type*} {q n M M' : ι → ℝ}
+    (hscale : ∀ i : ι, 0 < shawScale (q i) (n i))
+    (hle : ∀ i : ι, M' i ≤ M i) (h : CorePrizeBoundOn q n M) :
+    ShawOOneOn q n M' := by
+  exact (shawOOneOn_iff_corePrizeBoundOn hscale).2 (corePrizeBoundOn_of_le hle h)
+
 end ProximityGap.Frontier.ShawValueCapstone
 
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawScale_pos_of_pos_lt
@@ -300,3 +328,6 @@ end ProximityGap.Frontier.ShawValueCapstone
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_mem_interval_iff_raw_mem_scaled_interval_of_pos_lt
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor
 #print axioms ProximityGap.Frontier.ShawValueCapstone.shawValue_floor_ceiling_corridor_of_pos_lt
+#print axioms ProximityGap.Frontier.ShawValueCapstone.UniformCoreBound.of_le
+#print axioms ProximityGap.Frontier.ShawValueCapstone.corePrizeBoundOn_of_le
+#print axioms ProximityGap.Frontier.ShawValueCapstone.shawOOneOn_of_le_corePrizeBoundOn
