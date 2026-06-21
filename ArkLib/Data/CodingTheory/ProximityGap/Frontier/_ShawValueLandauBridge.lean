@@ -220,4 +220,26 @@ theorem prize_isBigO_iff_shaw_isBigO_one {q n M : ℕ → ℝ}
     _ ↔ (shawSeq q n M) =O[atTop] (fun _ => (1 : ℝ)) :=
         shawOOneOn_iff_shawSeq_isBigO_one hShnn
 
+/-! ### Domination transfer: a Landau prize bound passes to any dominated sup norm -/
+
+/-- **Domination transfer of the Landau prize bound.**  If a sup-norm family `M` satisfies the literal
+Landau prize bound `M =O[atTop] √(n·log(q/n))` and a second family `M'` is pointwise sandwiched
+`0 ≤ M' i ≤ M i` (e.g. the actual Gauss-period sup norm dominated by an auxiliary majorant whose Landau
+bound is known), then `M'` satisfies the SAME Landau prize bound.  This is the citable composition rung:
+any majorant with a proven `O(√(n·log(q/n)))` bound transports it to everything it dominates.  No new
+analytic estimate; CORE stays OPEN. -/
+theorem supSeq_isBigO_scaleSeq_of_le {q n M M' : ℕ → ℝ}
+    (hM'nn : ∀ i, 0 ≤ M' i) (hle : ∀ i, M' i ≤ M i)
+    (h : (supSeq M) =O[atTop] (scaleSeq q n)) :
+    (supSeq M') =O[atTop] (scaleSeq q n) := by
+  rw [isBigO_iff] at h ⊢
+  obtain ⟨c, hc⟩ := h
+  refine ⟨c, ?_⟩
+  filter_upwards [hc] with i hi
+  -- `‖M' i‖ = M' i ≤ M i = ‖M i‖ ≤ c·‖scale i‖`
+  rw [show ‖supSeq M' i‖ = M' i from abs_of_nonneg (hM'nn i)]
+  refine le_trans (hle i) ?_
+  rw [show M i = ‖supSeq M i‖ from (abs_of_nonneg (le_trans (hM'nn i) (hle i))).symm]
+  exact hi
+
 end ProximityGap.Frontier.ShawValueCapstone
