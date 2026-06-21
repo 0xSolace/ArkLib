@@ -58,6 +58,34 @@ theorem prod_le_max_pow_card (s : Finset ι) (lam : ι → ℝ)
       Finset.prod_le_prod hnn (fun i hi => hM i hi)
     _ = M ^ s.card := by rw [Finset.prod_const]
 
+/-- **Sum of a max-bounded family ≤ card times max.**  If every `lam i ≤ M` on `s`, then
+the additive average numerator is at most `card s * M`.  This is the arithmetic-mean analogue of
+`prod_le_max_pow_card`. -/
+theorem sum_le_card_mul_max (s : Finset ι) (lam : ι → ℝ) {M : ℝ}
+    (hM : ∀ i ∈ s, lam i ≤ M) :
+    ∑ i ∈ s, lam i ≤ (s.card : ℝ) * M := by
+  calc
+    ∑ i ∈ s, lam i ≤ ∑ _i ∈ s, M :=
+      Finset.sum_le_sum (fun i hi => hM i hi)
+    _ = (s.card : ℝ) * M := by simp [Finset.sum_const, nsmul_eq_mul]
+
+/-- **Arithmetic mean ≤ max (the density / murmuration no-transfer constraint).**  For a nonempty
+finset `s`, any additive average of values bounded entrywise by `M` is itself at most `M`.  Thus
+a density or arithmetic-average control of Door-IV periods is a lower-resolution object than the
+worst-case max; it does not by itself bound the adversarial `b`. -/
+theorem arithMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ) {M : ℝ}
+    (hM : ∀ i ∈ s, lam i ≤ M) :
+    (∑ i ∈ s, lam i) / (s.card : ℝ) ≤ M := by
+  have hcardpos : (0 : ℝ) < s.card := by
+    have : 0 < s.card := Finset.Nonempty.card_pos hs
+    exact_mod_cast this
+  have hsum : ∑ i ∈ s, lam i ≤ (s.card : ℝ) * M :=
+    sum_le_card_mul_max s lam hM
+  have hdiv : (∑ i ∈ s, lam i) / (s.card : ℝ) ≤
+      ((s.card : ℝ) * M) / (s.card : ℝ) :=
+    div_le_div_of_nonneg_right hsum (le_of_lt hcardpos)
+  simpa [mul_comm, ne_of_gt hcardpos] using hdiv
+
 /-- **Geometric mean ≤ max (the Mahler / log-average no-transfer constraint).**  For a nonempty
 finset `s` and nonnegative `lam` with entrywise bound `lam i ≤ M` (so `0 ≤ M`), the geometric mean
 satisfies `(∏_{i∈s} lam i)^{1/card s} ≤ M`.
@@ -89,4 +117,6 @@ theorem geomMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
 end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.prod_le_max_pow_card
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.sum_le_card_mul_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max

@@ -1,3 +1,18 @@
+## door-(iv) arithmetic-average/density lever is below max (2026-06-21)
+
+Lens: Lane 3 constraint lemma extending `_DoorIVGeomMeanBelowMax`. The prior brick kerneled the
+Mahler/log-average side (`geomMean_le_max`). This sweep adds the additive-density analogue: if
+`lam i ≤ M` on a nonempty finite spectrum, then `(Σ_i lam_i)/|s| ≤ M`.
+
+VERDICT: murmuration/density/arithmetic-average control is a typical-value statement on the wrong
+side of the Door-IV worst-frequency max. It cannot by itself upper-bound the adversarial `b`; the
+missing input must still control the max, not just an average. Refuted-lever constraint only: no
+CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new
+theorems `sum_le_card_mul_max` and `arithMean_le_max`; exported as
+`doorIV_arithMean_le_max_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
 ## door-(iv) balanced half-mass descent saturates the single-half loss at exactly two (2026-06-21)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVHalfMassBalanceAtArgmax`. Prior bricks proved the coherent half-mass identity and the constant-factor `≤2` loss for dropping to the heavier dyadic half. This refinement pins the sharp endpoint used by the balance probes: at coherent perfect balance,

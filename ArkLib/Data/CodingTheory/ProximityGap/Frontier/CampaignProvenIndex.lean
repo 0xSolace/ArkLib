@@ -202,6 +202,7 @@ anything here; this index does not claim otherwise.
 | `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
 | `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
 | `exists_jacobiCocycleDispersionFamilyBound_iff_rawSandwich_export` | capstone | JacobiCocycleDispersion |
+| `doorIV_arithMean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3315,6 +3316,14 @@ theorem doorIV_no_maxGain_from_smaller_moment_export {ι : Type*} (s : Finset ι
 #print axioms doorIV_envelope_multiplier_antitone_export
 #print axioms doorIV_no_maxGain_from_smaller_moment_export
 
+/-- **[obstruction, GeomMeanBelowMax]** The arithmetic mean / density average lies at or below the
+max. This kernels the murmuration-density half of the average-not-max obstruction: an additive
+average can witness typical behavior, but it does not control the adversarial worst frequency. -/
+theorem doorIV_arithMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonempty)
+    (lam : ι → ℝ) {M : ℝ} (hM : ∀ i ∈ s, lam i ≤ M) :
+    (∑ i ∈ s, lam i) / (s.card : ℝ) ≤ M :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max s hs lam hM
+
 /-- **[obstruction, GeomMeanBelowMax]** The geometric mean (Mahler-measure / log-average) of the
 nonnegative spectrum lies at or below the max: `(∏_{i∈s} lam i)^{1/card s} ≤ M` for `lam i ≤ M` on a
 nonempty `s`. Kernels the (b)/(d) literature-cluster verdict (murmuration density / Mahler measure are
@@ -3324,6 +3333,7 @@ theorem doorIV_geomMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonem
     (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max s hs lam hnn hM
 
+#print axioms doorIV_arithMean_le_max_export
 #print axioms doorIV_geomMean_le_max_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
