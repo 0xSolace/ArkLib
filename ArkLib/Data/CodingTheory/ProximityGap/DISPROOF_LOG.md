@@ -18766,3 +18766,14 @@ Lane: door-(iv) Lane 3 sign-hygiene refinement of `_DoorIVArgmaxDecouplingNoCont
 VERDICT: in finite support probes, the positive-constant hypotheses used by finite support-inclusion obstructions are forced by any successful nontrivial control at one positive measured point. This is sign hygiene for lever refutations only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorem `controlOn_constant_pos_of_positive_target_and_candidate`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_controlOn_constant_pos_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupled-finite-support-monotone] finite obstructions propagate to larger supports (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 finite-support hygiene in `_DoorIVArgmaxDecouplingNoControl`. This sweep adds the support-monotonicity forms for finite probe controls:
+
+- `UniformControlOn t target F C` restricts to `UniformControlOn s target F C` whenever `s ⊆ t`;
+- therefore failure of `C`-control on a measured sub-support `s` refutes `C`-control on every larger support `t` containing `s`.
+
+VERDICT: finite ratio/support/endpoint witnesses found on a measured subset cannot be repaired by adding more ambient frequencies. This is a finite-probe lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorems `uniformControlOn_of_subset` and `not_uniformControlOn_of_subset_not_control`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControlOn_of_subset_export` and `doorIV_argmaxDecoupled_no_controlOn_superset_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

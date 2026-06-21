@@ -2050,6 +2050,27 @@ theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_exists_ratio_gt
     hFpos hwit
 
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support monotonicity: control on a larger
+measured support restricts to any smaller support. -/
+theorem doorIV_argmaxDecoupled_uniformControlOn_of_subset_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s t : Finset ι} (hst : s ⊆ t)
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      t target F C) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn s target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.uniformControlOn_of_subset
+    hst hctrl
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support obstruction propagates upward:
+if `C`-control fails on a measured sub-support, it fails on every larger support containing it. -/
+theorem doorIV_argmaxDecoupled_no_controlOn_superset_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s t : Finset ι} (hst : s ⊆ t)
+    (hno : ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      s target F C) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn t target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_subset_not_control
+    hst hno
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support exact ratio-envelope
 characterization: on the enumerated probe support `s`, positive-candidate control is equivalent to
 bounding every support ratio `target i / F i`. This is the finite-frequency form used by door-(iv)
@@ -3178,6 +3199,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_uniformControl_iff_ratio_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
 #print axioms doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export
+#print axioms doorIV_argmaxDecoupled_uniformControlOn_of_subset_export
+#print axioms doorIV_argmaxDecoupled_no_controlOn_superset_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export
 #print axioms doorIV_argmaxDecoupled_controlOn_constant_pos_export
 #print axioms doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export

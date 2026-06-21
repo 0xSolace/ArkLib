@@ -165,6 +165,26 @@ theorem not_uniformControl_of_exists_ratio_gt {target F : ι → ℝ} {C : ℝ}
   have hle : target i / F i ≤ C := (uniformControl_iff_ratio_le hFpos).1 hctrl i
   exact (not_lt_of_ge hle) hi
 
+
+/-- **Finite-support monotonicity.**  Control on a larger measured support restricts to control on any
+smaller support.  Thus a finite obstruction found on a sub-support cannot be repaired by adding more
+ambient frequencies. -/
+theorem uniformControlOn_of_subset {target F : ι → ℝ} {C : ℝ} {s t : Finset ι}
+    (hst : s ⊆ t) (hctrl : UniformControlOn t target F C) :
+    UniformControlOn s target F C := by
+  intro i hi
+  exact hctrl i (hst hi)
+
+/-- **Finite-support obstruction propagates upward.**  If `C`-control already fails on a measured
+sub-support `s`, then it also fails on every larger support `t` containing `s`.  This lets a finite
+ratio/support/endpoint witness refute any claimed ambient finite-support control without proving
+anything about the unmeasured frequencies. -/
+theorem not_uniformControlOn_of_subset_not_control {target F : ι → ℝ} {C : ℝ}
+    {s t : Finset ι} (hst : s ⊆ t) (hno : ¬ UniformControlOn s target F C) :
+    ¬ UniformControlOn t target F C := by
+  intro hctrl
+  exact hno (uniformControlOn_of_subset hst hctrl)
+
 /-- **Finite-support ratio-envelope characterization.**  On a finite probe support `s`, if the candidate
 functional is strictly positive on `s`, then control on exactly that support is equivalent to bounding
 the pointwise ratio envelope on exactly that support.
