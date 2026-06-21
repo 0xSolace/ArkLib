@@ -32,6 +32,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceOrderBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeShawTetrachotomySynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
@@ -180,6 +181,9 @@ anything here; this index does not claim otherwise.
 | `shawOOne_unbounded_shawValue_drift_export` | capstone | ShawValueCapstone |
 | `corePrize_unbounded_shawValue_drift_export` | capstone | ShawValueCapstone |
 | `corePrize_unbounded_shawValue_drift_of_pos_lt_export` | capstone | ShawValueCapstone |
+| `doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
+| `doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
+| `doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
 | `doorIV_shawOOne_of_coreMajorant_export` | capstone | ShawValueCapstone |
 | `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
@@ -1453,6 +1457,65 @@ theorem corePrize_unbounded_shawValue_drift_of_pos_lt_export {ι : Type*} {q n M
         C < _root_.ProximityGap.Frontier.ShawValueCapstone.shawValue (q i) (n i) (M i) :=
   _root_.ProximityGap.Frontier.ShawValueCapstone.not_corePrizeBoundOn_iff_forall_exists_lt_shawValue_of_pos_lt
     hn hnq
+
+
+/-- **[capstone, DoorIVPrizeShawTetrachotomySynthesis]** Single citable Lane-2 synthesis: the
+nonnegative-constant prize-family reduction is exactly the nonnegative Shaw-value `O(1)` reduction,
+and, under the classical-overshoot refutations, every prize-certifying mechanism is door (iv). -/
+theorem doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export
+    {ι : Type*} {M n L : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (L i))
+    {nref Lref : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hclassicalOvershoots :
+      ∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK nref Lref) :
+    ((∃ C, 0 ≤ C ∧ ShawValueCapstone.rawPrizeFamilyBound M n L C) ↔
+        (∃ C, 0 ≤ C ∧ ShawValueCapstone.shawValueFamilyBound M n L C)) ∧
+      (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+        m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.prize_iff_shawBounded_nonneg_and_doorIV_only
+    hs hnref hLref hclassicalOvershoots
+
+/-- **[capstone, DoorIVPrizeShawTetrachotomySynthesis]** The remaining quantitative gap is exactly
+`√L` between the prize floor and BGK scale, and the no-fifth-door theorem routes any certificate for
+that gap to door (iv). -/
+theorem doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export
+    {nref Lref : ℝ} (hnref : 0 < nref) (hLref : 1 < Lref)
+    (hclassicalOvershoots :
+      ∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+        m'.door.isClassical → m'.OvershootsBGK nref Lref) :
+    (NoFifthDoorTetrachotomy.prizeScale nref < NoFifthDoorTetrachotomy.bgkScale nref Lref) ∧
+      (NoFifthDoorTetrachotomy.bgkScale nref Lref =
+        Real.sqrt Lref * NoFifthDoorTetrachotomy.prizeScale nref) ∧
+      (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+        m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+        m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.remaining_gap_is_sqrtL_factor_doorIV_only
+    hnref hLref hclassicalOvershoots
+
+/-- **[capstone, DoorIVPrizeShawTetrachotomySynthesis]** Fully discharged positive-side package:
+`prize ⇔ Sh(n)=O(1)` with nonnegative constants, plus an eventual floor-ratio formulation of the
+pointwise certificate problem after all honest classical doors are excluded. -/
+theorem doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export
+    {ι : Type*} {Mfam n Lfam : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Lfam i))
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ,
+      ((∃ K, 0 ≤ K ∧ ShawValueCapstone.rawPrizeFamilyBound Mfam n Lfam K) ↔
+          (∃ K, 0 ≤ K ∧ ShawValueCapstone.shawValueFamilyBound Mfam n Lfam K)) ∧
+        (∀ nref : ℝ, max N₀ 1 ≤ nref → nref * L ≤ q →
+          (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+            m'.door.isClassical → m'.RespectsProvenScale q C δ nref) →
+          ∀ M K : ℝ, NoFifthDoorTetrachotomy.prizeScale nref ≤ M →
+            (1 ≤ DoorIVPrizeShawTetrachotomySynthesis.floorPrizeRatio M nref) ∧
+              (M ≤ K * NoFifthDoorTetrachotomy.prizeScale nref ↔
+                DoorIVPrizeShawTetrachotomySynthesis.floorPrizeRatio M nref ≤ K) ∧
+              (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+                m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+                m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation)) :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.prize_iff_shawBounded_nonneg_and_floorPrizeRatio
+    hs hLnn hL hC hδ
 
 /-- **[capstone, ShawValueCapstone]** Elementary dominated-majorant transfer: a campaign
 `CorePrizeBoundOn` theorem for a pointwise majorant gives the same raw prize-scale bound for every
@@ -2956,6 +3019,9 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms shawOOne_unbounded_shawValue_drift_export
 #print axioms corePrize_unbounded_shawValue_drift_export
 #print axioms corePrize_unbounded_shawValue_drift_of_pos_lt_export
+#print axioms doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export
+#print axioms doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export
+#print axioms doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export

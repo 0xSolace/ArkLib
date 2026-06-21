@@ -10866,3 +10866,17 @@ VERDICT: the citable `BddAbove` API for `prize ⇔ Sh_H(n)=O(1)` is now closed o
 half-mass/Shaw ratios are exactly normalized-prize drift, and bounded half-mass/Shaw ratios are exactly
 not normalized-prize drift. This is bookkeeping for Shaw's reduction chain only. No CORE, cancellation,
 completion, moment-saving, anti-concentration, or capacity claim.
+
+## [doorIV-prize-shaw-tetrachotomy-indexed] Lane-2 synthesis exported (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 capstone. `_DoorIVPrizeShawTetrachotomySynthesis` already provided the
+kernel-checked bridge saying the raw prize-family bound is equivalent to nonnegative Shaw-value
+`O(1)`, while the no-fifth-door tetrachotomy routes any prize-floor certificate through door (iv).
+This entry imports that brick into `CampaignProvenIndex` and exposes the three citable exports:
+`doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export`,
+`doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export`, and
+`doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export`.
+
+VERDICT: permanent index now has a single axiom-clean citation for Shaw's prize⇔Sh(n)=O(1) reduction
+plus door-(iv)-only mechanism routing. No new estimate, no anti-concentration, no CORE claim; the open
+obligation remains the door-(iv) coherence bound.
