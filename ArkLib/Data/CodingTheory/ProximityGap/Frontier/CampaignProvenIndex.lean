@@ -46,6 +46,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvari
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -154,6 +155,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_crossHalf_norm_add_eq_halfMass_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
+| `doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
+| `doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1560,6 +1564,41 @@ theorem doorIV_whole_ladder_control_export
     ∀ r ∈ R, M ≤ wick r :=
   _root_.ProximityGap.Frontier.DoorIVCumulantLadderVacuity.whole_ladder_control hctrl hdec hladder
 
+/-- **[obstruction, DoorIVCrossHalfPhase]** In the probed real-collinear cross-half regime,
+the period norm equals the half-mass exactly. The cross-half datum carries no angular saving:
+coherence is saturated at `1`. -/
+theorem doorIV_crossHalf_norm_add_eq_halfMass_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {A B : E} {t : ℝ} (ht : 0 ≤ t)
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.crossHalfRatio A B t) :
+    ‖A + B‖ = ‖A‖ + ‖B‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_eq_halfMass_of_real_collinear
+    ht h
+
+/-- **[obstruction, DoorIVCrossHalfPhase]** Any fixed multiplier bound through one half,
+`‖A+B‖≤c‖A‖`, must already pay the full measured real ratio: `1+t≤c`. Thus a fixed-factor
+recursive half route hides the hard frequency-dependent ratio in the constant. -/
+theorem doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {A B : E} {t c : ℝ} (ht : 0 ≤ t) (hA : 0 < ‖A‖)
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.crossHalfRatio A B t)
+    (hbound : ‖A + B‖ ≤ c * ‖A‖) :
+    1 + t ≤ c :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.fixed_multiplier_forces_ratio_le
+    ht hA h hbound
+
+/-- **[obstruction, DoorIVCrossHalfPhase]** Contrapositive form used by the probe verdict:
+if the measured cross-half ratio exceeds the proposed fixed multiplier, the one-half factorization
+bound fails at that frequency. -/
+theorem doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {A B : E} {t c : ℝ} (ht : 0 ≤ t) (hA : 0 < ‖A‖)
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.crossHalfRatio A B t)
+    (hgt : c < 1 + t) :
+    ¬ ‖A + B‖ ≤ c * ‖A‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.fixed_multiplier_fails_of_ratio_gt
+    ht hA h hgt
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
@@ -1569,4 +1608,7 @@ theorem doorIV_whole_ladder_control_export
 #print axioms doorIV_ladder_control_passes_through_wick_export
 #print axioms doorIV_whole_ladder_wick_export
 #print axioms doorIV_whole_ladder_control_export
+#print axioms doorIV_crossHalf_norm_add_eq_halfMass_export
+#print axioms doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export
+#print axioms doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
