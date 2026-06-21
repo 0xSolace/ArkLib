@@ -118,6 +118,7 @@ anything here; this index does not claim otherwise.
 | `roughness_does_not_add_bad_primes_export` | obstruction | G4 |
 | `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
+| `shawValue_clean_corridor_width_eq_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
 | `worstPeriod_sharp_bracket_export` | capstone | ConcreteTrivialCeiling |
 | `completion_vacuous_below_trivial_ceiling_export` | obstruction | ConcreteBGKCompletionCorridor |
@@ -701,6 +702,14 @@ collapse this `√n`-wide normalized bracket to an absolute constant. -/
 theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
     (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
   bracket_width_eq_sqrt hn hL
+
+/-- **[capstone, ShawValue]** Exact width of the clean thin-regime normalized corridor.  The citable
+Lane-2 bracket `1/√(2L) ≤ Sh(M(μ_n)) ≤ √(n/L)` has endpoint ratio `√(2n)`, so normalization leaves a
+`√n`-scale unconditional gap (up to the harmless `√2`).  This is pure arithmetic over the proven
+corridor, not a CORE/cancellation estimate. -/
+theorem shawValue_clean_corridor_width_eq_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    Real.sqrt (n / L) / (1 / Real.sqrt (2 * L)) = Real.sqrt (2 * n) :=
+  _root_.ProximityGap.Frontier.ConcreteShawValueThinFloor.clean_corridor_width_eq hn hL
 
 /-- **[capstone, ConcreteTrivialCeiling]** The sharp unconditional corridor on the real worst
 period in the quadratic thin regime: `√(|G|-1) ≤ M(G) ≤ |G|`. This is the concrete lower/upper
@@ -1767,6 +1776,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms roughness_does_not_add_bad_primes_export
 #print axioms prizeBound_iff_shawValue_le_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
+#print axioms shawValue_clean_corridor_width_eq_export
 #print axioms shawValue_bracket_width_eq_sqrt_export
 #print axioms worstPeriod_sharp_bracket_export
 #print axioms completion_vacuous_below_trivial_ceiling_export

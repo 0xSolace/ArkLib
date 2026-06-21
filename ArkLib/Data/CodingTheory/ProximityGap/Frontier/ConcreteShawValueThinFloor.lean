@@ -123,6 +123,21 @@ theorem shawValue_worstPeriod_clean_corridor {ψ : AddChar F ℂ} (hψ : ψ.IsPr
   have hceil := shawValue_worstPeriod_le_of_card (ψ := ψ) G hne hs
   rwa [ceiling_bracket_eq hn0 hL] at hceil
 
+/-- **The clean normalized Shaw-value corridor is `√(2n)`-wide.**  The proven thin-regime
+endpoints in `shawValue_worstPeriod_clean_corridor` are `1/√(2L)` and `√(n/L)`.  Their ratio is
+exactly `√(2n)`, so normalization by the prize scale has not hidden the open gap: the unconditional
+Lane-2 bracket is still `√n`-wide (up to the harmless `√2`).  Closing this to `O(1)` is exactly the
+open door-(iv) CORE bound, not something supplied here. -/
+theorem clean_corridor_width_eq {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    Real.sqrt (n / L) / (1 / Real.sqrt (2 * L)) = Real.sqrt (2 * n) := by
+  have h2L : 0 < 2 * L := by positivity
+  have hs2L : Real.sqrt (2 * L) ≠ 0 := ne_of_gt (Real.sqrt_pos.2 h2L)
+  field_simp [hs2L]
+  rw [Real.sqrt_div (le_of_lt hn) L]
+  rw [Real.sqrt_mul (le_of_lt hL) 2]
+  rw [Real.sqrt_mul (le_of_lt hn) 2]
+  field_simp [ne_of_gt (Real.sqrt_pos.2 hL)]
+
 end ProximityGap.Frontier.ConcreteShawValueThinFloor
 
 /-! ## Axiom audit -/
@@ -130,3 +145,4 @@ end ProximityGap.Frontier.ConcreteShawValueThinFloor
 #print axioms ProximityGap.Frontier.ConcreteShawValueThinFloor.floor_half_bracket_eq
 #print axioms ProximityGap.Frontier.ConcreteShawValueThinFloor.shawValue_worstPeriod_floor_clean
 #print axioms ProximityGap.Frontier.ConcreteShawValueThinFloor.shawValue_worstPeriod_clean_corridor
+#print axioms ProximityGap.Frontier.ConcreteShawValueThinFloor.clean_corridor_width_eq
