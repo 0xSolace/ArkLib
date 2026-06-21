@@ -38,6 +38,22 @@ cannot DECIDE a 25-yr open asymptotic; this MEASURES which extrapolation the fin
 a proof, and proving the saturation IS the open BGK/Paley sup-norm problem. No CORE / cancellation /
 completion / moment / anti-concentration / capacity claim. CORE `M(mu_n) <= C sqrt(n log(p/n))` stays OPEN.
 
+ADDENDUM (same session) — the saturation is ROBUST ACROSS THE PRIZE BETA-BAND [4,5], not a beta=4 artifact.
+Probe `scripts/probes/probe_444_prizeratio_betaband_saturation.py` measures R at beta in {4.0,4.5,5.0}
+(good prime each, p<2^32 so beta=5 caps n<=64):
+
+| n  | R(beta=4.0) | R(beta=4.5) | R(beta=5.0) | spread |
+|----|-------------|-------------|-------------|--------|
+| 16 | 0.7057      | 0.7114      | 0.7026      | 0.009  |
+| 32 | 0.7716      | 0.7462      | 0.7684      | 0.025  |
+| 64 | 0.7592      | 0.8296      | 0.8038      | 0.070  |
+
+The beta-dependence is SMALL and NON-MONOTONE (R does not systematically worsen toward the upper prize
+end beta=5; at every n the ratio stays in the same 0.70-0.83 band). This addresses the keff_beta_band
+open note ("rising toward beta=5 => upper end worse"): for the DIRECT object M the upper prize end is NOT
+worse — the mild beta=4.5 bump at n=64 (0.830) is within-band, not a divergence. Saturation verdict holds
+across the whole prize regime. Same caveats: probe datum, n<=64 (uint64 cap), NOT a CORE claim, CORE OPEN.
+
 ## door-(iv) arithmetic-average/density lever is below max (2026-06-21)
 
 Lens: Lane 3 constraint lemma extending `_DoorIVGeomMeanBelowMax`. The prior brick kerneled the
