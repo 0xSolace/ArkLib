@@ -178,6 +178,19 @@ theorem endpoint_norm_le_two_R1 {a : ℕ → ℂ} {h : ℕ}
   rw [show 2 * h = h + h by omega]
   exact reflection_bound_second_half hanti (le_refl h)
 
+/-- The same endpoint identity forces the half-period partial sum to pay at least half of the
+endpoint norm. Thus any large endpoint wall immediately reappears inside the reflected half-walk. -/
+theorem half_norm_ge_endpoint_half {a : ℕ → ℂ} {h : ℕ}
+    (hanti : AntipodalIncrements a h) :
+    ‖endpoint a (2 * h)‖ / 2 ≤ ‖S a h‖ := by
+  have hle : ‖endpoint a (2 * h)‖ ≤ 2 * ‖S a h‖ := by
+    rw [endpoint_reflection_id hanti]
+    calc ‖S a h + (starRingEnd ℂ) (S a h)‖
+        ≤ ‖S a h‖ + ‖(starRingEnd ℂ) (S a h)‖ := norm_add_le _ _
+      _ = ‖S a h‖ + ‖S a h‖ := by rw [RCLike.norm_conj]
+      _ = 2 * ‖S a h‖ := by ring
+  linarith
+
 /-- **The full reflection majorant `R ≤ 2·R₁`** on `[0, 2h]` (`n = 2h`).
 Any partial sum index `k ≤ 2h` is either `≤ h` (bounded by `R₁`) or of the form `h+m` with `m ≤ h`
 (bounded by `2·R₁` via reflection).  Since `R₁ ≥ ‖S_0‖ = 0 ≥ 0`, `R₁ ≤ 2·R₁`, so the sup is
@@ -224,6 +237,7 @@ theorem dir9_reflection_reduces : DIR9ReflectionReducesToWall :=
 #print axioms antipodal_reflection_id
 #print axioms endpoint_reflection_id
 #print axioms endpoint_norm_le_two_R1
+#print axioms half_norm_ge_endpoint_half
 #print axioms reflection_bound_two_R1
 #print axioms endpoint_le_R
 #print axioms dir9_reflection_reduces

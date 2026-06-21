@@ -225,6 +225,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_avDIR9Reflection_endpoint_le_R_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_endpoint_id_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export` | obstruction | AvDIR9Reflection |
+| `doorIV_avDIR9Reflection_half_norm_ge_endpoint_half_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_bound_two_R1_export` | obstruction | AvDIR9Reflection |
 | `doorIV_avDIR9Reflection_reduces_export` | obstruction | AvDIR9Reflection |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3633,6 +3634,14 @@ theorem doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export {a : ℕ → ℂ}
       2 * _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R1 a h :=
   _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint_norm_le_two_R1 hanti
 
+/-- **[obstruction, AvDIR9Reflection]** Half-period lower wall: the reflected half-walk must
+already carry at least half the endpoint norm. -/
+theorem doorIV_avDIR9Reflection_half_norm_ge_endpoint_half_export {a : ℕ → ℂ} {h : ℕ}
+    (hanti : _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.AntipodalIncrements a h) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint a (2 * h)‖ / 2 ≤
+      ‖_root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.S a h‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.half_norm_ge_endpoint_half hanti
+
 /-- **[obstruction, AvDIR9Reflection]** Exact antipodal reflection gives the full-walk maximal
 function bound `R(2h) ≤ 2 R₁(h)`. Iterating this bound loses cancellation and recurses into the
 half-scale Gauss-sum wall, so it is a reduction certificate rather than a prize upper bound. -/
@@ -3698,6 +3707,7 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_avDIR9Reflection_endpoint_le_R_export
 #print axioms doorIV_avDIR9Reflection_endpoint_id_export
 #print axioms doorIV_avDIR9Reflection_endpoint_norm_le_two_R1_export
+#print axioms doorIV_avDIR9Reflection_half_norm_ge_endpoint_half_export
 #print axioms doorIV_avDIR9Reflection_bound_two_R1_export
 #print axioms doorIV_avDIR9Reflection_reduces_export
 #print axioms doorIV_jacAutocorr_wienerKhinchin_export
