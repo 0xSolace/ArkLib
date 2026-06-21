@@ -37,6 +37,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvers
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -135,6 +136,9 @@ anything here; this index does not claim otherwise.
 | `dilationEnergy_deep_step_of_depth2K_energy_export` | obstruction | AvDil_MultEnergyStepDiagonal |
 | `dilationEnergy_not_deep_step_of_offdiagonal_gt_export` | obstruction | AvDil_MultEnergyStepDiagonal |
 | `dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export` | obstruction | AvDil_MultEnergyStepDiagonal |
+| `coreReduction_mStar_gt_of_BCHKS_fails_export` | capstone | CoreReductionNecessity |
+| `coreReduction_mStar_le_iff_BCHKS_export` | capstone | CoreReductionNecessity |
+| `coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export` | capstone | CoreReductionNecessity |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -499,6 +503,56 @@ collapse this `√n`-wide normalized bracket to an absolute constant. -/
 theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
     (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
   bracket_width_eq_sqrt hn hL
+
+/-! ## CoreReductionNecessity — exact `m*` gate for the BCHKS/Shaw reduction.
+Scope: **capstone**. These exports make the Lane-2 necessity direction permanent: under the
+monotone cascade and the P2/E3 identification, the BCHKS budget at a fold is not merely sufficient
+for the binding depth to clear that fold, it is exactly equivalent. Thus the Johnson-side strict
+gate `m* < k` is equivalent to the single named BCHKS/Shaw budget at `k-1`. This is reduction
+bookkeeping only; the BCHKS budget itself remains the explicit open input. -/
+
+/-- **[capstone, CoreReductionNecessity]** Failure of the named BCHKS budget at fold `M` pushes
+the binding depth strictly past `M`. This is the necessity half of the `m*` gate. -/
+theorem coreReduction_mStar_gt_of_BCHKS_fails_export
+    (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
+    (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (n : ℕ)
+    (hex : ∃ m, D n m ≤ budget n)
+    (hmono : ∀ {a b : ℕ}, a ≤ b → D n b ≤ D n a)
+    (hident : ∀ m, D n m = Sigma (smap n) (rmap n m)) (M : ℕ)
+    (hfail : ¬ ArkLib.ProximityGap.CoreReductionComplete.BCHKSBudget Sigma (smap n) (rmap n M)
+      (budget n)) :
+    M < ArkLib.ProximityGap.CoreReductionComplete.mStar D budget n hex :=
+  ArkLib.ProximityGap.CoreReductionComplete.mStar_gt_of_BCHKS_fails
+    D budget Sigma smap rmap n hex hmono hident M hfail
+
+/-- **[capstone, CoreReductionNecessity]** Exact two-sided gate: under cascade monotonicity and
+the P2/E3 identification, `m* ≤ M` iff the BCHKS/Shaw budget holds at the corresponding fold. -/
+theorem coreReduction_mStar_le_iff_BCHKS_export
+    (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
+    (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (n : ℕ)
+    (hex : ∃ m, D n m ≤ budget n)
+    (hmono : ∀ {a b : ℕ}, a ≤ b → D n b ≤ D n a)
+    (hident : ∀ m, D n m = Sigma (smap n) (rmap n m)) (M : ℕ) :
+    ArkLib.ProximityGap.CoreReductionComplete.mStar D budget n hex ≤ M ↔
+      ArkLib.ProximityGap.CoreReductionComplete.BCHKSBudget Sigma (smap n) (rmap n M)
+        (budget n) :=
+  ArkLib.ProximityGap.CoreReductionComplete.mStar_le_iff_BCHKS
+    D budget Sigma smap rmap n hex hmono hident M
+
+/-- **[capstone, CoreReductionNecessity]** Consumer-facing Johnson-fold form: for positive
+`kNat`, clearing `m* < kNat` is equivalent to the BCHKS/Shaw budget at the previous fold `kNat-1`.
+This pins the exact open input of the reduction, without proving that input. -/
+theorem coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
+    (D : ℕ → ℕ → ℕ) (budget : ℕ → ℕ) (Sigma : ℕ → ℕ → ℕ)
+    (smap : ℕ → ℕ) (rmap : ℕ → ℕ → ℕ) (n : ℕ)
+    (hex : ∃ m, D n m ≤ budget n)
+    (hmono : ∀ {a b : ℕ}, a ≤ b → D n b ≤ D n a)
+    (hident : ∀ m, D n m = Sigma (smap n) (rmap n m)) (kNat : ℕ) (hk_pos : 1 ≤ kNat) :
+    ArkLib.ProximityGap.CoreReductionComplete.mStar D budget n hex < kNat ↔
+      ArkLib.ProximityGap.CoreReductionComplete.BCHKSBudget Sigma (smap n) (rmap n (kNat - 1))
+        (budget n) :=
+  ArkLib.ProximityGap.CoreReductionComplete.clears_johnson_iff_BCHKS_at_prev_fold
+    D budget Sigma smap rmap n hex hmono hident kNat hk_pos
 
 /-! ## Door-IV wraparound `Q ≥ 0` discharge. Scope: **obstruction**.
 
@@ -1189,4 +1243,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms dilationEnergy_deep_step_of_depth2K_energy_export
 #print axioms dilationEnergy_not_deep_step_of_offdiagonal_gt_export
 #print axioms dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export
+#print axioms coreReduction_mStar_gt_of_BCHKS_fails_export
+#print axioms coreReduction_mStar_le_iff_BCHKS_export
+#print axioms coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
