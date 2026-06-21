@@ -11195,3 +11195,33 @@ axiom-clean. The abstract rule-3 obstruction: a scalar lever `L : {thin,thick}�
 `(¬Factor2ThinSeparation) ↔ thick < 2·thin` (`no_factor2_thin_iff_thick_lt_two_thin`) and the probe-datum
 specialization at K=1.18 (`deficit_lever_not_separating`). Axioms ⊆ {propext, Classical.choice, Quot.sound}.
 
+## [doorIV-halfmass-thickness-invariant] worst-b HALF-MASS H(b*) is thickness-invariant => the BGK wall, not a leak (rule-3), 2026-06-21 (sol opus-4-8)
+
+Lane: door-(iv) Lane 1. Companion to [doorIV-coherence-deficit-thickness-invariant]. At b*, coherence
+rho(b*)≡1 so M(n)=H(b*)=|A_{b*}|+|B_{b*}| EXACTLY (_DoorIVWorstBHalfMassCarriesAll): the ENTIRE prize
+√-cancellation burden lives in the half-mass. Prior work measured H(b*)~n^{0.54-0.60} thin-only; the
+rule-3 (thinness-essentiality) test on the half-mass had never been run.
+
+PROBE (`scripts/probes/probe_dooriv_halfmass_thickness_discriminant.py`, proper mu_n<F_p*, p>>n^3 BOTH
+regimes, EXACT scans, matched coset counts, uniform-random subsample): IDENTICAL engine at THIN beta≈4.0
+vs THICK beta≈3.05 (CORE-FALSE window). Prize-NORMALIZED half-mass H(b*)/√(n log):
+  n= 16: THIN 1.193 vs THICK 1.122  (ratio 1.063)
+  n= 32: THIN 1.260 vs THICK 1.249  (ratio 1.009)
+  n= 64: THIN 1.194 vs THICK 1.183  (ratio 1.010)  [LARGE-n decisive]
+  n=128: THIN 1.242 vs THICK 1.307  (ratio 0.951)  [LARGE-n decisive]
+EVERY ratio within ~6% of 1 at EVERY n. Growth exponent H~n^a also tracks (thin 0.55-0.74, thick
+0.55-0.81, same band).
+
+VERDICT: the prize-normalized half-mass is THICKNESS-INVARIANT — it saturates the SAME prize-scale value
+(~1.1-1.3) thin AND thick. By rule 3 the half-mass is therefore thickness-blind and is NOT a CORE leak;
+it IS the collective BGK √-cancellation wall, with identical status in both regimes. Combined with the
+companion deficit result, BOTH factors of the M=rho·H worst-b decomposition are thickness-invariant: the
+coherence factor (rho deficit) AND the magnitude factor (half-mass) are each thickness-blind, so neither
+per-b factor is a thin-specific leak. The prize content is exclusively in the COLLECTIVE BGK aggregate
+over ALL frequencies. NO CORE / cancellation / completion / moment / anti-concentration / capacity claim;
+CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceDeficitThicknessInvariant.lean`,
+new theorem `halfMass_lever_not_separating_either_side` (a lever comparable with factor K≈1.07<2 admits
+NEITHER a factor-2 thin- nor thick-separation), reusing the RegimeLever abstraction. Axioms ⊆ {propext,
+Classical.choice, Quot.sound}.

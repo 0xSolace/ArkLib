@@ -132,6 +132,32 @@ theorem deficit_lever_not_separating
   have h1 : 2 * L.thin ≤ (118 / 100 : ℝ) * L.thin := le_trans hsep hbound
   nlinarith [hthin_pos]
 
+/-! ## Half-mass specialization (companion rule-3 negative, same abstraction)
+
+At the worst frequency `b*` the index-2 coset-half coherence is exactly `1`, so the worst-`b` period
+magnitude EQUALS the half-mass: `M(n) = H(b*) = |A_{b*}| + |B_{b*}|`
+(`_DoorIVWorstBHalfMassCarriesAll`). The entire prize √-cancellation burden therefore lives in the
+half-mass. The probe `scripts/probes/probe_dooriv_halfmass_thickness_discriminant.py` measured the
+prize-NORMALIZED half-mass `H(b*)/√(n·log)` at matched `n`, THIN `β≈4.0` vs THICK `β≈3.05`:
+
+  n= 16: 1.193 vs 1.122  (ratio 1.063)
+  n= 32: 1.260 vs 1.249  (ratio 1.009)
+  n= 64: 1.194 vs 1.183  (ratio 1.010)  [large-n, decisive]
+  n=128: 1.242 vs 1.307  (ratio 0.951)  [large-n, decisive]
+
+Every ratio sits within ~6 % of `1` — the half-mass saturates the SAME prize-scale value thin and
+thick. By rule 3 the half-mass is therefore thickness-blind and is NOT a CORE leak; it IS the
+collective BGK √-cancellation wall, identical in both regimes. We record the abstract two-sided
+statement: a lever whose regime-values are within a factor `K < 2` of each other (here `K ≈ 1.07`)
+admits NEITHER a factor-2 thin- NOR a factor-2 thick-separation. -/
+theorem halfMass_lever_not_separating_either_side
+    (hthin_pos : 0 < L.thin) (hthick_pos : 0 < L.thick)
+    (hcomp : L.Comparable (107 / 100 : ℝ)) :
+    (¬ L.Factor2ThinSeparation) ∧ (¬ L.Factor2ThickSeparation) := by
+  refine ⟨?_, ?_⟩
+  · exact L.not_factor2_thin_of_comparable (by norm_num) hthin_pos hcomp
+  · exact L.not_factor2_thick_of_comparable (by norm_num) hthick_pos hcomp
+
 end RegimeLever
 
 end ProximityGap.Frontier.DoorIVCoherenceDeficitThicknessInvariant
