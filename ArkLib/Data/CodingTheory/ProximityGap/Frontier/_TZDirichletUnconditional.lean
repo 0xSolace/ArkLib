@@ -47,6 +47,7 @@ sup-norm cone. Real, unconditional, Mathlib-backed progress on the B3 thread.
 namespace ArkLib.ProximityGap.KKH26
 
 open Finset
+open scoped NNReal ENNReal
 
 /-- **Dirichlet ⟹ good prime (generic).** For a modulus `n ≠ 0` and a finite family `R` of nonzero
 integers each with `|R i| ≤ M`, there is a prime `p ≡ 1 (mod n)` with `p > M` dividing none of the
@@ -95,8 +96,51 @@ theorem kkh26_good_prime_avoids_collisions_unconditional {n : ℕ} (hn : n ≠ 0
   have h := hgood ((collisionPairs μ r).equivFin ⟨(d₁, d₂), hq⟩)
   rwa [Equiv.symm_apply_apply] at h
 
+/-- A prime `p ≡ 1 (mod n)` carries an element of multiplicative order `n` in `F_p`
+(`(ZMod p)ˣ` is cyclic of order `p − 1`, and `n ∣ p − 1`). Inlined from
+`KKH26PolyFieldCeiling` (where it is `private`). -/
+private lemma exists_orderOf_eq_of_modEq' {p : ℕ} [Fact p.Prime] {n : ℕ} (hn : 0 < n)
+    (hmod : p ≡ 1 [MOD n]) : ∃ g : ZMod p, orderOf g = n := by
+  have hp2 : 2 ≤ p := (Fact.out : p.Prime).two_le
+  have hdvd : n ∣ p - 1 := (Nat.modEq_iff_dvd' (by omega)).mp hmod.symm
+  obtain ⟨u, hu⟩ := IsCyclic.exists_generator (α := (ZMod p)ˣ)
+  have hord : orderOf u = p - 1 := by
+    rw [orderOf_eq_card_of_forall_mem_zpowers hu, Nat.card_eq_fintype_card, ZMod.card_units]
+  have hdvd' : n ∣ orderOf u := hord ▸ hdvd
+  have hne : orderOf u ≠ 0 := by omega
+  refine ⟨((u ^ (orderOf u / n) : (ZMod p)ˣ) : ZMod p), ?_⟩
+  rw [orderOf_units, orderOf_pow_orderOf_div hne hdvd']
+
+/-- **The [KKH26] `δ*` ceiling, UNCONDITIONAL** (no `TZPrimeSupply`, #334 B3 pivot). For the
+smooth modulus `n = 2^μ·m` (`1 ≤ μ`, `1 ≤ m`) and `2 ≤ r ≤ 2^{μ-1}`, there is a prime
+`p ≡ 1 (mod n)` (with `p > s^{s/2}`, hence `> 2^μ`) and a smooth evaluation domain `⟨g⟩ ⊆ F_p^×`
+of order `n` such that for every `ε* < 2^r·(2^{μ-1}).choose r / p` the explicit evaluation code of
+degree `≤ (r-2)m` satisfies `mcaDeltaStar(C, ε*) ≤ 1 − r/2^μ` — strictly below capacity. The good
+prime is supplied UNCONDITIONALLY by Dirichlet (no analytic hypothesis); the price is that `p` is
+not proven polynomial in `n` (that is the remaining Linnik / effective-PNT-in-APs gap). -/
+theorem kkh26_mcaDeltaStar_le_unconditional {n : ℕ} (hn0' : n ≠ 0) [NeZero n] {μ m r : ℕ}
+    (hμ : 1 ≤ μ) (hm : 1 ≤ m) (hn : n = 2 ^ μ * m)
+    (hr2 : 2 ≤ r) (hr : r ≤ 2 ^ (μ - 1)) :
+    ∃ p : ℕ, p.Prime ∧ p ≡ 1 [MOD n] ∧ (((2 : ℕ) ^ μ) ^ 2 ^ (μ - 1)) < p ∧
+      ∃ (_ : Fact p.Prime) (g : ZMod p), orderOf g = n ∧
+        ∀ εstar : ℝ≥0∞,
+          εstar < ((2 ^ r * (2 ^ (μ - 1)).choose r : ℕ) : ℝ≥0∞) / (p : ℝ≥0∞) →
+          ProximityGap.MCAThresholdLedger.mcaDeltaStar (F := ZMod p)
+              (evalCode g n ((r - 2) * m)) εstar
+            ≤ 1 - (r : ℝ≥0) / ((2 : ℝ≥0) ^ μ) := by
+  obtain ⟨p, hp, hmod, hpgt, hndvd⟩ :=
+    kkh26_good_prime_avoids_collisions_unconditional hn0' hμ hr
+  haveI hfact : Fact p.Prime := ⟨hp⟩
+  have hplp : (2 : ℕ) ^ μ < p :=
+    lt_of_le_of_lt (Nat.le_self_pow (by positivity) ((2 : ℕ) ^ μ)) hpgt
+  have hn0 : 0 < n := Nat.pos_of_ne_zero hn0'
+  obtain ⟨g, hg⟩ := exists_orderOf_eq_of_modEq' hn0 hmod
+  refine ⟨p, hp, hmod, hpgt, hfact, g, hg, fun εstar hεstar => ?_⟩
+  exact kkh26_mcaDeltaStar_le_of_not_dvd hμ hm hn (hn ▸ hg) hplp hr2 hr hndvd εstar hεstar
+
 end ArkLib.ProximityGap.KKH26
 
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx). -/
 #print axioms ArkLib.ProximityGap.KKH26.exists_good_prime_dirichlet
 #print axioms ArkLib.ProximityGap.KKH26.kkh26_good_prime_avoids_collisions_unconditional
+#print axioms ArkLib.ProximityGap.KKH26.kkh26_mcaDeltaStar_le_unconditional
