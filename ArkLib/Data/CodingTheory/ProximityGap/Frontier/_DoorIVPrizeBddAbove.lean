@@ -60,6 +60,19 @@ theorem bddAbove_range_iff_exists_forall_le {ι : Type*} (f : ι → ℝ) :
     rintro x ⟨i, rfl⟩
     exact hC i
 
+/-- A bounded real family always has a **nonnegative** uniform upper constant.  This is the
+`O(1)` sign-normalization used in the Shaw-value prose: replacing any upper bound `C` by
+`max C 0` loses no information. -/
+theorem bddAbove_range_iff_exists_nonneg_forall_le {ι : Type*} (f : ι → ℝ) :
+    BddAbove (Set.range f) ↔ ∃ C, 0 ≤ C ∧ ∀ i, f i ≤ C := by
+  rw [bddAbove_range_iff_exists_forall_le]
+  constructor
+  · rintro ⟨C, hC⟩
+    refine ⟨max C 0, le_max_right C 0, fun i => ?_⟩
+    exact le_trans (hC i) (le_max_left C 0)
+  · rintro ⟨C, _hCnonneg, hC⟩
+    exact ⟨C, hC⟩
+
 /-- The bespoke normalized prize-family predicate is exactly `BddAbove` of the normalized prize
 ratios. -/
 theorem bddAbove_range_iff_exists_normalizedPrizeFamilyBound {ι : Type*} (M scale : ι → ℝ) :
@@ -68,12 +81,32 @@ theorem bddAbove_range_iff_exists_normalizedPrizeFamilyBound {ι : Type*} (M sca
   rw [bddAbove_range_iff_exists_forall_le]
   rfl
 
+/-- Nonnegative-constant `BddAbove` form for normalized prize ratios.  This is the exact
+standard-library statement of “the normalized prize/Shaw ratios are `O(1)`” with the conventional
+constant sign `0 ≤ C`. -/
+theorem bddAbove_range_iff_exists_nonneg_normalizedPrizeFamilyBound {ι : Type*}
+    (M scale : ι → ℝ) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ normalizedPrizeFamilyBound M scale C := by
+  rw [bddAbove_range_iff_exists_nonneg_forall_le]
+  rfl
+
 /-- The bespoke normalized half-mass-family predicate is exactly `BddAbove` of the normalized
 half-mass ratios. -/
 theorem bddAbove_range_iff_exists_normalizedHalfMassFamilyBound {ι : Type*} (H scale : ι → ℝ) :
     BddAbove (Set.range fun i => H i / scale i) ↔
       ∃ C, normalizedHalfMassFamilyBound H scale C := by
   rw [bddAbove_range_iff_exists_forall_le]
+  rfl
+
+/-- Nonnegative-constant `BddAbove` form for normalized half-mass Shaw ratios.  Boundedness of the
+half-mass door-(iv) target is unchanged by requiring the witnessing `O(1)` constant to be
+nonnegative. -/
+theorem bddAbove_range_iff_exists_nonneg_normalizedHalfMassFamilyBound {ι : Type*}
+    (H scale : ι → ℝ) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ normalizedHalfMassFamilyBound H scale C := by
+  rw [bddAbove_range_iff_exists_nonneg_forall_le]
   rfl
 
 /-- With positive scales, `BddAbove` of the normalized prize ratios is equivalent to the RAW prize
@@ -290,8 +323,11 @@ theorem bddAbove_range_normalizedHalfMass_iff_not_forall_exists_lt_normalizedPri
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_forall_le
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_nonneg_forall_le
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_normalizedPrizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_nonneg_normalizedPrizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_normalizedHalfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_nonneg_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
 
