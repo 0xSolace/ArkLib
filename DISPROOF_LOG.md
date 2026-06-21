@@ -10214,3 +10214,53 @@ VERDICT (rule-4 mapped wall; closes the oscillation hope; CORE OPEN):
   approach W_r -> n^r/q, i.e. the deep Wick-deficit going to zero -- which IS the open BGK wall (bounding
   the RATE of that approach at r~log q). No new lever; the alternating-series escape is mapped + closed.
 - Does NOT bound M. No CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+## [door-(iv) Lane-1] the NON-negation-stable decomposition lever is DEAD too: worst-b coherence is PARTITION-INVARIANT (=1) under term co-ray, breaking x->-x symmetry supplies NO slack (2026-06-21, sol)
+
+Lens: the EXPLICITLY-NAMED surviving Lane-1 direction. The raw index-2 coset-half split of the thin
+2-power subgroup mu_n is negation-stable (every nontrivial subgroup of the cyclic 2-group mu_n contains
+the order-2 element -1 = g^{n/2}), so both half-sums are real and worst-b coherence
+rho(b)=||Sum pieces||/Sum||pieces|| saturates to 1 on same-sign halves (kernel DoorIVCosetHalfCoherence,
+DISPROOF [door-iv-coset-half-degeneracy]). The VERDICT there named the surviving hope:
+"Any surviving door-(iv) theorem must use a finer / NON-negation-stable decomposition or a different
+arithmetic statistic of {b*x^m}." This entry probes + refutes that last unprobed Lane-1 lever.
+
+PROBES (probe-first, exact C, PROPER thin mu_n n=2^a, p=1 mod n, p>>n^3, m=(p-1)/n, NEVER n=q-1):
+ (1) scripts/probes/probe_dooriv_nonneg_split_coherence.py — split mu_n by exponent ARCS (NOT subgroups,
+     pieces NOT negation-closed): ARC2/ARC4/ARC8, vs the negation-stable SUBGRP2 reference.
+     RESULT (worst-b rho over all/sampled (p-1)/n cosets, n=16/32/64, beta 3.7-4.3, p up to 16.8M):
+       ARC2  -> 1.000000 EVERYWHERE, 1-rho SHRINKING with p (4.3e-7 @n16 down to 3.1e-12 @n64) -> 0.
+       ARC4/ARC8 -> best worst-rho >= 0.988, 1-rho FLAT/non-growing (~1e-2..1e-4), no uniform slack.
+       SUBGRP2(ref) -> 1.000000 exactly (the known degeneracy), as expected.
+ (2) scripts/probes/probe_dooriv_nonneg_split_coherence_b.py — adversarial: NON-CONTIGUOUS splits (BIT1,
+     gray-code) and ASYMMETRIC-cardinality split (|P0|=n/2-1, so pieces cannot negation-pair), at
+     generic AND structured Fermat-type primes (incl p=65537=F4, v2(p-1)=16; p with v2 up to 11).
+     RESULT: worst-b rho = 1.000000 for EVERY split at EVERY (n,prime); 1-rho at the numerical noise
+     floor and NOT growing with n for ANY split (explicit GROWING=False on all three). Structured primes
+     create no slack.
+
+EXACT RESULT / WALL: breaking the negation symmetry of the partition does NOT create exploitable
+coherence slack. The mechanism is partition-INVARIANCE: at the adversarial frequency the underlying
+period TERMS e_p(b*x) already co-align (worst-case common nonnegative ray), and ANY grouping of
+common-ray terms yields piece-sums on that SAME ray, so rho=1 for EVERY partition -- finer, coarser,
+contiguous, non-contiguous, negation-stable or not. Hence "choose a cleverer / non-negation-stable
+partition" is not a lever: partition choice is irrelevant once the terms co-ray at the worst b. A useful
+piece-split anti-concentration theorem must break the common-ray alignment of the TERMS at the worst b --
+which is exactly the original sup-norm (CORE) problem, not a new handle. This refutes the campaign's own
+named surviving Lane-1 direction in the computed prize regime. Consistent with the meta-theorem; NO
+M-bound, NO CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim. Asymptotic
+cliff-at-n/2 guard untouched (this is a piece-coherence structure result, not an over-det incidence claim).
+
+Lean (axiom-clean, axioms subset {propext, Classical.choice, Quot.sound}):
+Frontier/_DoorIVDecompositionInvariantCoherence.lean --
+ - block_sum_common_ray: common-ray terms group to common-ray block-sums under ANY partition g.
+ - multiPieceNormCoherence_block_eq_one_of_common_ray (HEADLINE): for common-ray terms with positive
+   mass, the grouped multi-piece coherence = 1 for EVERY partition (arity/contiguity/negation-symmetry
+   irrelevant).
+ - no_partition_beats_one_of_common_ray_terms: no partition certifies a strict rho<=theta<1 drop while
+   terms co-ray; common_ray_terms_no_partition_le_one_sub: the 1-eps epsilon-drop form.
+Builds on the existing DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_of_common_nonneg_ray
+(per-fixed-partition same-ray case); the NEW content is partition-invariance (the partition-choice lever
+is dead). No #444 closure (constraint lemma + regime-bounded refutation of the named surviving sub-hope).
+
+Co-authored-by: wakesync <shadow@shad0w.xyz>
