@@ -722,7 +722,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueDegeneracySupport
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueGradedFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueInfFinrank
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueKernelStructure
-import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRankDeficient
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationModule
 import ArkLib.Data.CodingTheory.ProximityGap.Conjecture41CliqueRelationReconstruct
 import ArkLib.Data.CodingTheory.ProximityGap.ConstantIndexGaussSumBound
@@ -1063,7 +1062,6 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingLevelSet
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassHalf
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationDoublingMassNoCompose
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DilationRealSignCocycle
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodMomentLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DistinctPeriodSecondMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.DividedDifferenceDeflation
