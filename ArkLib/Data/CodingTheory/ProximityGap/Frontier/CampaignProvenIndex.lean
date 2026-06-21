@@ -39,6 +39,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvariantCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -1299,7 +1301,89 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms coreReduction_mStar_gt_of_BCHKS_fails_export
 #print axioms coreReduction_mStar_le_iff_BCHKS_export
 #print axioms coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
+
+/-! ## Door-IV connected-correlation hierarchy closure. Scope: **obstruction/capstone**.
+
+These exports make the newest door-(iv) Lane-1/Lane-3 closure permanent: once the connected fourth
+cumulant and the signed 3-3 / sixth-order connected cumulant vanish, every attempted bound routed
+through the connected-correlation hierarchy through sixth order factors through the lower-order Wick
+/ diagonal data already mapped dead. The order-uniform ladder lemma records the same obstruction for
+any finite set of higher cumulant rungs. This is a no-new-correlation-lever statement only; it does
+not prove CORE. -/
+
+/-- **[obstruction, DoorIVCorrelationHierarchy]** If the connected triple correlation vanishes,
+the canonical signed six-point functional `|κ₃|²` is exactly zero. Thus the first phase-sensitive
+sixth-order object supplies no door-(iv) lower-bound content. -/
+theorem doorIV_sixPoint_lever_vacuous_export {κ₃ : ℂ} (hzero : κ₃ = 0) :
+    Complex.normSq κ₃ = 0 :=
+  _root_.ProximityGap.Frontier.DoorIVCorrelationHierarchyCapstone.sixPoint_lever_vacuous hzero
+
+/-- **[capstone, DoorIVCorrelationHierarchy]** Connected-correlation closure through sixth order:
+if a candidate is controlled by both the 2-2 and 3-3 moments, and the connected fourth and sixth
+cumulants vanish, then both controls pass through the Wick values. No connected-correlation
+functional through order six supplies a fresh door-(iv) bound. -/
+theorem doorIV_correlation_hierarchy_no_lever_export
+    {M m22 wick4 cum4 m33 wick6 cum6 : ℝ}
+    (hctrl4 : M ≤ m22) (hctrl6 : M ≤ m33)
+    (hdec4 : m22 = wick4 + cum4) (hcum4 : cum4 = 0)
+    (hdec6 : m33 = wick6 + cum6) (hcum6 : cum6 = 0) :
+    M ≤ wick4 ∧ M ≤ wick6 :=
+  _root_.ProximityGap.Frontier.DoorIVCorrelationHierarchyCapstone.correlation_hierarchy_no_lever
+    hctrl4 hctrl6 hdec4 hcum4 hdec6 hcum6
+
+/-- **[capstone, DoorIVCorrelationHierarchy]** Full citable closure through sixth order, including
+both Wick-factorization of the 4th/6th connected-correlation controls and the exact zero
+of the signed six-point functional when `κ₃ = 0`. -/
+theorem doorIV_correlation_hierarchy_closed_through_six_export
+    {M m22 wick4 cum4 m33 wick6 cum6 : ℝ} {κ₃ : ℂ}
+    (hctrl4 : M ≤ m22) (hctrl6 : M ≤ m33)
+    (hdec4 : m22 = wick4 + cum4) (hcum4 : cum4 = 0)
+    (hdec6 : m33 = wick6 + cum6) (hcum6 : cum6 = 0)
+    (htriple : κ₃ = 0) :
+    (M ≤ wick4 ∧ M ≤ wick6) ∧ Complex.normSq κ₃ = 0 :=
+  _root_.ProximityGap.Frontier.DoorIVCorrelationHierarchyCapstone.correlation_hierarchy_closed_through_six
+    hctrl4 hctrl6 hdec4 hcum4 hdec6 hcum6 htriple
+
+/-- **[obstruction, DoorIVCumulantLadder]** Order-uniform single-rung form: for any
+moment-cumulant decomposition `mr = wickr + cumr`, a vanishing connected cumulant forces every
+control through that rung to pass through the Wick value. -/
+theorem doorIV_ladder_control_passes_through_wick_export
+    {M mr wickr cumr : ℝ}
+    (hctrl : M ≤ mr) (hdecomp : mr = wickr + cumr) (hzero : cumr = 0) :
+    M ≤ wickr :=
+  _root_.ProximityGap.Frontier.DoorIVCumulantLadderVacuity.ladder_control_passes_through_wick
+    hctrl hdecomp hzero
+
+/-- **[capstone, DoorIVCumulantLadder]** Whole finite ladder form: if every connected
+cumulant in a finite set of orders vanishes and every moment decomposes as Wick plus cumulant,
+then each moment is its Wick value. Climbing to higher connected-correlation rungs adds no new
+structure without a nonzero connected cumulant. -/
+theorem doorIV_whole_ladder_wick_export
+    {R : Finset ℕ} {m wick cum : ℕ → ℝ}
+    (hdec : ∀ r ∈ R, m r = wick r + cum r)
+    (hladder : ∀ r ∈ R, cum r = 0) :
+    ∀ r ∈ R, m r = wick r :=
+  _root_.ProximityGap.Frontier.DoorIVCumulantLadderVacuity.whole_ladder_wick hdec hladder
+
+/-- **[capstone, DoorIVCumulantLadder]** Whole finite ladder control form: if a candidate is
+bounded at every rung of a finite cumulant ladder whose connected cumulants vanish, it is bounded
+at every rung by the corresponding Wick value. This packages the higher-order correlation route
+as a Wick-data route, not a fresh anti-concentration lever. -/
+theorem doorIV_whole_ladder_control_export
+    {R : Finset ℕ} {M : ℝ} {m wick cum : ℕ → ℝ}
+    (hctrl : ∀ r ∈ R, M ≤ m r)
+    (hdec : ∀ r ∈ R, m r = wick r + cum r)
+    (hladder : ∀ r ∈ R, cum r = 0) :
+    ∀ r ∈ R, M ≤ wick r :=
+  _root_.ProximityGap.Frontier.DoorIVCumulantLadderVacuity.whole_ladder_control hctrl hdec hladder
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
+#print axioms doorIV_sixPoint_lever_vacuous_export
+#print axioms doorIV_correlation_hierarchy_no_lever_export
+#print axioms doorIV_correlation_hierarchy_closed_through_six_export
+#print axioms doorIV_ladder_control_passes_through_wick_export
+#print axioms doorIV_whole_ladder_wick_export
+#print axioms doorIV_whole_ladder_control_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
