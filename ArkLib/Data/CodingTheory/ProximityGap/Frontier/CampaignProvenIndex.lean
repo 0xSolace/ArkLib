@@ -85,6 +85,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9ReflectionSteinitz
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_ResonatorRatioLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_MomentRatioLadderGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
@@ -3986,5 +3987,50 @@ theorem doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export {ι : Type*}
 #print axioms doorIV_no_coherenceSlackWithBaseline_finsetArgmax_export
 #print axioms doorIV_no_affineCoherenceSlack_finsetArgmax_export
 #print axioms doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export
+
+
+/-! ## Door-IV Lane 2 floor-ladder capstone exports.
+Scope: **lower-floor/capstone**.
+
+These exports make the general moment-ratio lower-floor ladder permanent and discoverable.
+They are floor statements: they certify unavoidable mass of the worst frequency, and explicitly do
+not prove the CORE upper bound. The value is the citable `M² · Aᵣ ≥ Aᵣ₊₁` capstone that subsumes
+`√3`, `√5`, and `√7` below the documented DC-crossover ceiling.
+-/
+
+/-- **[lower-floor, AvFloorLadder]** General abstract moment-ratio ladder: for every depth `r`,
+`∑_{b≠0} ‖η_b‖^(2(r+1)) ≤ M² * ∑_{b≠0} ‖η_b‖^(2r)`, where
+`M² = sup'_{b≠0} ‖η_b‖²`. This is the permanent index form of the citable `M² · Aᵣ ≥ Aᵣ₊₁`
+floor capstone, not a cancellation upper bound. -/
+theorem doorIV_avFloorLadder_momentSucc_le_sup_moment_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (ψ : AddChar F ℂ) (G : Finset F)
+    (hne : (Finset.univ.erase (0 : F)).Nonempty) (r : ℕ) :
+    (∑ b ∈ Finset.univ.erase (0 : F),
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ (2 * (r + 1)))
+      ≤ ((Finset.univ.erase (0 : F)).sup' hne
+            (fun b => ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2))
+          * (∑ b ∈ Finset.univ.erase (0 : F),
+              ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ (2 * r)) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvFloorLadder.momentSucc_le_sup'_moment ψ G hne r
+
+/-- **[lower-floor, AvFloorLadder]** General energy-form ladder: substituting the exact nonzero
+moment identity gives `q*E_{r+1} - n^(2(r+1)) ≤ M² * (q*E_r - n^(2r))` for every `r`. This
+packages the `√3/√5/√7/...` moment-ratio floor family under one indexed theorem. -/
+theorem doorIV_avFloorLadder_energy_moment_floor_general_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (Finset.univ.erase (0 : F)).Nonempty) (r : ℕ) :
+    (Fintype.card F : ℝ) * _root_.ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy G (r + 1)
+        - (G.card : ℝ) ^ (2 * (r + 1))
+      ≤ ((Finset.univ.erase (0 : F)).sup' hne
+            (fun b => ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2))
+          * ((Fintype.card F : ℝ)
+              * _root_.ArkLib.ProximityGap.SubgroupGaussSumMoment.rEnergy G r
+              - (G.card : ℝ) ^ (2 * r)) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvFloorLadder.energy_moment_floor_general hψ G hne r
+
+#print axioms doorIV_avFloorLadder_momentSucc_le_sup_moment_export
+#print axioms doorIV_avFloorLadder_energy_moment_floor_general_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

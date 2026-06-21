@@ -11273,3 +11273,22 @@ CORE/cancellation/completion/anti-concentration/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvFloor_MomentRatioLadderGeneral.lean`,
 theorems `momentSucc_le_sup'_moment`, `energy_moment_floor_general`. Both axiom-clean ⊆ {propext,
 Classical.choice, Quot.sound}; no sorry/opaque/native_decide.
+
+## [doorIV-avfloor-ladder-index-exports] permanent exports for the general moment-ratio floor ladder (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 capstone consolidation. The general floor ladder
+`AvFloorLadder.momentSucc_le_sup'_moment` and its energy form
+`AvFloorLadder.energy_moment_floor_general` were already proven axiom-clean in
+`_AvFloor_MomentRatioLadderGeneral.lean`; this entry makes them permanent and discoverable from
+`CampaignProvenIndex` as `doorIV_avFloorLadder_momentSucc_le_sup_moment_export` and
+`doorIV_avFloorLadder_energy_moment_floor_general_export`.
+
+VERDICT: the floor ladder is now a citable indexed capstone: `M² · Aᵣ ≥ Aᵣ₊₁` for every `r`,
+subsuming the `√3`, `√5`, and `√7` lower-floor rungs below the documented DC-crossover ceiling. This is
+a LOWER-floor statement only; it does not prove CORE, cancellation, completion, anti-concentration, or
+capacity. The open Door-IV content remains the BGK thin-subgroup upper-bound wall.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports
+`doorIV_avFloorLadder_momentSucc_le_sup_moment_export` and
+`doorIV_avFloorLadder_energy_moment_floor_general_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
