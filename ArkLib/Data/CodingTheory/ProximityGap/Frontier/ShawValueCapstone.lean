@@ -187,6 +187,24 @@ theorem exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound_o
   exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound
     (fun i => prizeScale_pos (hn i) (hL i))
 
+/-- Wall-facing strict existential capstone: failure of every absolute strict raw prize constant is
+exactly failure of every absolute strict Shaw-value constant.  This is the strict-slack analogue of
+`not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound`, useful when a Door-IV obstruction
+is formulated as the impossibility of a uniform strict margin. -/
+theorem not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    ¬ (∃ C, strictRawPrizeFamilyBound M n L C) ↔
+      ¬ (∃ C, strictShawValueFamilyBound M n L C) :=
+  not_congr (exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound hs)
+
+/-- Wall-facing strict existential capstone in pointwise-positive parameters. -/
+theorem not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound_of_pos
+    {ι : Type*} {M n L : ι → ℝ} (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    ¬ (∃ C, strictRawPrizeFamilyBound M n L C) ↔
+      ¬ (∃ C, strictShawValueFamilyBound M n L C) :=
+  not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound
+    (fun i => prizeScale_pos (hn i) (hL i))
+
 /-- Existential constant form of the uniform-family capstone: there is an absolute raw prize constant
 iff there is an absolute normalized Shaw-value constant, with the same witness. -/
 theorem exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound {ι : Type*} {M n L : ι → ℝ}
@@ -748,6 +766,8 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_strictRawPrizeFamilyBound_iff_exists_strictShawValueFamilyBound_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_strictRawPrizeFamilyBound_iff_not_exists_strictShawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound
