@@ -180,6 +180,14 @@ theorem exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycl
     refine ⟨max C 0, le_max_right C 0, ?_⟩
     exact jacobiCocycleDispersionFamilyBound_mono_const (le_max_left C 0) hC
 
+/-- Wall-facing version of the Jacobi sign-normalization wrapper: failure of every nonnegative
+absolute dispersion constant is exactly failure of every arbitrary absolute dispersion constant. -/
+theorem not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_jacobiCocycleDispersionFamilyBound
+    {ι : Type*} {M n m : ι → ℝ} :
+    ¬ (∃ C, 0 ≤ C ∧ jacobiCocycleDispersionFamilyBound M n m C) ↔
+      ¬ (∃ C, jacobiCocycleDispersionFamilyBound M n m C) :=
+  not_congr exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
+
 /-- **Uniform bridge to Shaw values.** A single constant bounding the Jacobi-cocycle dispersion target
 throughout a family is exactly a single constant bounding the corresponding Shaw values with `L_i = log m_i`.
 This is the family-level version of the Door-IV reduction: no cancellation estimate is hidden in the wrapper. -/
@@ -266,6 +274,7 @@ end ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_mono_const
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_jacobiCocycleDispersionFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_jacobiCocycleDispersionFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersion_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.jacobiCocycleDispersionFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.exists_jacobiCocycleDispersionFamilyBound_iff_exists_shawValueFamilyBound
