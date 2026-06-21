@@ -2455,9 +2455,30 @@ theorem doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export {F : Type*} [Fie
       ≤ max (2 * Pp.natDegree) (1 + 2 * Qp.natDegree) :=
   _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_indicator_sum_le_degreeEnvelope hR B
 
+/-- **[descent, ZLagrangeBound]** Exponent-controlled form from the G1→G2 bridge:
+`Z ≤ 1 + 2 * max (deg Pp) (deg Qp)`. -/
+theorem doorIV_descent_Z_card_le_degBound_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F}
+    (hR : _root_.ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (B.filter (fun y => (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2)).card
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentZ_card_le_degBound hR B
+
+/-- **[descent, even-spine]** Global symmetric backbone: summing the even fibre identity over the
+base gives exactly twice the lower-level agreement count. -/
+theorem doorIV_descentAgreement_even_eq_two_mul_export {F : Type*} [Field F] [DecidableEq F]
+    (B : Finset F) (ρ Pf : F → F)
+    (hρ0 : ∀ y ∈ B, ρ y ≠ 0) (h2 : (2 : F) ≠ 0) :
+    (∑ y ∈ B, (({ρ y, -ρ y} : Finset F).filter (fun x => Pf y + x * 0 = 0)).card)
+      = 2 * (B.filter (fun y => Pf y = 0)).card :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.descentAgreement_even_eq_two_mul B ρ Pf hρ0 h2
+
 #print axioms doorIV_descent_quadform_degreeEnvelope_export
 #print axioms doorIV_descent_Z_card_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export
+#print axioms doorIV_descent_Z_card_le_degBound_export
+#print axioms doorIV_descentAgreement_even_eq_two_mul_export
 
 /-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
 period magnitude equals the half-mass exactly. Thus the cross-half coherence factor contributes no
