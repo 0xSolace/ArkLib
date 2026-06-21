@@ -10432,3 +10432,23 @@ refute their disjunction as a possible fixed-sign route.
 VERDICT: the 8th-cumulant sign is not a field-universal monotone lever.  If an 8th-order object is useful,
 it cannot be via a bare fixed-sign cumulant inequality; it would need a new magnitude/structure theorem.
 No CORE/cancellation/completion/moment/capacity claim.
+
+## door-(iv) sign-cocycle positive mass is exactly balanced by cancellation mass (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3, hardening the real dilation sign-cocycle constraint. The prior sign-cocycle
+file proved the global signed cross identity
+`Σ_b Re(η_b(G)) Re(η_{ζb}(G)) = 0` for negation-closed `G` with disjoint dilate. This entry packages
+the exact finite consequence needed by the door-(iv) narrative:
+
+`Σ_b max(Re(η_b)Re(η_{ζb}),0) = Σ_b max(-Re(η_b)Re(η_{ζb}),0)`.
+
+Formal kernel: `Frontier/_DoorIVSignCocycleMassBalance.lean` proves the pure finite lemma
+`posMass_eq_negMass_of_sum_zero`, then specializes it as `sign_positiveMass_eq_negativeMass`. It also
+proves `positiveMass_zero_of_all_nonneg` and `not_all_nonneg_of_positiveMass_pos`: a globally all-`+`
+sign cocycle can only occur with zero positive cross-mass; any nonzero same-sign/doubling mass forces
+an opposite-sign/cancelling contribution elsewhere.
+
+VERDICT: the dilation sign-cocycle is not a free positive alignment budget. The doubling branch is
+globally paid for by equal cancellation mass. This does not bound the single worst-frequency descent
+word (the BGK/CORE wall remains), but it locks the constraint that a mass-level door-(iv) proof cannot
+keep only the same-sign side. No CORE/cancellation/completion/moment/capacity claim.
