@@ -3417,6 +3417,26 @@ theorem doorIV_weightedSubmean_le_max_export {ι : Type*} (s : Finset ι) (w lam
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedSubmean_le_max
     s w lam hw_nonneg hw_sum hM_nonneg hM
 
+/-- **[obstruction, GeomMeanBelowMax]** Probability-weighted averages that beat a threshold expose
+an entry above the same threshold. Average-side murmuration/density evidence is a lower witness for
+`max`, not an upper-control mechanism for the adversarial frequency. -/
+theorem doorIV_weightedMean_gt_forces_point_gt_export {ι : Type*} (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) = 1)
+    {C : ℝ} (hgt : C < ∑ i ∈ s, w i * lam i) :
+    ∃ i ∈ s, C < lam i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedMean
+    s w lam hw_nonneg hw_sum hgt
+
+/-- **[obstruction, GeomMeanBelowMax]** Subprobability-weighted averages above a nonnegative
+threshold still expose an entry above that threshold. Truncation does not create hidden worst-case
+upper control. -/
+theorem doorIV_weightedSubmean_gt_forces_point_gt_export {ι : Type*} (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) ≤ 1)
+    {C : ℝ} (hC_nonneg : 0 ≤ C) (hgt : C < ∑ i ∈ s, w i * lam i) :
+    ∃ i ∈ s, C < lam i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedSubmean
+    s w lam hw_nonneg hw_sum hC_nonneg hgt
+
 /-- **[obstruction, GeomMeanBelowMax]** The geometric mean (Mahler-measure / log-average) of the
 nonnegative spectrum lies at or below the max: `(∏_{i∈s} lam i)^{1/card s} ≤ M` for `lam i ≤ M` on a
 nonempty `s`. Kernels the (b)/(d) literature-cluster verdict (murmuration density / Mahler measure are
@@ -3698,6 +3718,8 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_arithMean_le_max_export
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
+#print axioms doorIV_weightedMean_gt_forces_point_gt_export
+#print axioms doorIV_weightedSubmean_gt_forces_point_gt_export
 #print axioms doorIV_geomMean_le_max_export
 #print axioms doorIV_orderedWalk_endpoint_le_maximalExcursion_export
 #print axioms doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export

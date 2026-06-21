@@ -11143,3 +11143,11 @@ overshoot √(n·log)). This CORRECTS the earlier "H/n ~ n^{-0.3..-0.5}, oversho
 the wrong yardstick √n). The half-mass object has the SAME status as M(n) itself: the BGK √-cancellation
 wall, not a leak. NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim; CORE
 remains OPEN.
+
+## [doorIV-weighted-average-excess-exposes-point] density averages are lower witnesses, not max upper controls (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. The previous kernel pinned that uniform, weighted, and subprobability averages lie below an entrywise max. This sweep adds the converse probe-facing witness form: if a probability-weighted density statistic is strictly above a threshold `C`, then some sampled value is already above `C`; likewise for subprobability weights when `0 ≤ C`.
+
+VERDICT: murmuration/density/truncated-average evidence cannot hide or manufacture adversarial worst-case upper control. An average above a threshold is only a lower witness for the max, not a mechanism bounding the worst frequency from above. Refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorems `exists_gt_of_lt_weightedMean` and `exists_gt_of_lt_weightedSubmean`; exported from `CampaignProvenIndex` as `doorIV_weightedMean_gt_forces_point_gt_export` and `doorIV_weightedSubmean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

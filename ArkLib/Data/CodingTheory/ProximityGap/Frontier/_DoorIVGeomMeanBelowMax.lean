@@ -116,6 +116,37 @@ theorem weightedSubmean_le_max (s : Finset ι) (w lam : ι → ℝ)
     mul_le_mul_of_nonneg_right hw_sum hM_nonneg
   simpa using le_trans hweighted hmass
 
+/-- **A weighted average beating a threshold exposes a point above that threshold.**  A density /
+murmuration statistic cannot hide an adversarial frequency: if a probability-weighted average is
+strictly larger than `C`, then some sampled value is strictly larger than `C`.  Thus an average-side
+witness is only a lower witness for the worst-case max, not an upper-control mechanism. -/
+theorem exists_gt_of_lt_weightedMean (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) = 1)
+    {C : ℝ} (hgt : C < ∑ i ∈ s, w i * lam i) :
+    ∃ i ∈ s, C < lam i := by
+  by_contra hno
+  have hC : ∀ i ∈ s, lam i ≤ C := by
+    intro i hi
+    exact le_of_not_gt (fun hlt => hno ⟨i, hi, hlt⟩)
+  have hle : ∑ i ∈ s, w i * lam i ≤ C :=
+    weightedMean_le_max s w lam hw_nonneg hw_sum hC
+  exact not_lt_of_ge hle hgt
+
+/-- **A subprobability average beating a nonnegative threshold still exposes a point above it.**
+Truncating the averaging window does not create hidden upper control: any strict excess over `C ≥ 0`
+comes from at least one entry already exceeding `C`. -/
+theorem exists_gt_of_lt_weightedSubmean (s : Finset ι) (w lam : ι → ℝ)
+    (hw_nonneg : ∀ i ∈ s, 0 ≤ w i) (hw_sum : (∑ i ∈ s, w i) ≤ 1)
+    {C : ℝ} (hC_nonneg : 0 ≤ C) (hgt : C < ∑ i ∈ s, w i * lam i) :
+    ∃ i ∈ s, C < lam i := by
+  by_contra hno
+  have hC : ∀ i ∈ s, lam i ≤ C := by
+    intro i hi
+    exact le_of_not_gt (fun hlt => hno ⟨i, hi, hlt⟩)
+  have hle : ∑ i ∈ s, w i * lam i ≤ C :=
+    weightedSubmean_le_max s w lam hw_nonneg hw_sum hC_nonneg hC
+  exact not_lt_of_ge hle hgt
+
 /-- **Geometric mean ≤ max (the Mahler / log-average no-transfer constraint).**  For a nonempty
 finset `s` and nonnegative `lam` with entrywise bound `lam i ≤ M` (so `0 ≤ M`), the geometric mean
 satisfies `(∏_{i∈s} lam i)^{1/card s} ≤ M`.
@@ -151,4 +182,6 @@ end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.arithMean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedMean_le_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.weightedSubmean_le_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedMean
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.exists_gt_of_lt_weightedSubmean
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max
