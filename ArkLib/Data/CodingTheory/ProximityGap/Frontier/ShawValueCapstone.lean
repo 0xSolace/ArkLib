@@ -401,6 +401,30 @@ theorem exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
     exists_nonneg_rawPrizeFamilyBound_iff_exists_nonneg_shawValueFamilyBound hs]
   exact exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich hK hs hMH hHM
 
+/-- Wall-facing Shaw-value sandwich equivalence.  Under the same raw sandwich `M ≤ H ≤ K*M`,
+failure of every nonnegative uniform Shaw bound is invariant when passing between `M` and `H`.
+This is the obstruction-facing companion to `exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich`:
+if the sandwiched half-mass target is unbounded in Shaw units, so is the prize supremum, and conversely. -/
+theorem not_exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    ¬ (∃ C, 0 ≤ C ∧ shawValueFamilyBound M n L C) ↔
+      ¬ (∃ C, 0 ≤ C ∧ shawValueFamilyBound H n L C) :=
+  not_congr (exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich hK hs hMH hHM)
+
+/-- Wall-facing raw-prize sandwich equivalence.  Under the raw sandwich `M ≤ H ≤ K*M`, failure of
+every nonnegative raw prize-family bound for `M` is exactly failure of every nonnegative raw bound
+for the sandwiched target `H`.  This records the obstruction side of the half-mass/prize reduction
+without changing the analytic burden. -/
+theorem not_exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
+    {ι : Type*} {M H n L : ι → ℝ} {K : ℝ}
+    (hK : 0 ≤ K) (hs : ∀ i, 0 < prizeScale (n i) (L i))
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    ¬ (∃ C, 0 ≤ C ∧ rawPrizeFamilyBound M n L C) ↔
+      ¬ (∃ C, 0 ≤ C ∧ rawPrizeFamilyBound H n L C) :=
+  not_congr (exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich hK hs hMH hHM)
+
 /-- Exact lower-floor normalization.  Under positive prize scale, a raw lower certificate
 `B ≤ M` is equivalent to the normalized lower certificate `B/scale ≤ Sh(M)`.  This is the
 lower-bound companion to `prizeBound_iff_shawValue_le`; it is useful for keeping the Plancherel /
@@ -785,6 +809,8 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_nonneg_shawValueFamilyBound_iff_of_rawSandwich
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_nonneg_rawPrizeFamilyBound_iff_of_rawSandwich
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBound_iff_shawValue_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawStrictLowerBound_iff_shawValue_strict_floor
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawLowerBoundFamily_iff_shawValueFloorFamily
