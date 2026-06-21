@@ -57,6 +57,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetCountSingleton
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawGrandSynthesis
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GKPhaseCoboundaryNonLinear
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackMarkoffCouplingNoGo
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvTannakianNonTorsionPump
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2206,6 +2209,83 @@ theorem doorIV_levelWorst_base_corrected_of_gate_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThresholdConcrete.levelWorst_le_base_corrected_of_gate
     hζ kstar r hdisj hgate
 
+/-! ## Door-IV direct-proof refutations from the Paley/direct-proof essay. Scope: **obstruction**.
+
+These exports make the latest direct-proof no-go kernels permanent: Gross--Koblitz phase
+bookkeeping, Markoff-surface coupling, and Tannakian non-torsion twists. All three are
+constraint lemmas only. They refute claimed shortcuts but do not prove CORE. -/
+
+/-- **[obstruction, GKPhaseCoboundary]** The additive Hasse--Davenport coboundary is exactly the
+Jacobi phase: under the product relation among unit Gauss phases, `J` is the `√p`-radius phase at
+`θ₁ + θ₂ - θ₁₂`. -/
+theorem doorIV_gk_coboundary_phase_eq_export {p : ℝ} (hp : 0 < p) (θ₁ θ₂ θ₁₂ : ℝ) {J : ℂ}
+    (hJ : ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₁ *
+        ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₂ =
+      J * ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₁₂) :
+    J = ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p (θ₁ + θ₂ - θ₁₂) :=
+  ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.coboundary_phase_eq
+    hp θ₁ θ₂ θ₁₂ hJ
+
+/-- **[obstruction, GKPhaseCoboundary]** A non-positive-real Jacobi factor certifies a nontrivial
+coboundary, hence forbids the linear/character-phase model needed for the free `√m` collapse. -/
+theorem doorIV_gk_nontrivial_coboundary_not_linearizable_export {p : ℝ} (hp : 0 < p)
+    (θ₁ θ₂ θ₁₂ : ℝ) {J : ℂ}
+    (hJ : ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₁ *
+        ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₂ =
+      J * ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.gPhase p θ₁₂)
+    (hJne : J ≠ (Real.sqrt p : ℂ)) :
+    Complex.exp ((θ₁ + θ₂ - θ₁₂) * Complex.I) ≠ 1 :=
+  ArkLib.ProximityGap.Frontier.GKPhaseCoboundaryNonLinear.nontrivial_coboundary_not_linearizable
+    hp θ₁ θ₂ θ₁₂ hJ hJne
+
+/-- **[obstruction, MarkoffCoupling]** A Markoff/twisted weighted period transfers to the real
+Paley period only in the constant-weight case; then the weighted period factors as `K` times the
+original period. -/
+theorem doorIV_markoff_weighted_period_factors_export {ι : Type*} (G : Finset ι)
+    (w f : ι → ℂ) (K : ℂ) (hw : ∀ x ∈ G, w x = K) :
+    (∑ x ∈ G, w x * f x) = K * (∑ x ∈ G, f x) :=
+  _root_.ProximityGap.Frontier.weighted_period_factors G w f K hw
+
+/-- **[obstruction, MarkoffCoupling]** Nonconstant slice weights refute every single-constant
+factorization through the Paley period on a two-slice witness. -/
+theorem doorIV_markoff_transfer_refuted_export {ι : Type*} [DecidableEq ι] (w : ι → ℂ)
+    (x₀ x₁ : ι) (hx : x₀ ≠ x₁) (hprobe : w x₀ ≠ w x₁) :
+    ¬ ∃ K : ℂ, ∀ f : ι → ℂ,
+        (∑ x ∈ ({x₀, x₁} : Finset ι), w x * f x)
+          = K * (∑ x ∈ ({x₀, x₁} : Finset ι), f x) :=
+  _root_.ProximityGap.Frontier.markoff_transfer_refuted w x₀ x₁ hx hprobe
+
+/-- **[obstruction, TannakianTwist]** A diagonal multiplicative twist only multiplies a
+cyclotomic minor determinant by the product of row weights. -/
+theorem doorIV_tannakian_twist_det_eq_export {n : Type*} [DecidableEq n] [Fintype n]
+    {R : Type*} [CommRing R] (χ : n → R) (A : Matrix n n R) :
+    (Matrix.of fun i j => χ i * A i j).det = (∏ i, χ i) * A.det :=
+  ArkLib.ProximityGap.Frontier.Tannakian.twist_det_eq χ A
+
+/-- **[obstruction, TannakianTwist]** Unit-valued diagonal twists preserve determinant vanishing,
+so they cannot turn a dyadic cyclotomic vanishing minor into a nonzero one. -/
+theorem doorIV_tannakian_twist_det_zero_iff_export {n : Type*} [DecidableEq n] [Fintype n]
+    {R : Type*} [CommRing R] [IsDomain R] {χ : n → R} (hχ : ∀ i, χ i ≠ 0)
+    (A : Matrix n n R) :
+    (Matrix.of fun i j => χ i * A i j).det = 0 ↔ A.det = 0 :=
+  ArkLib.ProximityGap.Frontier.Tannakian.twist_det_eq_zero_iff hχ A
+
+/-- **[obstruction, TannakianTwist]** A character whose image orders divide `d` with
+`gcd(d, |G|)=1` is trivial on the order-`|G|` subgroup. Thus a coprime non-torsion twist does
+nothing on `μ_n`. -/
+theorem doorIV_tannakian_coprime_order_trivial_export {G H : Type*} [Group G] [Group H]
+    [Fintype G] (χ : G →* H) {d : ℕ} (hdiv : ∀ g : G, orderOf (χ g) ∣ d)
+    (hcop : Nat.Coprime d (Fintype.card G)) :
+    ∀ g : G, χ g = 1 :=
+  ArkLib.ProximityGap.Frontier.Tannakian.coprime_order_trivial_on_mu χ hdiv hcop
+
+#print axioms doorIV_gk_coboundary_phase_eq_export
+#print axioms doorIV_gk_nontrivial_coboundary_not_linearizable_export
+#print axioms doorIV_markoff_weighted_period_factors_export
+#print axioms doorIV_markoff_transfer_refuted_export
+#print axioms doorIV_tannakian_twist_det_eq_export
+#print axioms doorIV_tannakian_twist_det_zero_iff_export
+#print axioms doorIV_tannakian_coprime_order_trivial_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_export
 #print axioms corePrize_bddAbove_range_shawValue_of_pos_lt_export
