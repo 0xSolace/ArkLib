@@ -104,6 +104,84 @@ theorem shawOOneOn_of_shawSeq_isBigO_one {q n M : ℕ → ℝ}
         exact Finset.single_le_sum (fun j _ => hnn j) hmem
       exact le_trans h2 (le_max_right _ _)
 
+/-! ### Prize-side companion: `M = O(√(n·log(q/n)))` in literal Landau notation -/
+
+/-- The `ℕ`-indexed sup-norm sequence of a prize family. -/
+noncomputable def supSeq (M : ℕ → ℝ) : ℕ → ℝ := fun i => M i
+
+/-- The `ℕ`-indexed prize-scale sequence `√(n·log(q/n))`. -/
+noncomputable def scaleSeq (q n : ℕ → ℝ) : ℕ → ℝ := fun i => shawScale (q i) (n i)
+
+/-- **Prize-side forward bridge.**  A global uniform prize-core bound `M ≤ C·scale` over the whole
+`ℕ` family, with pointwise nonnegative `M`, is in particular the literal Landau prize statement
+`M =O[atTop] √(n·log(q/n))`.  (The scale `√(·)` is automatically `≥ 0`, so `‖scale‖ = scale`.) -/
+theorem supSeq_isBigO_scaleSeq_of_corePrizeBoundOn {q n M : ℕ → ℝ}
+    (hMnn : ∀ i, 0 ≤ M i)
+    (h : CorePrizeBoundOn q n M) :
+    (supSeq M) =O[atTop] (scaleSeq q n) := by
+  obtain ⟨C, _hC, hbound⟩ := h
+  rw [isBigO_iff]
+  refine ⟨C, ?_⟩
+  filter_upwards with i
+  -- `‖M i‖ = M i`, `‖scale i‖ = scale i` (both nonneg); then the global bound.
+  rw [show ‖supSeq M i‖ = M i from abs_of_nonneg (hMnn i),
+      show ‖scaleSeq q n i‖ = shawScale (q i) (n i) from
+        abs_of_nonneg (Real.sqrt_nonneg _)]
+  exact hbound i
+
+/-- **Prize-side backward bridge.**  Under the prize-regime guard `0 < scale` (e.g. `n_i < q_i`,
+`0 < n_i`) and pointwise nonnegative `M`, the literal Landau bound `M =O[atTop] scale` upgrades to a
+global uniform prize-core bound `CorePrizeBoundOn`.  Positivity of the scale makes the prefix ratios
+`M i / scale i` well-defined, and the finitely many sub-threshold indices are absorbed. -/
+theorem corePrizeBoundOn_of_supSeq_isBigO_scaleSeq {q n M : ℕ → ℝ}
+    (hMnn : ∀ i, 0 ≤ M i)
+    (hscale : ∀ i, 0 < shawScale (q i) (n i))
+    (h : (supSeq M) =O[atTop] (scaleSeq q n)) :
+    CorePrizeBoundOn q n M := by
+  rw [isBigO_iff] at h
+  obtain ⟨c, hc⟩ := h
+  rw [eventually_atTop] at hc
+  obtain ⟨N, hN⟩ := hc
+  classical
+  -- eventual constant (made nonneg): `c' = max c 0`
+  set c' : ℝ := max c 0 with hc'
+  have hc'nn : 0 ≤ c' := le_max_right _ _
+  -- prefix ratio budget: each `M i / scale i` for `i < N`, summed (all terms ≥ 0).
+  set P : ℝ := ∑ j ∈ Finset.range N, (M j / shawScale (q j) (n j)) with hP
+  have hPnn : 0 ≤ P :=
+    Finset.sum_nonneg (fun j _ => div_nonneg (hMnn j) (le_of_lt (hscale j)))
+  refine ⟨max c' P, le_max_of_le_left hc'nn, ?_⟩
+  intro i
+  rcases le_or_gt N i with hi | hi
+  · -- eventual regime: `M i = ‖M i‖ ≤ c·‖scale i‖ = c·scale i ≤ c'·scale i ≤ (max c' P)·scale i`
+    have hbi := hN i hi
+    rw [show ‖supSeq M i‖ = M i from abs_of_nonneg (hMnn i),
+        show ‖scaleSeq q n i‖ = shawScale (q i) (n i) from
+          abs_of_nonneg (Real.sqrt_nonneg _)] at hbi
+    have hstep : c * shawScale (q i) (n i) ≤ (max c' P) * shawScale (q i) (n i) := by
+      apply mul_le_mul_of_nonneg_right _ (le_of_lt (hscale i))
+      exact le_trans (le_max_left c 0) (le_max_left c' P)
+    exact le_trans hbi hstep
+  · -- prefix regime: `M i / scale i ≤ P ≤ max c' P`, so `M i ≤ (max c' P)·scale i`
+    have hmem : i ∈ Finset.range N := Finset.mem_range.2 hi
+    have hratio : M i / shawScale (q i) (n i) ≤ P := by
+      rw [hP]
+      exact Finset.single_le_sum
+        (fun j _ => div_nonneg (hMnn j) (le_of_lt (hscale j))) hmem
+    have hle : M i / shawScale (q i) (n i) ≤ max c' P := le_trans hratio (le_max_right _ _)
+    rw [div_le_iff₀ (hscale i)] at hle
+    exact hle
+
+/-- **Prize-side Landau iff capstone.**  In the prize regime (positive scale, nonnegative sup norm),
+the campaign predicate `CorePrizeBoundOn` is *literally* the Landau prize statement
+`M =O[atTop] √(n·log(q/n))`. -/
+theorem corePrizeBoundOn_iff_supSeq_isBigO_scaleSeq {q n M : ℕ → ℝ}
+    (hMnn : ∀ i, 0 ≤ M i)
+    (hscale : ∀ i, 0 < shawScale (q i) (n i)) :
+    CorePrizeBoundOn q n M ↔ (supSeq M) =O[atTop] (scaleSeq q n) :=
+  ⟨supSeq_isBigO_scaleSeq_of_corePrizeBoundOn hMnn,
+   corePrizeBoundOn_of_supSeq_isBigO_scaleSeq hMnn hscale⟩
+
 /-- **Landau capstone (Lane-2).**  On an `ℕ`-indexed prize family with pointwise nonnegative Shaw
 value, the campaign predicate `ShawOOneOn` is *literally* Mathlib's Landau statement
 `shawSeq =O[atTop] 1`.  This is the notation bridge: the prose slogan `Sh(n)=O(1)` and the campaign's
