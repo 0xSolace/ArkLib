@@ -205,6 +205,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_sign_positiveMass_eq_negativeMass_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_not_all_nonneg_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_exists_negative_cross_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_positiveMass_le_half_card_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_negativeMass_le_half_card_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_positiveMass_eq_half_total_doublingMass_export` | obstruction | DoorIVSignCocycleMassBalance |
@@ -2155,6 +2156,23 @@ theorem doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
   _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
     hψ G hG hdisj hpos
 
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** Local witness form: nonzero positive
+same-sign/doubling mass forces an actually negative opposite-sign frequency. The balance theorem is
+therefore concrete spectral cancellation, not just an abstract equality of totals. -/
+theorem doorIV_sign_exists_negative_cross_of_positiveMass_pos_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G))
+    (hpos : 0 < ∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) :
+    ∃ b : F,
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re < 0 :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.exists_negative_cross_of_positiveMass_pos
+    hψ G hG hdisj hpos
+
 /-- **[obstruction, DoorIVSignCocycleMassBalance]** The same-sign/doubling branch occupies at most
 half of the global Cauchy--Schwarz cross budget `q·|G|`. This is only a global mass constraint, not a
 worst-frequency CORE bound. -/
@@ -2579,6 +2597,7 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
 #print axioms doorIV_sign_positiveMass_eq_negativeMass_export
 #print axioms doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
+#print axioms doorIV_sign_exists_negative_cross_of_positiveMass_pos_export
 #print axioms doorIV_sign_positiveMass_le_half_card_export
 #print axioms doorIV_sign_negativeMass_le_half_card_export
 #print axioms doorIV_sign_positiveMass_eq_half_total_doublingMass_export
