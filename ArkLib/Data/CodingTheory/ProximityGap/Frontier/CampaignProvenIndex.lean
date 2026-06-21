@@ -77,6 +77,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoM
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialStats
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -213,6 +214,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_radialSum_invariant_under_unit_twist_export` | obstruction | DoorIVPhaseBlindRadialStats |
 | `doorIV_stepanov_bstar_bound_export` | obstruction | StepanovAtBstar |
 | `doorIV_bstar_saving_iff_degenerate_export` | obstruction | StepanovAtBstar |
+| `doorIV_orderedWalk_endpoint_le_maximalExcursion_export` | obstruction | DoorIVOrderedWalkMajorant |
+| `doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export` | obstruction | DoorIVOrderedWalkMajorant |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3411,6 +3414,25 @@ theorem doorIV_geomMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonem
     (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max s hs lam hnn hM
 
+/-- **[obstruction, DoorIVOrderedWalkMajorant]** DIR9 ordered-walk scaffold: the endpoint
+norm is bounded by the finite maximal prefix excursion. This makes the ordered Doob/van-der-Corput
+object a genuine majorant of the Gauss-period endpoint while making no cancellation claim. -/
+theorem doorIV_orderedWalk_endpoint_le_maximalExcursion_export
+    {E : Type*} [SeminormedAddCommGroup E] (S : ℕ → E) (n : ℕ) :
+    ‖S n‖ ≤
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion S n :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_norm_le_maximalExcursion
+    S n
+
+/-- **[obstruction, DoorIVOrderedWalkMajorant]** Consumer form for DIR9: any uniform bound on the
+ordered maximal prefix excursion immediately bounds the Gauss-period endpoint. The whole analytic
+content remains proving the maximal-excursion bound. -/
+theorem doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
+    {E : Type*} [SeminormedAddCommGroup E] {S : ℕ → E} {n : ℕ} {C : ℝ}
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.maximalExcursion S n ≤ C) :
+    ‖S n‖ ≤ C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVOrderedWalkMajorant.endpoint_bound_of_maximalExcursion_bound h
+
 /-- **[obstruction, PhaseBlindRadialStats]** Every finite `normSq`-radial statistic is invariant
 under arbitrary pointwise unit twists. This is the kerneled radial side of Shaw's phase-blindness
 probe: a `b`-summed moment/radial summary cannot see the adversarial phase alignment Door (iv) needs. -/
@@ -3444,6 +3466,8 @@ theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
 #print axioms doorIV_geomMean_le_max_export
+#print axioms doorIV_orderedWalk_endpoint_le_maximalExcursion_export
+#print axioms doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_stepanov_bstar_bound_export
 #print axioms doorIV_bstar_saving_iff_degenerate_export
