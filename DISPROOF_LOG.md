@@ -1,3 +1,24 @@
+## [jacobi-hankel-routes-to-moments] form (D)'s b_k Hankel/Toda structure ROUTES BACK to the deep moments (form A) — no independent door (2026-06-21, sol)
+
+Lane: door-(iv) Lane-1 constraint verdict closing the "unexplored frontier" Shaw's Jacobi note named
+(is max_k b_k controllable by a route the exploding E_r obscured?). The off-diagonals are Hankel-
+determinant ratios b_k² = D_{k-1}D_{k+1}/D_k², so b_k is a (nonlinear) function of the moments
+m_0..m_{2k}. Probe scripts/probes/probe_444_jacobi_hankel_structure.py (exact, thin μ_n, p≫n³, n=16,32):
+argmax_k b_k = k* with peak depth 2k* = 10,14 ≈ log p = 11.1,13.9.
+
+VERDICT: max_k b_k (realized at k*) depends on the moments up to order 2k* ≈ log p = EXACTLY the deep-
+moment depth r≈log p that is the open kernel of form (A) (wraparound W_r for r>4). The Hankel/Toda
+structure REORGANIZES the deep moments into a bounded/stable/prime-discriminating object but introduces
+NO arithmetic input independent of them: controlling max_k b_k is EQUIVALENT to controlling the deep
+moments at depth ≈log p = the form-(A) wall (= BGK, proven non-proving). So FORM (D) OPENS NO DOOR
+BEYOND FORM (A) — the Jacobi tool relocates but does not escape, now kernel-backed. The Hankel-functional
+dependence is the structural fact (classical OP theory + probe), taken as an explicit hypothesis; NOT a
+larped crack. No CORE/cancellation/completion/anti-concentration/capacity claim. CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvJB_HankelRoutesToMoments.lean`,
+axiom-clean. Theorems `maxb_le_iff_moment_functional_le`, `maxb_determined_by_moments`,
+`prize_via_jacobi_is_moment_statement`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
 ## [jacobi-early-turnover-gap] form (D): free turnover ceiling is O(n), prize needs O(log p) — the gap is kernel-backed (2026-06-21, sol)
 
 Lane: door-(iv) Lane-2 bridge connecting the two PROVEN Jacobi modules
