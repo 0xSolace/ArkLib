@@ -84,6 +84,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9OrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9ReflectionSteinitz
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_ResonatorRatioLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3854,4 +3856,48 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_strict_peak_single_coset_export
 #print axioms doorIV_strict_maximizer_iff_translate_export
 #print axioms doorIV_strict_peak_Ncos_eq_one_export
+
+/-! ## Recent Door-IV capstones: resonator collapse and Rudnev/incidence stall.
+Scope: **obstruction/capstone**.
+
+These exports make the latest #444 reductions discoverable from the permanent index. The resonator
+brick records that the natural Montgomery-Soundararajan resonator on `μ_n` reproduces the ordinary
+moment-ratio floor; the Rudnev brick records, in exponent bookkeeping, why point-plane/sum-product
+incidence savings at `β = 4` stall at the `α = 1` census wall rather than the prize `α = 1/2`.
+-/
+
+/-- **[obstruction, AvResonator]** The natural resonator on `G` gives exactly the moment-ratio
+inequality `Σ‖η‖⁴ ≤ M²·Σ‖η‖²`. Thus this resonator lower-bound route factors through the already
+mapped moment/DC-crossover wall; it is a lower witness, not a Door-IV upper-control mechanism. -/
+theorem doorIV_resonator_one_gives_moment_floor_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (ψ : AddChar F ℂ) (G : Finset F)
+    (hne : (Finset.univ.erase (0 : F)).Nonempty) :
+    (∑ b ∈ Finset.univ.erase (0 : F),
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 4)
+      ≤ ((Finset.univ.erase (0 : F)).sup' hne
+            (fun b => ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2))
+          * (∑ b ∈ Finset.univ.erase (0 : F),
+              ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2) :=
+  _root_.ArkLib.ProximityGap.Frontier.AvResonator.resonator_one_gives_moment_floor ψ G hne
+
+/-- **[obstruction, RudnevPointPlaneStall]** At the prize exponent `β = 4`, the subgroup density
+parameter is exactly the point-plane/sum-product threshold `θ = 1/4`. The known incidence engine is
+therefore on the boundary, not in a strict-saving regime. -/
+theorem doorIV_rudnev_theta_at_beta_four_export :
+    _root_.ArkLib.ProximityGap.Frontier.RudnevPointPlaneStall.theta 4 = 1 / 4 :=
+  _root_.ArkLib.ProximityGap.Frontier.RudnevPointPlaneStall.theta_at_beta_four
+
+/-- **[obstruction, RudnevPointPlaneStall]** To make the incidence exponent reach the prize value
+`1/2`, the saving would have to be `κ = β + r - 1`, linear in the depth `r`. Fixed point-plane /
+sum-product savings cannot supply this; the remaining gap is the BGK phase-cancellation wall. -/
+theorem doorIV_rudnev_prize_needs_r_linear_saving_export (β κ : ℝ) (r : ℕ) (hr : 0 < r) :
+    _root_.ArkLib.ProximityGap.Frontier.RudnevPointPlaneStall.MExponent β κ r = 1 / 2 ↔
+      κ = β + r - 1 :=
+  _root_.ArkLib.ProximityGap.Frontier.RudnevPointPlaneStall.prize_needs_r_linear_saving β κ r hr
+
+#print axioms doorIV_resonator_one_gives_moment_floor_export
+#print axioms doorIV_rudnev_theta_at_beta_four_export
+#print axioms doorIV_rudnev_prize_needs_r_linear_saving_export
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
