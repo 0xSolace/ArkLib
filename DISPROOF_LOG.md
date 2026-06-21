@@ -10264,3 +10264,44 @@ Builds on the existing DoorIVComplexRayCoherence.multiPieceNormCoherence_eq_one_
 is dead). No #444 closure (constraint lemma + regime-bounded refutation of the named surviving sub-hope).
 
 Co-authored-by: wakesync <shadow@shad0w.xyz>
+
+## door-(iv) the SIGNED 6-point connected surface VANISHES — the connected TRIPLE correlation κ₃ is phase-incoherent (consistent with 0); the first 6-point object the board's own chain pointer named does not exist (2026-06-21, opus-4-8 subagent)
+
+Lens: door-(iv) Lane-1 CLOSURE of the board's OWN terminal chain pointer. The connected-4 entry
+(`_DoorIVConnectedCumulantVanishes`) closed the 4th-order surface and stated explicitly: "Any surviving
+door-(iv) crack must live at 6TH ORDER OR HIGHER, or in an object outside the moment hierarchy entirely."
+The modulus 6th moment K₆ collapses to the additive count E₃ (refuted energy, same character-orthogonality
+identity that killed K₄=E₂), so the only NOT-already-dead 6-point object is the PHASE-SENSITIVE, SIGNED one:
+the connected TRIPLE correlation of the period field z_j=η_{g^j} on the cyclic multiplicative quotient
+Z_{(p-1)/n}, κ₃(k,l) = E_j[(z_j−m)(z_{j+k}−m)(z_{j+l}−m)] (m=field mean). |κ₃|² is a genuine 3×conj-3 =
+6-point functional that does NOT reduce to E₃; every ODD connected cumulant of a complex-Gaussian field
+vanishes, so κ₃≡0 is the Gaussian baseline and a nonzero, N-non-shrinking, thinness-essential κ₃ would be
+a door-(iv) crack the white-noise autocorrelation and the connected-4 sweep are BLIND to.
+
+PROBE (`scripts/probes/probe_dooriv_signed_6point_cumulant.py` + `scripts/probes/probe_dooriv_6point_cumulant_floorcheck.py`,
+EXACT ℂ over coset reps g^j, PROPER 2-power μ_n, p≫n³, m=(p-1)/n>1, never n=q−1; sd³=(E|z−m|²)^{3/2}):
+- κ₃/sd³ over a lag grid hovers at the sampling floor; THIN (2-power n) and thick (non-2-power n) are
+  INTERLEAVED at matched cap (n=32 THIN max 0.0136 vs n=40 thick 0.0135; n=64 THIN 0.0177 vs n=48 thick
+  0.0134). Two decisive honesty controls:
+  - cap-scaling (fixed n,p): mean|κ₃|/sd³ tracks 1/√cap; ratio_to_floor FLAT at 0.65–0.79 across an 8×
+    cap range (3000→24000), i.e. |κ₃| DECAYS as 1/√cap (n=32: 0.0139→0.0042; n=64: 0.0137→0.0051). A real
+    connected cumulant keeps mean|κ₃|/sd³ flat (ratio_to_floor would GROW); it shrinks ⇒ pure sampling noise.
+  - i.i.d. control (same |z| multiset, randomized phases): period/iid = 0.764 (n=32), 0.818 (n=64) — the
+    period field's triple correlation is at or BELOW a phase-incoherent i.i.d. surrogate. No excess phase
+    coherence; marginally MORE decorrelated than i.i.d. at 3rd order.
+
+VERDICT (door-(iv) Lane-1 WALL / constraint lemma; CORE OPEN): the connected TRIPLE correlation is
+consistent with ZERO — the period field is phase-incoherent at 3rd order, so the first signed 6-point
+object does not exist. MECHANISM = no translation-structured signed alignment of triples z_j z_{j+k} z_{j+l}
+to grip; |κ₃|²→0 ⇒ the 6-point lever passes through 0 (vacuous), and the full 3-3 modulus moment equals its
+Wick value built from the (dead) 2-point covariance + the (dead) diagonal E₃. Together with marginal-EVT
+(dead), white 2-pt (dead), connected-4=0 (dead), K₄=E₂/K₆=E₃ (refuted energy), the period field is now
+mapped Gaussian/incoherent through the FIRST 6-point object. The surviving door-(iv) surface, if any, must
+be an EVEN-HIGHER connected order or genuinely outside the correlation hierarchy — NOT any per-lag connected
+correlation of the field. No CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel (Lean, `Frontier/_DoorIVTripleCorrelationVanishes.lean`, axiom-clean): `κ₃=0 ⇒ normSq κ₃=0`
+(`sixPoint_functional_zero_of_triple_zero`); a 6-point lever lower-bounded by |κ₃|² is vacuous at κ₃=0
+(`sixPoint_lever_vacuous_of_triple_zero`); 3-3 Wick factorization `m33=wick+cumulant, cumulant=0 ⇒ m33=wick`
+(`m33_eq_wick_of_cumulant_zero`[_complex]) and `control_passes_through_wick6`. Axioms ⊆ {propext,
+Classical.choice, Quot.sound}.
