@@ -141,6 +141,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_bddAbove_nonneg_normalizedHalfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_nonneg_rawPrize_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `trivial_cocycle_full_concentration_export` | obstruction | JacobiCocycleDispersion |
 | `trivial_cocycle_offSupport_zero_export` | obstruction | JacobiCocycleDispersion |
 | `jacobiCocycleDispersion_iff_shawValue_le_export` | capstone | JacobiCocycleDispersion |
@@ -1030,6 +1033,40 @@ theorem doorIV_bddAbove_nonneg_rawHalfMass_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
     hscale
 
+/-- **[capstone, DoorIVPrizeBddAbove]** The door-(iv) wall is invariant under the half-mass
+reduction: failure of `BddAbove` for normalized prize ratios is exactly failure for normalized
+half-mass Shaw ratios. -/
+theorem doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ BddAbove (Set.range fun i => M i / scale i)) ↔
+      ¬ BddAbove (Set.range fun i => H i / scale i) :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_not_bddAbove_range_normalizedHalfMass
+    hK hscale hMH hHM
+
+/-- **[capstone, DoorIVPrizeBddAbove]** The unbounded prize-side wall can be stated as explicit
+half-mass Shaw drift: every candidate constant is exceeded by some normalized half-mass ratio. -/
+theorem doorIV_not_bddAbove_prize_iff_halfMassDrift_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ BddAbove (Set.range fun i => M i / scale i)) ↔
+      ∀ C, ∃ i, C < H i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_forall_exists_lt_normalizedHalfMass
+    hK hscale hMH hHM
+
+/-- **[capstone, DoorIVPrizeBddAbove]** Positive door-(iv) boundedness is exactly the negation of
+half-mass Shaw drift, packaging `prize ⇔ ¬ wall` in the same standard-library API. -/
+theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ¬ ∀ C, ∃ i, C < H i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
+    hK hscale hMH hHM
+
 
 /-! ## JacobiCocycleDispersion — the named door-(iv) missing theorem, permanently indexed.
 Scope: **capstone**. The point of this section is discoverability: the #444 reduction does not
@@ -1417,6 +1454,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_bddAbove_nonneg_normalizedHalfMass_export
 #print axioms doorIV_bddAbove_nonneg_rawPrize_export
 #print axioms doorIV_bddAbove_nonneg_rawHalfMass_export
+#print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
+#print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
+#print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export
 #print axioms trivial_cocycle_full_concentration_export
 #print axioms trivial_cocycle_offSupport_zero_export
 #print axioms jacobiCocycleDispersion_iff_shawValue_le_export
