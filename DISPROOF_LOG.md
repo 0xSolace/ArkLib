@@ -1,3 +1,24 @@
+## [door-iv-martingale-input-ceiling-capstone] NO martingale input cracks the tower drift — bounded-increment sum AND predictable quadratic variation BOTH land at the trivial ceiling S_a ≤ a·log2, strictly above the prize ceiling ½·a·log2 (2026-06-20, sol)
+
+Lane: Door-(iv) Lane-3 (refuted-lever capstone). Gathers the two distinct Freedman/Azuma data for the
+log-ratio tower drift S_a = log M(μ_{2^a}) − log M(μ_1) into ONE convergence statement: the
+bounded-increment sum (`logTower_le_card_mul_log2`) and the predictable-quadratic-variation route via
+Cauchy–Schwarz (`qv_route_recovers_trivial_ceiling`, [door-iv-qv-cauchy-schwarz-circular]) BOTH give the
+IDENTICAL trivial ceiling `S_a ≤ a·log2`. The prize requires `S_a ≤ ½·a·log2 + O(log a)`
+(`logTower_excess_eq`), STRICTLY below `a·log2` for a≥1, gap exactly `½·a·log2` = exp→ factor `2^{a/2}=√n`.
+
+VERDICT: no martingale concentration INPUT — bounded increments, their centered excess, or their
+predictable quadratic variation — improves past `S_a ≤ a·log2`; each is consistent with the full trivial
+ceiling, so the §1.2 Azuma/Freedman lever is genuinely closed at the trivial `n`-ceiling and cannot force
+the prize. The irreducible separation is the factor `√n` (the BGK wall). CORE requires an INDEPENDENT
+mean-drift control `Σ Δ_i = O(log a)` (the binding-frequency phase law) living OUTSIDE the increment+QV
+data. No CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMartingaleInputCeilingCapstone.lean`,
+6 theorems (boundedSum_ceiling, qv_ceiling, martingale_inputs_same_ceiling, no_martingale_input_reaches_sublinear,
+prize_ceiling_strictly_below_martingale_ceiling, martingale_minus_prize_ceiling_eq), axiom-clean — all
+axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
 ## [door-iv-qv-cauchy-schwarz-circular] the Freedman/Azuma QV route is CIRCULAR — Cauchy–Schwarz on the proven predictable-quadratic-variation bound recovers ONLY the trivial linear drift ceiling (2026-06-20, sol)
 
 Lane: Door-(iv) Lane-3 (refuted-lever constraint). `LogRatioTowerBoundedIncrement` already landed the
