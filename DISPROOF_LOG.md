@@ -10605,3 +10605,32 @@ same-sign branch as a larger independent budget.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSignCocycleMassBalance.lean`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-collision-excess-pigeonhole] the subset-sum collision excess Ψ_p−Ψ_0 is a pure pigeonhole quantity, wrong-direction lever (2026-06-21, sol/opus-4-8)
+
+Lane: door-(iv) A50 follow-on (`Sweep_A50_SpectrumGeneratingFunction` named its open core as the
+`F_p` collision excess `Ψ_p − Ψ_0` over the closed-form char-0 subset-sum spectrum `N_r`). Probed
+the excess as a SCALING object (never done): `probe_444_psi_collision_excess_scaling.py` +
+`_birthday_law` + `_thinness_control`, exact arithmetic, proper `μ_n < F_p^*`, `p ≡ 1 mod n`, `m` odd,
+`β ≈ 4`, never `n = q-1`.
+
+PROBE VERDICT:
+- The excess is governed PURELY by the cardinality ratio `N_r / p`. At `N_r ≪ p` (n=16, β≥4 prize
+  regime) the defect is EXACTLY 0 (collision-free) — so A50's "collision-saturated at binding depth"
+  is false in the dilute large-`p` regime; saturation is a function of `N_r/p`, not of `r = ρn`.
+- The actual `Ψ_p` tracks the random birthday law `p·(1−(1−1/p)^{N_r})` to ~1–12%.
+- At the crossover band `N_r/p ∈ [0.7,1.3]` the thin `μ_n` collides MORE than a random set of equal
+  cardinality (mu/birthday ≈ 0.93–1.01 vs random/birthday ≈ 1.08–1.12). The excess IS thinness-essential
+  but in the WRONG DIRECTION: more subset-sum collisions ⟺ less additive distinctness ⟺ the thin
+  subgroup is MORE additively degenerate ⟺ `M(n)` LARGER (worse cancellation). Depth-resolved refinement
+  of the mapped DISPROOF "thin `μ_n` concentrates WORSE than random" (2026-06-15).
+
+VERDICT: an upper bound on `Ψ_p − Ψ_0` CANNOT yield an upper bound on `M`; the collision count is
+ANTI-correlated with cancellation. A50's named open core `Ψ_p − Ψ_0` is NOT a live door-(iv)
+upper-bound lever. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity
+claim. CORE OPEN (the wall lives in PHASE coherence, not in the subset-sum collision count).
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCollisionExcessPigeonhole.lean`,
+theorems `image_card_le_source` (Ψ_p ≤ Ψ_0), `image_card_le_codomain` (Ψ_p ≤ p),
+`defect_ge_of_source_gt_card` (defect ≥ N_r − p), `defect_pos_of_source_gt_card`,
+`image_card_le_min` (Ψ_p ≤ min(N_r, p)). Axiom-clean ⊆ {propext, Classical.choice, Quot.sound}.
