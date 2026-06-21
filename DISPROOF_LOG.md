@@ -11024,3 +11024,11 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCrossHalfPhaseUnstructur
 VERDICT: the cross-half phase-factorization lever cannot be rescued by choosing a larger fixed root-of-unity/real multiplier. Once the cross-half magnitude ratios are unstructured/unbounded across the measured family, the single-subperiod recursive bound fails for every absolute constant. This is a refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCrossHalfPhaseUnstructured.lean`, new theorem `no_uniform_fixed_multiplier_of_unbounded_ratios`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-crosshalf-ratio-envelope-iff] fixed single-subperiod multiplier is exactly a ratio envelope (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCrossHalfPhaseUnstructured`. After the family obstruction showed unbounded real-collinear ratios refute every absolute fixed multiplier, this sweep adds the exact iff: in the regime `B_i = t_i • A_i`, the uniform bound `∀ i, ‖A_i+B_i‖ ≤ C‖A_i‖` holds exactly when `∀ i, 1+t_i ≤ C`.
+
+VERDICT: the cross-half phase-factorization route has no hidden slack or auxiliary arithmetic content. It is precisely the task of uniformly bounding the measured real magnitude-ratio envelope `1+t_i`; if that envelope grows, the fixed single-subperiod recursion fails, and if it is bounded, that bound is the whole certificate. No CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCrossHalfPhaseUnstructured.lean`, new theorem `uniform_fixed_multiplier_iff_ratio_envelope`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

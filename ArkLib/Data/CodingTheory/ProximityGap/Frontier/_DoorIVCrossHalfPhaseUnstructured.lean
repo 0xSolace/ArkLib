@@ -157,6 +157,22 @@ theorem no_uniform_fixed_multiplier_of_unbounded_ratios {ι : Type*} (A B : ι �
   exact fixed_multiplier_fails_of_ratio_gt (A := A i) (B := B i) (t := t i) (c := C)
     (ht i) (hA i) (hcross i) hgt (hbound i)
 
+/-- **Exact uniform-envelope criterion.**  In the real-collinear cross-half regime, a uniform
+single-subperiod multiplier `C` exists exactly when `C` dominates every local multiplier `1+tᵢ`.
+Thus the fixed-multiplier route has no hidden arithmetic content: it is precisely the ratio-envelope
+problem measured by the probes. -/
+theorem uniform_fixed_multiplier_iff_ratio_envelope {ι : Type*} (A B : ι → E)
+    (t : ι → ℝ) (ht : ∀ i, 0 ≤ t i) (hA : ∀ i, 0 < ‖A i‖)
+    (hcross : ∀ i, crossHalfRatio (A i) (B i) (t i)) {C : ℝ} :
+    (∀ i, ‖A i + B i‖ ≤ C * ‖A i‖) ↔ ∀ i, 1 + t i ≤ C := by
+  constructor
+  · intro hbound i
+    exact fixed_multiplier_forces_ratio_le (A := A i) (B := B i) (t := t i) (c := C)
+      (ht i) (hA i) (hcross i) (hbound i)
+  · intro hC i
+    rw [norm_add_eq_of_real_collinear (ht i) (hcross i)]
+    exact mul_le_mul_of_nonneg_right (hC i) (norm_nonneg (A i))
+
 end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_eq_of_real_collinear
@@ -167,3 +183,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.distinct_ratios_give_distinct_multipliers
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_ge_of_ratio_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.no_uniform_fixed_multiplier_of_unbounded_ratios
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.uniform_fixed_multiplier_iff_ratio_envelope
