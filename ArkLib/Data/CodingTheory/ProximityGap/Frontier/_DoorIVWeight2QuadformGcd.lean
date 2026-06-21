@@ -91,18 +91,43 @@ theorem card_binomial_roots_eq_one_of_odd_gap_of_twoPow
     exact hodd
   exact hcop
 
-/-- **Even-even weight-2 spine count is a shifted binomial root count.** For an EVEN-EVEN weight-2
-word the non-symmetric `Z` vanishes (`Q = 0`) and the agreement is the pure doubled symmetric spine
-`2·A` with `A = #{y∈μ_N : y^{a/2} + y^{b/2} = 0} = #{y∈μ_N : y^c = −1}`, `c = |a−b|/2`. Over a
-finite cyclic group the fiber of the `c`-power map over ANY target is either empty or a single
-kernel-coset, so this spine count is at most `gcd(#G, c)` (and exactly `gcd(#G, c)` when `−1` is a
-`c`-th power, else `0`). This is the symmetric companion to `card_binomial_roots_eq_gcd`, completing
-the weight-2 census. (Probe `probe_444_g2_eveneven_spine_count.py`: `A ∈ {0, gcd(c,N)}`, n=8..64.) -/
+/-- **Even-even weight-2 spine count is a shifted binomial root count, exact form.** For an
+EVEN-EVEN weight-2 word the non-symmetric `Z` vanishes (`Q = 0`) and the agreement is the pure doubled
+symmetric spine `2·A` with `A = #{y∈μ_N : y^{a/2} + y^{b/2} = 0} = #{y∈μ_N : y^c = −1}`, `c =
+|a−b|/2`. Over a finite cyclic group the fiber of the `c`-power map over ANY target is either empty or
+a single kernel-coset, so this spine count is exactly `gcd(#G, c)` when the target is in the `c`-power
+range and exactly `0` otherwise. This is the symmetric companion to `card_binomial_roots_eq_gcd`,
+completing the weight-2 census. (Probe `probe_444_g2_eveneven_spine_count.py`: `A ∈ {0, gcd(c,N)}`,
+n=8..64.) -/
+theorem card_pow_eq_target_eq_if_mem_range (c : ℕ) (w : G) :
+    (univ.filter (fun y : G => y ^ c = w)).card
+      = if w ∈ (powMonoidHom c : G →* G).range then (Nat.card G).gcd c else 0 := by
+  exact ProximityGap.Frontier.CyclicPowerFiber.card_fiber_powMonoidHom c w
+
+/-- Even-even spine count on a reachable target is exactly the kernel size `gcd(#G,c)`. -/
+theorem card_pow_eq_target_eq_gcd_of_mem_range (c : ℕ) (w : G)
+    (hw : w ∈ (powMonoidHom c : G →* G).range) :
+    (univ.filter (fun y : G => y ^ c = w)).card = (Nat.card G).gcd c := by
+  rw [card_pow_eq_target_eq_if_mem_range c w, if_pos hw]
+
+/-- Even-even spine count off the `c`-power range is exactly zero. -/
+theorem card_pow_eq_target_eq_zero_of_not_mem_range (c : ℕ) (w : G)
+    (hw : w ∉ (powMonoidHom c : G →* G).range) :
+    (univ.filter (fun y : G => y ^ c = w)).card = 0 := by
+  rw [card_pow_eq_target_eq_if_mem_range c w, if_neg hw]
+
+/-- The prior consumer bound: the even-even spine count is always at most `gcd(#G,c)`. -/
 theorem card_pow_eq_target_le_gcd (c : ℕ) (w : G) :
     (univ.filter (fun y : G => y ^ c = w)).card ≤ (Nat.card G).gcd c := by
-  rw [ProximityGap.Frontier.CyclicPowerFiber.card_fiber_powMonoidHom c w]
+  rw [card_pow_eq_target_eq_if_mem_range c w]
   split
   · exact le_rfl
   · exact Nat.zero_le _
 
 end ArkLib.ProximityGap.EvenOddDescent
+
+/-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx) -/
+#print axioms ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_if_mem_range
+#print axioms ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_gcd_of_mem_range
+#print axioms ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_zero_of_not_mem_range
+#print axioms ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_le_gcd

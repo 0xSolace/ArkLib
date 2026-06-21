@@ -64,6 +64,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackMarkoffCouplingNoGo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvTannakianNonTorsionPump
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarriesAll
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZDegreeEnvelope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWeight2QuadformGcd
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2484,12 +2485,40 @@ theorem doorIV_descentAgreement_even_eq_two_mul_export {F : Type*} [Field F] [De
       = 2 * (B.filter (fun y => Pf y = 0)).card :=
   _root_.ArkLib.ProximityGap.EvenOddDescent.descentAgreement_even_eq_two_mul B ρ Pf hρ0 h2
 
+/-- **[descent, weight-2 even-even spine]** Exact shifted binomial fiber count for the
+symmetric weight-2 spine: the count is `gcd(#G,c)` when the target is a `c`-th power and `0`
+otherwise. -/
+theorem doorIV_weight2_evenSpine_card_eq_if_mem_range_export {G : Type*} [CommGroup G]
+    [Fintype G] [DecidableEq G] [IsCyclic G] (c : ℕ) (w : G) :
+    (Finset.univ.filter (fun y : G => y ^ c = w)).card
+      = if w ∈ (_root_.powMonoidHom c : G →* G).range then (Nat.card G).gcd c else 0 :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_if_mem_range c w
+
+/-- **[descent, weight-2 even-even spine]** Reachable-target consumer form: when the target is a
+`c`-th power, the symmetric spine count is exactly the kernel size `gcd(#G,c)`. -/
+theorem doorIV_weight2_evenSpine_card_eq_gcd_export {G : Type*} [CommGroup G]
+    [Fintype G] [DecidableEq G] [IsCyclic G] (c : ℕ) (w : G)
+    (hw : w ∈ (_root_.powMonoidHom c : G →* G).range) :
+    (Finset.univ.filter (fun y : G => y ^ c = w)).card = (Nat.card G).gcd c :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_gcd_of_mem_range c w hw
+
+/-- **[descent, weight-2 even-even spine]** Off-range consumer form: if the target is not a
+`c`-th power, the symmetric spine count is exactly zero. -/
+theorem doorIV_weight2_evenSpine_card_eq_zero_export {G : Type*} [CommGroup G]
+    [Fintype G] [DecidableEq G] [IsCyclic G] (c : ℕ) (w : G)
+    (hw : w ∉ (_root_.powMonoidHom c : G →* G).range) :
+    (Finset.univ.filter (fun y : G => y ^ c = w)).card = 0 :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_zero_of_not_mem_range c w hw
+
 #print axioms doorIV_descent_quadform_degreeEnvelope_export
 #print axioms doorIV_descent_Z_card_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_card_le_degBound_export
 #print axioms doorIV_descent_Z_indicator_sum_le_degBound_export
 #print axioms doorIV_descentAgreement_even_eq_two_mul_export
+#print axioms doorIV_weight2_evenSpine_card_eq_if_mem_range_export
+#print axioms doorIV_weight2_evenSpine_card_eq_gcd_export
+#print axioms doorIV_weight2_evenSpine_card_eq_zero_export
 
 /-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
 period magnitude equals the half-mass exactly. Thus the cross-half coherence factor contributes no
