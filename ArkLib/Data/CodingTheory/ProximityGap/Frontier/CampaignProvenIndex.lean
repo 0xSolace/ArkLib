@@ -73,6 +73,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVArgmaxDecouplingNoC
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCollisionExcessPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturationInsufficient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3253,6 +3254,17 @@ theorem doorIV_no_maxGain_from_smaller_moment_export {ι : Type*} (s : Finset ι
 
 #print axioms doorIV_envelope_multiplier_antitone_export
 #print axioms doorIV_no_maxGain_from_smaller_moment_export
+
+/-- **[obstruction, GeomMeanBelowMax]** The geometric mean (Mahler-measure / log-average) of the
+nonnegative spectrum lies at or below the max: `(∏_{i∈s} lam i)^{1/card s} ≤ M` for `lam i ≤ M` on a
+nonempty `s`. Kernels the (b)/(d) literature-cluster verdict (murmuration density / Mahler measure are
+AVERAGE objects, the wrong side of the worst-case max). -/
+theorem doorIV_geomMean_le_max_export {ι : Type*} (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
+    (hnn : ∀ i ∈ s, 0 ≤ lam i) {M : ℝ} (hM : ∀ i ∈ s, lam i ≤ M) :
+    (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max s hs lam hnn hM
+
+#print axioms doorIV_geomMean_le_max_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export

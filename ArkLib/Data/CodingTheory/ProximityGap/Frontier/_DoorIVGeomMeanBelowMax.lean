@@ -1,0 +1,92 @@
+/-
+Copyright (c) 2026 ArkLib Contributors. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: ArkLib Contributors (#444)
+-/
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+
+set_option autoImplicit false
+set_option linter.style.longLine false
+
+/-!
+# Door refutation: the geometric mean (Mahler-measure / log-average) of the spectrum lies BELOW the
+max, so the Mahler / murmuration "average" levers are on the wrong side of the prize max (#444)
+
+## Motivation (rule-4 + rule-5: a refuted lever is a result; back the prose verdict with a kernel)
+
+The #444 literature-mining record (`docs/kb/deltastar-444-latest-literature-mining-2026-06-21.md`,
+commit `aeb9e8da9`) flags four genuinely-fresh 2024-26 clusters and gives the funnel verdicts in
+PROSE.  Two of them — **(d) asymptotic Mahler measure of Gaussian periods** and **(b) murmurations of
+Dirichlet characters** — are refuted by the SAME mechanism: they are AVERAGE phenomena (Mahler measure
+is a GEOMETRIC mean / log-average of the conjugate magnitudes; a murmuration is a DENSITY), so they
+control the TYPICAL `|η_b|`, not the WORST-CASE max `M(n) = max_{b≠0}|η_b|` that the prize is about.
+"Average, the wrong side of `√n`."
+
+This file makes that mechanism an EXACT, machine-checked constraint: the geometric mean of the
+nonnegative spectrum is at most its maximum (entrywise upper bound).  Hence any Mahler-measure /
+log-average / murmuration-density control of the spectrum is automatically a LOWER-resolution object
+than `M`; it can never exceed (and so never certify a bound below) the max.  This kernels the
+"average-not-max" half of the (b)/(d) cluster verdicts, complementing
+`_DoorIVFractionalMomentNoMaxGain` (which kernels the same for fractional `ℓ^{2q}` moment roots).
+
+## The load-bearing facts (this file, axiom-clean)
+
+* **Geometric mean ≤ max.**  For a finset `s`, nonnegative `lam : ι → ℝ` with entrywise bound
+  `lam i ≤ M`, the geometric mean `(∏_{i∈s} lam i)^{1/card s} ≤ M`.  (The Mahler-measure analogue:
+  `exp(mean log lam) ≤ max lam`.)
+* **Product ≤ max^card.**  The underlying un-rooted form `∏_{i∈s} lam i ≤ M ^ card s`.
+
+NOT a CORE / cancellation / completion / moment-saving / anti-concentration / capacity claim: it
+bounds nothing about `M(n)` itself.  It records why a geometric-mean / density lever cannot be the
+prize lever — it lives strictly below the max it would need to control.
+-/
+
+namespace ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
+
+open scoped Real
+
+variable {ι : Type*}
+
+/-- **Product of a max-bounded nonnegative family ≤ max^card.**  If every `lam i ≤ M` on `s` with
+`lam` nonnegative, then `∏_{i∈s} lam i ≤ M ^ (card s)`. -/
+theorem prod_le_max_pow_card (s : Finset ι) (lam : ι → ℝ)
+    (hnn : ∀ i ∈ s, 0 ≤ lam i) {M : ℝ} (hM : ∀ i ∈ s, lam i ≤ M) :
+    ∏ i ∈ s, lam i ≤ M ^ s.card := by
+  calc
+    ∏ i ∈ s, lam i ≤ ∏ _i ∈ s, M :=
+      Finset.prod_le_prod hnn (fun i hi => hM i hi)
+    _ = M ^ s.card := by rw [Finset.prod_const]
+
+/-- **Geometric mean ≤ max (the Mahler / log-average no-transfer constraint).**  For a nonempty
+finset `s` and nonnegative `lam` with entrywise bound `lam i ≤ M` (so `0 ≤ M`), the geometric mean
+satisfies `(∏_{i∈s} lam i)^{1/card s} ≤ M`.
+
+This is the kerneled form of the (b)/(d) cluster verdict: a Mahler-measure (geometric mean) or
+murmuration (density / average) control of the spectrum lies at or below the max `M`; it is the wrong
+object for a worst-case max bound. -/
+theorem geomMean_le_max (s : Finset ι) (hs : s.Nonempty) (lam : ι → ℝ)
+    (hnn : ∀ i ∈ s, 0 ≤ lam i) {M : ℝ} (hM : ∀ i ∈ s, lam i ≤ M) :
+    (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card) ≤ M := by
+  obtain ⟨i₁, hi₁⟩ := hs
+  have hMnn : 0 ≤ M := le_trans (hnn i₁ hi₁) (hM i₁ hi₁)
+  have hcardpos : (0 : ℝ) < s.card := by
+    have : 0 < s.card := Finset.Nonempty.card_pos ⟨i₁, hi₁⟩
+    exact_mod_cast this
+  have hprod_nn : 0 ≤ ∏ i ∈ s, lam i :=
+    Finset.prod_nonneg hnn
+  have hprod_le : ∏ i ∈ s, lam i ≤ M ^ s.card :=
+    prod_le_max_pow_card s lam hnn hM
+  -- raise to 1/card (monotone on nonnegatives), then collapse (M^card)^{1/card} = M
+  have hmono : (∏ i ∈ s, lam i) ^ ((1 : ℝ) / s.card)
+      ≤ (M ^ s.card) ^ ((1 : ℝ) / s.card) :=
+    Real.rpow_le_rpow hprod_nn (by exact_mod_cast hprod_le) (by positivity)
+  have hcollapse : (M ^ s.card) ^ ((1 : ℝ) / s.card) = M := by
+    rw [← Real.rpow_natCast M s.card, ← Real.rpow_mul hMnn]
+    rw [mul_one_div, div_self (ne_of_gt hcardpos), Real.rpow_one]
+  rwa [hcollapse] at hmono
+
+end ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.prod_le_max_pow_card
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVGeomMeanBelowMax.geomMean_le_max
