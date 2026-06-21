@@ -139,6 +139,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export` | capstone | DoorIVHalfMassEquivalence |
 | `doorIV_bddAbove_nonneg_normalizedPrize_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_nonneg_normalizedHalfMass_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_nonneg_rawPrize_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_nonneg_rawHalfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `trivial_cocycle_full_concentration_export` | obstruction | JacobiCocycleDispersion |
 | `trivial_cocycle_offSupport_zero_export` | obstruction | JacobiCocycleDispersion |
 | `jacobiCocycleDispersion_iff_shawValue_le_export` | capstone | JacobiCocycleDispersion |
@@ -1008,6 +1010,26 @@ theorem doorIV_bddAbove_nonneg_normalizedHalfMass_export {ι : Type*} (H scale :
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_nonneg_normalizedHalfMassFamilyBound
     H scale
 
+/-- **[capstone, DoorIVPrizeBddAbove]** Positive-scale `BddAbove` of normalized prize/Shaw ratios
+is exactly the raw prize-family Big-O statement with a conventional nonnegative constant. -/
+theorem doorIV_bddAbove_nonneg_rawPrize_export {ι : Type*}
+    {M scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.prizeFamilyBound M scale C :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound
+    hscale
+
+/-- **[capstone, DoorIVPrizeBddAbove]** Positive-scale `BddAbove` of normalized half-mass/Shaw
+ratios is exactly the raw half-mass-family Big-O statement with a conventional nonnegative constant. -/
+theorem doorIV_bddAbove_nonneg_rawHalfMass_export {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, 0 ≤ C ∧
+        ArkLib.ProximityGap.Frontier.DoorIVHalfMassEquivalence.halfMassFamilyBound H scale C :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
+    hscale
+
 
 /-! ## JacobiCocycleDispersion — the named door-(iv) missing theorem, permanently indexed.
 Scope: **capstone**. The point of this section is discoverability: the #444 reduction does not
@@ -1393,6 +1415,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export
 #print axioms doorIV_bddAbove_nonneg_normalizedPrize_export
 #print axioms doorIV_bddAbove_nonneg_normalizedHalfMass_export
+#print axioms doorIV_bddAbove_nonneg_rawPrize_export
+#print axioms doorIV_bddAbove_nonneg_rawHalfMass_export
 #print axioms trivial_cocycle_full_concentration_export
 #print axioms trivial_cocycle_offSupport_zero_export
 #print axioms jacobiCocycleDispersion_iff_shawValue_le_export
