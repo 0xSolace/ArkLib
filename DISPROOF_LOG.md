@@ -10799,3 +10799,16 @@ VERDICT: single-window and two-window small-ball certificates cannot be sublinea
 bookkeeping alone. If their triangle split fits below a budget, the whole summand cardinality already
 fits below that budget; any genuine door-(iv) saving must prove phase cancellation inside or between
 pieces. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+## 2026-06-21 — door-(iv) index-factor cap is exactly a finite-index bound (g55)
+
+Lane 2/3 index-factor overshoot capstone export. The source kernel `_DoorIVIndexFactorOvershoot`
+already proves the exact criterion `C*sqrt(m) ≤ D ↔ m ≤ (D/C)^2` and the single-witness family
+refutation. This sweep makes those forms stable in `CampaignProvenIndex` as
+`doorIV_scaledConstant_le_iff_index_le_sq_export` and
+`doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export`.
+
+VERDICT: a claimed uniform Shaw cap through the naive `sqrt(n*m*L)` bridge is exactly a hidden finite
+bound on the index `m`. One family member with `m > (D/C)^2` refutes the cap. Thus the index-factor
+route cannot support unbounded thin-regime families unless a genuinely new door-(iv) argument removes
+`sqrt(m)`. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.

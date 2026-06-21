@@ -145,6 +145,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_index_le_sq_of_scaledConstant_le_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_scaledConstant_le_iff_index_le_sq_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_cosetInvariant_blind_to_order_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_cosetHitting_selector_bound_iff_global_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_strict_selector_bound_misses_coset_export` | obstruction | DoorIVCoherenceOrderBlind |
@@ -1060,6 +1062,26 @@ theorem doorIV_index_le_sq_of_scaledConstant_le_export {C m D : ℝ}
     m ≤ (D / C) ^ 2 :=
   ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.index_le_sq_of_scaledConstant_le
     hC hm hbound
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Exact pointwise cap criterion: for a positive raw
+constant and nonnegative advertised cap, a naive normalized cap `C*sqrt(m) ≤ D` is equivalent to the
+finite index constraint `m ≤ (D/C)^2`. The `sqrt(m)` loss is exactly an index bound. -/
+theorem doorIV_scaledConstant_le_iff_index_le_sq_export {C m D : ℝ}
+    (hC : 0 < C) (hm : 0 ≤ m) (hD : 0 ≤ D) :
+    C * Real.sqrt m ≤ D ↔ m ≤ (D / C) ^ 2 :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.scaledConstant_le_iff_index_le_sq
+    hC hm hD
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Single-witness family refutation: if some index
+exceeds `(D/C)^2`, then no uniform cap `C*sqrt(m i) ≤ D` can hold across the family. This is the
+probe-facing audit hook for unbounded-index failures of the naive bridge. -/
+theorem doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export
+    {ι : Type*} {C D : ℝ} {m : ι → ℝ}
+    (hC : 0 < C) (hm : ∀ i, 0 ≤ m i)
+    (hlarge : ∃ i, (D / C) ^ 2 < m i) :
+    ¬ ∀ i, C * Real.sqrt (m i) ≤ D :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq
+    hC hm hlarge
 
 /-! ## Door-IV order-blindness / selector obstruction. Scope: **obstruction**.
 
@@ -2048,6 +2070,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_naiveIncidenceScale_eq_sqrt_mul_prizeScale_export
 #print axioms doorIV_naiveIncidenceBound_iff_shawValue_le_scaled_export
 #print axioms doorIV_index_le_sq_of_scaledConstant_le_export
+#print axioms doorIV_scaledConstant_le_iff_index_le_sq_export
+#print axioms doorIV_not_scaledConstantFamily_le_uniform_of_exists_index_gt_sq_export
 #print axioms doorIV_cosetInvariant_blind_to_order_export
 #print axioms doorIV_cosetHitting_selector_bound_iff_global_export
 #print axioms doorIV_strict_selector_bound_misses_coset_export
