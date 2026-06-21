@@ -10416,3 +10416,19 @@ VERDICT: generic-MDS/Dirichlet reasoning cannot by itself discharge the algebrai
 actual dyadic prize subgroup.  Any surviving version must prove a statement stable under these
 cyclotomic relations rather than assuming all gapped minors are nonzero.  No CORE/cancellation/
 completion/moment/capacity claim.
+
+## door-(iv) eighth-cumulant fixed-sign route is unstable across admissible primes (2026-06-20)
+
+Lens: door-(iv) Lane 1/3 follow-up to the connected-correlation hierarchy.  The 8th marginal cumulant
+probe (`probe_dooriv_eighth_cumulant_multiprime.py`) finds mixed signs across admissible dyadic-prize
+instances, including at fixed `n` (`n=32`: positive then negative values; `n=64`: positive, negative,
+positive).  A fixed-sign eighth-cumulant certificate would need the candidate statistic to be uniformly
+nonnegative or uniformly nonpositive across the field-universal prize family.
+
+Formal kernel: `Frontier/_DoorIVEighthCumulantSignUnstable.lean` proves that one positive and one negative
+sample of a real statistic refute both universal fixed-sign certificates (`κ ≥ 0` and `κ ≤ 0`), and hence
+refute their disjunction as a possible fixed-sign route.
+
+VERDICT: the 8th-cumulant sign is not a field-universal monotone lever.  If an 8th-order object is useful,
+it cannot be via a bare fixed-sign cumulant inequality; it would need a new magnitude/structure theorem.
+No CORE/cancellation/completion/moment/capacity claim.
