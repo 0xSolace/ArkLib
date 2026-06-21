@@ -1784,6 +1784,27 @@ theorem doorIV_multiPiece_no_eps_slack_one_side_zero_export {ι : Type*} [Decida
   _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.not_multiPieceCoherence_le_one_sub_eps_of_one_side_zero
     s A hsum hden hposMass hnegMass htotal hzero hε
 
+/-- **[obstruction, DoorIVWindowConcentrationTrivial]** Single-window occupancy certificates
+force the trivial cardinality budget. If the in/out window triangle RHS is at most `B`, then already
+`|s| ≤ B`; a coarse small-ball count alone cannot beat the linear ceiling. -/
+theorem doorIV_window_budget_forces_card_le_export {ι : Type*} [DecidableEq ι]
+    {s W : Finset ι} (hW : W ⊆ s) {B : ℝ}
+    (hbudget : (W.card : ℝ) + ((s \ W).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B :=
+  _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_budget_forces_card_le
+    hW hbudget
+
+/-- **[obstruction, DoorIVWindowConcentrationTrivial]** Two-window occupancy certificates force the
+trivial cardinality budget. If two disjoint windows and the outside complement fit under `B`, then
+already `|s| ≤ B`; any sublinear certificate must use phase cancellation, not occupancy bookkeeping. -/
+theorem doorIV_twoWindow_budget_forces_card_le_export {ι : Type*} [DecidableEq ι]
+    {s W₁ W₂ : Finset ι} (h₁ : W₁ ⊆ s) (h₂ : W₂ ⊆ s) (hdis : Disjoint W₁ W₂)
+    {B : ℝ}
+    (hbudget : (W₁.card : ℝ) + (W₂.card : ℝ) + ((s \ (W₁ ∪ W₂)).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B :=
+  _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_budget_forces_card_le
+    h₁ h₂ hdis hbudget
+
 /-- **[obstruction, DoorIVWindowConcentrationTrivial]** Finite multi-window occupancy certificates
 force the trivial cardinality budget. If the disjoint-window triangle RHS is at most `B`, then
 already `|s| ≤ B`; coarse small-ball bookkeeping alone cannot beat the linear ceiling. -/
@@ -1808,6 +1829,11 @@ theorem doorIV_no_multiWindow_split_rhs_le_strict_budget_export {ι : Type*} [De
     ¬ (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) ≤ B :=
   _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
     hsub hdis hB
+
+#print axioms doorIV_window_budget_forces_card_le_export
+#print axioms doorIV_twoWindow_budget_forces_card_le_export
+#print axioms doorIV_multiWindow_budget_forces_card_le_export
+#print axioms doorIV_no_multiWindow_split_rhs_le_strict_budget_export
 
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** A uniform multiplicative control of the
 sup-norm `target` by a candidate functional `F` evaluated at the target's worst frequency `bstar`

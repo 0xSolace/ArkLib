@@ -187,6 +187,29 @@ theorem no_two_window_split_rhs_le_strict_budget [DecidableEq ι]
   have hconst := two_window_split_rhs_constant (s := s) (W₁ := W₁) (W₂ := W₂) h₁ h₂ hdis
   linarith
 
+/-- Budget-forcing form for single-window certificates: if the purely occupancy-based in/out split
+fits under some budget `B`, then the total number of summands already satisfies `|s| ≤ B`.  This is
+the probe-facing contrapositive of the strict-budget obstruction: a small-ball window cannot certify
+any sublinear door-(iv) estimate unless it uses genuine phase cancellation beyond occupancy counts. -/
+theorem window_budget_forces_card_le [DecidableEq ι]
+    {s W : Finset ι} (hW : W ⊆ s) {B : ℝ}
+    (hbudget : (W.card : ℝ) + ((s \ W).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B := by
+  have hconst := window_split_rhs_constant (s := s) (W := W) hW
+  linarith
+
+/-- Budget-forcing form for two-window certificates: if two disjoint coarse windows plus the outside
+complement fit under a budget `B`, then `|s| ≤ B` already.  Thus two-window occupancy bookkeeping
+cannot be the missing anti-concentration input for door-(iv); any improvement below the linear budget
+must prove cancellation inside or between the pieces. -/
+theorem two_window_budget_forces_card_le [DecidableEq ι]
+    {s W₁ W₂ : Finset ι} (h₁ : W₁ ⊆ s) (h₂ : W₂ ⊆ s) (hdis : Disjoint W₁ W₂)
+    {B : ℝ}
+    (hbudget : (W₁.card : ℝ) + (W₂.card : ℝ) + ((s \ (W₁ ∪ W₂)).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B := by
+  have hconst := two_window_split_rhs_constant (s := s) (W₁ := W₁) (W₂ := W₂) h₁ h₂ hdis
+  linarith
+
 /-- Budget-forcing form for finite multi-window certificates: if the purely occupancy-based split
 fits under some budget `B`, then the total number of summands already satisfies `|s| ≤ B`.  Thus
 any such certificate below the linear budget would contradict the exact split identity; occupancy
@@ -220,6 +243,8 @@ end ProximityGap.Frontier.DoorIVWindowConcentrationTrivial
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_split_rhs_constant
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_two_window_split_rhs_le_strict_budget
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.window_budget_forces_card_le
+#print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_budget_forces_card_le
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_budget_forces_card_le
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
 #print axioms ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.two_window_split_rhs_constant

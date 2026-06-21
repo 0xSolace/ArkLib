@@ -10787,3 +10787,15 @@ Follow-up formal corollary in `_DoorIVArgmaxDecouplingNoControl`: any successful
 VERDICT: the positive-constant hypotheses used by the support-inclusion constraints are not an extra
 assumption in the nontrivial positive-candidate door-(iv) regime; they are forced by the control itself.
 This is bookkeeping/sign hygiene for lever refutations only, not a CORE bound.
+
+## 2026-06-21 — door-(iv) one/two-window budgets force the trivial cardinality ceiling (g55)
+
+Lane 3 constraint extension in `_DoorIVWindowConcentrationTrivial`. The prior multi-window kernel
+proved that any disjoint finite occupancy partition whose triangle RHS fits under a budget `B` already
+forces `|s| ≤ B`. This refinement adds the probe-facing one-window and two-window specializations:
+`window_budget_forces_card_le` and `two_window_budget_forces_card_le`, with stable exports.
+
+VERDICT: single-window and two-window small-ball certificates cannot be sublinear by occupancy
+bookkeeping alone. If their triangle split fits below a budget, the whole summand cardinality already
+fits below that budget; any genuine door-(iv) saving must prove phase cancellation inside or between
+pieces. No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
