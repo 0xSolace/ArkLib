@@ -1432,6 +1432,20 @@ theorem doorIV_strict_maximizer_iff_translate_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.isMaximizer_iff_translate
     hf hb₀ hsingle b
 
+/-- **[obstruction, door-(iv) Lane-1]** The literal `Ncos = 1` count: under the single-coset
+hypothesis, the image of the exact argmax set under the orbit-quotient map `β → β /ₘ G` is the single
+class `{⟦b₀⟧}` — the strict peak meets EXACTLY ONE orbit. -/
+theorem doorIV_strict_peak_Ncos_eq_one_export
+    {G : Type*} [Group G] {β : Type*} [MulAction G β] {f : β → ℝ}
+    {Mval : ℝ} {b₀ : β} (hb₀ : f b₀ = Mval)
+    (hsingle : _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet f Mval
+      ⊆ MulAction.orbit G b₀) :
+    (fun x => Quotient.mk (MulAction.orbitRel G β) x) ''
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.argmaxSet f Mval
+      = {Quotient.mk (MulAction.orbitRel G β) b₀} :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton.orbitQuot_image_argmaxSet_eq_singleton
+    hb₀ hsingle
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1925,4 +1939,5 @@ theorem doorIV_levelWorst_base_corrected_of_gate_export
 #print axioms doorIV_levelWorst_base_corrected_of_gate_export
 #print axioms doorIV_strict_peak_single_coset_export
 #print axioms doorIV_strict_maximizer_iff_translate_export
+#print axioms doorIV_strict_peak_Ncos_eq_one_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

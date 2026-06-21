@@ -131,4 +131,42 @@ theorem argmaxSet_subset_superLevel
   simp only [argmaxSet, Set.mem_setOf_eq] at hb
   simp only [Set.mem_setOf_eq, hb]; exact hc
 
+/-! ### The literal `Ncos = 1` count form: the argmax set meets exactly ONE orbit
+
+`Ncos(τ,n) = |W(τ)|/n` counts the **distinct `μ_n`-orbits** the near-max set meets.  The most
+faithful formal rendering is the image of `argmaxSet` under the orbit-quotient map
+`q : β → β /ₘ G`: `Ncos` is the cardinality of `q '' argmaxSet`.  Under the single-coset
+hypothesis this image is a single point — `Ncos = 1`, literally. -/
+
+/-- The orbit-quotient class of a maximizer in `orbit G b₀` coincides with the class of `b₀`. -/
+theorem orbitQuot_eq_of_mem_orbit {b₀ x : β} (h : x ∈ MulAction.orbit G b₀) :
+    Quotient.mk (MulAction.orbitRel G β) x = Quotient.mk (MulAction.orbitRel G β) b₀ := by
+  apply Quotient.sound
+  show (MulAction.orbitRel G β) x b₀
+  rw [MulAction.orbitRel_apply]; exact h
+
+/-- **`Ncos = 1` (image form).**  Under orbit-constancy, an attained max, and the single-coset
+hypothesis, the image of the exact argmax set under the orbit-quotient map is the single class
+`{⟦b₀⟧}`.  The number of distinct orbits the strict peak meets is exactly ONE. -/
+theorem orbitQuot_image_argmaxSet_eq_singleton
+    {f : β → ℝ} {Mval : ℝ} {b₀ : β}
+    (hb₀ : f b₀ = Mval) (hsingle : argmaxSet f Mval ⊆ MulAction.orbit G b₀) :
+    (fun x => Quotient.mk (MulAction.orbitRel G β) x) '' argmaxSet f Mval
+      = {Quotient.mk (MulAction.orbitRel G β) b₀} := by
+  apply Set.eq_singleton_iff_unique_mem.2
+  refine ⟨⟨b₀, by simpa [argmaxSet] using hb₀, rfl⟩, ?_⟩
+  rintro y ⟨x, hx, rfl⟩
+  exact orbitQuot_eq_of_mem_orbit (hsingle hx)
+
+/-- **`Ncos = 1` (subsingleton form).**  Even WITHOUT a designated `b₀`, if all strict maximizers
+lie in a common orbit then the orbit-quotient image of the argmax set is a subsingleton: at most one
+ortho class.  Together with nonemptiness at the attained peak this is `Ncos = 1`. -/
+theorem orbitQuot_image_argmaxSet_subsingleton
+    {f : β → ℝ} {Mval : ℝ} {b₀ : β}
+    (hsingle : argmaxSet f Mval ⊆ MulAction.orbit G b₀) :
+    ((fun x => Quotient.mk (MulAction.orbitRel G β) x) '' argmaxSet f Mval).Subsingleton := by
+  rintro y ⟨x, hx, rfl⟩ z ⟨w, hw, rfl⟩
+  change Quotient.mk (MulAction.orbitRel G β) x = Quotient.mk (MulAction.orbitRel G β) w
+  rw [orbitQuot_eq_of_mem_orbit (hsingle hx), orbitQuot_eq_of_mem_orbit (hsingle hw)]
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstCosetCountSingleton
