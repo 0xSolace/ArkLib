@@ -32,6 +32,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -118,6 +119,9 @@ anything here; this index does not claim otherwise.
 | `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
 | `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
 | `exists_jacobiCocycleDispersionFamilyBound_iff_rawSandwich_export` | capstone | JacobiCocycleDispersion |
+| `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
+| `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
+| `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -936,6 +940,46 @@ theorem prize_iff_shawBounded_doorIV_only_and_object_moment_trapped_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVPrizeObjectGrandCapstone.prize_iff_shawBounded_doorIV_only_and_object_moment_trapped
     hs hnref hLref hclassicalOvershoots hEdge hExcess
 
+/-! ## DoorIVSignedDeepSumAbsLeak — the absolute-value leak made permanent.
+Scope: **obstruction / positive localization**. The signed deep period-power probe found the
+thinness-essential signal in `Σ η_b^r`, while all moment / energy packages pass through
+`Σ |η_b|^r` and discard cancellation. These permanent exports expose the kernel-checked
+triangle-inequality leak and its monotone transfer direction. They do NOT prove the open
+uniform signed deep-cancellation bound, and make no CORE/cancellation/completion/capacity claim. -/
+
+/-- **[obstruction, DoorIVSignedDeepSumAbsLeak]** Absolute-value / moment packaging can
+only upper-bound the signed deep sum through the triangle-inequality leak:
+`|Σ η_b^r| ≤ Σ |η_b|^r`. The gap is exactly the signed cancellation thrown away by
+moment methods. -/
+theorem doorIV_abs_signed_le_abs_moment_export {ι : Type*}
+    (s : Finset ι) (η : ι → ℝ) (r : ℕ) :
+    |∑ b ∈ s, (η b) ^ r| ≤ ∑ b ∈ s, |η b| ^ r := by
+  classical
+  exact _root_.ProximityGap.Frontier.DoorIVSignedDeepSumAbsLeak.abs_signed_le_abs_moment
+    s η r
+
+/-- **[obstruction, DoorIVSignedDeepSumAbsLeak]** The leak gap is nonnegative:
+absolute moments minus the signed deep sum magnitude are a real discarded-cancellation
+budget, never a saving. -/
+theorem doorIV_leak_nonneg_export {ι : Type*}
+    (s : Finset ι) (η : ι → ℝ) (r : ℕ) :
+    0 ≤ (∑ b ∈ s, |η b| ^ r) - |∑ b ∈ s, (η b) ^ r| := by
+  classical
+  exact _root_.ProximityGap.Frontier.DoorIVSignedDeepSumAbsLeak.leak_nonneg s η r
+
+/-- **[obstruction, DoorIVSignedDeepSumAbsLeak]** Any absolute-moment bound transfers
+only one way, to a bound on the signed sum. The converse is false (kernelized in the
+source file), so a signed deep-cancellation certificate cannot be recovered from an
+absolute-value certificate. -/
+theorem doorIV_abs_moment_bound_transfers_export {ι : Type*}
+    (s : Finset ι) (η : ι → ℝ) (r : ℕ) {B : ℝ}
+    (hB : ∑ b ∈ s, |η b| ^ r ≤ B) :
+    |∑ b ∈ s, (η b) ^ r| ≤ B := by
+  classical
+  exact _root_.ProximityGap.Frontier.DoorIVSignedDeepSumAbsLeak.abs_moment_bound_transfers
+    s η r hB
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1002,4 +1046,7 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms noTighterBound_from_symmetric_or_L2_export
 #print axioms doorIV_object_moment_corridor_export
 #print axioms prize_iff_shawBounded_doorIV_only_and_object_moment_trapped_export
+#print axioms doorIV_abs_signed_le_abs_moment_export
+#print axioms doorIV_leak_nonneg_export
+#print axioms doorIV_abs_moment_bound_transfers_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
