@@ -173,6 +173,26 @@ theorem uniform_fixed_multiplier_iff_ratio_envelope {ι : Type*} (A B : ι → E
     rw [norm_add_eq_of_real_collinear (ht i) (hcross i)]
     exact mul_le_mul_of_nonneg_right (hC i) (norm_nonneg (A i))
 
+/-- **Single-witness form of the cross-half ratio obstruction.**  For a proposed constant `C`, one
+frequency with local multiplier strictly above the envelope, `C < 1+tᵢ`, is exactly the finite
+certificate that the uniform single-subperiod multiplier fails.  This is the probe-facing version of
+the exact envelope criterion: after a worst-band scan finds one over-envelope ratio, no further
+frequency sweep is needed to refute that `C`. -/
+theorem not_uniform_fixed_multiplier_iff_exists_ratio_gt {ι : Type*} (A B : ι → E)
+    (t : ι → ℝ) (ht : ∀ i, 0 ≤ t i) (hA : ∀ i, 0 < ‖A i‖)
+    (hcross : ∀ i, crossHalfRatio (A i) (B i) (t i)) {C : ℝ} :
+    (¬ ∀ i, ‖A i + B i‖ ≤ C * ‖A i‖) ↔ ∃ i, C < 1 + t i := by
+  rw [uniform_fixed_multiplier_iff_ratio_envelope A B t ht hA hcross]
+  constructor
+  · intro hfail
+    by_contra hnone
+    have henv : ∀ i, 1 + t i ≤ C := by
+      intro i
+      exact le_of_not_gt (fun hi => hnone ⟨i, hi⟩)
+    exact hfail henv
+  · rintro ⟨i, hi⟩ henv
+    exact (not_lt_of_ge (henv i)) hi
+
 end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_eq_of_real_collinear
@@ -184,3 +204,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_ge_of_ratio_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.no_uniform_fixed_multiplier_of_unbounded_ratios
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.uniform_fixed_multiplier_iff_ratio_envelope
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.not_uniform_fixed_multiplier_iff_exists_ratio_gt
