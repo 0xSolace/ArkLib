@@ -72,6 +72,34 @@ theorem prizeBound_iff_shawValue_le_of_pos {M C n L : ℝ} (hn : 0 < n) (hL : 0 
     M ≤ C * prizeScale n L ↔ shawValue M n L ≤ C :=
   prizeBound_iff_shawValue_le (prizeScale_pos hn hL)
 
+/-- **Strict capstone normalization equivalence.**  Under positive target scale, a strict raw
+prize-shaped bound `M < C * sqrt(n L)` is exactly a strict Shaw-value bound `Sh(M) < C`.
+
+This is the strict-slack companion to `prizeBound_iff_shawValue_le`: any claimed positive margin
+inside the Door-IV normalization survives division by the prize scale, and conversely.  No
+cancellation estimate is hidden here; it is only reversible arithmetic bookkeeping. -/
+theorem strictPrizeBound_iff_shawValue_lt {M C n L : ℝ} (hs : 0 < prizeScale n L) :
+    M < C * prizeScale n L ↔ shawValue M n L < C := by
+  constructor
+  · intro h
+    unfold shawValue
+    have hdiv : M / prizeScale n L < (C * prizeScale n L) / prizeScale n L :=
+      div_lt_div_of_pos_right h hs
+    simpa [mul_comm, mul_left_comm, mul_assoc, ne_of_gt hs] using hdiv
+  · intro h
+    unfold shawValue at h
+    have hmul : (M / prizeScale n L) * prizeScale n L < C * prizeScale n L :=
+      mul_lt_mul_of_pos_right h hs
+    calc
+      M = (M / prizeScale n L) * prizeScale n L := by
+        field_simp [ne_of_gt hs]
+      _ < C * prizeScale n L := hmul
+
+/-- Strict prize/Shaw equivalence in expanded positive parameters. -/
+theorem strictPrizeBound_iff_shawValue_lt_of_pos {M C n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
+    M < C * prizeScale n L ↔ shawValue M n L < C :=
+  strictPrizeBound_iff_shawValue_lt (prizeScale_pos hn hL)
+
 
 
 /-! ## Uniform-family capstone: the arithmetic form of `prize ⇔ Sh(n)=O(1)` -/
@@ -108,6 +136,34 @@ theorem rawPrizeFamilyBound_iff_shawValueFamilyBound_of_pos {ι : Type*} {M n L 
     (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
     rawPrizeFamilyBound M n L C ↔ shawValueFamilyBound M n L C :=
   rawPrizeFamilyBound_iff_shawValueFamilyBound (fun i => prizeScale_pos (hn i) (hL i))
+
+/-- A strict raw prize-family bound by the same constant `C` across a parameter family. -/
+def strictRawPrizeFamilyBound {ι : Type*} (M n L : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, M i < C * prizeScale (n i) (L i)
+
+/-- A strict uniform Shaw-value bound by the same constant `C` across a parameter family. -/
+def strictShawValueFamilyBound {ι : Type*} (M n L : ι → ℝ) (C : ℝ) : Prop :=
+  ∀ i, shawValue (M i) (n i) (L i) < C
+
+/-- **Uniform strict-family Lane-2 capstone.**  Under pointwise positivity of the prize scale, a
+uniform strict raw prize-family bound by `C` is exactly a uniform strict Shaw-value bound by `C`.
+This is the strict-margin version of `rawPrizeFamilyBound_iff_shawValueFamilyBound`. -/
+theorem strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound
+    {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hs : ∀ i, 0 < prizeScale (n i) (L i)) :
+    strictRawPrizeFamilyBound M n L C ↔ strictShawValueFamilyBound M n L C := by
+  constructor
+  · intro h i
+    exact (strictPrizeBound_iff_shawValue_lt (hs i)).1 (h i)
+  · intro h i
+    exact (strictPrizeBound_iff_shawValue_lt (hs i)).2 (h i)
+
+/-- Uniform strict-family capstone in pointwise-positive parameters. -/
+theorem strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_of_pos
+    {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hn : ∀ i, 0 < n i) (hL : ∀ i, 0 < L i) :
+    strictRawPrizeFamilyBound M n L C ↔ strictShawValueFamilyBound M n L C :=
+  strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound (fun i => prizeScale_pos (hn i) (hL i))
 
 /-- Existential constant form of the uniform-family capstone: there is an absolute raw prize constant
 iff there is an absolute normalized Shaw-value constant, with the same witness. -/
@@ -662,8 +718,12 @@ end ArkLib.ProximityGap.Frontier.ShawValueCapstone
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeBound_iff_shawValue_le_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictPrizeBound_iff_shawValue_lt
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictPrizeBound_iff_shawValue_lt_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound_iff_shawValueFamilyBound_of_pos
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.exists_rawPrizeFamilyBound_iff_exists_shawValueFamilyBound_of_pos
 #print axioms ArkLib.ProximityGap.Frontier.ShawValueCapstone.not_exists_rawPrizeFamilyBound_iff_not_exists_shawValueFamilyBound

@@ -22,6 +22,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTrivialCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteBGKCompletionCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ShawValueCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
@@ -126,6 +127,8 @@ anything here; this index does not claim otherwise.
 | `coeff_route_loose_export` | obstruction | G3 |
 | `roughness_does_not_add_bad_primes_export` | obstruction | G4 |
 | `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
+| `strictPrizeBound_iff_shawValue_lt_export` | capstone | ShawValue |
+| `strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
 | `shawValue_clean_corridor_width_eq_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
@@ -717,6 +720,26 @@ estimate is hidden. -/
 theorem prizeBound_iff_shawValue_le_export {M C n L : ℝ} (hs : 0 < prizeScale n L) :
     M ≤ C * prizeScale n L ↔ shawValue M n L ≤ C :=
   prizeBound_iff_shawValue_le hs
+
+/-- **[capstone, ShawValue]** Strict prize normalization equivalence: under a positive prize scale,
+a strict raw prize-shaped bound `M < C·√(nL)` is exactly the statement that the normalized Shaw
+value is strictly below `C`. This is the strict-slack companion to the citable Lane-2 equivalence,
+not a cancellation estimate. -/
+theorem strictPrizeBound_iff_shawValue_lt_export {M C n L : ℝ}
+    (hs : 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L) :
+    M < C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L ↔
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue M n L < C :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictPrizeBound_iff_shawValue_lt hs
+
+/-- **[capstone, ShawValue]** Uniform strict-family form of the Lane-2 reduction: with positive
+pointwise prize scale, a strict raw prize bound by the same constant throughout a family is exactly
+a strict Shaw-value bound by that constant throughout the family. Pure normalization bookkeeping. -/
+theorem strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_export
+    {ι : Type*} {M n L : ι → ℝ} {C : ℝ}
+    (hs : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale (n i) (L i)) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound M n L C ↔
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictShawValueFamilyBound M n L C :=
+  _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound hs
 
 /-- **[capstone, ShawValue]** THE Lane-2 corridor. For the actual primitive-character Gauss-period
 worst frequency `M(μ_n) = worstPeriod ψ G` in the thin prize regime `q ≥ 2n` (automatic at
@@ -2319,6 +2342,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms coeff_route_loose_export
 #print axioms roughness_does_not_add_bad_primes_export
 #print axioms prizeBound_iff_shawValue_le_export
+#print axioms strictPrizeBound_iff_shawValue_lt_export
+#print axioms strictRawPrizeFamilyBound_iff_strictShawValueFamilyBound_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
 #print axioms shawValue_clean_corridor_width_eq_export
 #print axioms shawValue_bracket_width_eq_sqrt_export
