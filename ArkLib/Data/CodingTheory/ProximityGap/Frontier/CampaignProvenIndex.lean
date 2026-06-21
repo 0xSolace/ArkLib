@@ -90,6 +90,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SumProductCensusStallBeta
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4076,5 +4079,73 @@ theorem doorIV_kurihara_valuation_not_count_export (T : ℝ) (hT : 2 ≤ T) : T 
 #print axioms doorIV_sumProduct_pointplane_boundary_beta4_export
 #print axioms doorIV_sumProduct_census_stall_confirmed_export
 #print axioms doorIV_kurihara_valuation_not_count_export
+
+
+/-! ## Door-IV Lane 3 every-angle failure-step exports.
+Scope: **obstruction/capstone**.
+
+These exports make the newest exact failure-step certificates permanent and discoverable. They are
+not new moment grinding and not CORE upper bounds: the SOS export pins the finite `n = 16` Hankel
+obstruction to a uniform SOS certificate; the depth export pins why the sum-product cluster is
+confined to a vacuous depth-2 input at `β = 4`; the monodromy export pins that every `b`-summed
+correlation remains an abelian lattice count, so the A5 non-abelian-growth escape has no sheaf to
+apply to.
+-/
+
+/-- **[obstruction, A1SOSLadderN16]** At the exact Fermat-prime `n = 16`, `q = 65537` witness,
+the integral Wick-deficit Hankel minor `d̃₁*d̃₃ - d̃₂^2` is strictly negative. Thus the true
+per-depth deficits are not a positive-measure moment sequence, blocking a single degree-extending
+SOS/Gram certificate in the moment degree. -/
+theorem doorIV_A1SOS_hankel_minor2_negative_export :
+    _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.dTilde 1
+        * _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.dTilde 3
+      - _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.dTilde 2 ^ 2 < 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.hankel_minor2_negative
+
+/-- **[obstruction, A1SOSLadderN16]** The exact `n = 16`, `q = 65537` beta-four window sanity:
+`n^4 ≤ q` and `n ∣ q-1`. This keeps the SOS/Hankel witness inside the proper thin-prime regime,
+not the full-group false-positive regime. -/
+theorem doorIV_A1SOS_window_export :
+    _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.n ^ 4
+        ≤ _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.q ∧
+      _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.n ∣
+        (_root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.q - 1) :=
+  _root_.ArkLib.ProximityGap.Frontier.A1SOSLadderN16.window
+
+/-- **[obstruction, A3DepthConfinement]** The capstone depth mismatch: at beta four, the native
+sum-product/depth-2 engine is vacuous even with optimal `E₂`, remains vacuous for any `E₂` exponent
+`a ≥ 2`, and Wick-fed saving starts only after depth four. This is the exact depth/order mismatch
+that prevents a second-energy sum-product input from being the prize mechanism. -/
+theorem doorIV_A3_depth_order_mismatch_export :
+    (1 : ℝ) < _root_.ArkLib.ProximityGap.Frontier.A3DepthConfinement.momentEngineExp 4 2 2 ∧
+    (∀ a : ℝ, 2 ≤ a →
+      (1 : ℝ) < _root_.ArkLib.ProximityGap.Frontier.A3DepthConfinement.momentEngineExp 4 a 2) ∧
+    (_root_.ArkLib.ProximityGap.Frontier.A3DepthConfinement.wickFedExp 4 = 1 ∧
+      ∀ r : ℝ, 4 < r →
+        _root_.ArkLib.ProximityGap.Frontier.A3DepthConfinement.wickFedExp r < 1) :=
+  _root_.ArkLib.ProximityGap.Frontier.A3DepthConfinement.depth_order_mismatch
+
+/-- **[obstruction, A5TwistedMonodromy]** Every `b`-summed Gauss-period correlation is a `q` times
+an integer lattice count with zero imaginary part, uniformly in all orders. Hence the proposed
+A5 growing non-abelian monodromy route has no non-abelian `√q` contribution to exploit. -/
+theorem doorIV_A5_monodromy_abelian_all_orders_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) :
+    ∀ a c : ℕ, ∃ N : ℕ,
+      (∑ b : F,
+          _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b ^ a
+            * (starRingEnd ℂ)
+                (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b ^ c))
+        = (Fintype.card F : ℂ) * (N : ℂ) ∧
+      (∑ b : F,
+          _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b ^ a
+            * (starRingEnd ℂ)
+                (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b ^ c)).im = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.A5TwistedMonodromyAbelianVerdict.monodromy_abelian_all_orders hψ G
+
+#print axioms doorIV_A1SOS_hankel_minor2_negative_export
+#print axioms doorIV_A1SOS_window_export
+#print axioms doorIV_A3_depth_order_mismatch_export
+#print axioms doorIV_A5_monodromy_abelian_all_orders_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

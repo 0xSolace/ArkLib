@@ -18998,3 +18998,11 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVGeomMeanBelowMax`. Compl
 VERDICT: uniform density excess is only a lower witness for the adversarial max. It cannot certify a worst-case upper bound for Door-IV periods, and it cannot bypass the worst-b coherence problem. No CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBelowMax.lean`, new theorem `exists_gt_of_lt_arithMean`; exported from `CampaignProvenIndex` as `doorIV_arithMean_gt_forces_point_gt_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-every-angle-failure-step-index-exports] permanent exports for SOS/depth/monodromy failure-step certificates (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint consolidation. The latest every-angle failure-step certificates were proven axiom-clean but not indexed. This sweep exports from `CampaignProvenIndex`: the A1 exact `n=16, q=65537` beta-four window witness and negative SOS Hankel minor, the A3 beta-four sum-product depth/order mismatch capstone, and the A5 abelian monodromy all-orders verdict.
+
+VERDICT: these are refuted-lever constraints only. The SOS route lacks a positive-measure Hankel/SOS extension, the sum-product cluster is confined to vacuous depth two at beta four, and the monodromy escape remains abelian lattice-count bookkeeping with no non-abelian `sqrt(q)` term. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_A1SOS_hankel_minor2_negative_export`, `doorIV_A1SOS_window_export`, `doorIV_A3_depth_order_mismatch_export`, and `doorIV_A5_monodromy_abelian_all_orders_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
