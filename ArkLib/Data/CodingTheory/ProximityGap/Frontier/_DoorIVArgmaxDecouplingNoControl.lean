@@ -128,6 +128,37 @@ theorem positiveTarget_subset_positiveCandidate_of_positive_control {target F : 
   intro i hi
   exact candidate_pos_of_positive_control_at_positive_target hCpos hctrl hi
 
+/-- **Exact ratio-envelope characterization.**  When the candidate functional is strictly positive at
+every frequency, a multiplicative control `target ≤ C·F` is equivalent to bounding every pointwise
+witness ratio `target i / F i` by the same constant `C`.
+
+This packages the argmax obstruction as an exact equivalence: any door-(iv) functional with positive
+values controls the target up to an absolute constant **if and only if** its whole ratio envelope is
+uniformly bounded.  Therefore probe witnesses need not be literal argmaxes; any growing ratio anywhere
+inside the family rules out the proposed absolute control. -/
+theorem uniformControl_iff_ratio_le {target F : ι → ℝ} {C : ℝ}
+    (hFpos : ∀ i, 0 < F i) :
+    UniformControl target F C ↔ ∀ i, target i / F i ≤ C := by
+  constructor
+  · intro hctrl i
+    exact const_ge_ratio_at_argmax hctrl (hFpos i)
+  · intro hratio i
+    have hi : target i / F i ≤ C := hratio i
+    rwa [div_le_iff₀ (hFpos i)] at hi
+
+/-- **Ratio-envelope obstruction.**  Under strict positivity of the candidate functional, one ratio
+witness above `C` is exactly enough to refute a claimed `C`-control.  This is the probe-facing
+contrapositive of `uniformControl_iff_ratio_le`: a single frequency with
+`C < target i / F i` kills the proposed multiplicative bound, whether or not that frequency is the
+argmax of either functional. -/
+theorem not_uniformControl_of_exists_ratio_gt {target F : ι → ℝ} {C : ℝ}
+    (hFpos : ∀ i, 0 < F i) (hwit : ∃ i, C < target i / F i) :
+    ¬ UniformControl target F C := by
+  intro hctrl
+  obtain ⟨i, hi⟩ := hwit
+  have hle : target i / F i ≤ C := (uniformControl_iff_ratio_le hFpos).1 hctrl i
+  exact (not_lt_of_ge hle) hi
+
 /-- **Family form: an unbounded witness ratio rules out every absolute constant.**  Suppose for each
 member `n` of a family we have a target `target n`, a candidate functional `F n`, a worst frequency
 `bstar n` where `F n (bstar n) > 0`, and the per-`n` witness ratio

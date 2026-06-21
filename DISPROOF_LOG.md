@@ -10757,3 +10757,24 @@ Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
 `doorIV_argmaxDecoupled_candidate_pos_export` and
 `doorIV_argmaxDecoupled_positive_support_subset_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupling-ratio-envelope] positive-candidate control is exactly bounded ratio envelope (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVArgmaxDecouplingNoControl`. The prior kernel
+used the target argmax to force a lower bound on any multiplicative control constant. This sweep packages
+the exact positive-candidate equivalence:
+
+* If `F i > 0` at every frequency, then `UniformControl target F C` iff `∀ i, target i / F i ≤ C`.
+* Consequently a single ratio witness `C < target i / F i` at any frequency, not necessarily an argmax,
+  refutes the claimed `C`-control.
+
+VERDICT: door-(iv) anti-concentration/window candidates with positive values can control the target up to
+absolute constants exactly when their full pointwise ratio envelope is uniformly bounded. Probe witnesses
+therefore need not be worst-frequency coincidences; any growing outlier ratio kills the proposed control.
+This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment/capacity claim.
+
+Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
+`uniformControl_iff_ratio_le` and `not_uniformControl_of_exists_ratio_gt`, exported from
+`CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControl_iff_ratio_export` and
+`doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

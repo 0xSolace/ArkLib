@@ -207,6 +207,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_no_multiWindow_split_rhs_le_strict_budget_export` | obstruction | DoorIVWindowConcentrationTrivial |
 | `doorIV_argmaxDecoupled_const_ge_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_uniformControl_iff_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_candidate_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
@@ -1829,6 +1831,27 @@ theorem doorIV_argmaxDecoupled_no_control_below_ratio_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_control_below_measured_ratio
     hFpos hbelow
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Exact ratio-envelope characterization:
+when the candidate functional is strictly positive at every frequency, `target ≤ C·F` is equivalent to
+bounding every pointwise ratio `target i / F i` by `C`. Thus absolute control is exactly a uniform
+bound on the ratio envelope, not an argmax-only phenomenon. -/
+theorem doorIV_argmaxDecoupled_uniformControl_iff_ratio_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} (hFpos : ∀ i, 0 < F i) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C
+      ↔ ∀ i, target i / F i ≤ C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.uniformControl_iff_ratio_le
+    hFpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Ratio-envelope no-go: with positive candidate
+values, a single frequency whose witness ratio exceeds `C` refutes the claimed `C`-control, whether or
+not that frequency is an argmax of the target or candidate. -/
+theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} (hFpos : ∀ i, 0 < F i)
+    (hwit : ∃ i, C < target i / F i) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_exists_ratio_gt
+    hFpos hwit
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Endpoint no-go: for any nonnegative absolute
 constant `C`, if the candidate functional is nonpositive at a strictly-positive target peak, then no
 uniform multiplicative control exists. This covers the zero/small-window endpoint of the measured
@@ -2803,6 +2826,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_no_multiWindow_split_rhs_le_strict_budget_export
 #print axioms doorIV_argmaxDecoupled_const_ge_ratio_export
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
+#print axioms doorIV_argmaxDecoupled_uniformControl_iff_ratio_export
+#print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_candidate_pos_export
