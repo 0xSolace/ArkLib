@@ -39,6 +39,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvariantCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 
@@ -1301,6 +1302,57 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms coreReduction_mStar_gt_of_BCHKS_fails_export
 #print axioms coreReduction_mStar_le_iff_BCHKS_export
 #print axioms coreReduction_clears_johnson_iff_BCHKS_at_prev_fold_export
+
+
+/-! ## Door-IV sixth marginal cumulant collapse. Scope: **obstruction**.
+
+These exports make the explicit 6th-marginal rung permanent: when the sixth connected cumulant
+vanishes, the sixth moment is exactly its Wick/lower-cumulant value, hence any sixth-moment control
+passes through the already-mapped 2nd/4th data. This complements the signed 3-3 connected-correlation
+closure below; it is a no-new-sixth-order-lever statement only. -/
+
+/-- **[obstruction, DoorIVSixthCumulant]** Vanishing sixth connected cumulant collapses the sixth
+moment to its Wick value. -/
+theorem doorIV_m6_eq_wick_of_sixth_cumulant_zero_export
+    {m6 wick kappa6 : ℝ}
+    (hdecomp : m6 = kappa6 + wick) (hzero : kappa6 = 0) :
+    m6 = wick :=
+  _root_.ProximityGap.Frontier.DoorIVSixthCumulantVanishes.m6_eq_wick_of_sixth_cumulant_zero
+    hdecomp hzero
+
+/-- **[obstruction, DoorIVSixthCumulant]** Explicit lower-cumulant polynomial form: with `κ₆ = 0`,
+`m₆ = 15·κ₄·κ₂ + 15·κ₂³`, so the sixth moment carries no independent sixth-order datum. -/
+theorem doorIV_m6_eq_lowerCumulant_poly_of_sixth_cumulant_zero_export
+    {m6 kappa2 kappa4 kappa6 : ℝ}
+    (hdecomp : m6 = kappa6 + (15 * kappa4 * kappa2 + 15 * kappa2 ^ 3))
+    (hzero : kappa6 = 0) :
+    m6 = 15 * kappa4 * kappa2 + 15 * kappa2 ^ 3 :=
+  _root_.ProximityGap.Frontier.DoorIVSixthCumulantVanishes.m6_eq_lowerCumulant_poly_of_sixth_cumulant_zero
+    hdecomp hzero
+
+/-- **[obstruction, DoorIVSixthCumulant]** Central-moment polynomial form: with `κ₆ = 0`,
+`m₆ = 15·m₄·m₂ - 30·m₂³`, a fixed polynomial in the dead Plancherel/energy data. -/
+theorem doorIV_m6_eq_centralMoment_poly_of_sixth_cumulant_zero_export
+    {m6 m2 m4 kappa6 : ℝ}
+    (hdecomp : m6 = kappa6 + (15 * (m4 - 3 * m2 ^ 2) * m2 + 15 * m2 ^ 3))
+    (hzero : kappa6 = 0) :
+    m6 = 15 * m4 * m2 - 30 * m2 ^ 3 :=
+  _root_.ProximityGap.Frontier.DoorIVSixthCumulantVanishes.m6_eq_centralMoment_poly_of_sixth_cumulant_zero
+    hdecomp hzero
+
+/-- **[obstruction, DoorIVSixthCumulant]** A sixth-moment control gives no new door-(iv) lever once
+`m₆` Wick-factorizes: the candidate is controlled by the lower-order Wick data. -/
+theorem doorIV_control_passes_through_sixth_wick_export
+    {M m6 wick : ℝ}
+    (hctrl : M ≤ m6) (hfact : m6 = wick) :
+    M ≤ wick :=
+  _root_.ProximityGap.Frontier.DoorIVSixthCumulantVanishes.control_passes_through_sixth_wick
+    hctrl hfact
+
+#print axioms doorIV_m6_eq_wick_of_sixth_cumulant_zero_export
+#print axioms doorIV_m6_eq_lowerCumulant_poly_of_sixth_cumulant_zero_export
+#print axioms doorIV_m6_eq_centralMoment_poly_of_sixth_cumulant_zero_export
+#print axioms doorIV_control_passes_through_sixth_wick_export
 
 /-! ## Door-IV connected-correlation hierarchy closure. Scope: **obstruction/capstone**.
 
