@@ -81,6 +81,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkDoobMajo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9OrderedWalkMajorant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9ReflectionSteinitz
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
 
@@ -221,6 +222,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_bstar_saving_iff_degenerate_export` | obstruction | StepanovAtBstar |
 | `doorIV_orderedWalk_endpoint_le_maximalExcursion_export` | obstruction | DoorIVOrderedWalkMajorant |
 | `doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export` | obstruction | DoorIVOrderedWalkMajorant |
+| `doorIV_avDIR9Reflection_endpoint_le_R_export` | obstruction | AvDIR9Reflection |
+| `doorIV_avDIR9Reflection_bound_two_R1_export` | obstruction | AvDIR9Reflection |
+| `doorIV_avDIR9Reflection_reduces_export` | obstruction | AvDIR9Reflection |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3565,8 +3569,9 @@ theorem doorIV_orderedWalk_corePrize_endpoint_of_maximalExcursion_export {ι E :
   _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.corePrizeBoundOn_endpoint_of_maximalExcursion_bound
     hR
 
-/-- **[obstruction, OrderedWalkDoobMajorant]** Concrete contrapositive: if the endpoint periods are
-not prize-bounded, then the finite ordered maximal-prefix excursion cannot be prize-bounded either. -/
+/-- **[obstruction, OrderedWalkDoobMajorant]** Concrete contrapositive: if the endpoint
+periods are not prize-bounded, then the finite ordered maximal-prefix excursion cannot be
+prize-bounded either. -/
 theorem doorIV_orderedWalk_not_maximalExcursion_bound_of_endpoint_not_bound_export {ι E : Type*}
     [SeminormedAddCommGroup E] {q n : ι → ℝ} {S : ι → ℕ → E} {N : ι → ℕ}
     (hnot : ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
@@ -3577,17 +3582,19 @@ theorem doorIV_orderedWalk_not_maximalExcursion_bound_of_endpoint_not_bound_expo
   _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_maximalExcursion_of_endpoint_not_core
     hnot
 
-/-- **[obstruction, StepanovAtBstar]** Per-`b*` Stepanov supplies only the counting inequality:
-if a nonzero auxiliary vanishes to order `M` on the major-arc set `B`, then `M * |B| ≤ deg F`. -/
+/-- **[obstruction, StepanovAtBstar]** Per-`b*` Stepanov supplies only the counting
+inequality: if a nonzero auxiliary vanishes to order `M` on the major-arc set `B`, then
+`M * |B| ≤ deg F`. -/
 theorem doorIV_stepanov_bstar_bound_export {F : Type*} [Field F]
     {B : Finset F} {F' : Polynomial F} {M : ℕ}
     (hF : F' ≠ 0) (hvanish : ∀ x ∈ B, (Polynomial.X - Polynomial.C x) ^ M ∣ F') :
     M * B.card ≤ F'.natDegree :=
   _root_.ProximityGap.Frontier.StepanovAtBstar.stepanov_bstar_bound hF hvanish
 
-/-- **[obstruction, StepanovAtBstar]** A strictly sub-count per-`b*` Stepanov saving is exactly the
-named `MajorArcDegenerate` obligation. The natural structured/even auxiliaries have house=count, so
-closing this lane requires genuine major-arc algebraic degeneracy beyond the measured full-rank wall. -/
+/-- **[obstruction, StepanovAtBstar]** A strictly sub-count per-`b*` Stepanov saving is
+exactly the named `MajorArcDegenerate` obligation. The natural structured/even auxiliaries have
+house=count, so closing this lane requires genuine major-arc algebraic degeneracy beyond the
+measured full-rank wall. -/
 theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
     {B : Finset F} {M : ℕ} :
     _root_.ProximityGap.Frontier.StepanovAtBstar.MajorArcDegenerate B M ↔
@@ -3595,6 +3602,31 @@ theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
         (∀ x ∈ B, (Polynomial.X - Polynomial.C x) ^ M ∣ F') ∧
         F'.natDegree < M * B.card :=
   _root_.ProximityGap.Frontier.StepanovAtBstar.bstar_saving_iff_degenerate
+
+/-- **[obstruction, AvDIR9Reflection]** Endpoint domination for the reflection-Steinitz
+ordered walk: for every ordering, the endpoint Gauss period is one of the finite prefixes, so
+`‖η_b‖ ≤ R`. This is the wall-facing direction: any bound on the ordered maximal function must
+already bound the endpoint period itself. -/
+theorem doorIV_avDIR9Reflection_endpoint_le_R_export (a : ℕ → ℂ) (n : ℕ) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint a n‖ ≤
+      _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R a n :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.endpoint_le_R a n
+
+/-- **[obstruction, AvDIR9Reflection]** Exact antipodal reflection gives the full-walk maximal
+function bound `R(2h) ≤ 2 R₁(h)`. Iterating this bound loses cancellation and recurses into the
+half-scale Gauss-sum wall, so it is a reduction certificate rather than a prize upper bound. -/
+theorem doorIV_avDIR9Reflection_bound_two_R1_export {a : ℕ → ℂ} {h : ℕ}
+    (hanti : _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.AntipodalIncrements a h) :
+    _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R a (2 * h) ≤
+      2 * _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.R1 a h :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.reflection_bound_two_R1 hanti
+
+/-- **[obstruction, AvDIR9Reflection]** The reflection-Steinitz attack reduces to the same
+endpoint wall: the permanent certificate is precisely `endpoint_le_R`, with the reflection majorant
+pointing in the wrong direction for an unconditional `M` upper bound. -/
+theorem doorIV_avDIR9Reflection_reduces_export :
+    _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.DIR9ReflectionReducesToWall :=
+  _root_.ArkLib.ProximityGap.Frontier.AvDIR9Reflection.dir9_reflection_reduces
 
 /-- **[capstone, ShawValueBracketCenter]** The product of the normalized floor endpoint
 `√n/√(nL)` and ceiling endpoint `n/√(nL)` is the closed-form midpoint datum `√n/L`. -/
@@ -3642,6 +3674,9 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_avDIR9_endpoint_le_R_export
 #print axioms doorIV_avDIR9_pairAntisym_sum_zero_export
 #print axioms doorIV_avDIR9_majorant_reduces_export
+#print axioms doorIV_avDIR9Reflection_endpoint_le_R_export
+#print axioms doorIV_avDIR9Reflection_bound_two_R1_export
+#print axioms doorIV_avDIR9Reflection_reduces_export
 #print axioms doorIV_jacAutocorr_wienerKhinchin_export
 #print axioms doorIV_jacAutocorr_offdiag_le_total_sub_diag_export
 #print axioms doorIV_jacAutocorr_gap_suffices_export
