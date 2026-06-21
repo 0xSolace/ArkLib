@@ -18940,3 +18940,21 @@ Lane: door-(iv) Lane 3 permanent-export rung for Shaw's `_StepanovAtBstar` kerne
 VERDICT: the only per-`b*` Stepanov escape route is genuine major-arc algebraic degeneracy beyond the measured full-rank wall. The CampaignProvenIndex now exposes the two citable endpoints: `doorIV_stepanov_bstar_bound_export` and `doorIV_bstar_saving_iff_degenerate_export`. This is a refuted-lever/reduction constraint only: no CORE upper bound, no cancellation, no completion saving, no moment saving, no anti-concentration, and no capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_StepanovAtBstar.lean`; permanent exports in `CampaignProvenIndex`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) ordered-walk/Doob majorant is an exact reformulation target (2026-06-21)
+
+Lens: Lane 1/2 capstone for Shaw's DIR9 ordered-walk frontier. The probe object is the per-`b*`
+ordered partial-sum maximal excursion `R(b)=sup_k |S_k(b)|`, which is order-dependent and therefore
+outside the polynomial `b`-summation phase-blind dichotomy. The safe kernel records only the consumption
+rung: if `R` pointwise dominates the endpoint period norm, then any prize-scale bound for `R` transfers
+verbatim to the endpoint periods; contrapositively, failure of the endpoint prize bound forbids any
+pointwise-dominating ordered-walk radius bound.
+
+VERDICT: DIR9 is a real formulation, not a normalization shortcut. A Doob/vdC proof for the ordered walk
+would have to prove a bound as strong as the original Paley/BGK wall because the majorant transfer is
+constant-preserving. No CORE/cancellation/completion/moment/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVOrderedWalkDoobMajorant.lean`,
+axiom-clean. New theorems: `corePrizeBoundOn_endpoint_of_orderedWalkMajorant`,
+`shawOOne_endpoint_of_orderedWalkMajorant`, and `not_corePrizeBoundOn_radius_of_endpoint_not_core`.
+Axioms are contained in `{propext, Classical.choice, Quot.sound}`.

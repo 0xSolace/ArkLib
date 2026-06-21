@@ -76,6 +76,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialStats
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkDoobMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 
@@ -3443,6 +3444,31 @@ theorem doorIV_radialSum_invariant_under_unit_twist_export {ι : Type*} (s : Fin
   _root_.ArkLib.ProximityGap.Frontier.DoorIVPhaseBlindRadialStats.radialSum_invariant_under_unit_twist
     s F tw A htw
 
+/-- **[capstone, OrderedWalkDoobMajorant]** DIR9 ordered-walk consumer: if the ordered maximal
+excursion radius `R` dominates the endpoint period at every family member, then a prize-scale theorem
+for `R` transfers verbatim to the endpoint periods. The remaining open obligation is the genuine
+per-`b*` maximal-inequality bound for `R`, not another normalization step. -/
+theorem doorIV_orderedWalk_corePrize_endpoint_of_majorant_export {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {endpoint : ι → E} {R : ι → ℝ}
+    (hdom : _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.EndpointDominated endpoint R)
+    (hR : _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n R) :
+    _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => ‖endpoint i‖) :=
+  _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.corePrizeBoundOn_endpoint_of_orderedWalkMajorant
+    hdom hR
+
+/-- **[obstruction, OrderedWalkDoobMajorant]** Contrapositive DIR9 form: if the endpoint periods are
+not prize-bounded, then no pointwise-dominating ordered-walk radius can be prize-bounded either. Thus
+an ordered-walk/Doob route must prove a bound as strong as the original Paley/BGK wall. -/
+theorem doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export {ι E : Type*}
+    [SeminormedAddCommGroup E] {q n : ι → ℝ} {endpoint : ι → E} {R : ι → ℝ}
+    (hdom : _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.EndpointDominated endpoint R)
+    (hnot : ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n
+      (fun i : ι => ‖endpoint i‖)) :
+    ¬ _root_.ProximityGap.Frontier.ShawValueCapstone.CorePrizeBoundOn q n R :=
+  _root_.ProximityGap.Frontier.DoorIVOrderedWalkDoobMajorant.not_corePrizeBoundOn_radius_of_endpoint_not_core
+    hdom hnot
+
 /-- **[obstruction, StepanovAtBstar]** Per-`b*` Stepanov supplies only the counting inequality:
 if a nonzero auxiliary vanishes to order `M` on the major-arc set `B`, then `M * |B| ≤ deg F`. -/
 theorem doorIV_stepanov_bstar_bound_export {F : Type*} [Field F]
@@ -3469,6 +3495,8 @@ theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
 #print axioms doorIV_orderedWalk_endpoint_le_maximalExcursion_export
 #print axioms doorIV_orderedWalk_endpoint_bound_of_maximal_bound_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
+#print axioms doorIV_orderedWalk_corePrize_endpoint_of_majorant_export
+#print axioms doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export
 #print axioms doorIV_stepanov_bstar_bound_export
 #print axioms doorIV_bstar_saving_iff_degenerate_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
