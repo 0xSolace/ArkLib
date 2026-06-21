@@ -133,6 +133,8 @@ anything here; this index does not claim otherwise.
 | `gaussEnergyStep_step_of_increments_le_export` | capstone | AvGR_GaussSumEnergyStep |
 | `dilationEnergy_step_iff_offdiagonal_export` | capstone | AvDil_MultEnergyStepDiagonal |
 | `dilationEnergy_deep_step_of_depth2K_energy_export` | obstruction | AvDil_MultEnergyStepDiagonal |
+| `dilationEnergy_not_deep_step_of_offdiagonal_gt_export` | obstruction | AvDil_MultEnergyStepDiagonal |
+| `dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export` | obstruction | AvDil_MultEnergyStepDiagonal |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1085,6 +1087,30 @@ theorem dilationEnergy_deep_step_of_depth2K_energy_export
     Akp1 Ak off Em Ephi n K hsplit hoff_nonneg hCS htarget_nonneg hdepth
 
 
+/-- **[obstruction, DilationMultEnergyStep]** Probe-facing contrapositive of the diagonal split:
+if the off-diagonal piece exceeds `2K n A_K`, the deep step itself is false. -/
+theorem dilationEnergy_not_deep_step_of_offdiagonal_gt_export
+    (Akp1 Ak off : ℚ) (n K : ℚ)
+    (hsplit : Akp1 = n * Ak + off)
+    (hoff_gt : 2 * K * n * Ak < off) :
+    ¬ Akp1 ≤ (2 * K + 1) * n * Ak :=
+  _root_.Issue444.DilationMultEnergyStep.not_deep_step_of_offdiagonal_gt
+    Akp1 Ak off n K hsplit hoff_gt
+
+/-- **[obstruction, DilationMultEnergyStep]** If Cauchy--Schwarz certifies
+`OFF² ≤ Em·Ephi` while the target is already below `OFF`, then the depth-`2K` energy budget
+`Em·Ephi ≤ target²` is impossible. This names the exact BGK-wall failure mode. -/
+theorem dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export
+    (off Em Ephi target : ℚ)
+    (hoff_nonneg : 0 ≤ off)
+    (htarget_nonneg : 0 ≤ target)
+    (hoff_gt : target < off)
+    (hCS : off ^ 2 ≤ Em * Ephi) :
+    ¬ Em * Ephi ≤ target ^ 2 :=
+  _root_.Issue444.DilationMultEnergyStep.not_depth2K_energy_of_cs_and_offdiagonal_gt
+    off Em Ephi target hoff_nonneg htarget_nonneg hoff_gt hCS
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1161,4 +1187,6 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms gaussEnergyStep_step_of_increments_le_export
 #print axioms dilationEnergy_step_iff_offdiagonal_export
 #print axioms dilationEnergy_deep_step_of_depth2K_energy_export
+#print axioms dilationEnergy_not_deep_step_of_offdiagonal_gt_export
+#print axioms dilationEnergy_not_depth2K_energy_of_cs_and_offdiagonal_gt_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

@@ -150,10 +150,44 @@ theorem deep_step_of_depth2K_energy
   rw [step_iff_offdiagonal Akp1 Ak off n K hsplit]
   exact hoff
 
+/-- **Overshooting the off-diagonal target is exactly failure of the deep step.**
+Under the exact diagonal split, an empirical/probe witness `2K·n·A_K < OFF` rules out
+`A_{K+1} ≤ (2K+1)·n·A_K`. This is the contrapositive interface for the diagonal reduction:
+there is no hidden slack in the diagonal bookkeeping. -/
+theorem not_deep_step_of_offdiagonal_gt
+    (Akp1 Ak off : ℚ) (n K : ℚ)
+    (hsplit : Akp1 = n * Ak + off)
+    (hoff_gt : 2 * K * n * Ak < off) :
+    ¬ Akp1 ≤ (2 * K + 1) * n * Ak := by
+  intro hdeep
+  have hoff_le : off ≤ 2 * K * n * Ak :=
+    (step_iff_offdiagonal Akp1 Ak off n K hsplit).mp hdeep
+  linarith
+
+/-- **A Cauchy--Schwarz certificate cannot coexist with an off-diagonal overshoot.**
+If `target < OFF`, `OFF ≥ 0`, and Cauchy--Schwarz has already certified
+`OFF² ≤ Em·Ephi`, then the depth-`2K` energy budget `Em·Ephi ≤ target²` is impossible.
+Thus any observed off-diagonal overshoot pinpoints the missing input as the depth-`2K`
+energy/Wick (BGK) bound, not the diagonal/dilation algebra. -/
+theorem not_depth2K_energy_of_cs_and_offdiagonal_gt
+    (off Em Ephi target : ℚ)
+    (hoff_nonneg : 0 ≤ off)
+    (htarget_nonneg : 0 ≤ target)
+    (hoff_gt : target < off)
+    (hCS : off ^ 2 ≤ Em * Ephi) :
+    ¬ Em * Ephi ≤ target ^ 2 := by
+  intro hdepth
+  have hsq_le : off ^ 2 ≤ target ^ 2 := le_trans hCS hdepth
+  have hsq_lt : target ^ 2 < off ^ 2 := by
+    nlinarith [sq_nonneg (off - target)]
+  linarith
+
 /-! ## Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}; NO sorryAx). -/
 #print axioms step_iff_offdiagonal
 #print axioms diagonal_block_eq
 #print axioms offdiagonal_le_of_depth2K_energy
 #print axioms deep_step_of_depth2K_energy
+#print axioms not_deep_step_of_offdiagonal_gt
+#print axioms not_depth2K_energy_of_cs_and_offdiagonal_gt
 
 end Issue444.DilationMultEnergyStep
