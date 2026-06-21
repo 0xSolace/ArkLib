@@ -46,6 +46,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiago
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CoreReductionNecessity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDecompositionInvariantCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTripleCorrelationVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorrelationHierarchyCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCumulantLadderVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstructured
@@ -191,6 +192,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
+| `doorIV_tripleCorrelation_sixPoint_vacuous_export` | obstruction | DoorIVTripleCorrelationVanishes |
+| `doorIV_tripleCorrelation_m33_eq_wick_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_crossHalf_norm_add_eq_halfMass_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_forces_ratio_le_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
 | `doorIV_crossHalf_fixed_multiplier_fails_of_ratio_gt_export` | obstruction | DoorIVCrossHalfPhaseUnstructured |
@@ -1987,6 +1991,31 @@ theorem doorIV_correlation_hierarchy_closed_through_six_export
   _root_.ProximityGap.Frontier.DoorIVCorrelationHierarchyCapstone.correlation_hierarchy_closed_through_six
     hctrl4 hctrl6 hdec4 hcum4 hdec6 hcum6 htriple
 
+/-- **[obstruction, DoorIVTripleCorrelationVanishes]** If the connected triple correlation `κ₃`
+vanishes, the signed six-point functional `|κ₃|²` is exactly zero. This is the direct indexed form of
+the 6-point connected-correlation wall. -/
+theorem doorIV_tripleCorrelation_sixPoint_zero_export {κ₃ : ℂ} (hzero : κ₃ = 0) :
+    Complex.normSq κ₃ = 0 :=
+  _root_.ProximityGap.Frontier.DoorIVTripleCorrelationVanishes.sixPoint_functional_zero_of_triple_zero
+    hzero
+
+/-- **[obstruction, DoorIVTripleCorrelationVanishes]** A six-point lever routed through the signed
+triple-correlation functional is vacuous when `κ₃ = 0`: it only supplies `0 ≤ ‖M‖²`. -/
+theorem doorIV_tripleCorrelation_sixPoint_vacuous_export {M κ₃ : ℂ}
+    (hbound : Complex.normSq κ₃ ≤ Complex.normSq M) (hzero : κ₃ = 0) :
+    (0 : ℝ) ≤ Complex.normSq M :=
+  _root_.ProximityGap.Frontier.DoorIVTripleCorrelationVanishes.sixPoint_lever_vacuous_of_triple_zero
+    hbound hzero
+
+/-- **[obstruction, DoorIVTripleCorrelationVanishes]** With vanishing connected 3-3 cumulant, the
+sixth-order 3-3 moment collapses to its Wick/lower-order value, so the candidate adds no new
+six-point phase structure beyond already-mapped covariance/diagonal data. -/
+theorem doorIV_tripleCorrelation_m33_eq_wick_export {m33 wick cumulant : ℝ}
+    (hdecomp : m33 = wick + cumulant) (hzero : cumulant = 0) :
+    m33 = wick :=
+  _root_.ProximityGap.Frontier.DoorIVTripleCorrelationVanishes.m33_eq_wick_of_cumulant_zero
+    hdecomp hzero
+
 /-- **[obstruction, DoorIVCumulantLadder]** Order-uniform single-rung form: for any
 moment-cumulant decomposition `mr = wickr + cumr`, a vanishing connected cumulant forces every
 control through that rung to pass through the Wick value. -/
@@ -2440,6 +2469,9 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_sixPoint_lever_vacuous_export
 #print axioms doorIV_correlation_hierarchy_no_lever_export
 #print axioms doorIV_correlation_hierarchy_closed_through_six_export
+#print axioms doorIV_tripleCorrelation_sixPoint_zero_export
+#print axioms doorIV_tripleCorrelation_sixPoint_vacuous_export
+#print axioms doorIV_tripleCorrelation_m33_eq_wick_export
 #print axioms doorIV_ladder_control_passes_through_wick_export
 #print axioms doorIV_whole_ladder_wick_export
 #print axioms doorIV_whole_ladder_control_export
