@@ -10901,3 +10901,24 @@ Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new definition `UniformC
 `CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export` and
 `doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupling-finite-support-positive-support] finite support control forces positive candidate support (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 companion to the finite-support ratio envelope. The previous entry made finite
+probe-support control exactly equivalent to the ratio envelope on the enumerated support `s`. This sweep
+adds the support-level prerequisite for positive constants:
+
+- If `UniformControlOn s target F C`, `0<C`, `i∈s`, and `0<target i`, then `0<F i`.
+- Therefore `{i | i∈s ∧ 0<target i} ⊆ {i | 0<F i}` under any positive finite-support control.
+
+VERDICT: a finite small-ball/window candidate cannot even start to control the target on a measured
+support if it vanishes or goes nonpositive at a positive target frequency in that support. This is a
+finite-probe lever constraint only. No CORE, cancellation, completion, moment-saving, anti-concentration,
+or capacity claim.
+
+Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
+`candidate_pos_of_positive_controlOn_at_positive_target` and
+`positiveTargetOn_subset_positiveCandidate_of_positive_controlOn`, exported from `CampaignProvenIndex` as
+`doorIV_argmaxDecoupled_candidate_pos_on_export` and
+`doorIV_argmaxDecoupled_positive_support_on_subset_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

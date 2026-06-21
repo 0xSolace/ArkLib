@@ -196,6 +196,29 @@ theorem not_uniformControlOn_of_exists_ratio_gt_on {target F : ι → ℝ} {C : 
   have hle : target i / F i ≤ C := (uniformControlOn_iff_ratio_le_on hFpos).1 hctrl i hi
   exact (not_lt_of_ge hle) hgt
 
+/-- **Finite-support positive-support constraint.**  A strictly-positive control constant on a finite
+probe support forces the candidate functional to be positive at every support frequency where the target
+is positive.  Thus a finite probe candidate whose positive support misses a positive target point in
+`s` is dead before ratio estimates matter. -/
+theorem candidate_pos_of_positive_controlOn_at_positive_target {target F : ι → ℝ}
+    {C : ℝ} {s : Finset ι} {i : ι} (hCpos : 0 < C)
+    (hctrl : UniformControlOn s target F C) (hi : i ∈ s) (htpos : 0 < target i) :
+    0 < F i := by
+  by_contra hnot
+  have htarget_le_mul : target i ≤ C * F i := hctrl i hi
+  have hmul_nonpos : C * F i ≤ 0 := mul_nonpos_of_nonneg_of_nonpos (le_of_lt hCpos)
+    (le_of_not_gt hnot)
+  have htarget_nonpos : target i ≤ 0 := le_trans htarget_le_mul hmul_nonpos
+  exact (not_lt_of_ge htarget_nonpos) htpos
+
+/-- **Finite-support support-inclusion form.**  A positive multiplicative control on `s` forces every
+positive target point of `s` to lie in the candidate's positive support. -/
+theorem positiveTargetOn_subset_positiveCandidate_of_positive_controlOn {target F : ι → ℝ}
+    {C : ℝ} {s : Finset ι} (hCpos : 0 < C) (hctrl : UniformControlOn s target F C) :
+    {i | i ∈ s ∧ 0 < target i} ⊆ {i | 0 < F i} := by
+  intro i hi
+  exact candidate_pos_of_positive_controlOn_at_positive_target hCpos hctrl hi.1 hi.2
+
 /-- **A nonzero positive target forces the control constant itself to be positive.**  If the
 candidate is positive at some frequency and the target is positive there, then any multiplicative
 control `target ≤ C·F` must have `C > 0`.  Thus the `C > 0` hypotheses in the support lemmas are not
