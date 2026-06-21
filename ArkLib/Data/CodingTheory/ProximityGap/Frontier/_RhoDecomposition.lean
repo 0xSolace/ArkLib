@@ -97,10 +97,19 @@ theorem rho_le_one_iff_wraparound_le_slack
   · intro h; nlinarith [h]
   · intro h; nlinarith [h]
 
-/-- **The char-0 component is the proven, nonnegative part of the slack.**  If the char-0 energy obeys its
-(proven) bound `E0 ≤ Wick` (`gaussianEnergyBound_dyadic`, i.e. `R_r ≤ 1`) and the DC term is nonnegative
-(`Wick ≤ n^{2r}`, true at every depth past the DC crossover), then the slack is at least the char-0 slack
-`Wick − E0 ≥ 0`.  Hence a wraparound within the char-0 slack alone already discharges the criterion. -/
+/-- **The char-0 component is the proven, nonnegative part of the slack** (sufficiency direction).  If the
+char-0 energy obeys its (proven) bound `E0 ≤ Wick` (`gaussianEnergyBound_dyadic`, i.e. `R_r ≤ 1`) and the DC
+term is nonnegative (`Wick ≤ n^{2r}`, true at every depth past the DC crossover), then the slack is at least
+the char-0 slack `Wick − E0 ≥ 0`, so a wraparound within the char-0 slack `W ≤ Wick − E0` discharges `ρ ≤ 1`.
+
+⚠ **VACUOUS-AT-PRIZE (honesty audit 2026-06-19).** The hypothesis `hwrap : W ≤ Wick − E0` DROPS the DC slack
+`(n^{2r}−Wick)/p` from the full budget. Under the file's reading `W = E_r − E0`, `W ≤ Wick − E0` is exactly
+the RAW energy bound `E_r ≤ Wick`, which is machine-proven FALSE at prize depth
+(`DCEnergyEssential.energy_ge_dc`: `E_r ≥ n^{2r}/p ≫ Wick`). So this rung's hypothesis is UNSATISFIABLE at
+prize scale: the char-0 slack alone does NOT suffice there — the genuinely-open criterion needs the FULL
+slack (char-0 PLUS the DC term), i.e. the main identity `rho_le_one_iff_wraparound_le_slack` with
+`W ≤ slack = (Wick−E0) + (n^{2r}−Wick)/p`, NOT this char-0-only sufficiency. This lemma is a valid
+conditional but is non-vacuous only OFF the prize regime. -/
 theorem wraparound_within_char0_slack_suffices
     (p E0 W n2r Wick : ℝ) (hp : 1 < p) (hW : 0 < Wick)
     (hchar0 : E0 ≤ Wick) (hDC : Wick ≤ n2r) (hwrap : W ≤ Wick - E0) :
