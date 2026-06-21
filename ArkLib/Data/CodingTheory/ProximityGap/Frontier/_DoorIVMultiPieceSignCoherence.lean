@@ -38,6 +38,32 @@ noncomputable def multiPieceCoherence {ι : Type*} [DecidableEq ι]
     (s : Finset ι) (A : ι → ℝ) : ℝ :=
   |∑ i ∈ s, A i| / (∑ i ∈ s, |A i|)
 
+/-- The real multi-piece coherence statistic is always at most `1` when its `L¹` denominator is
+positive.  This pins the trivial ceiling for refined door-(iv) splits: any useful statement must
+be a strict subunit bound, and the later signed-mass lemmas identify exactly what pays for that strict
+slack. -/
+theorem multiPieceCoherence_le_one {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) (hpos : 0 < ∑ i ∈ s, |A i|) :
+    multiPieceCoherence s A ≤ 1 := by
+  unfold multiPieceCoherence
+  exact (div_le_one hpos).mpr (Finset.abs_sum_le_sum_abs _ _)
+
+/-- Nonnegativity of the real multi-piece coherence statistic. -/
+theorem multiPieceCoherence_nonneg {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) :
+    0 ≤ multiPieceCoherence s A := by
+  unfold multiPieceCoherence
+  exact div_nonneg (abs_nonneg _)
+    (Finset.sum_nonneg (fun i hi => abs_nonneg (A i)))
+
+/-- The real multi-piece coherence lies in the closed unit interval whenever the denominator is
+positive.  This is the exact ceiling/slack interface consumed by the sign-balance obstruction: the
+only nontrivial content is moving from `≤ 1` to `≤ 1 - ε`. -/
+theorem multiPieceCoherence_mem_Icc {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) (hpos : 0 < ∑ i ∈ s, |A i|) :
+    multiPieceCoherence s A ∈ Set.Icc (0 : ℝ) 1 :=
+  ⟨multiPieceCoherence_nonneg s A, multiPieceCoherence_le_one s A hpos⟩
+
 /-- If all real pieces are nonnegative and the total is nonzero, multi-piece coherence is exactly
 `1`.  This is the positive-sign saturation obstruction for negation-stable door-(iv) refinements. -/
 theorem multiPieceCoherence_eq_one_of_nonneg {ι : Type*} [DecidableEq ι]
@@ -505,6 +531,9 @@ end ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 open ProximityGap.Frontier.DoorIVMultiPieceSignCoherence
 
 #print axioms multiPieceCoherence_eq_one_of_nonneg
+#print axioms multiPieceCoherence_le_one
+#print axioms multiPieceCoherence_nonneg
+#print axioms multiPieceCoherence_mem_Icc
 #print axioms multiPieceCoherence_eq_one_of_nonpos
 #print axioms multiPieceCoherence_eq_one_of_sameSign
 #print axioms multiPieceCoherence_eq_abs_signedMass_ratio

@@ -228,6 +228,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_decomposition_block_sum_common_ray_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_partition_invariant_coherence_export` | obstruction | DoorIVDecompositionInvariantCoherence |
 | `doorIV_decomposition_no_partition_beats_one_export` | obstruction | DoorIVDecompositionInvariantCoherence |
+| `doorIV_multiPiece_coherence_mem_Icc_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_exact_saving_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_eps_budget_eq_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_eps_budget_iff_export` | obstruction | DoorIVMultiPieceSignCoherence |
@@ -1989,6 +1990,16 @@ theorem doorIV_decomposition_no_partition_beats_one_export
         (fun k => ∑ i ∈ t.filter (fun i => g i = k), f i) ≤ θ :=
   _root_.ProximityGap.Frontier.DoorIVDecompositionInvariantCoherence.no_partition_beats_one_of_common_ray_terms t s f hθ hray g hcover
 
+/-- **[obstruction, DoorIVMultiPieceSignCoherence]** Real refined-piece coherence has the
+closed-unit-interval ceiling `0 ≤ coherence ≤ 1` whenever its `L¹` denominator is positive. Therefore
+all nontrivial door-(iv) content starts only at a strict subunit bound `≤ 1 - ε`; the signed-mass
+exports below identify the exact minority-mass payment for that slack. -/
+theorem doorIV_multiPiece_coherence_mem_Icc_export {ι : Type*} [DecidableEq ι]
+    (s : Finset ι) (A : ι → ℝ) (hpos : 0 < ∑ i ∈ s, |A i|) :
+    _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence s A ∈
+      Set.Icc (0 : ℝ) 1 :=
+  _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.multiPieceCoherence_mem_Icc s A hpos
+
 /-- **[obstruction, DoorIVMultiPieceSignCoherence]** Exact saving identity for real refined
 piece coherence. After compression to aggregate positive/negative masses, the slack below saturation
 is precisely `2·minority/total`; refinement alone creates no hidden cancellation term. -/
@@ -3426,6 +3437,7 @@ theorem doorIV_radialSum_invariant_under_unit_twist_export {ι : Type*} (s : Fin
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
+#print axioms doorIV_multiPiece_coherence_mem_Icc_export
 #print axioms doorIV_multiPiece_exact_saving_export
 #print axioms doorIV_multiPiece_eps_budget_eq_export
 #print axioms doorIV_multiPiece_eps_budget_iff_export
