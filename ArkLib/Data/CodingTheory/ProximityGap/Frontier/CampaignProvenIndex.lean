@@ -2071,6 +2071,30 @@ theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_exists_ratio_gt_on
     hFpos hwit
 
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support point-ratio no-go: a single
+measured support point with positive candidate value and ratio above `C` refutes `C`-control on that
+support, without assuming the candidate is positive at every measured frequency. -/
+theorem doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} {i : ι} (hi : i ∈ s)
+    (hFpos : 0 < F i) (hgt : C < target i / F i) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn s target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControlOn_of_point_ratio_gt_on
+    hi hFpos hgt
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support family no-go: if the measured
+support witness ratios are unbounded across a family, then every candidate absolute constant fails on
+some measured support.  This is the finite-enumeration version of the unbounded-ratio obstruction. -/
+theorem doorIV_argmaxDecoupled_no_absolute_constOn_export {ι N : Type*}
+    {target F : N → ι → ℝ} {s : N → Finset ι} {bstar : N → ι}
+    (hmem : ∀ n, bstar n ∈ s n)
+    (hFpos : ∀ n, 0 < F n (bstar n))
+    (hunbdd : ∀ C : ℝ, ∃ n, C < target n (bstar n) / F n (bstar n)) :
+    ∀ C : ℝ, ∃ n, ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      (s n) (target n) (F n) C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_absolute_constantOn_of_unbounded_point_ratio
+    hmem hFpos hunbdd
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support support constraint:
 a positive `C`-control on the measured support `s` forces the candidate to be positive at every support
 frequency where the target is positive. -/
@@ -3143,6 +3167,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
 #print axioms doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export
+#print axioms doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export
+#print axioms doorIV_argmaxDecoupled_no_absolute_constOn_export
 #print axioms doorIV_argmaxDecoupled_candidate_pos_on_export
 #print axioms doorIV_argmaxDecoupled_positive_support_on_subset_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_controlOn_export

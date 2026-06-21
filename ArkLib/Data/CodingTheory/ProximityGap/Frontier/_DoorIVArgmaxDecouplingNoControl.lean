@@ -196,6 +196,38 @@ theorem not_uniformControlOn_of_exists_ratio_gt_on {target F : ι → ℝ} {C : 
   have hle : target i / F i ≤ C := (uniformControlOn_iff_ratio_le_on hFpos).1 hctrl i hi
   exact (not_lt_of_ge hle) hgt
 
+
+/-- **Finite-support point-ratio obstruction.**  A single measured support point with positive
+candidate value and ratio above `C` refutes `C`-control on that support.  Unlike the full ratio-envelope
+form, this pointwise witness does not require the candidate to be positive at every measured frequency;
+it only uses positivity at the offending support point. -/
+theorem not_uniformControlOn_of_point_ratio_gt_on {target F : ι → ℝ} {C : ℝ}
+    {s : Finset ι} {i : ι} (hi : i ∈ s) (hFpos : 0 < F i)
+    (hgt : C < target i / F i) :
+    ¬ UniformControlOn s target F C := by
+  intro hctrl
+  have h : target i ≤ C * F i := hctrl i hi
+  have hle : target i / F i ≤ C := by
+    rw [div_le_iff₀ hFpos]
+    exact h
+  exact (not_lt_of_ge hle) hgt
+
+/-- **Finite-support family form.**  If finite probes produce, for every candidate absolute constant
+`C`, one family member `n` with a measured support frequency `bstar n ∈ s n` whose witness ratio
+`target n (bstar n) / F n (bstar n)` is bigger than `C`, then no single absolute constant can control
+all measured supports.  This is the exact finite-enumeration version of the unbounded-ratio no-go: the
+obstruction is already present on the probed support and does not require any unmeasured ambient
+frequency assumption. -/
+theorem no_absolute_constantOn_of_unbounded_point_ratio {N : Type*}
+    {target F : N → ι → ℝ} {s : N → Finset ι} {bstar : N → ι}
+    (hmem : ∀ n, bstar n ∈ s n)
+    (hFpos : ∀ n, 0 < F n (bstar n))
+    (hunbdd : ∀ C : ℝ, ∃ n, C < target n (bstar n) / F n (bstar n)) :
+    ∀ C : ℝ, ∃ n, ¬ UniformControlOn (s n) (target n) (F n) C := by
+  intro C
+  obtain ⟨n, hn⟩ := hunbdd C
+  exact ⟨n, not_uniformControlOn_of_point_ratio_gt_on (hmem n) (hFpos n) hn⟩
+
 /-- **Finite-support positive-support constraint.**  A strictly-positive control constant on a finite
 probe support forces the candidate functional to be positive at every support frequency where the target
 is positive.  Thus a finite probe candidate whose positive support misses a positive target point in

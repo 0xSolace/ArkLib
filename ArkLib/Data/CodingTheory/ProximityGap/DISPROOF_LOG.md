@@ -18729,3 +18729,32 @@ EXACTLY the demand to collapse the proven `√n`-wide corridor, i.e. `M(μ_n): n
 constant. No overclaim, CORE OPEN. Complements the moment-face wiring (`_PrizeCharZeroWired`,
 `prize_sup_of_saddle_charZeroWired`): both open-core faces are now adversarially-confirmed honest, with
 the open residual precisely located on each (moment: `SaddleEnergyBound`/`S_r`; incidence: corridor-collapse).
+
+## door-(iv) Lane-2 pair-discrepancy residual controls the raw variance corridor (2026-06-20)
+
+Lens: Lane 2 citable reduction rung extending `_PhasePairEquidistBudget`. Prior bricks recorded the
+normalized two-sided budget `|V/(2m)-1| ≤ δ(2m-1)` and the raw upper multiplicative form
+`V ≤ (2m)(1+ε)`. This refinement packages the missing raw lower and absolute-error corridor: if the
+named pair-discrepancy residual obeys `δ(2m-1)≤ε`, then
+
+`(2m)(1-ε) ≤ V` and `|V-2m| ≤ (2m)ε`.
+
+VERDICT: the reduction target is exact in unnormalized as well as normalized units. A prize-scale
+variance certificate from this lane is equivalent to proving the genuinely arithmetic residual
+`δ=O(1/m)`; no cancellation, anti-concentration, completion saving, or CORE bound is proved here.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_PhasePairEquidistBudget.lean`,
+axiom-clean. New theorems: `prizeProxy_mul_one_sub_le_variance_of_pairResidual` and
+`abs_variance_sub_prizeProxy_le_prizeProxy_mul_of_pairResidual`. Axioms are contained in
+`{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupled-finite-family-ratio] finite measured supports inherit the unbounded-ratio no-go (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVArgmaxDecouplingNoControl`. Previous finite-support bricks proved the exact ratio envelope on an enumerated support `s` under positivity on all of `s`, plus zero/nonpositive endpoint obstructions. This sweep adds the single-witness and family forms actually used by finite Lane-1 probes:
+
+- a single measured point `i ∈ s` with `F i > 0` and `C < target i / F i` already refutes `UniformControlOn s target F C`, without assuming candidate positivity on every support point;
+- if such measured support ratios are unbounded across a family, then every proposed absolute constant fails on some measured support.
+
+VERDICT: a growing finite-probe ratio witness is already a finite-support obstruction. It does not need ambient/unmeasured frequency assumptions, full-support candidate positivity, or an argmax coincidence. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorems `not_uniformControlOn_of_point_ratio_gt_on` and `no_absolute_constantOn_of_unbounded_point_ratio`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export` and `doorIV_argmaxDecoupled_no_absolute_constOn_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
