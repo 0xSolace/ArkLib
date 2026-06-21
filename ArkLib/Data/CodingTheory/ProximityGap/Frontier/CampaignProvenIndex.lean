@@ -82,6 +82,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9OrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReducesToWall
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3493,6 +3494,29 @@ theorem doorIV_jacAutocorr_gap_suffices_export {m : ℕ} [NeZero m] {C : ℝ}
               ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g t‖ ^ 2) :=
   _root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.normSq_autocorr_le_of_gap g hm hgap hs
 
+/-- **[obstruction, AvERG]** Periodic ergodic sums have exact drift by the endpoint period:
+there is no new infinite-time cancellation regime beyond the single Door-IV window. -/
+theorem doorIV_avERG_drift_export (a : ℕ → ℂ) (n : ℕ)
+    (hper : ∀ j, a (j + n) = a j) (k : ℕ) :
+    _root_.ArkLib.ProximityGap.Frontier.AvERG.ergodicSum a (n + k) =
+      _root_.ArkLib.ProximityGap.Frontier.AvERG.ergodicSum a k +
+        _root_.ArkLib.ProximityGap.Frontier.AvERG.periodSum a n :=
+  _root_.ArkLib.ProximityGap.Frontier.AvERG.drift a n hper k
+
+/-- **[obstruction, AvERG]** At the prize relation `p = n^4`, the deterministic
+Rademacher-Menshov maximal scale exceeds the prize scale for `n ≥ 55`; the route loses a real
+`sqrt(log n)` factor. -/
+theorem doorIV_avERG_rmScale_gt_prizeScale_export (n : ℕ) (hn : 55 ≤ n) :
+    _root_.ArkLib.ProximityGap.Frontier.AvERG.prizeScale n <
+      _root_.ArkLib.ProximityGap.Frontier.AvERG.rmScale n :=
+  _root_.ArkLib.ProximityGap.Frontier.AvERG.rmScale_gt_prizeScale n hn
+
+/-- **[obstruction, AvERG]** The ergodic/dynamical maximal-function angle reduces to the wall:
+zero-entropy drift plus Rademacher-Menshov scale loss are the exact unconditional certificate. -/
+theorem doorIV_avERG_ergodic_maximal_reduces_export :
+    _root_.ArkLib.ProximityGap.Frontier.AvERG.ErgodicMaximalReducesToWall :=
+  _root_.ArkLib.ProximityGap.Frontier.AvERG.ergodic_maximal_reduces
+
 /-- **[obstruction, PhaseBlindRadialStats]** Every finite `normSq`-radial statistic is invariant
 under arbitrary pointwise unit twists. This is the kerneled radial side of Shaw's phase-blindness
 probe: a `b`-summed moment/radial summary cannot see the adversarial phase alignment Door (iv) needs. -/
@@ -3621,6 +3645,9 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_jacAutocorr_wienerKhinchin_export
 #print axioms doorIV_jacAutocorr_offdiag_le_total_sub_diag_export
 #print axioms doorIV_jacAutocorr_gap_suffices_export
+#print axioms doorIV_avERG_drift_export
+#print axioms doorIV_avERG_rmScale_gt_prizeScale_export
+#print axioms doorIV_avERG_ergodic_maximal_reduces_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_orderedWalk_corePrize_endpoint_of_majorant_export
 #print axioms doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export
