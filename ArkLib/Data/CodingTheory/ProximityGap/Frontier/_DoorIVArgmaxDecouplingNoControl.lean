@@ -159,6 +159,19 @@ theorem not_uniformControl_of_exists_ratio_gt {target F : ι → ℝ} {C : ℝ}
   have hle : target i / F i ≤ C := (uniformControl_iff_ratio_le hFpos).1 hctrl i
   exact (not_lt_of_ge hle) hi
 
+/-- **A nonzero positive target forces the control constant itself to be positive.**  If the
+candidate is positive at some frequency and the target is positive there, then any multiplicative
+control `target ≤ C·F` must have `C > 0`.  Thus the `C > 0` hypotheses in the support lemmas are not
+extra structure in the nontrivial door-(iv) regime; they are forced by any successful control of a
+positive target through a positive candidate. -/
+theorem control_constant_pos_of_positive_target_and_candidate {target F : ι → ℝ}
+    {C : ℝ} {i : ι} (hctrl : UniformControl target F C)
+    (hFpos : 0 < F i) (htpos : 0 < target i) :
+    0 < C := by
+  have hratio : target i / F i ≤ C := const_ge_ratio_at_argmax hctrl hFpos
+  have hratio_pos : 0 < target i / F i := div_pos htpos hFpos
+  exact lt_of_lt_of_le hratio_pos hratio
+
 /-- **Family form: an unbounded witness ratio rules out every absolute constant.**  Suppose for each
 member `n` of a family we have a target `target n`, a candidate functional `F n`, a worst frequency
 `bstar n` where `F n (bstar n) > 0`, and the per-`n` witness ratio

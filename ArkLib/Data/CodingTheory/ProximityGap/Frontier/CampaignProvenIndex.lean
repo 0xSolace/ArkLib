@@ -209,6 +209,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_uniformControl_iff_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_control_constant_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_nonpos_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_no_zero_candidate_control_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_argmaxDecoupled_candidate_pos_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
@@ -1852,6 +1853,18 @@ theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export {ι : Type*}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.not_uniformControl_of_exists_ratio_gt
     hFpos hwit
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Nontrivial positive control forces the
+constant positive: if `target ≤ C·F`, `F i > 0`, and `target i > 0` at even one frequency, then
+`C > 0`. Thus positive-control support constraints require no extra sign assumption in the nonzero
+positive-candidate regime. -/
+theorem doorIV_argmaxDecoupled_control_constant_pos_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {i : ι}
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C)
+    (hFpos : 0 < F i) (htpos : 0 < target i) :
+    0 < C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.control_constant_pos_of_positive_target_and_candidate
+    hctrl hFpos htpos
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Endpoint no-go: for any nonnegative absolute
 constant `C`, if the candidate functional is nonpositive at a strictly-positive target peak, then no
 uniform multiplicative control exists. This covers the zero/small-window endpoint of the measured
@@ -2828,6 +2841,7 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
 #print axioms doorIV_argmaxDecoupled_uniformControl_iff_ratio_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
+#print axioms doorIV_argmaxDecoupled_control_constant_pos_export
 #print axioms doorIV_argmaxDecoupled_no_nonpos_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_no_zero_candidate_control_export
 #print axioms doorIV_argmaxDecoupled_candidate_pos_export

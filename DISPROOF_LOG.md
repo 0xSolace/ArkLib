@@ -10778,3 +10778,12 @@ Formal kernel: `_DoorIVArgmaxDecouplingNoControl.lean`, new theorems
 `CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControl_iff_ratio_export` and
 `doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+### positive-candidate control constants are forced positive (2026-06-21, g55)
+
+Follow-up formal corollary in `_DoorIVArgmaxDecouplingNoControl`: any successful multiplicative control
+`target ≤ C·F` with `F i > 0` and `target i > 0` at one frequency forces `C > 0`.
+
+VERDICT: the positive-constant hypotheses used by the support-inclusion constraints are not an extra
+assumption in the nontrivial positive-candidate door-(iv) regime; they are forced by the control itself.
+This is bookkeeping/sign hygiene for lever refutations only, not a CORE bound.
