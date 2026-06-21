@@ -19,6 +19,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTrivialCeiling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteBGKCompletionCorridor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPWraparoundLogConcaveQ
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._CharPStepRatioMonotoneFails
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
@@ -97,6 +100,10 @@ anything here; this index does not claim otherwise.
 | `prizeBound_iff_shawValue_le_export` | capstone | ShawValue |
 | `shawValue_worstPeriod_clean_corridor_export` | capstone | ShawValue |
 | `shawValue_bracket_width_eq_sqrt_export` | capstone | ShawValue |
+| `worstPeriod_sharp_bracket_export` | capstone | ConcreteTrivialCeiling |
+| `completion_vacuous_below_trivial_ceiling_export` | obstruction | ConcreteBGKCompletionCorridor |
+| `shawValue_worstPeriod_torsion_full_corridor_export` | capstone | ConcreteShawCompletionCorridorFull |
+| `worstPeriod_torsion_sharp_floor_export` | capstone | ConcreteShawCompletionCorridorFull |
 | `charP_wrap_gap_ge_two_mul_sq_export` | obstruction | CharPWraparoundLogConcaveQ |
 | `charP_wrap_gap_nonneg_of_logConcave_export` | obstruction | CharPWraparoundLogConcaveQ |
 | `charP_transfer_of_dominance_logConcave_export` | obstruction | CharPWraparoundLogConcaveQ |
@@ -511,6 +518,75 @@ collapse this `√n`-wide normalized bracket to an absolute constant. -/
 theorem shawValue_bracket_width_eq_sqrt_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
     (n / prizeScale n L) / (Real.sqrt n / prizeScale n L) = Real.sqrt n :=
   bracket_width_eq_sqrt hn hL
+
+/-- **[capstone, ConcreteTrivialCeiling]** The sharp unconditional corridor on the real worst
+period in the quadratic thin regime: `√(|G|-1) ≤ M(G) ≤ |G|`. This is the concrete lower/upper
+bracket the Shaw normalization rests on; it is pure Parseval plus the triangle ceiling and makes no
+cancellation claim. -/
+theorem worstPeriod_sharp_bracket_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    (hq1 : (1 : ℝ) < (Fintype.card F : ℝ))
+    (hG1 : (1 : ℝ) < (G.card : ℝ))
+    (hsq : (G.card : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((G.card : ℝ) - 1) ≤
+        _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ G hne
+      ∧ _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ G hne
+          ≤ (G.card : ℝ) :=
+  _root_.ProximityGap.Frontier.ConcreteTrivialCeiling.worstPeriod_sharp_bracket
+    hψ G hne hq1 hG1 hsq
+
+/-- **[obstruction, ConcreteBGKCompletionCorridor]** In the thin regime `d² ≤ q`, the classical
+`√q` completion ceiling is no better than the free triangle ceiling `d`: `d ≤ √q`. Thus door (ii)
+is not just above the BGK target, it can be vacuous relative to `M≤d` on the real period. -/
+theorem completion_vacuous_below_trivial_ceiling_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {d : ℝ} (hd : 0 ≤ d)
+    (hsq : d ^ 2 ≤ (Fintype.card F : ℝ)) :
+    d ≤ Real.sqrt (Fintype.card F) :=
+  _root_.ProximityGap.Frontier.ConcreteBGKCompletionCorridor.card_le_completionCeiling_of_sq_le
+    (F := F) hd hsq
+
+/-- **[capstone, ConcreteShawCompletionCorridorFull]** The complete normalized completion corridor
+on the actual torsion-subgroup object `μ_d`: `1/√(2L) ≤ Sh(M(μ_d)) ≤ √(q/(d·L))`. The upper endpoint
+is exactly the SOTA completion baseline; collapsing it to `O(1)` is the open prize. -/
+theorem shawValue_worstPeriod_torsion_full_corridor_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {d : ℕ}
+    (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    (hd1 : 1 ≤ (d : ℝ))
+    (hq2d : 2 * (d : ℝ) ≤ (Fintype.card F : ℝ)) {L : ℝ} (hL : 0 < L)
+    (hs : 0 < _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d).card : ℝ) L) :
+    1 / Real.sqrt (2 * L)
+        ≤ _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ
+            (_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d) hne)
+          ((_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d).card : ℝ) L
+      ∧ _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ
+            (_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d) hne)
+          ((_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d).card : ℝ) L
+          ≤ Real.sqrt ((Fintype.card F : ℝ) / ((d : ℝ) * L)) :=
+  _root_.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.shawValue_worstPeriod_torsion_full_corridor
+    hd hd0 hψ hne hd1 hq2d hL hs
+
+/-- **[capstone, ConcreteShawCompletionCorridorFull]** The sharp Parseval floor specialized to the
+canonical prize object `μ_d`: in the quadratic thin regime, `√(d−1) ≤ M(μ_d)`. This records the true
+lower endpoint on the real object; the missing work remains entirely on the upper/cancellation side. -/
+theorem worstPeriod_torsion_sharp_floor_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {d : ℕ}
+    (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    (hq1 : (1 : ℝ) < (Fintype.card F : ℝ)) (hd1 : (1 : ℝ) < (d : ℝ))
+    (hsq : (d : ℝ) ^ 2 ≤ (Fintype.card F : ℝ)) :
+    Real.sqrt ((d : ℝ) - 1) ≤
+      _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumWorstCase.torsion F d) hne :=
+  _root_.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull.worstPeriod_torsion_sharp_floor
+    hd hd0 hψ hne hq1 hd1 hsq
 
 /-! ## CoreReductionNecessity — exact `m*` gate for the BCHKS/Shaw reduction.
 Scope: **capstone**. These exports make the Lane-2 necessity direction permanent: under the
@@ -1246,6 +1322,10 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms prizeBound_iff_shawValue_le_export
 #print axioms shawValue_worstPeriod_clean_corridor_export
 #print axioms shawValue_bracket_width_eq_sqrt_export
+#print axioms worstPeriod_sharp_bracket_export
+#print axioms completion_vacuous_below_trivial_ceiling_export
+#print axioms shawValue_worstPeriod_torsion_full_corridor_export
+#print axioms worstPeriod_torsion_sharp_floor_export
 #print axioms charP_wrap_gap_ge_two_mul_sq_export
 #print axioms charP_wrap_gap_nonneg_of_logConcave_export
 #print axioms charP_transfer_of_dominance_logConcave_export
