@@ -10833,3 +10833,23 @@ factor before claiming a uniform bound. No CORE, cancellation, completion, momen
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, axiom-clean exports
 of the strict forms already proven in `_DoorIVIndexFactorOvershoot.lean`. Axioms are contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-index-factor-strict-iff] strict naive-scale overshoot is exactly `1 < m` (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2/3 capstone constraint extending `_DoorIVIndexFactorOvershoot`. The one-way
+strict nontrivial-index forms are sharpened to exact iff criteria:
+
+- `constant_lt_scaled_constant_iff_one_lt_m`: for `0<C` and `0≤m`, `C < C*sqrt(m) ↔ 1 < m`.
+- `prizeScale_lt_naiveIncidenceScale_iff_one_lt_m`: in the positive thin regime, the naive incidence
+  scale `sqrt(n*m*L)` strictly exceeds the prize scale `sqrt(n*L)` iff `1 < m`.
+- permanent exports `doorIV_constant_lt_scaledConstant_iff_one_lt_m_export` and
+  `doorIV_prizeScale_lt_naiveIncidenceScale_iff_one_lt_m_export`.
+
+VERDICT: strict overshoot is not a proof-artifact or normalization slack; it is exactly the hidden
+index crossing the degenerate endpoint. This gives a citable audit hook for any claimed constant-Shaw
+route through the naive bridge: if its index is nontrivial, it strictly pays `sqrt(m)`, and if it does
+not strictly pay, then it has not left the `m≤1` endpoint. No CORE, cancellation, completion,
+moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean` plus
+`CampaignProvenIndex.lean`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

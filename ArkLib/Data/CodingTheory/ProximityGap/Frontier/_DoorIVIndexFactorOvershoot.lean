@@ -289,6 +289,37 @@ theorem not_scaled_constant_le_constant_of_one_lt_m {C m : ℝ} (hC : 0 < C) (hm
     ¬ C * Real.sqrt m ≤ C := by
   exact not_le_of_gt (constant_lt_scaled_constant_of_one_lt_m hC hm)
 
+/-- Exact strict-overshoot criterion for the normalized constant.  For a positive raw constant and
+nonnegative index, the naive bridge's Shaw constant is strictly larger than the desired constant if
+and only if the hidden index is genuinely nontrivial (`1 < m`).  This is the strict analogue of
+`constant_le_scaled_constant_iff_one_le_m`: no strict gain or loss can be hidden at the endpoint. -/
+theorem constant_lt_scaled_constant_iff_one_lt_m {C m : ℝ} (hC : 0 < C) (hm0 : 0 ≤ m) :
+    C < C * Real.sqrt m ↔ 1 < m := by
+  constructor
+  · intro h
+    have hsqrt_one : (1 : ℝ) < Real.sqrt m := by
+      have hdiv : C / C < (C * Real.sqrt m) / C :=
+        div_lt_div_of_pos_right h hC
+      have hleft : C / C = (1 : ℝ) := div_self (ne_of_gt hC)
+      have hright : (C * Real.sqrt m) / C = Real.sqrt m := by
+        field_simp [ne_of_gt hC]
+      rwa [hleft, hright] at hdiv
+    have hsq : (1 : ℝ) ^ 2 < (Real.sqrt m) ^ 2 := by
+      apply sq_lt_sq' <;> linarith [Real.sqrt_nonneg m]
+    simpa [Real.sq_sqrt hm0] using hsq
+  · exact constant_lt_scaled_constant_of_one_lt_m hC
+
+/-- Exact strict-overshoot criterion for the scales themselves.  In the positive thin regime, the
+naive incidence scale is strictly larger than the prize scale exactly when the hidden index is
+strictly larger than one. -/
+theorem prizeScale_lt_naiveIncidenceScale_iff_one_lt_m {n m L : ℝ}
+    (hn : 0 < n) (hm0 : 0 ≤ m) (hL : 0 < L) :
+    prizeScale n L < naiveIncidenceScale n m L ↔ 1 < m := by
+  rw [naiveIncidenceScale_eq_sqrt_mul_prizeScale (n := n) (m := m) (L := L) hm0]
+  simpa [mul_comm] using
+    (constant_lt_scaled_constant_iff_one_lt_m (C := prizeScale n L) (m := m)
+      (prizeScale_pos hn hL) hm0)
+
 /-- Uniform-family form of the same obstruction: pointwise naive incidence bounds normalize to a
 Shaw-value family bound whose pointwise constant is multiplied by `sqrt(m i)`.  This is only scale
 bookkeeping; the analytic loss remains in the hypotheses. -/
@@ -366,6 +397,8 @@ end ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_of_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaled_constant_le_constant_of_one_lt_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_iff_one_lt_m
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_iff_one_lt_m
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.shawValueFamilyBound_of_naiveIncidenceBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceFamilyBound_iff_shawValueFamilyBound_scaled
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_naiveIncidenceFamilyBound_iff_not_shawValueFamilyBound_scaled

@@ -150,6 +150,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_constant_lt_scaledConstant_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_not_scaledConstant_le_constant_of_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_constant_lt_scaledConstant_iff_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
+| `doorIV_prizeScale_lt_naiveIncidenceScale_iff_one_lt_m_export` | obstruction | DoorIVIndexFactorOvershoot |
 | `doorIV_cosetInvariant_blind_to_order_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_cosetHitting_selector_bound_iff_global_export` | obstruction | DoorIVCoherenceOrderBlind |
 | `doorIV_strict_selector_bound_misses_coset_export` | obstruction | DoorIVCoherenceOrderBlind |
@@ -1113,6 +1115,25 @@ theorem doorIV_not_scaledConstant_le_constant_of_one_lt_m_export {C m : ℝ}
     ¬ C * Real.sqrt m ≤ C :=
   ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.not_scaled_constant_le_constant_of_one_lt_m
     hC hm
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Exact strict normalized-constant criterion:
+the naive Shaw constant is strictly larger than the desired constant iff the hidden index is
+strictly larger than one. -/
+theorem doorIV_constant_lt_scaledConstant_iff_one_lt_m_export {C m : ℝ}
+    (hC : 0 < C) (hm0 : 0 ≤ m) :
+    C < C * Real.sqrt m ↔ 1 < m :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.constant_lt_scaled_constant_iff_one_lt_m
+    hC hm0
+
+/-- **[obstruction, DoorIVIndexFactorOvershoot]** Exact strict scale criterion: the naive incidence
+scale strictly exceeds the prize scale iff the hidden index is strictly larger than one. -/
+theorem doorIV_prizeScale_lt_naiveIncidenceScale_iff_one_lt_m_export {n m L : ℝ}
+    (hn : 0 < n) (hm0 : 0 ≤ m) (hL : 0 < L) :
+    ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L <
+      ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.naiveIncidenceScale n m L ↔
+        1 < m :=
+  ArkLib.ProximityGap.Frontier.DoorIVIndexFactorOvershoot.prizeScale_lt_naiveIncidenceScale_iff_one_lt_m
+    hn hm0 hL
 
 /-! ## Door-IV order-blindness / selector obstruction. Scope: **obstruction**.
 
@@ -2931,6 +2952,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_prizeScale_lt_naiveIncidenceScale_of_one_lt_m_export
 #print axioms doorIV_constant_lt_scaledConstant_of_one_lt_m_export
 #print axioms doorIV_not_scaledConstant_le_constant_of_one_lt_m_export
+#print axioms doorIV_constant_lt_scaledConstant_iff_one_lt_m_export
+#print axioms doorIV_prizeScale_lt_naiveIncidenceScale_iff_one_lt_m_export
 #print axioms doorIV_collision_defect_eq_zero_iff_injOn_export
 #print axioms doorIV_collision_defect_pos_iff_not_injOn_export
 #print axioms doorIV_sixPoint_lever_vacuous_export
