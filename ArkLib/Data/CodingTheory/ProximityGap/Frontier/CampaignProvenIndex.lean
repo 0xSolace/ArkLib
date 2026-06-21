@@ -66,6 +66,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvTannakianNonTorsionPump
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarriesAll
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZDegreeEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWeight2QuadformGcd
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -200,6 +201,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_multiPiece_eps_budget_eq_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_eps_budget_iff_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiPiece_no_eps_slack_one_side_zero_export` | obstruction | DoorIVMultiPieceSignCoherence |
+| `doorIV_multiWindow_budget_forces_card_le_export` | obstruction | DoorIVWindowConcentrationTrivial |
+| `doorIV_no_multiWindow_split_rhs_le_strict_budget_export` | obstruction | DoorIVWindowConcentrationTrivial |
 | `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_sixPoint_vacuous_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_m33_eq_wick_export` | obstruction | DoorIVTripleCorrelationVanishes |
@@ -1767,6 +1770,31 @@ theorem doorIV_multiPiece_no_eps_slack_one_side_zero_export {ι : Type*} [Decida
   _root_.ProximityGap.Frontier.DoorIVMultiPieceSignCoherence.not_multiPieceCoherence_le_one_sub_eps_of_one_side_zero
     s A hsum hden hposMass hnegMass htotal hzero hε
 
+/-- **[obstruction, DoorIVWindowConcentrationTrivial]** Finite multi-window occupancy certificates
+force the trivial cardinality budget. If the disjoint-window triangle RHS is at most `B`, then
+already `|s| ≤ B`; coarse small-ball bookkeeping alone cannot beat the linear ceiling. -/
+theorem doorIV_multiWindow_budget_forces_card_le_export {ι : Type*} [DecidableEq ι]
+    {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s)
+    (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id)
+    {B : ℝ}
+    (hbudget : (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) ≤ B) :
+    (s.card : ℝ) ≤ B :=
+  _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.multi_window_budget_forces_card_le
+    hsub hdis hbudget
+
+/-- **[obstruction, DoorIVWindowConcentrationTrivial]** Strict finite multi-window small-ball
+certificates are impossible without extra phase cancellation: the occupancy split RHS is exactly
+`|s|`, so it cannot fit under any strict budget `B < |s|`. -/
+theorem doorIV_no_multiWindow_split_rhs_le_strict_budget_export {ι : Type*} [DecidableEq ι]
+    {s : Finset ι} {Ω : Finset (Finset ι)}
+    (hsub : ∀ W ∈ Ω, W ⊆ s)
+    (hdis : (↑Ω : Set (Finset ι)).PairwiseDisjoint id)
+    {B : ℝ} (hB : B < (s.card : ℝ)) :
+    ¬ (∑ W ∈ Ω, (W.card : ℝ)) + ((s \ Ω.biUnion id).card : ℝ) ≤ B :=
+  _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
+    hsub hdis hB
+
 /-- **[obstruction, door-(iv) Lane-1]** The STRICT worst-frequency peak is a SINGLE coset
 (`Ncos(τ→0)=1`).  For an orbit-constant statistic `f` (the `μ_n`-invariant `|η_·|`) whose maximum
 value `Mval` is attained at `b₀`, IF every strict maximizer lies in the orbit `G • b₀` (the measured
@@ -2670,6 +2698,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_multiPiece_eps_budget_eq_export
 #print axioms doorIV_multiPiece_eps_budget_iff_export
 #print axioms doorIV_multiPiece_no_eps_slack_one_side_zero_export
+#print axioms doorIV_multiWindow_budget_forces_card_le_export
+#print axioms doorIV_no_multiWindow_split_rhs_le_strict_budget_export
 #print axioms doorIV_sixPoint_lever_vacuous_export
 #print axioms doorIV_correlation_hierarchy_no_lever_export
 #print axioms doorIV_correlation_hierarchy_closed_through_six_export
