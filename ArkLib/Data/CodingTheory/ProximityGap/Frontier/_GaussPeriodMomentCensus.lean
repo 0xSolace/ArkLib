@@ -100,7 +100,34 @@ theorem sum_eta_pow_eq_card_mul_zeroSumCensus
     _ = (Fintype.card F : ℂ) * (zeroSumCensus G r : ℂ) := by
         rw [← Finset.sum_filter, Finset.sum_const, zeroSumCensus, nsmul_eq_mul, mul_comm]
 
+/-- The principal (`b = 0`) period is the cardinality: `η_0 = Σ_{y∈G} ψ(0) = |G|`. -/
+theorem eta_zero_eq_card {ψ : AddChar F ℂ} (G : Finset F) :
+    eta ψ G 0 = (G.card : ℂ) := by
+  simp only [eta, zero_mul, map_zero_eq_one, Finset.sum_const, nsmul_eq_mul, mul_one]
+
+/-- **The DELETED (b ≠ 0) period-moment ↔ census bridge** — the prize-relevant form.
+Deleting the isolated principal term `η_0^r = (|G|)^r` from the full-`F` identity gives
+`Σ_{b≠0} (η_b)^r = |F| · zeroSumCensus G r − (|G|)^r`. This is the EXACT algebraic substrate
+`A_r = |F|·W_r − n^r` that every odd-`r` deep-signed probe (#407, #444) and the campaign's ODD-`r`
+signed-cancellation map use; the parent file proved only the un-deleted full-`F` identity, leaving
+this (the actually-used object) in prose. Pure `Fintype.sum_eq_sum_compl_add` on the singleton `{0}`. -/
+theorem sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ) :
+    ∑ b ∈ (Finset.univ.erase (0 : F)), (eta ψ G b) ^ r
+      = (Fintype.card F : ℂ) * (zeroSumCensus G r : ℂ) - (G.card : ℂ) ^ r := by
+  have hfull := sum_eta_pow_eq_card_mul_zeroSumCensus hψ G r
+  -- Split the full sum over `F` into the `b = 0` term plus the sum over `b ≠ 0`.
+  have hsplit : ∑ b : F, (eta ψ G b) ^ r
+      = (eta ψ G 0) ^ r + ∑ b ∈ (Finset.univ.erase (0 : F)), (eta ψ G b) ^ r := by
+    rw [← Finset.add_sum_erase Finset.univ _ (Finset.mem_univ (0 : F))]
+  rw [hsplit, eta_zero_eq_card] at hfull
+  -- hfull : |F| * census = (G.card)^r + S  ⇒  S = |F| * census - (G.card)^r
+  linear_combination hfull
+
 end ProximityGap.Frontier.GaussPeriodMomentCensus
 
 /-! ## Axiom audit -/
-#print axioms ProximityGap.Frontier.GaussPeriodMomentCensus.sum_eta_pow_eq_card_mul_zeroSumCensus
+open ProximityGap.Frontier.GaussPeriodMomentCensus in
+#print axioms sum_eta_pow_eq_card_mul_zeroSumCensus
+open ProximityGap.Frontier.GaussPeriodMomentCensus in
+#print axioms sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub
