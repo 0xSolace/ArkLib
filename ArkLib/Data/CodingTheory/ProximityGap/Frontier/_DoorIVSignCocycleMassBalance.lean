@@ -192,6 +192,23 @@ theorem totalParts_le_card {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Fins
   rw [sign_totalParts_eq_total_doublingMass G hG ζ]
   exact total_doublingMass_le hψ G hζ
 
+/-- Direct norm-cross form of the exact split: the same-sign/doubling mass is exactly half of the
+total `‖η_b‖‖η_ζb‖` cross mass. This is the citable version used when the sign-cocycle budget is
+compared directly to the Cauchy--Schwarz cross term. -/
+theorem positiveMass_eq_half_total_doublingMass {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, posPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) =
+      (∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖) / 2 := by
+  rw [positiveMass_eq_half_totalParts hψ G hG hdisj, sign_totalParts_eq_total_doublingMass G hG ζ]
+
+/-- Direct norm-cross form for the cancelling branch: opposite-sign mass is also exactly half of the
+total `‖η_b‖‖η_ζb‖` cross mass. -/
+theorem negativeMass_eq_half_total_doublingMass {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hdisj : Disjoint G (dilate ζ G)) :
+    (∑ b : F, negPart ((eta ψ G b).re * (eta ψ G (ζ * b)).re)) =
+      (∑ b : F, ‖eta ψ G b‖ * ‖eta ψ G (ζ * b)‖) / 2 := by
+  rw [negativeMass_eq_half_totalParts hψ G hG hdisj, sign_totalParts_eq_total_doublingMass G hG ζ]
+
 end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posMass_eq_negMass_of_sum_zero
@@ -204,3 +221,5 @@ end ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_eq_half_totalParts
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_eq_half_totalParts
 #print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.totalParts_le_card
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_eq_half_total_doublingMass
+#print axioms ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_eq_half_total_doublingMass

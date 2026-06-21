@@ -10484,3 +10484,20 @@ only the positive branch. No CORE bound, no completion/moment/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSignCocycleMassBalance.lean`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane 3 — sign-cocycle half-split in norm-cross units (2026-06-21, g55)
+
+Second sweep on `_DoorIVSignCocycleMassBalance`: packages the exact 50/50 split directly against the
+norm cross-term `Σ_b ‖η_b‖‖η_{ζb}‖`, removing the intermediate positive-plus-negative notation for
+citations. New theorems:
+
+- `positiveMass_eq_half_total_doublingMass`
+- `negativeMass_eq_half_total_doublingMass`
+
+VERDICT: under negation-closure plus a disjoint dilate, the same-sign/doubling branch and the
+opposite-sign/cancelling branch each equal exactly one half of the total norm cross-mass. This is still a
+global mass identity, not a worst-frequency CORE bound, but it blocks any proof narrative that treats the
+same-sign branch as a larger independent budget.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSignCocycleMassBalance.lean`,
+axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
