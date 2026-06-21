@@ -1,3 +1,34 @@
+## [door-iv-twodilate-no-joint-extreme] the two-dilate sub-period coupling H(n)=max_b(S(b)+S(gb)) is STRUCTURELESS — no co-peak (H<2maxS, gap grows with n) and ≤ an independent-pairing surrogate (2026-06-20, sol)
+
+Lane: Door-(iv) Lane-1 (probe) + Lane-3 (refuted-lever constraint). Continues the dilation form
+([door-iv-halfmass-dilation], 223b4c0d2): prize H(n)=max_b(S(b)+S(gb)), S(c)=‖eta ψ μ_{n/2} c‖ the
+sub-period magnitude, g the index-2 coset rep (S is μ_{n/2}-coset-invariant; c→gc moves to the sibling
+μ_{n/2}-coset inside the same μ_n-coset). The hope: a RECURSIVE √-saving from positive shift-correlation
+(co-peak ⇒ H≈2maxS ⇒ transfer a thinner-subgroup bound on maxS), or a structured anti-correlation below
+the marginal.
+
+PROBE (probe_dooriv_subperiod_shift_corr.py; EXACT ℂ, PROPER 2-power μ_n n=16/32/64, p≫n³, structured+
+generic primes, FULL F_p* sub-period scan at n=16/32, sampled larger, NEVER n=q-1):
+ - NO co-peak: H/(2maxS) ∈ [0.69, 0.91], DECREASING with n (≈0.9 n=16, ≈0.78 n=32, ≈0.72 n=64). The
+   worst-b halves are asymmetric (S(b*)/maxS, S(gb*)/maxS e.g. 0.545, 0.983) — "one near-max + one
+   substantial", not both-at-max.
+ - H/√n ≤ iid-surrogate/√n in EVERY case (surrogate = max over random INDEPENDENT pairing of the same
+   S-multiset): the shift-g pairing supplies NO excess positive correlation (mildly anti if anything).
+
+VERDICT (does NOT close CORE): the dilation coupling is structureless — it neither co-peaks (no positive
+shift-correlation ⇒ no recursive √-saving) nor beats the independent-pairing envelope (no structured
+anti-correlation below the marginal). So bounding H(n) routes through the MARGINAL sub-period max maxS
+under near-independent pairing = back to the Gaussian-EVT marginal (dead door-iii), with NO recursion
+from the two-frequency {b,gb} structure. Closes the "recursive-ascent via dilation coupling" hope at the
+level of the dilation sum (companion to [door-iv-worstb-non-nested]). NO M-bound, NO CORE/cancellation/
+completion/moment/anti-concentration/capacity claim.
+
+Lean (axiom-clean, axioms ⊆ {propext, Classical.choice, Quot.sound}):
+Frontier/_DoorIVTwoDilateNoJointExtreme.lean — twoDilate_le_two_mul_max (H≤2maxS unconditional),
+not_both_max_of_lt_two_mul (H≤c·maxS, c<2, maxS>0 ⇒ not both halves max), no_copeak_recursion (one half
+=maxS ⇒ other strictly below), dilate_le_surrogate_le_two_max, dilate_pinned_between_marginal_and_surrogate
+(maxS≤H≤I: pinned between marginal floor and independent envelope).
+
 ## door-(iv) Lane-2 capstone — the half-mass is an EXACT two-dilate sub-period sum: B_b = A_{g·b}, H(n)=max_b(‖A_b‖+‖A_{g·b}‖) (2026-06-20, sol)
 
 Lens: Lane-2 citable capstone rung (SAFE/certain). The half-mass thread ([door-iv-halfmass-equivalence],
