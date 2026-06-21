@@ -198,6 +198,10 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_sign_positiveMass_eq_negativeMass_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_not_all_nonneg_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_positiveMass_le_half_card_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_negativeMass_le_half_card_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_positiveMass_eq_half_total_doublingMass_export` | obstruction | DoorIVSignCocycleMassBalance |
+| `doorIV_sign_negativeMass_eq_half_total_doublingMass_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_gappedMinor125_159_eq_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
@@ -2117,6 +2121,68 @@ theorem doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
   _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.not_all_nonneg_of_positiveMass_pos
     hψ G hG hdisj hpos
 
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** The same-sign/doubling branch occupies at most
+half of the global Cauchy--Schwarz cross budget `q·|G|`. This is only a global mass constraint, not a
+worst-frequency CORE bound. -/
+theorem doorIV_sign_positiveMass_le_half_card_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0)
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G)) :
+    (∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) ≤
+      ((Fintype.card F : ℝ) * G.card) / 2 :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_le_half_card
+    hψ G hG hζ hdisj
+
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** The opposite-sign/cancelling branch obeys the
+same half-budget cap as the same-sign branch. Neither side of the real sign-cocycle can spend more
+than half of the global cross budget. -/
+theorem doorIV_sign_negativeMass_le_half_card_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F} (hζ : ζ ≠ 0)
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G)) :
+    (∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) ≤
+      ((Fintype.card F : ℝ) * G.card) / 2 :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_le_half_card
+    hψ G hG hζ hdisj
+
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** Direct norm-cross form: under the disjoint-dilate
+sign-cocycle hypotheses, the same-sign branch is exactly one half of
+`∑ b, ‖η_b‖ * ‖η_{ζb}‖`. -/
+theorem doorIV_sign_positiveMass_eq_half_total_doublingMass_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G)) :
+    (∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.posPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) =
+      (∑ b : F, ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ *
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)‖) / 2 :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.positiveMass_eq_half_total_doublingMass
+    hψ G hG hdisj
+
+/-- **[obstruction, DoorIVSignCocycleMassBalance]** Direct norm-cross form for the cancelling branch:
+it is also exactly one half of the total norm cross-mass. Any proof narrative that spends only the
+same-sign side is therefore globally over-budget. -/
+theorem doorIV_sign_negativeMass_eq_half_total_doublingMass_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F)
+    (hG : ∀ x ∈ G, -x ∈ G) {ζ : F}
+    (hdisj : Disjoint G (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ G)) :
+    (∑ b : F, (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negPart
+      ((_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b).re *
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)).re))) =
+      (∑ b : F, ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ *
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (ζ * b)‖) / 2 :=
+  _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.negativeMass_eq_half_total_doublingMass
+    hψ G hG hdisj
+
 /-- **[obstruction, DoorIVAlgebraicFloorCyclotomicWall]** The concrete `μ₁₆` gapped minor
 (rows `(1,2,5)`, powers `(1,5,9)`) vanishes under the dyadic relation `ζ^8=-1`. This is the
 formal cyclotomic wall behind the algebraic-floor probe: generic nonzero-minor reasoning is not
@@ -2362,6 +2428,10 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
 #print axioms doorIV_sign_positiveMass_eq_negativeMass_export
 #print axioms doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
+#print axioms doorIV_sign_positiveMass_le_half_card_export
+#print axioms doorIV_sign_negativeMass_le_half_card_export
+#print axioms doorIV_sign_positiveMass_eq_half_total_doublingMass_export
+#print axioms doorIV_sign_negativeMass_eq_half_total_doublingMass_export
 #print axioms doorIV_gappedMinor125_159_eq_zero_export
 #print axioms doorIV_not_gappedMinor125_159_ne_zero_export
 #print axioms doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
