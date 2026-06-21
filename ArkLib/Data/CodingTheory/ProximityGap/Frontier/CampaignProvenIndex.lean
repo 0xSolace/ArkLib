@@ -53,6 +53,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBala
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -180,6 +181,10 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
 | `doorIV_levelWorst_le_prize_budget_of_xgate_export` | capstone | DoorIVXGatePrizeBudget |
+| `doorIV_gateThreshold_split_telescope_sqrt2_export` | obstruction | DoorIVXGatedBaseThreshold |
+| `doorIV_gateThreshold_strictly_above_clean_export` | obstruction | DoorIVXGatedBaseThreshold |
+| `doorIV_levelWorst_base_step_two_export` | obstruction | DoorIVXGatedBaseThresholdConcrete |
+| `doorIV_levelWorst_base_corrected_of_gate_export` | obstruction | DoorIVXGatedBaseThresholdConcrete |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1814,6 +1819,54 @@ theorem doorIV_levelWorst_le_prize_budget_of_xgate_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatePrizeBudget.levelWorst_le_prize_budget_of_xgate
     hr h_dim h_base hC hL hn
 
+/-- **[obstruction, DoorIVXGatedBaseThreshold]** Split telescope with `k*` factor-2 base levels
+and `√2` cancellation above the gate threshold. -/
+theorem doorIV_gateThreshold_split_telescope_sqrt2_export (M : ℕ → ℝ) (hpos : ∀ k, 0 ≤ M k)
+    (kstar r : ℕ)
+    (hbase : ∀ k, k < kstar → M (k + 1) ≤ 2 * M k)
+    (hcanc : ∀ j, j < r → M (kstar + j + 1) ≤ Real.sqrt 2 * M (kstar + j)) :
+    M (kstar + r) ≤ 2 ^ kstar * (Real.sqrt 2) ^ r * M 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThreshold.split_telescope_sqrt2
+    M hpos kstar r hbase hcanc
+
+/-- **[obstruction, DoorIVXGatedBaseThreshold]** Any nonzero gate threshold `k* ≥ 1` costs a
+strict excess factor over the clean `(√2)^(k*+r)` floor. -/
+theorem doorIV_gateThreshold_strictly_above_clean_export {kstar : ℕ} (hk : 1 ≤ kstar) (r : ℕ) :
+    (Real.sqrt 2) ^ (kstar + r) < (2 : ℝ) ^ kstar * (Real.sqrt 2) ^ r :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThreshold.gate_threshold_strictly_above_clean
+    hk r
+
+/-- **[obstruction, DoorIVXGatedBaseThresholdConcrete]** On the real `levelWorst` character sum,
+the thin base step costs the unconditional trivial factor `2`. -/
+theorem doorIV_levelWorst_base_step_two_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} (hζ : ζ ≠ 0) (k : ℕ)
+    (hdisj : Disjoint
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.levelTower ψ G ζ k)
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.levelTower ψ G ζ k))) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ (k + 1) ≤
+      2 * _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ k :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThresholdConcrete.levelWorst_step_two
+    hζ k hdisj
+
+/-- **[obstruction, DoorIVXGatedBaseThresholdConcrete]** Concrete base-corrected bound on the
+real `levelWorst` object: `k*` base levels pay factor `2`, only the `r` levels above the gate get `√2`. -/
+theorem doorIV_levelWorst_base_corrected_of_gate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} (hζ : ζ ≠ 0) (kstar r : ℕ)
+    (hdisj : ∀ k, Disjoint
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.levelTower ψ G ζ k)
+      (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.dilate ζ
+        (_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.levelTower ψ G ζ k)))
+    (hgate : _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.LevelRatioBoundNZ
+      ψ G ζ (kstar + r) (Real.sqrt 2)) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ (kstar + r)
+      ≤ 2 ^ kstar * (Real.sqrt 2) ^ r *
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedBaseThresholdConcrete.levelWorst_le_base_corrected_of_gate
+    hζ kstar r hdisj hgate
+
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
@@ -1835,4 +1888,8 @@ theorem doorIV_levelWorst_le_prize_budget_of_xgate_export
 #print axioms doorIV_not_gappedMinor125_159_ne_zero_export
 #print axioms doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
 #print axioms doorIV_levelWorst_le_prize_budget_of_xgate_export
+#print axioms doorIV_gateThreshold_split_telescope_sqrt2_export
+#print axioms doorIV_gateThreshold_strictly_above_clean_export
+#print axioms doorIV_levelWorst_base_step_two_export
+#print axioms doorIV_levelWorst_base_corrected_of_gate_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
