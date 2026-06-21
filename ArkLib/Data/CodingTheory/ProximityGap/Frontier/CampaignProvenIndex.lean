@@ -94,6 +94,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_JacobiEdgeBoundedSupportCeiling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HermiteTurnoverReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_TurnoverSupportGap
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4189,5 +4191,54 @@ theorem doorIV_jacobi_three_S_strictly_above_support_export {a b : ℕ → ℝ} 
 #print axioms doorIV_jacobi_edge_le_three_S_export
 #print axioms doorIV_jacobi_M_le_three_S_export
 #print axioms doorIV_jacobi_three_S_strictly_above_support_export
+
+
+/-! ## Door-IV Lane 2 Hermite-turnover reduction exports.
+Scope: **conditional capstone/obstruction**.
+
+These exports make form (D) of the Jacobi problem statement citable: under the explicit
+edge-turnover model `M^2 = 2*n*kstar`, the prize-scale bound is equivalent to `kstar ≤ L`, and the
+free support/Gershgorin input only gives the much weaker `kstar ≤ (9/2)n`. The missing theorem is
+therefore exactly early turnover `kstar = O(log p)`; the exports do not assert that model or prove
+that bound.
+-/
+
+/-- **[conditional capstone, HermiteTurnover]** Under the explicit edge-turnover model, the prize
+bound `M ≤ sqrt 2 * sqrt(n*L)` is equivalent to the scalar turnover-depth bound `kstar ≤ L`. -/
+theorem doorIV_hermite_prize_iff_turnover_le_export {n M kstar L : ℝ}
+    (h : _root_.ProximityGap.Frontier.HermiteTurnover.EdgeTurnover n M kstar) (hL : 0 ≤ L) :
+    M ≤ Real.sqrt 2 * Real.sqrt (n * L) ↔ kstar ≤ L :=
+  _root_.ProximityGap.Frontier.HermiteTurnover.prize_iff_turnover_le h hL
+
+/-- **[conditional capstone, HermiteTurnover]** Specializing `L = log p`, the Jacobi form of the
+prize is exactly `kstar ≤ log p`, under the explicit edge-turnover model. -/
+theorem doorIV_hermite_prize_iff_turnover_le_logp_export {n M kstar p : ℝ}
+    (h : _root_.ProximityGap.Frontier.HermiteTurnover.EdgeTurnover n M kstar)
+    (hp1 : 1 ≤ p) :
+    M ≤ Real.sqrt 2 * Real.sqrt (n * Real.log p) ↔ kstar ≤ Real.log p :=
+  _root_.ProximityGap.Frontier.HermiteTurnover.prize_iff_turnover_le_logp h hp1
+
+/-- **[obstruction, HermiteTurnover]** The free support/Gershgorin ceiling `M ≤ 3n` yields only
+`kstar ≤ (9/2)n` under the edge-turnover model. This is the support-trivial turnover bound, far
+weaker than the desired `O(log p)` early-turnover theorem. -/
+theorem doorIV_hermite_turnover_le_free_ceiling_export {n M kstar : ℝ}
+    (h : _root_.ProximityGap.Frontier.HermiteTurnover.EdgeTurnover n M kstar)
+    (hMle : M ≤ 3 * n) : kstar ≤ (9 / 2) * n :=
+  _root_.ProximityGap.Frontier.HermiteTurnover.turnover_le_free_ceiling h hMle
+
+/-- **[obstruction, HermiteTurnover]** If the free ceiling is tight and the target scale `L` is
+below `(9/2)n`, then the prize bound at scale `L` fails. This packages the `O(n)` versus `O(log p)`
+gap that the support bound cannot close. -/
+theorem doorIV_hermite_free_ceiling_insufficient_for_prize_export {n M kstar : ℝ}
+    (h : _root_.ProximityGap.Frontier.HermiteTurnover.EdgeTurnover n M kstar)
+    (htight : (9 / 2) * n ≤ kstar) {L : ℝ} (hLnn : 0 ≤ L)
+    (hLgap : L < (9 / 2) * n) :
+    ¬ (M ≤ Real.sqrt 2 * Real.sqrt (n * L)) :=
+  _root_.ProximityGap.Frontier.HermiteTurnover.free_ceiling_insufficient_for_prize h htight hLnn hLgap
+
+#print axioms doorIV_hermite_prize_iff_turnover_le_export
+#print axioms doorIV_hermite_prize_iff_turnover_le_logp_export
+#print axioms doorIV_hermite_turnover_le_free_ceiling_export
+#print axioms doorIV_hermite_free_ceiling_insufficient_for_prize_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

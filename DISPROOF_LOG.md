@@ -11415,3 +11415,11 @@ Lane: door-(iv) Lane 2 capstone/constraint consolidation. The new char-p Jacobi 
 VERDICT: the Jacobi tool genuinely relocates the half-power from an exploding char-0 Wick edge to a bounded char-p recurrence object, but the unconditional support-bound ceiling is only `M <= 3S`, hence support-trivial. Prize-scale improvement still requires fine arithmetic control of the recurrence coefficients. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_jacobi_edge_le_three_S_export`, `doorIV_jacobi_M_le_three_S_export`, and `doorIV_jacobi_three_S_strictly_above_support_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-hermite-turnover-reduction-index-exports] permanent exports for Jacobi form-D early-turnover reduction (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 conditional reduction/capstone consolidation. The Hermite-turnover reduction and support-gap bridge were proven axiom-clean but not indexed. This sweep exports the scalar equivalence `M <= sqrt(2)*sqrt(n*L) <=> kstar <= L`, the `L=log p` specialization, the free support ceiling `kstar <= (9/2)n`, and the insufficiency witness when the target scale is below that free ceiling.
+
+VERDICT: under the explicit measured edge-turnover model, the prize is exactly early turnover `kstar = O(log p)`. The support-bound/Gershgorin input only proves an `O(n)` turnover ceiling, so it cannot close the prize-scale gap. Conditional reduction/constraint only: the edge-turnover model and early-turnover theorem are not asserted. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_hermite_prize_iff_turnover_le_export`, `doorIV_hermite_prize_iff_turnover_le_logp_export`, `doorIV_hermite_turnover_le_free_ceiling_export`, and `doorIV_hermite_free_ceiling_insufficient_for_prize_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
