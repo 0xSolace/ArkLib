@@ -15,11 +15,35 @@ will refine the exponent table.*
 | Parseval floor (lower) | `M ≥ √n` | proven | max ≥ RMS, `Σ_{b≠0}|η_b|²=qn−n²` |
 | **prize target** | `M ≤ C√(n log m) = n^{1/2+o(1)}` | **OPEN** | the upper BGK/Paley bound |
 | Weil / Deligne | `M ≤ (m−1)√p ≈ n^{5/4}` | proven but **vacuous** | `μ_n` is 0-dimensional ⟹ main term = the count |
-| di Benedetto–Solymosi–White | power saving for `2<β<4`; at β=4 gives `n^{73/72} > n` | proven, **vanishes at the endpoint** | saving `δ(β)` is affine, hits 0 as β→4⁻ |
+| di Benedetto–Solymosi–White | β=4 endpoint: **DISPUTED** — `n^{73/72}>n` (careful retraction) vs `n^{0.989}` (BGK-floor run) | proven shape, **endpoint exponent contested** | saving `δ(β)` affine; whether the `p^{1/72}` prefactor eats it at β=4 is unresolved |
 | **BGK (sum-product)** | `M ≤ n^{1−o(1)}` | **proven (SOTA)** | Bourgain–Glibichuk–Konyagin; the only nontrivial bound at β≥4 |
 
 The gap is **`n^{1−o(1)} → n^{1/2+o(1)}`** — a full half-power. BGK is a *working* bound (a theorem),
 and the task is to drive its `o(1)` down to `1/2`.
+
+> **DISPUTE FLAG (di Benedetto at β=4):** the campaign's careful (double-)retraction computed the
+> realised bound at `p=n^4` as `n^{23/24}·p^{1/72}=n^{73/72}>n` (vacuous — the `p^{1/72}` prefactor
+> pushes it over trivial). The 2026-06-21 BGK-floor run's `_BGK_2` instead read it as
+> `δ=31/2880 ⟹ n^{2849/2880}≈n^{0.989}<n` (a tiny nontrivial saving). These conflict on the exact
+> exponent and the discrepancy is **unresolved** (it needs an exact re-derivation tracking the
+> prefactor). Either way `α≈0.99` is a full half-power above the prize, so **the conclusion is
+> unchanged**; `_BGK_2` was *excluded* from commit pending resolution.
+
+> **DEPTH-EXPONENT LAW (proven, `_BgkDepthExponentLawBootstrapNoGo`):** a Wick-shape budget
+> `M^{2r} ≤ q·(cn)^r` at depth `r` yields the EXACT exponent `α(r) = 1/2 + β/(2r)`. So `α(β)=1`
+> (shallow), `α(r)→1/2` only as `r→∞`, and at the saddle `r≈log q` (`≈158` at the prize point)
+> `α≈0.513`. This makes precise WHY the prize needs depth `r~log p`: every bounded-depth route is
+> stuck at `α>1/2`. And the **bootstrap no-go**: the `M→E_r→M` round-trip loop is proven
+> non-improving (monotone, only fixed point `V*=qn`, i.e. `M*=n^{(β+1)/2}=n^{2.5}` — trivial).
+
+> **SUM-PRODUCT STALLS AT α=1 (proven census, 2026-06-21):** every proven, unconditional,
+> applicable-at-β=4 mechanism (trivial cube, maximal-energy uniform, sum-product Cauchy–Schwarz
+> bridge, Garcia–Voloch/HBK rep bound [vacuous at θ≈0.19<1/4], BGK/di Benedetto) caps at `α=1`
+> (or the disputed `α≈0.99`). The ONLY mechanism reaching `α=1/2` is the char-p Wick energy bound at
+> `r~log p`. **So the sum-product engine alone cannot close the gap** — the prize specifically
+> requires the char-p deep-moment Wick transfer (char-0 shadow proven; char-p transfer = the open
+> core), not more sum-product. (LOWER side: `_BgkSuperDiagonalSqrtNLowerBound` proves
+> `M ≥ (5/4)^{1/4}√n ≈ 1.057√n` unconditionally — exponent `1/2`, constant `>1`, no log.)
 
 ## 2. What we HAVE (proven, axiom-clean)
 
