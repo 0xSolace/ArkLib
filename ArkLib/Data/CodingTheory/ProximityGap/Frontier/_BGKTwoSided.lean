@@ -27,14 +27,23 @@ maximum of a nonnegative sequence and its power-sums (moments):
   squared period cannot exceed the total `L²` energy). For thin `n ~ p^{1/4}` this is `≈ n^{5/2}`: true
   but very far from the conjecture.
 
-* **Upper bound (sharp, CONDITIONAL).** For every `r`, `M^{2r} = (max a)^r ≤ Σ a^r = Σ|η_b|^{2r} = p·E_r`.
-  Hence *if* the Wick energy bound `E_r ≤ (2r−1)‼·n^r` holds out to depth `r ≈ log p` (the open wall),
-  then optimizing `r = log p` gives `M ≤ √(2 n log p)` — the conjecture. The named hypothesis
-  `Σ a^r ≤ B` below is exactly the additive-energy wall; everything downstream of it is unconditional.
+* **Upper bound (sharp, CONDITIONAL).** Indexing `s = {b ≠ 0}` (so the DC term `η_0 = n` is excluded),
+  for every `r`, `M^{2r} = (max_{b≠0} a_b)^r ≤ Σ_{b≠0} a_b^r = Σ_{b≠0}|η_b|^{2r} = p·E_r − n^{2r}`.
+  Hence *if* the **DC-subtracted** Wick energy bound `Σ_{b≠0}|η_b|^{2r} ≤ (2r−1)‼·n^r` holds out to
+  depth `r ≈ log p` (the open wall), then optimizing `r = log p` gives `M ≤ √(2 n log p)` — the
+  conjecture. The named hypothesis `Σ a^r ≤ B` below is exactly that additive-energy wall; everything
+  downstream of it is unconditional. **The DC subtraction is essential**: the *full*-energy form
+  `E_r(μ_n) = (Σ_all |η_b|^{2r})/p ≤ (2r−1)‼·n^r` (which includes `η_0 = n`) is known *false* past the
+  prize-depth DC crossover (in-tree `DCEnergyEssential.not_gaussianEnergyBound_of_deep`); summing over
+  `s = {b≠0}` here is exactly the usable DC-subtracted object. (This is the self-contained two-sided
+  companion to the in-tree moment-method bridge `GaussPeriodMomentBound.lean` and the Ramanujan bridge
+  `GeneralizedPaleyRamanujan.lean`, which supply the upper side alone; the value added here is the matching
+  unconditional lower side and the explicit single-file bracket.)
 
 So the bracket `√3·√n ≤ M ≤ √(p n)` is fully proven here, and the sharp upper edge `√(2 n log p)` is
-reduced to the single open energy inequality. This is the honest two-sided BGK statement: NOT closure —
-the gap between `√n` (proven lower) and `√(n log p)` (conjectured) on the upper side is the prize.
+reduced to the single open DC-subtracted energy inequality. This is the honest two-sided BGK statement:
+NOT closure — the gap between `√n` (proven lower) and `√(n log p)` (conjectured) on the upper side is the
+prize.
 
 ## Results (axiom-clean)
 * `single_sq_le_sum` / `max_le_sum_of_nonneg` — the trivial upper bound `M² ≤ Σ a`.
