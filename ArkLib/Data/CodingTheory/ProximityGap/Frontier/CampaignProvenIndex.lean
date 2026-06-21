@@ -67,6 +67,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarri
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZDegreeEnvelope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWeight2QuadformGcd
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVArgmaxDecouplingNoControl
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -203,6 +204,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_multiPiece_no_eps_slack_one_side_zero_export` | obstruction | DoorIVMultiPieceSignCoherence |
 | `doorIV_multiWindow_budget_forces_card_le_export` | obstruction | DoorIVWindowConcentrationTrivial |
 | `doorIV_no_multiWindow_split_rhs_le_strict_budget_export` | obstruction | DoorIVWindowConcentrationTrivial |
+| `doorIV_argmaxDecoupled_const_ge_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_control_below_ratio_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
+| `doorIV_argmaxDecoupled_no_absolute_const_export` | obstruction | DoorIVArgmaxDecouplingNoControl |
 | `doorIV_tripleCorrelation_sixPoint_zero_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_sixPoint_vacuous_export` | obstruction | DoorIVTripleCorrelationVanishes |
 | `doorIV_tripleCorrelation_m33_eq_wick_export` | obstruction | DoorIVTripleCorrelationVanishes |
@@ -1795,6 +1799,41 @@ theorem doorIV_no_multiWindow_split_rhs_le_strict_budget_export {ι : Type*} [De
   _root_.ProximityGap.Frontier.DoorIVWindowConcentrationTrivial.no_multi_window_split_rhs_le_strict_budget
     hsub hdis hB
 
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** A uniform multiplicative control of the
+sup-norm `target` by a candidate functional `F` evaluated at the target's worst frequency `bstar`
+(with `F bstar > 0`) FORCES the constant `C ≥ target bstar / F bstar`.  When `F` is decoupled and
+small at the worst frequency (probe `smallball_vs_energy`: argmax mismatch at every n), this forces a
+large constant. -/
+theorem doorIV_argmaxDecoupled_const_ge_ratio_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {bstar : ι}
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C)
+    (hFpos : 0 < F bstar) :
+    target bstar / F bstar ≤ C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.const_ge_ratio_at_argmax
+    hctrl hFpos
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** A claimed absolute constant strictly below the
+measured worst-frequency ratio `target bstar / F bstar` (with `F bstar > 0`) is impossible: there is
+no such uniform control. -/
+theorem doorIV_argmaxDecoupled_no_control_below_ratio_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {bstar : ι}
+    (hFpos : 0 < F bstar) (hbelow : C < target bstar / F bstar) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl target F C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_control_below_measured_ratio
+    hFpos hbelow
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Family no-go: if the per-`n` worst-frequency
+witness ratio is UNBOUNDED above (decoupling: the target peaks where `F` is small), then NO single
+absolute constant `C` uniformly controls every family member — for each `C` some member fails. -/
+theorem doorIV_argmaxDecoupled_no_absolute_const_export {ι N : Type*}
+    {target F : N → ι → ℝ} {bstar : N → ι}
+    (hFpos : ∀ n, 0 < F n (bstar n))
+    (hunbdd : ∀ C : ℝ, ∃ n, C < target n (bstar n) / F n (bstar n)) :
+    ∀ C : ℝ, ∃ n, ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControl
+      (target n) (F n) C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.no_absolute_constant_of_unbounded_ratio
+    hFpos hunbdd
+
 /-- **[obstruction, door-(iv) Lane-1]** The STRICT worst-frequency peak is a SINGLE coset
 (`Ncos(τ→0)=1`).  For an orbit-constant statistic `f` (the `μ_n`-invariant `|η_·|`) whose maximum
 value `Mval` is attained at `b₀`, IF every strict maximizer lies in the orbit `G • b₀` (the measured
@@ -2700,6 +2739,9 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_multiPiece_no_eps_slack_one_side_zero_export
 #print axioms doorIV_multiWindow_budget_forces_card_le_export
 #print axioms doorIV_no_multiWindow_split_rhs_le_strict_budget_export
+#print axioms doorIV_argmaxDecoupled_const_ge_ratio_export
+#print axioms doorIV_argmaxDecoupled_no_control_below_ratio_export
+#print axioms doorIV_argmaxDecoupled_no_absolute_const_export
 #print axioms doorIV_sixPoint_lever_vacuous_export
 #print axioms doorIV_correlation_hierarchy_no_lever_export
 #print axioms doorIV_correlation_hierarchy_closed_through_six_export

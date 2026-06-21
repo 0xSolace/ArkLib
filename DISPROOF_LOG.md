@@ -10654,3 +10654,27 @@ completion, moment-saving, or capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean` and
 `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, commits `268d560ff` and `05e805629`,
 axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupling] an argmax-decoupled functional cannot control M up to absolute constants (2026-06-21, sol)
+
+Lane: door-(iv) Lane-3 constraint lemma, abstracting the freshest Lane-1 probe finding
+(`probe_dooriv_smallball_vs_energy.py`): the small-ball / anti-concentration coherence functional `F`
+and the sup-norm target `M` (= `|η_b|`) have DIFFERENT argmaxes at every n (16..256), and their
+rank-correlation DECAYS to zero (spearman 0.490 → 0.046). `F` is asymptotically DECOUPLED from `M`.
+
+VERDICT: a uniform multiplicative control `M b ≤ C·F b` evaluated at the target's worst frequency
+`b*` FORCES `C ≥ M(b*)/F(b*)`. A candidate functional that is small at the target's argmax (because it
+peaks elsewhere — decoupling) therefore forces a LARGE constant, and if the per-n witness ratio
+`M(b*)/F(b*)` is unbounded over the family, NO single absolute constant `C` controls `M`. This kernels
+WHY every decoupled door-(iv) functional (small-ball, anti-concentration, the whole class the probe
+measured) cannot serve as an absolute-constant control. Sharper companion to the unit-coherent-argmax
+vacuity (`_DoorIVCoherenceSlackVacuousAtArgmax`): here the candidate is merely SMALL at b*, not unit. No
+CORE / cancellation / completion / moment / capacity claim — a refutation-with-mechanism for a lever class.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`
+(theorems `const_ge_ratio_at_argmax`, `not_uniformControl_of_ratio_gt`,
+`no_absolute_constant_of_unbounded_ratio`, `const_ge_ratio_at_finsetArgmax`,
+`no_control_below_measured_ratio`), exported in `CampaignProvenIndex.lean`
+(`doorIV_argmaxDecoupled_const_ge_ratio_export`, `doorIV_argmaxDecoupled_no_control_below_ratio_export`,
+`doorIV_argmaxDecoupled_no_absolute_const_export`), axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
