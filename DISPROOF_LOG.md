@@ -11006,3 +11006,13 @@ This sweep packages the probe-facing contrapositive: any below-floor target must
 VERDICT: the dyadic tower route has only the two escape routes named in Shaw's door-(iv) analysis, width growth or floor decay. The upper coherent tower contributes exactly no damping. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`, new theorems `fixed_width_target_forces_bottom_floor_break` and `below_floor_target_forces_width_or_floor_break`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-halfmass-deficit-budget] cross-half loss is exactly coherence deficit times half-mass (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVWorstBHalfMassCarriesAll`. The existing kernel pinned the worst-frequency canonical index-2 split at coherence `ρ = 1`, equivalently `M = H` where `H = ‖A‖ + ‖B‖` is the half-mass.
+
+This sweep adds the exact budget identity `M = ρ·H` and therefore `H - M = (1 - ρ)·H`. Any cross-half coherence route must exhibit an actual deficit in `ρ` at the adversarial frequency; there is no hidden saving term once the split has been localized to half-mass and coherence.
+
+VERDICT: the index-2 cross-half lever is fully budgeted. At worst `b`, probes/previous kernel give `ρ = 1`, so the cross-half loss budget is zero and all possible saving must move into the self-similar half-mass recursion. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorems `magnitude_eq_coherence_mul_halfMass` and `halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

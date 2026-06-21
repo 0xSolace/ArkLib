@@ -79,6 +79,25 @@ theorem worstB_magnitude_eq_halfMass_of_sameRay {A B : E} (h : SameRay ℝ A B) 
     ‖A + B‖ = ‖A‖ + ‖B‖ :=
   norm_add_eq_of_sameRay h
 
+/-- **Exact coherence factorization.**  With positive half-mass, the period magnitude is exactly the
+two-piece coherence times the half-mass: `M = ρ · H`.  Thus the localized door-(iv) index-2 object can
+only save through the factor `ρ`; when probes show `ρ = 1` at worst `b`, the full burden moves to the
+half-mass recursion. -/
+theorem magnitude_eq_coherence_mul_halfMass {A B : E} (hden : 0 < ‖A‖ + ‖B‖) :
+    ‖A + B‖ = twoPieceNormCoherence A B * (‖A‖ + ‖B‖) := by
+  unfold twoPieceNormCoherence
+  rw [div_mul_cancel₀ _ (ne_of_gt hden)]
+
+/-- **Exact deficit budget.**  The loss between half-mass `H` and combined magnitude `M` is precisely
+`(1 - ρ)·H`.  Therefore a cross-half coherence route must prove an actual coherence deficit at the
+adversarial frequency; subdivision alone cannot hide an additional saving term. -/
+theorem halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass {A B : E}
+    (hden : 0 < ‖A‖ + ‖B‖) :
+    (‖A‖ + ‖B‖) - ‖A + B‖ =
+      (1 - twoPieceNormCoherence A B) * (‖A‖ + ‖B‖) := by
+  rw [magnitude_eq_coherence_mul_halfMass (A := A) (B := B) hden]
+  ring
+
 /-- **No coherence saving at the worst `b` (contrapositive form).**  A strict magnitude saving below the
 half-mass, `‖A + B‖ < ‖A‖ + ‖B‖`, REQUIRES the halves to be non-`SameRay`.  The probe shows the worst-`b`
 canonical halves ARE `SameRay` (`ρ ≡ 1`), so no such cross-half saving is available there: any door-(iv)
@@ -112,6 +131,8 @@ theorem coherence_one_iff_magnitude_eq_halfMass {A B : E} (hden : 0 < ‖A‖ + 
 
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.norm_add_eq_halfMass_of_coherence_one
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.worstB_magnitude_eq_halfMass_of_sameRay
+#print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.magnitude_eq_coherence_mul_halfMass
+#print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.not_sameRay_of_magnitude_lt_halfMass
 #print axioms ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_one_iff_magnitude_eq_halfMass
 
