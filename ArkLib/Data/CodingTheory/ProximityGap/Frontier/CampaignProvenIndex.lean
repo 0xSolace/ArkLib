@@ -81,6 +81,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkDoobMajo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDIR9OrderedWalkMajorant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacAutocorrL2SupGap
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3458,6 +3459,40 @@ theorem doorIV_avDIR9_majorant_reduces_export :
     _root_.ArkLib.ProximityGap.Frontier.AvDIR9.DIR9MajorantReducesToWall :=
   _root_.ArkLib.ProximityGap.Frontier.AvDIR9.dir9_majorant_reduces
 
+/-- **[obstruction, JacAutocorrL2SupGap]** Complex Wiener-Khinchin identity for the cyclic
+Jacobi/Gauss-sum autocorrelation: the autocorrelation L2 mass equals the convolution L2 mass. -/
+theorem doorIV_jacAutocorr_wienerKhinchin_export {m : ℕ} [NeZero m]
+    (g : ZMod m → ℂ) :
+    ∑ s : ZMod m,
+        ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g s‖ ^ 2 =
+      ∑ d : ZMod m,
+        ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicConv g d‖ ^ 2 :=
+  _root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.sum_normSq_autocorr_eq_sum_normSq_conv g
+
+/-- **[obstruction, JacAutocorrL2SupGap]** The exact L2-to-sup control for one off-diagonal
+Jacobi autocorrelation term is the whole off-diagonal L2 mass, i.e. the route loses the square-root
+number of shifts unless a new flatness theorem is supplied. -/
+theorem doorIV_jacAutocorr_offdiag_le_total_sub_diag_export {m : ℕ} [NeZero m]
+    (g : ZMod m → ℂ) {s : ZMod m} (hs : s ≠ 0) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g s‖ ^ 2
+      ≤ (∑ d : ZMod m,
+          ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicConv g d‖ ^ 2) -
+        ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g 0‖ ^ 2 :=
+  _root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.normSq_autocorr_le_total_sub_diag g hs
+
+/-- **[prize-bridge, JacAutocorrL2SupGap]** The named autocorrelation flatness residual removes the
+L2-to-sup square-root loss and yields the per-shift prize-shape bound. The residual itself is the open
+Door-IV wall, not asserted here. -/
+theorem doorIV_jacAutocorr_gap_suffices_export {m : ℕ} [NeZero m] {C : ℝ}
+    (g : ZMod m → ℂ) (hm : 2 ≤ m)
+    (hgap : _root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.AutocorrL2SupGap C g)
+    {s : ZMod m} (hs : s ≠ 0) :
+    ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g s‖ ^ 2
+      ≤ (C * Real.log m / ((m : ℝ) - 1))
+          * (∑ t ∈ (Finset.univ.erase (0 : ZMod m)),
+              ‖_root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.cyclicAutocorr g t‖ ^ 2) :=
+  _root_.ArkLib.ProximityGap.Frontier.JAC1SecondMoment.normSq_autocorr_le_of_gap g hm hgap hs
+
 /-- **[obstruction, PhaseBlindRadialStats]** Every finite `normSq`-radial statistic is invariant
 under arbitrary pointwise unit twists. This is the kerneled radial side of Shaw's phase-blindness
 probe: a `b`-summed moment/radial summary cannot see the adversarial phase alignment Door (iv) needs. -/
@@ -3583,6 +3618,9 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_avDIR9_endpoint_le_R_export
 #print axioms doorIV_avDIR9_pairAntisym_sum_zero_export
 #print axioms doorIV_avDIR9_majorant_reduces_export
+#print axioms doorIV_jacAutocorr_wienerKhinchin_export
+#print axioms doorIV_jacAutocorr_offdiag_le_total_sub_diag_export
+#print axioms doorIV_jacAutocorr_gap_suffices_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
 #print axioms doorIV_orderedWalk_corePrize_endpoint_of_majorant_export
 #print axioms doorIV_orderedWalk_not_radius_bound_of_endpoint_not_bound_export
