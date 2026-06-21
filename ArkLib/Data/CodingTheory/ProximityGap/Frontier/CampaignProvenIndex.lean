@@ -52,6 +52,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCrossHalfPhaseUnstr
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassDilationForm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVEighthCumulantSignUnstable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
@@ -204,6 +205,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_sign_negativeMass_eq_half_total_doublingMass_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_gappedMinor125_159_eq_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
+| `doorIV_eighthCumulant_mixed_sign_forbids_fixed_sign_export` | obstruction | DoorIVEighthCumulantSignUnstable |
+| `doorIV_eighthCumulant_no_fixedSignCertificate_export` | obstruction | DoorIVEighthCumulantSignUnstable |
 | `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
 | `doorIV_levelWorst_le_prize_budget_of_xgate_export` | capstone | DoorIVXGatePrizeBudget |
 | `doorIV_gateThreshold_split_telescope_sqrt2_export` | obstruction | DoorIVXGatedBaseThreshold |
@@ -2199,6 +2202,26 @@ theorem doorIV_not_gappedMinor125_159_ne_zero_export {ζ : ℂ} (hζ : ζ ^ 8 = 
   _root_.ArkLib.ProximityGap.DoorIVAlgebraicFloorCyclotomicWall.not_gappedMinor125_159_ne_zero_of_pow8_eq_neg_one
     hζ
 
+/-- **[obstruction, DoorIVEighthCumulantSignUnstable]** Mixed signs in a candidate eighth-cumulant
+statistic refute both universal fixed-sign certificates (`κ ≥ 0` and `κ ≤ 0`). This indexes the
+formal constraint supplied by the multiprime door-IV probe; no cumulant bound is claimed. -/
+theorem doorIV_eighthCumulant_mixed_sign_forbids_fixed_sign_export
+    {ι : Type*} {κ : ι → ℝ} {i j : ι} (hpos : 0 < κ i) (hneg : κ j < 0) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.UniversalNonnegative κ ∧
+      ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.UniversalNonpositive κ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.mixed_sign_forbids_universal_fixed_sign
+    hpos hneg
+
+/-- **[obstruction, DoorIVEighthCumulantSignUnstable]** Disjunction/contradiction form: once the
+same admissible statistic takes both positive and negative values, it cannot provide a universal
+fixed-sign eighth-cumulant route. -/
+theorem doorIV_eighthCumulant_no_fixedSignCertificate_export
+    {ι : Type*} {κ : ι → ℝ} {i j : ι} (hpos : 0 < κ i) (hneg : κ j < 0) :
+    ¬ (_root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.UniversalNonnegative κ ∨
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.UniversalNonpositive κ) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.no_fixedSignCertificate_of_mixed_sign
+    hpos hneg
+
 /-- **[capstone, DoorIVXGatedPrizeReduction]** The named open `XGatedRatio` hypothesis, plus its
 levelwise `x`-gate, telescopes to the explicit square-root tower factor `√(2^μ)·M₀`. This is the
 end-to-end Lane-2 reduction of the corrected door-(iv) scalar to the geometric prize scale; the
@@ -2434,6 +2457,8 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_sign_negativeMass_eq_half_total_doublingMass_export
 #print axioms doorIV_gappedMinor125_159_eq_zero_export
 #print axioms doorIV_not_gappedMinor125_159_ne_zero_export
+#print axioms doorIV_eighthCumulant_mixed_sign_forbids_fixed_sign_export
+#print axioms doorIV_eighthCumulant_no_fixedSignCertificate_export
 #print axioms doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export
 #print axioms doorIV_levelWorst_le_prize_budget_of_xgate_export
 #print axioms doorIV_gateThreshold_split_telescope_sqrt2_export
