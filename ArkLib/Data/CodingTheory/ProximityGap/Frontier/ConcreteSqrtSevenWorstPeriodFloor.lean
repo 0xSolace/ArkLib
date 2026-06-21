@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_SqrtSevenMomentRatio
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_MomentRatioLadderGeneral
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteMomentAssembly
 
 set_option linter.style.longLine false
@@ -24,12 +25,15 @@ discharged that identity, so the sharpened `√7` floor was NOT yet available on
 
 This file supplies the missing connective rung:
 
-> `worstPeriod_sq_eq_sup'_sq`            : `(worstPeriod ψ G hne)² = sup'_{b≠0} ‖η_b‖²`,
-> `worstPeriod_sq_moment_ratio_floor`    : `q·E₄ − n⁸ ≤ (worstPeriod ψ G hne)² · (q·E₃ − n⁶)`.
+> `worstPeriod_sq_eq_sup'_sq`               : `(worstPeriod ψ G hne)² = sup'_{b≠0} ‖η_b‖²`,
+> `worstPeriod_sq_moment_ratio_floor`       : `q·E₄ − n⁸ ≤ (worstPeriod ψ G hne)² · (q·E₃ − n⁶)`,
+> `worstPeriod_sq_moment_ratio_floor_general`: `q·Eᵣ₊₁ − n^{2(r+1)} ≤ (worstPeriod ψ G hne)² · (q·Eᵣ − n^{2r})` ∀ r.
 
-The second is the abstract `√7` floor transported verbatim onto the concrete worst period: the
-SHARPENED lower bound (`M² ≥ (q·E₄−n⁸)/(q·E₃−n⁶)`, asymptotically `→ 7n`) now lives on the exact
-object the Shaw-value normalization consumes, strictly stronger than the RMS `n(q−n)/(q−1)` floor
+The second is the abstract `√7` floor transported verbatim onto the concrete worst period (the `r = 3`
+rung); the third is the FULL parametrized ladder `energy_moment_floor_general` transported the same
+way, so the entire `√3, √5, √7, …` floor ladder lives on `worstPeriod` at once. The SHARPENED lower
+bound (`M² ≥ (q·Eᵣ₊₁−n^{2(r+1)})/(q·Eᵣ−n^{2r})`, the `r = 3` rung asymptotically `→ 7n`) now lives on the
+exact object the Shaw-value normalization consumes, strictly stronger than the RMS `n(q−n)/(q−1)` floor
 already wired there (`ConcreteParsevalLower.worstPeriod_sq_ge_parseval`).
 
 ## Honesty (the prize is the GAP, untouched)
@@ -46,6 +50,7 @@ open Finset AddChar
 open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment (eta)
 open ArkLib.ProximityGap.SubgroupGaussSumMoment (rEnergy)
 open ArkLib.ProximityGap.Frontier.AvFloorSqrt7 (energy_moment_floor_sqrt7)
+open ArkLib.ProximityGap.Frontier.AvFloorLadder (energy_moment_floor_general)
 open ProximityGap.Frontier.ConcreteMomentAssembly (worstPeriod worstPeriod_nonneg)
 
 namespace ProximityGap.Frontier.ConcreteSqrtSevenWorstPeriodFloor
@@ -105,8 +110,29 @@ theorem worstPeriod_sq_moment_ratio_floor {ψ : AddChar F ℂ} (hψ : ψ.IsPrimi
   rw [worstPeriod_sq_eq_sup'_sq ψ G hne]
   exact habs
 
+/-- **Concrete GENERAL moment-ratio floor on the worst period — every rung at once.** Transport of
+the proven parametrized abstract ladder `energy_moment_floor_general` onto `worstPeriod` via
+`worstPeriod_sq_eq_sup'_sq`:
+
+> `q·Eᵣ₊₁ − n^{2(r+1)}  ≤  (worstPeriod ψ G hne)² · (q·Eᵣ − n^{2r})`   for EVERY `r : ℕ`,
+
+i.e. `M(μ_n)² ≥ (q·Eᵣ₊₁ − n^{2(r+1)})/(q·Eᵣ − n^{2r})`. The rungs `r = 1, 2, 3` recover the concrete
+`√3, √5, √7` floors; `worstPeriod_sq_moment_ratio_floor` above is the `r = 3` specialization. The
+WHOLE floor ladder is now available on the canonical concrete worst period the Shaw-value bridge
+consumes — strictly subsuming the single-rung transport and the RMS Parseval floor. UNCONDITIONAL
+(holds for any `G`). FLOOR only; does NOT close CORE. -/
+theorem worstPeriod_sq_moment_ratio_floor_general {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (G : Finset F) (hne : (Finset.univ.erase (0 : F)).Nonempty) (r : ℕ) :
+    (Fintype.card F : ℝ) * rEnergy G (r + 1) - (G.card : ℝ) ^ (2 * (r + 1))
+      ≤ (worstPeriod ψ G hne) ^ 2
+          * ((Fintype.card F : ℝ) * rEnergy G r - (G.card : ℝ) ^ (2 * r)) := by
+  have habs := energy_moment_floor_general hψ G hne r
+  rw [worstPeriod_sq_eq_sup'_sq ψ G hne]
+  exact habs
+
 end ProximityGap.Frontier.ConcreteSqrtSevenWorstPeriodFloor
 
 /-! ## Axiom audit -/
 #print axioms ProximityGap.Frontier.ConcreteSqrtSevenWorstPeriodFloor.worstPeriod_sq_eq_sup'_sq
 #print axioms ProximityGap.Frontier.ConcreteSqrtSevenWorstPeriodFloor.worstPeriod_sq_moment_ratio_floor
+#print axioms ProximityGap.Frontier.ConcreteSqrtSevenWorstPeriodFloor.worstPeriod_sq_moment_ratio_floor_general
