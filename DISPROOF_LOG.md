@@ -11042,3 +11042,22 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVWorstBHalfMassCarriesAll
 VERDICT: an advertised epsilon saving in the worst-b cross-half route must be paid linearly by measured deficit mass. Since the worst-b probe/previous kernel gives zero deficit on the canonical split, this route cannot produce any positive epsilon saving there. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorem `coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit`, exported from `CampaignProvenIndex` as `doorIV_worstB_eps_halfMass_deficit_iff_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+## [doorIV-coherence-saturation-insufficient] under worst-b coherence saturation the prize burden transfers to a strict-sub-trivial half-mass bound (2026-06-21, sol)
+
+Lane: door-(iv) Lane 1 — QUANTITATIVE prize-regime sharpening of `[door-iv-worstb-halfmass]` (the qualitative `ρ(b*)=1 ⟹ M=H` entry). The brief's deepest Lane-1 question is "is ρ(b)→1 forced, or is there slack a non-sum-product method could exploit?". The qualitative answer (ρ=1, saving moves to the half-mass recursion) was logged; this entry pins the quantitative INSUFFICIENCY.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_coherence_deficit_law.py`, proper `μ_n < F_p*`, `p ≫ n³`, structured odd-`m` primes, `n = 16..256`, never `n = q−1`): measured the worst-frequency canonical index-2 coset-half coherence `ρ(b*)` and compared it to the coherence `ρ_needed = √(n·L)/n` that the trivial half-mass ceiling `H ≤ n` would need to reach the prize `M ≤ C·√(n·L)`:
+
+| n   | ρ(b*)    | 1−ρ(b*) | H/n  | ρ_needed = √(nL)/n |
+|-----|----------|---------|------|--------------------|
+| 16  | 1.000000 | 0       | 0.86 | 0.72               |
+| 32  | 1.000000 | 0       | 0.72 | 0.57               |
+| 64  | 1.000000 | 0       | 0.53 | 0.44               |
+| 128 | 1.000000 | 0       | 0.37 | 0.34               |
+| 256 | 1.000000 | 0       | 0.28 | 0.25 ⟸ ρ ≫ ρ_needed |
+
+`ρ(b*) ≡ 1` (deficit `≡ 0`) on the canonical squares-coset split at EVERY tested `n`, while `ρ_needed → 0`. So `ρ(b*) ≫ ρ_needed`: the index-2 coherence is provably INSUFFICIENT to reach the prize on its own. The entire √-cancellation is carried by the half-mass `H(b*)=‖A‖+‖B‖`, whose normalized value `H/n` itself decays (measured `H/n ~ n^{-c}`, `c ≈ 0.3..0.5`).
+
+VERDICT: under worst-b coherence saturation the prize bound `M ≤ C·prizeScale n L` is EXACTLY a half-mass bound `H ≤ C·prizeScale n L`, and in the thin prize regime (`prizeScale n L < n ⟺ L < n`) with `0 < C ≤ 1` that target is STRICTLY below the trivial ceiling `n` that coherence saturation alone delivers. Coherence supplies NONE of the prize gap; the whole burden is a strict-sub-trivial bound on the half-mass — the self-similar descent `μ_n ⊃ (μ_n)² ⊃ …`, NOT the index-2 coherence object. This LOCALIZES the prize OFF the door-(iv) coherence lever. Refutation-with-mechanism only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceSaturationInsufficient.lean`, new theorems `magnitude_le_trivial_of_saturation`, `prizeBound_iff_halfMassBound_of_saturation`, `prizeTarget_lt_trivial_ceiling`, capstone `coherenceSaturation_transfers_to_strict_subTrivial_halfMass`; exported from `CampaignProvenIndex` as `doorIV_coherenceSaturation_prizeBound_iff_halfMassBound_export`, `doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export`, `doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

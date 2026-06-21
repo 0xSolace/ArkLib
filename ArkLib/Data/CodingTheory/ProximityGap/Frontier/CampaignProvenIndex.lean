@@ -71,6 +71,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWeight2QuadformGcd
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentrationTrivial
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVArgmaxDecouplingNoControl
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCollisionExcessPigeonhole
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturationInsufficient
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3181,10 +3182,54 @@ theorem doorIV_worstB_eps_halfMass_deficit_iff_export {E : Type*}
       ε * (‖A‖ + ‖B‖) ≤ (‖A‖ + ‖B‖) - ‖A + B‖ :=
   _root_.ProximityGap.Frontier.DoorIVWorstBHalfMassCarriesAll.coherence_le_one_sub_eps_iff_eps_halfMass_le_deficit
     hden ε
+
+/-- **[obstruction, CoherenceSaturationInsufficient]** Under coherence saturation (`M = H`), the
+prize-shaped bound is exactly a half-mass bound: `M ≤ C·prizeScale n L ↔ H ≤ C·prizeScale n L`. The
+entire prize task transfers onto bounding the half-mass; the index-2 coherence object contributes
+nothing. (Probe `probe_dooriv_worstb_coherence_deficit_law.py`: `ρ(b*) ≡ 1`.) -/
+theorem doorIV_coherenceSaturation_prizeBound_iff_halfMassBound_export {M H C n L : ℝ}
+    (hsat : M = H) :
+    M ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L ↔
+      H ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.prizeBound_iff_halfMassBound_of_saturation
+    hsat
+
+/-- **[obstruction, CoherenceSaturationInsufficient]** In the thin prize regime
+(`prizeScale n L < n`, i.e. `√(n·L) < n ⟺ L < n`) any prize constant `0 < C ≤ 1` makes the prize
+target strictly below the trivial half-mass ceiling `n`. So coherence saturation supplies none of the
+prize gap; the whole burden is a strict-sub-trivial bound on the half-mass (the self-similar
+descent). -/
+theorem doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export {C n L : ℝ}
+    (hscale : _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L < n)
+    (hC0 : 0 < C) (hC1 : C ≤ 1) :
+    C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L < n :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.prizeTarget_lt_trivial_ceiling
+    hscale hC0 hC1
+
+/-- **[obstruction, CoherenceSaturationInsufficient]** Coherence-insufficiency transfer capstone:
+at coherence saturation (`M = H`) with the trivial ceiling (`H ≤ n`) in the thin prize regime
+(`prizeScale n L < n`), for any prize constant `0 < C ≤ 1` the prize-shaped bound is exactly a
+strict-sub-trivial half-mass bound. The kerneled form of the probe verdict
+`ρ(b*) ≡ 1 ≫ ρ_needed = √(n·L)/n` ⟹ COHERENCE-INSUFFICIENT: the prize burden lives entirely on the
+half-mass descent, not the index-2 coherence object. -/
+theorem doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_export
+    {M H C n L : ℝ}
+    (hsat : M = H) (hceil : H ≤ n)
+    (hscale : _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L < n)
+    (hC0 : 0 < C) (hC1 : C ≤ 1) :
+    (M ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L ↔
+        H ≤ C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L) ∧
+      C * _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.prizeScale n L < n :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSaturationInsufficient.coherenceSaturation_transfers_to_strict_subTrivial_halfMass
+    hsat hceil hscale hC0 hC1
+
 #print axioms doorIV_worstB_norm_add_eq_halfMass_of_coherence_one_export
 #print axioms doorIV_worstB_not_sameRay_of_magnitude_lt_halfMass_export
 #print axioms doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export
 #print axioms doorIV_worstB_eps_halfMass_deficit_iff_export
+#print axioms doorIV_coherenceSaturation_prizeBound_iff_halfMassBound_export
+#print axioms doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export
+#print axioms doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
