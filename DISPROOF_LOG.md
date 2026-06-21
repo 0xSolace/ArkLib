@@ -11257,3 +11257,19 @@ CORE/cancellation/completion/anti-concentration/capacity claim.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvFloor_SqrtSevenMomentRatio.lean`, new
 theorems `eighthSum_le_sup'_sixthSum` and `energy_moment_floor_sqrt7`. Both axiom-clean ⊆ {propext,
 Classical.choice, Quot.sound}; no sorry/opaque/native_decide.
+
+## [floor-moment-ratio-ladder-general] M²·Aᵣ ≥ Aᵣ₊₁ for ALL r — the floor-ladder capstone (2026-06-21, sol)
+Lane: Lane-2 floor capstone. The √3/√5/√7 rungs (r=2,3,4) were each hard-coded. This sweep proves the
+PARAMETRIZED ladder for EVERY r:ℕ in one theorem, subsuming all individual rungs as the citable form.
+`momentSucc_le_sup'_moment`: ∑_{b≠0}‖η‖^{2(r+1)} ≤ M²·∑_{b≠0}‖η‖^{2r} (weighted engine, h=‖η‖² g=‖η‖^{2r}).
+`energy_moment_floor_general`: q·Eᵣ₊₁−n^{2(r+1)} ≤ M²·(q·Eᵣ−n^{2r}) ∀r — UNCONDITIONAL (any G).
+
+The asymptotic ratio → Eᵣ₊₁/Eᵣ → (2r+1)n (double-factorial substrate Eᵣ~(2r−1)!!nʳ) gives M≥√(2r+1)·√n,
+BUT bounded by the DC-crossover cap (r₀~5): beyond it n^{2r} dominates q·Eᵣ, so the ladder does NOT yield
+an unbounded floor — this is the documented reason the floor saturates at √(bounded)·√n and cannot by
+itself reach the conjectured √(n·log(p/n)). FLOOR (lower bound), does NOT close CORE. No
+CORE/cancellation/completion/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_AvFloor_MomentRatioLadderGeneral.lean`,
+theorems `momentSucc_le_sup'_moment`, `energy_moment_floor_general`. Both axiom-clean ⊆ {propext,
+Classical.choice, Quot.sound}; no sorry/opaque/native_decide.
