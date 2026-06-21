@@ -278,9 +278,42 @@ theorem no_fixed_width_tower_damping_below_floor (upper bottom : List ℝ) {c θ
     tower_product_ge_fixed_width_floor upper bottom hupper hc0 hc1 hlen hbottom
   exact not_lt_of_ge (hfloor.trans htarget) hbelow
 
+/-- **A below-floor target forces bottom-factor decay.**  If the upper tower is coherent, the
+nontrivial segment has fixed width `≤ K`, and a claimed coherence-product target lies below the fixed
+floor `c^K`, then at least one bottom factor must actually be `< c`.  This is the probe-facing
+contrapositive of the fixed-width obstruction: with a fixed number of bottom levels, the only escape
+from the constant floor is to make some bottom coherence floor shrink. -/
+theorem fixed_width_target_forces_bottom_floor_break (upper bottom : List ℝ) {c θ : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (hlen : bottom.length ≤ K)
+    (htarget : (upper ++ bottom).prod ≤ θ) (hbelow : θ < c ^ K) :
+    ∃ r ∈ bottom, r < c := by
+  by_contra hno
+  have hbottom : ∀ r ∈ bottom, c ≤ r := by
+    intro r hr
+    exact le_of_not_gt (fun hlt => hno ⟨r, hr, hlt⟩)
+  exact no_fixed_width_tower_damping_below_floor upper bottom hupper hc0 hc1 hlen hbottom
+    htarget hbelow
+
+/-- **Only two escape routes for a below-floor coherence-product target.**  Under coherent upper
+levels and a target below `c^K`, either the number of nontrivial bottom levels exceeds the fixed
+width budget `K`, or some bottom coherence factor is below the floor `c`.  Thus the dyadic tower
+route cannot get logarithmic-in-`n` damping while keeping both a fixed-width slack zone and a uniform
+bottom-factor floor. -/
+theorem below_floor_target_forces_width_or_floor_break (upper bottom : List ℝ) {c θ : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (htarget : (upper ++ bottom).prod ≤ θ) (hbelow : θ < c ^ K) :
+    K < bottom.length ∨ ∃ r ∈ bottom, r < c := by
+  by_cases hlen : bottom.length ≤ K
+  · exact Or.inr (fixed_width_target_forces_bottom_floor_break upper bottom hupper hc0 hc1 hlen
+      htarget hbelow)
+  · exact Or.inl (Nat.lt_of_not_ge hlen)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.bottom_product_ge_pow_length
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_fixed_width_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.no_fixed_width_tower_damping_below_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.fixed_width_target_forces_bottom_floor_break
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.below_floor_target_forces_width_or_floor_break

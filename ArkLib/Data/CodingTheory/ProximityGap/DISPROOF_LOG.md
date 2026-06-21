@@ -18785,3 +18785,13 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVMultiPieceSignCoherence`
 VERDICT: a real multi-piece sign refinement does not generate slack by subdivision count. Every claimed epsilon coherence saving must be paid linearly by actual aggregate minority-sign mass at the adversarial frequency. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`, new theorems `minMass_ge_half_eps_total_of_multiPieceCoherence_le_one_sub_eps` and `not_multiPieceCoherence_le_one_sub_eps_of_minMass_lt_half_eps_total`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-tower-fixed-width-escape-routes] below-floor tower damping forces width growth or bottom-floor break (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCoherenceTowerCollapse`. The existing kernel proved that if the upper dyadic tower is coherent, the nontrivial bottom segment has length at most `K`, and every bottom coherence factor is at least `c ∈ [0,1]`, then the full tower product cannot be forced below the fixed floor `c^K`.
+
+This sweep packages the probe-facing contrapositive: any below-floor target must break one of the two structural hypotheses that a fixed-width tower lever needs. Either the bottom slack zone has width `> K`, or some bottom coherence factor is `< c`. Thus a 2-adic coherence-product attack cannot obtain logarithmic-in-`n` damping while keeping both a fixed-width noncoherent zone and a uniform bottom-factor floor.
+
+VERDICT: the dyadic tower route has only the two escape routes named in Shaw's door-(iv) analysis, width growth or floor decay. The upper coherent tower contributes exactly no damping. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCoherenceTowerCollapse.lean`, new theorems `fixed_width_target_forces_bottom_floor_break` and `below_floor_target_forces_width_or_floor_break`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
