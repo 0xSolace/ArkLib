@@ -10399,3 +10399,20 @@ Formal kernel (Lean, `Frontier/_DoorIVTripleCorrelationVanishes.lean`, axiom-cle
 (`sixPoint_lever_vacuous_of_triple_zero`); 3-3 Wick factorization `m33=wick+cumulant, cumulant=0 ⇒ m33=wick`
 (`m33_eq_wick_of_cumulant_zero`[_complex]) and `control_passes_through_wick6`. Axioms ⊆ {propext,
 Classical.choice, Quot.sound}.
+
+## door-(iv) algebraic-floor gapped-minor route hits a cyclotomic vanishing wall (2026-06-20)
+
+Lens: door-(iv) Lane 3 constraint lemma backing the latest algebraic-floor probe.  The attempted
+AGL24 / higher-order-MDS / Dirichlet route needs gapped Vandermonde minors on dyadic cyclotomic rows
+to behave like generic nonzero minors.  The concrete probe found the first smoking-gun obstruction at
+`μ₁₆`: rows `(1,2,5)` and column powers `(1,5,9)` give a `3 × 3` minor that vanishes exactly.
+
+Formal kernel: `Frontier/_DoorIVAlgebraicFloorCyclotomicWall.lean` proves that for any complex `ζ` with
+`ζ^8 = -1`, the explicit determinant `gappedMinor125_159 ζ` is zero, and therefore a generic
+nonvanishing hypothesis on this minor is contradictory.  Mechanism: the gapped exponents collide with
+the dyadic relation `ζ^8=-1`; this is the cyclotomic-vanishing wall, not a numerical accident.
+
+VERDICT: generic-MDS/Dirichlet reasoning cannot by itself discharge the algebraic floor route on the
+actual dyadic prize subgroup.  Any surviving version must prove a statement stable under these
+cyclotomic relations rather than assuming all gapped minors are nonzero.  No CORE/cancellation/
+completion/moment/capacity claim.
