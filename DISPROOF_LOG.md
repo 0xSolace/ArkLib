@@ -11016,3 +11016,11 @@ This sweep adds the exact budget identity `M = ρ·H` and therefore `H - M = (1 
 VERDICT: the index-2 cross-half lever is fully budgeted. At worst `b`, probes/previous kernel give `ρ = 1`, so the cross-half loss budget is zero and all possible saving must move into the self-similar half-mass recursion. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBHalfMassCarriesAll.lean`, new theorems `magnitude_eq_coherence_mul_halfMass` and `halfMass_sub_magnitude_eq_one_sub_coherence_mul_halfMass`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-crosshalf-unbounded-ratio-family] unbounded real-collinear ratios refute every fixed single-subperiod multiplier (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVCrossHalfPhaseUnstructured`. The pointwise kernel already proved that in the probed real-collinear cross-half regime `B = t • A`, any bound `‖A+B‖ ≤ C‖A‖` forces `1+t ≤ C`, and a single `C < 1+t` witness breaks that bound. This sweep adds the family form: if the measured ratios have no uniform envelope for `1+t_i`, then for every proposed absolute constant `C` there is some frequency/family point where `‖A_i+B_i‖ ≤ C‖A_i‖` fails.
+
+VERDICT: the cross-half phase-factorization lever cannot be rescued by choosing a larger fixed root-of-unity/real multiplier. Once the cross-half magnitude ratios are unstructured/unbounded across the measured family, the single-subperiod recursive bound fails for every absolute constant. This is a refuted-lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVCrossHalfPhaseUnstructured.lean`, new theorem `no_uniform_fixed_multiplier_of_unbounded_ratios`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

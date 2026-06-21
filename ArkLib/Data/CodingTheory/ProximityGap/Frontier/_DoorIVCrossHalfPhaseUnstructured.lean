@@ -142,6 +142,21 @@ theorem norm_add_ge_of_ratio_ge {A B : E} {t t₀ : ℝ} (ht₀ : 0 ≤ t₀) (h
   apply mul_le_mul_of_nonneg_right _ (norm_nonneg A)
   linarith
 
+/-- **Unbounded cross-half ratios rule out every uniform single-subperiod multiplier.**  This is the
+family form of the probe verdict: once the real-collinear ratios `tᵢ = ‖Bᵢ‖/‖Aᵢ‖` have no absolute
+upper envelope after the `1+tᵢ` multiplier, there is no constant `C` for which all periods satisfy
+`‖Aᵢ+Bᵢ‖ ≤ C‖Aᵢ‖`.  Thus the cross-half factorization cannot be repaired by choosing a larger fixed
+root-of-unity/real multiplier; the obstruction is the unbounded family of measured ratios itself. -/
+theorem no_uniform_fixed_multiplier_of_unbounded_ratios {ι : Type*} (A B : ι → E)
+    (t : ι → ℝ) (ht : ∀ i, 0 ≤ t i) (hA : ∀ i, 0 < ‖A i‖)
+    (hcross : ∀ i, crossHalfRatio (A i) (B i) (t i))
+    (hunbounded : ∀ C : ℝ, ∃ i, C < 1 + t i) :
+    ∀ C : ℝ, ¬ ∀ i, ‖A i + B i‖ ≤ C * ‖A i‖ := by
+  intro C hbound
+  rcases hunbounded C with ⟨i, hgt⟩
+  exact fixed_multiplier_fails_of_ratio_gt (A := A i) (B := B i) (t := t i) (c := C)
+    (ht i) (hA i) (hcross i) hgt (hbound i)
+
 end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_eq_of_real_collinear
@@ -151,3 +166,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.fixed_multiplier_fails_of_ratio_gt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.distinct_ratios_give_distinct_multipliers
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.norm_add_ge_of_ratio_ge
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVCrossHalfPhaseUnstructured.no_uniform_fixed_multiplier_of_unbounded_ratios
