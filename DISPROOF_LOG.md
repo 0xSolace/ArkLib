@@ -10988,3 +10988,11 @@ Lane: door-(iv) Lane 3 finite-support hygiene in `_DoorIVArgmaxDecouplingNoContr
 VERDICT: finite ratio/support/endpoint witnesses found on a measured subset cannot be repaired by adding more ambient frequencies. This is a finite-probe lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorems `uniformControlOn_of_subset` and `not_uniformControlOn_of_subset_not_control`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_uniformControlOn_of_subset_export` and `doorIV_argmaxDecoupled_no_controlOn_superset_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-multipiece-minority-mass-floor] epsilon coherence saving requires an epsilon/2 minority mass share (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVMultiPieceSignCoherence`. The existing kernel proved the exact real-refinement budget `coherence ≤ 1 - ε ↔ ε·total ≤ 2·minority`. This sweep packages the direct probe-facing floor: any advertised `ε` saving forces `(ε/2)·total ≤ minority`, and if the observed minority aggregate is below that floor then the refined multi-piece split cannot certify `coherence ≤ 1 - ε`.
+
+VERDICT: a real multi-piece sign refinement does not generate slack by subdivision count. Every claimed epsilon coherence saving must be paid linearly by actual aggregate minority-sign mass at the adversarial frequency. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVMultiPieceSignCoherence.lean`, new theorems `minMass_ge_half_eps_total_of_multiPieceCoherence_le_one_sub_eps` and `not_multiPieceCoherence_le_one_sub_eps_of_minMass_lt_half_eps_total`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
