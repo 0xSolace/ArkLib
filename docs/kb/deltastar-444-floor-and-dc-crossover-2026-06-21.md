@@ -105,3 +105,42 @@ The value is `sqrt(n log p)` (empirically `C_M -> sqrt 2`-ish). Connecting every
 the tightest two-sided `sqrt n`-scale sandwich and the precise single open object on each side — but
 **not** the log factor, which is blocked, symmetrically, at the deep-depth DC-crossover. No QED is
 faked; the prize remains the open deep-depth archimedean core.
+
+## 5. Follow-up: the connect-all conditional, the resonance reduction, and the sharper floor
+
+**(5a) The whole prize = one inequality (`_B6ConnectAll.connect_all_prize`, axiom-clean).**
+`M <= 2 sqrt(e) sqrt(n log p)` follows from **exactly one** open hypothesis, the **SaddleEnergyBound**
+`sum_{b!=0} ||eta_b||^{2r} <= (p-1) E_r^char0` at `r ~ ln q` (equivalently `A_r <= Wick`). The
+moment=energy spine, the char-0 Wick anchor (Lam-Leung, *proven* in-tree), and the optimization
+last-mile are all machine-checked. Companion axiom-clean bricks: `_AvgMaxExponentGapBarrier` (every
+`b`-summed/moment route is trapped at exponent `>= 1`, the floor `qE_k >= n^{2k}` *derived* for the
+real periods), `_AvB1_WeilTransferVacuous` (per-Gauss-sum Weil forces energy floor `n^{4r} >> Wick`),
+`_AvSD_StickelbergerOnsetVacuous` (onset `r_0 ~ p^{1/phi(n)} ~ 4-5 << saddle r* ~ ln q`).
+
+**(5b) The resonance / concentration LOWER-bound construction definitively reduces (no log).** Both
+natural routes cap at bounded`*sqrt n`:
+- *Dirichlet / pigeonhole* — vacuous: concentrating all `n` dilates `{b x mod p}` needs `K = n^{4/n} > 4`,
+  but `K <= 2.0` at `n=16` and `-> 1` (at `beta=4`, `p = n^4` is too small for simultaneous approximation).
+  The concentration at the worst `b` (empty arc `> 50%` of the circle at moderate `n`) is *statistical*,
+  not constructible; it weakens as `M/n = sqrt(log p / n) -> 0`.
+- *Montgomery-Soundararajan resonator* (`_AvFloor_ResonatorRatioLowerBound`, axiom-clean) — equals the
+  moment-ratio in disguise: `resonator_one_*` show the `r=1` resonator on `S = G` gives inner sum `= eta_b`,
+  weight `||eta_b||^2`, collapsing to the `sqrt 3` floor; the optimal degree-`r` gain is `A_r/A_{r-1} =
+  (2r-1)n`, capped by the same DC-crossover.
+
+So the lower `log` is the matching open Omega-result (same far-tail control as the upper bound).
+
+**(5c) Sharper floor `M >= sqrt(5) sqrt(n)`** (`_AvFloor_SqrtFiveMomentRatio`, axiom-clean): the
+moment *ratio* `M^2 >= A_3/A_2 = (q E_3 - n^6)/(q E_2 - n^4) -> 5n`, via the new weighted engine
+`weighted_sum_le_sup'_mul_sum` (`h = ||eta||^2`, `g = ||eta||^4`) and the exact char-0 energies
+`E_3 = 15 n^3 - 45 n^2 + 40 n`, `E_2 = 3 n^2 - 3 n` (`W_2 = W_3 = 0` for all `p > n^4`). Supersedes the
+`sqrt 3` floor of Section 1; the ratio climbs (`2.09, 2.16, 2.39, 2.52, ...`) but caps at bounded`*sqrt n`.
+
+**(5d) Method-space is closed.** Two further mining rounds (170 + 50 user-provided papers, mined for
+*methods* not theorems, the ~22 already-reduced technique families filtered out): **0** genuinely-new
+non-reducing methods promoted. Every technique producing a bound on a `b`-summed / moment / energy /
+spectral object is phase-blind by `Sum_b eta_b^a conj(eta_b)^c = q * (real lattice count)`, hence capped
+at `n^{1-o(1)}` (upper) and `sqrt n` (lower). The two structural escape-hopes are *theorems about why
+they fail*: multiplicative chaos's better-than-`sqrt` is the *average* not the worst-case max (opposite
+side of `sqrt n`); big monodromy is *abelian* (Kummer/Gauss-sum), pinning the average not the sup. The
+prize stands as the single SaddleEnergyBound at `r ~ ln q` — the 25-year Paley/BGK wall at `beta = 4`.
