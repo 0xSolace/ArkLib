@@ -87,6 +87,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvERG_ErgodicMaximalReduc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvFloor_ResonatorRatioLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3940,5 +3941,50 @@ theorem doorIV_halfMass_lever_not_separating_either_side_export
 #print axioms doorIV_regimeLever_not_factor2_thin_of_comparable_export
 #print axioms doorIV_regimeLever_no_factor2_thin_iff_export
 #print axioms doorIV_halfMass_lever_not_separating_either_side_export
+
+
+/-! ## Door-IV Lane 1 finite coherent-argmax slack obstructions.
+Scope: **obstruction**.
+
+These exports package the probe-native finite-support wrappers for the coherent-argmax no-go: if the
+observed finite argmax itself has full coherence, adding a zero-slack baseline, affine baseline, or
+multiplicative normalized factor cannot rescue a slack certificate whose baseline is below the peak.
+-/
+
+open _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Finite observed-argmax baseline form:
+when the coherent argmax has peak mass above `g 0`, a baseline slack certificate cannot hold. -/
+theorem doorIV_no_coherenceSlackWithBaseline_finsetArgmax_export {ι : Type*}
+    {mass coh : ι → ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (hbs : bstar ∈ s) (hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : g 0 < mass bstar) :
+    ¬ CoherenceSlackBoundWithBaseline mass coh g :=
+  no_coherenceSlackBoundWithBaseline_of_small_baseline_finsetArgmax
+    hbs hmax hcoh hsmall
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Finite affine form: a below-peak
+additive baseline cannot be rescued by a slack penalty at a fully coherent observed argmax. -/
+theorem doorIV_no_affineCoherenceSlack_finsetArgmax_export {ι : Type*}
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (hbs : bstar ∈ s) (hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : B < mass bstar) :
+    ¬ AffineCoherenceSlackBound mass coh B g :=
+  no_affineCoherenceSlackBound_of_small_baseline_finsetArgmax
+    hbs hmax hcoh hsmall
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Finite multiplicative form: a below-peak
+baseline times a normalized slack factor cannot hold at a fully coherent observed argmax. -/
+theorem doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export {ι : Type*}
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ} {s : Finset ι} {bstar : ι}
+    (hbs : bstar ∈ s) (hmax : ∀ i ∈ s, mass i ≤ mass bstar)
+    (hcoh : coh bstar = 1) (hsmall : B < mass bstar) :
+    ¬ MultiplicativeCoherenceSlackBound mass coh B g :=
+  no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax
+    hbs hmax hcoh hsmall
+
+#print axioms doorIV_no_coherenceSlackWithBaseline_finsetArgmax_export
+#print axioms doorIV_no_affineCoherenceSlack_finsetArgmax_export
+#print axioms doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
