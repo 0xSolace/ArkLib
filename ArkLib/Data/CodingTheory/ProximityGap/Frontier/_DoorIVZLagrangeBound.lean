@@ -143,6 +143,15 @@ theorem descentZ_card_le_degBound {Pp Qp : F[X]} (hR : descentQuadform Pp Qp ≠
       ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
   le_trans (descentZ_card_le_natDegree hR B) (descentQuadform_natDegree_le Pp Qp)
 
+/-- Indicator-sum consumer form of the exponent-controlled `Z` bound.  This matches the summed
+`A + Z` descent notation: the non-symmetric single-fibre correction contributes at most
+`1 + 2·max(deg Pp, deg Qp)` in indicator form as well as cardinality form. -/
+theorem descentZ_indicator_sum_le_degBound {Pp Qp : F[X]}
+    (hR : descentQuadform Pp Qp ≠ 0) (B : Finset F) :
+    (∑ y ∈ B, (if (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2 then 1 else 0))
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  le_trans (descentZ_indicator_sum_le_natDegree hR B) (descentQuadform_natDegree_le Pp Qp)
+
 /-- **Global even-spine descent identity** (the symmetric backbone, summed). `Sweep_A41`'s
 `fiber_agreement_even` gives the PER-FIBRE even count `2·⟦P=0⟧`; summed over the base `B = μ_N`
 (with chosen square roots `ρ y ≠ 0`) this is the GLOBAL even-spine identity
