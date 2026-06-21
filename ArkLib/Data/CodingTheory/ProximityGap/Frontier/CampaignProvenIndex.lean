@@ -112,6 +112,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
 | `doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export` | capstone | DoorIVHalfMassEquivalence |
 | `doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export` | capstone | DoorIVHalfMassEquivalence |
+| `trivial_cocycle_full_concentration_export` | obstruction | JacobiCocycleDispersion |
+| `trivial_cocycle_offSupport_zero_export` | obstruction | JacobiCocycleDispersion |
 | `jacobiCocycleDispersion_iff_shawValue_le_export` | capstone | JacobiCocycleDispersion |
 | `exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
 | `not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export` | capstone | JacobiCocycleDispersion |
@@ -820,6 +822,24 @@ leave an anonymous anti-concentration obligation, but the explicit predicate
 These exports are direct aliases of the proven Lane-2 wrappers; they do NOT prove the missing
 Jacobi dispersion theorem, and make no CORE/cancellation/completion/moment/capacity claim. -/
 
+/-- **[obstruction, JacobiCocycleDispersion]** The degenerate trivial cocycle has full
+concentration at a support frequency: if the written phase ratio satisfies `ζ^k = 1`, the length-`n`
+fiber is exactly `n`. This is the baseline the missing Jacobi dispersion theorem must destroy. -/
+theorem trivial_cocycle_full_concentration_export {n : ℕ} (hn : 0 < n) (ζ : ℂ) {k : ℕ}
+    (hζk : ζ ^ k = 1) :
+    (∑ g ∈ Finset.range n, (ζ ^ k) ^ g) = (n : ℂ) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_full_concentration
+    hn ζ hζk
+
+/-- **[obstruction, JacobiCocycleDispersion]** Off a support frequency, a trivial cocycle has exact
+geometric cancellation. The on/off pattern shows that the named Door-IV theorem is not a normalization
+artifact: it must rule out collapse to this degenerate support. -/
+theorem trivial_cocycle_offSupport_zero_export {n : ℕ} (ζ : ℂ) {k : ℕ}
+    (hpow : (ζ ^ k) ^ n = 1) (hoff : ζ ^ k ≠ 1) :
+    (∑ g ∈ Finset.range n, (ζ ^ k) ^ g) = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDispersion.trivial_cocycle_offSupport_zero
+    ζ hpow hoff
+
 /-- **[capstone, JacobiCocycleDispersion]** Pointwise form of the named door-(iv) target: the
 Jacobi-cocycle dispersion predicate is exactly a Shaw-value bound with logarithmic thinness
 parameter `L = log m`. -/
@@ -966,6 +986,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_prizeFamilyBound_iff_halfMassFamilyBound_export
 #print axioms doorIV_prizeFamilyBound_iff_normalizedHalfMassFamilyBound_export
 #print axioms doorIV_prizeFamilyBound_iff_all_halfMassShaw_forms_export
+#print axioms trivial_cocycle_full_concentration_export
+#print axioms trivial_cocycle_offSupport_zero_export
 #print axioms jacobiCocycleDispersion_iff_shawValue_le_export
 #print axioms exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_exists_nonneg_shawValueFamilyBound_pos_export
 #print axioms not_exists_nonneg_jacobiCocycleDispersionFamilyBound_iff_not_exists_nonneg_shawValueFamilyBound_pos_export
