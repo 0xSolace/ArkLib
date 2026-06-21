@@ -11110,3 +11110,36 @@ Lane: door-(iv) Lane 3 constraint lemma backing Shaw's fresh `probe_bsummation_p
 ## [doorIV-stepanov-at-bstar-export] per-b* Stepanov saving is exactly MajorArcDegenerate (2026-06-21, g55)
 
 Lane: door-(iv) Lane 3 permanent-export rung for `_StepanovAtBstar`: exported the per-`b*` Stepanov count inequality and the `MajorArcDegenerate` iff to `CampaignProvenIndex` as `doorIV_stepanov_bstar_bound_export` and `doorIV_bstar_saving_iff_degenerate_export`. Constraint only: no CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## door-(iv) Lane 1 — half-mass exponent PINNED: H(b*) tracks the PRIZE scale (saturates), CORRECTING the fuzzy "overshoots sqrt(n)" reading (2026-06-21, sol)
+
+Lens: sharpening the coherence-deficit refutation (commit d320db29e, rho(b*)≡1 ⇒ prize burden relocates
+onto the half-mass H(b*)=|A_{b*}|+|B_{b*}|). Three prior reports recorded "H/n ~ n^{-c}, c≈0.3..0.5" but
+NEVER PINNED the exponent, and read it as "overshoots". That straddled the decisive c=1/2 threshold AND
+used the WRONG yardstick (sqrt n instead of the prize scale sqrt(n·log(p/n))).
+
+PROBE (`scripts/probes/probe_444_halfmass_exponent_law.py`, PROPER thin μ_n<F_p*, p≡1 mod n, p≫n³,
+p<2³², β≈4 [n=512 uses β=3.5 to keep uint64 modmul exact], structured odd-m primes, NEVER n=q-1, exact
+M(n) and b*, half-split at b*):
+
+| n   | p          | M=|η(b*)| | H(b*)   | ρ(b*) | H/√n   | H/√(n·log(p/n)) |
+|-----|------------|-----------|---------|-------|--------|------------------|
+| 16  | 65521      | 13.7585   | 13.7585 | 1.000 | 3.4396 | 1.1927 |
+| 32  | 1048609    | 22.9834   | 22.9834 | 1.000 | 4.0629 | 1.2600 |
+| 64  | 16777153   | 37.4363   | 37.4363 | 1.000 | 4.6795 | 1.3248 |
+| 128 | 268437889  | 53.6171   | 53.6171 | 1.000 | 4.7391 | 1.2422 |
+| 256 | 4294961921 | 70.8137   | 70.8137 | 1.000 | 4.4259 | 1.0851 |
+| 512 | 3037000193 | 99.8420   | 99.8420 | 1.000 | 4.4124 | 1.1173 |
+
+RAW exponent fit (β=4 pts): H(b*) ~ n^{0.54..0.60} — JUST above sqrt(n). But the prize scale is
+sqrt(n·log(p/n)), NOT sqrt(n); the log factor is part of the prize bound.
+
+VERDICT (normalization-corrected): against the CORRECT prize scale, H(b*)/sqrt(n·log(p/n)) SATURATES in a
+bounded band 1.09–1.32 (peak at n=64, declining after) — the EXACT mirror of the M(n)/sqrt(n·log) prize-
+ratio saturation (DISPROOF_LOG, g55 prizeratio-creep: R flat ~0.79 for n≥32). So with ρ(b*)≡1, the half-
+mass at b* does NOT overshoot the prize scale: the coherence→half-mass relocation is CONSISTENT with a
+fixed-C prize bound. It neither CRACKS the prize (H is NOT O(√n) — α>1/2) nor REFUTES it (H does NOT
+overshoot √(n·log)). This CORRECTS the earlier "H/n ~ n^{-0.3..-0.5}, overshoots" reading (it compared to
+the wrong yardstick √n). The half-mass object has the SAME status as M(n) itself: the BGK √-cancellation
+wall, not a leak. NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim; CORE
+remains OPEN.
