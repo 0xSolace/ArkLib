@@ -72,6 +72,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWindowConcentration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVArgmaxDecouplingNoControl
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCollisionExcessPigeonhole
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturationInsufficient
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -3230,6 +3231,28 @@ theorem doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_expor
 #print axioms doorIV_coherenceSaturation_prizeBound_iff_halfMassBound_export
 #print axioms doorIV_coherenceSaturation_prizeTarget_lt_trivial_ceiling_export
 #print axioms doorIV_coherenceSaturation_transfers_to_strict_subTrivial_halfMass_export
+
+/-- **[obstruction, FractionalMomentNoMaxGain]** The moment-to-max envelope multiplier `c^{1/r}`
+(`c = card s`) is ANTITONE in moment depth `r`: a deeper moment gives a tighter overshoot. This is
+the direction in Shaw's probe `(N·A_q)^{1/(2q)}` decreasing in `q`. -/
+theorem doorIV_envelope_multiplier_antitone_export {c : ℝ} (hc : 1 ≤ c)
+    {r₁ r₂ : ℕ} (hr₁ : 1 ≤ r₁) (hr₁₂ : r₁ ≤ r₂) :
+    c ^ ((1 : ℝ) / r₂) ≤ c ^ ((1 : ℝ) / r₁) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVFractionalMomentNoMaxGain.envelope_multiplier_antitone
+    hc hr₁ hr₁₂
+
+/-- **[obstruction, FractionalMomentNoMaxGain]** No max-gain from a smaller moment: for nonempty `s`
+and `0 ≤ M`, the high-moment max-envelope `(card s)^{1/r₂}·M` is `≤` the low-moment one
+`(card s)^{1/r₁}·M`. Dropping to the fractional / Harper `q<1` regime cannot tighten the worst-case
+max bound — the average-vs-max obstruction in kerneled form. -/
+theorem doorIV_no_maxGain_from_smaller_moment_export {ι : Type*} (s : Finset ι) (hs : s.Nonempty)
+    {M : ℝ} (hM : 0 ≤ M) {r₁ r₂ : ℕ} (hr₁ : 1 ≤ r₁) (hr₁₂ : r₁ ≤ r₂) :
+    (s.card : ℝ) ^ ((1 : ℝ) / r₂) * M ≤ (s.card : ℝ) ^ ((1 : ℝ) / r₁) * M :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVFractionalMomentNoMaxGain.no_maxGain_from_smaller_moment
+    s hs hM hr₁ hr₁₂
+
+#print axioms doorIV_envelope_multiplier_antitone_export
+#print axioms doorIV_no_maxGain_from_smaller_moment_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export
