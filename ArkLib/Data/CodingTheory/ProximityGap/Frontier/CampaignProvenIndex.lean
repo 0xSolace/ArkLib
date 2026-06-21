@@ -35,6 +35,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSVacuous
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvGR_GaussSumEnergyStep
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvDil_MultEnergyStepDiagonal
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -127,6 +129,10 @@ anything here; this index does not claim otherwise.
 | `trivial_cocycle_overshoots_thin_export` | obstruction | JacobiCocycleTrivialOvershoot |
 | `trivial_overshoot_gap_pos_export` | obstruction | JacobiCocycleTrivialOvershoot |
 | `allDefect_cs_floor_vacuous_export` | obstruction | JacobiCocycleAllDefectCSVacuous |
+| `gaussEnergyStep_incrementOne_lt_two_n_export` | capstone | AvGR_GaussSumEnergyStep |
+| `gaussEnergyStep_step_of_increments_le_export` | capstone | AvGR_GaussSumEnergyStep |
+| `dilationEnergy_step_iff_offdiagonal_export` | capstone | AvDil_MultEnergyStepDiagonal |
+| `dilationEnergy_deep_step_of_depth2K_energy_export` | obstruction | AvDil_MultEnergyStepDiagonal |
 
 ## Lane-2 capstone (the `prize ⟺ Sh(n)=O(1)` normalization)
 
@@ -1030,6 +1036,55 @@ theorem allDefect_cs_floor_vacuous_export (M : ℕ) (hM : 1 ≤ M) (w : Fin M �
     M hM w hunit
 
 
+/-! ## GaussSumEnergyStep / DilationMultEnergyStep — the exact deep-step assault.
+Scope: **capstone / obstruction**. These exports permanently index the focused Door-IV
+Paley-kernel assault at the exact increment/off-diagonal level. The K=1 increment closes
+unconditionally; the all-K step is reduced to the named tilted-increment input; and the
+dilation split isolates the remaining BGK wall as off-diagonal/depth-`2K` cancellation.
+No CORE bound is claimed. -/
+
+/-- **[capstone, GaussSumEnergyStep]** The `K = 1` tilted-energy increment is strictly below
+`2n` for every rational parameter pair `4 ≤ n < p`. This is the one unconditional closed-form
+multiplicative-subgroup rung of the Paley/BGK deep step. -/
+theorem gaussEnergyStep_incrementOne_lt_two_n_export
+    (n p : ℚ) (hn : 4 ≤ n) (hpn : n < p) :
+    (3 * p * (n - 1) - n ^ 3) / (p - n) - n * (p - n) / (p - 1) < 2 * n :=
+  _root_.Issue444.GaussSumEnergyStep.incrementOne_lt_two_n n p hn hpn
+
+/-- **[capstone, GaussSumEnergyStep]** The exact telescope reduction: if every tilted increment
+is at most `2n`, then every deep-step ratio satisfies `r K ≤ (2K+1)n`. The hypothesis for
+`K ≥ 2` is exactly the open tilted-variance/BGK input; this export records the reduction only. -/
+theorem gaussEnergyStep_step_of_increments_le_export
+    (n : ℚ) (r : ℕ → ℚ) (hr0 : r 0 ≤ n)
+    (hincr : ∀ K, r (K + 1) - r K ≤ 2 * n) :
+    ∀ K, r K ≤ (2 * (K : ℚ) + 1) * n :=
+  _root_.Issue444.GaussSumEnergyStep.step_of_increments_le n r hr0 hincr
+
+/-- **[capstone, DilationMultEnergyStep]** The exact diagonal split turns the deep step
+`A_{K+1} ≤ (2K+1)nA_K` into the off-diagonal inequality `OFF ≤ 2KnA_K`. This is the
+load-bearing algebraic reduction supplied by multiplicative dilation invariance. -/
+theorem dilationEnergy_step_iff_offdiagonal_export
+    (Akp1 Ak off : ℚ) (n K : ℚ)
+    (hsplit : Akp1 = n * Ak + off) :
+    (Akp1 ≤ (2 * K + 1) * n * Ak) ↔ (off ≤ 2 * K * n * Ak) :=
+  _root_.Issue444.DilationMultEnergyStep.step_iff_offdiagonal Akp1 Ak off n K hsplit
+
+/-- **[obstruction, DilationMultEnergyStep]** The Cauchy--Schwarz route from the off-diagonal
+piece proves the deep step only after assuming the depth-`2K` energy/Wick input
+`Em·Ephi ≤ (2K n A_K)^2`. Thus the dilation lever reduces to, but does not discharge, the
+BGK wall. -/
+theorem dilationEnergy_deep_step_of_depth2K_energy_export
+    (Akp1 Ak off Em Ephi : ℚ) (n K : ℚ)
+    (hsplit : Akp1 = n * Ak + off)
+    (hoff_nonneg : 0 ≤ off)
+    (hCS : off ^ 2 ≤ Em * Ephi)
+    (htarget_nonneg : 0 ≤ 2 * K * n * Ak)
+    (hdepth : Em * Ephi ≤ (2 * K * n * Ak) ^ 2) :
+    Akp1 ≤ (2 * K + 1) * n * Ak :=
+  _root_.Issue444.DilationMultEnergyStep.deep_step_of_depth2K_energy
+    Akp1 Ak off Em Ephi n K hsplit hoff_nonneg hCS htarget_nonneg hdepth
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -1102,4 +1157,8 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms trivial_cocycle_overshoots_thin_export
 #print axioms trivial_overshoot_gap_pos_export
 #print axioms allDefect_cs_floor_vacuous_export
+#print axioms gaussEnergyStep_incrementOne_lt_two_n_export
+#print axioms gaussEnergyStep_step_of_increments_le_export
+#print axioms dilationEnergy_step_iff_offdiagonal_export
+#print axioms dilationEnergy_deep_step_of_depth2K_energy_export
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
