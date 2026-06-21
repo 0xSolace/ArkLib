@@ -171,7 +171,9 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_nonneg_rawHalfMass_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_not_bddAbove_prize_iff_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_not_bddAbove_halfMass_iff_prizeDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `doorIV_bddAbove_prize_iff_not_halfMassDrift_export` | capstone | DoorIVPrizeBddAbove |
+| `doorIV_bddAbove_halfMass_iff_not_prizeDrift_export` | capstone | DoorIVPrizeBddAbove |
 | `shawOOne_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
 | `corePrize_bddAbove_range_shawValue_export` | capstone | ShawValueCapstone |
 | `corePrize_bddAbove_range_shawValue_of_pos_lt_export` | capstone | ShawValueCapstone |
@@ -1362,6 +1364,17 @@ theorem doorIV_not_bddAbove_prize_iff_halfMassDrift_export {ι : Type*}
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedPrize_iff_forall_exists_lt_normalizedHalfMass
     hK hscale hMH hHM
 
+/-- **[capstone, DoorIVPrizeBddAbove]** The symmetric wall face: unbounded normalized half-mass
+Shaw ratios can be stated as explicit normalized-prize drift past every candidate constant. -/
+theorem doorIV_not_bddAbove_halfMass_iff_prizeDrift_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    (¬ BddAbove (Set.range fun i => H i / scale i)) ↔
+      ∀ C, ∃ i, C < M i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_normalizedHalfMass_iff_forall_exists_lt_normalizedPrize
+    hK hscale hMH hHM
+
 /-- **[capstone, DoorIVPrizeBddAbove]** Positive door-(iv) boundedness is exactly the negation of
 half-mass Shaw drift, packaging `prize ⇔ ¬ wall` in the same standard-library API. -/
 theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
@@ -1371,6 +1384,17 @@ theorem doorIV_bddAbove_prize_iff_not_halfMassDrift_export {ι : Type*}
     BddAbove (Set.range fun i => M i / scale i) ↔
       ¬ ∀ C, ∃ i, C < H i / scale i :=
   ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_not_forall_exists_lt_normalizedHalfMass
+    hK hscale hMH hHM
+
+/-- **[capstone, DoorIVPrizeBddAbove]** Symmetric positive/wall face: bounded normalized half-mass
+Shaw ratios are exactly the negation of normalized-prize drift. -/
+theorem doorIV_bddAbove_halfMass_iff_not_prizeDrift_export {ι : Type*}
+    {M H scale : ι → ℝ} {K : ℝ} (hK : 0 ≤ K)
+    (hscale : ∀ i, 0 < scale i)
+    (hMH : ∀ i, M i ≤ H i) (hHM : ∀ i, H i ≤ K * M i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ¬ ∀ C, ∃ i, C < M i / scale i :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_not_forall_exists_lt_normalizedPrize
     hK hscale hMH hHM
 
 /-- **[capstone, ShawValueCapstone]** Standard-library boundedness form of the Shaw slogan:
@@ -2143,7 +2167,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms doorIV_not_nonneg_rawHalfMass_iff_halfMassDrift_export
 #print axioms doorIV_not_bddAbove_prize_iff_not_bddAbove_halfMass_export
 #print axioms doorIV_not_bddAbove_prize_iff_halfMassDrift_export
+#print axioms doorIV_not_bddAbove_halfMass_iff_prizeDrift_export
 #print axioms doorIV_bddAbove_prize_iff_not_halfMassDrift_export
+#print axioms doorIV_bddAbove_halfMass_iff_not_prizeDrift_export
 #print axioms doorIV_corePrize_of_dominated_majorant_export
 #print axioms doorIV_shawOOne_of_coreMajorant_export
 #print axioms doorIV_landau_shaw_of_dominated_majorant_export

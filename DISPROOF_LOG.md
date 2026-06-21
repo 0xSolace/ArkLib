@@ -10853,3 +10853,16 @@ moment-saving, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVIndexFactorOvershoot.lean` plus
 `CampaignProvenIndex.lean`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-bddAbove-wall-symmetric-exports] symmetric `BddAbove` wall faces indexed (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 capstone hardening. The `_DoorIVPrizeBddAbove` kernel already proves the two
+standard-library wall/dichotomy orientations for the half-mass Shaw value, but the permanent campaign
+index exposed only the prize-side forms. This entry adds the missing symmetric exports:
+`doorIV_not_bddAbove_halfMass_iff_prizeDrift_export` and
+`doorIV_bddAbove_halfMass_iff_not_prizeDrift_export`.
+
+VERDICT: the citable `BddAbove` API for `prize ⇔ Sh_H(n)=O(1)` is now closed on both sides: unbounded
+half-mass/Shaw ratios are exactly normalized-prize drift, and bounded half-mass/Shaw ratios are exactly
+not normalized-prize drift. This is bookkeeping for Shaw's reduction chain only. No CORE, cancellation,
+completion, moment-saving, anti-concentration, or capacity claim.
