@@ -124,6 +124,20 @@ theorem sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub
   -- hfull : |F| * census = (G.card)^r + S  ⇒  S = |F| * census - (G.card)^r
   linear_combination hfull
 
+/-- **Rigidity at vanishing census** (the deep-Sidon / odd-`r` rigid value, kernel-anchored).
+Whenever the additive zero-sum census vanishes (`zeroSumCensus G r = 0` — e.g. for odd `r` below the
+Sidon onset depth `d_odd`), the deleted period-moment is the `p`-INDEPENDENT rigid value
+`Σ_{b≠0} η_b^r = −(|G|)^r`. This is the exact algebraic content of the campaign's odd-`r`
+sign-rigidity finding (`A_r = −n^r`, negative + magnitude-rigid in the wraparound-free regime): the
+apparent "signed √-cancellation" `A_r/(p·M^r)→0` is a normalization artifact of a RIGID equation, not
+a proof handle for the sup-norm. Immediate from the deleted census bridge with the census term zero. -/
+theorem sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) (r : ℕ)
+    (hcensus : zeroSumCensus G r = 0) :
+    ∑ b ∈ (Finset.univ.erase (0 : F)), (eta ψ G b) ^ r = -((G.card : ℂ) ^ r) := by
+  rw [sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub hψ G r, hcensus]
+  simp
+
 end ProximityGap.Frontier.GaussPeriodMomentCensus
 
 /-! ## Axiom audit -/
@@ -131,3 +145,5 @@ open ProximityGap.Frontier.GaussPeriodMomentCensus in
 #print axioms sum_eta_pow_eq_card_mul_zeroSumCensus
 open ProximityGap.Frontier.GaussPeriodMomentCensus in
 #print axioms sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub
+open ProximityGap.Frontier.GaussPeriodMomentCensus in
+#print axioms sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero
