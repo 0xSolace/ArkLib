@@ -76,6 +76,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSaturation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialStats
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._StepanovAtBstar
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -210,6 +211,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_weightedMean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
 | `doorIV_weightedSubmean_le_max_export` | obstruction | DoorIVGeomMeanBelowMax |
 | `doorIV_radialSum_invariant_under_unit_twist_export` | obstruction | DoorIVPhaseBlindRadialStats |
+| `doorIV_stepanov_bstar_bound_export` | obstruction | StepanovAtBstar |
+| `doorIV_bstar_saving_iff_degenerate_export` | obstruction | StepanovAtBstar |
 | `doorIV_abs_signed_le_abs_moment_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_leak_nonneg_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
 | `doorIV_abs_moment_bound_transfers_export` | obstruction | DoorIVSignedDeepSumAbsLeak |
@@ -3418,11 +3421,32 @@ theorem doorIV_radialSum_invariant_under_unit_twist_export {ι : Type*} (s : Fin
   _root_.ArkLib.ProximityGap.Frontier.DoorIVPhaseBlindRadialStats.radialSum_invariant_under_unit_twist
     s F tw A htw
 
+/-- **[obstruction, StepanovAtBstar]** Per-`b*` Stepanov supplies only the counting inequality:
+if a nonzero auxiliary vanishes to order `M` on the major-arc set `B`, then `M * |B| ≤ deg F`. -/
+theorem doorIV_stepanov_bstar_bound_export {F : Type*} [Field F]
+    {B : Finset F} {F' : Polynomial F} {M : ℕ}
+    (hF : F' ≠ 0) (hvanish : ∀ x ∈ B, (Polynomial.X - Polynomial.C x) ^ M ∣ F') :
+    M * B.card ≤ F'.natDegree :=
+  _root_.ProximityGap.Frontier.StepanovAtBstar.stepanov_bstar_bound hF hvanish
+
+/-- **[obstruction, StepanovAtBstar]** A strictly sub-count per-`b*` Stepanov saving is exactly the
+named `MajorArcDegenerate` obligation. The natural structured/even auxiliaries have house=count, so
+closing this lane requires genuine major-arc algebraic degeneracy beyond the measured full-rank wall. -/
+theorem doorIV_bstar_saving_iff_degenerate_export {F : Type*} [Field F]
+    {B : Finset F} {M : ℕ} :
+    _root_.ProximityGap.Frontier.StepanovAtBstar.MajorArcDegenerate B M ↔
+      ∃ F' : Polynomial F, F' ≠ 0 ∧
+        (∀ x ∈ B, (Polynomial.X - Polynomial.C x) ^ M ∣ F') ∧
+        F'.natDegree < M * B.card :=
+  _root_.ProximityGap.Frontier.StepanovAtBstar.bstar_saving_iff_degenerate
+
 #print axioms doorIV_arithMean_le_max_export
 #print axioms doorIV_weightedMean_le_max_export
 #print axioms doorIV_weightedSubmean_le_max_export
 #print axioms doorIV_geomMean_le_max_export
 #print axioms doorIV_radialSum_invariant_under_unit_twist_export
+#print axioms doorIV_stepanov_bstar_bound_export
+#print axioms doorIV_bstar_saving_iff_degenerate_export
 #print axioms doorIV_tannakian_twist_period_eq_original_export
 #print axioms doorIV_tannakian_coprime_twisted_period_eq_original_export
 #print axioms shawOOne_bddAbove_range_shawValue_export

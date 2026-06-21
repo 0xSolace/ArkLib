@@ -11106,3 +11106,7 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGeomMeanBe
 ## [doorIV-phaseblind-radial-stats] radial b-summed statistics are invariant under pointwise unit twists (2026-06-21, g55)
 
 Lane: door-(iv) Lane 3 constraint lemma backing Shaw's fresh `probe_bsummation_phaseblind_dichotomy.py` verdict. Any finite statistic that sees a complex period only through `Complex.normSq` is invariant under arbitrary pointwise unit-phase twists, so radial / moment / `|.|^2` summaries cannot by themselves see the adversarial Door-IV phase alignment. Formal kernel: `_DoorIVPhaseBlindRadialStats.lean`, export `doorIV_radialSum_invariant_under_unit_twist_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`. Constraint only: no CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+## [doorIV-stepanov-at-bstar-export] per-b* Stepanov saving is exactly MajorArcDegenerate (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 permanent-export rung for `_StepanovAtBstar`: exported the per-`b*` Stepanov count inequality and the `MajorArcDegenerate` iff to `CampaignProvenIndex` as `doorIV_stepanov_bstar_bound_export` and `doorIV_bstar_saving_iff_degenerate_export`. Constraint only: no CORE/cancellation/completion/moment-saving/anti-concentration/capacity claim. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

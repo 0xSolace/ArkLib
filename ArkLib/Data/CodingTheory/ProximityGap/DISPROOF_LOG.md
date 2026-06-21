@@ -18932,3 +18932,11 @@ Lane: door-(iv) Lane 3 constraint lemma backing Shaw's fresh `probe_bsummation_p
 VERDICT: the radial side is now kernel-anchored. Any finite statistic that sees a complex period only through `Complex.normSq` is invariant under arbitrary pointwise unit-phase twists, so it cannot distinguish two spectra with the same magnitudes and different phases. Thus radial / moment / `|.|^2` summaries cannot by themselves control the Door-IV worst-frequency phase alignment object. This is a phase-blindness constraint only: no CORE upper bound, no cancellation, no completion saving, no moment saving, no anti-concentration, and no capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseBlindRadialStats.lean`, new theorems `normSq_mul_eq_of_unit`, `radialObservable_eq_of_unit`, `radialSum_invariant_under_unit_twist`, `radialEntry_eq_under_unit_twist`; exported from `CampaignProvenIndex` as `doorIV_radialSum_invariant_under_unit_twist_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-stepanov-at-bstar-export] per-b* Stepanov saving is exactly MajorArcDegenerate (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 permanent-export rung for Shaw's `_StepanovAtBstar` kernel (commit `51437057c`). The file already proves the per-worst-frequency Stepanov count inequality and the honest reduction: a strictly sub-count Stepanov saving is equivalent to the named `MajorArcDegenerate` obligation, while the natural product and antipodal-even auxiliaries have house exactly equal to count.
+
+VERDICT: the only per-`b*` Stepanov escape route is genuine major-arc algebraic degeneracy beyond the measured full-rank wall. The CampaignProvenIndex now exposes the two citable endpoints: `doorIV_stepanov_bstar_bound_export` and `doorIV_bstar_saving_iff_degenerate_export`. This is a refuted-lever/reduction constraint only: no CORE upper bound, no cancellation, no completion saving, no moment saving, no anti-concentration, and no capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_StepanovAtBstar.lean`; permanent exports in `CampaignProvenIndex`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
