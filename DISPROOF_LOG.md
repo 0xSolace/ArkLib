@@ -1,3 +1,33 @@
+## [door-iv-xgated-base-threshold] The XGatedRatio descent's √2-saving CANNOT reach the thin base — the saving is (√2)^{μ−k*}, NOT (√2)^μ; the k* base levels are non-cancelling (trivial doubling), costing an extra √(2^{k*}) over the clean prize floor (2026-06-21, sol)
+
+Lane: Door-(iv) Lane-3 (XGate-reduction constraint companion). The end-to-end reduction
+`_DoorIVXGatedPrizeReduction.levelWorst_le_sqrt2_pow_mul_of_xGatedRatio` (6e47fbd34) proves
+`XGatedRatio ψ G ζ μ x₀ lnm ∧ (gate: x₀·lnm ≤ |level k| ∀ k≤μ) ⟹ M_μ ≤ (√2)^μ·M_0 = √n·M_0`. The `√2`
+per-level ratio is the CORRECTED cancellation-regime object (`_BetaGatedRatioGate.XGatedRatio`), gated by
+`x = n/ln m ≥ x₀`.
+
+The un-locked structural cost: by `_BetaGatedRatioGate.levelTower_card`, `|level k| = 2^k·|G|`, so the gate
+`x₀·lnm ≤ |level k|` is UNSATISFIABLE at the thin base — it first holds at `k ≥ k* := ⌈log₂(x₀·lnm/|G|)⌉`.
+Below `k*` the per-level ratio is the TRIVIAL doubling factor 2 (`_BetaGatedRatioGate.levelRatio_at_zero_eq_two`,
+the aligned b=0 frequency), NOT √2. So the honest telescope SPLITS: `k*` trivial base levels + `(μ−k*)`
+cancelling levels ⟹ `M_μ ≤ 2^{k*}·(√2)^{μ−k*}·M_0 = √(2^{k*})·√n·M_0`. The √2-saving cannot reach the thin
+base; the descent's clean `(√2)^μ` floor is only available modulo a `√(2^{k*})` base correction.
+
+Probe (`scripts/probes/probe_dooriv_gate_threshold.py`): k*=6..9 at prize-regime params (G=2..16, x₀=4..8,
+lnm≈30..89), extra cost √(2^{k*})=2^3..2^4.5. k* = O(log(lnm/|G|)) = O(log log p) is MU-INDEPENDENT, so the
+loss is a harmless polylog at the prize point — the descent's prize-scale saving survives asymptotically,
+but ONLY because k* does not grow with μ. The constraint is a genuine structural fact, not a refutation of
+the descent route.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVXGatedBaseThreshold.lean`, 4 theorems,
+all axioms ⊆ {propext, Classical.choice, Quot.sound}:
+- `split_telescope_two_then_c`: factor-2 steps for k<k*, factor-c for k*≤k<a ⟹ `M_a ≤ 2^{k*}·c^{a−k*}·M_0`.
+- `split_telescope_sqrt2`: c=√2 specialization ⟹ `M_a ≤ 2^{k*}·(√2)^{a−k*}·M_0`.
+- `split_cost_eq_sqrt_two_pow`: `2^{k*}·(√2)^r = √(2^{k*})·(√2)^{k*+r}` (isolates the √(2^{k*}) excess).
+- `gate_threshold_strictly_above_clean`: k*≥1 ⟹ `(√2)^{k*+r} < 2^{k*}·(√2)^r` (the thin base genuinely costs).
+
+NO CORE / cancellation / completion / moment / anti-concentration / capacity claim. CORE OPEN.
+
 ## [door-iv-martingale-input-ceiling-capstone] NO martingale input cracks the tower drift — bounded-increment sum AND predictable quadratic variation BOTH land at the trivial ceiling S_a ≤ a·log2, strictly above the prize ceiling ½·a·log2 (2026-06-20, sol)
 
 Lane: Door-(iv) Lane-3 (refuted-lever capstone). Gathers the two distinct Freedman/Azuma data for the
