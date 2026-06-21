@@ -120,6 +120,33 @@ theorem bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound {ι : Type*}
   exact (exists_prizeFamilyBound_iff_exists_normalizedPrizeFamilyBound
     (M := M) (scale := scale) hscale).symm
 
+/-- With positive scales, `BddAbove` of the normalized prize ratios is equivalent to the RAW
+prize Big-O statement with a **nonnegative** absolute constant. This is the sign-normalized `O(1)`
+form that downstream statements usually cite. -/
+theorem bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound {ι : Type*}
+    {M scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    BddAbove (Set.range fun i => M i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ prizeFamilyBound M scale C := by
+  rw [bddAbove_range_iff_exists_nonneg_normalizedPrizeFamilyBound]
+  constructor
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (prizeFamilyBound_iff_normalizedPrizeFamilyBound hscale).2 hC⟩
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (prizeFamilyBound_iff_normalizedPrizeFamilyBound hscale).1 hC⟩
+
+/-- With positive scales, `BddAbove` of the normalized half-mass ratios is equivalent to the RAW
+half-mass Big-O statement with a **nonnegative** absolute constant. -/
+theorem bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound {ι : Type*}
+    {H scale : ι → ℝ} (hscale : ∀ i, 0 < scale i) :
+    BddAbove (Set.range fun i => H i / scale i) ↔
+      ∃ C, 0 ≤ C ∧ halfMassFamilyBound H scale C := by
+  rw [bddAbove_range_iff_exists_nonneg_normalizedHalfMassFamilyBound]
+  constructor
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (halfMassFamilyBound_iff_normalizedHalfMassFamilyBound hscale).2 hC⟩
+  · rintro ⟨C, hCnonneg, hC⟩
+    exact ⟨C, hCnonneg, (halfMassFamilyBound_iff_normalizedHalfMassFamilyBound hscale).1 hC⟩
+
 /-- **Door-(iv) reduction in `BddAbove` form.**  Under the family-wide half-mass comparison
 (`M i ≤ H i` and `H i ≤ K · M i` with one `K ≥ 0`) and positive scales, the normalized prize ratios are
 bounded above iff the normalized half-mass ratios are. This is the directly citable
@@ -329,9 +356,11 @@ end ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_iff_exists_nonneg_normalizedHalfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_prizeFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_nonneg_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_bddAbove_range_normalizedHalfMass
 
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_halfMassFamilyBound
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_nonneg_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedPrize_iff_exists_halfMassFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.bddAbove_range_normalizedHalfMass_iff_exists_prizeFamilyBound
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeBddAbove.not_bddAbove_range_iff_forall_exists_lt
