@@ -2072,6 +2072,18 @@ theorem doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export {ι : Type*}
     hFpos hwit
 
 
+
+/-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support sign hygiene: if a measured
+support control holds at one point where both target and candidate are positive, then the control
+constant is itself positive. -/
+theorem doorIV_argmaxDecoupled_controlOn_constant_pos_export {ι : Type*}
+    {target F : ι → ℝ} {C : ℝ} {s : Finset ι} {i : ι}
+    (hctrl : _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.UniformControlOn
+      s target F C) (hi : i ∈ s) (hFpos : 0 < F i) (htpos : 0 < target i) :
+    0 < C :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVArgmaxDecouplingNoControl.controlOn_constant_pos_of_positive_target_and_candidate
+    hctrl hi hFpos htpos
+
 /-- **[obstruction, DoorIVArgmaxDecouplingNoControl]** Finite-support point-ratio no-go: a single
 measured support point with positive candidate value and ratio above `C` refutes `C`-control on that
 support, without assuming the candidate is positive at every measured frequency. -/
@@ -3167,6 +3179,7 @@ theorem doorIV_worstB_coherence_one_iff_magnitude_eq_halfMass_export {E : Type*}
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_control_export
 #print axioms doorIV_argmaxDecoupled_uniformControlOn_iff_ratio_on_export
 #print axioms doorIV_argmaxDecoupled_exists_ratio_gt_no_controlOn_export
+#print axioms doorIV_argmaxDecoupled_controlOn_constant_pos_export
 #print axioms doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export
 #print axioms doorIV_argmaxDecoupled_no_absolute_constOn_export
 #print axioms doorIV_argmaxDecoupled_candidate_pos_on_export

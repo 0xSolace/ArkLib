@@ -18758,3 +18758,11 @@ Lane: door-(iv) Lane 3 constraint refinement of `_DoorIVArgmaxDecouplingNoContro
 VERDICT: a growing finite-probe ratio witness is already a finite-support obstruction. It does not need ambient/unmeasured frequency assumptions, full-support candidate positivity, or an argmax coincidence. This is a lever constraint only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorems `not_uniformControlOn_of_point_ratio_gt_on` and `no_absolute_constantOn_of_unbounded_point_ratio`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_point_ratio_gt_no_controlOn_export` and `doorIV_argmaxDecoupled_no_absolute_constOn_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-argmax-decoupled-finite-control-positive] finite measured nontrivial control forces `C > 0` (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 sign-hygiene refinement of `_DoorIVArgmaxDecouplingNoControl`. The global kernel already proved that a nontrivial positive-candidate control forces the multiplicative control constant positive. This sweep adds the finite-probe analogue: if `UniformControlOn s target F C` holds at a measured point `i ∈ s` with `0 < target i` and `0 < F i`, then `0 < C`.
+
+VERDICT: in finite support probes, the positive-constant hypotheses used by finite support-inclusion obstructions are forced by any successful nontrivial control at one positive measured point. This is sign hygiene for lever refutations only: no CORE upper bound, no cancellation/completion/moment-saving/anti-concentration/capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVArgmaxDecouplingNoControl.lean`, new theorem `controlOn_constant_pos_of_positive_target_and_candidate`, exported from `CampaignProvenIndex` as `doorIV_argmaxDecoupled_controlOn_constant_pos_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.

@@ -197,6 +197,22 @@ theorem not_uniformControlOn_of_exists_ratio_gt_on {target F : ι → ℝ} {C : 
   exact (not_lt_of_ge hle) hgt
 
 
+
+/-- **Finite-support nonzero positive target forces the control constant positive.**  If a finite
+support control holds at a measured point where both the candidate and target are positive, then the
+multiplicative constant itself must be positive.  This is the finite-probe analogue of
+`control_constant_pos_of_positive_target_and_candidate`. -/
+theorem controlOn_constant_pos_of_positive_target_and_candidate {target F : ι → ℝ}
+    {C : ℝ} {s : Finset ι} {i : ι} (hctrl : UniformControlOn s target F C)
+    (hi : i ∈ s) (hFpos : 0 < F i) (htpos : 0 < target i) :
+    0 < C := by
+  have hle : target i / F i ≤ C := by
+    have h : target i ≤ C * F i := hctrl i hi
+    rw [div_le_iff₀ hFpos]
+    exact h
+  have hratio_pos : 0 < target i / F i := div_pos htpos hFpos
+  exact lt_of_lt_of_le hratio_pos hle
+
 /-- **Finite-support point-ratio obstruction.**  A single measured support point with positive
 candidate value and ratio above `C` refutes `C`-control on that support.  Unlike the full ratio-envelope
 form, this pointwise witness does not require the candidate to be positive at every measured frequency;
