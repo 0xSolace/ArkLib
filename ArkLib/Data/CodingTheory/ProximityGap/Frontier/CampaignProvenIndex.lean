@@ -121,6 +121,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntiConcKurtosisRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVNegationSymmetryRealAndBalanced
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5410,5 +5411,29 @@ theorem doorIV_fixedDyadicRung_full_mass_forces_spike_export
 
 #print axioms doorIV_no_fixedDyadicRungRule_of_two_rungs_export
 #print axioms doorIV_fixedDyadicRung_full_mass_forces_spike_export
+
+/-- **[Lane 3 refuted-lever constraint, AvN4 PadicMahlerSupplyGap — Shaw's Lever C]** Bad-prime / p-adic
+Mahler refutation: at every prize scale `μ ≥ 4`, the binomial supply crosses `p` already at constant
+weight `7` (`prizePrime μ ≤ supply (2^μ) 7`), so non-balanced vanishing relations exist at constant
+weight and Lam-Leung rigidity is overrun there; YET the moment saddle depth `8μ` is `> 7` and grows
+without bound. Hence there is NO `μ`-uniform weight threshold below the saddle at which rigidity could
+suppress the wraparound — the p-adic / Mahler angle REDUCES to the generic BGK moment wall. NO CORE /
+cancellation / completion / capacity claim. -/
+theorem doorIV_padic_mahler_no_leverage_export {μ : ℕ} (hμ : 4 ≤ μ) :
+    _root_.ArkLib.ProximityGap.Frontier.AvN4.prizePrime μ ≤
+        _root_.ArkLib.ProximityGap.Frontier.AvN4.supply (2 ^ μ) 7 ∧
+      7 < _root_.ArkLib.ProximityGap.Frontier.AvN4.saddleDepth μ :=
+  _root_.ArkLib.ProximityGap.Frontier.AvN4.padic_mahler_no_leverage hμ
+
+/-- **[Lane 3 refuted-lever constraint, AvN4 PadicMahlerSupplyGap — Shaw's Lever C]** The moment saddle
+depth is UNBOUNDED in the scale: for every `N` there is a scale `μ` with `N < saddleDepth μ`. This is the
+load-bearing fact that the constant-weight rigidity band can never reach the `Θ(μ)`-deep saddle the
+moment/di-Benedetto route requires. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_mahler_saddleDepth_unbounded_export (N : ℕ) :
+    ∃ μ, N < _root_.ArkLib.ProximityGap.Frontier.AvN4.saddleDepth μ :=
+  _root_.ArkLib.ProximityGap.Frontier.AvN4.saddleDepth_unbounded N
+
+#print axioms doorIV_padic_mahler_no_leverage_export
+#print axioms doorIV_mahler_saddleDepth_unbounded_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

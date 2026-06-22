@@ -11878,3 +11878,21 @@ Formal kernel: `_DoorIVWorstBDyadicSelectorWalled.lean` (no_fixedRungRule_of_two
 fixedRung_full_mass_forces_spike, no_full_mass_rung_of_no_fixedRungSpike). New `CampaignProvenIndex`
 exports: `doorIV_no_fixedDyadicRungRule_of_two_rungs_export`,
 `doorIV_fixedDyadicRung_full_mass_forces_spike_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-padic-mahler-no-leverage-indexed] Shaw's Lever C (bad-prime / p-adic Mahler) refuted as citable constraint (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 3 — formalize Shaw's refuted Lever C (bad-prime Mahler) per the brief's explicit
+Lane-3 list. Kernel `_AvN4_PadicMahlerSupplyGap` was unindexed.
+
+VERDICT: the p-adic / Mahler angle reduces to the generic BGK moment wall. At every prize scale μ ≥ 4,
+the binomial supply crosses p already at constant weight 7 (prizePrime μ ≤ supply(2^μ) 7), so non-balanced
+vanishing relations exist at constant weight and Lam-Leung rigidity is overrun there; YET the moment saddle
+depth 8μ is > 7 and UNBOUNDED in μ. Hence there is NO μ-uniform weight threshold below the saddle at which
+rigidity could suppress the wraparound — the bad-prime Mahler supply-gap lever provides no leverage. Lever
+C of Shaw's no-fifth-door tetrachotomy, now kernel-checked. NO CORE / cancellation / completion / capacity
+claim. CORE OPEN.
+
+Formal kernel: `_AvN4_PadicMahlerSupplyGap.lean` (padic_mahler_no_leverage, supply_seven_ge_prize,
+saddleDepth_unbounded, rigidity_band_below_saddle). New `CampaignProvenIndex` exports:
+`doorIV_padic_mahler_no_leverage_export`, `doorIV_mahler_saddleDepth_unbounded_export`.
+Axioms ⊆ {propext, Classical.choice, Quot.sound}.
