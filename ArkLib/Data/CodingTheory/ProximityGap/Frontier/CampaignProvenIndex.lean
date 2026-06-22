@@ -90,6 +90,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SumProductCensusStallBeta
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSavingStall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
@@ -5093,5 +5094,37 @@ theorem doorIV_neither_factor_thin_separates_export
 
 #print axioms doorIV_no_perFrequency_factor_separates_export
 #print axioms doorIV_neither_factor_thin_separates_export
+
+/-- **[Lane 3 two-piece phase geometry obstruction, ComplexRayCoherence]** Any positive
+two-piece Door-IV coherence saving below `1` is exactly a non-same-ray obligation: the normalized
+two-piece norm coherence drops strictly below `1` iff the two vector pieces are not carried by the
+same nonnegative real ray. This is a pure triangle-equality constraint, not a CORE/cancellation bound. -/
+theorem doorIV_twoPieceNormCoherence_lt_one_iff_not_sameRay_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [StrictConvexSpace ℝ E]
+    {x y : E} (hden : 0 < ‖x‖ + ‖y‖) :
+    _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence x y < 1 ↔
+      ¬ SameRay ℝ x y :=
+  _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.twoPieceNormCoherence_lt_one_iff_not_sameRay hden
+
+/-- **[Lane 3 finite-refinement phase geometry obstruction, ComplexRayCoherence]** A universal
+positive epsilon-drop for finite Door-IV refinements is refuted by one member whose pieces all lie on
+a common nonnegative ray. Subdivision alone supplies no anti-concentration unless it rules out this
+common-ray geometry at the adversarial frequency. -/
+theorem doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ray_export
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {κ ι : Type*} (s : κ → Finset ι) (A : κ → ι → E) {ε : κ → ℝ}
+    (hε : ∀ k, 0 < ε k)
+    (hbad : ∃ k, ∃ (u : E) (c : ι → ℝ),
+      (∀ i ∈ s k, A k i = c i • u) ∧
+      (∀ i ∈ s k, 0 ≤ c i) ∧
+      0 < (∑ i ∈ s k, c i) ∧ u ≠ 0) :
+    ¬ ∀ k,
+      _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.multiPieceNormCoherence (s k) (A k) ≤
+        1 - ε k :=
+  _root_.ProximityGap.Frontier.DoorIVComplexRayCoherence.not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_nonneg_ray
+    s A hε hbad
+
+#print axioms doorIV_twoPieceNormCoherence_lt_one_iff_not_sameRay_export
+#print axioms doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ray_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

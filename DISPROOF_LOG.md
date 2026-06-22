@@ -11707,3 +11707,20 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPerFrequen
 new theorems `no_perFrequency_factor_separates`, `neither_factor_thin_separates`; exported from
 `CampaignProvenIndex` as `doorIV_no_perFrequency_factor_separates_export`,
 `doorIV_neither_factor_thin_separates_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-complex-ray-coherence-indexed] two-piece strict coherence is exactly non-same-ray geometry (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint/indexing lemma. The existing `_DoorIVComplexRayCoherence` kernel
+proves the exact two-piece phase-geometry obstruction: normalized two-piece coherence drops below `1`
+iff the two pieces are not on the same nonnegative real ray, and a finite refinement with one common-ray
+member refutes any universal positive epsilon-drop.
+
+VERDICT: splitting the adversarial sum into two or finitely many pieces supplies no hidden anti-concentration.
+Any useful door-(iv) phase-saving certificate must prove genuine non-same-ray geometry for the adversarial
+pieces. This is a triangle-equality/geometric no-go only: no CORE upper bound, no cancellation, no completion,
+no moment-saving, and no capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRayCoherence.lean`; permanent
+exports in `CampaignProvenIndex`: `doorIV_twoPieceNormCoherence_lt_one_iff_not_sameRay_export` and
+`doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ray_export`, axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.
