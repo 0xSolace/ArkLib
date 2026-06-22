@@ -68,6 +68,27 @@ theorem powerSum_capSlack_eq_zero_of_ratio_eq {ι : Type*}
           rw [Finset.sum_sub_distrib, Finset.mul_sum]
     _ = 0 := by rw [hmul]; ring
 
+/-- If the weighted cap-slack residual vanishes under an entrywise cap, then every point with
+positive `r`-weight lies exactly at the cap. -/
+theorem powerSum_eq_cap_of_ratio_eq_of_pos {ι : Type*}
+    (s : Finset ι) (a : ι → ℝ) (r : ℕ) (M : ℝ)
+    (ha : ∀ i ∈ s, 0 ≤ a i) (hcap : ∀ i ∈ s, a i ≤ M)
+    (hres : (∑ i ∈ s, (M - a i) * a i ^ r) = 0)
+    {i : ι} (hi : i ∈ s) (hpos : 0 < a i ^ r) :
+    a i = M := by
+  classical
+  have hnonneg : ∀ j ∈ s, 0 ≤ (M - a j) * a j ^ r := by
+    intro j hj
+    exact mul_nonneg (sub_nonneg.mpr (hcap j hj)) (pow_nonneg (ha j hj) r)
+  have hterm : (M - a i) * a i ^ r = 0 := by
+    have hiff := Finset.sum_eq_zero_iff_of_nonneg hnonneg
+    exact (hiff.mp hres) i hi
+  have hslack : M - a i = 0 := by
+    rcases mul_eq_zero.mp hterm with hzero | hzero
+    · exact hzero
+    · exact False.elim ((ne_of_gt hpos) hzero)
+  linarith
+
 /-- **Equality residual for the resonance ratio cap.**  If a realised spectral cap `Mcap` saturates
 one tower growth ratio, then the weighted cap-slack residual vanishes:
 `∑ k, (Mcap - ‖K̂(k)‖²) * (‖K̂(k)‖²)^r = 0`.
@@ -105,8 +126,28 @@ theorem resonanceMoment_ratio_capSlack_eq_zero_of_eq (u : ZMod m → ℂ)
     (powerSum_capSlack_eq_zero_of_ratio_eq (Finset.univ : Finset (ZMod m))
       (capEqWeight u) r Mcap hSpos hratio)
 
+/-- **Support rigidity for equality in the resonance ratio cap.**  If `Mcap` is an entrywise
+spectral cap and one tower growth ratio equals `Mcap`, then every frequency with positive
+`r`-weight must itself sit exactly at the cap.  This is the pointwise form of the zero-slack
+residual; it is still only a saturation constraint, not a proof that saturation occurs. -/
+theorem resonanceMoment_ratio_eq_cap_forces_weight_eq_cap_of_pos
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (hm : 2 ≤ m) (r : ℕ) (Mcap : ℝ)
+    (hcap : ∀ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ^ 2 ≤ Mcap)
+    (heq : resonanceMoment u (r + 1) / resonanceMoment u r = Mcap)
+    {k : ZMod m} (hpos : 0 < (‖kernelSpectrum (dftChar k) u‖ ^ 2) ^ r) :
+    ‖kernelSpectrum (dftChar k) u‖ ^ 2 = Mcap := by
+  classical
+  have hres := resonanceMoment_ratio_capSlack_eq_zero_of_eq u hu hm r Mcap heq
+  simpa [capEqWeight] using
+    (powerSum_eq_cap_of_ratio_eq_of_pos (Finset.univ : Finset (ZMod m))
+      (capEqWeight u) r Mcap (fun j _ => by unfold capEqWeight; positivity)
+      (fun j _ => hcap j) (by simpa [capEqWeight] using hres)
+      (Finset.mem_univ k) (by simpa [capEqWeight] using hpos))
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.powerSum_capSlack_eq_zero_of_ratio_eq
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.powerSum_eq_cap_of_ratio_eq_of_pos
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_capSlack_eq_zero_of_eq
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_eq_cap_forces_weight_eq_cap_of_pos

@@ -7603,9 +7603,30 @@ theorem doorIV_resonance_ratio_capSlack_eq_zero_of_eq_export
   ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_capSlack_eq_zero_of_eq
     u hu hm r Mcap heq
 
+/-- **[Lane 3 resonance tower cap-equality support rigidity]** If an entrywise spectral cap
+`Mcap` is saturated by one resonance-tower growth ratio, then every frequency with positive
+`r`-weight must itself sit exactly at `Mcap`.  This is the pointwise zero-slack form of equality in
+the ratio cap; still a constraint only, not a proof of saturation or cancellation. -/
+theorem doorIV_resonance_ratio_eq_cap_forces_weight_eq_cap_of_pos_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) (hm : 2 ≤ m) (r : ℕ) (Mcap : ℝ)
+    (hcap : ∀ k : ZMod m,
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 ≤ Mcap)
+    (heq : ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u (r + 1) /
+      ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r = Mcap)
+    {k : ZMod m}
+    (hpos : 0 < (‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+      (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2) ^ r) :
+    ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+        (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 = Mcap :=
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_eq_cap_forces_weight_eq_cap_of_pos
+    u hu hm r Mcap hcap heq hpos
+
 #print axioms doorIV_resonance_ratio_floor_export
 #print axioms doorIV_not_resonance_ratio_lt_floor_export
 #print axioms doorIV_resonance_ratio_capSlack_eq_zero_of_eq_export
+#print axioms doorIV_resonance_ratio_eq_cap_forces_weight_eq_cap_of_pos_export
 
 /-- **[Lane 3 resonance tower shape]** Endpoint rigidity for the ratio sandwich: if every squared
 kernel spectral weight is capped by the Parseval mean `m−1`, then every consecutive tower ratio is
