@@ -120,3 +120,47 @@ advanced functorial, geometric, probabilistic, and analytic machinery — **0 su
 the proof awaits the one missing theorem (effective, uniform-in-`p`, worst-case, order-`r>log p` phase CLT for a
 single deterministic abelian configuration), which the mod-Gaussian framing names most precisely and the
 `H^{1/2}`-criticality restates most sharply. Not closure.
+
+---
+
+## Loops 3 & 4: invent-new-tools + research-grounded scaffold-leveraging — 0 survivors; the MINIMAL BRIDGE pinned
+
+**Loop 3 (invent demonstrably-new tools):** 60 candidates (8/20 batches rate-limited), 0 survivors. Genuinely-new
+inventions — *Arrangement Transport Energy* (signed phase-carrying r-energy), *Phase-Defect Cocycle Spectral
+Sequence* (a multiplicative cocycle distinct from additive Gross–Koblitz), *Winding-Number Defect* (the η-curve
+turning), *Resonance-Stratified Height* (archimedean distance to the antipodal vanishing-variety) — each refuted:
+the `b`-integral forces phase-blindness; the dilation orbit is magnitude-invariant; curve-turning collapses to an
+extreme coordinate; the tube-volume is the geometry-of-numbers wall.
+
+**Loop 4 (research-grounded, leveraging the proven scaffold):** 100 candidates, 0 survivors — the *sharpest* loop,
+because each built on a proven in-tree piece. It pins the **minimal bridge** definitively.
+
+### The minimal bridge — and why it IS the wall
+> The single smallest lemma that crosses: **`E_r^{F_p}(μ_n) ≤ (2r−1)‼·n^r` for `r` up to `≈log p`** (equivalently
+> `W_r ≤ SLACK_r`). The proven pieces sit on *opposite sides* of it and cannot bridge it:
+
+- **Char-0 Wick is PROVEN** (`zeroSumCount_le_doubleFactorial_dyadic`, Lam–Leung antipodal) — but *char-0 only*;
+  it holds exactly where there is no wraparound. The char-p version differs by `W_r` = the count of *unbalanced
+  mod-p vanishing tuples*, provably `> 0` for an explicit bad-prime family (in-tree countermodel n=16, p=76001).
+- **BGK `n^{1−o(1)}` is PROVEN** — but it is the *magnitude/phase-blind* side; `SumProductEnergyBound` is a named
+  `Prop` *never asserted*. Combining floor + char-0-shadow reproduces the wraparound `W_r` at the saddle.
+
+### The 5 closest scaffold-leveraging candidates (each fails at one named char-p step)
+1. **Deep-r Wick via the proven moment identity** `Σ_{b≠0}‖η_b‖^{2r}=q·E_r−n^{2r}` — needs `W_r ≤ SLACK_r` (wall).
+2. **Onset-to-saddle credit chain** — onset `W_r=0` stops at *fixed* depth (resultant height `b(r)^{n/2}`,
+   `b(r)²∈{4,5,8,9,12}`, exponential), so the credit window `[r₀,log p]` is exactly where `W_r` turns on.
+3. **β=4 field-penalty-free reduction** — genuinely *simplifies* the core: at β=4 the field-size cost `D=4` is
+   asymptotically free (`2/r→0`), collapsing the two-parameter `(θ,D)` problem to the single open parameter (the
+   energy gain `θ=W_r`). A real structural clarification — the field size is free, the energy gain is the whole game.
+4. **Defect-autocorrelation recursion** `W_{r+1}=n·W_r+Σ_{d≠0}ΔC_r(d)N(d)` (exact identity) — restates the wall as
+   one clean "defect-kernel spread" inequality (`ΔC_r ≤ 2rn·W_r`); the probe shows the kernel is *concentrated*,
+   not spread.
+5. **Cauchy–Schwarz dual floor** `E_r ≥ |G|^{2r}/|rG|` — re-derives the BGK *floor* (`rG=F_p` saturates at β=4),
+   confirming it; cannot reach the ceiling.
+
+### Verdict (loops 1–4: ~471 candidates total)
+**0 survivors.** The wall is `W_r ≤ SLACK_r` to depth `log p` — the deep additive-energy / wraparound bound — and
+it is irreducible: the proven char-0 Wick and proven BGK floor are on opposite sides, and combining them is
+*exactly* the open wraparound. The genuinely-useful new output of loop 4 is the **β=4 field-penalty-free
+collapse** (the open problem is purely the energy gain `θ=W_r`; field size is free) and the **defect-kernel-spread
+restatement** of the wall as a single inequality. Not closure.
