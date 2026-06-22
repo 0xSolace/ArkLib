@@ -7725,4 +7725,26 @@ theorem doorIV_kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero_export
 #print axioms doorIV_phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero_export
 #print axioms doorIV_kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero_export
 
+/-- Door-IV Lane-2 capstone export: the dimensionless Shaw bound is equivalent to the raw
+prize-floor scalar bound, with the same constant, whenever the floor is positive. -/
+theorem doorIV_shawValueBound_iff_prizeScalarBound_export {C M n m : ℝ}
+    (hn : 0 < n) (hm : 1 < m) :
+    ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.ShawValueBound C M n m ↔
+      ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.PrizeScalarBound C M n m :=
+  ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.shawValueBound_iff_prizeScalarBound
+    hn hm
+
+/-- Door-IV Lane-2 family capstone export: a uniform raw prize-floor constant is equivalent to
+`Sh(n)=O(1)` for any positive-floor family.  This is normalization only; the open monomial-sum
+anti-concentration theorem is not discharged here. -/
+theorem doorIV_shawFamilyBound_iff_prizeFamilyBound_export {ι : Type*} (M n m : ι → ℝ)
+    (hn : ∀ i : ι, 0 < n i) (hm : ∀ i : ι, 1 < m i) :
+    ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.ShawFamilyBound M n m ↔
+      ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.PrizeFamilyBound M n m :=
+  ArkLib.ProximityGap.Frontier.ShawValueScalarEquivalence.shawFamilyBound_iff_prizeFamilyBound
+    M n m hn hm
+
+#print axioms doorIV_shawValueBound_iff_prizeScalarBound_export
+#print axioms doorIV_shawFamilyBound_iff_prizeFamilyBound_export
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
