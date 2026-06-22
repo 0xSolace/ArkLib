@@ -12385,3 +12385,21 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBParti
 
 No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
+
+## [doorIV-worstb-imbalance-endpoint-gaps] stationary half-balance gives proportional gaps from both dead endpoints (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 extension of `_DoorIVWorstBImbalanceBand`. The prior kernel packaged the
+stationary O(1) band as a sandwich `(1+rlo)H ≤ ‖A+B‖ ≤ (1+rhi)H`. This refinement names the exact
+endpoint-gap form: under the same coherent band assumptions, the slack above the single heavier-half
+model is at least `rlo·H`, while the symmetric `2H` ceiling over-counts by at least `(1-rhi)·H`.
+
+VERDICT: a stationary worst-b half split is quantitatively separated from both tempting endpoints. It
+is not degenerate to one half, and it is not a balanced/symmetric thinning mechanism; it remains an
+`O(1)` reshuffle around the heavier-half scale. No CORE, cancellation, completion, moment-saving, or
+capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBImbalanceBand.lean`, new
+theorems `lower_band_slack_over_single_ge`, `upper_band_gap_to_symmetric_ceiling_ge`, and
+`stationary_band_endpoint_gap_bounds`; permanent export
+`doorIV_worstB_imbalance_stationary_band_endpoint_gap_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

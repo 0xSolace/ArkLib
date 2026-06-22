@@ -122,6 +122,40 @@ theorem stationary_band_sandwich {A B : E} {rlo rhi : ℝ}
     (1 + rlo) * max ‖A‖ ‖B‖ ≤ ‖A + B‖ ∧ ‖A + B‖ ≤ (1 + rhi) * max ‖A‖ ‖B‖ :=
   ⟨one_add_rlo_mul_max_le_norm hcoh hlo, norm_le_one_add_rhi_mul_max hcoh hhi⟩
 
+/-- **Endpoint-gap lower bound, lower-band side.**  In the stationary-band regime the amount by which
+the coherent sum exceeds the single heavier half is at least `rlo · H`.  This is the quantitative
+version of "no degeneration to one half": the slack over the one-half model is not merely positive, it
+pays the lower-band fraction of the heavier-half scale. -/
+theorem lower_band_slack_over_single_ge {A B : E} {rlo : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hlo : rlo * max ‖A‖ ‖B‖ ≤ min ‖A‖ ‖B‖) :
+    rlo * max ‖A‖ ‖B‖ ≤ ‖A + B‖ - max ‖A‖ ‖B‖ := by
+  rw [coherent_norm_eq_max_add_min hcoh]
+  nlinarith [hlo]
+
+/-- **Endpoint-gap lower bound, upper-band side.**  In the stationary-band regime the amount by which
+the symmetric `2H` ceiling over-counts the coherent sum is at least `(1-rhi)·H`.  Thus an upper band
+bounded away from `1` gives a proportional, not infinitesimal, gap from the balanced ceiling. -/
+theorem upper_band_gap_to_symmetric_ceiling_ge {A B : E} {rhi : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hhi : min ‖A‖ ‖B‖ ≤ rhi * max ‖A‖ ‖B‖) :
+    (1 - rhi) * max ‖A‖ ‖B‖ ≤ 2 * max ‖A‖ ‖B‖ - ‖A + B‖ := by
+  rw [coherent_norm_eq_max_add_min hcoh]
+  nlinarith [hhi]
+
+/-- **Stationary band gives proportional gaps from BOTH endpoints.**  Under a band
+`rlo·H ≤ min ≤ rhi·H`, the coherent half split is separated from the one-half endpoint by at least
+`rlo·H` and from the symmetric `2H` endpoint by at least `(1-rhi)·H`.  This is the exact endpoint-gap
+form of the "dead from both ends" verdict. -/
+theorem stationary_band_endpoint_gap_bounds {A B : E} {rlo rhi : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hlo : rlo * max ‖A‖ ‖B‖ ≤ min ‖A‖ ‖B‖)
+    (hhi : min ‖A‖ ‖B‖ ≤ rhi * max ‖A‖ ‖B‖) :
+    rlo * max ‖A‖ ‖B‖ ≤ ‖A + B‖ - max ‖A‖ ‖B‖ ∧
+      (1 - rhi) * max ‖A‖ ‖B‖ ≤ 2 * max ‖A‖ ‖B‖ - ‖A + B‖ :=
+  ⟨lower_band_slack_over_single_ge hcoh hlo,
+   upper_band_gap_to_symmetric_ceiling_ge hcoh hhi⟩
+
 /-- **Both-ends-dead, packaged.**  Under the stationary band with `0 < r_lo`, `r_hi < 1`, and a nonzero
 heavier half, the period norm is strictly between the single-heavier-half value and the balanced
 ceiling: `max(‖A‖,‖B‖) < ‖A + B‖ < 2·max(‖A‖,‖B‖)`.  Neither endpoint is reached: the coherent
@@ -143,3 +177,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand.max_lt_norm_of_lower_band
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand.norm_lt_two_mul_max_of_upper_band
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand.coherent_norm_eq_one_add_ratio_mul_max
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand.stationary_band_endpoint_gap_bounds

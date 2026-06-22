@@ -152,6 +152,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTele
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
@@ -7117,6 +7118,25 @@ theorem doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
    fun h => DoorIVWorstBCoherentImbalance.coherent_norm_eq_two_mul_max_forces_balance hcoh h⟩
 
 #print axioms doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
+
+/-- **[obstruction, DoorIVWorstBImbalanceBand — door-(iv) Lane-1/3]** If the coherent worst-frequency
+half split sits in a stationary balance band `rlo·H ≤ min ≤ rhi·H`, then it has proportional gaps from
+BOTH dead endpoints: it exceeds the single heavier-half model by at least `rlo·H`, and the symmetric
+`2H` ceiling over-counts it by at least `(1-rhi)·H`.  This packages the robust probe verdict that the
+worst-`b` half split is neither degenerate-to-one nor a `√`-thinning mechanism: it is only an `O(1)`
+reshuffle around the heavier-half scale.  No CORE / cancellation / completion / moment / capacity claim;
+CORE remains OPEN. -/
+theorem doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {rlo rhi : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hlo : rlo * max ‖A‖ ‖B‖ ≤ min ‖A‖ ‖B‖)
+    (hhi : min ‖A‖ ‖B‖ ≤ rhi * max ‖A‖ ‖B‖) :
+    rlo * max ‖A‖ ‖B‖ ≤ ‖A + B‖ - max ‖A‖ ‖B‖ ∧
+      (1 - rhi) * max ‖A‖ ‖B‖ ≤ 2 * max ‖A‖ ‖B‖ - ‖A + B‖ :=
+  ArkLib.ProximityGap.Frontier.DoorIVWorstBImbalanceBand.stationary_band_endpoint_gap_bounds
+    hcoh hlo hhi
+
+#print axioms doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
 
 
 /-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half
