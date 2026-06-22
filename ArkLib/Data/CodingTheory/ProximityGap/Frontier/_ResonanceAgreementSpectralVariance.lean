@@ -62,6 +62,26 @@ theorem centeredKernelSpectrum_zero_iff_offDiag_two_re_zero (u : ZMod m → ℂ)
     exact ne_of_gt hpos
   exact mul_eq_zero.trans (or_iff_right hm)
 
+/-- **Every individual spectral deviation is paid by the agreement variance budget.**  Since the
+centered spectrum sum of squares is exactly `m · Re Off(2)`, each single squared deviation from the
+Parseval mean is bounded by that same budget.  Thus a large spike cannot hide from the named
+depth-two agreement object. -/
+theorem centeredKernelSpectrum_sq_le_card_mul_offDiag_two_re (u : ZMod m → ℂ)
+    (hu : ∀ a : ZMod m, ‖u a‖ = 1) (k : ZMod m) :
+    (‖kernelSpectrum (dftChar k) u‖ ^ 2 - ((m : ℝ) - 1)) ^ 2
+      ≤ (m : ℝ) * (resonanceOffDiag u 2).re := by
+  classical
+  have hnonneg : ∀ x ∈ (Finset.univ : Finset (ZMod m)),
+      0 ≤ (‖kernelSpectrum (dftChar x) u‖ ^ 2 - ((m : ℝ) - 1)) ^ 2 := by
+    intro x hx
+    positivity
+  have hle := Finset.single_le_sum hnonneg (Finset.mem_univ k)
+  calc
+    (‖kernelSpectrum (dftChar k) u‖ ^ 2 - ((m : ℝ) - 1)) ^ 2
+        ≤ ∑ x : ZMod m, (‖kernelSpectrum (dftChar x) u‖ ^ 2 - ((m : ℝ) - 1)) ^ 2 := hle
+    _ = (m : ℝ) * (resonanceOffDiag u 2).re :=
+        sum_sq_centered_kernelSpectrum_eq_card_mul_offDiag_two_re u hu
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
@@ -69,3 +89,5 @@ end ArkLib.ProximityGap.GaussPhaseResonance
   ArkLib.ProximityGap.GaussPhaseResonance.sum_sq_centered_kernelSpectrum_eq_card_mul_offDiag_two_re
 #print axioms
   ArkLib.ProximityGap.GaussPhaseResonance.centeredKernelSpectrum_zero_iff_offDiag_two_re_zero
+#print axioms
+  ArkLib.ProximityGap.GaussPhaseResonance.centeredKernelSpectrum_sq_le_card_mul_offDiag_two_re
