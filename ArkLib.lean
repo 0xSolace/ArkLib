@@ -2135,6 +2135,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementFlatnes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementOffDiagCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementOffDiagNonneg
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementReality
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementSpectralVariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceChebyshevLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConjectureTrivialDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConstantVectorCeiling
