@@ -2159,6 +2159,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRec
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSumConvolutionRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSumConvolutionSubmult
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceRecursionBaseConsistency
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralCapDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralMean
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralVariance
