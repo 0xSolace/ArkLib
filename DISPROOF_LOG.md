@@ -12315,3 +12315,40 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGreedyHeavi
  - coherent_level_factor / greedyProduct_no_cancellation: per-level coherent identity
    heavy+light=heavy·(1+r) and ∏(1+r_i)≥1 — the chain can only GROW (no destructive interference to
    exploit), confirming the prize burden is the multiplicative half-mass, not a cancellation.
+
+## [doorIV-worstb-imbalance-stationary-band] worst-b half-imbalance is a STATIONARY O(1) band, NOT a divergence — corrects [doorIV-worstb-imbalance-growth] (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane-1. SUPERSEDES the probe-only `[doorIV-worstb-imbalance-growth]` (2026-06-21),
+whose "min_p r(b*) monotone-down 0.704→0.527→0.478, halves DIVERGE as μ_n thins" was a 3-point
+sampling artifact off the NOISY min-over-primes statistic.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_imbalance_growth_law.py`; FULL coset scan F_p^*/μ_n ≅ ℤ_m,
+proper μ_n, p≫n³, β=4, MEDIAN over 4–12 structured primes per n, never n=q-1; int64-overflow-safe
+object-dtype modular arithmetic so n=256 is valid):
+- The MEDIAN worst-b balance ratio r(b*)=min(‖A‖,‖B‖)/max is FLAT across the thin regime:
+  r*(med) = 0.832, 0.810, 0.830 at n=16/32/64 (12 primes/n) — essentially constant ≈0.83.
+- ALL THREE decay-law fits have R² < 0.015: polynomial d~c·n^{-s} (R²=0.0095), logarithmic d~c/log n
+  (R²=0.0107), √log on the magnitude gap g=-log r (R²=0.0144). There is NO growth law.
+- The min-over-primes IS noisy (0.709/0.553/0.478 — picks the single worst of 12 primes); that is
+  precisely what the prior probe mistook for a monotone-down divergence. The robust MEDIAN does not move.
+
+VERDICT: the worst-b coset-half imbalance is THICKNESS-BAND-STATIONARY, r(b*) ∈ a fixed band ≈[0.72,0.90]
+(median ≈0.83), neither decaying to 1 (perfect balance, which would revive the symmetric ÷2 descent) nor
+degenerating to 0 (single heavier half, the greedy chain). It is a bounded O(1) reshuffle. So the
+coherent imbalanced half-split is a dead √-thinning lever from BOTH ends, by a stationary band — not the
+asymptotic divergence claimed before. (This also retracts the "divergence grows" sharpening; the
+coherent-but-imbalanced base fact `[doorIV-worstb-coherent-imbalance]` stands.)
+
+NOT a growth-law theorem (HARD RULE 1): the kernel formalizes only the CONDITIONAL band consequence.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBImbalanceBand.lean
+(6 theorems, axiom-clean ⊆ {propext, Classical.choice, Quot.sound}, builds on _DoorIVWorstBCoherentImbalance):
+- coherent_norm_eq_one_add_ratio_mul_max: ‖A+B‖=(1+r)·H at coherence (H=max, r=min/max).
+- one_add_rlo_mul_max_le_norm / max_lt_norm_of_lower_band: lower band r_lo>0 ⟹ (1+r_lo)·H ≤ ‖A+B‖ and
+  H < ‖A+B‖ — persistent positive second term, NO degeneration to one heavier half.
+- norm_le_one_add_rhi_mul_max / norm_lt_two_mul_max_of_upper_band: upper band r_hi<1 ⟹ ‖A+B‖ ≤
+  (1+r_hi)·H < 2H — bounded O(1) factor over the heavier half, NO √-thinning.
+- stationary_band_sandwich / strictly_between_single_and_ceiling: H < ‖A+B‖ < 2H.
+
+No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
