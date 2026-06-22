@@ -19,6 +19,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawFamilyReduction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteTrivialCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteBGKCompletionCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawCompletionCorridorFull
@@ -921,6 +922,74 @@ corridor, not a CORE/cancellation estimate. -/
 theorem shawValue_clean_corridor_width_eq_export {n L : ℝ} (hn : 0 < n) (hL : 0 < L) :
     Real.sqrt (n / L) / (1 / Real.sqrt (2 * L)) = Real.sqrt (2 * n) :=
   _root_.ProximityGap.Frontier.ConcreteShawValueThinFloor.clean_corridor_width_eq hn hL
+
+/-- **[Lane 2 concrete family reduction]** For a concrete family of thin Gauss-period instances,
+a uniform raw prize bound for the actual worst periods is exactly a uniform bound on Shaw's
+normalized value, with the same constant. This is the citable concrete `prize ⇔ Sh(n)=O(1)` capstone,
+not an anti-concentration estimate. -/
+theorem concreteShawFamily_corePrizeBound_iff_shawBounded_export {ι : Type*}
+    (T : ι → _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.ThinInstance) (C : ℝ) :
+    _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T) C
+      ↔ _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T) C :=
+  _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.corePrizeBound_iff_shawBounded T C
+
+/-- **[Lane 2 concrete family reduction]** Existential-constant form of the same concrete capstone:
+an absolute CORE constant for the real worst-period family exists iff an absolute Shaw-value constant
+exists. The open content is only the uniform upper constant. -/
+theorem concreteShawFamily_exists_corePrizeBound_iff_exists_shawBounded_export {ι : Type*}
+    (T : ι → _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.ThinInstance) :
+    (∃ C, _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T) C)
+      ↔ (∃ C, _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValueFamilyBound
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T) C) :=
+  _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.exists_corePrizeBound_iff_exists_shawBounded T
+
+/-- **[Lane 2 concrete family reduction]** Every member of a concrete thin family has the proven
+`n`-independent Shaw floor `1/√(2Lᵢ)`. The bounded-Shaw side is therefore a real two-sided corridor,
+not a vacuous predicate. -/
+theorem concreteShawFamily_shawValue_floor_uniform_export {ι : Type*}
+    (T : ι → _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.ThinInstance) (i : ι) :
+    1 / Real.sqrt (2 * _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T i) ≤
+      _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T i)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T i)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T i) :=
+  _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.shawValue_floor_uniform T i
+
+/-- **[Lane 2 concrete family reduction]** A uniform raw prize bound for the real worst-period family
+forces each normalized Shaw value into the concrete sandwich `1/√(2Lᵢ) ≤ Shᵢ ≤ C`. This records the
+exact Shaw-value corridor the open CORE bound must collapse. -/
+theorem concreteShawFamily_corePrizeBound_forces_sandwich_export {ι : Type*}
+    (T : ι → _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.ThinInstance) {C : ℝ}
+    (hC : _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.rawPrizeFamilyBound
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T)
+        (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T) C) (i : ι) :
+    1 / Real.sqrt (2 * _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T i) ≤
+        _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T i)
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T i)
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T i)
+      ∧ _root_.ArkLib.ProximityGap.Frontier.ShawValueCapstone.shawValue
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.worstFam T i)
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.nFam T i)
+          (_root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.LFam T i) ≤ C :=
+  _root_.ProximityGap.Frontier.ConcreteShawFamilyReduction.corePrizeBound_forces_sandwich T hC i
+
+#print axioms concreteShawFamily_corePrizeBound_iff_shawBounded_export
+#print axioms concreteShawFamily_exists_corePrizeBound_iff_exists_shawBounded_export
+#print axioms concreteShawFamily_shawValue_floor_uniform_export
+#print axioms concreteShawFamily_corePrizeBound_forces_sandwich_export
 
 /-- **[capstone, ConcreteTrivialCeiling]** The sharp unconditional corridor on the real worst
 period in the quadratic thin regime: `√(|G|-1) ≤ M(G) ≤ |G|`. This is the concrete lower/upper
