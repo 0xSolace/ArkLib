@@ -17,6 +17,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G3_periodpoly_coeff_no
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._wf9G4_roughness_not_the_driver
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._BridgeOneWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoFifthDoorTetrachotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCorridorIcc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NoTighterBoundCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawValueThinFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier.ConcreteShawFamilyReduction
@@ -650,6 +651,39 @@ theorem doorIV_corridor_width_pos_export {n L : ℝ} (hn : 0 < n) (hL : 1 < L) :
     _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n
       < _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L :=
   _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIV_corridor_width_pos hn hL
+
+/-- **[capstone, DoorIVCorridorIcc]** `Set.Icc` membership form of the door-(iv) corridor: a value
+lies in the closed target interval exactly when it is between the Plancherel floor and BGK ceiling. -/
+theorem doorIVCorridor_mem_iff_export {n L M : ℝ} :
+    M ∈ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor n L ↔
+      _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n ≤ M ∧
+        M ≤ _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.bgkScale n L :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.mem_doorIVCorridor_iff
+
+/-- **[capstone, DoorIVCorridorIcc]** In the prize regime `L > 1`, the `Set.Icc` door-(iv) corridor is
+nonempty. This packages the positive-width target as an order-theoretic interval. -/
+theorem doorIVCorridor_nonempty_export {n L : ℝ} (hn : 0 < n) (hL : 1 < L) :
+    (_root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor n L).Nonempty :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor_nonempty hn hL
+
+/-- **[capstone, DoorIVCorridorIcc]** At `L = 1`, the door-(iv) corridor collapses to the singleton
+floor `{√n}`. Positive-width statements therefore genuinely use the thinness slack `L > 1`. -/
+theorem doorIVCorridor_one_eq_singleton_export (n : ℝ) :
+    _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor n 1 =
+      {_root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.prizeScale n} :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor_one_eq_singleton n
+
+/-- **[capstone, DoorIVCorridorIcc]** Corridor monotonicity in the thinness parameter: increasing
+`L` only widens the BGK ceiling while leaving the prize floor fixed. -/
+theorem doorIVCorridor_subset_of_le_export {n L₁ L₂ : ℝ} (hn : 0 ≤ n) (hL : L₁ ≤ L₂) :
+    _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor n L₁ ⊆
+      _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor n L₂ :=
+  _root_.ArkLib.ProximityGap.Frontier.NoFifthDoorTetrachotomy.doorIVCorridor_subset_of_le hn hL
+
+#print axioms doorIVCorridor_mem_iff_export
+#print axioms doorIVCorridor_nonempty_export
+#print axioms doorIVCorridor_one_eq_singleton_export
+#print axioms doorIVCorridor_subset_of_le_export
 
 /-- **[capstone, NoFifthDoor]** The exact factor door (iv) must remove: the BGK ceiling equals the
 prize floor scaled by `√L`, i.e. `√(n·L) = √L · √n`. Pins the door-(iv) obligation quantitatively. -/
