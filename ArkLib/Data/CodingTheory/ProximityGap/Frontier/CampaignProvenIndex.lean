@@ -6039,6 +6039,32 @@ theorem doorIV_twoDilate_no_copeak_recursion_export
   _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.no_copeak_recursion
     hc hSmax hbound hb
 
+/-- **[Lane 1/3 two-dilate coupling obstruction]** The no-co-peak certificate is symmetric: if the
+shifted half reaches the marginal maximum under the same strict `c < 2` envelope, the base half must
+be strictly below the maximum.  The observed worst-`b` shape cannot hide a perfect joint extreme by
+swapping the two dilates. -/
+theorem doorIV_twoDilate_no_copeak_recursion_left_export
+    {ι : Type*} {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b : ι}
+    (hc : c < 2) (hSmax : 0 < Smax)
+    (hbound : _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate s σ b ≤
+      c * Smax)
+    (hb : s (σ b) = Smax) :
+    s b < Smax :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.no_copeak_recursion_left
+    hc hSmax hbound hb
+
+/-- **[Lane 1/3 two-dilate coupling obstruction]** Minimal contradiction form of the strict envelope:
+`H(b) ≤ c·Smax` with `c < 2` forbids both dilates at that same frequency from being marginal maximizers.
+This is the exact formal statement that the two-dilate coupling supplies no recursive co-peak. -/
+theorem doorIV_twoDilate_not_joint_marginal_extreme_export
+    {ι : Type*} {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b : ι}
+    (hc : c < 2) (hSmax : 0 < Smax)
+    (hbound : _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate s σ b ≤
+      c * Smax) :
+    ¬ (s b = Smax ∧ s (σ b) = Smax) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.not_joint_marginal_extreme_of_lt_two_mul
+    hc hSmax hbound
+
 /-- **[Lane 1/3 two-dilate coupling obstruction]** If the two-dilate maximum is dominated by a
 structureless independent-pairing surrogate and the surrogate is bounded by the perfect co-peak
 ceiling, then the dilation route remains at the same marginal envelope. No cancellation, completion,
@@ -6060,6 +6086,8 @@ theorem doorIV_dilate_pinned_between_marginal_and_surrogate_export {H I Smax : �
 
 #print axioms doorIV_twoDilate_le_two_mul_max_export
 #print axioms doorIV_twoDilate_no_copeak_recursion_export
+#print axioms doorIV_twoDilate_no_copeak_recursion_left_export
+#print axioms doorIV_twoDilate_not_joint_marginal_extreme_export
 #print axioms doorIV_dilate_le_surrogate_le_two_max_export
 #print axioms doorIV_dilate_pinned_between_marginal_and_surrogate_export
 

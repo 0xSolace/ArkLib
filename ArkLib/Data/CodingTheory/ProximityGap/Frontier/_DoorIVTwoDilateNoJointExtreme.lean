@@ -92,6 +92,32 @@ theorem no_copeak_recursion {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b 
   rw [hb] at hlt
   linarith
 
+/-- **No-co-peak is symmetric in the two dilates.**  The same strict gap below `2·Smax` rules out
+the sibling frequency carrying the marginal maximum together with a maximal base frequency.  If the
+shifted half is already at `Smax`, then the base half must be strictly below `Smax`.
+
+This is the exact symmetric audit hook for the observed "one near-max + one substantial" worst-`b`
+shape: a strict two-dilate envelope cannot hide a perfect joint extreme in either ordering. -/
+theorem no_copeak_recursion_left {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b : ι}
+    (hc : c < 2) (hSmax : 0 < Smax) (hbound : twoDilate s σ b ≤ c * Smax)
+    (hb : s (σ b) = Smax) :
+    s b < Smax := by
+  have hlt := not_both_max_of_lt_two_mul hc hSmax hbound
+  rw [hb] at hlt
+  linarith
+
+/-- **Strict two-dilate gap forbids a joint marginal extreme.**  If `H(b) ≤ c·Smax` with `c < 2`
+and `Smax > 0`, then it is impossible for both dilates at that same `b` to equal the marginal maximum.
+This packages the probe verdict as the minimal contradiction form: the coupling may have one large
+half, but it cannot certify a recursive co-peak. -/
+theorem not_joint_marginal_extreme_of_lt_two_mul {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b : ι}
+    (hc : c < 2) (hSmax : 0 < Smax) (hbound : twoDilate s σ b ≤ c * Smax) :
+    ¬ (s b = Smax ∧ s (σ b) = Smax) := by
+  intro hboth
+  have hlt := not_both_max_of_lt_two_mul hc hSmax hbound
+  rw [hboth.1, hboth.2] at hlt
+  linarith
+
 /-- **Marginal-envelope localization.**  The probe shows `H ≤ I ≤ 2·Smax`, where `I` is the
 independent-pairing surrogate maximum (no shift structure).  Abstractly: if the worst-`b` two-dilate sum
 is dominated by a structureless surrogate `I` which is itself at most `2·Smax`, then `H ≤ 2·Smax` AND
@@ -117,5 +143,7 @@ end ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate_le_two_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.not_both_max_of_lt_two_mul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.no_copeak_recursion
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.no_copeak_recursion_left
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.not_joint_marginal_extreme_of_lt_two_mul
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.dilate_le_surrogate_le_two_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.dilate_pinned_between_marginal_and_surrogate
