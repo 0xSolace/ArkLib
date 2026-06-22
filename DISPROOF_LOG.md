@@ -12506,3 +12506,20 @@ axiom-clean ⊆ {propext, Classical.choice, Quot.sound}): under the probed injec
 any budget C < n); `frequencyBlind_no_separation` (a count agreeing at worst/generic b admits no separating
 threshold ⟹ zero selection info); `doorIV_phaseCurvature_dead` bundles both faces. NEGATIVE structural
 lemma; NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim. CORE stays OPEN.
+## [doorIV-worstb-partition-inflation-ratio] partition-depth inflation is strictly interior: `1 < F_k < k` (2026-06-22, g55)
+
+Lane: door-(iv) Lane-1/3 constraint lemma extending `[doorIV-worstb-partition-depth-invariant]`.
+The partition-depth band kernel already proved the coherent k-piece norm sits strictly between the
+single heaviest piece `H` and the balanced ceiling `k·H`. This refinement divides by the positive
+heaviest norm and pins the exact probe-facing inflation ratio `F_k = M/H`: under the same coherent
+band hypotheses, `1 < F_k < k`.
+
+VERDICT: the dyadic k-piece worst-b split is an interior bounded O(1) reshuffle at the ratio level.
+It neither degenerates to one piece nor reaches balanced full-k inflation. This is a formal
+constraint on the dyadic-tower coherence lever, not a CORE, cancellation, completion, moment-saving,
+or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPartitionDepthBand.lean`,
+new theorem `one_lt_norm_div_max_and_norm_div_max_lt_card`, exported as
+`doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export`, axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.

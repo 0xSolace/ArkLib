@@ -155,6 +155,29 @@ theorem strictly_between_single_and_ceiling [DecidableEq ι] {s : Finset ι} {Q 
   ⟨max_lt_norm_of_lower_band hcoh hi₀ hH hrlo hHpos htwo hlb,
    norm_lt_card_mul_max hcoh hub hi₁ hstrict⟩
 
+/-- **Inflation-ratio sandwich.**  Dividing the partition-depth band by the positive heaviest-piece
+norm `H` gives the exact probe quantity `F_k = M/H`: it lies strictly between `1` and `|s|`.  Thus the
+coherent `k`-piece split is a bounded interior reshuffle at that refinement depth, neither a
+single-piece degeneration (`F_k = 1`) nor a perfectly balanced full `k`-inflation (`F_k = |s|`). -/
+theorem one_lt_norm_div_max_and_norm_div_max_lt_card [DecidableEq ι] {s : Finset ι} {Q : ι → E}
+    {H rlo : ℝ} {i₀ i₁ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖)
+    (hi₀ : i₀ ∈ s) (hH : ‖Q i₀‖ = H) (hrlo : 0 < rlo) (hHpos : 0 < H) (htwo : 2 ≤ s.card)
+    (hlb : ∀ i ∈ s, rlo * H ≤ ‖Q i‖) (hub : ∀ i ∈ s, ‖Q i‖ ≤ H)
+    (hi₁ : i₁ ∈ s) (hstrict : ‖Q i₁‖ < H) :
+    1 < ‖∑ i ∈ s, Q i‖ / H ∧ ‖∑ i ∈ s, Q i‖ / H < (s.card : ℝ) := by
+  obtain ⟨hlo, hhi⟩ := strictly_between_single_and_ceiling hcoh hi₀ hH hrlo hHpos htwo hlb hub hi₁ hstrict
+  constructor
+  · have hone : (1 : ℝ) = H / H := by
+      field_simp [ne_of_gt hHpos]
+    rw [hone]
+    exact div_lt_div_of_pos_right hlo hHpos
+  · have hlt : ‖∑ i ∈ s, Q i‖ / H < ((s.card : ℝ) * H) / H :=
+      div_lt_div_of_pos_right hhi hHpos
+    have hcard : ((s.card : ℝ) * H) / H = (s.card : ℝ) := by
+      field_simp [ne_of_gt hHpos]
+    simpa [hcard] using hlt
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
@@ -164,3 +187,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_le_card_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.card_mul_rlo_mul_max_le_norm
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.lower_band_slack_over_single_ge
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.one_lt_norm_div_max_and_norm_div_max_lt_card

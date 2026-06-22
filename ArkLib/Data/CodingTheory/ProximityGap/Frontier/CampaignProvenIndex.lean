@@ -7196,6 +7196,26 @@ theorem doorIV_partitionDepth_lower_band_slack_over_single_export
     hcoh hi₀ hH hlb
 
 #print axioms doorIV_partitionDepth_lower_band_slack_over_single_export
+/-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** For any coherent `k`-piece
+worst-frequency partition satisfying the stationary lower band and having at least one strict-under-max
+piece, the measured aggregate inflation `F_k = M/H` is strictly interior: `1 < F_k < k`.  This makes
+the partition-depth-invariant probe conclusion citable at the exact ratio level: no single-piece
+collapse and no balanced full-`k` thinning at any dyadic refinement.  No CORE / cancellation /
+completion / moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export
+    {ι E : Type*} [SeminormedAddCommGroup E]
+    {s : Finset ι} {Q : ι → E} {H rlo : ℝ} {i₀ i₁ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖)
+    (hi₀ : i₀ ∈ s) (hH : ‖Q i₀‖ = H) (hrlo : 0 < rlo) (hHpos : 0 < H) (htwo : 2 ≤ s.card)
+    (hlb : ∀ i ∈ s, rlo * H ≤ ‖Q i‖) (hub : ∀ i ∈ s, ‖Q i‖ ≤ H)
+    (hi₁ : i₁ ∈ s) (hstrict : ‖Q i₁‖ < H) :
+    1 < ‖∑ i ∈ s, Q i‖ / H ∧ ‖∑ i ∈ s, Q i‖ / H < (s.card : ℝ) :=
+by
+  classical
+  exact ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.one_lt_norm_div_max_and_norm_div_max_lt_card
+    hcoh hi₀ hH hrlo hHpos htwo hlb hub hi₁ hstrict
+
+#print axioms doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export
 
 
 /-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half
