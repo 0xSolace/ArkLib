@@ -5342,6 +5342,33 @@ theorem doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
       ‖A + B‖ < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_lt_one_iff_norm_lt_halfMass h
 
+/-- **[Lane 3 coset-half reciprocal-spend obstruction, HalfMassFactorization]** If a split has
+coherence at most `rho > 0` while the original period norm has floor `T`, then the half-mass must pay
+at least `T / rho`. A coherence drop alone only relocates the burden onto the `L¹` half-mass budget. -/
+theorem doorIV_halfMass_ge_normFloor_div_of_coherence_le_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {T rho : ℝ}
+    (h : 0 < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B)
+    (hrho : 0 < rho)
+    (hcoh : _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence A B ≤ rho)
+    (hT : T ≤ ‖A + B‖) :
+    T / rho ≤ _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass_ge_normFloor_div_of_coherence_le
+    h hrho hcoh hT
+
+/-- **[Lane 3 coset-half single-instance product-budget obstruction, HalfMassFactorization]** If an
+advertised coherence cap `rho` and half-mass cap `H` have product strictly below a known period floor
+`T`, then that coherence cap is impossible under the half-mass cap. This is the local algebraic budget
+gate behind the family version below. -/
+theorem doorIV_not_coherence_le_of_normFloor_gt_product_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {T rho H : ℝ}
+    (h : 0 < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B)
+    (hrho0 : 0 ≤ rho)
+    (hcohMass : _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B ≤ H)
+    (hT : T ≤ ‖A + B‖) (hprod : rho * H < T) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence A B ≤ rho :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_coherence_le_of_normFloor_gt_product
+    h hrho0 hcohMass hT hprod
+
 /-- **[Lane 3 coset-half budget obstruction, HalfMassFactorization]** A family of advertised
 coherence caps and half-mass caps is impossible if one member's half-mass budget lies below the forced
 reciprocal floor `T_i / rho_i` coming from the period floor. Coherence savings must be paid for in
@@ -5373,6 +5400,8 @@ theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_pro
     h hrho0 hT hbad
 
 #print axioms doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
+#print axioms doorIV_halfMass_ge_normFloor_div_of_coherence_le_export
+#print axioms doorIV_not_coherence_le_of_normFloor_gt_product_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
 /-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** The additive energy `E⁺(b • S)` of the
