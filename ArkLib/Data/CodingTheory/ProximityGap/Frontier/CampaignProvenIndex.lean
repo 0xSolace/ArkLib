@@ -1982,6 +1982,39 @@ theorem doorIV_object_moment_corridor_export {iidSup realSup Δ : ℝ}
   _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentCorridor.realSup_in_moment_corridor
     hEdge hExcess
 
+/-- **[capstone, DoorIVObjectMomentTrapped]** Conjunctive no-slack form for the single live
+Door-IV object: the real cocycle sup has no edge below the iid/extreme-value surrogate, and its
+advantage above the surrogate cannot exceed the additive-energy/moment excess. -/
+theorem doorIV_object_moment_trapped_no_slack_export {iidSup realSup δ Δ : ℝ}
+    (hEdge : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup)
+    (hMoment : _root_.ArkLib.ProximityGap.Frontier.DoorIVExcessIsMoment.MomentSourced δ Δ) :
+    (¬ realSup < iidSup) ∧ (¬ Δ < δ) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentTrappedCapstone.doorIV_object_moment_trapped
+    hEdge hMoment
+
+/-- **[capstone, DoorIVObjectMomentTrapped]** Any proposed upper bound on the real Door-IV object
+must also dominate the iid/extreme-value surrogate, while the real-over-iid advantage remains capped
+by the door-(i) moment ceiling. This is the object-level two-dead-doors constraint. -/
+theorem doorIV_candidate_bound_forced_through_dead_doors_export
+    {iidSup realSup δ Δ B Bm : ℝ}
+    (hEdge : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup)
+    (hMoment : _root_.ArkLib.ProximityGap.Frontier.DoorIVExcessIsMoment.MomentSourced δ Δ)
+    (hReal : realSup ≤ B) (hCeil : Δ ≤ Bm) :
+    iidSup ≤ B ∧ δ ≤ Bm :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentTrappedCapstone.candidate_bound_forced_through_dead_doors
+    hEdge hMoment hReal hCeil
+
+/-- **[capstone, DoorIVObjectMomentTrapped]** Falsifiable audit form: object moment-trapping is
+exactly the pair of measured hypotheses `iidSup ≤ realSup` and `0 ≤ δ ∧ δ ≤ Δ`. A future probe must
+break one of these two inequalities to reopen this lever. -/
+theorem doorIV_object_moment_trapped_iff_export {iidSup realSup δ Δ : ℝ} :
+    (_root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal iidSup realSup ∧
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVExcessIsMoment.MomentSourced δ Δ) ↔
+      (iidSup ≤ realSup ∧ (0 ≤ δ ∧ δ ≤ Δ)) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVObjectMomentTrappedCapstone.moment_trapped_iff
+
 /-- **[capstone, DoorIVObject]** The grand three-pillar statement of the #444 structural result: from
 the standard thin-instance positivity, the proven classical-overshoot refutations, and the two measured
 facts about the door-(iv) object, ALL THREE pillars hold simultaneously — (1) the prize ⇔ `Sh=O(1)`
@@ -2853,6 +2886,9 @@ namespace ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 #print axioms noTighterBound_secondMoment_blind_export
 #print axioms noTighterBound_from_symmetric_or_L2_export
 #print axioms doorIV_object_moment_corridor_export
+#print axioms doorIV_object_moment_trapped_no_slack_export
+#print axioms doorIV_candidate_bound_forced_through_dead_doors_export
+#print axioms doorIV_object_moment_trapped_iff_export
 #print axioms prize_iff_shawBounded_doorIV_only_and_object_moment_trapped_export
 #print axioms doorIV_abs_signed_le_abs_moment_export
 #print axioms doorIV_leak_nonneg_export
