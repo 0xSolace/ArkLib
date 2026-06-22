@@ -5416,6 +5416,48 @@ theorem doorIV_phaseSet_addEnergy_dilation_invariant_export
       _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy S :=
   _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq S hb
 
+/-- **[Lane 1 phase-set sumset invariance]** Nonzero frequency dilation preserves additive-doubling
+cardinality. A small-ball route based on `|bS+bS|` cannot distinguish the adversarial `b`; the worst
+frequency only relabels the sumset. -/
+theorem doorIV_phaseSet_addSumset_card_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] (S : Finset F) {b : F} (hb : b ≠ 0) :
+    (_root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset
+        (S.image (fun x => b * x))).card =
+      (_root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset S).card :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSumset_card_smul_eq S hb
+
+/-- **[Lane 1 phase-set difference invariance]** Nonzero frequency dilation preserves the additive
+difference-set cardinality. Pair-spacing support of `{b*x^m}` is `b`-blind, so it cannot identify a
+worst-frequency anti-concentration selector. -/
+theorem doorIV_phaseSet_addDiffset_card_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] (S : Finset F) {b : F} (hb : b ≠ 0) :
+    (_root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset
+        (S.image (fun x => b * x))).card =
+      (_root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset S).card :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addDiffset_card_smul_eq S hb
+
+/-- **[Lane 1 phase-set pair-sum fiber invariance]** Every pair-sum multiplicity is preserved after
+rescaling the target by the same nonzero frequency. This is the multiplicity-level form behind the
+sumset small-ball no-go. -/
+theorem doorIV_phaseSet_addPairSumCount_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F]
+    (S : Finset F) {b t : F} (hb : b ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount
+        (S.image (fun x => b * x)) (b * t) =
+      _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount S t :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairSumCount_smul_eq S hb
+
+/-- **[Lane 1 phase-set pair-difference fiber invariance]** Every pair-difference multiplicity is
+preserved after rescaling the target by the same nonzero frequency. Difference-fiber small-ball data
+of `{b*x^m}` is also `b`-blind. -/
+theorem doorIV_phaseSet_addPairDiffCount_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F]
+    (S : Finset F) {b t : F} (hb : b ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount
+        (S.image (fun x => b * x)) (b * t) =
+      _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount S t :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addPairDiffCount_smul_eq S hb
+
 /-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** No strict scalar improvement for an
 additive-energy small-ball bound: if one nonzero frequency dilate exceeds a proposed threshold `C`,
 NO other nonzero dilate can satisfy `E⁺ ≤ C`. An additive-energy/Halász lever cannot become a
@@ -5450,6 +5492,10 @@ theorem doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export
     S A hb₁ hb₂ hbad
 
 #print axioms doorIV_phaseSet_addEnergy_dilation_invariant_export
+#print axioms doorIV_phaseSet_addSumset_card_dilation_invariant_export
+#print axioms doorIV_phaseSet_addDiffset_card_dilation_invariant_export
+#print axioms doorIV_phaseSet_addPairSumCount_dilation_invariant_export
+#print axioms doorIV_phaseSet_addPairDiffCount_dilation_invariant_export
 #print axioms doorIV_no_phaseSet_addEnergy_scalar_improvement_export
 #print axioms doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export
 
