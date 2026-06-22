@@ -12664,3 +12664,32 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonanceConstant
 (leaf, GaussPhaseResonance only). Theorems: phaseSum_const_one, norm_phaseSum_const_one,
 resonanceMoment_const_one, resonanceMoment_const_one_ge_dc, const_one_saturates_count_floor.
 Axiom-clean (subset {propext, Classical.choice, Quot.sound}). Pushed e2dac3cf8.
+
+## [resonance-universal-phasemass-floor] UNIVERSAL lower floor T(r) >= |S|^{2r}/m, S=sum_{a!=0} u(a), for the resonance moment — door-(iv) phase-essential (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 on T(r)=sum_c‖phaseSum u r c‖² (the √p-free open core). Companion LOWER bound to
+the proven trivial UPPER ceiling T(r) <= m(m-1)^{2(r-1)}, valid for EVERY u (not only unit modulus), in
+terms of the scalar phase mass S = sum_{a!=0} u(a).
+
+MECHANISM (clean Cauchy-Schwarz, fully provable, no off-diagonal sign control needed):
+ (1) sum_c phaseSum u r c = S^r. The frequency-sum reconstructs the entire (∀i, X i ≠ 0) filter
+     (Finset.sum_fiberwise on g X = sum_i X i), which factors over coordinates (Finset.sum_pow').
+ (2) triangle + sq_sum_le_card_mul_sum_sq over the m frequencies:
+     |S^r|² = |sum_c phaseSum u r c|² <= (sum_c‖·‖)² <= m·sum_c‖·‖² = m·T(r).
+ => T(r) >= |S|^{2r}/m.
+
+ORDER-TIGHT at u≡1 (S=m-1): T(r) >= (m-1)^{2r}/m = Theta(m^{2r-1}) = the trivial ceiling order — a SECOND
+independent certificate (companion to [resonance-const-vector-ceiling-attained]) that the DC-coherent
+vector is the Cauchy-Schwarz extremizer (probe: gap to T1(r) is exactly +1). CONVERSELY the floor controls
+T(r) ONLY through the scalar |S|; genuine unit-modulus Gauss phases have S small (multiplicative
+cancellation), so the open Theta(m^r) regime lives precisely where |S| collapses.
+
+VERDICT (constraint): the resonance moment is bounded below purely by the scalar phase mass |S|. A
+prize-relevant improvement therefore must control the PHASE DISTRIBUTION of {b·x^m}, not its phase mass —
+the phase-essential/thinness content of door-(iv). No CORE/cancellation/completion/moment/anti-
+concentration/capacity claim. CORE OPEN.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseMassFloor.lean (leaf,
+GaussPhaseResonance only). Theorems: phaseMass, sum_phaseSum_eq_phaseMass_pow,
+normSq_sum_phaseSum_le_card_mul_resonanceMoment, resonanceMoment_ge_phaseMass_pow_div_card,
+phaseMass_floor_constraint. Axiom-clean ({propext, Classical.choice, Quot.sound}). Pushed a709da42f.
