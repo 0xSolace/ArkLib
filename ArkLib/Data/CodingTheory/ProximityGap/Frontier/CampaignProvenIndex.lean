@@ -4621,6 +4621,12 @@ theorem doorIV_saddle_target_budget_not_vanishing_export
   _root_.ArkLib.ProximityGap.Frontier.WraparoundSaddleCreditForced.saddle_target_is_budget_not_vanishing
     hp hW hbudget
 
+/-- **[capstone, OnsetToSaddleCreditChain]** The count-positivity bridge as a stable named
+index predicate: failure of `OnsetSavesSaddle` at depth `r` implies strictly positive real-valued
+wraparound count `W r`. This remains an explicit hypothesis, not an asserted theorem. -/
+def doorIV_wraparoundCountPositive_export (m : ℕ) {p : ℕ} (g : ZMod p) (W : ℕ → ℝ) : Prop :=
+  _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.WraparoundCountPositive m g W
+
 /-- **[capstone, OnsetToSaddleCreditChain]** Pigeonhole below the saddle plus the explicit
 count-positivity bridge gives positive wraparound at depth `r`. The bridge is a hypothesis, not
 asserted here; the exported theorem wires the proven onset-pigeonhole side to that named rung. -/
@@ -4634,6 +4640,20 @@ theorem doorIV_onset_chain_wrap_pos_of_pigeonhole_export
     0 < W r :=
   _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.wrap_pos_of_pigeonhole
     p g w r hwr S hSw hcard W hbridge
+
+/-- **[capstone, OnsetToSaddleCreditChain]** Credit-only projection of the full chain:
+pigeonhole plus the explicit count-positivity bridge and budget inequality imply `0 < credit`.
+This gives a convenient citable scalar form of the saddle-credit consequence. -/
+theorem doorIV_credit_pos_of_pigeonhole_chain_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w r : ℕ) (hwr : w ≤ r)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card) (W : ℕ → ℝ)
+    (hbridge : doorIV_wraparoundCountPositive_export m g W)
+    {pp credit : ℝ} (hpp : 0 < pp) (hbudget : pp * (W r) ≤ credit) :
+    0 < credit :=
+  _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.credit_pos_of_pigeonhole_chain
+    p g w r hwr S hSw hcard W hbridge hpp hbudget
 
 /-- **[capstone, OnsetToSaddleCreditChain]** Full citable chain: pigeonhole refutes onset-saving,
 the explicit count-positivity bridge turns that into `0<W_r`, and any successful budget inequality
@@ -4657,7 +4677,9 @@ theorem doorIV_onset_chain_saddle_spends_credit_export
 #print axioms doorIV_A2_not_onsetSavesSaddle_of_card_gt_export
 #print axioms doorIV_saddle_credit_pos_of_budget_wrap_pos_export
 #print axioms doorIV_saddle_target_budget_not_vanishing_export
+#print axioms doorIV_wraparoundCountPositive_export
 #print axioms doorIV_onset_chain_wrap_pos_of_pigeonhole_export
+#print axioms doorIV_credit_pos_of_pigeonhole_chain_export
 
 #print axioms doorIV_onset_chain_saddle_spends_credit_export
 
