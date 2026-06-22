@@ -147,6 +147,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGener
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTowerSlackNonAssemblable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
@@ -6997,6 +6998,36 @@ theorem floorBad_defect_ramification_tower_invariant_export :
   FloorBadTower.defect_ramification_tower_invariant
 
 #print axioms floorBad_defect_ramification_tower_invariant_export
+
+
+/-- **[obstruction, DoorIVTowerSlackNonAssemblable — door-(iv) Lane-1/3]** The empirical
+min-over-cosets tower slack count `K_min` is the wrong object for bounding the worst-frequency period:
+its product is **below** every honest single-chain product, so a small min-product is only a lower bound,
+not an upper bound.  The concrete two-level witness shows the min product can be strictly below the
+maximally coherent `[1,1]` chain by mixing sibling branches, and the honest chain product, when equal to
+the period ratio, is tautological rather than a new saving.  This makes the non-assemblability of the
+observed `K_min` growth citable without claiming CORE, cancellation, completion, moment-saving, or
+capacity. -/
+theorem doorIV_towerSlack_nonassemblable_package_export
+    (T : DoorIVTowerSlackNonAssemblable.CoherenceTable) (sel : List ℝ)
+    (hlen : T.length = sel.length)
+    (hmem : ∀ i (hi : i < T.length),
+      sel.get ⟨i, hlen ▸ hi⟩ ∈ T.get ⟨i, hi⟩)
+    (hmin_nonneg : ∀ lvl ∈ T, 0 ≤ lvl.foldr min 1)
+    (hsel_nonneg : ∀ x ∈ sel, 0 ≤ x) {r : ℝ}
+    (hr : DoorIVTowerSlackNonAssemblable.chainProd sel = r) :
+    (DoorIVTowerSlackNonAssemblable.minProd T ≤
+        DoorIVTowerSlackNonAssemblable.chainProd sel) ∧
+    (DoorIVTowerSlackNonAssemblable.minProd [[1, 0], [0, 1]] = 0 ∧
+      DoorIVTowerSlackNonAssemblable.chainProd [1, 1] = 1 ∧
+      DoorIVTowerSlackNonAssemblable.minProd [[1, 0], [0, 1]] <
+        DoorIVTowerSlackNonAssemblable.chainProd [1, 1]) ∧
+    (r ≤ DoorIVTowerSlackNonAssemblable.chainProd sel) :=
+  ⟨DoorIVTowerSlackNonAssemblable.minProd_le_chainProd T sel hlen hmem hmin_nonneg hsel_nonneg,
+   DoorIVTowerSlackNonAssemblable.minProd_strictly_below_topcoherent_chain,
+   DoorIVTowerSlackNonAssemblable.chainProd_eq_period_ratio_no_saving sel r hr⟩
+
+#print axioms doorIV_towerSlack_nonassemblable_package_export
 
 /-- **[obstruction, DoorIVWorstBCoherentImbalance — door-(iv) Lane-1/3]** At the **true** worst frequency
 the two index-2 coset-halves `A_{b*}, B_{b*}` of `η_{b*} = Σ_{y∈μ_n} e_p(b*·y)` are COHERENT
