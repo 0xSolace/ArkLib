@@ -2130,6 +2130,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RUD_MathlibAssessment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConjectureTrivialDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionDiagExtraction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionOffDiagSign
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceEulerProductRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
