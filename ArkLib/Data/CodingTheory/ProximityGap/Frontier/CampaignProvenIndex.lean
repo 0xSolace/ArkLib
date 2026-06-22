@@ -131,6 +131,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGener
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5783,5 +5784,24 @@ theorem doorIV_jointField_white_diagonalizes_export {ι : Type*}
 #print axioms doorIV_jointField_sum_centered_export
 #print axioms doorIV_jointField_diagonal_sndMoment_nonneg_export
 #print axioms doorIV_jointField_white_diagonalizes_export
+
+/-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
+core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
+set `{17, 257}` (primes dividing the discriminant, where `S`'s mod-`p` root-count drops from the
+generic 4 to 3) is DISJOINT from the §9 floor-bad prime `97 = ` least prime `≡ 1 (mod 32)` (which is
+unramified — `97 ∤ disc` — with the full 4 roots mod 97, and `17 ≢ 1 mod 32`, `257 ≠ 97`). Hence the
+discriminant / ramification locus of the defect resultant does NOT identify the floor-bad prime: a
+"ramified ⟹ bad" reading of the off-BGK floor route is refuted by explicit finite arithmetic. The
+floor-bad selector is the least-prime-in-AP object, a disjoint phenomenon (cf.
+`_AvD2_LinnikWindowCountRequired`: Linnik existence ⊬ divisibility). No CORE / cancellation /
+completion / moment / capacity claim; CORE remains OPEN. -/
+theorem floorBad_disjoint_from_defect_ramification_export :
+    (17 ∣ FloorBadRamif.discS ∧ FloorBadRamif.rootCountMod 17 = 3) ∧
+    (257 ∣ FloorBadRamif.discS ∧ FloorBadRamif.rootCountMod 257 = 3) ∧
+    ((97 : ℕ) % 32 = 1 ∧ ¬ (97 ∣ FloorBadRamif.discS) ∧ FloorBadRamif.rootCountMod 97 = 4) ∧
+    ((17 : ℕ) % 32 ≠ 1) ∧ ((257 : ℕ) % 32 = 1 ∧ (257 : ℕ) ≠ 97) :=
+  FloorBadRamif.floorBad_disjoint_from_ramification
+
+#print axioms floorBad_disjoint_from_defect_ramification_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

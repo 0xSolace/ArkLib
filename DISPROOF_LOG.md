@@ -12024,3 +12024,31 @@ Formal exports: `doorIV_jointField_sum_centered_export`,
 `doorIV_jointField_diagonal_sndMoment_nonneg_export`, and
 `doorIV_jointField_white_diagonalizes_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [floorbad-ramification-disjoint] §9 floor-bad prime is NOT the defect resultant's ramification locus (2026-06-22, sol)
+
+Lane: door-(iv)-adjacent Lane 3 constraint lemma for the #464 §9 **bad-prime localization / least-prime-in-AP** route to the δ* FLOOR (the one genuinely off-BGK lever the dossier flags as under-explored). Probe-first finding, then axiom-clean formalization.
+
+#464 §9 describes the `n=32` defect core via the fixed integer polynomial
+`S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`= R^(32)(g)`, `u=g⁴`), states `disc(S) = 2⁴¹·17²·257²`
+and "root-count drops exactly at {17,257}", and separately states the FLOOR-bad prime is the single
+smallest prime `≡ 1 (mod n)` = `97` for `n=32`. Read naïvely these coincide. THEY DO NOT.
+
+VERDICT: the disc-RAMIFICATION set `{17,257}` (odd primes `p | disc`, where `S` gains a repeated
+root mod `p` and its root-count drops 4→3) is DISJOINT from the floor-bad prime `97`:
+- `17 | disc`, `S` has 3 roots mod 17, and `17 ≢ 1 mod 32` (not even in the AP);
+- `257 | disc`, `S` has 3 roots mod 257, `257 ≡ 1 mod 32` but `257 ≠ 97` (not the least);
+- `97 ∤ disc` (UNRAMIFIED), `S` has the FULL 4 roots mod 97, `97 ≡ 1 mod 32` (the floor-bad prime).
+So ramification (`p|disc`, root-count drop) and floor-badness (least `p≡1 mod n`) are governed by
+DIFFERENT arithmetic. The off-BGK floor route cannot be closed by a "ramified ⟹ bad / unramified ⟹
+good" reading of §9; the floor-bad selector is the least-prime-in-AP object, a disjoint phenomenon.
+Consistent with `_AvD2_LinnikWindowCountRequired` (Linnik existence ⊬ divisibility-avoidance; the
+floor closure reduces to the wall). No CORE / cancellation / completion / moment-saving /
+anti-concentration / capacity claim; CORE `M(μ_n) ≤ C·√(n·log(p/n))` remains OPEN.
+
+Probe: `scripts/probes/probe_444_floorbad_ramif.py` (sympy; disc factorization + root-counts +
+repeated-root/ramification check, all assertions pass).
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_FloorBadRamificationDisjoint.lean`,
+theorem `floorBad_disjoint_from_ramification`; indexed as
+`CampaignProvenIndex.floorBad_disjoint_from_defect_ramification_export`. Axiom-clean with axioms
+contained in `{propext, Classical.choice, Quot.sound}`.
