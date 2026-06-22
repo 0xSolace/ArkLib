@@ -166,6 +166,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagSpikeCost
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -7505,6 +7506,50 @@ theorem doorIV_worstB_threshold_count_eq_zero_of_sndMoment_lt_sq_export
 #print axioms doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
 #print axioms doorIV_worstB_threshold_count_eq_zero_of_sndMoment_lt_sq_export
 
+/-- **[Lane 3 resonance spike/off-diagonal constraint]** A one-step squared-spectrum spike `d`
+above the Parseval mean forces `d² ≤ m · Re Off(2)`.  This pins the exact localized agreement
+budget paid by any proposed worst-frequency spike selector. -/
+theorem doorIV_resonance_spike_cost_le_offDiag_two_re_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d)
+    (hspike : ∃ k : ZMod m,
+      ((m : ℝ) - 1) + d
+        ≤ ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+            (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2) :
+    d ^ 2 ≤ (m : ℝ) *
+      (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re :=
+  ArkLib.ProximityGap.GaussPhaseResonance.spike_cost_le_offDiag_two_re u hu d hd hspike
+
+/-- **[Lane 3 resonance spike/off-diagonal constraint]** Normalized form: a spike of height `d`
+forces the named depth-two agreement object to be at least `d² / m`. -/
+theorem doorIV_resonance_offDiag_two_re_ge_spike_sq_div_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d)
+    (hspike : ∃ k : ZMod m,
+      ((m : ℝ) - 1) + d
+        ≤ ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+            (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2) :
+    d ^ 2 / (m : ℝ)
+      ≤ (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re :=
+  ArkLib.ProximityGap.GaussPhaseResonance.offDiag_two_re_ge_spike_sq_div u hu d hd hspike
+
+/-- **[Lane 3 resonance spike/off-diagonal constraint]** Count form: the number of frequencies
+spiking `d` above the mean is bounded by `m · Re Off(2) / d²`.  Selector/count routes therefore
+consume the same localized agreement budget. -/
+theorem doorIV_resonance_spike_count_le_offDiag_two_re_div_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d) :
+    (((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ((m : ℝ) - 1) + d
+          ≤ ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+              (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2)).card : ℝ)
+      ≤ (m : ℝ) *
+        (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re / d ^ 2 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_offDiag_two_re_div u hu d hd
+
+#print axioms doorIV_resonance_spike_cost_le_offDiag_two_re_export
+#print axioms doorIV_resonance_offDiag_two_re_ge_spike_sq_div_export
+#print axioms doorIV_resonance_spike_count_le_offDiag_two_re_div_export
 
 /-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
 is the root count of the explicit quadratic form `Pp² - X·Qp²`; if that polynomial is nonzero,
