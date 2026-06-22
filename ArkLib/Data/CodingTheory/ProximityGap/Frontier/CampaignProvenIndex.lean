@@ -3697,6 +3697,25 @@ theorem doorIV_weight2_evenSpine_card_eq_zero_export {G : Type*} [CommGroup G]
     (Finset.univ.filter (fun y : G => y ^ c = w)).card = 0 :=
   _root_.ArkLib.ProximityGap.EvenOddDescent.card_pow_eq_target_eq_zero_of_not_mem_range c w hw
 
+/-- **[descent, weight-2 mixed quadform]** Exact mixed-parity binomial root count: over a finite
+cyclic group, the non-symmetric weight-2 quadform count `#{y : y^a = y^b}` is exactly
+`gcd(#G, a-b)` when `b ≤ a`. This is the citable Door-IV/G2 replacement for the false
+"subgroup-root O(1)" hope: the count is controlled by the actual cyclotomic gcd. -/
+theorem doorIV_weight2_mixedQuadform_card_eq_gcd_export {G : Type*} [CommGroup G]
+    [Fintype G] [DecidableEq G] [IsCyclic G] (a b : ℕ) (hba : b ≤ a) :
+    (Finset.univ.filter (fun y : G => y ^ a = y ^ b)).card = (Nat.card G).gcd (a - b) :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.card_binomial_roots_eq_gcd a b hba
+
+/-- **[descent, weight-2 mixed quadform]** Mixed-parity specialization over a two-power cyclic
+group: if the exponent gap is odd and `#G = 2^k`, the non-symmetric weight-2 correction is exactly
+one. This pins the measured `S₁ ≤ 1` mechanism as parity/cyclotomic gcd, not cancellation. -/
+theorem doorIV_weight2_mixedQuadform_card_eq_one_of_odd_gap_twoPow_export {G : Type*}
+    [CommGroup G] [Fintype G] [DecidableEq G] [IsCyclic G]
+    (a b : ℕ) (hba : b ≤ a) (hodd : Odd (a - b)) {k : ℕ} (hN : Nat.card G = 2 ^ k) :
+    (Finset.univ.filter (fun y : G => y ^ a = y ^ b)).card = 1 :=
+  _root_.ArkLib.ProximityGap.EvenOddDescent.card_binomial_roots_eq_one_of_odd_gap_of_twoPow
+    a b hba hodd hN
+
 #print axioms doorIV_descent_quadform_degreeEnvelope_export
 #print axioms doorIV_descent_Z_card_le_degreeEnvelope_export
 #print axioms doorIV_descent_Z_indicator_sum_le_degreeEnvelope_export
@@ -3706,6 +3725,8 @@ theorem doorIV_weight2_evenSpine_card_eq_zero_export {G : Type*} [CommGroup G]
 #print axioms doorIV_weight2_evenSpine_card_eq_if_mem_range_export
 #print axioms doorIV_weight2_evenSpine_card_eq_gcd_export
 #print axioms doorIV_weight2_evenSpine_card_eq_zero_export
+#print axioms doorIV_weight2_mixedQuadform_card_eq_gcd_export
+#print axioms doorIV_weight2_mixedQuadform_card_eq_one_of_odd_gap_twoPow_export
 
 /-- **[obstruction, WorstBHalfMass]** At two-piece coherence one with positive denominator, the
 period magnitude equals the half-mass exactly. Thus the cross-half coherence factor contributes no
