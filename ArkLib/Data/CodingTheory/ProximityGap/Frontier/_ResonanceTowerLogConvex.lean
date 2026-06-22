@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceParsevalBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerFloor
 
 /-!
 # Log-convexity of the resonance tower (#407 / #444)
@@ -20,6 +21,18 @@ spectral measure:
 i.e. the tower is **log-convex** in `r`. Equivalently the spectral `ℓ^{2r}`-power sums
 `P r = ∑_k ‖K̂(k)‖^{2r}` satisfy `P(r+1)² ≤ P r · P(r+2)` — the standard Lyapunov / power-mean
 interpolation inequality for the moments of the nonnegative spectral measure `‖K̂(·)‖²`.
+
+Its immediate corollary is the **monotonicity of the tower growth ratio**, stated directly on the
+named free variable (the abstract ratio ladder `PowerSumRatioMonotone.powerSum_ratio_monotone` was
+never connected to `resonanceMoment`):
+
+> **`T(r+1)/T(r) ≤ T(r+2)/T(r+1)`** (`resonanceMoment_ratio_monotone`, unit phases, `m ≥ 2`).
+
+With the proven Chebyshev floor `(m−1) ≤ T(r+1)/T(r)` (`_ResonanceChebyshevLower`) and the trivial
+per-level ceiling, the door-(iv) growth ratio is squeezed into a **monotone sequence bounded below by
+`m−1`** — so the prize `√`-cancellation (if real) is a SINGLE monotone geometric rate of the whole
+tower, not a depth-localized dip. This is the citable door-(iv) growth-rate constraint at the level
+of the actual prize object.
 
 ## Why this is a genuinely new structural lever (not a spectral-cap brick, not a moment route)
 
@@ -137,8 +150,38 @@ theorem resonanceMoment_sq_le_mul_succ_succ (u : ZMod m → ℂ) (r : ℕ) :
   rw [hrw, hrw2] at key
   exact le_of_mul_le_mul_left key hmsq
 
+/-- Strict positivity of the resonance moment for unit phases when `m ≥ 2`, via the proven tower
+floor `(m−1)^r ≤ T r` (`resonanceMoment_ge_pow`). -/
+private theorem resonanceMoment_pos (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) : 0 < resonanceMoment u r := by
+  have hmR : (1 : ℝ) ≤ (m : ℝ) - 1 := by
+    have : (2 : ℝ) ≤ (m : ℝ) := by exact_mod_cast hm
+    linarith
+  have hfloor : ((m : ℝ) - 1) ^ r ≤ resonanceMoment u r := resonanceMoment_ge_pow u hu r
+  have : (0 : ℝ) < ((m : ℝ) - 1) ^ r := by positivity
+  linarith
+
+/-- **Monotonicity of the resonance tower growth ratio** (unit phases, `m ≥ 2`).
+`T(r+1)/T(r) ≤ T(r+2)/T(r+1)`: the named door-(iv) free variable's consecutive growth ratio is
+monotone non-decreasing in `r` — the direct corollary of log-convexity, stated at the level of the
+actual prize object. Transports `PowerSumRatioMonotone.powerSum_ratio_monotone` (on the spectral
+moduli `‖K̂(k)‖`) through the Parseval bridge, then clears the common `m` factor. -/
+theorem resonanceMoment_ratio_monotone (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) :
+    resonanceMoment u (r + 1) / resonanceMoment u r
+      ≤ resonanceMoment u (r + 2) / resonanceMoment u (r + 1) := by
+  classical
+  -- log-convexity (already proven) gives the cross-multiplied inequality directly
+  have hlc := resonanceMoment_sq_le_mul_succ_succ u r
+  have hT0 : 0 < resonanceMoment u r := resonanceMoment_pos u hu hm r
+  have hT1 : 0 < resonanceMoment u (r + 1) := resonanceMoment_pos u hu hm (r + 1)
+  rw [div_le_div_iff₀ hT0 hT1]
+  -- goal: T(r+1) * T(r+1) ≤ T(r+2) * T r, exactly log-convexity reassociated
+  nlinarith [hlc]
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spectral_powerSum_sq_le_mul
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_sq_le_mul_succ_succ
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_monotone
