@@ -11817,3 +11817,28 @@ Formal kernel: `_AttackB1_BadSetCosetNonSidon.lean` (AtkB1.not_sidon_of_antipoda
 AtkB1.coset_with_two_antipodal_pairs_not_sidon). New `CampaignProvenIndex` exports:
 `doorIV_badSet_antipodal_not_sidon_export`, `doorIV_coset_two_antipodal_pairs_not_sidon_export`.
 Axiom-clean (axioms ⊆ {propext}).
+
+## [doorIV-kurtosis-and-negsym-indexed] anti-concentration disproof refuted (sub-Gaussian kurtosis) + a SECOND b-blindness mechanism (conj-closed signed-value selectors) — both citable (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 1/3. Two pre-existing unindexed axiom-clean kernels closing distinct anti-
+concentration attack vectors.
+
+VERDICT 1 (AntiConcKurtosisRefuted — closes the DISPROOF route): the period family is sub-Gaussian.
+Exact additive energy E₂(μ_n) = 3n² − 3n < 3n² (n even), kurtosis E₂/n² = 3 − 3/n strictly below the
+Gaussian/Wick ceiling 3, deficit exactly 3n. A Paley-Zygmund / 4th-moment lower bound therefore
+certifies at most M_cert² ≲ 3·μ₂ = Θ(n) ⟹ M_cert = O(√n), short of the prize √(n log p) by √(log p).
+So NO kurtosis-based DISPROOF of Paley/CORE exists. Closes an attack vector, not CORE.
+
+VERDICT 2 (DoorIVNegationSymmetryRealAndBalanced — a SECOND b-blindness mechanism, distinct from the
+dilation-invariance meta-theorem): at the worst b the phase set is conjugation-closed ⟹ η(b) real and
+η(−b) = conj(η(b)) = η(b), so the paired frequencies b, −b carry the IDENTICAL signed complex value.
+Hence ANY signed-value selector (threshold, sign test, half-plane gate, arbitrary predicate P) is exactly
+±b-blind. This covers value-selectors outside the reach of the additive-linear dilation-invariance no-go.
+
+NO CORE upper-bound / cancellation / completion / capacity claim. CORE OPEN.
+
+Formal kernels: `_AntiConcKurtosisRefuted.lean` (no_kurtosis_disproof, E2_closed_form, kurtosis_lt_gaussian,
+kurtosis_deficit) and `_DoorIVNegationSymmetryRealAndBalanced.lean` (signed_value_selector_invariant,
+signed_value_selector_invariant_of_conjClosed). New `CampaignProvenIndex` exports:
+`doorIV_no_kurtosis_disproof_export`, `doorIV_signed_value_selector_pm_b_blind_export`,
+`doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.

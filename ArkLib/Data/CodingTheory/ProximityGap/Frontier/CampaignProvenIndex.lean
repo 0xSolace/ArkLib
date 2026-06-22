@@ -117,6 +117,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPerFrequencyLocaliz
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseSetDilationInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexDelocalized
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackB1_BadSetCosetNonSidon
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntiConcKurtosisRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVNegationSymmetryRealAndBalanced
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5309,5 +5311,48 @@ theorem doorIV_coset_two_antipodal_pairs_not_sidon_export
 
 #print axioms doorIV_badSet_antipodal_not_sidon_export
 #print axioms doorIV_coset_two_antipodal_pairs_not_sidon_export
+
+/-- **[Lane 1 constraint, AntiConcKurtosisRefuted]** The anti-concentration DISPROOF of Paley is itself
+refuted by the sub-Gaussian 4th moment of the period family. The exact additive energy is
+`E₂(μ_n) = 3n² - 3n < 3n²` (n even), so the kurtosis `E₂/n² = 3 - 3/n` is strictly BELOW the Gaussian
+(Wick) ceiling `3` with deficit exactly `3n`. A Paley-Zygmund / 4th-moment lower bound can therefore
+certify at most `M_cert² ≲ 3·μ₂ = Θ(n)`, i.e. `M_cert = O(√n)`, short of the prize target `√(n log p)`
+by a `√(log p)` factor: NO kurtosis-based disproof of CORE exists. This CLOSES an attack vector
+(disproof route), not CORE itself. NO CORE upper-bound / cancellation / completion / capacity claim. -/
+theorem doorIV_no_kurtosis_disproof_export (n : ℕ) (hn : 1 ≤ n) :
+    _root_.ProximityGap.Frontier.AntiConcKurtosisRefuted.E2 n < 3 * n ^ 2 ∧
+      3 * n ^ 2 - _root_.ProximityGap.Frontier.AntiConcKurtosisRefuted.E2 n = 3 * n :=
+  _root_.ProximityGap.Frontier.AntiConcKurtosisRefuted.no_kurtosis_disproof n hn
+
+#print axioms doorIV_no_kurtosis_disproof_export
+
+/-- **[Lane 1/3 constraint, DoorIVNegationSymmetryRealAndBalanced]** A SECOND b-blindness mechanism,
+distinct from the dilation-invariance meta-theorem: because the phase set at the worst `b` is
+conjugation-closed, the period is real and `η(-b) = conj(η(b)) = η(b)`, so the paired frequencies
+`b, -b` carry the IDENTICAL signed complex value. Hence ANY frequency selector that reads the signed
+period value (threshold, sign test, half-plane gate, arbitrary predicate `P`) is exactly `±b`-blind —
+covering value-selectors outside the reach of the additive-linear dilation-invariance no-go. NO CORE /
+cancellation / completion / anti-concentration / capacity claim. -/
+theorem doorIV_signed_value_selector_pm_b_blind_export
+    {ι : Type*} (η : ι → ℂ) (P : ℂ → Prop) (b nb : ι)
+    (hreal : (starRingEnd ℂ) (η b) = η b) (hneg : η nb = (starRingEnd ℂ) (η b)) :
+    P (η nb) ↔ P (η b) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVNegationSymmetryRealAndBalanced.signed_value_selector_invariant
+    η P b nb hreal hneg
+
+/-- **[Lane 1/3 constraint, DoorIVNegationSymmetryRealAndBalanced]** Conjugation-closed phase-set form:
+any predicate on the signed period sum is `±b`-invariant given the standard negation relation
+`η(-b) = conj(η(b))`. The signed-value gate cannot distinguish the paired frequencies. NO CORE /
+cancellation / completion / capacity claim. -/
+theorem doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export
+    {ι : Type*} (S : ι → Finset ℂ) (P : ℂ → Prop) (b nb : ι)
+    (hS : _root_.ArkLib.ProximityGap.Frontier.DoorIVNegationSymmetryRealAndBalanced.ConjClosed (S b))
+    (hneg : (∑ z ∈ S nb, z) = (starRingEnd ℂ) (∑ z ∈ S b, z)) :
+    P (∑ z ∈ S nb, z) ↔ P (∑ z ∈ S b, z) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVNegationSymmetryRealAndBalanced.signed_value_selector_invariant_of_conjClosed
+    S P b nb hS hneg
+
+#print axioms doorIV_signed_value_selector_pm_b_blind_export
+#print axioms doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
