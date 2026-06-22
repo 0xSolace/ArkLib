@@ -1853,6 +1853,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCosetClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarriesAll
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
