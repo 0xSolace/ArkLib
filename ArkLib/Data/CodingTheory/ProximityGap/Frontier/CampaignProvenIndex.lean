@@ -7023,6 +7023,53 @@ theorem doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export {
     Fintype.card G ≤ (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
   DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit hf c hb hfree
 
+/-- **[Lane 1 worst-b selector obstruction]** Signed audit contrapositive: if a threshold set is
+smaller than the actual signed coset fiber of `b`, then `b` cannot be in that threshold set. This is
+the signed version of the exact coset-budget wall for worst-frequency selectors. -/
+theorem doorIV_worstBCoset_not_mem_of_card_lt_sigmaOrbitImage_export {G β : Type*} [Group G]
+    [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card <
+      (Finset.univ.image (fun g : G => σ (g • b))).card) :
+    ¬ b ∈ DoorIVWorstBCosetClosed.superLevel f c :=
+  DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_sigmaOrbitImage hf hσ c hcard
+
+/-- **[Lane 1 worst-b selector obstruction]** Free signed-fiber cardinal floor: if
+`g ↦ σ(g•b)` injects, one near-max frequency forces at least `|G|` signed coset mates in the
+threshold set. Sign symmetry does not give a cheaper selector; it pays a whole signed fiber. -/
+theorem doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_sigma_orbit_export {G β : Type*}
+    [Group G] [MulAction G β] [Fintype G] [Fintype β]
+    {f : β → ℝ} {σ : β → β} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c)
+    (hfree : ∀ {g h : G}, σ (g • b) = σ (h • b) → g = h) :
+    Fintype.card G ≤ (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
+  DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_sigma_orbit hf hσ c hb hfree
+
+/-- **[Lane 1 worst-b selector obstruction]** Sub-coset threshold no-go: a threshold set with
+cardinality below `|G|` contains no point with a free orbit. This exports the direct audit hook for
+claims that a coset-blind worst-`b` statistic has isolated a sub-coset-sized near-max set. -/
+theorem doorIV_worstBCoset_not_exists_free_orbit_mem_of_card_lt_group_export {G β : Type*}
+    [Group G] [MulAction G β] [Fintype G] [Fintype β]
+    {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f) (c : ℝ)
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card < Fintype.card G) :
+    ¬ ∃ b : β, b ∈ DoorIVWorstBCosetClosed.superLevel f c ∧
+      ∀ {g h : G}, g • b = h • b → g = h :=
+  DoorIVWorstBCosetClosed.not_exists_free_orbit_mem_of_card_superLevelFinset_lt_group hf c hcard
+
+/-- **[Lane 1 worst-b selector obstruction]** Signed sub-coset threshold no-go: a threshold set with
+cardinality below `|G|` contains no point whose signed coset fiber is free. This pins the exact
+signed-selector budget obstruction used by worst-`b` arithmetic probes. -/
+theorem doorIV_worstBCoset_not_exists_free_sigma_orbit_mem_of_card_lt_group_export {G β : Type*}
+    [Group G] [MulAction G β] [Fintype G] [Fintype β]
+    {f : β → ℝ} {σ : β → β} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ)
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card < Fintype.card G) :
+    ¬ ∃ b : β, b ∈ DoorIVWorstBCosetClosed.superLevel f c ∧
+      ∀ {g h : G}, σ (g • b) = σ (h • b) → g = h :=
+  DoorIVWorstBCosetClosed.not_exists_free_sigma_orbit_mem_of_card_superLevelFinset_lt_group hf hσ c hcard
+
 #print axioms doorIV_worstBCoset_smul_mem_superLevel_iff_export
 #print axioms doorIV_worstBCoset_sigma_mem_superLevel_iff_export
 #print axioms doorIV_worstBCoset_sigma_smul_mem_superLevel_iff_export
@@ -7030,5 +7077,9 @@ theorem doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export {
 #print axioms doorIV_worstBCoset_card_sigmaOrbitImage_le_superLevelFinset_export
 #print axioms doorIV_worstBCoset_not_mem_of_card_lt_orbitImage_export
 #print axioms doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export
+#print axioms doorIV_worstBCoset_not_mem_of_card_lt_sigmaOrbitImage_export
+#print axioms doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_sigma_orbit_export
+#print axioms doorIV_worstBCoset_not_exists_free_orbit_mem_of_card_lt_group_export
+#print axioms doorIV_worstBCoset_not_exists_free_sigma_orbit_mem_of_card_lt_group_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
