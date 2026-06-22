@@ -12249,3 +12249,39 @@ Formal exports: `doorIV_coherenceProduct_mul_getLast_export`,
 `doorIV_not_root_le_bound_of_bound_div_leaf_lt_product_floor_export`, and
 `doorIV_root_ge_product_floor_mul_leaf_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-greedy-heavier-half-descent] the greedy heavier-half 1-D descent product reconstructs M at b* but carries the same √-wall and is non-telescoping — dead thinning lever (2026-06-22, sol)
+
+Lens: door-(iv) Lane-1, builds on the fleet-proven worst-b coherent-but-imbalanced fact (c1aae3d7e:
+ρ(b*)=1 exact, ∠(A,B)=0, so M(n)=‖A‖+‖B‖; 2c3e1aad6: imbalance GROWS with n). NEW question (not a
+re-probe of nesting/coherence/half-mass-factorization, all of which are mapped): since at b* the
+period collapses to a single coherent imbalanced split, does iterating the split into the HEAVIER half
+at the FIXED frequency b* reduce M(n) to a thin 1-D descent product Π_i(1+r_i), r_i=light/heavy ∈[0,1)?
+
+PROBE (scripts/probes/probe_dooriv_greedy_heavier_half_descent.py; PROPER μ_n, p≡1 mod n, p≫n³,
+m=(p-1)/n odd, never n=q-1; FULL coset scan n=8/16/32, stride scan n=64/128, β=4):
+ - RECONSTRUCTION EXACT: greedy product G=Π(1+r_i) ≈ M(n) at b* (G=7.59/13.86/23.02/34.08/53.73 vs
+   M=7.54/13.76/22.98/33.95/53.62). So M(n) at the worst frequency IS a 1-D descent product, NOT a
+   2^a-leaf tree — the growing imbalance collapses the tower to a single chain. (mechanism, new.)
+ - NO THINNING: G/√n GROWS monotonically (2.68→3.46→4.07→4.26→4.74), tracking M/√n exactly. The 1-D
+   reframe RELOCATES the √(n·log p) wall, it does not thin it. The descent product carries the same wall.
+ - NON-TELESCOPING: at the first split b* is NOT the heavier sub-subgroup's worst frequency
+   (b*=subWorst? = NO at every full-scan n; consistent with proven _DoorIVWorstBNonNested). So the
+   greedy single-half value LOWER-bounds (never attains) the adversarial sub-period ⟹ the descent
+   product cannot serve as an UPPER bound on M(n/2) ⟹ no upward recursion.
+
+VERDICT: the greedy heavier-half 1-D descent is an EXACT but INERT reconstruction of M at b* — it
+transfers the √-wall and cannot telescope upward. A precisely-mapped dead door-(iv) lever. Does NOT
+bound M(n); NO CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGreedyHeavierHalfDescent.lean
+(9 theorems, axiom-clean ⊆ {propext, Classical.choice, Quot.sound}, no sorryAx):
+ - greedyProduct_le_two_pow / greedyProduct_ge_two_pow_of_capped: G=Π(1+r_i)∈[1,2^a]; a √n=2^{a/2}
+   thinning needs Σlog(1+r_i) ≤ (a/2)log2+O(loglog), which the probe REFUTES (G/√n→∞). One capped
+   level (r_i=1) already contributes the full factor 2.
+ - greedyValue_le_subMax / descent_not_majorant_of_strict / greedy_ascent_unsound: a fixed-frequency
+   single-half value ≤ the sub-period max, STRICTLY below it when the frequency is dominated downstream;
+   so the recursive-ascent that upper-bounds M(n/2) by the greedy value is unsound (positive witness gap).
+ - coherent_level_factor / greedyProduct_no_cancellation: per-level coherent identity
+   heavy+light=heavy·(1+r) and ∏(1+r_i)≥1 — the chain can only GROW (no destructive interference to
+   exploit), confirming the prize burden is the multiplicative half-mass, not a cancellation.
