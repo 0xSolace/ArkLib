@@ -99,6 +99,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSectorCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCompression
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
@@ -5920,6 +5923,100 @@ theorem doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export {zs : Lis
 #print axioms doorIV_sector_escape_of_coherence_le_export
 #print axioms doorIV_sector_aggregate_deficit_budget_export
 #print axioms doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export
+/-- **[Lane 1/3 real-piece coherence obstruction]** If all real pieces in a door-(iv) refinement
+are nonnegative and the total signed mass is positive, the normalized real-piece coherence is exactly
+`1`. A real/collinear split has no intrinsic anti-concentration slack until it proves genuine negative
+mass. -/
+theorem doorIV_realPiece_coherence_eq_one_nonneg_export {xs : List ℝ}
+    (h : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) :
+    _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs = 1 :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence_eq_one_of_forall_nonneg
+    h hsum
+
+/-- **[Lane 1/3 real-piece coherence obstruction]** Mirror same-sign obstruction: an all-nonpositive
+real-piece refinement with negative total mass also saturates coherence at `1`. -/
+theorem doorIV_realPiece_coherence_eq_one_nonpos_export {xs : List ℝ}
+    (h : ∀ x ∈ xs, x ≤ 0) (hsum : xs.sum < 0) :
+    _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs = 1 :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence_eq_one_of_forall_nonpos
+    h hsum
+
+/-- **[Lane 1/3 real-piece coherence obstruction]** Strict real-piece coherence slack below `1`
+forces both signs to occur in the actual finite list. Thus a real, negation-stable door-(iv)
+refinement only helps if it proves balanced sign mixing, not merely a finer partition. -/
+theorem doorIV_realPiece_coherence_lt_one_forces_both_signs_export {xs : List ℝ}
+    (hsum : xs.sum ≠ 0)
+    (hcoh : _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs < 1) :
+    (∃ x ∈ xs, 0 < x) ∧ (∃ x ∈ xs, x < 0) :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence_lt_one_forces_both_signs
+    hsum hcoh
+
+/-- **[Lane 1/3 sign-mass slack obstruction]** In the compressed real two-mass model, coherence
+is exactly `1 - 2 * min(P,N)/(P+N)`. The entire possible saving is the minority sign mass. -/
+theorem doorIV_signMass_coherence_eq_one_sub_twice_min_export {P N : ℝ}
+    (hden : 0 < P + N) :
+    _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence P N =
+      1 - 2 * min P N / (P + N) :=
+  _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence_eq_one_sub_twice_min
+    hden
+
+/-- **[Lane 1/3 sign-mass slack obstruction]** A target `theta` for compressed real coherence is
+equivalent to the minority-mass lower bound `(1-theta)(P+N)/2 ≤ min(P,N)`. This is the exact
+probe-facing constraint behind any real/collinear anti-concentration claim. -/
+theorem doorIV_signMass_coherence_le_iff_minority_mass_ge_export {P N theta : ℝ}
+    (hden : 0 < P + N) :
+    _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence P N ≤ theta ↔
+      (1 - theta) * (P + N) / 2 ≤ min P N :=
+  _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence_le_iff_minority_mass_ge
+    hden
+
+/-- **[Lane 1/3 sign-mass slack obstruction]** If the minority sign mass is below the requested
+`eps/2` fraction, then a `1-eps` real-coherence certificate is impossible. -/
+theorem doorIV_signMass_no_coherence_drop_of_minority_lt_export {P N eps : ℝ}
+    (hden : 0 < P + N) (hminor : min P N < eps * (P + N) / 2) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence P N ≤ 1 - eps :=
+  _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.not_coherence_le_one_sub_of_minority_mass_lt
+    hden hminor
+
+/-- **[Lane 1/3 real-piece compression obstruction]** Once a real refinement is compressed to
+positive mass `P` and negative mass `N`, its list coherence is literally the sign-mass coherence.
+Finer real partitions add no hidden angular degree of freedom. -/
+theorem doorIV_realPiece_compression_eq_signMass_export {xs : List ℝ} {P N : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) :
+    _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs =
+      _root_.ProximityGap.Frontier.DoorIVRealSignMassSlack.signMassCoherence P N :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCompression.realPieceCoherence_eq_signMassCoherence_of_compression
+    hsum habssum
+
+/-- **[Lane 1/3 real-piece compression obstruction]** Under compression, achieving a threshold
+`theta` is exactly the same minority-sign-mass lower bound as in the two-mass model. -/
+theorem doorIV_realPiece_compression_le_iff_minority_mass_ge_export {xs : List ℝ} {P N theta : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) (hden : 0 < P + N) :
+    _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs ≤ theta ↔
+      (1 - theta) * (P + N) / 2 ≤ min P N :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCompression.realPieceCoherence_le_iff_minority_mass_ge_of_compression
+    hsum habssum hden
+
+/-- **[Lane 1/3 real-piece compression obstruction]** Compressed strict slack forces a positive
+minority sign mass and actual list-level sign mixing. This locks the real/collinear Door-IV route to
+a concrete sign-balance obligation; no CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export {xs : List ℝ} {P N : ℝ}
+    (hsum : xs.sum = P - N) (habssum : (xs.map abs).sum = P + N) (hden : 0 < P + N)
+    (hsumne : xs.sum ≠ 0)
+    (hcoh : _root_.ProximityGap.Frontier.DoorIVRealPieceCoherence.realPieceCoherence xs < 1) :
+    0 < min P N ∧ (∃ x ∈ xs, 0 < x) ∧ (∃ x ∈ xs, x < 0) :=
+  _root_.ProximityGap.Frontier.DoorIVRealPieceCompression.min_pos_and_both_signs_of_realPieceCoherence_lt_one_of_compression
+    hsum habssum hden hsumne hcoh
+
+#print axioms doorIV_realPiece_coherence_eq_one_nonneg_export
+#print axioms doorIV_realPiece_coherence_eq_one_nonpos_export
+#print axioms doorIV_realPiece_coherence_lt_one_forces_both_signs_export
+#print axioms doorIV_signMass_coherence_eq_one_sub_twice_min_export
+#print axioms doorIV_signMass_coherence_le_iff_minority_mass_ge_export
+#print axioms doorIV_signMass_no_coherence_drop_of_minority_lt_export
+#print axioms doorIV_realPiece_compression_eq_signMass_export
+#print axioms doorIV_realPiece_compression_le_iff_minority_mass_ge_export
+#print axioms doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
