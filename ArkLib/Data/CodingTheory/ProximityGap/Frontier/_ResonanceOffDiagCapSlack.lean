@@ -66,6 +66,30 @@ theorem resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean (u : ZMod m → ℂ)
   · intro hcap
     exact resonanceOffDiag_two_re_eq_zero_of_cap_at_mean u hu hcap
 
+/-- **Positive depth-two agreement excess iff some one-step frequency spikes above the mean.**
+The named off-diagonal is strictly positive exactly when the squared one-step spectrum violates the
+Parseval-floor cap at at least one frequency.  This is an exact localization of the depth-two
+obstruction, not a proof that such spikes are small for the thin Gauss-period kernel. -/
+theorem resonanceOffDiag_two_re_pos_iff_exists_above_mean (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) :
+    0 < (resonanceOffDiag u 2).re ↔
+      ∃ k : ZMod m, (m : ℝ) - 1 < ‖kernelSpectrum (dftChar k) u‖ ^ 2 := by
+  constructor
+  · intro hpos
+    by_contra hno
+    have hcap : ∀ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ^ 2 ≤ (m : ℝ) - 1 := by
+      intro k
+      exact le_of_not_gt fun hk => hno ⟨k, hk⟩
+    have hzero := (resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean u hu).mpr hcap
+    linarith
+  · rintro ⟨k, hk⟩
+    have hnonneg := resonanceOffDiag_re_nonneg u 2 hu
+    have hne : (resonanceOffDiag u 2).re ≠ 0 := by
+      intro hzero
+      have hcap := (resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean u hu).mp hzero
+      exact not_le_of_gt hk (hcap k)
+    exact lt_of_le_of_ne' hnonneg hne
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
@@ -74,3 +98,5 @@ end ArkLib.ProximityGap.GaussPhaseResonance
   ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_eq_zero_of_cap_at_mean
 #print axioms
   ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean
+#print axioms
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_pos_iff_exists_above_mean
