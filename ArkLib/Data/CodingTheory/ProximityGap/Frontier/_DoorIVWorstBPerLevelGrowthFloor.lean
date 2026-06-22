@@ -5,6 +5,7 @@ Authors: ArkLib Contributors (#444)
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Real.Basic
 
 set_option autoImplicit false
@@ -104,10 +105,24 @@ theorem no_perLevel_growth_below_floor {A B : E} {rlo ε M₂ K : ℝ}
     mul_lt_mul_of_pos_right hK hM₂
   nlinarith [hfloor, hle, hKlt]
 
+/-- **No `√2` per-level thinning under a super-`√2` floor.**  This is the probe-facing specialization
+of `no_perLevel_growth_below_floor`: if the measured coherent-band/transfer floor satisfies
+`√2 < (1+r_lo)(1−ε)`, then the dyadic wall cannot obey the square-root descent step
+`M(μ_n) ≤ √2 · M(μ_{n/2})` on those hypotheses.  This is a lower-bound obstruction to that descent,
+not a CORE upper bound. -/
+theorem no_sqrt_two_perLevel_thinning {A B : E} {rlo ε M₂ : ℝ}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖)
+    (hlb : rlo * ‖A‖ ≤ ‖B‖) (hrlo : 0 ≤ rlo)
+    (htransfer : (1 - ε) * M₂ ≤ ‖A‖) (hε : 0 ≤ 1 - ε)
+    (hM₂ : 0 < M₂) (hsqrt : Real.sqrt 2 < (1 + rlo) * (1 - ε)) :
+    ¬ ‖A + B‖ ≤ Real.sqrt 2 * M₂ :=
+  no_perLevel_growth_below_floor hcoh hlb hrlo htransfer hε hM₂ hsqrt
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor.perLevel_growth_floor
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor.no_perLevel_growth_below_floor
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor.no_sqrt_two_perLevel_thinning
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor.one_add_rlo_mul_subHalf_le_coherent_peak
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPerLevelGrowthFloor.subHalf_norm_le_coherent_peak
