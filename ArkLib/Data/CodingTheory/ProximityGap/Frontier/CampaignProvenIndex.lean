@@ -104,6 +104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCompression
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMultShiftCollinear
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoPieceAngularDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVUnitPieceDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
@@ -6092,6 +6093,94 @@ theorem doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export
 #print axioms doorIV_realPiece_compression_eq_signMass_export
 #print axioms doorIV_realPiece_compression_le_iff_minority_mass_ge_export
 #print axioms doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** For any finite real multiplicative-shift
+piece family, the normalized coherence is exactly the sign-mass imbalance. Thus a real/collinear
+refinement has no hidden two-dimensional angular degree of freedom; it must prove sign cancellation. -/
+theorem doorIV_multShift_coherence_eq_signMass_imbalance_export {ι : Type*} (s : Finset ι)
+    (A : ι → ℝ) :
+    _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A =
+      |_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A -
+        _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A| /
+        (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+          _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence_eq_signMass_imbalance s A
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** A claimed threshold for real-collinear
+multiplicative-shift coherence is equivalent to a concrete minority-sign-mass lower bound. This is
+the exact finite obligation left by such refinements, not a cancellation theorem. -/
+theorem doorIV_multShift_coherence_le_iff_minority_mass_ge_export {ι : Type*} (s : Finset ι)
+    (A : ι → ℝ) {theta : ℝ}
+    (hden : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+      _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :
+    _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A ≤ theta ↔
+      (1 - theta) *
+          (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+            _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) / 2 ≤
+        min (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A)
+          (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence_le_iff_minority_mass_ge s A hden
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** In the operational `1 - ε` form, a real
+multiplicative-shift refinement must prove an `ε/2` minority-sign-mass fraction. If the adversarial
+frequency is nearly one-signed, this route has no slack. -/
+theorem doorIV_multShift_coherence_le_one_sub_iff_minority_mass_ge_export {ι : Type*} (s : Finset ι)
+    (A : ι → ℝ) {eps : ℝ}
+    (hden : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+      _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :
+    _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A ≤ 1 - eps ↔
+      eps *
+          (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+            _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) / 2 ≤
+        min (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A)
+          (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence_le_one_sub_iff_minority_mass_ge s A hden
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** Contrapositive budget form: if the minority
+sign mass is below the requested `ε/2` fraction, a real-collinear mult-shift split cannot certify
+`ρ ≤ 1 - ε`. -/
+theorem doorIV_multShift_not_coherence_le_one_sub_of_minority_lt_export {ι : Type*} (s : Finset ι)
+    (A : ι → ℝ) {eps : ℝ}
+    (hden : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+      _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A)
+    (hminor : min (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A)
+        (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) <
+      eps * (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+        _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) / 2) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A ≤ 1 - eps :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.not_coherence_le_one_sub_of_minority_mass_lt
+    s A hden hminor
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** Exact strict-slack criterion: once total
+real mass is nonzero, real-collinear coherence drops below `1` iff both sign masses are present. -/
+theorem doorIV_multShift_coherence_lt_one_iff_both_sign_masses_pos_export {ι : Type*} (s : Finset ι)
+    (A : ι → ℝ)
+    (hden : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+      _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :
+    _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A < 1 ↔
+      0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A ∧
+        0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence_lt_one_iff_both_sign_masses_pos s A hden
+
+/-- **[Lane 1/3 mult-shift collinearity obstruction]** With both signs present, the exact deficit
+`1 - ρ` is the doubled minority sign mass over total mass. The real mult-shift route reduces to this
+one scalar balance condition. -/
+theorem doorIV_multShift_one_sub_coherence_eq_export {ι : Type*} (s : Finset ι) (A : ι → ℝ)
+    (hP : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A)
+    (hN : 0 < _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :
+    1 - _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.coherence s A =
+      2 * min (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A)
+          (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) /
+        (_root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.posMass s A +
+          _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.negMass s A) :=
+  _root_.ProximityGap.Frontier.DoorIVMultShiftCollinear.one_sub_coherence_eq s A hP hN
+
+#print axioms doorIV_multShift_coherence_eq_signMass_imbalance_export
+#print axioms doorIV_multShift_coherence_le_iff_minority_mass_ge_export
+#print axioms doorIV_multShift_coherence_le_one_sub_iff_minority_mass_ge_export
+#print axioms doorIV_multShift_not_coherence_le_one_sub_of_minority_lt_export
+#print axioms doorIV_multShift_coherence_lt_one_iff_both_sign_masses_pos_export
+#print axioms doorIV_multShift_one_sub_coherence_eq_export
 
 open scoped ComplexConjugate
 
