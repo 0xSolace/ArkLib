@@ -11532,3 +11532,31 @@ Lane: Door-IV Lane 2/3 conditional reduction export. The proved brick `_HDCocycl
 VERDICT: this does not prove CORE. It makes the escape-or-relocate statement citable: phase-blind/magnitude-only methods stay pinned to the Parseval/random average, while the HD identity escapes that class but relocates the prize to the explicit cocycle-contraction/off-diagonal-deficit theorem. The contraction `theta<1` is not asserted.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_hd_rerandom_invariant_forces_average_export`, `doorIV_hd_cocycle_breaks_rerandom_export`, `doorIV_hd_selfSimilarity_is_linear_in_phases_export`, `doorIV_hd_doubling_defect_telescope_export`, `doorIV_hd_prizeSup_of_cocycleContraction_export`, and `doorIV_hd_contractionStep_of_offDiagonalDeficit_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [wraparound-saddle-credit-forced] `W_{r*}=0` is the wrong target — the saddle forces a strictly-positive credit (2026-06-22, sol)
+
+Lane: door-(iv) Lane 3 constraint lemma locking the saddle-side correction Shaw's probe
+`probe_Wr_onset_vs_saddle.py` (commit `720f09ac5`) established empirically. That probe DECIDED that
+the genuine mod-`p` wraparound count `W_r` is `0` for `r ≤ 4`, has ONSET `r_0 = 5`, and is STRICTLY
+POSITIVE and growing thereafter (`W_8 ≈ 1.4·10¹⁷` at `n=16`), so at the saddle `r* = round(log p) = 11
+≫ r_0` we have `W_{r*} > 0`. Hence the previously-hoped *static* target `W_{r*} = 0` is FALSE and
+unprovable (small cyclotomic integers DO hit the prime past the Lam–Leung antipodal regime; house
+bound vacuous). The correct open target is the budget inequality `p·W ≤ creditᵣ`
+(`creditᵣ = n^(2r) − Wick + p·Delta`, the recalled `_WraparoundBudgetIdentity.prize_iff_wraparound_budget`
+equivalence), which the saddle satisfies WITH MARGIN (`W_r/SLACK_r ≈ 0.0002/0.0017/0.0045` at
+`r=5/6/7`) DESPITE `W > 0`, because the char-0 deficit `p·Delta` dwarfs `p·W`.
+
+VERDICT (constraint lemma, rule-4): at the saddle the prize moment bound is NEVER certifiable by a
+vanishing credit — a genuinely positive wraparound mass forces the credit strictly positive, so the
+`W = 0` route is excluded past onset and the open content is the *budget* inequality on a positive
+`W`, not its vanishing. The `W = 0` target degenerates the budget to bare credit-nonnegativity
+`0 ≤ credit` (why it was tempting below onset; why it cannot extend past onset). No CORE upper bound,
+no cancellation, no completion, no anti-concentration, no capacity claim; `0 < W` is taken as the
+saddle HYPOTHESIS the probe supplies, never larped as a theorem. CORE (the open budget inequality)
+remains open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_WraparoundSaddleCreditForced.lean`,
+axiom-clean. Theorems `credit_pos_of_budget_of_wrap_pos`, `wrap_ne_zero_of_onset_lt_saddle`,
+`budget_not_via_wrap_zero`, `wrap_zero_budget_iff_credit_nonneg`,
+`credit_strictly_exceeds_wrap_of_margin`, `saddle_target_is_budget_not_vanishing`. Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
