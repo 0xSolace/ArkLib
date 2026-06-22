@@ -100,6 +100,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvJB_HankelRoutesToMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NonTensorWrapCrossResidual
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HDCocyclePhaseCoupling
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A2OnsetLatticeMinimum
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditForced
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4522,6 +4525,135 @@ theorem doorIV_hd_contractionStep_of_offDiagonalDeficit_export
 #print axioms doorIV_hd_selfSimilarity_is_linear_in_phases_export
 #print axioms doorIV_hd_doubling_defect_telescope_export
 #print axioms doorIV_hd_prizeSup_of_cocycleContraction_export
+
 #print axioms doorIV_hd_contractionStep_of_offDiagonalDeficit_export
+
+/-! ## Door-IV Lane 2/3 onset-to-saddle credit chain exports.
+Scope: **reduction/obstruction capstone**.
+
+These exports make the newest `W_r` onset lattice and saddle-credit correction citable from the
+permanent index. They do not prove the saddle budget inequality. They pin the exact failure of the
+static `W_r = 0` target: pigeonhole-onset forces short wraparound relations below the saddle, and
+once the real-valued wraparound count is positive, any successful budget proof must spend a strictly
+positive DC/char-0 credit.
+-/
+
+/-- **[obstruction, A2OnsetLatticeMinimum]** Contributing-pair embedding: two reduced `r`-tuples
+with equal residue evaluation but distinct integer reductions produce a nonzero lattice vector of
+`ℓ¹`-weight at most `2r`. This is the exact short-vector source of the onset law. -/
+theorem doorIV_A2_contributing_pair_short_lattice_export
+    {m p r : ℕ} (g : ZMod p) (rv rw : Fin m → ℤ)
+    (hrv : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 rv ≤ r)
+    (hrw : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 rw ≤ r)
+    (heval : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.eval g rv =
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.eval g rw) (hne : rv ≠ rw) :
+    _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.inLattice g (fun j => rv j - rw j) ∧
+      (fun j => rv j - rw j) ≠ 0 ∧
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 (fun j => rv j - rw j) ≤ 2 * r :=
+  _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.contributing_pair_short_lattice
+    g rv rw hrv hrw heval hne
+
+/-- **[obstruction, A2OnsetLatticeMinimum]** Onset law, sufficient direction: if every nonzero
+lattice vector has `ℓ¹`-weight greater than `2r`, then equal evaluations of two reduced `r`-tuples
+force the reductions to be equal. Equivalently, below the first lattice minimum there is no genuine
+wraparound contribution. -/
+theorem doorIV_A2_no_wraparound_below_lambda_export
+    {m p r : ℕ} (g : ZMod p)
+    (hmin : ∀ a : Fin m → ℤ,
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.inLattice g a → a ≠ 0 →
+        2 * r < _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a)
+    (rv rw : Fin m → ℤ)
+    (hrv : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 rv ≤ r)
+    (hrw : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 rw ≤ r)
+    (heval : _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.eval g rv =
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.eval g rw) :
+    rv = rw :=
+  _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.no_wraparound_of_below_lambda
+    g hmin rv rw hrv hrw heval
+
+/-- **[obstruction, A2OnsetLatticeMinimum]** Pigeonhole upper bound on the onset minimum: more than
+`p` integer vectors of `ℓ¹`-weight at most `w` force two to collide modulo `p`, hence a nonzero
+lattice relation of weight at most `2w`. This is the short-relation mechanism that makes onset
+constant-scale at prize parameters. -/
+theorem doorIV_A2_short_relation_of_card_gt_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w : ℕ)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card) :
+    ∃ a ∈ S, ∃ b ∈ S, a ≠ b ∧
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.inLattice g (fun j => a j - b j) ∧
+      (fun j => a j - b j) ≠ 0 ∧
+      _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 (fun j => a j - b j) ≤ 2 * w :=
+  _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.exists_short_relation_of_card_gt
+    p g w S hSw hcard
+
+/-- **[obstruction, A2OnsetLatticeMinimum]** Pigeonhole refutes `OnsetSavesSaddle`: if the short
+ball already outgrows `p` at radius `w ≤ r`, then the saddle cannot be certified by `W_r = 0`.
+The surviving obligation is the orbit-count/budget bound beyond onset. -/
+theorem doorIV_A2_not_onsetSavesSaddle_of_card_gt_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w r : ℕ) (hwr : w ≤ r)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card) :
+    ¬ _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r :=
+  _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.not_onsetSavesSaddle_of_card_gt
+    p g w r hwr S hSw hcard
+
+/-- **[obstruction, WraparoundSaddleCreditForced]** If the saddle wraparound mass is positive and
+the budget `p*W≤credit` holds with `p>0`, then the credit is strictly positive. Therefore a saddle
+budget proof cannot be a zero-credit certificate. -/
+theorem doorIV_saddle_credit_pos_of_budget_wrap_pos_export
+    {p W credit : ℝ} (hp : 0 < p) (hW : 0 < W) (hbudget : p * W ≤ credit) :
+    0 < credit :=
+  _root_.ArkLib.ProximityGap.Frontier.WraparoundSaddleCreditForced.credit_pos_of_budget_of_wrap_pos
+    hp hW hbudget
+
+/-- **[obstruction, WraparoundSaddleCreditForced]** Past onset, positive wraparound makes the
+static `W=0` target false and forces strictly positive credit under the budget inequality. This is
+Shaw's corrected target in kernel form: prove the budget on positive `W`, not `W=0`. -/
+theorem doorIV_saddle_target_budget_not_vanishing_export
+    {p W credit : ℝ} (hp : 0 < p) (hW : 0 < W) (hbudget : p * W ≤ credit) :
+    W ≠ 0 ∧ 0 < credit ∧ p * W ≤ credit :=
+  _root_.ArkLib.ProximityGap.Frontier.WraparoundSaddleCreditForced.saddle_target_is_budget_not_vanishing
+    hp hW hbudget
+
+/-- **[capstone, OnsetToSaddleCreditChain]** Pigeonhole below the saddle plus the explicit
+count-positivity bridge gives positive wraparound at depth `r`. The bridge is a hypothesis, not
+asserted here; the exported theorem wires the proven onset-pigeonhole side to that named rung. -/
+theorem doorIV_onset_chain_wrap_pos_of_pigeonhole_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w r : ℕ) (hwr : w ≤ r)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card) (W : ℕ → ℝ)
+    (hbridge : _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.WraparoundCountPositive
+      m g W) :
+    0 < W r :=
+  _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.wrap_pos_of_pigeonhole
+    p g w r hwr S hSw hcard W hbridge
+
+/-- **[capstone, OnsetToSaddleCreditChain]** Full citable chain: pigeonhole refutes onset-saving,
+the explicit count-positivity bridge turns that into `0<W_r`, and any successful budget inequality
+`pp*W_r≤credit` must spend a strictly positive credit. No budget inequality or CORE bound is asserted. -/
+theorem doorIV_onset_chain_saddle_spends_credit_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w r : ℕ) (hwr : w ≤ r)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card) (W : ℕ → ℝ)
+    (hbridge : _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.WraparoundCountPositive
+      m g W)
+    {pp credit : ℝ} (hpp : 0 < pp) (hbudget : pp * (W r) ≤ credit) :
+    ¬ _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r ∧
+      0 < W r ∧ 0 < credit :=
+  _root_.ArkLib.ProximityGap.Frontier.OnsetToSaddleCreditChain.saddle_forced_past_onset_spends_credit
+    p g w r hwr S hSw hcard W hbridge hpp hbudget
+
+#print axioms doorIV_A2_contributing_pair_short_lattice_export
+#print axioms doorIV_A2_no_wraparound_below_lambda_export
+#print axioms doorIV_A2_short_relation_of_card_gt_export
+#print axioms doorIV_A2_not_onsetSavesSaddle_of_card_gt_export
+#print axioms doorIV_saddle_credit_pos_of_budget_wrap_pos_export
+#print axioms doorIV_saddle_target_budget_not_vanishing_export
+#print axioms doorIV_onset_chain_wrap_pos_of_pigeonhole_export
+#print axioms doorIV_onset_chain_saddle_spends_credit_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

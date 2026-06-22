@@ -11609,3 +11609,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OrbitCountWallDi
 axiom-clean. Defs `OrbitCountWall`, `OrbitWallImpliesSaddle`; theorems `saddle_obligation_dichotomy`,
 `saddle_bound_of_onset_fail_and_wall`, `pigeonhole_routes_to_orbit_wall`. Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+## door-(iv) Lane 2/3 — onset-to-saddle credit chain permanently indexed (2026-06-21)
+
+Scope: permanent CampaignProvenIndex export of the newest `W_r` onset lattice and saddle-credit
+correction stack. Added citable exports for:
+- the A2 contributing-pair-to-short-lattice-vector embedding;
+- the below-λ₁ no-wraparound/onset law;
+- the pigeonhole short-relation bound and `¬ OnsetSavesSaddle` consequence;
+- the saddle fact that positive wraparound plus `p·W ≤ credit` forces strictly positive credit;
+- the combined chain: pigeonhole below the saddle + explicit count-positivity bridge + budget
+  inequality ⇒ `¬OnsetSavesSaddle ∧ 0<W_r ∧ 0<credit`.
+
+Verdict: the static target `W_r = 0` is now indexed as the wrong saddle target. Past onset, any
+successful proof must prove the budget inequality on genuinely positive wraparound mass and spend
+DC/char-0 credit. This is a reduction/obstruction capstone only: no CORE upper bound, no cancellation,
+no completion, no anti-concentration, and the count-positivity bridge remains an explicit hypothesis.
+
