@@ -11914,3 +11914,19 @@ Formal kernel: `_DoorIVQVCauchySchwarzCircular.lean` (qv_route_recovers_trivial_
 qv_route_no_sublinear_saving, cauchy_schwarz_increments, drift_sq_le_card_mul_log2_mul_drift). New
 `CampaignProvenIndex` exports: `doorIV_qv_route_recovers_trivial_ceiling_export`,
 `doorIV_qv_route_no_sublinear_saving_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-jacobi-cocycle-characterization-indexed] Jacobi-cocycle Door-IV capstone made permanent (2026-06-21, g55)
+
+Lane: door-(iv) Lane 2 formal reduction/capstone. Indexed `_JacobiCocycleDoorIVCapstone` in
+`CampaignProvenIndex` as `doorIV_jacobiCocycle_characterization_export`.
+
+VERDICT: the three already-proven faces of the localized Jacobi-cocycle gap are now one citable,
+permanent theorem: (1) the exact required cancellation factor `(1/C)·sqrt(n/log m)`, (2) the flat
+budget forces genuine phase non-alignment, and (3) the prize arithmetic excludes the Fermat closed-form
+corner. This is a characterization/reduction capstone only. It does NOT prove the missing cocycle
+dispersion, CORE cancellation, completion, moment saving, anti-concentration, or capacity. CORE remains
+open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDoorIVCapstone.lean`,
+permanent export in `CampaignProvenIndex`: `doorIV_jacobiCocycle_characterization_export`, axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`.

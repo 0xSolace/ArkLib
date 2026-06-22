@@ -37,6 +37,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeShawTetrachotomySynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDoorIVCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
@@ -2554,6 +2555,30 @@ theorem doorIV_nonTensor_tensor_dilution_strict_export
 
 
 
+
+
+/-- **[Lane 2 Door-IV Jacobi-cocycle capstone]** Bundles the three proven faces of the localized
+Jacobi-cocycle gap into one permanent citable theorem: the exact cancellation factor, the forced
+non-alignment mechanism under a flat prize budget, and the exclusion of the Fermat closed-form corner.
+This is a characterization/reduction capstone only: it does NOT prove the missing cocycle dispersion,
+CORE, cancellation, completion, moment saving, or capacity. -/
+theorem doorIV_jacobiCocycle_characterization_export
+    {C n m : ℝ} (hC : 0 < C) (hn : 0 < n) (hm : 1 < m)
+    {pSub nNat mNat r a : ℕ}
+    (hfac : pSub = nNat * mNat) (hnNat : nNat = 2 ^ a)
+    (hr_odd : Odd r) (hr1 : 1 < r) (hr_dvd : r ∣ mNat)
+    {M : ℕ} {γ : Fin M → ℂ}
+    (hbudget : ‖_root_.ProximityGap.Frontier.DyadicJacobiCocycleNonContraction.phaseSum γ‖ ≤
+      C * Real.sqrt ((M : ℝ) * Real.log M))
+    (hgap : C * Real.sqrt ((M : ℝ) * Real.log M) < (M : ℝ)) :
+    n / (C * Real.sqrt (n * Real.log m)) =
+        _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleCancellationGap.requiredCancellationFactor C n m
+      ∧ (¬ ∃ ζ : ℂ, ‖ζ‖ = 1 ∧ ∀ j, γ j = ζ)
+      ∧ (∀ k, pSub ≠ 2 ^ k) :=
+  _root_.ArkLib.ProximityGap.Frontier.JacobiCocycleDoorIVCapstone.jacobiCocycle_doorIV_characterization
+    hC hn hm hfac hnNat hr_odd hr1 hr_dvd hbudget hgap
+
+#print axioms doorIV_jacobiCocycle_characterization_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
