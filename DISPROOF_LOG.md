@@ -12422,3 +12422,38 @@ new theorems `zeroSumCount_eq_zero_of_deviation_lt_two_q` and
 `doorIV_signedDeep_zeroSumCount_zero_of_deviation_lt_two_q_export` and
 `doorIV_signedDeep_eq_floor_of_deviation_lt_two_q_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-perlevel-growth-floor] per-level wall growth has a (1+r_lo)(1-ε) FLOOR > √2 — the √-wall does not thin down the tower (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane-1. Ties the worst-b coherent-imbalance band [doorIV-worstb-imbalance-stationary-band]
+to the dyadic tower via the measured sub-period transfer, and SHARPENS [doorIV-worstb-nonnested].
+
+PROBE (scripts/probes/probe_dooriv_worstb_crossdepth_argmax.py; FULL coset scan of BOTH μ_n (m cosets)
+AND μ_{n/2} (2m cosets — the correct bigger quotient), proper μ_n, p≫n³, β=4, median over 6 structured
+primes, never n=q-1):
+- per-level wall growth M(μ_n)/M(μ_{n/2}) = 1.738, 1.541, 1.459 at n=16/32/64 — strictly above √2≈1.414
+  (the floor on the √(n·log) law). The √-wall does NOT thin per level.
+- the full-group worst frequency b* sits at the 99.9th percentile (0.9986/0.9987/0.9975) of μ_{n/2}'s
+  |η| distribution: b* is NEAR-worst (but by [doorIV-worstb-nonnested] NOT exactly the sub-argmax) for
+  the half-subgroup. So non-nesting is FRAGILE: the transfer is ‖A_{b*}‖ ≥ (1-ε)·M(μ_{n/2}) with a
+  small ε≈10⁻³ — b* misses the exact sub-argmax by only ~0.1 percentile.
+
+VERDICT: combining the coherent imbalance band (M₁=‖A+B‖ ≥ (1+r_lo)·‖A‖) with the near-worst transfer
+(‖A‖ ≥ (1-ε)·M₂) gives a CONDITIONAL per-level growth FLOOR M₁ ≥ (1+r_lo)(1-ε)·M₂. With measured
+r_lo≈0.5, ε≈10⁻³ the floor ≈1.498·M₂ > √2·M₂, matching observed 1.46–1.74. So under the measured
+band+transfer hypotheses the wall provably does NOT thin per level — any descent hoping for a per-level
+factor below (1+r_lo)(1-ε) is excluded. This explains the partition-depth-invariance
+([doorIV-worstb-partition-depth-invariant]): the same near-worst b* persists at every depth.
+
+CONDITIONAL lower bound (hypotheses = measured band + near-worst transfer), not a CORE upper bound.
+PROBE-ONLY on the n-trend (HARD RULE 1): only the conditional floor is formalized.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPerLevelGrowthFloor.lean
+(4 theorems, axiom-clean ⊆ {propext, Classical.choice, Quot.sound}, no sorryAx):
+- subHalf_norm_le_coherent_peak: ‖A‖ ≤ ‖A+B‖ (single coherent nonneg summand).
+- one_add_rlo_mul_subHalf_le_coherent_peak: r_lo·‖A‖≤‖B‖ ⟹ (1+r_lo)·‖A‖ ≤ ‖A+B‖.
+- perLevel_growth_floor: + (1-ε)·M₂≤‖A‖ ⟹ M₁ ≥ (1+r_lo)(1-ε)·M₂.
+- no_perLevel_growth_below_floor: K<(1+r_lo)(1-ε) ⟹ ¬(M₁ ≤ K·M₂) (descent below floor impossible).
+
+No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
