@@ -2160,6 +2160,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceRecursionBaseCon
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralMean
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectrumModulusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceStickelbergerCeilingDiagnostic
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoAntitoneFailsThinPrime
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoCharZeroSlackVacuousAtPrize
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RhoDecomposition
