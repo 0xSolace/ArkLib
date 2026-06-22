@@ -1840,6 +1840,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepRigidityC
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTowerGrowthIteration
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTowerSlackNonAssemblable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTripleCorrelationVanishes
