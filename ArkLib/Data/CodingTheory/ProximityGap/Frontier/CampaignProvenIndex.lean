@@ -140,6 +140,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGener
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -6137,6 +6138,66 @@ theorem doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export (zs : List ℂ) :
 #print axioms doorIV_multiPiece_norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit_export
 #print axioms doorIV_multiPiece_norm_sum_sq_le_iff_totalPairDeficit_ge_export
 #print axioms doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export
+
+/-- **[Lane 3 worst-b participation budget]** The aligned coherent mass at a candidate worst
+frequency is bounded by its L² magnitude budget: `(Σ wⱼ)² ≤ |s| Σ wⱼ²`. Thus a participation or
+forward-mass certificate for the Door-IV coherence cannot evade the Plancherel-style magnitude
+object merely by renaming the aligned terms; it must pay the corresponding L² budget. No CORE /
+cancellation / completion / moment-saving / capacity claim. -/
+theorem doorIV_worstB_participation_sq_aligned_le_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) :
+    (∑ j ∈ s, w j) ^ 2 ≤ (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.sq_aligned_mass_le_card_mul_sumSq
+    s w
+
+/-- **[Lane 3 worst-b participation ratio]** With positive L² denominator, the normalized
+participation ratio is at most one. This is the generic Cauchy ceiling behind the observed worst-b
+internal geometry: a strict saving needs arithmetic input beyond the L² participation variable. -/
+theorem doorIV_worstB_participation_ratio_le_one_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ)
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :
+    (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ 1 :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_one
+    s w hpos
+
+/-- **[Lane 3 worst-b participation threshold]** A claimed normalized participation bound
+`PR ≤ θ` is exactly the denominator-cleared squared-aligned-mass inequality. The route has no hidden
+phase slack unless that concrete L²-normalized inequality is proved. -/
+theorem doorIV_worstB_participation_ratio_le_iff_sq_aligned_le_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :
+    (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ θ ↔
+      (∑ j ∈ s, w j) ^ 2 ≤ θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_iff_sq_aligned_le
+    s w hpos
+
+/-- **[Lane 3 worst-b coherence L² floor]** If nonnegative coherent mass `C` is below the aligned
+mass, then the L² mass must be at least `C² / |s|`. This is the probe-facing floor: a large aligned
+worst-b certificate already forces the corresponding Plancherel expenditure. -/
+theorem doorIV_worstB_sumSq_ge_coherence_sq_div_card_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) {C : ℝ}
+    (hC0 : 0 ≤ C) (hC : C ≤ ∑ j ∈ s, w j) :
+    C ^ 2 / (s.card : ℝ) ≤ ∑ j ∈ s, (w j) ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.sumSq_ge_coherence_sq_div_card
+    s w hcard hC0 hC
+
+/-- **[Lane 3 worst-b budget contrapositive]** An explicit L² budget `B < C² / |s|` rules out
+aligned coherent mass `C`. Worst-b participation/coherence attacks must either pay this L² floor or
+leave the coherent certificate below `C`; naming participation variables gives no arithmetic
+anti-concentration for free. -/
+theorem doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) (hcard : 0 < (s.card : ℝ)) {B C : ℝ}
+    (hC0 : 0 ≤ C) (hbudget : ∑ j ∈ s, (w j) ^ 2 ≤ B)
+    (hB : B < C ^ 2 / (s.card : ℝ)) :
+    ¬ C ≤ ∑ j ∈ s, w j :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_coherence_le_aligned_mass_of_sumSq_le_budget
+    s w hcard hC0 hbudget hB
+
+#print axioms doorIV_worstB_participation_sq_aligned_le_export
+#print axioms doorIV_worstB_participation_ratio_le_one_export
+#print axioms doorIV_worstB_participation_ratio_le_iff_sq_aligned_le_export
+#print axioms doorIV_worstB_sumSq_ge_coherence_sq_div_card_export
+#print axioms doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
