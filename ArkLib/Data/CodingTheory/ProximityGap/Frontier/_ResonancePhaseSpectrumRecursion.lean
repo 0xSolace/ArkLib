@@ -73,6 +73,34 @@ theorem phaseSpectrum_succ (ψ : ZMod m → ℂ) (u : ZMod m → ℂ) (r : ℕ)
     _ = u a * ψ a * ∑ d : ZMod m, phaseSum u r d * ψ d := by
           ring
 
+/-- Depth zero has only the empty tuple, so its spectrum is `ψ 0`. -/
+theorem phaseSpectrum_zero (ψ : ZMod m → ℂ) (u : ZMod m → ℂ) :
+    phaseSpectrum ψ u 0 = ψ 0 := by
+  classical
+  unfold phaseSpectrum phaseSum
+  rw [Finset.sum_eq_single (0 : ZMod m)]
+  · simp
+  · intro c _ hc
+    have h0c : ¬ (0 : ZMod m) = c := by
+      simpa [eq_comm] using hc
+    simp [h0c]
+  · simp
+
+/-- Iterating the spectral recursion: with `ψ 0 = 1`, every rung is a power of the
+one-step kernel spectrum. -/
+theorem phaseSpectrum_eq_kernelSpectrum_pow (ψ : ZMod m → ℂ) (u : ZMod m → ℂ)
+    (hmul : ∀ x y : ZMod m, ψ (x + y) = ψ x * ψ y) (hzero : ψ 0 = 1) :
+    ∀ r : ℕ, phaseSpectrum ψ u r = (kernelSpectrum ψ u) ^ r := by
+  intro r
+  induction r with
+  | zero =>
+      rw [phaseSpectrum_zero, hzero, pow_zero]
+  | succ r ih =>
+      rw [phaseSpectrum_succ ψ u r hmul, ih, pow_succ]
+      ring
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_succ
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_zero
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_eq_kernelSpectrum_pow
