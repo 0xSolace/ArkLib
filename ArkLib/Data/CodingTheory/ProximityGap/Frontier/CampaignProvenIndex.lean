@@ -143,6 +143,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -341,6 +342,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMassBalance_single_half_pays_floor_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
 | `doorIV_halfMassBalance_descent_loss_eq_two_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
 | `doorIV_halfMassBalance_descent_loss_le_two_export` | obstruction | DoorIVHalfMassBalanceAtArgmax |
+| `doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export` | obstruction | DoorIVWorstBCoherentImbalance |
 | `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
@@ -6373,5 +6375,31 @@ theorem floorBad_defect_ramification_tower_invariant_export :
   FloorBadTower.defect_ramification_tower_invariant
 
 #print axioms floorBad_defect_ramification_tower_invariant_export
+
+/-- **[obstruction, DoorIVWorstBCoherentImbalance — door-(iv) Lane-1/3]** At the **true** worst frequency
+the two index-2 coset-halves `A_{b*}, B_{b*}` of `η_{b*} = Σ_{y∈μ_n} e_p(b*·y)` are COHERENT
+(`ρ(b*)=1`, `‖A+B‖ = ‖A‖+‖B‖`, the same-ray fact — probe deficit `1−ρ(b*)` identically `0`,
+`∠(A,B)=0` to machine precision, `n=16..256`) yet STRICTLY IMBALANCED (`‖A‖ ≠ ‖B‖`; full-coset-scan
+balance `r(b*) = 0.89 / 0.61 / 0.78` at `n=16/32/64`, bounded away from `1`, correcting the earlier
+*sampled* probe's `r→0.99` reading which was a sampling artifact). Under this coherent-imbalanced
+regime the period norm is **strictly below** the symmetric ceiling `‖A+B‖ < 2·max(‖A‖,‖B‖)`, with the
+over-count `2·max − ‖A+B‖ = max − min > 0` equal to the half-mass imbalance. Contrapositively, any
+descent step that uses the symmetric identity `‖A+B‖ = 2·max(‖A‖,‖B‖)` *forces* `‖A‖ = ‖B‖`, which the
+true worst-`b` violates — so the balanced-symmetric "÷2" descent is INAPPLICABLE at the adversarial
+frequency and the dyadic recursion the prize reduces to is genuinely asymmetric. Distinct from
+`_DoorIVHalfMassBalanceAtArgmax` (which proves the *conditional* balanced identities `‖A+B‖=2‖A‖`); this
+pins that the conditioning hypothesis FAILS at the real argmax. No CORE / cancellation / completion /
+moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E}
+    (hcoh : ‖A + B‖ = ‖A‖ + ‖B‖) (hne : ‖A‖ ≠ ‖B‖) :
+    (‖A + B‖ < 2 * max ‖A‖ ‖B‖) ∧
+    (2 * max ‖A‖ ‖B‖ - ‖A + B‖ = max ‖A‖ ‖B‖ - min ‖A‖ ‖B‖) ∧
+    (∀ (_h : ‖A + B‖ = 2 * max ‖A‖ ‖B‖), ‖A‖ = ‖B‖) :=
+  ⟨DoorIVWorstBCoherentImbalance.norm_lt_two_mul_max_of_coherent_imbalanced hcoh hne,
+   DoorIVWorstBCoherentImbalance.two_mul_max_sub_norm_eq_imbalance hcoh,
+   fun h => DoorIVWorstBCoherentImbalance.coherent_norm_eq_two_mul_max_forces_balance hcoh h⟩
+
+#print axioms doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

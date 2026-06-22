@@ -12147,3 +12147,38 @@ Formal exports: `doorIV_twoPiece_norm_add_sq_eq_halfMass_sq_sub_two_angularDefic
 `doorIV_multiPiece_norm_sum_sq_le_iff_totalPairDeficit_ge_export`, and
 `doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-coherent-imbalance] the TRUE worst-b coset-halves are coherent but STRICTLY imbalanced — symmetric "÷2" descent inapplicable (2026-06-21, sol opus-4-8)
+
+Lane: door-(iv) Lane-1 PROBE + Lane-3 constraint. The brief's localized live object is the index-2
+coset-half coherence ρ(b*) at the worst frequency, η_b = A_b + B_b with A_b over μ_{n/2}, B_b over the
+coset h·μ_{n/2}.
+
+PROBE (`scripts/probes/probe_444_worstb_coherent_imbalance.py` + `probe_dooriv_worstb_coherence_deficit_law.py`;
+FULL coset-space scan F_p*/μ_n ≅ Z_m over ALL m cosets via g^t — NOT sampled; proper μ_n, p≫n³, odd m,
+never n=q-1):
+- ρ(b*) = 1.00000 EXACTLY at every n=16..256 (1−ρ identically 0; ∠(A,B)=0 to machine precision,
+  ≤1.6e-16). The worst frequency is exactly the one that phase-ALIGNS the two halves ⟹ door-(iv)
+  coset-half *coherence* supplies ZERO destructive interference. The "halves cancel" hope is DEAD.
+- BUT balance r(b*)=min(‖A‖,‖B‖)/max = 0.8907 (n=16), 0.6088 (n=32), 0.7853 (n=64): bounded strictly
+  away from 1 and NON-monotone. CORRECTS the earlier *sampled* balance probe's "r(b*)→0.93..0.9996,
+  balance-enriched" reading, which was a SAMPLING ARTIFACT (scanning ~4000 random cosets misses the
+  true argmax and lands on a more-balanced near-max coset).
+
+VERDICT (refutation-with-mechanism): at the TRUE worst b the two halves are coherent (same-ray) yet
+STRICTLY imbalanced (‖A‖≠‖B‖). Under coherence with strict imbalance the period norm is STRICTLY below
+the symmetric ceiling: ‖A+B‖ < 2·max(‖A‖,‖B‖), with the over-count 2·max − ‖A+B‖ = max − min > 0 equal
+to the half-mass imbalance. Contrapositively, any descent step using ‖A+B‖ = 2·max(‖A‖,‖B‖) FORCES
+‖A‖=‖B‖, which the true worst-b violates. So the balanced-symmetric "÷2" dyadic descent is INAPPLICABLE
+at the adversarial frequency; the half-mass recursion the prize reduces to is genuinely ASYMMETRIC. The
+entire √-cancellation burden falls on H(b*)=‖A‖+‖B‖ (decaying ~n^{−0.3..0.5}) via the asymmetric
+recursion, OFF the coherence object. No CORE / cancellation / completion / moment / capacity claim;
+CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBCoherentImbalance.lean`,
+theorems `norm_lt_two_mul_max_of_coherent_imbalanced`, `two_mul_max_sub_norm_eq_imbalance`,
+`coherent_norm_eq_two_mul_max_forces_balance`, `coherent_norm_eq_max_add_min`; indexed
+`CampaignProvenIndex.doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export`. Axiom-clean
+with axioms contained in `{propext, Classical.choice, Quot.sound}`. Distinct from
+`_DoorIVHalfMassBalanceAtArgmax` (which proves the *conditional* balanced identity ‖A+B‖=2‖A‖); this
+pins that the conditioning hypothesis FAILS at the real argmax.
