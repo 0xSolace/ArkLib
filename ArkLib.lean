@@ -2141,6 +2141,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwoBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentUnconditionalCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceNumeratorDiagOffDiagSplit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceParsevalBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSumConvolutionRecursion
