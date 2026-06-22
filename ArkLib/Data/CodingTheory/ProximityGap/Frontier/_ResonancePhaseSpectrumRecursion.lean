@@ -99,8 +99,31 @@ theorem phaseSpectrum_eq_kernelSpectrum_pow (ψ : ZMod m → ℂ) (u : ZMod m �
       rw [phaseSpectrum_succ ψ u r hmul, ih, pow_succ]
       ring
 
+/-- If the one-step kernel spectrum vanishes at a frequency, then every positive depth
+spectrum vanishes at the same frequency.  This is only an exact algebraic annihilation
+criterion; it does not prove that any prize-relevant kernel spectrum vanishes. -/
+theorem phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero (ψ : ZMod m → ℂ)
+    (u : ZMod m → ℂ) (r : ℕ)
+    (hmul : ∀ x y : ZMod m, ψ (x + y) = ψ x * ψ y)
+    (hk : kernelSpectrum ψ u = 0) :
+    phaseSpectrum ψ u (r + 1) = 0 := by
+  rw [phaseSpectrum_succ ψ u r hmul, hk, zero_mul]
+
+/-- Contrapositive packaging of the annihilation criterion: any nonzero positive-depth
+spectrum certifies a nonzero one-step kernel spectrum.  The open door-(iv) content is still
+to bound this one-step kernel at the adversarial frequency, not merely to prove nonvanishing. -/
+theorem kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero (ψ : ZMod m → ℂ)
+    (u : ZMod m → ℂ) (r : ℕ)
+    (hmul : ∀ x y : ZMod m, ψ (x + y) = ψ x * ψ y)
+    (hspec : phaseSpectrum ψ u (r + 1) ≠ 0) :
+    kernelSpectrum ψ u ≠ 0 := by
+  intro hk
+  exact hspec (phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero ψ u r hmul hk)
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_succ
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_zero
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_eq_kernelSpectrum_pow
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero
