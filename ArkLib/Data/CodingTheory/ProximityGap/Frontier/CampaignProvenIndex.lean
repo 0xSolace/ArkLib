@@ -142,6 +142,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCirc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecursion
@@ -5726,6 +5727,76 @@ theorem doorIV_tower_product_ge_bottom_floor_export (upper bottom : List ℝ) {c
     c ^ bottom.length ≤ (upper ++ bottom).prod :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor
     upper bottom hupper hc hbottom
+
+/-- **[Lane 1/3 dyadic coherence-tower telescope]** Exact endpoint telescope: for any positive mass
+chain, the product of consecutive parent/child coherence ratios times the final leaf mass is exactly
+the initial root mass. This kernelizes the algebra behind "root = product × leaf". -/
+theorem doorIV_coherenceProduct_mul_getLast_export (a : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x) :
+    DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t) *
+        (a :: t).getLast (by simp) = a :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.coherenceProduct_mul_getLast
+    a t hpos
+
+/-- **[Lane 1/3 dyadic coherence-tower telescope]** Door-IV-facing restatement of the exact telescope:
+the root mass equals the coherence product times the leaf mass. No cancellation is created here; it is
+only the faithful algebraic reduction that exposes the product as the remaining obligation. -/
+theorem doorIV_root_eq_coherenceProduct_mul_leaf_export (a : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x) :
+    a = DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t) *
+        (a :: t).getLast (by simp) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_eq_coherenceProduct_mul_leaf
+    a t hpos
+
+/-- **[Lane 1/3 dyadic coherence-tower telescope]** The coherence product is exactly root divided by
+leaf. Therefore a prize-scale root bound inside the tower is precisely a small-product requirement,
+not an independent fifth lever. -/
+theorem doorIV_coherenceProduct_eq_root_div_leaf_export (a : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x) :
+    DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t) =
+      a / (a :: t).getLast (by simp) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.coherenceProduct_eq_root_div_leaf
+    a t hpos
+
+/-- **[Lane 1/3 dyadic coherence-tower telescope]** Raw root control is equivalent to controlling the
+coherence product below the normalized target `B / leaf`. This is the formal interface used by the
+tower-collapse obstruction. -/
+theorem doorIV_root_le_bound_iff_coherenceProduct_le_bound_div_leaf_export
+    (a B : ℝ) (t : List ℝ) (hpos : ∀ x ∈ a :: t, 0 < x) :
+    a ≤ B ↔
+      DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t) ≤
+        B / (a :: t).getLast (by simp) :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_le_bound_iff_coherenceProduct_le_bound_div_leaf
+    a B t hpos
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** If the product has a floor `c` and the normalized
+target is below that floor, the advertised root bound is impossible. This packages the exact consumer
+for the fixed-width tower-collapse no-go. -/
+theorem doorIV_not_root_le_bound_of_bound_div_leaf_lt_product_floor_export
+    (a B c : ℝ) (t : List ℝ) (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hfloor : c ≤ DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t))
+    (htarget : B / (a :: t).getLast (by simp) < c) :
+    ¬ a ≤ B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.not_root_le_bound_of_bound_div_leaf_lt_product_floor
+    a B c t hpos hfloor htarget
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** Product floors transfer back to raw root floors:
+`c ≤ ∏ρ_j` forces `c * leaf ≤ root`. A fixed product floor therefore keeps the period at a fixed
+fraction of leaf mass and cannot by itself yield the prize's square-root saving. -/
+theorem doorIV_root_ge_product_floor_mul_leaf_export (a c : ℝ) (t : List ℝ)
+    (hpos : ∀ x ∈ a :: t, 0 < x)
+    (hfloor : c ≤ DoorIVCoherenceTowerTelescope.coherenceProduct (a :: t)) :
+    c * (a :: t).getLast (by simp) ≤ a :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerTelescope.root_ge_product_floor_mul_leaf
+    a c t hpos hfloor
+
+#print axioms doorIV_coherenceProduct_mul_getLast_export
+#print axioms doorIV_root_eq_coherenceProduct_mul_leaf_export
+#print axioms doorIV_coherenceProduct_eq_root_div_leaf_export
+#print axioms doorIV_root_le_bound_iff_coherenceProduct_le_bound_div_leaf_export
+#print axioms doorIV_not_root_le_bound_of_bound_div_leaf_lt_product_floor_export
+#print axioms doorIV_root_ge_product_floor_mul_leaf_export
+
 
 /-- **[Lane 1/3 dyadic coherence-tower obstruction]** A fixed-width bottom slack zone gives only a
 fixed-width floor: if the nontrivial bottom segment has length at most `K` and all its factors are at

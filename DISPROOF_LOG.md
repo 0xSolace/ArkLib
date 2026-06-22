@@ -12229,3 +12229,23 @@ Formal exports: `doorIV_norm_eta_le_worstPeriod_export`, `doorIV_two_dilate_le_t
 `doorIV_norm_eta_union_le_two_mul_worstPeriod_export`, `doorIV_worstPeriod_union_le_two_mul_worstPeriod_export`,
 and `doorIV_two_mul_worstPeriod_nonneg_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-coherence-tower-telescope-indexed] root equals coherence-product times leaf mass (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 reduction + constraint. Indexed the existing axiom-clean kernel
+`_DoorIVCoherenceTowerTelescope.lean` into `CampaignProvenIndex`, making the exact dyadic tower algebra
+citable: for any positive mass chain, `(∏ parent/child ratios) * leaf = root`, equivalently the
+coherence product is exactly `root / leaf`.
+
+VERDICT: the dyadic coherence tower has no hidden lever besides making the product of level coherences
+small. A raw root cap `root ≤ B` is equivalent to the normalized product cap `∏ρ ≤ B/leaf`, and any
+product floor above `B/leaf` refutes that raw cap. This is the exact bridge consumed by the fixed-width
+coherence-tower collapse no-go; it does not supply anti-concentration, cancellation, completion,
+moment-saving, or capacity.
+
+Formal exports: `doorIV_coherenceProduct_mul_getLast_export`,
+`doorIV_root_eq_coherenceProduct_mul_leaf_export`, `doorIV_coherenceProduct_eq_root_div_leaf_export`,
+`doorIV_root_le_bound_iff_coherenceProduct_le_bound_div_leaf_export`,
+`doorIV_not_root_le_bound_of_bound_div_leaf_lt_product_floor_export`, and
+`doorIV_root_ge_product_floor_mul_leaf_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
