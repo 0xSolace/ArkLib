@@ -74,3 +74,49 @@ arithmetic dynamics, TCS, geometry of numbers. Every route relocates to the one 
 uniform-in-`p`, worst-case CLT for short cyclotomic coincidences at depth `log p`. Not closure — the most
 thorough demonstration yet that the proof awaits a genuinely-new theorem, with four new family-killing no-gos
 identified for formalization.
+
+---
+
+## Loop 2 (exotic frameworks): 0/100 survivors — 200/200 total refuted
+
+A second 100-candidate loop over 20 *exotic* frameworks (Langlands functoriality, beyond-endoscopy Ψ-operator,
+theta/Weil oscillator representation, relative trace formula, cyclic base change, condensed/perfectoid/
+Fargues–Fontaine, nilsequences over the multiplicative group, effective Chebotarev/Sato–Tate, RMT
+moment-conjecture/CFKRS recipe, Berkovich/tropical, vanishing-cycles, quantum groups/Bethe ansatz, traffic free
+probability, Schmidt subspace, Macdonald/crystals, mod-Gaussian convergence, motivic regulators, QUE/Hecke
+sup-norm, arithmetic microlocal, non-abelian Bourgain–Gamburd, persistent homology, resurgence, and a
+maximally-invented swing). **0 self-claimed survivors, 0 verified survivors.** Every candidate relocates by the
+same **double-orthogonality**: *p-adic + average* (what the geometric/automorphic machinery delivers) vs
+*archimedean + worst-case* (what the prize demands). Every functorial/geometric lift collapses to **rank-1
+abelian Kummer** (`_A5TwistedMonodromyAbelianVerdict`) and transfers nothing.
+
+### The 3 closest (exact missing step)
+- **Effective Chebotarev bad-prime count** (closest, genuinely arithmetic). Bound #bad-at-depth-`r` prize-primes
+  by (#prime-divisors of one norm ≤ `log₂ N`) × (#norms). *Missing:* the Chebotarev error is governed by the
+  compositum discriminant = the resultant height `b(r)^{φ(n)/2}` — **exponential** in `n`, so the rate beats
+  `√p` only for `n = O(log p)`, polynomially short of `n ~ p^{1/4}`. (`_wf6C1` formalizes the count side.)
+- **Mod-Gaussian / quantitative CLT for the Gauss-sum phases** — the *only surviving shape* (phase-aware +
+  archimedean + establishes a uniform CLT). *Missing:* effective-in-`p`, order-`r≈log p` cumulant decay of
+  `u_j = G(ω^{jn})/√p`. Every cumulant input is either the energy `E_r` (phase-blind floor) or a Weil bound
+  (pins `√p`); the order-`>log p` decay *is* the conjecture.
+- **Strong-Szegő / `H^{1/2}`-critical restatement** (genuinely-new analytic framing). The Gauss-phase symbol sits
+  *exactly* at the `H^{1/2}` critical regularity — the Szegő-convergence boundary. *Missing:* prove the symbol is
+  on the good side of `H^{1/2}` **uniformly in `p`**; every nearby tool needs `H^{1/2+ε}`, and the `ε` is the
+  entire half-power. The sharpest analytic statement of "off by an epsilon."
+
+### Three new obstruction-sharpening insights (worth formalizing as no-go bricks)
+1. **Discriminant / phase-DOF dichotomy:** any `p`-independent algebraic invariant of `μ_n` carries
+   bounded-discriminant magnitude/count data only, while the archimedean phase has `~n^{3/2}` free DOF forcing
+   *exponential* discriminant — so no effective-Chebotarev constant can be simultaneously `p`-uniform AND
+   phase-controlling. Subsumes the whole Chebotarev/equidistribution-count lane.
+2. **Zero-density ⊥ far-tail:** ratios/CFKRS/L-function-statistics are *small-value* (zero-repulsion) technology;
+   Paley-max is *large-value* (far-tail). For a deterministic family there is no proven `zero-density ⟹ max`
+   implication — explaining why the entire L-function-statistics shelf is structurally orthogonal to the prize.
+3. **`H^{1/2}`-criticality (definitional):** makes obstruction-1's "phase-blind methods miss by a power" precise
+   as "the symbol is `H^{1/2}`-critical and the prize is the good-side-uniform statement."
+
+**Verdict (loops 1+2):** 200 fresh candidate proofs across ~40 mathematical domains — including the most
+advanced functorial, geometric, probabilistic, and analytic machinery — **0 survive**. The wall is irreducible;
+the proof awaits the one missing theorem (effective, uniform-in-`p`, worst-case, order-`r>log p` phase CLT for a
+single deterministic abelian configuration), which the mod-Gaussian framing names most precisely and the
+`H^{1/2}`-criticality restates most sharply. Not closure.
