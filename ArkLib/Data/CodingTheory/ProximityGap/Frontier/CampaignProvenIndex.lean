@@ -150,6 +150,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTele
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -6701,6 +6702,35 @@ theorem doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
    fun h => DoorIVWorstBCoherentImbalance.coherent_norm_eq_two_mul_max_forces_balance hcoh h⟩
 
 #print axioms doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
+
+
+/-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half
+descent found by the probe is an exact reconstruction at the worst frequency, but as a proof lever it
+has two kernel-checkable failures. First, a product of factors `1+rᵢ` with `rᵢ ∈ [0,1]` is bounded only
+by the trivial `2^a` ceiling, is always `≥1`, and any capped levels contribute the full `2^|S|` floor;
+so a `√n` thinning would have to be a genuinely new log-product estimate, not a consequence of the
+reconstruction. Second, the fixed-frequency greedy subvalue is merely one competitor below the true
+sub-period maximum, and when the downstream argmax is non-nested (`subMag b < M₂`) it is strictly NOT a
+majorant (`0 < M₂-subMag b`, `¬ M₂≤subMag b`). Thus the 1-D descent transfers the wall and cannot
+telescope upward. No CORE / cancellation / completion / moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_greedy_heavier_half_descent_dead_lever_export {a : ℕ} (r : Fin a → ℝ)
+    (h0 : ∀ i, 0 ≤ r i) (h1 : ∀ i, r i ≤ 1) (S : Finset (Fin a))
+    (hS : ∀ i ∈ S, r i = 1) {ι : Type*} (subMag : ι → ℝ) (M₂ : ℝ) (b : ι)
+    (hmax : ∀ c, subMag c ≤ M₂) (hstrict : subMag b < M₂) :
+    ((∏ i, (1 + r i)) ≤ 2 ^ a) ∧
+    (1 ≤ ∏ i, (1 + r i)) ∧
+    ((2 : ℝ) ^ S.card ≤ ∏ i, (1 + r i)) ∧
+    (subMag b ≤ M₂) ∧
+    (0 < M₂ - subMag b) ∧
+    ¬ (M₂ ≤ subMag b) :=
+  ⟨DoorIVGreedyHeavierHalfDescent.greedyProduct_le_two_pow a r h0 h1,
+   DoorIVGreedyHeavierHalfDescent.one_le_greedyProduct a r h0,
+   DoorIVGreedyHeavierHalfDescent.greedyProduct_ge_two_pow_of_capped r h0 S hS,
+   DoorIVGreedyHeavierHalfDescent.greedyValue_le_subMax subMag M₂ b hmax,
+   (DoorIVGreedyHeavierHalfDescent.descent_not_majorant_of_strict subMag M₂ b hstrict).1,
+   (DoorIVGreedyHeavierHalfDescent.descent_not_majorant_of_strict subMag M₂ b hstrict).2⟩
+
+#print axioms doorIV_greedy_heavier_half_descent_dead_lever_export
 
 /-- **[Lane 1 worst-b selector obstruction]** If the frequency statistic is constant on group
 orbits, then super-level membership is exactly invariant under every orbit move. A worst-`b`
