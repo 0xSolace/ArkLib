@@ -154,6 +154,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecu
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPartitionDepthBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
@@ -7176,6 +7177,25 @@ theorem doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
     hcoh hlo hhi
 
 #print axioms doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
+
+/-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** At any coherent `k`-piece
+dyadic partition, if `i₀` is a heaviest piece `H` and every other piece still carries at least
+`rlo·H`, then the aggregate exceeds the single-piece endpoint by at least `(k-1)·rlo·H`, expressed as
+`(s.erase i₀).card * (rlo*H) ≤ ‖Σ Q i‖ - H`.  This is the probe-facing quantitative form of
+partition-depth non-degeneration: a coherent dyadic refinement cannot be treated as one surviving
+piece while the lower band persists.  No CORE / cancellation / completion / moment / capacity claim;
+CORE remains OPEN. -/
+theorem doorIV_partitionDepth_lower_band_slack_over_single_export
+    {ι E : Type*} [DecidableEq ι] [SeminormedAddCommGroup E]
+    {s : Finset ι} {Q : ι → E} {H rlo : ℝ} {i₀ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖)
+    (hi₀ : i₀ ∈ s) (hH : ‖Q i₀‖ = H)
+    (hlb : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖) :
+    (s.erase i₀).card * (rlo * H) ≤ ‖∑ i ∈ s, Q i‖ - H :=
+  ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.lower_band_slack_over_single_ge
+    hcoh hi₀ hH hlb
+
+#print axioms doorIV_partitionDepth_lower_band_slack_over_single_export
 
 
 /-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half

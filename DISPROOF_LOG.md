@@ -12457,3 +12457,22 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPerLe
 
 No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
+
+## [doorIV-partition-depth-lower-band-endpoint-gap] k-piece lower band forces `(k-1)`-piece slack above the heaviest piece (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 extension of `_DoorIVWorstBPartitionDepthBand`. The partition-depth kernel
+already proved a coherent k-piece split sits strictly between the heaviest-piece endpoint and the
+balanced `kH` ceiling under a lower band. This refinement names the exact lower endpoint gap: if `i₀`
+is a heaviest piece with norm `H` and every other piece carries at least `rlo·H`, then the coherent
+aggregate exceeds `H` by at least `(k-1)·rlo·H`, written as
+`(s.erase i₀).card * (rlo*H) ≤ ‖Σ Q i‖ - H`.
+
+VERDICT: dyadic partition-depth coherence cannot be collapsed to one surviving piece while a lower band
+persists on the remaining pieces. The slack above the heaviest piece scales with the number of remaining
+pieces, so the Lever-A reshuffle is quantitatively non-degenerate at every refinement depth. No CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPartitionDepthBand.lean`,
+new theorem `lower_band_slack_over_single_ge`; permanent export
+`doorIV_partitionDepth_lower_band_slack_over_single_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

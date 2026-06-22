@@ -79,6 +79,26 @@ theorem card_mul_rlo_mul_max_le_norm {s : Finset ι} {Q : ι → E} {H rlo : ℝ
   calc s.card * (rlo * H) = ∑ _i ∈ s, rlo * H := by rw [Finset.sum_const, nsmul_eq_mul]
     _ ≤ ∑ i ∈ s, ‖Q i‖ := Finset.sum_le_sum hlb
 
+/-- **Lower-band endpoint slack for a `k`-piece split.**  If `i₀` is a heaviest piece with
+`‖Q i₀‖ = H`, and every *other* piece carries at least `rlo·H`, then the coherent aggregate exceeds
+the single-piece endpoint by at least `(k-1)·rlo·H`.  This is the partition-depth analogue of the
+two-half endpoint-gap theorem: no dyadic refinement collapses to the selected heaviest piece while the
+lower band holds on the remaining pieces. -/
+theorem lower_band_slack_over_single_ge [DecidableEq ι] {s : Finset ι} {Q : ι → E} {H rlo : ℝ} {i₀ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s) (hH : ‖Q i₀‖ = H)
+    (hlb : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖) :
+    (s.erase i₀).card * (rlo * H) ≤ ‖∑ i ∈ s, Q i‖ - H := by
+  rw [hcoh]
+  have hsum : (s.erase i₀).card * (rlo * H) ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+    calc
+      (s.erase i₀).card * (rlo * H) = ∑ _i ∈ s.erase i₀, rlo * H := by
+        rw [Finset.sum_const, nsmul_eq_mul]
+      _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb
+  have hsplit : (∑ i ∈ s, ‖Q i‖) = ‖Q i₀‖ + ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+    rw [← Finset.sum_erase_add s (fun i => ‖Q i‖) hi₀]; ring
+  rw [hsplit, hH]
+  nlinarith
+
 /-- **Strict aggregate floor over the heaviest piece (lower band, `|s| ≥ 2`).**  With a heaviest piece
 `i₀ ∈ s` (`‖Q i₀‖ = H`), at least two pieces, every piece `≥ r_lo·H` with `r_lo > 0`, and `H > 0`, the
 aggregate strictly exceeds the single heaviest piece: `H < M`.  The split does NOT collapse to one
@@ -143,3 +163,4 @@ end ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_lt_card_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_le_card_mul_max
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.card_mul_rlo_mul_max_le_norm
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.lower_band_slack_over_single_ge
