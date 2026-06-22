@@ -2131,6 +2131,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceEulerProductRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCaseZero
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentConvolutionRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentGeneralCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRThree
