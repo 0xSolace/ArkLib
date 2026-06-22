@@ -65,8 +65,28 @@ theorem spike_count_le_offDiag_two_re_div
     linarith [hoff]
   rwa [hdiff] at h
 
+/-- Contrapositive count form: if the depth-two agreement budget is below `d²`, then no frequency
+can spike `d` above the Parseval mean. -/
+theorem spike_count_eq_zero_of_offDiag_two_re_lt_sq
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (d : ℝ) (hd : 0 < d)
+    (hsmall : (m : ℝ) * (resonanceOffDiag u 2).re < d ^ 2) :
+    ((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ((m : ℝ) - 1) + d ≤ ‖kernelSpectrum (dftChar k) u‖ ^ 2)).card = 0 := by
+  classical
+  have hzero :=
+    _root_.ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_eq_zero_of_sndMoment_lt_sq
+      (fun k => ‖kernelSpectrum (dftChar k) u‖ ^ 2) (Finset.univ : Finset (ZMod m))
+      ((m : ℝ) - 1) d hd
+  have hvar :
+      (∑ k : ZMod m, (‖kernelSpectrum (dftChar k) u‖ ^ 2 - ((m : ℝ) - 1)) ^ 2)
+        < d ^ 2 := by
+    rw [sum_sq_centered_kernelSpectrum_eq_card_mul_offDiag_two_re u hu]
+    exact hsmall
+  exact hzero hvar
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_cost_le_offDiag_two_re
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.offDiag_two_re_ge_spike_sq_div
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_offDiag_two_re_div
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq

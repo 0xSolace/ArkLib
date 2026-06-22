@@ -7547,9 +7547,24 @@ theorem doorIV_resonance_spike_count_le_offDiag_two_re_div_export
         (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re / d ^ 2 :=
   ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_offDiag_two_re_div u hu d hd
 
+/-- **[Lane 3 resonance spike/off-diagonal constraint]** Contrapositive count form: if the
+localized depth-two agreement budget is below `d²`, no frequency can spike `d` above the mean. -/
+theorem doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d)
+    (hsmall : (m : ℝ) *
+      (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re < d ^ 2) :
+    ((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ((m : ℝ) - 1) + d
+          ≤ ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+              (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2)).card = 0 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq
+    u hu d hd hsmall
+
 #print axioms doorIV_resonance_spike_cost_le_offDiag_two_re_export
 #print axioms doorIV_resonance_offDiag_two_re_ge_spike_sq_div_export
 #print axioms doorIV_resonance_spike_count_le_offDiag_two_re_div_export
+#print axioms doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
 
 /-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
 is the root count of the explicit quadratic form `Pp² - X·Qp²`; if that polynomial is nonzero,
