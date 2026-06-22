@@ -104,6 +104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A2OnsetLatticeMinimum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditForced
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBOrbitLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
 
@@ -4860,5 +4861,71 @@ theorem doorII_not_phaseCoherentUniform_of_prizeRegime_export
 #print axioms doorII_phaseCoherent_eta_zero_export
 #print axioms doorII_phaseCoherent_secondMoment_nonzero_export
 #print axioms doorII_not_phaseCoherentUniform_of_prizeRegime_export
+
+/-! ## Door-IV Lane 1 worst-frequency orbit multiplicity exports.
+Scope: **quotient-count bookkeeping / obstruction**.
+
+These exports record the exact coset-orbit consequence of eta invariance: a nonzero frequency above a
+threshold contributes its whole multiplicative `G`-orbit above the same threshold. This is useful for
+quotient probes of the worst-`b` set, but it gives no upper bound or anti-concentration by itself.
+-/
+
+/-- **[Lane 1, WorstBOrbitLowerBound]** Eta-norm threshold membership is closed under the
+multiplicative `G`-orbit of a frequency. -/
+theorem doorIV_worstB_frequency_orbit_subset_threshold_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {ψ : AddChar F ℂ} (G : Finset F)
+    (hGnz : ∀ c ∈ G, c ≠ 0)
+    (hmulG : ∀ c ∈ G, ∀ x ∈ G, c * x ∈ G) (thr : ℝ) {b : F}
+    (hbthr : thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖) :
+    (G.image fun c => c * b) ⊆ Finset.univ.filter
+      (fun y => thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G y‖) :=
+  _root_.ProximityGap.Frontier.WorstBOrbitLowerBound.frequency_orbit_subset_threshold
+    G hGnz hmulG thr hbthr
+
+/-- **[Lane 1, WorstBOrbitLowerBound]** For nonzero `b`, the whole above-threshold orbit lies in
+the non-principal frequency line. -/
+theorem doorIV_worstB_frequency_orbit_subset_nonzero_threshold_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {ψ : AddChar F ℂ} (G : Finset F)
+    (hGnz : ∀ c ∈ G, c ≠ 0)
+    (hmulG : ∀ c ∈ G, ∀ x ∈ G, c * x ∈ G) (thr : ℝ) {b : F} (hbne : b ≠ 0)
+    (hbthr : thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖) :
+    (G.image fun c => c * b) ⊆ Finset.univ.filter
+      (fun y => y ≠ 0 ∧
+        thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G y‖) :=
+  _root_.ProximityGap.Frontier.WorstBOrbitLowerBound.frequency_orbit_subset_nonzero_threshold
+    G hGnz hmulG thr hbne hbthr
+
+/-- **[Lane 1, WorstBOrbitLowerBound]** A single nonzero above-threshold representative forces at
+least `|G|` non-principal above-threshold frequencies. -/
+theorem doorIV_worstB_card_nonzero_threshold_ge_card_of_mem_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {ψ : AddChar F ℂ} (G : Finset F)
+    (hGnz : ∀ c ∈ G, c ≠ 0)
+    (hmulG : ∀ c ∈ G, ∀ x ∈ G, c * x ∈ G) (thr : ℝ) {b : F} (hbne : b ≠ 0)
+    (hbthr : thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖) :
+    G.card ≤ (Finset.univ.filter
+      (fun y => y ≠ 0 ∧
+        thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G y‖)).card :=
+  _root_.ProximityGap.Frontier.WorstBOrbitLowerBound.card_nonzero_threshold_ge_card_of_mem
+    G hGnz hmulG thr hbne hbthr
+
+/-- **[Lane 1, WorstBOrbitLowerBound]** Contrapositive quotient-count certificate: fewer than
+`|G|` non-principal threshold clearers rules out every nonzero threshold clearer. -/
+theorem doorIV_worstB_not_exists_nonzero_threshold_of_card_lt_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] {ψ : AddChar F ℂ} (G : Finset F)
+    (hGnz : ∀ c ∈ G, c ≠ 0)
+    (hmulG : ∀ c ∈ G, ∀ x ∈ G, c * x ∈ G) (thr : ℝ)
+    (hcard : (Finset.univ.filter
+      (fun y => y ≠ 0 ∧
+        thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G y‖)).card <
+        G.card) :
+    ¬ ∃ b : F, b ≠ 0 ∧
+      thr ≤ ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ :=
+  _root_.ProximityGap.Frontier.WorstBOrbitLowerBound.not_exists_nonzero_threshold_of_card_lt
+    G hGnz hmulG thr hcard
+
+#print axioms doorIV_worstB_frequency_orbit_subset_threshold_export
+#print axioms doorIV_worstB_frequency_orbit_subset_nonzero_threshold_export
+#print axioms doorIV_worstB_card_nonzero_threshold_ge_card_of_mem_export
+#print axioms doorIV_worstB_not_exists_nonzero_threshold_of_card_lt_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
