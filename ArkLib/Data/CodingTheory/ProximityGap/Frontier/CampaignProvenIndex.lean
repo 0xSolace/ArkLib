@@ -120,6 +120,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackB1_BadSetCosetNonSi
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntiConcKurtosisRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVNegationSymmetryRealAndBalanced
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBlind
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5380,5 +5381,34 @@ theorem doorIV_no_emptyArc_split_rhs_le_strict_budget_export
 
 #print axioms doorIV_largestGap_yields_only_trivial_ceiling_export
 #print axioms doorIV_no_emptyArc_split_rhs_le_strict_budget_export
+
+/-- **[Lane 3 refuted-lever constraint, DyadicSelectorWalled — Shaw's Lever A]** Dyadic-tower coherence
+refutation: no FIXED dyadic-rung selector can explain the worst frequency, because two observed worst-`b`
+samples on different 2-adic rungs `v₂(dlog_g b*)` already contradict any single-rung rule. The adversarial
+frequency does NOT live on a fixed dyadic subtower. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_no_fixedDyadicRungRule_of_two_rungs_export
+    {α : Type*} {a : ℕ} (S : Finset α) (rung : α → Fin a) {x y : α}
+    (hx : x ∈ S) (hy : y ∈ S) (hxy : rung x ≠ rung y) :
+    ¬ ∃ j : Fin a,
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.FixedRungRule S rung j :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.no_fixedRungRule_of_two_rungs
+    S rung hx hy hxy
+
+/-- **[Lane 3 refuted-lever constraint, DyadicSelectorWalled — Shaw's Lever A]** A genuine fixed-subtower
+selection (`hist j = total`) is FORCED to be a visible scaled-Haar-excess histogram spike (given honest
+probe thresholds): it cannot hide inside Haar-null noise. Hence the verified no-spike sweep rules out the
+dyadic-tower coherence lever — it must exhibit an actual spike that the probe did not find. NO CORE /
+cancellation / completion / capacity claim. -/
+theorem doorIV_fixedDyadicRung_full_mass_forces_spike_export
+    {a : ℕ} (hist : Fin a → ℕ) {total spikeNum spikeDen massNum massDen : ℕ} {j : Fin a}
+    (hfull : hist j = total) (hpos : 0 < total)
+    (hthreshold : spikeNum < spikeDen * 2 ^ (j.val + 1)) (hmass : massNum ≤ massDen) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.FixedRungSpike
+      hist total spikeNum spikeDen massNum massDen j :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBDyadicSelectorWalled.fixedRung_full_mass_forces_spike
+    hist hfull hpos hthreshold hmass
+
+#print axioms doorIV_no_fixedDyadicRungRule_of_two_rungs_export
+#print axioms doorIV_fixedDyadicRung_full_mass_forces_spike_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

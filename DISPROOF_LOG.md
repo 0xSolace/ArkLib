@@ -11860,3 +11860,21 @@ Formal kernel: `_DoorIVLargestGapEnergyBlind.lean` (largestGap_yields_only_trivi
 no_emptyArc_split_rhs_le_strict_budget, emptyArc_budget_forces_card_le, largestGap_ceiling_independent_of_gap).
 New `CampaignProvenIndex` exports: `doorIV_largestGap_yields_only_trivial_ceiling_export`,
 `doorIV_no_emptyArc_split_rhs_le_strict_budget_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-dyadic-selector-walled-indexed] Shaw's Lever A (dyadic-tower coherence) refuted as citable constraint (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 3 — formalize Shaw's refuted Lever A (dyadic-tower coherence) as an axiom-clean
+constraint, per the brief's explicit Lane-3 list. Kernel `_DoorIVWorstBDyadicSelectorWalled` was unindexed.
+
+VERDICT: the dyadic worst-b selector route is WALLED. (1) No FIXED dyadic-rung rule survives: two observed
+worst-b samples on different 2-adic rungs v₂(dlog_g b*) already contradict any single-rung selector — the
+adversarial frequency does not live on a fixed dyadic subtower. (2) A genuine fixed-subtower selection
+(hist j = total) is FORCED to be a visible scaled-Haar-excess histogram spike; it cannot hide in Haar-null
+noise. So a verified no-spike sweep (which the exact probe found) rules out the dyadic-tower coherence
+lever entirely. This is Lever A of Shaw's no-fifth-door tetrachotomy, now kernel-checked not just prose.
+NO CORE / cancellation / completion / capacity claim. CORE OPEN.
+
+Formal kernel: `_DoorIVWorstBDyadicSelectorWalled.lean` (no_fixedRungRule_of_two_rungs,
+fixedRung_full_mass_forces_spike, no_full_mass_rung_of_no_fixedRungSpike). New `CampaignProvenIndex`
+exports: `doorIV_no_fixedDyadicRungRule_of_two_rungs_export`,
+`doorIV_fixedDyadicRung_full_mass_forces_spike_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
