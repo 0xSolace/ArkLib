@@ -12352,3 +12352,36 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBImbal
 
 No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
+
+## [doorIV-worstb-partition-depth-invariant] the coherent worst-b reshuffle is PARTITION-DEPTH-INVARIANT — k-piece split is a bounded O(1) lever at every dyadic depth (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane-1 / Lever A (dyadic-tower coherence). Generalizes [doorIV-worstb-imbalance-stationary-band]
+(index-2 halves) to an arbitrary k-piece coset split (k=2^j, every dyadic refinement depth).
+
+PROBE (scripts/probes/probe_dooriv_worstb_index4_band.py; FULL coset scan F_p^*/μ_n, proper μ_n,
+p≫n³, β=4, median over structured primes, never n=q-1): at the TRUE worst frequency b*, split
+μ_n = ⊔_{j<4} g^j·μ_{n/4} into four coset-quarters Q_0..Q_3:
+- quarter coherence rho4(b*) = ‖ΣQ_j‖/Σ‖Q_j‖ = 1.0000 EXACTLY at every n (all four quarters
+  phase-aligned, exactly as the two halves are at index-2) ⟹ M(b*) = Σ‖Q_j‖.
+- quarter imbalance r4(b*) = min_j‖Q_j‖/max_j‖Q_j‖ ∈ [0.52,0.67] median (stationary band, in (0,1)).
+- aggregate inflation F4 = M/max_j‖Q_j‖ ∈ [3.1,3.5] median — bounded in (1,4): NEITHER single-quarter
+  degeneration (F4→1) NOR four-balanced full √-thinning (F4→4).
+
+VERDICT: the coherent bounded-imbalance reshuffle picture is PARTITION-DEPTH-INVARIANT — it holds at the
+two-half split AND the four-quarter split, by the same mechanism at every dyadic refinement k=2^j. No
+dyadic sub-partition at the worst frequency supplies √-thinning ⟹ Shaw's Lever A (dyadic-tower coherence)
+is dead at EVERY refinement depth, not just one level (strengthens [doorIV-dyadic-selector-walled],
+[doorIV-coherence-tower-collapse]).
+
+NOT a growth-law theorem (HARD RULE 1): the kernel formalizes only the conditional k-piece band fact.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPartitionDepthBand.lean
+(6 theorems, axiom-clean ⊆ {propext, Classical.choice, Quot.sound}, no sorryAx):
+- norm_le_card_mul_max / card_mul_rlo_mul_max_le_norm: |s|·r_lo·H ≤ M ≤ |s|·H for a k-piece coherent
+  split with band r_lo·H ≤ ‖Q_i‖ ≤ H, H=max.
+- max_lt_norm_of_lower_band: |s|≥2, r_lo>0, H>0 ⟹ H < M (no single-piece degeneration).
+- norm_lt_card_mul_max: one piece strictly under H ⟹ M < |s|·H (no full k-thinning).
+- strictly_between_single_and_ceiling: H < M < |s|·H (both ends dead at any dyadic depth k=|s|).
+
+No CORE, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
