@@ -5582,6 +5582,33 @@ theorem doorIV_no_phaseSet_addEnergyK_scalar_improvement_export
   _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergyK_scalar_improvement
     (k := k) S hb₁ hb₂ hbad
 
+/-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** The higher-order `k`-sum max-fiber
+small-ball statistic is invariant under nonzero frequency dilation. Maximizing over the target does
+not recover dependence on the adversarial scalar `b`; dilation only relabels which target realizes the
+maximal fiber. NO CORE / cancellation / completion / moment-saving / capacity claim. -/
+theorem doorIV_phaseSet_addKSumMaxFiber_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] {k : ℕ}
+    (S : Finset F) {b : F} (hb : b ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber (k := k)
+        (S.image (fun x => b * x)) =
+      _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber (k := k) S :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber_smul_eq (k := k) S hb
+
+/-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** No strict scalar improvement for the
+higher-order `k`-sum max-fiber small-ball bound. If one nonzero dilate violates `max_t #{Σv_i=t} ≤ C`,
+then every other nonzero dilate violates the same threshold. The usual target-optimized
+Littlewood-Offord/Halász statistic cannot become a worst-`b` anti-concentration lever. NO CORE /
+cancellation / completion / capacity claim. -/
+theorem doorIV_no_phaseSet_addKSumMaxFiber_scalar_improvement_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] {k : ℕ}
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber (k := k)
+        (S.image (fun x => b₁ * x))) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addKSumMaxFiber (k := k)
+        (S.image (fun x => b₂ * x)) ≤ C :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addKSumMaxFiber_scalar_improvement
+    (k := k) S hb₁ hb₂ hbad
+
 #print axioms doorIV_phaseSet_addEnergy_dilation_invariant_export
 #print axioms doorIV_phaseSet_addSumset_card_dilation_invariant_export
 #print axioms doorIV_phaseSet_addDiffset_card_dilation_invariant_export
@@ -5591,6 +5618,8 @@ theorem doorIV_no_phaseSet_addEnergyK_scalar_improvement_export
 #print axioms doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export
 #print axioms doorIV_phaseSet_addEnergyK_dilation_invariant_export
 #print axioms doorIV_no_phaseSet_addEnergyK_scalar_improvement_export
+#print axioms doorIV_phaseSet_addKSumMaxFiber_dilation_invariant_export
+#print axioms doorIV_no_phaseSet_addKSumMaxFiber_scalar_improvement_export
 
 /-- **[Lane 1/3 constraint, WorstIndexDelocalized]** Packaged worst-frequency no-selector: a
 prime-independently DELOCALIZED worst-index family (realizing two distinct residues mod `d` AND two
