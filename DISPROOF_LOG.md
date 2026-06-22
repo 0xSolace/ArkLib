@@ -12637,3 +12637,30 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorem `exists_tail_piece_below_lower_band_of_slack_lt`; permanent export
 `doorIV_partitionDepth_tail_thinness_necessary_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [resonance-const-vector-ceiling-attained] the trivial resonance ceiling m·(m-1)^{2(r-1)} is ORDER-ATTAINED by the constant (DC-coherent) phase vector u≡1 — door-(iv) phase-essential constraint (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 on the resonance moment T(r)=∑_c‖phaseSum u r c‖² (the √p-free open core).
+Prior rungs proved the UNIFORM trivial ceiling T(r) ≤ m·(m-1)^{2(r-1)} (resonanceMoment_le_general) with
+probe truth T(r)=Θ(m^r) far below — leaving open whether that ceiling is genuinely LOOSE (so a triangle-
+blind improvement could already beat it). This brick PINS the answer: the trivial ceiling is order-tight,
+ATTAINED at the constant phase vector u≡1.
+
+MECHANISM: for u≡1 every phase product is 1, so the phase-sum degenerates to a pure count
+phaseSum (fun _=>1) r c = (N r c : ℂ), N r c = #{nonzero r-tuples summing to c} (phaseSum filter card).
+Hence T₁(r) = ∑_c (N r c)² (raw squared support count), with DC single-frequency floor T₁(r) ≥ (N r 0)².
+PROBE (probe_resonance_dcfloor.py, probe_Nr0_closedform.py; quadratic-Gauss phases m=7..23, EXACT closed
+forms verified): N r 0 = ((m-1)^r + (m-1)(-1)^r)/m, N r (c≠0) = ((m-1)^r - (-1)^r)/m (both integer, char-
+sum incl-excl). N r 0 = Θ(m^{r-1}) ⟹ T₁(r) ≥ (N r 0)² = Θ(m^{2(r-1)}) — i.e. u≡1 SATURATES the order of
+the trivial ceiling, while genuine unit-modulus Gauss phases collapse T(r) to Θ(m^r) (full m^{r-1} cancel).
+
+VERDICT (constraint lemma): no UNIVERSAL (every-u) bound on T(r) can drop below Θ(m^{2(r-1)}); the prize
+gap to the √-cancelled Θ(m^r) regime is UNREACHABLE by any argument that does not exploit the unit-modulus
+phase structure of the Gauss-sum vector. A moment/triangle/cardinality bound is order-tight on the constant
+vector and CANNOT see the √-cancellation the prize needs — the thinness/phase-essential content of door-(iv)
+made citable. No CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonanceConstantVectorCeiling.lean
+(leaf, GaussPhaseResonance only). Theorems: phaseSum_const_one, norm_phaseSum_const_one,
+resonanceMoment_const_one, resonanceMoment_const_one_ge_dc, const_one_saturates_count_floor.
+Axiom-clean (subset {propext, Classical.choice, Quot.sound}). Pushed e2dac3cf8.
