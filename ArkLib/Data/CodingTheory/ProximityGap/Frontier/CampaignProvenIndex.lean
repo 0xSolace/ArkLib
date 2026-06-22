@@ -37,6 +37,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeShawTetrachotomySynthesis
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCocycleNoRandomEdge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDoorIVCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
@@ -5697,5 +5698,55 @@ theorem doorIV_dilation_telescope_per_level_factor_export (M : ℕ → ℝ) (hpo
 #print axioms doorIV_dilation_telescope_le_two_pow_mul_export
 #print axioms doorIV_dilation_telescope_le_two_pow_of_base_one_export
 #print axioms doorIV_dilation_telescope_per_level_factor_export
+
+
+/-- **[Lane 3 refuted-lever constraint, Jacobi cocycle no-random-edge]** If the iid-unit-phase
+surrogate sup is below the real Jacobi-cocycle sup, then the real object has no strict dispersion edge
+over that random-phase surrogate. This kernelizes the probe verdict that the cocycle route is
+surrogate-dominated, hence any successful bound must also control the moment / extreme-value surrogate
+rather than exploit a cocycle-specific door-(iv) mechanism. No CORE / cancellation / completion /
+capacity claim. -/
+theorem doorIV_cocycle_no_random_edge_export {iidSup realSup : ℝ}
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup) :
+    ¬ realSup < iidSup :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.no_cocycle_edge_of_surrogate_le h
+
+/-- **[Lane 3 refuted-lever constraint, Jacobi cocycle no-random-edge]** Any bound on the real
+Jacobi-cocycle sup transfers immediately to the iid surrogate under the measured regime
+`iidSup ≤ realSup`. Thus a purported door-(iv) real-object bound is no stronger than the same bound on
+the surrogate, i.e. it routes back to the random extreme-value / moment face. -/
+theorem doorIV_cocycle_real_bound_transfers_to_surrogate_export {iidSup realSup B : ℝ}
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup) (hB : realSup ≤ B) :
+    iidSup ≤ B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.real_bound_transfers_to_surrogate
+    h hB
+
+/-- **[Lane 3 refuted-lever constraint, Jacobi cocycle no-random-edge]** A certificate below the iid
+surrogate is impossible: if `B < iidSup`, then `B` cannot bound the real Jacobi-cocycle sup. This is the
+probe-facing contrapositive of surrogate domination. -/
+theorem doorIV_cocycle_no_sub_surrogate_certificate_export {iidSup realSup B : ℝ}
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup) (hlt : B < iidSup) :
+    ¬ realSup ≤ B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.real_not_le_of_lt_surrogate
+    h hlt
+
+/-- **[Lane 3 refuted-lever constraint, Jacobi cocycle no-random-edge]** Headline packaging: the real
+Jacobi-cocycle sup is surrogate-dominated below, so a cocycle-specific dispersion advantage over iid
+random phases is excluded. This only records the obstruction to the proof route; it does not prove the
+CORE Gauss-period cancellation bound. -/
+theorem doorIV_cocycle_dispersion_surrogate_dominated_export {iidSup realSup : ℝ}
+    (h : _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.SurrogateLeReal
+      iidSup realSup) :
+    iidSup ≤ realSup ∧ ¬ realSup < iidSup :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCocycleNoRandomEdge.cocycle_dispersion_is_surrogate_dominated
+    h
+
+#print axioms doorIV_cocycle_no_random_edge_export
+#print axioms doorIV_cocycle_real_bound_transfers_to_surrogate_export
+#print axioms doorIV_cocycle_no_sub_surrogate_certificate_export
+#print axioms doorIV_cocycle_dispersion_surrogate_dominated_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

@@ -11989,3 +11989,21 @@ Lane: door-(iv) Lane 3 constraint consolidation for `_DoorIVDilationDescentTeles
 VERDICT: pure dyadic descent has no hidden sqrt-cancellation. A nontrivial prize-scale descent must prove a genuine per-level factor below the doubling ceiling and then pay the `a`-fold product; the factor-2 recursion alone leaves the whole gap untouched. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_dilation_telescope_le_two_pow_mul_export`, `doorIV_dilation_telescope_le_two_pow_of_base_one_export`, and `doorIV_dilation_telescope_per_level_factor_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-cocycle-no-random-edge-indexed] Jacobi-cocycle dispersion has no random-phase edge (2026-06-22, g55)
+
+Lane: door-(iv) Lane 3 refuted-lever constraint. Indexed the existing axiom-clean kernel
+`_DoorIVCocycleNoRandomEdge.lean` into `CampaignProvenIndex`, making the probe verdict citable:
+under the measured regime `iidSup ≤ realSup`, the real Jacobi-cocycle projective-Fourier sup cannot
+sit strictly below the iid-unit-phase surrogate. Consequently any real-object bound transfers to the
+surrogate, and any certificate below the surrogate is impossible.
+
+VERDICT: the Jacobi-cocycle route supplies no cocycle-specific dispersion advantage over random phases;
+it routes back to the moment / extreme-value surrogate face, not to a new door-(iv) anti-concentration
+mechanism. No CORE, cancellation, completion, moment-saving, or capacity claim.
+
+Formal exports: `doorIV_cocycle_no_random_edge_export`,
+`doorIV_cocycle_real_bound_transfers_to_surrogate_export`,
+`doorIV_cocycle_no_sub_surrogate_certificate_export`, and
+`doorIV_cocycle_dispersion_surrogate_dominated_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
