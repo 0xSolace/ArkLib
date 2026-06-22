@@ -141,6 +141,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBli
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCircular
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVMartingaleInputCeilingCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
@@ -5653,6 +5654,37 @@ theorem doorIV_qv_route_no_sublinear_saving_export (a : ℕ) (R : ℝ)
 
 #print axioms doorIV_qv_route_recovers_trivial_ceiling_export
 #print axioms doorIV_qv_route_no_sublinear_saving_export
+
+
+/-- **[Lane 3 refuted-lever capstone, DoorIVMartingaleInputCeilingCapstone]** The bounded-increment
+martingale input and the predictable-QV input converge to the IDENTICAL trivial tower ceiling
+`S_a ≤ a·log 2`; any target `R < a·log 2` is therefore outside what these inputs certify. The strict
+separation from the prize drift `a·log2/2` is exactly another `a·log2/2`. This is a citable wrapper for
+the martingale/Azuma/Freedman dead lever: no CORE / cancellation / completion / moment / capacity
+claim; a genuinely new mean-drift law is still required. -/
+theorem doorIV_martingale_inputs_all_trivial_ceiling_export
+    (Mtow : ℕ → ℝ) (a : ℕ) (R : ℝ)
+    (hpos : ∀ i, 0 < Mtow i) (hdouble : ∀ i, Mtow (i + 1) ≤ 2 * Mtow i)
+    (hmono : ∀ i, Mtow i ≤ Mtow (i + 1)) (ha : 1 ≤ a)
+    (hR : R < (a : ℝ) * Real.log 2) :
+    (Real.log (Mtow a) - Real.log (Mtow 0) ≤ (a : ℝ) * Real.log 2) ∧
+    (Real.log (Mtow a) - Real.log (Mtow 0) ≤ (a : ℝ) * Real.log 2) ∧
+    (¬ ((a : ℝ) * Real.log 2 ≤ R)) ∧
+    ((a : ℝ) * (Real.log 2 / 2) < (a : ℝ) * Real.log 2) ∧
+    ((a : ℝ) * Real.log 2 - (a : ℝ) * (Real.log 2 / 2) =
+      (a : ℝ) * (Real.log 2 / 2)) :=
+  ⟨(_root_.ProximityGap.Frontier.DoorIVMartingaleInputCeilingCapstone.martingale_inputs_same_ceiling
+      Mtow a hpos hdouble hmono).1,
+   (_root_.ProximityGap.Frontier.DoorIVMartingaleInputCeilingCapstone.martingale_inputs_same_ceiling
+      Mtow a hpos hdouble hmono).2,
+   _root_.ProximityGap.Frontier.DoorIVMartingaleInputCeilingCapstone.no_martingale_input_reaches_sublinear
+      a R hR,
+   _root_.ProximityGap.Frontier.DoorIVMartingaleInputCeilingCapstone.prize_ceiling_strictly_below_martingale_ceiling
+      a ha,
+   _root_.ProximityGap.Frontier.DoorIVMartingaleInputCeilingCapstone.martingale_minus_prize_ceiling_eq
+      a⟩
+
+#print axioms doorIV_martingale_inputs_all_trivial_ceiling_export
 
 
 /-- **[Lane 1 worst-b coset-index arithmetic obstruction]** A top-three worst-coset-index witness
