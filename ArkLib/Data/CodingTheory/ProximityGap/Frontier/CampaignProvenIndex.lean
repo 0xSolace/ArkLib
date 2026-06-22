@@ -125,6 +125,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelecto
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCircular
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5522,5 +5523,47 @@ theorem doorIV_worstCosetIndex_not_parity_restricted_export
 #print axioms doorIV_worstCosetIndex_no_proper_progression_export
 #print axioms doorIV_worstCosetIndex_no_common_residue_mod_export
 #print axioms doorIV_worstCosetIndex_not_parity_restricted_export
+
+
+/-- **[Lane 1 worst-b coset-index multiplicative genericity]** If an observed worst-index set
+contains two elements whose ratio lies outside a subgroup `H`, then the set is not contained in any
+single left coset of `H`. This is the generic multiplicative class-restriction obstruction. -/
+theorem doorIV_worstIndexMult_not_subset_coset_export
+    {G : Type*} [Group G] {H : Subgroup G} {s : Set G} {a b : G}
+    (ha : a ∈ s) (hb : b ∈ s) (hne : b⁻¹ * a ∉ H) :
+    ∀ g : G, ¬ (∀ x ∈ s,
+      _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.inCoset H g x) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_subset_coset_of_ratio_not_mem
+    ha hb hne
+
+/-- **[Lane 1 worst-b coset-index multiplicative genericity]** Quadratic-residue specialization:
+a finite observed worst-index set containing one pair with non-square ratio is not confined to a
+single square-coset. Thus QR/non-QR coexistence kills the multiplicative QR selector. -/
+theorem doorIV_worstIndexMult_not_finset_power_coset_restricted_export
+    {A : Type*} [CommGroup A] {s : Finset A} {a b : A}
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hns : b⁻¹ * a ∉ _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.squares A) :
+    ∀ g : A, ¬ (∀ x ∈ s,
+      _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.inCoset
+        (_root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.squares A) g x) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_power_coset_restricted
+    ha hb hns
+
+/-- **[Lane 1 worst-b coset-index multiplicative genericity]** General `k`-th-power specialization:
+one pair ratio outside the `k`-th-power subgroup prevents the finite worst-index set from lying in any
+single `k`-power coset. No CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_worstIndexMult_not_finset_kth_power_coset_restricted_export
+    {A : Type*} [CommGroup A] {k : ℕ} {s : Finset A} {a b : A}
+    (ha : a ∈ s) (hb : b ∈ s)
+    (hnp : b⁻¹ * a ∉ _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.kthPowers A k) :
+    ∀ g : A, ¬ (∀ x ∈ s,
+      _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.inCoset
+        (_root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.kthPowers A k) g x) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstIndexMultGeneric.not_finset_kth_power_coset_restricted
+    ha hb hnp
+
+#print axioms doorIV_worstIndexMult_not_subset_coset_export
+#print axioms doorIV_worstIndexMult_not_finset_power_coset_restricted_export
+#print axioms doorIV_worstIndexMult_not_finset_kth_power_coset_restricted_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

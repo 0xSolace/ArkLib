@@ -11947,3 +11947,21 @@ Permanent exports: `doorIV_worstCosetIndex_no_proper_progression_export`,
 `doorIV_worstCosetIndex_no_common_residue_mod_export`, and
 `doorIV_worstCosetIndex_not_parity_restricted_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-index-multiplicative-genericity-indexed] worst-b coset indices have no power-coset selector (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1 formalization of the worst-b multiplicative-structure probe. Indexed
+`_DoorIVWorstIndexMultGeneric` in `CampaignProvenIndex`.
+
+VERDICT: the multiplicative companion to the additive/AP obstruction is now citable. If an observed
+worst-index set contains a pair whose ratio is outside a subgroup, it cannot be contained in any single
+coset of that subgroup. Specialized to squares and general `k`-th powers: QR/non-QR coexistence, or any
+non-`k`-power ratio, rules out a power-coset restriction. Together with the additive gap-gcd obstruction,
+this closes the class-restriction map for worst-b coset indices. No CORE, cancellation, completion,
+anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstIndexMultGeneric.lean`.
+Permanent exports: `doorIV_worstIndexMult_not_subset_coset_export`,
+`doorIV_worstIndexMult_not_finset_power_coset_restricted_export`, and
+`doorIV_worstIndexMult_not_finset_kth_power_coset_restricted_export`, axiom-clean with axioms contained
+in `{propext, Classical.choice, Quot.sound}`.
