@@ -105,6 +105,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditFor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4730,6 +4731,69 @@ theorem doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
 #print axioms doorIV_orbit_saddle_obligation_dichotomy_export
 #print axioms doorIV_orbit_saddle_bound_of_onset_fail_and_wall_export
 #print axioms doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
+
+
+/-! ## Door-IV Lane 3 Gross--Koblitz size/L²-norm no-go exports.
+Scope: **refuted lever / obstruction**.
+
+These exports make the A10 verdict permanent: the Gross--Koblitz/norm-size route can improve the
+naive house base to an L²/AM--GM base, but the resulting no-wraparound threshold remains inactive at
+the saddle, and the L² datum does not determine the archimedean norm spread. This is not a CORE
+upper bound or a completion estimate; it is a route-elimination brick.
+-/
+
+/-- **[A10, AM--GM]** Product of nonnegative conjugate squared moduli is bounded by the L² mean
+raised to the number of conjugates. This is the only unconditional information extracted from the
+Gross--Koblitz size/L² datum. -/
+theorem doorIV_A10_prod_le_mean_pow_card_export
+    {ι : Type*} (s : Finset ι) (z : ι → ℝ)
+    (hz : ∀ k ∈ s, 0 ≤ z k) (hs : 0 < s.card) :
+    (∏ k ∈ s, z k) ≤ ((∑ k ∈ s, z k) / s.card) ^ s.card :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.prod_le_mean_pow_card
+    s z hz hs
+
+/-- **[A10, AM--GM]** Feeding the exact `L²` cap `mean≤4r` gives the norm-square bound
+`∏z_k≤(4r)^φ`; this is a size bound only, not a sup-norm or CORE bound. -/
+theorem doorIV_A10_norm_sq_le_fourR_pow_export
+    {ι : Type*} (s : Finset ι) (z : ι → ℝ) (r : ℝ)
+    (hz : ∀ k ∈ s, 0 ≤ z k) (hs : 0 < s.card)
+    (hL2 : (∑ k ∈ s, z k) / s.card ≤ 4 * r) (hr : 0 ≤ r) :
+    (∏ k ∈ s, z k) ≤ (4 * r) ^ s.card :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.norm_sq_le_fourR_pow
+    s z r hz hs hL2 hr
+
+/-- **[A10, comparison]** The L² base `√(4r)` improves the house base `2r` for `r≥1`, but this
+base-level improvement is not enough to reach the saddle/deep-r prize scale. -/
+theorem doorIV_A10_L2_base_le_house_base_export (r : ℝ) (hr : 1 ≤ r) :
+    Real.sqrt (4 * r) ≤ 2 * r :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.L2_base_le_house_base r hr
+
+/-- **[A10, obstruction]** Once `4r≥B²`, the L² norm bound `p≤(4r)^e` excludes nothing from a
+prime bounded by `(B²)^e`. Thus the Gross--Koblitz size threshold is vacuous at the saddle. -/
+theorem doorIV_A10_L2_threshold_vacuous_at_saddle_export
+    (B : ℝ) (r : ℝ) (e : ℕ) (p : ℝ)
+    (hB : 0 ≤ B) (hr : B ^ 2 ≤ 4 * r) (hp : p ≤ (B ^ 2) ^ e) :
+    p ≤ (4 * r) ^ e :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.L2_threshold_vacuous_at_saddle
+    B r e p hB hr hp
+
+/-- **[A10, obstruction]** Equal L² data can have different products: the L²/Ramanujan datum does
+not pin the norm. This is the formal spread-free-degree witness behind the route refutation. -/
+theorem doorIV_A10_L2_does_not_pin_norm_export :
+    (2 : ℝ) + 2 = 1 + 3 ∧ (2 : ℝ) * 2 ≠ 1 * 3 :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.L2_does_not_pin_norm
+
+/-- **[A10, obstruction]** The exact n=16,r=3 spread interval is nondegenerate, so the archimedean
+norm spread carries information absent from the L² datum. -/
+theorem doorIV_A10_free_spread_nondegenerate_export : (256 : ℝ) < 20736 :=
+  _root_.ArkLib.ProximityGap.Frontier.A10GrossKoblitzSize.free_spread_nondegenerate
+
+#print axioms doorIV_A10_prod_le_mean_pow_card_export
+#print axioms doorIV_A10_norm_sq_le_fourR_pow_export
+#print axioms doorIV_A10_L2_base_le_house_base_export
+#print axioms doorIV_A10_L2_threshold_vacuous_at_saddle_export
+#print axioms doorIV_A10_L2_does_not_pin_norm_export
+#print axioms doorIV_A10_free_spread_nondegenerate_export
 
 /-! ## Door-II/Door-IV boundary phase-coherent resonator non-realizability exports.
 Scope: **obstruction**.

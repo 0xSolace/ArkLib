@@ -11651,3 +11651,14 @@ Verdict: this is only a permanent index/export of the already-proven non-realiza
 backs the no-fifth-door/completion-door no-go: a b-uniform phase-coherent resonator would overspend the
 second moment.  It proves no CORE cancellation, no anti-concentration, no capacity claim, and no new
 bound on `M` beyond existing completion/Parseval facts.
+
+
+## [A10-gross-koblitz-size-l2-indexed] L² norm-size route permanently exported (g55, 2026-06-21)
+
+Lane 3 refuted-lever indexing sweep.  `_A10GrossKoblitzSizeL2NormBound` is now citable through
+`CampaignProvenIndex`: AM--GM gives the product/norm-square bound from an L² mean, the L² base
+`√(4r)` is indeed below the house base `2r`, but the threshold is vacuous at the saddle and equal L²
+data can have different products.
+
+Verdict: Gross--Koblitz size/L² information is a valid size bound but not an archimedean L∞/CORE
+certificate.  It cannot pin the norm spread, cannot supply cancellation, and makes no capacity claim.
