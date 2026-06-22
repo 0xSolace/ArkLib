@@ -98,3 +98,53 @@ standard cluster. 76 distinct papers found; 42 relevant (score>=1).*
 - 2506.23099 (2025-06) — On sesquilinear forms over finite fields
 - 2506.07815 (2025-06) — Nonvanishing of $L$--functions associated to fixed order characters over function fields
 - 2505.12015 (2025-05) — The second moment of cubic Dirichlet L-functions over function fields
+
+
+---
+
+## Novel approaches ideated from the fresh literature (50 total; 26 open-untested)
+
+*Each draws on a freshly-mined 2025-2026 paper. 'Open-untested' = not immediately refutable by the ideating
+agent; the synthesis editor's deeper scrutiny predicts they reduce to the known obstructions (phase-blind /
+r=2-only / family-average), but each is a genuinely-distinct paper-grounded pointing not in the ~471 refuted
+ledger — the most-grounded new attack surface to date. The 2 closest to the right object (Mazumder mixed-sum
+recast of W_r; Cochrane Fermat-curve genus ladder) reduce to the sqrt(p)/sqrt(rank) ceiling on probe.*
+
+### Open-untested approaches (26), by inspiring paper
+- **Cochrane 2602.04111 (GAP-dichotomy Thm 1.1 + sumset-dou** — Anti-structure-certified Lindeberg CLT: convert Cochrane's unconditional 'mu_n is NOT a GAP / additively indecomposable' theorem into a quantitative Sidon-defect that BOU
+- **Kim-Yip-Yoo 2602.20919 Lemma 1.8 near-equality coset-ri** — Stability-defect contradiction: define the multiplicative Hanson-Petridis SATURATION defect of mu_n (gap from equality in |A||B| <= |G| + correction), prove via Kim-Yip-Y
+- **Chattopadhyay 2602.22167 Prop 8 (mixed-side multiplicat** — Galois-tower box-energy descent: embed the depth-r wraparound count of mu_n into the multiplicative energy of a STRUCTURED BOX in the subfield tower F_{p} subset F_{p^2} 
+- **Kim-Yip-Yoo 2602.20919 Lemma 1.8 (multiplicative Hanson** — Quantitative-defect (stability) inversion of the Kim-Yip-Yoo coset-rigidity lemma: turn the EXACT near-equality reconstruction into a worst-case b-defect functional. KYY 
+- **Chattopadhyay 2602.22167 Prop 11 (Katz complete-sum inp** — Subfield-descent worst-case-frequency localization via the Chattopadhyay/Katz generalized Polya-Vinogradov 'tall box' Case 3. The Katz complete-sum input plus subfield-re
+- **Cochrane 2602.04111 Eq 5.1 (Hasse-Weil Fermat-curve r(c** — Genus-graded energy ladder via Cochrane's Fermat-curve representation count. Cochrane bounds the 2nd-order representation count r(c) of mu_k by Hasse-Weil on a Fermat cur
+- **Chattopadhyay 2602.22167 Prop 11 (Katz complete-sum) + ** — Subfield-descent 'tall box' bootstrap on the Gauss-sum SIDE. Chattopadhyay's tall-box Case 3 uses generalized Polya-Vinogradov on a subfield F_{p^{n/r}} when chi is nontr
+- **Mazumder-Kapetanakis-Kala-Basnet 2603.02118 (mixed char** — Mixed-character function-field bootstrap for the WRAPAROUND term specifically. The wall reduces to W_r <= SLACK_r where W_r is the char-p wraparound excess (sums exceedin
+- **Kalmynin 2504.10202 (explicit Stepanov differential ope** — Differential-operator / residue power-sum CERTIFICATE for the worst frequency. Kalmynin's Stepanov-variant uses an explicit differential operator and sum-of-residues powe
+- **Kim-Yip-Yoo 2602.20919 (multiplicative HP Lemma 1.8 + n** — Irreducibility-as-anticoncentration: convert Kim-Yip-Yoo multiplicative-irreducibility of the SHIFTED orbit into a forbidden-resonance certificate that caps E_r. The wall
+- **Chattopadhyay 2602.22167 Prop 11 (Katz complete-sum inp** — Subfield-descent CLT via the codimension-k Katz completion in the natural F_{p^a}-tower. Chattopadhyay's tall-box Case 3 uses generalized Polya-Vinogradov on subfields: w
+- **Kim-Yip-Yoo 2602.20919 Lemma 1.8 multiplicative HP boun** — Coset-rigidity-forced anticoncentration of the r-fold relation variety: use Kim-Yip-Yoo's EXACT near-equality clause (when the multiplicative Hanson-Petridis product-set 
+- **Chattopadhyay 2602.22167 Prop 11 (Katz complete-sum inp** — Subfield-descent CLT bootstrap via the F_{p^n} box embedding: Chattopadhyay's generalized-Polya-Vinogradov 'tall box' subfield trick (chi nontrivial on a subfield F_{p^{n
+- **Kalmynin 2504.10202 Stepanov differential-operator root** — Differential-operator (Stepanov) certificate for the WRAPAROUND ONSET threshold rather than for M: Kalmynin's explicit Stepanov differential operator + sum-of-residues po
+- **Chattopadhyay 2602.22167 (subfield-descent generalized ** — Subfield-descent of the Gauss-period phase via Chattopadhyay's tall-box Polya-Vinogradov (Prop 11 / Case 3). Reframe M(mu_n) over F_p by EMBEDDING the additive-character-
+- **Kim-Yip-Yoo 2602.20919 Lemma 1.8 equality/coset-rigidit** — Rigidity-defect amplifier: turn HP/Kim-Yip-Yoo NEAR-EQUALITY coset-rigidity into a contradiction-budget for the EXTREME frequency b*. Instead of using the Hanson-Petridis
+- **Chattopadhyay 2602.22167 Case 3 subfield Polya-Vinograd** — Subfield-descent of the multiplicative-dual sum into F_{p^2}, escaping the fixed-index conductor wall. The archimedean route already showed prize <=> max_chi |sum_{zeta i
+- **Kalmynin 2504.10202 explicit differential operator + su** — Holonomic recursion for the energy ladder via Kalmynin's residue-differential operator. Kalmynin 2504.10202 uses an EXPLICIT differential operator + sum-of-residues power
+- **Cochrane 2602.04111 (mu_n is not a GAP / all decomposit** — Indecomposability-as-anti-resonance: convert Cochrane's theorem-grade additive un-structure of mu_n into a variance LOWER-bound-free CLT via a Lindeberg swap whose neglig
+- **Chattopadhyay 2602.22167 (subfield-restriction PV, Case** — Subfield-descent CLT splitting: descend the Gauss-phase sum over mu_n through a tower of subfields using Chattopadhyay's subfield-restriction generalized Polya-Vinogradov
+- **Kim-Yip-Yoo 2602.20919 Lemma 1.8 (multiplicative HP pro** — Quantitative dissociativity certificate from FAILURE of multiplicative HP coset-rigidity (the deviation gap forces a CLT at depth r). Use the Kim-Yip-Yoo Lemma 1.8 / Kalm
+- **Chattopadhyay 2602.22167 Prop 8 (mixed-side multiplicat** — Minkowski successive-minima energy count over the SIGNED wraparound relation lattice: certify E_r via lattice-point geometry of the relation module, escaping phase-blindn
+- **Chattopadhyay 2602.22167 Prop 11 (Katz complete-sum inp** — Subfield-descent Polya-Vinogradov on the 2-adic tower of mu_n, completing each tower rung with a Katz complete character sum. Chattopadhyay's 'tall box' Case 3 runs gener
+- **2602.20919 Kim-Yip-Yoo multiplicative Hanson-Petridis L** — Coset-rigidity DEFECT as a PHASE-carrying remainder: turn Kim-Yip-Yoo Lemma 1.8 near-equality into a signed wraparound functional. The mined multiplicative HP bound |A||B
+- **2602.04111 Cochrane Eq 5.1 (Hasse-Weil Fermat-curve r(c** — Fermat-curve r(c) representation-count as a SECOND DERIVATIVE feeding a Stein/CLT bootstrap (not as a static depth-2 bound). Cochrane's Eq 5.1 gives the EXACT pointwise 2
+- **2603.22167 Chattopadhyay Prop 11 + Case 3 'tall box' ge** — Subfield-descent of the FREQUENCY (not the set): embed b∈F_p^* into a relative trace over F_{p^2}/F_p and run Chattopadhyay's generalized Pólya-Vinogradov 'tall box' Case
+
+### Honest verdict
+No paper-level technique CROSSES (all reduce: phase-blind energy/sumset/box bounds give exponent >=1; exact
+rigidity/generic-rank pins average/weight not the worst-case max; second-moment/functional-CLT results are
+family-average not worst-case-uniform). The richest cluster is the additive-structure-of-mult-subgroups line
+(Cochrane 2602.04111 Fermat-curve genus ladder; Kim-Yip-Yoo 2602.20919 coset-rigidity; Kalmynin 2504.10202
+Stepanov residue operator) + the mixed-character wraparound recast (Mazumder 2603.02118 m*q^{1/2}). The two
+literature-specified probes both ran and reduced (double-symmetry variance = Gaussian chi^2_1 not sub-Poisson;
+Katz-curve conductor = m, eigenvalues pure weight-1 sqrt(p)). NET: ~100+ new papers, 55 deep-read, 50 new
+approaches (26 open-untested) — 0 crossings; the most-grounded new attack angles are the Cochrane genus ladder
+and the Mazumder mixed-sum recast, both reducing to the sqrt(rank) half-power deficit on scrutiny. NOT closure.
