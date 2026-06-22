@@ -11742,3 +11742,20 @@ exports in `CampaignProvenIndex`: `doorIV_halfMass_coherence_lt_one_iff_norm_lt_
 `doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export`, and
 `doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export`, axiom-clean with
 axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-nonnested-indexed] recursive worst-b ascent requires exact sub-argmax identity, not high percentile (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1/3 constraint/indexing lemma. The existing `_DoorIVWorstBNonNested` kernel
+formalizes the full-scan worst-b nesting obstruction: transfer ratio `< 1` is exactly a positive missed-
+subargmax gap, and any ratio certificate `≤ r < 1` rules out the level-`n` worst frequency being a true
+level-`n/2` sub-maximizer.
+
+VERDICT: near-top or high-percentile behavior of the adversarial frequency across dyadic levels is not
+enough for a recursive-ascent proof. The route needs exact argmax identity and a single positive witness
+gap refutes it. No CORE upper bound, cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonNested.lean`; permanent
+exports in `CampaignProvenIndex`: `doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export`,
+`doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export`, and
+`doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

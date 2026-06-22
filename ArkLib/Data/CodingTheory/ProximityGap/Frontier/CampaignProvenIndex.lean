@@ -92,6 +92,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThi
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
@@ -5172,5 +5173,36 @@ theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_pro
 #print axioms doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
+
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** A transfer ratio below `1`
+from the level-`n` worst frequency to the true level-`n/2` sub-maximum is exactly a positive missed-
+subargmax gap. High percentile behavior is not argmax identity. -/
+theorem doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export
+    {ι : Type*} {subMag : ι → ℝ} {b c : ι} (hpos : 0 < subMag c) :
+    subMag b / subMag c < 1 ↔ 0 < subMag c - subMag b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_lt_one_iff_witness_gap_pos hpos
+
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** If the observed transfer
+ratio is bounded by some explicit `r < 1`, then the level-`n` worst frequency is not a level-`n/2`
+sub-maximizer. This is the formal obstruction behind the full-scan worst-b nesting probes. -/
+theorem doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export
+    {ι : Type*} {subMag : ι → ℝ} {b c : ι} {r : ℝ}
+    (hpos : 0 < subMag c) (hratio : subMag b / subMag c ≤ r) (hr : r < 1) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.IsSubMaximizer subMag b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_of_ratio_le_lt_one
+    hpos hratio hr
+
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** Non-maximality is exactly
+the existence of a positive raw gap. A recursive-ascent certificate must rule out every such witness,
+not merely show that the level-`n` worst frequency has high percentile rank at level `n/2`. -/
+theorem doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
+    {ι : Type*} {subMag : ι → ℝ} {b : ι} :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.IsSubMaximizer subMag b ↔
+      ∃ c, 0 < subMag c - subMag b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_gap_pos
+
+#print axioms doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export
+#print axioms doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export
+#print axioms doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
