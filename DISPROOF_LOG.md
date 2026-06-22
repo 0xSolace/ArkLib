@@ -12476,3 +12476,33 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorem `lower_band_slack_over_single_ge`; permanent export
 `doorIV_partitionDepth_lower_band_slack_over_single_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-phase-curvature-generic] worst-b second-difference (curvature) complexity is MAXIMAL + frequency-blind — discrete-curvature lever dead (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane 1, a genuinely-NEW measurement (NOT in the prior probe set). `ThreeGapPositionalRigidity`
+closed the gap-VALUE complexity of the worst-b coset positions (≤ n/2+1 distinct gaps, negation-closure,
+dilation-invariant). The NEXT-ORDER non-energy hope was a discrete-curvature / Halász–Littlewood small-ball
+lever via BOUNDED second differences of the sorted positions.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_phase_curvature.py`; proper μ_n, p ≡ 1 mod n, p ~ n⁴ ≫ n³,
+never n=q-1; UNIFORM coset-rep sampling to avoid scan-stride artifacts; EXACT integer positions in ℤ_p;
+global worst-b scan; n=16/32/64 × 5 structured primes each):
+
+  n=16 : distinctGaps(b*) = 9  (= n/2+1) ;  distinctΔ²(b*) = 16 = n ;  generic-b Δ² = 16
+  n=32 : distinctGaps(b*) = 17 (= n/2+1) ;  distinctΔ²(b*) = 32 = n ;  generic-b Δ² = 32
+  n=64 : distinctGaps(b*) = 33 (= n/2+1) ;  distinctΔ²(b*) = 64 = n ;  generic-b Δ² = 64
+
+VERDICT — REFUTATION-WITH-MECHANISM. At the worst frequency the cyclic second-difference (curvature)
+sequence attains the MAXIMAL n distinct values (curvature-GENERIC — no bounded-curvature structure to
+grip; a curvature lever needs distinctΔ² = O(1)), AND distinctΔ²(b*) = distinctΔ²(generic b) at every
+prime/every n ⟹ DILATION-INVARIANT ⟹ frequency-blind ⟹ rule-3 dead (same failure mode as the three-gap
+count). Mechanism: the gap sequence is a negation-closure palindrome (low distinct VALUES), but the gaps
+sit generically around the circle, so all n circular second-differences are distinct — palindromic
+low-gap-complexity does NOT force low-curvature-complexity; the two complexities are independent.
+
+Constraint lemma (formal kernel `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPhaseCurvatureGeneric.lean`,
+axiom-clean ⊆ {propext, Classical.choice, Quot.sound}): under the probed injectivity of the curvature map,
+`secondDiffSet_card_eq_of_injective` (full image = n) and `no_curvature_collapse` (distinctΔ² cannot fit
+any budget C < n); `frequencyBlind_no_separation` (a count agreeing at worst/generic b admits no separating
+threshold ⟹ zero selection info); `doorIV_phaseCurvature_dead` bundles both faces. NEGATIVE structural
+lemma; NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim. CORE stays OPEN.
