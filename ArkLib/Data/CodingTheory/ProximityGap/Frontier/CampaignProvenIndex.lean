@@ -46,6 +46,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorrido
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepRigidityCorner
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._GaussPeriodMomentCensus
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleTrivialOvershoot
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleAllDefectCSVacuous
@@ -2914,6 +2915,44 @@ theorem gaussPeriod_sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero_export
 #print axioms gaussPeriod_sum_eta_pow_eq_card_mul_zeroSumCensus_export
 #print axioms gaussPeriod_sum_eta_pow_deleted_eq_card_mul_zeroSumCensus_sub_export
 #print axioms gaussPeriod_sum_eta_pow_deleted_eq_neg_card_pow_of_census_zero_export
+
+/-! ## Door-IV signed-deep rigidity gap. Scope: **constraint/capstone**.
+
+The signed-deep floor is not just a point: on a negation-closed `0`-free domain in characteristic
+`≠ 2`, the deviation above `-|G|^r` lives on a `2q`-spaced lattice. These exports package the
+probe-facing contrapositive: any claimed leakage smaller than the first `2q` step is no leakage at
+all, hence the signed deep sum is exactly at its rigidity floor. -/
+
+/-- **[constraint, SignedDeepRigidityCorner]** No sub-`2q` leakage: below the first parity-quantized
+lattice step, the signed zero-sum count remains zero. -/
+theorem doorIV_signedDeep_zeroSumCount_zero_of_deviation_lt_two_q_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {r : ℕ} (hr : r ≠ 0) (h2 : (2 : F) ≠ 0) (G : Finset F)
+    (hneg : ∀ g ∈ G, -g ∈ G) (h0 : (0 : F) ∉ G)
+    (hsmall :
+      (∑ ψ ∈ (Finset.univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r).re + (G.card : ℝ) ^ r
+        < 2 * (Fintype.card F : ℝ)) :
+    _root_.ArkLib.ProximityGap.NegationClosedWalk.zeroSumCount G r = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.zeroSumCount_eq_zero_of_deviation_lt_two_q
+    hr h2 G hneg h0 hsmall
+
+/-- **[constraint, SignedDeepRigidityCorner]** Sub-`2q` deviation collapses to the exact floor
+`A_r = -|G|^r`; there is no tiny positive signed-deep structure to harvest before the open BGK-rate
+regime begins. -/
+theorem doorIV_signedDeep_eq_floor_of_deviation_lt_two_q_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {r : ℕ} (hr : r ≠ 0) (h2 : (2 : F) ≠ 0) (G : Finset F)
+    (hneg : ∀ g ∈ G, -g ∈ G) (h0 : (0 : F) ∉ G)
+    (hsmall :
+      (∑ ψ ∈ (Finset.univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r).re + (G.card : ℝ) ^ r
+        < 2 * (Fintype.card F : ℝ)) :
+    (∑ ψ ∈ (Finset.univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r)
+      = - (G.card : ℂ) ^ r :=
+  _root_.ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_eq_floor_of_deviation_lt_two_q
+    hr h2 G hneg h0 hsmall
+
+#print axioms doorIV_signedDeep_zeroSumCount_zero_of_deviation_lt_two_q_export
+#print axioms doorIV_signedDeep_eq_floor_of_deviation_lt_two_q_export
 
 /-! ## Door-IV sixth marginal cumulant collapse. Scope: **obstruction**.
 

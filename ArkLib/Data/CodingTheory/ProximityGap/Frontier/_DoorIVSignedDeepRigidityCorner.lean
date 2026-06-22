@@ -188,6 +188,46 @@ theorem signedPeriodPow_re_deviation_two_q_quantized
   push_cast
   ring
 
+/-- **No sub-`2q` leakage off the rigidity floor.**  In the same negation-closed, `0`-free,
+char-`≠ 2` setting as `signedPeriodPow_re_deviation_two_q_quantized`, the first allowed step above
+the floor has size exactly `2q`: if the real deviation
+`Re(A_r) + |G|^r` is strictly smaller than `2q`, then the zero-sum count is still zero.  Thus a probe
+or attempted argument cannot use a tiny positive signed-deep leakage as structure; below the `2q`
+lattice gap there is no leakage at all. -/
+theorem zeroSumCount_eq_zero_of_deviation_lt_two_q
+    {r : ℕ} (hr : r ≠ 0) (h2 : (2 : F) ≠ 0) (G : Finset F)
+    (hneg : ∀ g ∈ G, -g ∈ G) (h0 : (0 : F) ∉ G)
+    (hsmall :
+      (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r).re + (G.card : ℝ) ^ r
+        < 2 * (Fintype.card F : ℝ)) :
+    zeroSumCount G r = 0 := by
+  obtain ⟨k, hk⟩ := ArkLib.ProximityGap.NegationClosedWalk.two_dvd_zeroSumCount hr h2 G hneg h0
+  rw [signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount G r, hk] at hsmall
+  push_cast at hsmall
+  have hq : (0 : ℝ) < (Fintype.card F : ℝ) := by
+    exact_mod_cast Fintype.card_pos
+  have hklt : (k : ℝ) < 1 := by
+    nlinarith
+  have hk0 : k = 0 := by
+    exact Nat.cast_lt_one.mp hklt
+  rw [hk, hk0]
+
+/-- **Sub-`2q` deviation forces the exact floor.**  The quantized-gap contrapositive packaged at the
+level of the signed deep sum itself: under negation-closed, `0`-free, char-`≠ 2` hypotheses, any
+claimed deviation smaller than the first lattice step `2q` collapses to the exact rigidity corner
+`A_r = −|G|^r`.  This is a Door-(iv) constraint lemma, not a cancellation estimate: it says the
+signed-deep object has a hard arithmetic floor gap before the open BGK-rate regime begins. -/
+theorem signedPeriodPow_eq_floor_of_deviation_lt_two_q
+    {r : ℕ} (hr : r ≠ 0) (h2 : (2 : F) ≠ 0) (G : Finset F)
+    (hneg : ∀ g ∈ G, -g ∈ G) (h0 : (0 : F) ∉ G)
+    (hsmall :
+      (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r).re + (G.card : ℝ) ^ r
+        < 2 * (Fintype.card F : ℝ)) :
+    (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r)
+      = - (G.card : ℂ) ^ r := by
+  exact signedPeriodPow_eq_neg_card_pow_of_zeroSumCount_zero G r
+    (zeroSumCount_eq_zero_of_deviation_lt_two_q hr h2 G hneg h0 hsmall)
+
 end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 
 /-! ## Axiom audit -/
@@ -198,3 +238,5 @@ end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.neg_card_pow_le_signedPeriodPow_re
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_deviation_two_q_quantized
+#print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.zeroSumCount_eq_zero_of_deviation_lt_two_q
+#print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_eq_floor_of_deviation_lt_two_q

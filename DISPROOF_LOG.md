@@ -12402,4 +12402,23 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBImba
 theorems `lower_band_slack_over_single_ge`, `upper_band_gap_to_symmetric_ceiling_ge`, and
 `stationary_band_endpoint_gap_bounds`; permanent export
 `doorIV_worstB_imbalance_stationary_band_endpoint_gap_export`, axiom-clean with axioms contained in
+## [doorIV-signeddeep-sub2q-gap] sub-`2q` signed-deep leakage is impossible below the parity lattice step (2026-06-22, g55)
+
+Lane: door-(iv) Lane 2/3 constraint lemma extending `_DoorIVSignedDeepRigidityCorner`. The prior
+kernel pinned the signed deep floor and proved the deviation
+`Re(A_r) + |G|^r = q·zeroSumCount(G,r)` is `2q`-quantized on a negation-closed, `0`-free domain in
+characteristic not two. This refinement packages the probe-facing contrapositive: if a proposed
+argument sees deviation strictly below the first `2q` step, then `zeroSumCount(G,r)=0`, hence the
+signed deep sum is exactly at the rigidity floor `A_r = -|G|^r`.
+
+VERDICT: there is no tiny positive signed-deep leakage to exploit before the open BGK-rate regime
+begins. The signed-deep object has a hard arithmetic floor gap: below `2q`, the apparent leakage
+collapses to no leakage at all. This is a constraint on candidate Door-IV reductions, not a CORE,
+cancellation, completion, moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVSignedDeepRigidityCorner.lean`,
+new theorems `zeroSumCount_eq_zero_of_deviation_lt_two_q` and
+`signedPeriodPow_eq_floor_of_deviation_lt_two_q`, exported as
+`doorIV_signedDeep_zeroSumCount_zero_of_deviation_lt_two_q_export` and
+`doorIV_signedDeep_eq_floor_of_deviation_lt_two_q_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
