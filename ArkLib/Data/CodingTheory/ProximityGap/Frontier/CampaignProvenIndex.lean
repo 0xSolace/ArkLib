@@ -103,6 +103,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCompression
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoPieceAngularDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
@@ -6084,6 +6085,58 @@ theorem doorIV_canonicalHalf_coherence_eq_zero_of_real_mul_eq_zero_export {a b :
 #print axioms doorIV_canonicalHalf_coherence_eq_one_of_real_mul_pos_export
 #print axioms doorIV_canonicalHalf_coherence_eq_neg_one_of_real_mul_neg_export
 #print axioms doorIV_canonicalHalf_coherence_eq_zero_of_real_mul_eq_zero_export
+
+/-- **[Lane 1 angular-deficit accounting]** The squared norm of a two-piece sum loses exactly twice
+`angularDeficit A B` from the squared half-mass. This is the sharp two-piece Door-IV identity: any
+strict coset-half coherence drop is genuine angular misalignment, not a bookkeeping artifact. -/
+theorem doorIV_twoPiece_norm_add_sq_eq_halfMass_sq_sub_two_angularDeficit_export (A B : ℂ) :
+    ‖A + B‖ ^ 2 = (‖A‖ + ‖B‖) ^ 2 -
+      2 * _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.angularDeficit A B :=
+  _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_add_sq_eq_halfMass_sq_sub_two_angularDeficit
+    A B
+
+/-- **[Lane 1 angular-deficit accounting]** A strict squared half-mass deficit is equivalent to a
+positive two-piece angular deficit. Thus a two-piece anti-concentration certificate must prove a
+positive phase-misalignment term. -/
+theorem doorIV_twoPiece_norm_add_sq_lt_iff_angularDeficit_pos_export (A B : ℂ) :
+    ‖A + B‖ ^ 2 < (‖A‖ + ‖B‖) ^ 2 ↔
+      0 < _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.angularDeficit A B :=
+  _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_add_sq_lt_halfMass_sq_iff_angularDeficit_pos
+    A B
+
+/-- **[Lane 1 multi-piece angular-deficit accounting]** For a finite list of complex pieces, the
+squared resultant norm equals squared `L¹` mass minus twice the total pairwise angular deficit. This
+identifies the exact many-piece object a Door-IV phase-spread proof must lower-bound. -/
+theorem doorIV_multiPiece_norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit_export (zs : List ℂ) :
+    ‖zs.sum‖ ^ 2 =
+      (_root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass zs) ^ 2 -
+        2 * _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs :=
+  _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit
+    zs
+
+/-- **[Lane 1 threshold reduction]** A squared resultant ceiling `T` is exactly equivalent to a
+lower bound on total pairwise angular deficit. This is a sqrt-free, non-moment accounting reduction
+only; it does not prove the missing arithmetic anti-concentration lower bound. -/
+theorem doorIV_multiPiece_norm_sum_sq_le_iff_totalPairDeficit_ge_export (zs : List ℂ) (T : ℝ) :
+    ‖zs.sum‖ ^ 2 ≤ T ↔
+      ((_root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass zs) ^ 2 - T) / 2 ≤
+        _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs :=
+  _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.norm_sum_sq_le_iff_totalPairDeficit_ge
+    zs T
+
+/-- **[Lane 1 angular-deficit ceiling]** The total pairwise angular deficit is bounded by the
+antipodal `L¹²/2` ceiling. This names the corresponding L²/triangle-inequality ceiling: controlling
+the deficit only by this generic cap cannot by itself supply the prize-scale arithmetic saving. -/
+theorem doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export (zs : List ℂ) :
+    _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs ≤
+      (_root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass zs) ^ 2 / 2 :=
+  _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit_le_l1Mass_sq_div_two zs
+
+#print axioms doorIV_twoPiece_norm_add_sq_eq_halfMass_sq_sub_two_angularDeficit_export
+#print axioms doorIV_twoPiece_norm_add_sq_lt_iff_angularDeficit_pos_export
+#print axioms doorIV_multiPiece_norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit_export
+#print axioms doorIV_multiPiece_norm_sum_sq_le_iff_totalPairDeficit_ge_export
+#print axioms doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification

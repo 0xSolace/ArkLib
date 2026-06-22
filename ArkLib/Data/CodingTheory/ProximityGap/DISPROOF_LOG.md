@@ -19156,3 +19156,23 @@ Formal exports: `doorIV_sector_floor_le_coherence_export`,
 `doorIV_sector_escape_of_coherence_le_export`, `doorIV_sector_aggregate_deficit_budget_export`, and
 `doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-two-piece-angular-deficit-indexed] phase-spread saving is exactly total angular deficit (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1 constraint indexing. Indexed the existing axiom-clean kernel
+`_DoorIVTwoPieceAngularDeficit.lean` into `CampaignProvenIndex`.
+
+VERDICT: subdividing the worst-frequency sum only helps if it creates a real accumulated angular
+misalignment budget. For two pieces, the squared half-mass deficit is exactly `2*angularDeficit`; for
+many pieces, `‖Σzᵢ‖² = L¹² - 2*totalPairDeficit`. Therefore any squared resultant ceiling is exactly a
+lower bound on total pairwise angular deficit. This is a sharp accounting reduction and constraint,
+not the missing arithmetic anti-concentration theorem. The generic antipodal/L² cap on total deficit
+is also pinned, marking the ceiling of phase-blind deficit control. No CORE, cancellation, completion,
+moment-saving, anti-concentration theorem, or capacity claim.
+
+Formal exports: `doorIV_twoPiece_norm_add_sq_eq_halfMass_sq_sub_two_angularDeficit_export`,
+`doorIV_twoPiece_norm_add_sq_lt_iff_angularDeficit_pos_export`,
+`doorIV_multiPiece_norm_sum_sq_eq_l1Mass_sq_sub_two_totalPairDeficit_export`,
+`doorIV_multiPiece_norm_sum_sq_le_iff_totalPairDeficit_ge_export`, and
+`doorIV_totalPairDeficit_le_l1Mass_sq_div_two_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
