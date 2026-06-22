@@ -12713,3 +12713,23 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseMas
 _ResonancePhaseMassFloor). Theorems: card_nonzero_filter, norm_phaseMass_le_of_unit,
 norm_phaseMass_const_one, phaseMass_pow_le_const_one_of_unit, const_one_maximizes_phaseMass_floor.
 Axiom-clean ({propext, Classical.choice, Quot.sound}). Pushed 1694b7445.
+
+## [resonance-diagonal-extraction] diagonal extraction of T(r): Wick floor (m-1)^r + named agreement off-diagonal (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 on T(r)=sum_c‖phaseSum u r c‖². Expanding each squared norm as a fiber double sum
+and regrouping by the AGREEMENT relation sumX=sumY gives the exact identity
+  (T r : ℂ) = sum_{X,Y both nonzero, sumX=sumY} conj(prod u X)·(prod u Y)
+(resonanceMoment_eq_agreement_double; normSq_eq_conj_mul_self + sum_mul_sum + sum_fiberwise merging the
+per-frequency fibers into the single agreement relation). The DIAGONAL X=Y is resonanceDiag u r =
+sum_X‖prod u X‖², pinned to the Wick count (m-1)^r for unit-modulus phases (resonanceDiag_unit).
+
+VERDICT (constraint): T(r) decomposes as Wick diagonal (m-1)^r PLUS an off-diagonal AGREEMENT term
+(X!=Y, sumX=sumY). The off-diagonal is the single open object; the entire √-cancellation question is
+whether it stays bounded. Together with the phase-mass arc (|S| controls the coherent part), this fully
+localizes the open content of the resonance moment to the agreement off-diagonal. The off-diagonal is
+NAMED, not bounded. No CORE/cancellation/completion/moment/anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonanceDiagonalExtraction.lean (leaf,
+GaussPhaseResonance only). Theorems: resonanceDiag, normSq_phaseSum_eq_double,
+resonanceMoment_eq_agreement_double, resonanceDiag_unit. Axiom-clean ({propext, Classical.choice,
+Quot.sound}). Pushed 59a928f3a.
