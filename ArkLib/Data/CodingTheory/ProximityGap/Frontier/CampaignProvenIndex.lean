@@ -128,6 +128,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnst
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5663,5 +5664,38 @@ theorem doorIV_below_floor_target_forces_width_or_floor_break_export
 #print axioms doorIV_tower_product_ge_bottom_floor_export
 #print axioms doorIV_tower_product_ge_fixed_width_floor_export
 #print axioms doorIV_below_floor_target_forces_width_or_floor_break_export
+
+
+/-- **[Lane 3 dyadic descent obstruction]** Iterating the per-level dilation descent
+`M (k+1) ≤ 2*M k` through `a` dyadic levels gives only `M a ≤ 2^a * M 0`, the factor-`n` trivial
+ceiling for `n=2^a`. -/
+theorem doorIV_dilation_telescope_le_two_pow_mul_export (M : ℕ → ℝ)
+    (hpos : ∀ k, 0 ≤ M k) (hstep : ∀ k, M (k + 1) ≤ 2 * M k) (a : ℕ) :
+    M a ≤ 2 ^ a * M 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentTelescope.telescope_le_two_pow_mul
+    M hpos hstep a
+
+/-- **[Lane 3 dyadic descent obstruction]** With the base period normalized to one, pure factor-2
+recursion gives exactly `M a ≤ 2^a`. This is the trivial `M(μ_n) ≤ n` ceiling, not the prize
+`√(n log)` cancellation scale. -/
+theorem doorIV_dilation_telescope_le_two_pow_of_base_one_export (M : ℕ → ℝ)
+    (hpos : ∀ k, 0 ≤ M k) (hstep : ∀ k, M (k + 1) ≤ 2 * M k)
+    (hbase : M 0 = 1) (a : ℕ) :
+    M a ≤ 2 ^ a :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentTelescope.telescope_le_two_pow_of_base_one
+    M hpos hstep hbase a
+
+/-- **[Lane 3 dyadic descent obstruction]** More generally, any descent with per-level factor `c`
+telescopes to `c^a * M 0`. Thus all nontrivial saving must come from a real per-level factor below the
+doubling ceiling, precisely the slack object isolated by the Door-IV probes. -/
+theorem doorIV_dilation_telescope_per_level_factor_export (M : ℕ → ℝ) (hpos : ∀ k, 0 ≤ M k)
+    {c : ℝ} (hc1 : 1 ≤ c) (hstep : ∀ k, M (k + 1) ≤ c * M k) (a : ℕ) :
+    M a ≤ c ^ a * M 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentTelescope.telescope_per_level_factor
+    M hpos hc1 hstep a
+
+#print axioms doorIV_dilation_telescope_le_two_pow_mul_export
+#print axioms doorIV_dilation_telescope_le_two_pow_of_base_one_export
+#print axioms doorIV_dilation_telescope_per_level_factor_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

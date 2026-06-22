@@ -11981,3 +11981,11 @@ Lane: door-(iv) Lane 1/3 constraint consolidation for `_DoorIVCoherenceTowerColl
 VERDICT: fully coherent upper levels contribute product factor exactly `1`; the whole coherence product collapses to the bottom segment. If that bottom segment has fixed width `K` and factors bounded below by `c`, the full product is bounded below by `c^K`, independent of tower height. Therefore any below-floor/logarithmic damping target must prove either a growing number of noncoherent levels or shrinking bottom factors. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_tower_product_collapses_to_bottom_export`, `doorIV_tower_product_ge_bottom_floor_export`, `doorIV_tower_product_ge_fixed_width_floor_export`, and `doorIV_below_floor_target_forces_width_or_floor_break_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-dilation-descent-telescope-indexed] permanent exports for saving-free dyadic descent (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint consolidation for `_DoorIVDilationDescentTelescope`. The dilation recursion gives the per-level inequality `M(k+1) <= 2*M(k)`. This sweep makes the telescoping obstruction citable: iterating that inequality through `a` levels yields `M(a) <= 2^a*M(0)`, and with base one this is exactly the trivial `M <= n` ceiling.
+
+VERDICT: pure dyadic descent has no hidden sqrt-cancellation. A nontrivial prize-scale descent must prove a genuine per-level factor below the doubling ceiling and then pay the `a`-fold product; the factor-2 recursion alone leaves the whole gap untouched. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_dilation_telescope_le_two_pow_mul_export`, `doorIV_dilation_telescope_le_two_pow_of_base_one_export`, and `doorIV_dilation_telescope_per_level_factor_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
