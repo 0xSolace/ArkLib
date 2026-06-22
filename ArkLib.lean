@@ -1856,6 +1856,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBHalfMassCarri
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPartitionDepthBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSidonNoEnergyExcess
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetCountSingleton
