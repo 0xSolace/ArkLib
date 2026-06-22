@@ -12007,3 +12007,20 @@ Formal exports: `doorIV_cocycle_no_random_edge_export`,
 `doorIV_cocycle_no_sub_surrogate_certificate_export`, and
 `doorIV_cocycle_dispersion_surrogate_dominated_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-joint-field-white-indexed] nonzero-lag b-field covariance diagonalizes to the marginal variance (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 refuted-lever constraint. Indexed the existing axiom-clean kernel
+`_DoorIVJointFieldWhite.lean` into `CampaignProvenIndex`. The formal interface says: if the centered
+period field has zero summed cross-covariance against a shifted copy and the shift preserves diagonal
+mass, then the quadratic form of the two-block sum is exactly twice the marginal variance.
+
+VERDICT: low-order joint `b ↔ b'` structure contributes no exploitable information beyond the diagonal
+variance/marginal moment face. The worst-b/coset field remains white at nonzero multiplicative lags;
+any useful estimate must still solve the marginal BGK/Gauss-period wall. No CORE, cancellation,
+completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal exports: `doorIV_jointField_sum_centered_export`,
+`doorIV_jointField_diagonal_sndMoment_nonneg_export`, and
+`doorIV_jointField_white_diagonalizes_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

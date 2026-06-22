@@ -38,6 +38,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeShawTetrachoto
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDispersion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCocycleNoRandomEdge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVJointFieldWhite
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCocycleDoorIVCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVObjectMomentTrappedCapstone
@@ -5748,5 +5749,39 @@ theorem doorIV_cocycle_dispersion_surrogate_dominated_export {iidSup realSup : �
 #print axioms doorIV_cocycle_real_bound_transfers_to_surrogate_export
 #print axioms doorIV_cocycle_no_sub_surrogate_certificate_export
 #print axioms doorIV_cocycle_dispersion_surrogate_dominated_export
+
+
+/-- **[Lane 1/3 joint-field whiteness obstruction]** Centering is linear. This is the bookkeeping
+identity used by the lag-covariance probe interface before the white-field diagonalization. -/
+theorem doorIV_jointField_sum_centered_export {ι : Type*}
+    (f : ι → ℝ) (s : Finset ι) (μ : ℝ) :
+    ∑ i ∈ s, (f i - μ) = (∑ i ∈ s, f i) - (s.card : ℝ) * μ :=
+  _root_.ProximityGap.Frontier.DoorIVJointFieldWhite.sum_centered f s μ
+
+/-- **[Lane 1/3 joint-field whiteness obstruction]** The diagonal second moment of the centered
+period field is nonnegative. In the white-field regime this variance is the only surviving quadratic
+mass; nonzero lag blocks carry no additional structure. -/
+theorem doorIV_jointField_diagonal_sndMoment_nonneg_export {ι : Type*}
+    (f : ι → ℝ) (s : Finset ι) (μ : ℝ) :
+    0 ≤ ∑ i ∈ s, (f i - μ) ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVJointFieldWhite.diagonal_sndMoment_nonneg f s μ
+
+/-- **[Lane 1/3 joint-field whiteness obstruction]** If the centered period field has zero summed
+cross-covariance against a shifted copy, and the shift preserves the diagonal mass, then the quadratic
+form of the two-block sum diagonalizes to exactly twice the marginal variance. Thus the joint `b ↔ b'`
+route contributes no information beyond the marginal moment/variance face. No CORE / cancellation /
+completion / capacity claim. -/
+theorem doorIV_jointField_white_diagonalizes_export {ι : Type*}
+    (f : ι → ℝ) (s : Finset ι) (μ : ℝ) (σ : ι → ι)
+    (hσ : ∑ i ∈ s, (f i - μ) * (f (σ i) - μ) = 0)
+    (hbij : ∑ i ∈ s, (f (σ i) - μ) ^ 2 = ∑ i ∈ s, (f i - μ) ^ 2) :
+    ∑ i ∈ s, ((f i - μ) + (f (σ i) - μ)) ^ 2 =
+      2 * ∑ i ∈ s, (f i - μ) ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVJointFieldWhite.white_field_diagonalizes
+    f s μ σ hσ hbij
+
+#print axioms doorIV_jointField_sum_centered_export
+#print axioms doorIV_jointField_diagonal_sndMoment_nonneg_export
+#print axioms doorIV_jointField_white_diagonalizes_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
