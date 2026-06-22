@@ -2162,6 +2162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceRecursionBaseCon
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralCapDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralMean
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralNormCapDischarge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectralVariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpectrumModulusLaw
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceSpikeVarianceCost
