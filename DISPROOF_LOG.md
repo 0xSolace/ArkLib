@@ -11724,3 +11724,21 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVComplexRay
 exports in `CampaignProvenIndex`: `doorIV_twoPieceNormCoherence_lt_one_iff_not_sameRay_export` and
 `doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ray_export`, axiom-clean with axioms
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-halfmass-factorization-indexed] coset-half coherence savings must pay the half-mass budget (2026-06-21, g55)
+
+Lane: door-(iv) Lane 3 constraint/indexing lemma. The existing `_DoorIVHalfMassFactorization` kernel
+proves the exact split algebra: at positive half-mass, `coherence < 1` iff the period norm has strict
+triangle slack below the half-mass envelope, and any proposed coherence/half-mass caps are impossible
+when their reciprocal or product budget sits below the known period floor.
+
+VERDICT: a coset-half split does not itself create anti-concentration. Any strict coherence drop must
+be paired with enough `L¹` half-mass budget, or with an independent half-mass upper theorem strong enough
+that the product still covers the adversarial period floor. No CORE upper bound, cancellation, completion,
+moment-saving, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVHalfMassFactorization.lean`; permanent
+exports in `CampaignProvenIndex`: `doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export`,
+`doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export`, and
+`doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export`, axiom-clean with
+axioms contained in `{propext, Classical.choice, Quot.sound}`.

@@ -91,6 +91,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSaving
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A5TwistedMonodromyAbelianVerdict
@@ -5126,5 +5127,50 @@ theorem doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ra
 
 #print axioms doorIV_twoPieceNormCoherence_lt_one_iff_not_sameRay_export
 #print axioms doorIV_not_family_multiPieceNormCoherence_le_one_sub_of_exists_common_ray_export
+
+/-- **[Lane 3 coset-half factorization obstruction, HalfMassFactorization]** At positive half-mass,
+a strict coset-half coherence drop is exactly strict triangle slack in the half-mass envelope. The act
+of splitting `A+B` supplies no saving unless the certificate proves `‖A+B‖ < ‖A‖+‖B‖` at the
+adversarial frequency. -/
+theorem doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E}
+    (h : 0 < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence A B < 1 ↔
+      ‖A + B‖ < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence_lt_one_iff_norm_lt_halfMass h
+
+/-- **[Lane 3 coset-half budget obstruction, HalfMassFactorization]** A family of advertised
+coherence caps and half-mass caps is impossible if one member's half-mass budget lies below the forced
+reciprocal floor `T_i / rho_i` coming from the period floor. Coherence savings must be paid for in
+`L¹` half-mass unless an independent half-mass theorem is supplied. -/
+theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
+    {E : Type*} [SeminormedAddCommGroup E] {ι : Type*} {A B : ι → E} {T rho H : ι → ℝ}
+    (h : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass (A i) (B i))
+    (hrho : ∀ i, 0 < rho i) (hT : ∀ i, T i ≤ ‖A i + B i‖)
+    (hbad : ∃ i, H i < T i / rho i) :
+    ¬ ∀ i,
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence (A i) (B i) ≤ rho i ∧
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass (A i) (B i) ≤ H i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt
+    h hrho hT hbad
+
+/-- **[Lane 3 coset-half product-budget obstruction, HalfMassFactorization]** If a proposed
+coherence cap and half-mass cap have product below the known period floor at even one indexed member,
+the family of caps is impossible. This is the exact algebraic budget gate for coset-half Door-IV claims,
+not a CORE/cancellation estimate. -/
+theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
+    {E : Type*} [SeminormedAddCommGroup E] {ι : Type*} {A B : ι → E} {T rho H : ι → ℝ}
+    (h : ∀ i, 0 < _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass (A i) (B i))
+    (hrho0 : ∀ i, 0 ≤ rho i) (hT : ∀ i, T i ≤ ‖A i + B i‖)
+    (hbad : ∃ i, rho i * H i < T i) :
+    ¬ ∀ i,
+      _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.coherence (A i) (B i) ≤ rho i ∧
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass (A i) (B i) ≤ H i :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product
+    h hrho0 hT hbad
+
+#print axioms doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
+#print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
+#print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
