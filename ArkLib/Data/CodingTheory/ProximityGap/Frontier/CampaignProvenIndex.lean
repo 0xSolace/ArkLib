@@ -110,6 +110,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNon
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvThaine_DCompositionPhaseBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCongruencePadicPhaseBlind
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPerFrequencyLocalizationCollectiveOnly
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5060,5 +5061,37 @@ theorem doorIV_worstBSet_maximiser_orbit_export
 #print axioms doorIV_worstBSet_mem_dilate_iff_export
 #print axioms doorIV_worstBSet_dilate_mem_export
 #print axioms doorIV_worstBSet_maximiser_orbit_export
+
+/-- **[Lane 2/3 composition capstone, PerFrequencyLocalizationCollectiveOnly]** The worst-`b`
+per-frequency decomposition `M = ρ · H` admits NO factor-2 thin-separation in either factor (and the
+half-mass admits no factor-2 thick-separation either), under the probe-supplied thickness-comparability
+hypotheses (coherence deficit `K = 118/100`, half-mass `K = 107/100`). Both per-`b` factors are
+thickness-blind ⟹ by rule 3 neither is the thinness-essential CORE lever; the prize √-cancellation
+content is COLLECTIVE-only (the BGK wall). Refuted-lever constraint capstone — NO CORE/cancellation/
+completion/moment/anti-concentration/capacity claim. -/
+theorem doorIV_no_perFrequency_factor_separates_export
+    (D : _root_.ProximityGap.Frontier.DoorIVPerFrequencyLocalizationCollectiveOnly.WorstBDecomposition)
+    (hcoh_thin_pos : 0 < D.coherenceDeficit.thin)
+    (hcoh_bound : D.coherenceDeficit.thick ≤ (118 / 100 : ℝ) * D.coherenceDeficit.thin)
+    (hhm_thin_pos : 0 < D.halfMass.thin) (hhm_thick_pos : 0 < D.halfMass.thick)
+    (hhm_comp : D.halfMass.Comparable (107 / 100 : ℝ)) :
+    (¬ D.coherenceDeficit.Factor2ThinSeparation) ∧
+      (¬ D.halfMass.Factor2ThinSeparation) ∧
+      (¬ D.halfMass.Factor2ThickSeparation) :=
+  D.no_perFrequency_factor_separates hcoh_thin_pos hcoh_bound hhm_thin_pos hhm_thick_pos hhm_comp
+
+/-- **[Lane 2/3 composition capstone, PerFrequencyLocalizationCollectiveOnly]** Slogan form: neither
+per-frequency factor of `M = ρ · H` thin-separates (no per-`b` thin lever). -/
+theorem doorIV_neither_factor_thin_separates_export
+    (D : _root_.ProximityGap.Frontier.DoorIVPerFrequencyLocalizationCollectiveOnly.WorstBDecomposition)
+    (hcoh_thin_pos : 0 < D.coherenceDeficit.thin)
+    (hcoh_bound : D.coherenceDeficit.thick ≤ (118 / 100 : ℝ) * D.coherenceDeficit.thin)
+    (hhm_thin_pos : 0 < D.halfMass.thin) (hhm_thick_pos : 0 < D.halfMass.thick)
+    (hhm_comp : D.halfMass.Comparable (107 / 100 : ℝ)) :
+    (¬ D.coherenceDeficit.Factor2ThinSeparation) ∧ (¬ D.halfMass.Factor2ThinSeparation) :=
+  D.neither_factor_thin_separates hcoh_thin_pos hcoh_bound hhm_thin_pos hhm_thick_pos hhm_comp
+
+#print axioms doorIV_no_perFrequency_factor_separates_export
+#print axioms doorIV_neither_factor_thin_separates_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

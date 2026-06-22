@@ -11678,3 +11678,32 @@ Lane: Door-IV Lane 1 worst-b arithmetic / anti-concentration localization. `_Wor
 VERDICT: this is the formal/proven half of the worst-b set probe. It gives only multiplicative coset closure, not an additive structure, anti-concentration, CORE bound, or capacity claim. Any remaining Lane-1 exploit must act on the quotient by the forced μ_n-cosets.
 
 Formal exports: `doorIV_worstBSet_mem_dilate_iff_export`, `doorIV_worstBSet_dilate_mem_export`, `doorIV_worstBSet_maximiser_orbit_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-perFrequency-localization-collective-only] BOTH factors of the worst-b M=ρ·H decomposition are thickness-blind ⟹ no per-frequency CORE lever; prize content is COLLECTIVE-only (composition capstone, 2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane 2/3 COMPOSITION capstone (no new probe/estimate/mechanism — conjoins two already-
+proven kernel theorems, `_ShawGrandSynthesis` style). At the worst frequency `b*`, write
+`M(n) = ρ(b*)·H(b*)`: `ρ(b*)` = index-2 coset-half COHERENCE, `H(b*)=|A|+|B|` = half-MASS. Two prior
+rule-3 results lived in `_DoorIVCoherenceDeficitThicknessInvariant` as SEPARATE theorems plus prose, but
+no single kernel statement conjoined them:
+  - coherence factor: near-worst deficit `1−ρ` comparable thin/thick with `K≈1.18<2` ⟹
+    `deficit_lever_not_separating` (no factor-2 thin-separation).
+  - magnitude factor: prize-normalized half-mass comparable with `K≈1.07<2` ⟹
+    `halfMass_lever_not_separating_either_side` (no factor-2 thin- OR thick-separation).
+
+CAPSTONE: a new file conjoins both into ONE citable statement — under the probe-supplied comparability
+hypotheses, NEITHER per-frequency factor of `M=ρ·H` admits a factor-2 thin-separation (and the half-mass
+admits no thick-separation). By HARD RULE 3 a thickness-blind quantity cannot be the thinness-essential
+deciding lever (CORE is FALSE in the thick β≈2.3–3.2 window). Therefore the worst-b per-frequency
+localization is DEAD as a CORE lever in BOTH of its factors, and the entire prize √-cancellation content
+is COLLECTIVE-only — the 25-yr-open BGK aggregate over all frequencies. This backs the previously
+prose-only "prize content is exclusively in the collective BGK aggregate" claim with a kernel-checked
+theorem. NON-CLAIM: refuted-lever constraint capstone only; NO CORE upper bound, NO cancellation/
+completion/moment-saving/anti-concentration/capacity claim. CORE stays OPEN. The two empirical constants
+(118/100, 107/100) are carried as EXPLICIT hypotheses supplied by the two probes — NOT larped as theorems;
+this capstone composes conclusions and adds NO new axiom.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVPerFrequencyLocalizationCollectiveOnly.lean`,
+new theorems `no_perFrequency_factor_separates`, `neither_factor_thin_separates`; exported from
+`CampaignProvenIndex` as `doorIV_no_perFrequency_factor_separates_export`,
+`doorIV_neither_factor_thin_separates_export`. Axioms contained in `{propext, Classical.choice, Quot.sound}`.
