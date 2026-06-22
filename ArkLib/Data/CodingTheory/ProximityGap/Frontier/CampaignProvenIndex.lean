@@ -127,6 +127,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBOrbitLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBSetCosetClosed
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueScalarEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCosetClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound

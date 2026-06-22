@@ -1806,6 +1806,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVEighthCumulantSignU
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVExcessIsMoment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFourthMomentEnergyCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVFractionalMomentNoMaxGain
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGapNoLongRun
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGapSpectrumFullRank
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGeomMeanBelowMax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassBalanceAtArgmax
@@ -1826,6 +1828,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkDoobMajo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVOrderedWalkMajorant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPerFrequencyLocalizationCollectiveOnly
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseBlindRadialStats
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseCurvatureGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseSetDilationInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeBddAbove
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPrizeObjectGrandCapstone
@@ -2130,9 +2133,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RUD_MathlibAssessment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceChebyshevLower
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConjectureTrivialDischarge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConstantVectorCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionDiagExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionOffDiagSign
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagTrivialGap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceDiagonalExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceEulerProductRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
@@ -2144,8 +2148,11 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentRTwoBounds
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentUnconditionalCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceNumeratorDiagOffDiagSplit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagTrivialGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceParsevalBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseMassExtremizer
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseMassFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSumConvolutionRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSumConvolutionSubmult
@@ -2174,6 +2181,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawTransferPrinciple
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueBGKBracket
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueLandauBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawValueScalarEquivalence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ShawVanishingCoefficient
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseCoeffZeros
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._SparseRootCheck
