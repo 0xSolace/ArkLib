@@ -64,8 +64,31 @@ theorem resonanceOffDiag_re_corridor (u : ZMod m → ℂ) (r : ℕ) (hr : 1 ≤ 
   exact ⟨resonanceOffDiag_re_nonneg u r hu,
     resonanceOffDiag_re_le_trivial_ceiling_gap u r hr hu⟩
 
+/-- **Upper-corridor equality is exactly trivial-ceiling saturation.**
+For `r ≥ 1`, the agreement off-diagonal fills the whole corridor precisely when the resonance
+moment itself attains the uniform triangle ceiling.  Thus any proof that the off-diagonal stays
+strictly below the corridor top is equivalent to proving genuine slack in the triangle ceiling. -/
+theorem resonanceOffDiag_re_eq_trivial_ceiling_gap_iff (u : ZMod m → ℂ) (r : ℕ)
+    (hu : ∀ a : ZMod m, ‖u a‖ = 1) :
+    (resonanceOffDiag u r).re
+        = (m : ℝ) * ((m : ℝ) - 1) ^ (2 * (r - 1)) - ((m : ℝ) - 1) ^ r
+      ↔ resonanceMoment u r = (m : ℝ) * ((m : ℝ) - 1) ^ (2 * (r - 1)) := by
+  have hgap := resonanceOffDiag_re_eq_moment_sub_floor u r hu
+  constructor <;> intro h <;> linarith
+
+/-- **The corridor top is nonnegative whenever unit phases exist.**
+This is only a consistency check forced by the already-proven floor and ceiling: the trivial
+ceiling sits above the Wick floor in the unit-phase regime. -/
+theorem trivial_ceiling_gap_nonneg_of_unit (u : ZMod m → ℂ) (r : ℕ) (hr : 1 ≤ r)
+    (hu : ∀ a : ZMod m, ‖u a‖ = 1) :
+    0 ≤ (m : ℝ) * ((m : ℝ) - 1) ^ (2 * (r - 1)) - ((m : ℝ) - 1) ^ r := by
+  have hcorr := resonanceOffDiag_re_corridor u r hr hu
+  exact le_trans hcorr.1 hcorr.2
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_re_eq_moment_sub_floor
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_re_le_trivial_ceiling_gap
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_re_corridor
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_re_eq_trivial_ceiling_gap_iff
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.trivial_ceiling_gap_nonneg_of_unit
