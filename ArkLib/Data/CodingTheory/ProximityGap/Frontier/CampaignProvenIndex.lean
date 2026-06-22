@@ -64,6 +64,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBala
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVAlgebraicFloorCyclotomicWall
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVEighthCumulantSignUnstable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedPrizeReduction
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedTelescopeBridge
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatePrizeBudget
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVXGatedBaseThresholdConcrete
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetCountSingleton
@@ -362,6 +363,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_not_gappedMinor125_159_ne_zero_export` | obstruction | DoorIVAlgebraicFloorCyclotomicWall |
 | `doorIV_eighthCumulant_mixed_sign_forbids_fixed_sign_export` | obstruction | DoorIVEighthCumulantSignUnstable |
 | `doorIV_eighthCumulant_no_fixedSignCertificate_export` | obstruction | DoorIVEighthCumulantSignUnstable |
+| `doorIV_levelWorst_step_of_levelRatioBoundNZ_export` | capstone | DoorIVXGatedTelescopeBridge |
+| `doorIV_levelWorst_le_sqrt2_pow_mul_of_levelRatioBoundNZ_export` | capstone | DoorIVXGatedTelescopeBridge |
 | `doorIV_levelWorst_le_sqrt_two_pow_mul_of_xGatedRatio_export` | capstone | DoorIVXGatedPrizeReduction |
 | `doorIV_levelWorst_le_prize_budget_of_xgate_export` | capstone | DoorIVXGatePrizeBudget |
 | `doorIV_gateThreshold_split_telescope_sqrt2_export` | obstruction | DoorIVXGatedBaseThreshold |
@@ -3262,6 +3265,38 @@ theorem doorIV_eighthCumulant_no_fixedSignCertificate_export
       _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.UniversalNonpositive κ) :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVEighthCumulantSignUnstable.no_fixedSignCertificate_of_mixed_sign
     hpos hneg
+
+/-- **[capstone, DoorIVXGatedTelescopeBridge]** The corrected nonzero-frequency ratio hypothesis
+`LevelRatioBoundNZ ψ G ζ μ r` is exactly a one-step tower inequality on the concrete worst-period
+object: `M_{k+1} ≤ r·M_k` for every `k < μ`. This is the local rung of Shaw's door-(iv) descent;
+it assumes the open ratio gate and makes no cancellation claim. -/
+theorem doorIV_levelWorst_step_of_levelRatioBoundNZ_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} {μ : ℕ} {r : ℝ}
+    (hr : _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.LevelRatioBoundNZ ψ G ζ μ r)
+    {k : ℕ} (hk : k < μ) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ (k + 1) ≤
+      r * _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ k :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst_step_of_levelRatioBoundNZ
+    hr hk
+
+/-- **[capstone, DoorIVXGatedTelescopeBridge]** Telescoping the corrected `b ≠ 0` `√2` gate gives
+exactly the prize square-root tower factor `(√2)^μ·M₀`. This records the clean equivalence target:
+shaving every dyadic level from factor `2` to factor `√2` is precisely the geometric door-(iv)
+obligation. The `LevelRatioBoundNZ ... √2` input is open. -/
+theorem doorIV_levelWorst_le_sqrt2_pow_mul_of_levelRatioBoundNZ_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F] [Nontrivial F]
+    {ψ : AddChar F ℂ} {G : Finset F} {ζ : F} (μ : ℕ)
+    (hr : _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.LevelRatioBoundNZ ψ G ζ μ
+      (Real.sqrt 2)) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ μ ≤
+      (Real.sqrt 2) ^ μ *
+        _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst ψ G ζ 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVXGatedTelescopeBridge.levelWorst_le_sqrt2_pow_mul_of_xgate
+    μ hr
+
+#print axioms doorIV_levelWorst_step_of_levelRatioBoundNZ_export
+#print axioms doorIV_levelWorst_le_sqrt2_pow_mul_of_levelRatioBoundNZ_export
 
 /-- **[capstone, DoorIVXGatedPrizeReduction]** The named open `XGatedRatio` hypothesis, plus its
 levelwise `x`-gate, telescopes to the explicit square-root tower factor `√(2^μ)·M₀`. This is the
