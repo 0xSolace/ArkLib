@@ -104,6 +104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCompression
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoPieceAngularDeficit
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVUnitPieceDeficit
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
@@ -6198,6 +6199,71 @@ theorem doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export {�
 #print axioms doorIV_worstB_participation_ratio_le_iff_sq_aligned_le_export
 #print axioms doorIV_worstB_sumSq_ge_coherence_sq_div_card_export
 #print axioms doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export
+
+/-- **[Lane 1 unit-piece angular deficit]** For unit-modulus Door-IV phase pieces, the abstract
+`L¹` mass is exactly the number of pieces. This specializes the angular-deficit accounting to the
+actual monomial-sum geometry without introducing any estimate. -/
+theorem doorIV_unitPiece_l1Mass_eq_length_export {zs : List ℂ}
+    (h : ∀ z ∈ zs, ‖z‖ = 1) :
+    _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.l1Mass zs = zs.length :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.l1Mass_eq_length_of_forall_norm_one h
+
+/-- **[Lane 1 unit-piece angular deficit]** For unit-modulus phase pieces, the squared resultant
+loses exactly twice the total pairwise angular deficit from `(#pieces)²`. This is the concrete
+identity `|η_b|² = n² - 2D(b)` for the Door-IV monomial pieces. No CORE bound is claimed. -/
+theorem doorIV_unitPiece_norm_sum_sq_eq_length_sq_sub_two_deficit_export {zs : List ℂ}
+    (h : ∀ z ∈ zs, ‖z‖ = 1) :
+    ‖zs.sum‖ ^ 2 = (zs.length : ℝ) ^ 2 -
+      2 * _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_eq_length_sq_sub_two_totalPairDeficit_of_unit
+    h
+
+/-- **[Lane 1 unit-piece threshold reduction]** For unit pieces, a squared-resultant ceiling `T` is
+exactly the lower bound `D ≥ ((#pieces)² - T)/2` on total pairwise angular deficit. The prize burden
+is therefore the arithmetic task of forcing the worst-b unit-piece deficit near its ceiling. -/
+theorem doorIV_unitPiece_norm_sum_sq_le_iff_deficit_ge_export {zs : List ℂ} (T : ℝ)
+    (h : ∀ z ∈ zs, ‖z‖ = 1) :
+    ‖zs.sum‖ ^ 2 ≤ T ↔
+      ((zs.length : ℝ) ^ 2 - T) / 2 ≤
+        _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_le_iff_totalPairDeficit_ge_of_unit
+    T h
+
+/-- **[Lane 1 unit-piece deficit ceiling]** The total pairwise angular deficit of unit pieces is at
+most `(#pieces)²/2`, so the prize-scale deficit target sits just below this sharp generic ceiling.
+This is only accounting, not an anti-concentration estimate. -/
+theorem doorIV_unitPiece_totalPairDeficit_le_length_sq_div_two_export {zs : List ℂ}
+    (h : ∀ z ∈ zs, ‖z‖ = 1) :
+    _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs ≤
+      (zs.length : ℝ) ^ 2 / 2 :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.totalPairDeficit_le_length_sq_div_two_of_unit
+    h
+
+/-- **[Lane 1 normalized unit-piece deficit]** For a nonempty list of unit pieces, the normalized
+`deficitFraction` is exactly `2D/(#pieces)²`, i.e. the complement of normalized squared coherence.
+The prize is equivalently a near-one lower bound on this finite worst-b deficit fraction. -/
+theorem doorIV_unitPiece_deficitFraction_eq_two_mul_totalPairDeficit_div_export {zs : List ℂ}
+    (h : ∀ z ∈ zs, ‖z‖ = 1) (hne : zs ≠ []) :
+    _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction zs =
+      2 * _root_.ProximityGap.Frontier.DoorIVTwoPieceAngularDeficit.totalPairDeficit zs /
+        (zs.length : ℝ) ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction_eq_two_mul_totalPairDeficit_div
+    h hne
+
+/-- **[Lane 1 normalized unit-piece threshold]** Bounding normalized squared resultant by `ε` is
+exactly forcing the deficit fraction above `1 - ε`. This names the no-slack normalized form of the
+Door-IV worst-b prize burden; the missing content remains the arithmetic lower bound. -/
+theorem doorIV_unitPiece_norm_sum_sq_div_le_iff_deficitFraction_ge_export {zs : List ℂ} (ε : ℝ) :
+    ‖zs.sum‖ ^ 2 / (zs.length : ℝ) ^ 2 ≤ ε ↔
+      1 - ε ≤ _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.deficitFraction zs :=
+  _root_.ProximityGap.Frontier.DoorIVUnitPieceDeficit.norm_sum_sq_div_le_iff_deficitFraction_ge ε
+
+#print axioms doorIV_unitPiece_l1Mass_eq_length_export
+#print axioms doorIV_unitPiece_norm_sum_sq_eq_length_sq_sub_two_deficit_export
+#print axioms doorIV_unitPiece_norm_sum_sq_le_iff_deficit_ge_export
+#print axioms doorIV_unitPiece_totalPairDeficit_le_length_sq_div_two_export
+#print axioms doorIV_unitPiece_deficitFraction_eq_two_mul_totalPairDeficit_div_export
+#print axioms doorIV_unitPiece_norm_sum_sq_div_le_iff_deficitFraction_ge_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
