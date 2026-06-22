@@ -3,7 +3,9 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
-import ArkLib.Data.CodingTheory.ProximityGap.Frontier._IncidenceL4SpectralConvBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier.IncidenceDevL2Offset
+import ArkLib.Data.CodingTheory.ProximityGap.IncidenceDeviationCharSum
+import ArkLib.Data.CodingTheory.ProximityGap.IncidencePeriodBridge
 
 /-!
 # The incidence-offset MOMENT-RATIO tool: an EXACT, wall-free sandwich pinning the worst-case
@@ -77,7 +79,6 @@ open ArkLib.ProximityGap.SubgroupGaussSumSecondMoment
 open ArkLib.ProximityGap.IncidencePeriodBridge
 open ArkLib.ProximityGap.IncidenceDeviationCharSum
 open ArkLib.ProximityGap.IncidenceDevL2Offset
-open ArkLib.ProximityGap.Frontier.GrindL4Bridge
 
 namespace ArkLib.ProximityGap.Frontier.PIN6
 

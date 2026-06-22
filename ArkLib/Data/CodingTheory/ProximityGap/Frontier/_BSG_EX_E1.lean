@@ -26,7 +26,7 @@ contradicting `A.Nonempty`; hence `rDeg A G b₀ > 0`, i.e. `#N > 0`.
 -/
 
 open Finset
-open scoped BigOperators Pointwise Combinatorics.Additive
+open scoped BigOperators Pointwise
 
 namespace Finset.BSG
 

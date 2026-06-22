@@ -11662,3 +11662,11 @@ data can have different products.
 
 Verdict: Gross--Koblitz size/L² information is a valid size bound but not an archimedean L∞/CORE
 certificate.  It cannot pin the norm spread, cannot supply cancellation, and makes no capacity claim.
+
+## [doorIV-thaine-jacobi-congruence-phaseblind-indexed] Thaine d-composition and Jacobi congruence routes are phase-blind (g55, 2026-06-21)
+
+Lane: Door-IV Lane 3 constraint/reduction export. Shaw's 31-paper mine bricks `_AvThaine_DCompositionPhaseBlind` and `_JacobiCongruencePadicPhaseBlind` are now indexed from `CampaignProvenIndex`: d-composition/Hasse--Davenport lifting transports Jacobi-sum squared moduli exactly (`‖J₁∗J₂‖²=q₁q₂`, `‖lift_k J‖²=q^(k+1)`), the phase-blind moment skeleton only rearranges the triangle/diagonal bound, and any `p`-adic/congruence readout invariant under unit phases assigns the same value to aligned and cancelling two-piece configurations despite norms `2ρ` and `0`.
+
+VERDICT: these methods refine modulus, valuation, and congruence data, not the archimedean phase cancellation of the off-diagonal Jacobi/Gauss products. They localize the remaining obligation to the signed off-diagonal phase-cancellation wall and do not prove CORE, cancellation, completion, anti-concentration, or capacity.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_thaine_jacobiCompose_normSq_eq_export`, `doorIV_thaine_jacobiLift_normSq_eq_export`, `doorIV_thaine_phaseBlind_moment_bound_export`, `doorIV_thaine_composition_overshoot_export`, `doorIV_jacobiCongruence_phaseBlind_cannot_separate_export`, `doorIV_jacobiCongruence_full_norm_range_export`, and `doorIV_jacobiCongruence_phaseBlindOnF2_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.

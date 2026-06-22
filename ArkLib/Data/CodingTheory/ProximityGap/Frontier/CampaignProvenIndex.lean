@@ -107,6 +107,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBOrbitLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvThaine_DCompositionPhaseBlind
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCongruencePadicPhaseBlind
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2537,6 +2539,8 @@ theorem doorIV_nonTensor_tensor_dilution_strict_export
 #print axioms doorIV_nonTensor_tensor_dilution_strict_export
 
 
+
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -4927,5 +4931,90 @@ theorem doorIV_worstB_not_exists_nonzero_threshold_of_card_lt_export
 #print axioms doorIV_worstB_frequency_orbit_subset_nonzero_threshold_export
 #print axioms doorIV_worstB_card_nonzero_threshold_ge_card_of_mem_export
 #print axioms doorIV_worstB_not_exists_nonzero_threshold_of_card_lt_export
+
+
+/-! ## Door-IV Lane 3 phase-blind Jacobi/Thaine no-go exports.
+Scope: **obstruction / reduction localization**.
+
+These exports make Shaw's 31-paper mine verdict permanent: Thaine `d`-composition and
+Hasse--Davenport lifting transport Jacobi-sum **moduli** exactly, while congruence/`p`-adic
+Jacobi-sum data are invariant under archimedean unit phases. Both methods therefore leave the
+signed off-diagonal phase-cancellation wall explicit instead of proving CORE.
+-/
+
+/-- **[Thaine d-composition, phase-blindness]** The squared modulus of a composed Jacobi datum is
+exactly the product of the squared moduli. Thus the composition/lifting law transports absolute
+values, not the archimedean phase cancellation needed for the door-(iv) off-diagonal wall. -/
+theorem doorIV_thaine_jacobiCompose_normSq_eq_export
+    (J₁ J₂ : _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData) :
+    Complex.normSq
+        (_root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData.compose J₁ J₂).val =
+      J₁.fieldSize * J₂.fieldSize :=
+  _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData.jacobiCompose_normSq_eq J₁ J₂
+
+/-- **[Hasse--Davenport lift, phase-blindness]** The `(k+1)`-fold self-lift has squared modulus
+`q^(k+1)` exactly. No cancellation is gained by lifting the Weil modulus data. -/
+theorem doorIV_thaine_jacobiLift_normSq_eq_export
+    (J : _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData) (k : ℕ) :
+    Complex.normSq (_root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData.lift J k).val =
+      J.fieldSize ^ (k + 1) :=
+  _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.JacobiData.jacobiLift_normSq_eq J k
+
+/-- **[Thaine d-composition, obstruction]** The phase-blind moment estimate only rearranges to the
+triangle/diagonal bound `C * nTerms * qPow`; the off-diagonal signed cancellation remains outside
+the composition law. -/
+theorem doorIV_thaine_phaseBlind_moment_bound_export
+    {Ar nTerms qPow C : ℝ} (hC : 1 ≤ C) (hq : 0 ≤ qPow) (hn : 0 ≤ nTerms)
+    (hblind : Ar ≤ nTerms * (qPow * C)) :
+    Ar ≤ C * (nTerms * qPow) :=
+  _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.phaseBlind_moment_bound hC hq hn hblind
+
+/-- **[Thaine d-composition, prize-regime overshoot]** In the thin regime `q ≥ n`, the phase-blind
+ratio `q^r/n^r` is at least `q/n` for every `r ≥ 1`, recording the multiplicative overshoot of the
+modulus-only route. -/
+theorem doorIV_thaine_composition_overshoot_export
+    {q n : ℝ} (hn : 0 < n) (hqn : n ≤ q) {r : ℕ} (hr : 1 ≤ r) :
+    q / n ≤ q ^ r / n ^ r :=
+  _root_.ArkLib.ProximityGap.Frontier.ThaineDComposition.composition_overshoot hn hqn hr
+
+/-- **[Jacobi congruence, phase-blindness]** A phase-blind `p`-adic/congruence readout gives the same
+value to the two-piece aligned and cancelling configurations. Hence valuation/congruence data alone
+cannot detect the archimedean cancellation needed for the energy face. -/
+theorem doorIV_jacobiCongruence_phaseBlind_cannot_separate_export
+    (v : (Fin 2 → ℂ) → ℝ) (ρ : ℝ)
+    (hv : _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.PhaseBlind
+      (Finset.univ : Finset (Fin 2)) v) :
+    v (fun i => if i = 0 then (ρ : ℂ) else (-(ρ : ℂ))) = v (fun _ => (ρ : ℂ)) :=
+  _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.phaseBlind_cannot_separate_cancel_from_aligned
+    v ρ hv
+
+/-- **[Jacobi congruence, full norm gap]** The same phase-blind value is compatible with
+archimedean norm `0` and with the aligned norm `2ρ`; this is the precise obstruction to turning a
+`p`-adic/congruence certificate into a CORE energy bound. -/
+theorem doorIV_jacobiCongruence_full_norm_range_export
+    (v : (Fin 2 → ℂ) → ℝ) (ρ : ℝ) (hρ : 0 < ρ)
+    (hv : _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.PhaseBlind
+      (Finset.univ : Finset (Fin 2)) v) :
+    ∃ Acancel Aaligned : Fin 2 → ℂ,
+      v Acancel = v Aaligned ∧
+      ‖∑ i, Acancel i‖ = 0 ∧
+      ‖∑ i, Aaligned i‖ = 2 * ρ :=
+  _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.phaseBlind_value_compatible_with_full_norm_range
+    v ρ hρ hv
+
+/-- **[Jacobi congruence, capstone]** The congruence/`p`-adic method is phase-blind on F2: every
+phase-blind readout admits an aligned/cancel pair with identical value and maximal archimedean norm
+separation. -/
+theorem doorIV_jacobiCongruence_phaseBlindOnF2_export :
+    _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.CongruenceMethodPhaseBlindOnF2 :=
+  _root_.ProximityGap.Frontier.JacobiCongruencePadicPhaseBlind.congruenceMethodPhaseBlindOnF2_holds
+
+#print axioms doorIV_thaine_jacobiCompose_normSq_eq_export
+#print axioms doorIV_thaine_jacobiLift_normSq_eq_export
+#print axioms doorIV_thaine_phaseBlind_moment_bound_export
+#print axioms doorIV_thaine_composition_overshoot_export
+#print axioms doorIV_jacobiCongruence_phaseBlind_cannot_separate_export
+#print axioms doorIV_jacobiCongruence_full_norm_range_export
+#print axioms doorIV_jacobiCongruence_phaseBlindOnF2_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
