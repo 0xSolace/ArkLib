@@ -122,8 +122,27 @@ theorem sndMoment_ge_sq_of_exists_threshold
     simpa [T] using threshold_count_mul_sq_le_centered_sndMoment x s μ d hd
   exact le_trans hmul hcheb
 
+
+/-- Contrapositive spike-budget form: if the centered second moment budget is strictly below `d²`,
+then there is **no** index at threshold `μ+d`.  This is the exact kernel guard against a b-side
+"isolated spike for free" argument: even a single threshold hit already costs one full `d²` unit of
+second moment, so any proof that permits such a hit has routed through the moment/BGK object. -/
+theorem threshold_count_eq_zero_of_sndMoment_lt_sq
+    (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d)
+    (hsmall : (∑ i ∈ s, (x i - μ) ^ 2) < d ^ 2) :
+    (s.filter (fun i => μ + d ≤ x i)).card = 0 := by
+  classical
+  by_contra hne
+  have hpos : 0 < (s.filter (fun i => μ + d ≤ x i)).card := Nat.pos_of_ne_zero hne
+  rcases Finset.card_pos.mp hpos with ⟨i, hiT⟩
+  have hi : i ∈ s ∧ μ + d ≤ x i := Finset.mem_filter.mp hiT
+  have hge : d ^ 2 ≤ ∑ i ∈ s, (x i - μ) ^ 2 :=
+    sndMoment_ge_sq_of_exists_threshold x s μ d hd ⟨i, hi.1, hi.2⟩
+  linarith
+
 end ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound
 
 #print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_mul_sq_le_centered_sndMoment
 #print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_le_sndMoment_div
 #print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.sndMoment_ge_sq_of_exists_threshold
+#print axioms ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_eq_zero_of_sndMoment_lt_sq

@@ -7116,9 +7116,20 @@ theorem doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
   ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.sndMoment_ge_sq_of_exists_threshold
     x s μ d hd hex
 
+/-- **[Lane 3 worst-b spike contrapositive]** If the centered second-moment budget is below `d²`,
+then no `b`-side value can reach the threshold `μ+d`.  Thus a claimed isolated threshold spike is not
+free arithmetic information: even one hit forces a `d²` moment cost, so the route is moment/BGK-bound. -/
+theorem doorIV_worstB_threshold_count_eq_zero_of_sndMoment_lt_sq_export
+    {ι : Type*} (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d)
+    (hsmall : (∑ i ∈ s, (x i - μ) ^ 2) < d ^ 2) :
+    (s.filter (fun i => μ + d ≤ x i)).card = 0 :=
+  ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_eq_zero_of_sndMoment_lt_sq
+    x s μ d hd hsmall
+
 #print axioms doorIV_worstB_spike_count_mul_sq_le_centered_sndMoment_export
 #print axioms doorIV_worstB_spike_count_le_sndMoment_div_export
 #print axioms doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
+#print axioms doorIV_worstB_threshold_count_eq_zero_of_sndMoment_lt_sq_export
 
 
 /-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
