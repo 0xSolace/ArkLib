@@ -12621,3 +12621,19 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPerL
 new theorem `no_sqrt_two_perLevel_thinning`; permanent export
 `doorIV_worstB_no_sqrt_two_perLevel_thinning_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`. Landed in `2991683ce`; conflict-marker fix in `d516c5885`.
+
+## [doorIV-partition-depth-tail-thinness-necessary] beating the tail floor forces actual tail collapse (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 extension of `_DoorIVWorstBPartitionDepthBand`. After the exact tail-budget
+identity, this pins the contrapositive form: if the surplus over a certified heaviest piece is strictly
+below the `(k-1)·rlo·H` lower-band floor, then at least one non-heaviest tail piece must be below
+`rlo·H`.
+
+VERDICT: any attempted improvement over the coherent partition-depth floor must prove genuine tail
+thinness/collapse. Refinement depth itself cannot supply the saving while the lower band persists. No
+CORE, cancellation, completion, moment-saving, anti-concentration theorem, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPartitionDepthBand.lean`,
+new theorem `exists_tail_piece_below_lower_band_of_slack_lt`; permanent export
+`doorIV_partitionDepth_tail_thinness_necessary_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

@@ -208,9 +208,26 @@ theorem lower_band_slack_over_heaviest_ge [DecidableEq ι] {s : Finset ι} {Q : 
     _ = ∑ _i ∈ s.erase i₀, rlo * H := by rw [Finset.sum_const, nsmul_eq_mul]
     _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb_tail
 
+
+/-- **Tail-thinness necessity.**  If the surplus over a certified heaviest piece is strictly below the
+lower-band budget `(k-1)·rlo·H`, then some non-heaviest tail piece must violate the `rlo·H` lower band.
+Thus beating the partition-depth slack floor is possible only by genuine tail collapse, not by a
+coherent refinement-depth trick. -/
+theorem exists_tail_piece_below_lower_band_of_slack_lt [DecidableEq ι] {s : Finset ι} {Q : ι → E}
+    {H rlo : ℝ} {i₀ : ι} (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s)
+    (hH : ‖Q i₀‖ = H)
+    (hshort : ‖∑ i ∈ s, Q i‖ - H < ((s.card - 1 : ℕ) : ℝ) * (rlo * H)) :
+    ∃ i ∈ s.erase i₀, ‖Q i‖ < rlo * H := by
+  by_contra hnone
+  push_neg at hnone
+  have hlb_tail : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖ := hnone
+  have hfloor := lower_band_slack_over_heaviest_ge hcoh hi₀ hH hlb_tail
+  linarith
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.exists_tail_piece_below_lower_band_of_slack_lt
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.lower_band_slack_over_heaviest_ge
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_sub_max_eq_sum_erase
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.strictly_between_single_and_ceiling

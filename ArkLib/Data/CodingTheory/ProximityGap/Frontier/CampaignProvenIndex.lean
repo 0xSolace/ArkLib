@@ -7249,6 +7249,39 @@ theorem doorIV_partitionDepth_tail_slack_budget_export
 
 #print axioms doorIV_partitionDepth_tail_slack_budget_export
 
+/-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** If a coherent `k`-piece
+partition has surplus over the certified heaviest piece strictly below the `(k-1)·rlo·H` lower-band
+floor, then some non-heaviest tail piece is genuinely below `rlo·H`. So any attempted improvement over
+the partition-depth floor must prove tail collapse; refinement depth alone cannot supply it. No CORE /
+cancellation / completion / moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_partitionDepth_tail_thinness_necessary_export
+    {ι E : Type*} [DecidableEq ι] [SeminormedAddCommGroup E]
+    {s : Finset ι} {Q : ι → E} {H rlo : ℝ} {i₀ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s)
+    (hH : ‖Q i₀‖ = H)
+    (hshort : ‖∑ i ∈ s, Q i‖ - H < ((s.card - 1 : ℕ) : ℝ) * (rlo * H)) :
+    ∃ i ∈ s.erase i₀, ‖Q i‖ < rlo * H := by
+  by_contra hnone
+  push_neg at hnone
+  have hlb_tail : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖ := hnone
+  have htail : ‖∑ i ∈ s, Q i‖ - H = ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+    rw [hcoh]
+    have hsplit : (∑ i ∈ s, ‖Q i‖) = ‖Q i₀‖ + ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+      rw [← Finset.sum_erase_add s _ hi₀]; ring
+    rw [hsplit, hH]
+    ring
+  have hfloor : ((s.card - 1 : ℕ) : ℝ) * (rlo * H) ≤ ‖∑ i ∈ s, Q i‖ - H := by
+    rw [htail]
+    calc
+      ((s.card - 1 : ℕ) : ℝ) * (rlo * H)
+          = ((s.erase i₀).card : ℝ) * (rlo * H) := by
+            rw [Finset.card_erase_of_mem hi₀]
+      _ = ∑ _i ∈ s.erase i₀, rlo * H := by rw [Finset.sum_const, nsmul_eq_mul]
+      _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb_tail
+  linarith
+
+#print axioms doorIV_partitionDepth_tail_thinness_necessary_export
+
 /-- **[obstruction, DoorIVWorstBPerLevelGrowthFloor — door-(iv) Lane-1/3]** Under the measured
 coherent-band plus near-worst transfer hypotheses, if the conditional per-level floor satisfies
 `√2 < (1+rlo)(1−ε)`, then the dyadic wall cannot satisfy the square-root thinning step
