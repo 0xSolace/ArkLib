@@ -124,6 +124,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBOrbitLowerBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBSetCosetClosed
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCosetClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvThaine_DCompositionPhaseBlind
@@ -6560,5 +6561,86 @@ theorem doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
    fun h => DoorIVWorstBCoherentImbalance.coherent_norm_eq_two_mul_max_forces_balance hcoh h⟩
 
 #print axioms doorIV_worstB_coherent_imbalance_breaks_symmetric_descent_export
+
+/-- **[Lane 1 worst-b selector obstruction]** If the frequency statistic is constant on group
+orbits, then super-level membership is exactly invariant under every orbit move. A worst-`b`
+selector cannot distinguish points inside one multiplicative coset using that statistic. -/
+theorem doorIV_worstBCoset_smul_mem_superLevel_iff_export {G β : Type*} [Group G]
+    [MulAction G β] {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (c : ℝ) (g : G) {b : β} :
+    g • b ∈ DoorIVWorstBCosetClosed.superLevel f c ↔
+      b ∈ DoorIVWorstBCosetClosed.superLevel f c :=
+  DoorIVWorstBCosetClosed.smul_mem_superLevel_iff_of_orbitConstant hf c g
+
+/-- **[Lane 1 worst-b selector obstruction]** With an invariant involution (the prize case is
+`b ↦ -b`), super-level membership is also exactly sign-invariant. The near-max set is sign-closed. -/
+theorem doorIV_worstBCoset_sigma_mem_superLevel_iff_export {β : Type*} {f : β → ℝ}
+    {σ : β → β} (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) {b : β} :
+    σ b ∈ DoorIVWorstBCosetClosed.superLevel f c ↔
+      b ∈ DoorIVWorstBCosetClosed.superLevel f c :=
+  DoorIVWorstBCosetClosed.sigma_mem_superLevel_iff hσ c
+
+/-- **[Lane 1 worst-b selector obstruction]** Combined coset-plus-sign invariance: applying any
+coset move and then the involution neither creates nor destroys near-max membership. This is the
+selector-facing form of the coset/sign granularity wall. -/
+theorem doorIV_worstBCoset_sigma_smul_mem_superLevel_iff_export {G β : Type*} [Group G]
+    [MulAction G β] {f : β → ℝ} {σ : β → β}
+    (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) (g : G) {b : β} :
+    σ (g • b) ∈ DoorIVWorstBCosetClosed.superLevel f c ↔
+      b ∈ DoorIVWorstBCosetClosed.superLevel f c :=
+  DoorIVWorstBCosetClosed.sigma_smul_mem_superLevel_iff hf hσ c g
+
+/-- **[Lane 1 worst-b selector obstruction]** Finite cardinal floor: a near-max point forces the
+finite super-level set to contain its whole actual orbit image. Thus sub-orbit-sized worst-`b` sets
+are impossible unless the orbit itself has collapsed by stabilizers. -/
+theorem doorIV_worstBCoset_card_orbitImage_le_superLevelFinset_export {G β : Type*} [Group G]
+    [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c) :
+    (Finset.univ.image (fun g : G => g • b)).card ≤
+      (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
+  DoorIVWorstBCosetClosed.card_orbitImage_le_superLevelFinset hf c hb
+
+/-- **[Lane 1 worst-b selector obstruction]** Signed-fiber cardinal floor: with sign symmetry, a
+near-max point forces the whole image `g ↦ σ(g•b)` into the finite super-level set. -/
+theorem doorIV_worstBCoset_card_sigmaOrbitImage_le_superLevelFinset_export {G β : Type*} [Group G]
+    [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c) :
+    (Finset.univ.image (fun g : G => σ (g • b))).card ≤
+      (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
+  DoorIVWorstBCosetClosed.card_sigmaOrbitImage_le_superLevelFinset hf hσ c hb
+
+/-- **[Lane 1 worst-b selector obstruction]** Audit contrapositive: if a reported threshold set is
+smaller than the actual orbit image of `b`, then `b` cannot be in that threshold set. This pins the
+minimum budget any coset-blind worst-frequency selector must pay. -/
+theorem doorIV_worstBCoset_not_mem_of_card_lt_orbitImage_export {G β : Type*} [Group G]
+    [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card <
+      (Finset.univ.image (fun g : G => g • b)).card) :
+    ¬ b ∈ DoorIVWorstBCosetClosed.superLevel f c :=
+  DoorIVWorstBCosetClosed.not_mem_superLevel_of_card_superLevelFinset_lt_orbitImage hf c hcard
+
+/-- **[Lane 1 worst-b selector obstruction]** Free-orbit version of the cardinal floor: if the orbit
+map at `b` injects, one near-max frequency forces at least `|G|` near-max frequencies. A point-sized
+or sub-coset-sized worst-`b` selector is impossible in the free case. -/
+theorem doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export {G β : Type*}
+    [Group G] [MulAction G β] [Fintype G] [Fintype β]
+    {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c)
+    (hfree : ∀ {g h : G}, g • b = h • b → g = h) :
+    Fintype.card G ≤ (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
+  DoorIVWorstBCosetClosed.card_group_le_superLevelFinset_of_free_orbit hf c hb hfree
+
+#print axioms doorIV_worstBCoset_smul_mem_superLevel_iff_export
+#print axioms doorIV_worstBCoset_sigma_mem_superLevel_iff_export
+#print axioms doorIV_worstBCoset_sigma_smul_mem_superLevel_iff_export
+#print axioms doorIV_worstBCoset_card_orbitImage_le_superLevelFinset_export
+#print axioms doorIV_worstBCoset_card_sigmaOrbitImage_le_superLevelFinset_export
+#print axioms doorIV_worstBCoset_not_mem_of_card_lt_orbitImage_export
+#print axioms doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
