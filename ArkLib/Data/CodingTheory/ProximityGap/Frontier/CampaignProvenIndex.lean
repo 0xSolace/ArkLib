@@ -169,6 +169,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvari
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagSpikeCost
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerLogConvex
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerRatioSpectralCap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceRatioCapEquality
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -7585,8 +7586,26 @@ theorem doorIV_not_resonance_ratio_lt_floor_export
         ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r < ((m : ℝ) - 1) :=
   ArkLib.ProximityGap.GaussPhaseResonance.not_resonanceMoment_ratio_lt_floor u hu hm r
 
+/-- **[Lane 3 resonance tower cap-equality constraint]** If a realised spectral cap saturates one
+resonance-tower growth ratio, the weighted cap-slack residual is exactly zero.  Thus equality in the
+already-proven ratio cap leaves no slack on the `r`-support of the squared one-step spectrum; this is
+a constraint only, not an upper bound on the worst frequency. -/
+theorem doorIV_resonance_ratio_capSlack_eq_zero_of_eq_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) (hm : 2 ≤ m) (r : ℕ) (Mcap : ℝ)
+    (heq : ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u (r + 1) /
+      ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r = Mcap) :
+    (∑ k : ZMod m,
+        (Mcap - ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+            (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2) *
+          (‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+            (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2) ^ r) = 0 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_capSlack_eq_zero_of_eq
+    u hu hm r Mcap heq
+
 #print axioms doorIV_resonance_ratio_floor_export
 #print axioms doorIV_not_resonance_ratio_lt_floor_export
+#print axioms doorIV_resonance_ratio_capSlack_eq_zero_of_eq_export
 
 /-- **[Lane 3 resonance tower shape]** Endpoint rigidity for the ratio sandwich: if every squared
 kernel spectral weight is capped by the Parseval mean `m−1`, then every consecutive tower ratio is
