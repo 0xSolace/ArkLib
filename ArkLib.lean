@@ -1430,8 +1430,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvM1_HalaszSignedMomentNo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvMC1_ChaosLogDecorrelation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvMRS_PhaseBlindEnergyFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN1_MonomialWeylVMVTVacuous
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN1_ProductFormulaStickelbergerPhaseBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN3_GumbelTailRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN6_GITMomentMapVacuous
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvND_NormDiameterThreshold
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvNS_RGTowerFixedPoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvNT_CumulantAdditivityEngine
@@ -1834,6 +1836,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCompressio
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealSignMassSlack
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSectorCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignCocycleMassBalance
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepRigidityCorner
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSignedDeepSumAbsLeak
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSixthCumulantVanishes
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSupRmsGaussianSaturation
@@ -2026,7 +2029,9 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MomentSaddleValue
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialLineSpectrumNoEscape
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialNormTransport
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._MonomialWeylBridge
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._N3IntegralityCapacityVacuity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._N3MomentNotDeadDCEscape
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._N4SOSForMaxIdentity
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NTStrat_HDMagnitudeInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NamedLeverRefutationCapstone
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._NegTransversalCharFree
