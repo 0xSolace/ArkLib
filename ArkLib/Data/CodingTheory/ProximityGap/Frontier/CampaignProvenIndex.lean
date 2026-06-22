@@ -7603,6 +7603,41 @@ theorem doorIV_resonance_ratio_eq_floor_of_specMaxSq_le_floor_export
     u hu hm r hcap
 
 #print axioms doorIV_resonance_ratio_eq_floor_of_specMaxSq_le_floor_export
+/-- **[Lane 3 resonance spectral-floor endpoint]** A realised squared spectral maximum cannot sit
+below the Parseval floor `m−1`.  This is the endpoint compatibility condition forced by the
+growth-ratio sandwich: the actual worst frequency is at least the spectral mean.  Lower-side
+constraint only, not an upper bound on the BGK object. -/
+theorem doorIV_realised_specMaxSq_ge_parseval_floor_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (b₀ : ZMod m)
+    (hb₀ : ∀ k : ZMod m,
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 ≤
+        ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar b₀) u‖ ^ 2) :
+    (m : ℝ) - 1 ≤
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+        (ArkLib.ProximityGap.GaussPhaseResonance.dftChar b₀) u‖ ^ 2 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.realised_specMaxSq_ge_parseval_floor u hu hm b₀ hb₀
+
+/-- **[Lane 3 resonance spectral-floor endpoint]** Contrapositive guard: no realised
+worst-frequency squared mass can be strictly below `m−1`.  Any proposed door-(iv) cap must live
+above the Parseval floor; the open work is an upper bound in that range, not a
+sub-floor collapse. -/
+theorem doorIV_not_realised_specMaxSq_lt_parseval_floor_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (b₀ : ZMod m)
+    (hb₀ : ∀ k : ZMod m,
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 ≤
+        ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar b₀) u‖ ^ 2) :
+    ¬ ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+        (ArkLib.ProximityGap.GaussPhaseResonance.dftChar b₀) u‖ ^ 2 < ((m : ℝ) - 1) :=
+  ArkLib.ProximityGap.GaussPhaseResonance.not_realised_specMaxSq_lt_parseval_floor u hu hm b₀ hb₀
+
+#print axioms doorIV_realised_specMaxSq_ge_parseval_floor_export
+#print axioms doorIV_not_realised_specMaxSq_lt_parseval_floor_export
 
 /-- **[Lane 3 resonance two-sided off-diagonal constraint]** A one-step squared-spectrum dip `d`
 below the Parseval mean also forces `d² ≤ m · Re Off(2)`.  Near-flatness must therefore control
