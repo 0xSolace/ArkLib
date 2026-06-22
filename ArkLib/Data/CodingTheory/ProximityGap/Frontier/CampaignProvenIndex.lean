@@ -157,6 +157,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPartitionDepthBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPerLevelGrowthFloor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseCurvatureGeneric
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGapNoLongRun
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGapSpectrumFullRank
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
@@ -7223,6 +7225,35 @@ by
     d hinj s bstar b0 hblind
 
 #print axioms doorIV_phase_curvature_generic_dead_export
+
+/-- **[obstruction, DoorIVGapSpectrumFullRank — door-(iv) Lane-1/3]** The gap-spectrum probe
+is recorded as a citable full-rank obstruction.  If the worst-frequency rank is full (`N-1`) and
+is at least the generic rank, then no low-rank budget below `N-1` can hold at the worst frequency,
+and no threshold can select the worst frequency as the low-rank one.  This is a negative structural
+lemma only: no CORE / cancellation / completion / moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_gap_spectrum_full_rank_dead_export {N genericRank worstRank : ℕ}
+    (hfull : worstRank = N - 1) (hN : 1 ≤ N) (hle : genericRank ≤ worstRank) :
+    (∀ C : ℕ, C < N - 1 → ¬ (worstRank ≤ C)) ∧
+      genericRank ≤ N - 1 ∧
+      (∀ t : ℕ, ¬ (worstRank < t ∧ t ≤ genericRank)) :=
+  ArkLib.ProximityGap.Frontier.DoorIVGapSpectrumFullRank.doorIV_gapSpectrum_dead hfull hN hle
+
+#print axioms doorIV_gap_spectrum_full_rank_dead_export
+
+/-- **[obstruction, DoorIVGapNoLongRun — door-(iv) Lane-1/3]** The local near-AP gap-run probe is
+recorded as a citable obstruction.  A worst-frequency longest monotone run bounded by `K` has no
+run of any target length above `K`, stays below every ambient `n > K`, and if it equals the generic
+run-length then no threshold selects the worst frequency as the long-run one.  This is a negative
+structural lemma only: no CORE / cancellation / completion / moment / capacity claim; CORE remains
+OPEN. -/
+theorem doorIV_gap_no_long_run_dead_export {Lworst Lgen K n : ℕ}
+    (hbound : Lworst ≤ K) (hKn : K < n) (heq : Lworst = Lgen) :
+    (∀ L0 : ℕ, K < L0 → Lworst < L0) ∧
+      Lworst < n ∧
+      (∀ t : ℕ, ¬ (Lgen < t ∧ t ≤ Lworst)) :=
+  ArkLib.ProximityGap.Frontier.DoorIVGapNoLongRun.doorIV_gapNoLongRun_dead hbound hKn heq
+
+#print axioms doorIV_gap_no_long_run_dead_export
 
 /-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** For any coherent `k`-piece
 worst-frequency partition satisfying the stationary lower band and having at least one strict-under-max
