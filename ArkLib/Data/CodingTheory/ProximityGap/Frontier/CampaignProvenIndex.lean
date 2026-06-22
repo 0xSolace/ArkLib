@@ -126,6 +126,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCircular
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5565,5 +5566,54 @@ theorem doorIV_worstIndexMult_not_finset_kth_power_coset_restricted_export
 #print axioms doorIV_worstIndexMult_not_subset_coset_export
 #print axioms doorIV_worstIndexMult_not_finset_power_coset_restricted_export
 #print axioms doorIV_worstIndexMult_not_finset_kth_power_coset_restricted_export
+
+
+/-- **[Lane 1/3 two-dilate coupling obstruction]** The half-period dilation sum at any frequency is
+bounded by twice the marginal sub-period maximum. This is the exact perfect-co-peak ceiling, not a
+CORE upper bound. -/
+theorem doorIV_twoDilate_le_two_mul_max_export
+    {ι : Type*} {s : ι → ℝ} {σ : ι → ι} {Smax : ℝ} {b : ι}
+    (h1 : s b ≤ Smax) (h2 : s (σ b) ≤ Smax) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate s σ b ≤
+      2 * Smax :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate_le_two_mul_max
+    h1 h2
+
+/-- **[Lane 1/3 two-dilate coupling obstruction]** A strict factor `c < 2` below the marginal envelope
+is precisely a no-co-peak certificate: the two shifted halves cannot both sit at the marginal maximum.
+This packages the probe verdict that the dilation coupling gives no recursive co-peaking gain. -/
+theorem doorIV_twoDilate_no_copeak_recursion_export
+    {ι : Type*} {s : ι → ℝ} {σ : ι → ι} {Smax c : ℝ} {b : ι}
+    (hc : c < 2) (hSmax : 0 < Smax)
+    (hbound : _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.twoDilate s σ b ≤
+      c * Smax)
+    (hb : s b = Smax) :
+    s (σ b) < Smax :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.no_copeak_recursion
+    hc hSmax hbound hb
+
+/-- **[Lane 1/3 two-dilate coupling obstruction]** If the two-dilate maximum is dominated by a
+structureless independent-pairing surrogate and the surrogate is bounded by the perfect co-peak
+ceiling, then the dilation route remains at the same marginal envelope. No cancellation, completion,
+or capacity claim. -/
+theorem doorIV_dilate_le_surrogate_le_two_max_export {H I Smax : ℝ}
+    (hHI : H ≤ I) (hI : I ≤ 2 * Smax) :
+    H ≤ 2 * Smax :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.dilate_le_surrogate_le_two_max
+    hHI hI
+
+/-- **[Lane 1/3 two-dilate coupling obstruction]** When the dilation maximum is pinned between the
+marginal floor and the independent-pairing surrogate, the two-dilate structure carries the marginal
+`√(n·log)` burden rather than supplying a new anti-concentration mechanism. -/
+theorem doorIV_dilate_pinned_between_marginal_and_surrogate_export {H I Smax : ℝ}
+    (hfloor : Smax ≤ H) (hHI : H ≤ I) :
+    Smax ≤ H ∧ H ≤ I :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVTwoDilateNoJointExtreme.dilate_pinned_between_marginal_and_surrogate
+    hfloor hHI
+
+#print axioms doorIV_twoDilate_le_two_mul_max_export
+#print axioms doorIV_twoDilate_no_copeak_recursion_export
+#print axioms doorIV_dilate_le_surrogate_le_two_max_export
+#print axioms doorIV_dilate_pinned_between_marginal_and_surrogate_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

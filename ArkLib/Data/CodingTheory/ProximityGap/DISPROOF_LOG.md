@@ -19022,3 +19022,11 @@ Lane: door-(iv) Lane 2 conditional reduction/capstone consolidation. The Hermite
 VERDICT: under the explicit measured edge-turnover model, the prize is exactly early turnover `kstar = O(log p)`. The support-bound/Gershgorin input only proves an `O(n)` turnover ceiling, so it cannot close the prize-scale gap. Conditional reduction/constraint only: the edge-turnover model and early-turnover theorem are not asserted. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_hermite_prize_iff_turnover_le_export`, `doorIV_hermite_prize_iff_turnover_le_logp_export`, `doorIV_hermite_turnover_le_free_ceiling_export`, and `doorIV_hermite_free_ceiling_insufficient_for_prize_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-two-dilate-no-joint-extreme-indexed] permanent exports for structureless half-period dilation coupling (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1/3 constraint consolidation for `_DoorIVTwoDilateNoJointExtreme`. The two-dilate decomposition `H(b)=S(b)+S(g*b)` was a plausible recursive-ascent/anti-correlation handle on the worst-b coset-half coherence. Probe `probe_dooriv_subperiod_shift_corr.py` found no joint-extreme structure: the worst frequency does not co-peak (`H/(2*maxS)<1`) and the shift pairing stays below an independent-pairing surrogate.
+
+VERDICT: the dilation coupling is pinned between the marginal sub-period envelope and a structureless surrogate. It cannot provide either a recursive co-peak transfer or a new anti-concentration saving below the marginal `Smax`; the burden returns to the marginal Gauss-period wall. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_twoDilate_le_two_mul_max_export`, `doorIV_twoDilate_no_copeak_recursion_export`, `doorIV_dilate_le_surrogate_le_two_max_export`, and `doorIV_dilate_pinned_between_marginal_and_surrogate_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
