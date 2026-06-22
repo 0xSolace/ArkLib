@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors (#444, #464)
 -/
 import ArkLib.Data.CodingTheory.ProximityGap.SignedPeriodZeroSumBridge
+import ArkLib.Data.CodingTheory.ProximityGap.SignedZeroSumCountEven
 
 set_option linter.style.longLine false
 
@@ -168,6 +169,25 @@ theorem signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount
     rw [h1, Complex.ofReal_re]
   rw [hre]; ring
 
+/-- **The deviation from the floor is `2q`-quantized on a negation-closed, `0`-free domain.**
+On a negation-closed `0`-free `G` in char `≠ 2`, `SignedZeroSumCountEven.two_dvd_zeroSumCount` gives
+`2 ∣ Z` at every order `r ≥ 1`, so the deviation `Re(A_r) + |G|^r = q·Z` is `q` times an EVEN
+integer: `∃ k : ℕ, Re(A_r) + |G|^r = 2·q·k`. This SHARPENS the rigidity floor from a single point to
+a `2q`-spaced LATTICE of allowed values — the signed deep sum cannot sit just above `−|G|^r`; its
+first possible step off the floor is a full `2q`. (The arithmetic of the located prize object, not a
+bound on it. The RATE at which `Z` grows with `r` toward `|G|^r/q` is the open BGK wall.) -/
+theorem signedPeriodPow_re_deviation_two_q_quantized
+    {r : ℕ} (hr : r ≠ 0) (h2 : (2 : F) ≠ 0) (G : Finset F)
+    (hneg : ∀ g ∈ G, -g ∈ G) (h0 : (0 : F) ∉ G) :
+    ∃ k : ℕ,
+      (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ G, ψ x) ^ r).re + (G.card : ℝ) ^ r
+        = 2 * (Fintype.card F : ℝ) * (k : ℝ) := by
+  obtain ⟨k, hk⟩ := ArkLib.ProximityGap.NegationClosedWalk.two_dvd_zeroSumCount hr h2 G hneg h0
+  refine ⟨k, ?_⟩
+  rw [signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount G r, hk]
+  push_cast
+  ring
+
 end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 
 /-! ## Axiom audit -/
@@ -177,3 +197,4 @@ end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_eq_neg_card_pow_iff_zeroSumCount_zero
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.neg_card_pow_le_signedPeriodPow_re
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount
+#print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_deviation_two_q_quantized
