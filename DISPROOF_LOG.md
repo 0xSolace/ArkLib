@@ -1,3 +1,30 @@
+## [doorIV-coset-resonator-route-localized] the coset-multiplicative (Montgomery loglog) resonator route reduces ENTIRELY to the numerator off-diagonal — kernel-checked (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 capstone. The coset-multiplicative resonator route feeds weights
+`w_b = ‖∑_{j∈J} r_j φ_j(b)‖²` (φ_j = coset character χ^j trivial on μ_n) into the axiom-clean engine
+`M² ≥ (∑_{b≠0} w_b‖η_b‖²)/(∑_{b≠0} w_b)` to try to import a loglog Ω-lower-bound. `_ResonanceLogLocalizedOffDiagonal`
+previously proved the diagonal = Parseval floor `√n` (PROSE: "all gain lives in the off-diagonal"); this
+entry LOCKS that prose as kernel-checked identities and pins the entire route to one named object.
+
+KERNEL `Frontier/_ResonanceNumeratorDiagOffDiagSplit.lean` (leaf, imports `_ResonanceLogLocalizedOffDiagonal`
+only), 7 theorems, all axioms ⊆ {propext, Classical.choice, Quot.sound}:
+- `coset_resonator_numerator_diag_add_offdiag`: `Num = (∑_j‖r_j‖²)·A₁ + ∑_j∑_{j'≠j} r_j r̄_{j'}·Γ(j,j')`,
+  `A₁ = ∑_{b≠0}‖η_b‖²` (phase-free Parseval mass), `Γ(j,j')` = named Gauss-period autocorrelation at lag j−j'.
+- `coset_resonator_numerator_eq_parseval_add_offdiag`: substrate form `A₁ = qn − n²`.
+- `autocorrKernel_conj_symm`: `Γ(j',j) = conj Γ(j,j')` (Hermitian off-diagonal form in r).
+- `coset_resonator_numerator_single_eq_parseval`: |J|=1 ⟹ empty off-diagonal ⟹ `Num = ‖r‖²·A₁` EXACTLY
+  (a single coset can never beat √n).
+- `coset_resonator_denominator_expand` + `coset_resonator_denominator_eq_diagonal_of_orthogonal`: under
+  coset-character orthogonality the FULL denominator = `‖r‖²·(q−1)` exactly (zero off-diagonal).
+
+VERDICT (constraint): the resonator ratio is exactly `(‖r‖²·A₁ + Off)/(‖r‖²·(q−1))`; the denominator and
+the numerator diagonal carry NO open content (both `r`-independent up to `‖r‖²`), so ANY coset-resonator-route
+improvement over the bare √n floor must come ENTIRELY from the numerator off-diagonal `Off`, NAMED here
+as the Gauss-period autocorrelation lag-sum and NOT bounded (= the open BGK Ω-input). A loglog gain from
+this route therefore REQUIRES an unconditional lower bound on the off-diagonal multiplicative-character
+correlation, which is not supplied. No CORE, cancellation, completion, moment, anti-concentration, or
+capacity claim; CORE `M(μ_n) ≤ C·√(n·log(p/n))` OPEN. SHAs 3f5c29a7e, ce3292b76, 4979d29bd.
+
 ## [doorIV-tower-slack-nonassemblable] the dyadic tower MIN-OVER-COSETS slack count is NON-ASSEMBLABLE — closes the "more nontrivial levels" escape hatch (2026-06-22, sol)
 
 Lane: door-(iv) Lane 1 probe + Lane 3 constraint, strengthening [door-iv-tower-collapse-quantitative]
