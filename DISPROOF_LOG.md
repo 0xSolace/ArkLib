@@ -12523,3 +12523,34 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorem `one_lt_norm_div_max_and_norm_div_max_lt_card`, exported as
 `doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export`, axiom-clean with axioms
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-gap-spectrum-fullrank] worst-b gap-sequence spectral rank is (near-)FULL + wrong-direction — spectral/quasi-periodic gap lever dead (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane 1, a genuinely-NEW measurement completing the worst-b gap-complexity trilogy.
+`ThreeGapPositionalRigidity` closed gap-VALUE complexity (<= n/2+1, dilation-invariant);
+`_DoorIVPhaseCurvatureGeneric` (a670238d0) closed gap-CURVATURE complexity (maximal n, dilation-invariant).
+The remaining non-energy hope was a SPECTRAL / quasi-periodic gap lever: a LOW-RANK circular DFT of the
+gap sequence g_i would be a structured small-ball target not routing through multiplicative energy.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_gap_autocorr_rank.py`; proper mu_n, p ≡ 1 mod n, p ~ n^4 ≫ n^3,
+never n=q-1; uniform coset-rep sampling; EXACT integer gaps; circular DFT significant-mode count of the
+mean-centred gap sequence at two tolerances; global worst-b scan; n=16/32/64 × 4-5 structured primes):
+
+  tol 0.02 :  specRank(b*) = 15, 31, 63  (= n-1 = FULL at every n) ;  generic = 15, 29, 59
+  tol 0.08 :  specRank(b*) = 15, 30, 54  (near-full, GROWING in n) ;  generic = 14, 27.5, 50
+
+VERDICT — REFUTATION-WITH-MECHANISM. The worst-b gap-sequence spectral rank is consistently >= the
+generic-b rank and saturates at (near-)FULL n-1, GROWING with n (15 -> 30 -> 54). The adversarial
+frequency is precisely where the gap sequence is MOST spectrally generic — there is NO low-rank
+quasi-periodic structure to exploit, and the (real) frequency-sensitivity points the WRONG way for a
+lever (the worst b is LESS structured, not more). A spectral lever wants the worst b at LOW rank; it
+sits at the FULL-rank ceiling.
+
+Constraint lemma (formal kernel `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGapSpectrumFullRank.lean`,
+axiom-clean ⊆ {propext, Quot.sound}): `no_lowrank_spectral_target` (worstRank = N-1 => no budget C < N-1
+is met), `worst_is_least_structured` + `no_lowrank_separation` (genericRank <= worstRank => no threshold
+marks the worst b as the low-rank one), `doorIV_gapSpectrum_dead` bundles both. NEGATIVE structural lemma;
+NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim. CORE stays OPEN.
+
+Trilogy complete: worst-b gap VALUE (n/2+1), CURVATURE (maximal n), SPECTRUM (full n-1) — all
+dilation/wrong-direction ⟹ no exploitable gap-combinatorial lever at the adversarial frequency.
