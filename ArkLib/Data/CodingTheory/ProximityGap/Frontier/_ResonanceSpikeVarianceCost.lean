@@ -98,8 +98,33 @@ theorem variance_ge_spike_sq_div
   have h := spike_cost_le_variance u hu d hd hspike
   linarith [h]
 
+/-- **Multiplicity cap: at most `m·(T 2 − (m−1)²)/d²` frequencies can spike to height `d` above the
+mean** (unit-modulus phases). The COUNT form of the spike obstruction, instantiating the abstract
+Cantelli count bound (`threshold_count_le_sndMoment_div`) on the kernel profile at `μ = m−1` and
+substituting the proven spectral-variance identity for the centered second moment:
+
+  `#{k : ((m−1)+d) ≤ ‖K̂(k)‖²} ≤ m·(T 2 − (m−1)²)/d²`.
+
+The number of near-worst frequencies is capped by the spectral variance over `d²`. Like the existence
+form, this runs the WRONG way for the prize: a *small* count is *explained by* a small variance, it
+does not bound the worst value. Any selector/count argument for the worst frequency therefore
+consumes spectral-variance (= moment / BGK) budget. -/
+theorem spike_count_le_variance_div
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (d : ℝ) (hd : 0 < d) :
+    (((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ((m : ℝ) - 1) + d ≤ ‖kernelSpectrum (dftChar k) u‖ ^ 2)).card : ℝ)
+      ≤ (m : ℝ) * (resonanceMoment u 2 - ((m : ℝ) - 1) ^ 2) / d ^ 2 := by
+  classical
+  have hcount :=
+    ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_le_sndMoment_div
+      (fun k => ‖kernelSpectrum (dftChar k) u‖ ^ 2) (Finset.univ : Finset (ZMod m))
+      ((m : ℝ) - 1) d hd
+  -- rewrite the centered second moment as the proven spectral variance m·(T2-(m-1)²)
+  rwa [sum_sq_centered_kernelSpectrum_eq u hu] at hcount
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_cost_le_variance
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.variance_ge_spike_sq_div
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_variance_div
