@@ -2131,6 +2131,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSparseRealizability
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RThinSqrtNKRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RUD_MathlibAssessment
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RaggedRootBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementOffDiagCorridor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementOffDiagNonneg
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementReality
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceChebyshevLower
