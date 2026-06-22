@@ -11930,3 +11930,20 @@ open.
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_JacobiCocycleDoorIVCapstone.lean`,
 permanent export in `CampaignProvenIndex`: `doorIV_jacobiCocycle_characterization_export`, axiom-clean
 with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worst-coset-index-unstructured-indexed] worst-b coset indices have no AP/residue selector (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1 formalization of the worst-b arithmetic-structure probe. Indexed
+`_DoorIVWorstCosetIndexUnstructured` in `CampaignProvenIndex`.
+
+VERDICT: the probe-facing `gap-gcd = 1` witness now has permanent citable exports: three top worst-coset
+indices with consecutive-gap gcd one cannot all lie in any proper arithmetic progression `r + dℤ`, any
+single residue class modulo `d ≥ 2`, or a common parity/2-adic class. Thus the adversarial worst-b
+coset-index set cannot be thinned by an AP/sublattice/residue selector. This is a class-restriction
+no-go only; no CORE, cancellation, completion, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstCosetIndexUnstructured.lean`.
+Permanent exports: `doorIV_worstCosetIndex_no_proper_progression_export`,
+`doorIV_worstCosetIndex_no_common_residue_mod_export`, and
+`doorIV_worstCosetIndex_not_parity_restricted_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

@@ -124,6 +124,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBli
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCircular
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5487,5 +5488,39 @@ theorem doorIV_qv_route_no_sublinear_saving_export (a : ℕ) (R : ℝ)
 
 #print axioms doorIV_qv_route_recovers_trivial_ceiling_export
 #print axioms doorIV_qv_route_no_sublinear_saving_export
+
+
+/-- **[Lane 1 worst-b coset-index arithmetic obstruction]** A top-three worst-coset-index witness
+with consecutive-gap gcd `1` cannot be contained in any proper arithmetic progression / sublattice
+`r₀ + dℤ` with `d ≥ 2`. Thus the observed worst-`b` coset-index set cannot be thinned by an AP or
+proper residue-class selector. This is only a class-restriction no-go, not a CORE bound. -/
+theorem doorIV_worstCosetIndex_no_proper_progression_export
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ∀ d r₀ : ℤ, 2 ≤ d →
+      ¬ (d ∣ (t₀ - r₀) ∧ d ∣ (t₁ - r₀) ∧ d ∣ (t₂ - r₀)) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstCosetIndex.no_proper_progression_of_consecutive_gap_gcd_one
+    hgcd
+
+/-- **[Lane 1 worst-b coset-index arithmetic obstruction]** The same gap-gcd witness forbids putting
+three worst-coset indices in one residue class modulo any proper modulus `d ≥ 2`. This is the exact
+formal interface for the probe verdict that there is no fixed mod-`d` class selecting the adversarial
+worst frequencies. No CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_worstCosetIndex_no_common_residue_mod_export
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ∀ d r : ℤ, 2 ≤ d → ¬ (t₀ % d = r ∧ t₁ % d = r ∧ t₂ % d = r) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstCosetIndex.no_common_residue_mod_of_consecutive_gap_gcd_one
+    hgcd
+
+/-- **[Lane 1 worst-b coset-index arithmetic obstruction]** Parity/2-adic specialization: a
+consecutive-gap-gcd-one witness cannot have all three top indices in a common parity progression.
+So the worst-`b` set is not trapped in the even sublattice or a fixed parity class. No CORE claim. -/
+theorem doorIV_worstCosetIndex_not_parity_restricted_export
+    {t₀ t₁ t₂ : ℤ} (hgcd : Int.gcd (t₁ - t₀) (t₂ - t₁) = 1) :
+    ∀ r₀ : ℤ, ¬ ((2 : ℤ) ∣ (t₀ - r₀) ∧ (2 : ℤ) ∣ (t₁ - r₀) ∧ (2 : ℤ) ∣ (t₂ - r₀)) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstCosetIndex.worst_index_not_parity_restricted hgcd
+
+#print axioms doorIV_worstCosetIndex_no_proper_progression_export
+#print axioms doorIV_worstCosetIndex_no_common_residue_mod_export
+#print axioms doorIV_worstCosetIndex_not_parity_restricted_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
