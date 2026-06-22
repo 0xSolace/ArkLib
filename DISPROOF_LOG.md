@@ -1,3 +1,33 @@
+## [doorIV-tower-slack-nonassemblable] the dyadic tower MIN-OVER-COSETS slack count is NON-ASSEMBLABLE — closes the "more nontrivial levels" escape hatch (2026-06-22, sol)
+
+Lane: door-(iv) Lane 1 probe + Lane 3 constraint, strengthening [door-iv-tower-collapse-quantitative]
+(2026-06-19). That verdict proved the honest single-chain coherence product collapses to a fixed-width
+bottom (k=O(1) nontrivial levels) and named the ONLY two surviving escape hatches for a dyadic-tower
+coherence-product attack to get log2(n)-many damping factors: (1) the number of genuinely nontrivial
+levels GROWS with n, or (2) the bottom factors themselves SHRINK with n. This entry closes hatch (1).
+
+PROBE (probe_dooriv_tower_slack_count_law.py; proper mu_n, p>>n^3, structured primes p=k*n+1, never
+n=q-1, exact complex eta, global worst-b scan, n=16..256): the MIN-over-cosets slack count
+K_min(n)=#{j : 1-rho_j^min >= tau} appears to GROW with a=log2(n) (1,2,3,5,5 for a=4..8), which at face
+value re-opens hatch (1). PROBE (probe_dooriv_tower_honest_chain_vs_minover.py) resolves it: along the
+actual SINGLE nested chain that telescopes the worst-frequency period, the slack count K_chain(n) does
+NOT grow (0,0,2,1,1,3,1,2,2,0 over a=4..8 — no trend, O(1)). The K_min growth is an ARTIFACT of unrelated
+sibling cosets — the per-level minimum is attained at a DIFFERENT coset each level, in branches that do
+not compose into a bound on the worst-frequency period.
+
+VERDICT: escape-hatch (1) is closed adversarially. The growing quantity (K_min) is the WRONG object
+(non-assemblable into a period bound), and the RIGHT object (K_chain) is O(1) (the banked collapse). The
+dyadic-tower coherence-product lever stays DEAD. No CORE / cancellation / completion / moment /
+anti-concentration / capacity claim; M(mu_n) remains OPEN.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVTowerSlackNonAssemblable.lean,
+axiom-clean (all 5 theorems ⊆ {propext, Classical.choice, Quot.sound}, 0 sorryAx). Key theorems:
+minProd_le_chainProd (min-over-cosets product <= ANY single-chain product, so a small minProd never
+upper-bounds the period), minProd_strictly_below_topcoherent_chain (concrete witness: minProd=0 but the
+top-coherent chain has product 1), chainProd_eq_period_ratio_no_saving (even the honest chain product
+equals the period ratio it bounds — tautology, only real content is the already-mapped half-mass descent).
+Pushed 5dc0e4b06.
+
 ## [floorbad-defect-ramification-tower-invariant] §9 defect ramification locus {17,257} is TOWER-INVARIANT, forced by the unit constant term (2026-06-22, sol)
 
 Lane: door-(iv) is DEAD; this is the ONE off-BGK lever (§9 bad-prime localization / least-prime-in-AP,
