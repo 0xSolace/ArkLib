@@ -143,6 +143,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGener
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
@@ -5784,6 +5785,75 @@ theorem doorIV_dilation_telescope_per_level_factor_export (M : ℕ → ℝ) (hpo
 #print axioms doorIV_dilation_telescope_le_two_pow_mul_export
 #print axioms doorIV_dilation_telescope_le_two_pow_of_base_one_export
 #print axioms doorIV_dilation_telescope_per_level_factor_export
+
+
+/-- **[Lane 3 dyadic descent obstruction]** Per-frequency half-subgroup control is exactly bounded by
+that half-subgroup's worst period. This is the pointwise input to the Door-IV dilation recursion, and
+it carries no cancellation beyond the definition of `M(H)`. -/
+theorem doorIV_norm_eta_le_worstPeriod_export {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {ψ : AddChar F ℂ} (H : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    {c : F} (hc : c ≠ 0) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H c‖ ≤
+      _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ H hne :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentRecursion.norm_eta_le_worstPeriod
+    H hne hc
+
+/-- **[Lane 3 dyadic descent obstruction]** The two sub-periods in a nonzero dilation split are bounded
+by `2*M(H)`. Since multiplication by a nonzero coset representative preserves nonzero frequencies,
+this is the exact factor-2 bottleneck of the elementary descent. -/
+theorem doorIV_two_dilate_le_two_mul_worstPeriod_export {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {ψ : AddChar F ℂ} (H : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    {g b : F} (hg : g ≠ 0) (hb : b ≠ 0) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ ≤
+        2 * _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ H hne :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentRecursion.two_dilate_le_two_mul_worstPeriod
+    H hne hg hb
+
+/-- **[Lane 3 dyadic descent obstruction]** On an index-2 dilation cover `G = H ∪ gH`, each nonzero
+frequency has period magnitude at most `2*M(H)`. This is triangle inequality plus nonzero-frequency
+preservation only, hence no Door-IV anti-concentration input. -/
+theorem doorIV_norm_eta_union_le_two_mul_worstPeriod_export {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {ψ : AddChar F ℂ} (H : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    {g b : F} (hg : g ≠ 0) (hb : b ≠ 0)
+    (hdisj : Disjoint H (H.image (fun y => g * y))) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+        (H ∪ H.image (fun y => g * y)) b‖ ≤
+      2 * _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ H hne :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentRecursion.norm_eta_union_le_two_mul_worstPeriod
+    H hne hg hb hdisj
+
+/-- **[Lane 3 dyadic descent obstruction]** Headline recursion: the worst period of the index-2 cover
+is at most twice the half-subgroup worst period. Iterated down a dyadic tower this recovers only the
+trivial `M(μ_n) ≤ n` ceiling, so any prize-relevant descent must prove a real per-level factor below
+`2`. No CORE / cancellation / completion / moment-saving / capacity claim. -/
+theorem doorIV_worstPeriod_union_le_two_mul_worstPeriod_export {F : Type*} [Field F]
+    [Fintype F] [DecidableEq F] {ψ : AddChar F ℂ} (H : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty)
+    {g : F} (hg : g ≠ 0) (hdisj : Disjoint H (H.image (fun y => g * y))) :
+    _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ
+        (H ∪ H.image (fun y => g * y)) hne ≤
+      2 * _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ H hne :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentRecursion.worstPeriod_union_le_two_mul_worstPeriod
+    H hne hg hdisj
+
+/-- **[Lane 3 dyadic descent obstruction]** The RHS of the factor-2 recursion is nonnegative, so the
+recursion is a genuine non-vacuous ceiling between nonnegative worst-period quantities. -/
+theorem doorIV_two_mul_worstPeriod_nonneg_export {F : Type*} [Field F] [Fintype F]
+    [DecidableEq F] {ψ : AddChar F ℂ} (H : Finset F)
+    (hne : (_root_.ArkLib.ProximityGap.I031DilationOrbitReduction.nonzeroFreqs F).Nonempty) :
+    0 ≤ 2 * _root_.ProximityGap.Frontier.ConcreteMomentAssembly.worstPeriod ψ H hne :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVDilationDescentRecursion.two_mul_worstPeriod_nonneg
+    H hne
+
+#print axioms doorIV_norm_eta_le_worstPeriod_export
+#print axioms doorIV_two_dilate_le_two_mul_worstPeriod_export
+#print axioms doorIV_norm_eta_union_le_two_mul_worstPeriod_export
+#print axioms doorIV_worstPeriod_union_le_two_mul_worstPeriod_export
+#print axioms doorIV_two_mul_worstPeriod_nonneg_export
 
 
 /-- **[Lane 3 refuted-lever constraint, Jacobi cocycle no-random-edge]** If the iid-unit-phase

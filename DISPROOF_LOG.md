@@ -12211,3 +12211,21 @@ trend whose proof would require exactly the open CORE structure; asserting a Lea
 be fabricated closure. Logged as a precise probe verdict only. The axiom-clean *conditional* content
 (coherent + ‖A‖≠‖B‖ ⟹ ‖A+B‖ < 2·max, symmetric descent inapplicable) is already kernel-checked in
 `_DoorIVWorstBCoherentImbalance.lean`. CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
+
+## [doorIV-dilation-descent-recursion-indexed] factor-2 half-subgroup descent is now permanent (2026-06-22, g55)
+
+Lane: door-(iv) Lane 3 refuted-lever constraint / Lane 2 capstone rung. Indexed the existing axiom-clean kernel
+`_DoorIVDilationDescentRecursion.lean` into `CampaignProvenIndex`, making the exact pointwise and worst-period
+recursion citable: on an index-2 dilation cover `G = H ∪ gH`, every nonzero frequency obeys
+`‖η_G(b)‖ ≤ 2*M(H)`, hence `M(G) ≤ 2*M(H)`.
+
+VERDICT: the elementary dyadic half-subgroup recursion supplies only the factor-2-per-level telescope, i.e.
+iterated over `log₂ n` levels it recovers the trivial `M(μ_n) ≤ n*M(μ_1)` ceiling. Any prize-relevant descent
+must prove a genuine per-level factor below `2`, so the missing input remains Door-IV anti-concentration / coherence
+slack rather than triangle-inequality dilation bookkeeping. No CORE, cancellation, completion, moment-saving,
+anti-concentration theorem, or capacity claim.
+
+Formal exports: `doorIV_norm_eta_le_worstPeriod_export`, `doorIV_two_dilate_le_two_mul_worstPeriod_export`,
+`doorIV_norm_eta_union_le_two_mul_worstPeriod_export`, `doorIV_worstPeriod_union_le_two_mul_worstPeriod_export`,
+and `doorIV_two_mul_worstPeriod_nonneg_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
