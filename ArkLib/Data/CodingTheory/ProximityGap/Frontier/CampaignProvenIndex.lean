@@ -105,6 +105,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditFor
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBOrbitLowerBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WorstBSetCosetClosed
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2NormBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvThaine_DCompositionPhaseBlind
@@ -5016,5 +5017,48 @@ theorem doorIV_jacobiCongruence_phaseBlindOnF2_export :
 #print axioms doorIV_jacobiCongruence_phaseBlind_cannot_separate_export
 #print axioms doorIV_jacobiCongruence_full_norm_range_export
 #print axioms doorIV_jacobiCongruence_phaseBlindOnF2_export
+
+
+/-! ## Door-IV Lane 1 worst-b set coset-closure exports.
+
+These exports pin the formal part of the worst-frequency arithmetic probe: the near-max set
+`{b : thr ≤ ‖η_b‖}` is closed under every multiplicative dilation preserving the coset support `G`.
+Thus the forced structure lives on multiplicative `μ_n`-cosets; the formal statement gives no CORE
+upper bound and no additive anti-concentration, it only localizes what any Lane-1 attack must exploit
+after quotienting by `μ_n`.
+-/
+
+/-- **[worst-b set, coset closure]** Membership in the threshold worst-frequency set is invariant
+under every nonzero dilation `b ↦ c*b` whose multiplier preserves the support `G`. -/
+theorem doorIV_worstBSet_mem_dilate_iff_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (G : Finset F) {c : F} (hc : c ≠ 0)
+    (hcG : ∀ x ∈ G, c * x ∈ G) (thr : ℝ) (b : F) :
+    c * b ∈ _root_.ProximityGap.Frontier.WorstBSetCosetClosed.worstSet ψ G thr ↔
+      b ∈ _root_.ProximityGap.Frontier.WorstBSetCosetClosed.worstSet ψ G thr :=
+  _root_.ProximityGap.Frontier.WorstBSetCosetClosed.mem_worstSet_dilate_iff G hc hcG thr b
+
+/-- **[worst-b set, forward closure]** If `b` is above threshold, every support-preserving
+`μ_n`-dilate of `b` is also above threshold. -/
+theorem doorIV_worstBSet_dilate_mem_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (G : Finset F) {c : F} (hc : c ≠ 0)
+    (hcG : ∀ x ∈ G, c * x ∈ G) (thr : ℝ) {b : F}
+    (hb : b ∈ _root_.ProximityGap.Frontier.WorstBSetCosetClosed.worstSet ψ G thr) :
+    c * b ∈ _root_.ProximityGap.Frontier.WorstBSetCosetClosed.worstSet ψ G thr :=
+  _root_.ProximityGap.Frontier.WorstBSetCosetClosed.worstSet_dilate_mem G hc hcG thr hb
+
+/-- **[worst-b maximizer orbit]** Every support-preserving `μ_n`-dilate has exactly the same
+Fourier magnitude, so a maximizer is accompanied by its whole multiplicative coset orbit. -/
+theorem doorIV_worstBSet_maximiser_orbit_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (G : Finset F) {c : F} (hc : c ≠ 0)
+    (hcG : ∀ x ∈ G, c * x ∈ G) (b : F) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G (c * b)‖ = ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ :=
+  _root_.ProximityGap.Frontier.WorstBSetCosetClosed.maximiser_orbit G hc hcG b
+
+#print axioms doorIV_worstBSet_mem_dilate_iff_export
+#print axioms doorIV_worstBSet_dilate_mem_export
+#print axioms doorIV_worstBSet_maximiser_orbit_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

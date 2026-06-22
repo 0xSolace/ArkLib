@@ -11670,3 +11670,11 @@ Lane: Door-IV Lane 3 constraint/reduction export. Shaw's 31-paper mine bricks `_
 VERDICT: these methods refine modulus, valuation, and congruence data, not the archimedean phase cancellation of the off-diagonal Jacobi/Gauss products. They localize the remaining obligation to the signed off-diagonal phase-cancellation wall and do not prove CORE, cancellation, completion, anti-concentration, or capacity.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, exports `doorIV_thaine_jacobiCompose_normSq_eq_export`, `doorIV_thaine_jacobiLift_normSq_eq_export`, `doorIV_thaine_phaseBlind_moment_bound_export`, `doorIV_thaine_composition_overshoot_export`, `doorIV_jacobiCongruence_phaseBlind_cannot_separate_export`, `doorIV_jacobiCongruence_full_norm_range_export`, and `doorIV_jacobiCongruence_phaseBlindOnF2_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstB-set-coset-closed-indexed] Worst-frequency threshold sets are μ_n-coset unions (g55, 2026-06-21)
+
+Lane: Door-IV Lane 1 worst-b arithmetic / anti-concentration localization. `_WorstBSetCosetClosed` is now indexed from `CampaignProvenIndex`: if a nonzero multiplier `c` preserves the coset support `G`, then membership in `{b : thr ≤ ‖η_b‖}` is invariant under `b ↦ c*b`, and maximizers come with their whole multiplicative orbit.
+
+VERDICT: this is the formal/proven half of the worst-b set probe. It gives only multiplicative coset closure, not an additive structure, anti-concentration, CORE bound, or capacity claim. Any remaining Lane-1 exploit must act on the quotient by the forced μ_n-cosets.
+
+Formal exports: `doorIV_worstBSet_mem_dilate_iff_export`, `doorIV_worstBSet_dilate_mem_export`, `doorIV_worstBSet_maximiser_orbit_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
