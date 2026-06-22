@@ -6578,6 +6578,40 @@ theorem doorIV_worstB_participation_ratio_le_iff_sq_aligned_le_export {ι : Type
   _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_le_iff_sq_aligned_le
     s w hpos
 
+/-- **[Lane 3 worst-b strict participation threshold]** A strict normalized participation saving
+`PR < θ` is exactly the strict denominator-cleared squared-aligned-mass inequality. This is the
+strict-budget interface probes need before claiming a worst-b participation lever has any content
+beyond the same L² magnitude object. -/
+theorem doorIV_worstB_participation_ratio_lt_iff_sq_aligned_lt_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :
+    (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < θ ↔
+      (∑ j ∈ s, w j) ^ 2 < θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.participation_ratio_lt_iff_sq_aligned_lt
+    s w hpos
+
+/-- **[Lane 3 worst-b participation failed-saving certificate]** If the squared aligned mass already
+exceeds the `θ` denominator budget, then `PR ≤ θ` is impossible. This is the exact no-go form for a
+claimed participation anti-concentration saving at the adversarial frequency. -/
+theorem doorIV_worstB_not_participation_ratio_le_of_sq_aligned_gt_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2)
+    (hgt : θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < (∑ j ∈ s, w j) ^ 2) :
+    ¬ (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ θ :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_participation_ratio_le_of_sq_aligned_gt
+    s w hpos hgt
+
+/-- **[Lane 3 worst-b strict participation failed-saving certificate]** If the squared aligned mass
+reaches the `θ` denominator budget, then `PR < θ` is impossible. Strict participation improvements
+therefore have exactly the strict L²-normalized squared-mass content, with no hidden phase slack. -/
+theorem doorIV_worstB_not_participation_ratio_lt_of_sq_aligned_ge_export {ι : Type*}
+    (s : Finset ι) (w : ι → ℝ) {θ : ℝ}
+    (hpos : 0 < (s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2)
+    (hge : θ * ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) ≤ (∑ j ∈ s, w j) ^ 2) :
+    ¬ (∑ j ∈ s, w j) ^ 2 / ((s.card : ℝ) * ∑ j ∈ s, (w j) ^ 2) < θ :=
+  _root_.ProximityGap.Frontier.DoorIVWorstBParticipationGeneric.not_participation_ratio_lt_of_sq_aligned_ge
+    s w hpos hge
+
 /-- **[Lane 3 worst-b coherence L² floor]** If nonnegative coherent mass `C` is below the aligned
 mass, then the L² mass must be at least `C² / |s|`. This is the probe-facing floor: a large aligned
 worst-b certificate already forces the corresponding Plancherel expenditure. -/
@@ -6603,6 +6637,9 @@ theorem doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export {�
 #print axioms doorIV_worstB_participation_sq_aligned_le_export
 #print axioms doorIV_worstB_participation_ratio_le_one_export
 #print axioms doorIV_worstB_participation_ratio_le_iff_sq_aligned_le_export
+#print axioms doorIV_worstB_participation_ratio_lt_iff_sq_aligned_lt_export
+#print axioms doorIV_worstB_not_participation_ratio_le_of_sq_aligned_gt_export
+#print axioms doorIV_worstB_not_participation_ratio_lt_of_sq_aligned_ge_export
 #print axioms doorIV_worstB_sumSq_ge_coherence_sq_div_card_export
 #print axioms doorIV_worstB_not_coherence_le_aligned_mass_of_sumSq_le_budget_export
 
