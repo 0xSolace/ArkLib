@@ -283,6 +283,7 @@ anything here; this index does not claim otherwise.
 | `corePrize_unbounded_shawValue_drift_of_pos_lt_export` | capstone | ShawValueCapstone |
 | `doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
+| `doorIV_floorPrizeConstant_ge_one_export` | constraint | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_no_prize_iff_no_shawBound_nonneg_and_floorPrizeRatio_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
@@ -1796,6 +1797,17 @@ theorem doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export
         m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation) :=
   ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.remaining_gap_is_sqrtL_factor_doorIV_only
     hnref hLref hclassicalOvershoots
+
+/-- **[constraint, DoorIVPrizeShawTetrachotomySynthesis]** Any floor-scale prize constant must be
+at least one: the Plancherel floor `√n ≤ M` and a putative certificate `M ≤ K√n` force `1 ≤ K`.
+This makes the floor-unit baseline citable from the campaign index. -/
+theorem doorIV_floorPrizeConstant_ge_one_export
+    {M n K : ℝ} (hn : 0 < n)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale n ≤ M)
+    (hbound : M ≤ K * NoFifthDoorTetrachotomy.prizeScale n) :
+    1 ≤ K :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.one_le_prizeFloorConstant_of_plancherel_floor
+    hn hfloor hbound
 
 /-- **[capstone, DoorIVPrizeShawTetrachotomySynthesis]** Fully discharged positive-side package:
 `prize ⇔ Sh(n)=O(1)` with nonnegative constants, plus an eventual floor-ratio formulation of the
@@ -4275,6 +4287,7 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms corePrize_unbounded_shawValue_drift_of_pos_lt_export
 #print axioms doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export
 #print axioms doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export
+#print axioms doorIV_floorPrizeConstant_ge_one_export
 #print axioms doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export
 #print axioms doorIV_no_prize_iff_no_shawBound_nonneg_and_floorPrizeRatio_export
 #print axioms doorIV_decomposition_block_sum_common_ray_export
