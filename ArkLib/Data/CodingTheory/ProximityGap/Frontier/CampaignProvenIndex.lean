@@ -114,6 +114,8 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A10GrossKoblitzSizeL2Norm
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvThaine_DCompositionPhaseBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCongruencePadicPhaseBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPerFrequencyLocalizationCollectiveOnly
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseSetDilationInvariant
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexDelocalized
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5173,6 +5175,80 @@ theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_pro
 #print axioms doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
+/-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** The additive energy `E⁺(b • S)` of the
+worst-`b` phase set `S_b = b • μ_n` is INVARIANT under the nonzero dilation `b`: `E⁺(b • S) = E⁺(S)`.
+The worst frequency therefore cannot tune the additive (small-ball / Halász) structure of the phase
+set; the additive-energy lever is `b`-blind. Lane-1 small-ball verdict backbone (kernel-checked).
+NO CORE / cancellation / completion / moment-saving / capacity claim. -/
+theorem doorIV_phaseSet_addEnergy_dilation_invariant_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] (S : Finset F) {b : F} (hb : b ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy
+        (S.image (fun x => b * x)) =
+      _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy S :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy_smul_eq S hb
+
+/-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** No strict scalar improvement for an
+additive-energy small-ball bound: if one nonzero frequency dilate exceeds a proposed threshold `C`,
+NO other nonzero dilate can satisfy `E⁺ ≤ C`. An additive-energy/Halász lever cannot become a
+worst-frequency anti-concentration theorem by optimizing over `b` — the scalar only relabels the
+phase set. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_no_phaseSet_addEnergy_scalar_improvement_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F]
+    (S : Finset F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy
+        (S.image (fun x => b₁ * x))) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addEnergy
+        (S.image (fun x => b₂ * x)) ≤ C :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addEnergy_scalar_improvement
+    S hb₁ hb₂ hbad
+
+/-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** The strongest dilation-invariance no-go: even
+the target-optimized multi-dimensional small-ball maximum (max over vector targets of the joint
+linear-system fiber, i.e. the actual Halász/Littlewood-Offord small-ball use case where the target is
+chosen adversarially after the linear system `A` is fixed) admits NO scalar improvement. Any
+linear-pattern small-ball lever over the dilated phase set is `b`-blind. This is the kernel-checked
+statement that closes the brief's Lane-1 "non-moment small-ball anti-concentration over the worst-`b`
+phase set" hope: every such statistic is dilation-invariant, so the worst `b` cannot be the lever.
+NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export
+    {F : Type*} [Field F] [DecidableEq F] [Fintype F] {m k : ℕ}
+    (S : Finset F) (A : Fin m → Fin k → F) {b₁ b₂ : F} (hb₁ : b₁ ≠ 0) (hb₂ : b₂ ≠ 0) {C : ℕ}
+    (hbad : C < _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber
+        (S.image (fun x => b₁ * x)) A) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.addSystemPatternMaxFiber
+        (S.image (fun x => b₂ * x)) A ≤ C :=
+  _root_.ProximityGap.Frontier.DoorIVPhaseSetDilationInvariant.not_addSystemPatternMaxFiber_scalar_improvement
+    S A hb₁ hb₂ hbad
+
+#print axioms doorIV_phaseSet_addEnergy_dilation_invariant_export
+#print axioms doorIV_no_phaseSet_addEnergy_scalar_improvement_export
+#print axioms doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export
+
+/-- **[Lane 1/3 constraint, WorstIndexDelocalized]** Packaged worst-frequency no-selector: a
+prime-independently DELOCALIZED worst-index family (realizing two distinct residues mod `d` AND two
+distinct values, as the cross-prime probe measures) is excluded by EVERY fixed-residue rule and EVERY
+fixed-position rule simultaneously. The adversarial frequency offers no prime-stable arithmetic target
+for a TARGETED (non-energy, non-sum-product) anti-concentration bound. NO CORE / cancellation /
+completion / capacity claim. -/
+theorem doorIV_worstIndex_delocalized_excludes_fixed_selector_export
+    {P : Type*} (J : P → ℕ) (d : ℕ)
+    (h : _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.IndexDelocalized J d) :
+    (∀ r, ¬ _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.FixedResidueRule J d r) ∧
+      (∀ c, ¬ _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.FixedPositionRule J c) :=
+  _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.delocalized_excludes_fixed_selector J d h
+
+/-- **[Lane 1/3 constraint, WorstIndexDelocalized]** Residue spread alone kills a pinned index: if the
+worst-index family realizes two distinct residues mod `d` across primes, NO fixed-position selector can
+fit it (without needing a separate raw-value witness). NO CORE / cancellation / completion / capacity
+claim. -/
+theorem doorIV_worstIndex_residueSpread_excludes_fixedPosition_export
+    {P : Type*} (J : P → ℕ) (d : ℕ) (h : ∃ p₁ p₂, J p₁ % d ≠ J p₂ % d) :
+    ∀ c, ¬ _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.FixedPositionRule J c :=
+  _root_.ProximityGap.Frontier.DoorIVWorstIndexDelocalized.residue_delocalized_excludes_fixedPosition
+    J d h
+
+#print axioms doorIV_worstIndex_delocalized_excludes_fixed_selector_export
+#print axioms doorIV_worstIndex_residueSpread_excludes_fixedPosition_export
 
 /-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** A transfer ratio below `1`
 from the level-`n` worst frequency to the true level-`n/2` sub-maximum is exactly a positive missed-

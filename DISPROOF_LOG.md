@@ -11758,4 +11758,41 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBNonN
 exports in `CampaignProvenIndex`: `doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export`,
 `doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export`, and
 `doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export`, axiom-clean with axioms contained in
+## [doorIV-phaseset-dilation-invariant-indexed] worst-b cannot tune ANY additive small-ball statistic + worst-index has no prime-stable selector — both kernels now citable (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 1/3 — permanently index the two axiom-clean kernels backing the brief's
+SINGLE-LIVE-TARGET refutation that the worst-frequency additive/small-ball lever is dead. Both kernels
+existed on origin/main (`_DoorIVPhaseSetDilationInvariant.lean`, `_DoorIVWorstIndexDelocalized.lean`)
+but were UNINDEXED in `CampaignProvenIndex`, so the no-fifth-door tetrachotomy lacked their citable
+exports. This indexes them (no new math, no new probe — pure capstone-export of proven theorems).
+
+VERDICT (kernel-checked, not just prose):
+  1. PHASE-SET DILATION-INVARIANCE. `E⁺(b • S) = E⁺(S)` for every nonzero `b`, and more generally EVERY
+     additive-pattern statistic of the dilated phase set `S_b = b • μ_n` — additive energy, k-th additive
+     energy, sumset/diffset cardinality, pair/triple-sum fiber counts, 3-AP counts, arbitrary
+     linear-pattern fiber counts, AND the target-optimized multi-dimensional joint-system max-fiber
+     (the actual Halász/Littlewood-Offord small-ball use case) — is INVARIANT under the dilation `b`.
+     Therefore the worst frequency cannot tune the additive structure; any small-ball / Halász /
+     LO anti-concentration lever over the worst-`b` phase set is b-BLIND and reproduces the typical
+     (EVT/Plancherel) ceiling, it cannot beat it. (Matches probe_dooriv_phaseset_additive_smallball:
+     Sidon-spread reproduces BGK; structured = mult-energy in disguise.)
+  2. WORST-INDEX DELOCALIZATION. A prime-independently delocalized worst-index family (two distinct
+     residues mod d AND two distinct values, as the cross-prime probe measures) is excluded by EVERY
+     fixed-residue rule and EVERY fixed-position rule simultaneously; residue-spread alone kills any
+     pinned-position selector. So the adversarial frequency offers NO prime-stable arithmetic target for
+     a targeted (non-energy, non-sum-product) anti-concentration bound.
+
+Together these are the kernel-checked spine of the brief's Lane-1 verdict that the door-(iv) "structured
+worst-b ⟹ targeted non-moment anti-concentration" hope is dead. NO CORE / cancellation / completion /
+moment-saving / capacity claim. CORE  M(μ_n) ≤ C·√(n·log(p/n))  remains OPEN.
+
+Formal kernels: `_DoorIVPhaseSetDilationInvariant.lean` (addEnergy_smul_eq,
+not_addEnergy_scalar_improvement, not_addSystemPatternMaxFiber_scalar_improvement, …) and
+`_DoorIVWorstIndexDelocalized.lean` (delocalized_excludes_fixed_selector,
+residue_delocalized_excludes_fixedPosition). New `CampaignProvenIndex` exports:
+`doorIV_phaseSet_addEnergy_dilation_invariant_export`,
+`doorIV_no_phaseSet_addEnergy_scalar_improvement_export`,
+`doorIV_no_phaseSet_systemSmallBall_scalar_improvement_export`,
+`doorIV_worstIndex_delocalized_excludes_fixed_selector_export`,
+`doorIV_worstIndex_residueSpread_excludes_fixedPosition_export`. All axiom-clean
 `{propext, Classical.choice, Quot.sound}`.
