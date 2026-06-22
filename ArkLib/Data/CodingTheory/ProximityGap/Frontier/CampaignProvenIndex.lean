@@ -151,6 +151,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentRecu
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipationGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -6731,6 +6732,42 @@ theorem doorIV_greedy_heavier_half_descent_dead_lever_export {a : ℕ} (r : Fin 
    (DoorIVGreedyHeavierHalfDescent.descent_not_majorant_of_strict subMag M₂ b hstrict).2⟩
 
 #print axioms doorIV_greedy_heavier_half_descent_dead_lever_export
+
+
+/-- **[Lane 3 worst-b spike constraint]** A b-side near-maximum/spike-count argument pays exactly
+the centered second moment: the number of indices above a threshold `μ+d`, multiplied by `d²`, is
+bounded by `Σ (xᵢ-μ)²`.  Thus proving the worst frequency is isolated, or that few `b` are near it,
+routes through the moment object rather than opening a new door-(iv) anti-concentration lever. -/
+theorem doorIV_worstB_spike_count_mul_sq_le_centered_sndMoment_export
+    {ι : Type*} (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d) :
+    ((s.filter (fun i => μ + d ≤ x i)).card : ℝ) * d ^ 2
+      ≤ ∑ i ∈ s, (x i - μ) ^ 2 :=
+  ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_mul_sq_le_centered_sndMoment
+    x s μ d hd
+
+/-- **[Lane 3 worst-b spike constraint]** Division form of the same wall: the above-threshold count
+is at most the centered second moment divided by `d²`.  Any selector/count proof of a worst-b spike
+therefore consumes second-moment budget, i.e. the already-dead moment/BGK route. -/
+theorem doorIV_worstB_spike_count_le_sndMoment_div_export
+    {ι : Type*} (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d) :
+    ((s.filter (fun i => μ + d ≤ x i)).card : ℝ)
+      ≤ (∑ i ∈ s, (x i - μ) ^ 2) / d ^ 2 :=
+  ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.threshold_count_le_sndMoment_div
+    x s μ d hd
+
+/-- **[Lane 3 worst-b spike constraint]** Even one adversarial spike at height `μ+d` already forces
+the centered second moment to be at least `d²`.  Isolating the worst `b` is therefore not independent
+information: the spike itself has already paid the moment cost. -/
+theorem doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
+    {ι : Type*} (x : ι → ℝ) (s : Finset ι) (μ d : ℝ) (hd : 0 < d)
+    (hex : ∃ i ∈ s, μ + d ≤ x i) :
+    d ^ 2 ≤ ∑ i ∈ s, (x i - μ) ^ 2 :=
+  ProximityGap.Frontier.DoorIVWorstBSpikeMomentBound.sndMoment_ge_sq_of_exists_threshold
+    x s μ d hd hex
+
+#print axioms doorIV_worstB_spike_count_mul_sq_le_centered_sndMoment_export
+#print axioms doorIV_worstB_spike_count_le_sndMoment_div_export
+#print axioms doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
 
 /-- **[Lane 1 worst-b selector obstruction]** If the frequency statistic is constant on group
 orbits, then super-level membership is exactly invariant under every orbit move. A worst-`b`
