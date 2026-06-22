@@ -160,6 +160,20 @@ theorem resonanceMoment_ratio_sandwich_realised (u : ZMod m → ℂ) (hu : ∀ l
   resonanceMoment_ratio_sandwich u hu hm r (‖kernelSpectrum (dftChar b₀) u‖ ^ 2)
     (fun k => hb₀ k)
 
+/-- **Mean-cap rigidity for the tower growth ratio.** If every squared spectral weight is already
+at most the Parseval mean `m−1`, then every consecutive resonance growth ratio is forced to equal
+`m−1` exactly. This is the tight endpoint of the sandwich: an anti-spike theorem down to the mean
+would leave no local ratio slack at all; any actual prize improvement must therefore come from
+bounding the realised spectral sup-norm above the floor but far below the trivial `(m−1)^2` ceiling,
+not from a below-floor ratio rung. -/
+theorem resonanceMoment_ratio_eq_base_of_specMaxSq_le_base
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (hm : 2 ≤ m) (r : ℕ)
+    (hcap : ∀ k : ZMod m, specWeight u k ≤ (m : ℝ) - 1) :
+    resonanceMoment u (r + 1) / resonanceMoment u r = (m : ℝ) - 1 := by
+  exact le_antisymm
+    (resonanceMoment_ratio_le_specMaxSq u hu hm r ((m : ℝ) - 1) hcap)
+    (resonanceMoment_ratio_ge_base u hu hm r)
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
@@ -167,3 +181,4 @@ end ArkLib.ProximityGap.GaussPhaseResonance
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_ge_base
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_sandwich
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_sandwich_realised
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_eq_base_of_specMaxSq_le_base

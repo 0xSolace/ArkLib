@@ -168,6 +168,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagSpikeCost
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerLogConvex
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerRatioSpectralCap
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -7586,6 +7587,22 @@ theorem doorIV_not_resonance_ratio_lt_floor_export
 
 #print axioms doorIV_resonance_ratio_floor_export
 #print axioms doorIV_not_resonance_ratio_lt_floor_export
+
+/-- **[Lane 3 resonance tower shape]** Endpoint rigidity for the ratio sandwich: if every squared
+kernel spectral weight is capped by the Parseval mean `m−1`, then every consecutive tower ratio is
+forced to equal `m−1` exactly.  This pins the mean-cap endpoint as rigidity, not prize cancellation. -/
+theorem doorIV_resonance_ratio_eq_floor_of_specMaxSq_le_floor_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ)
+    (hcap : ∀ k : ZMod m,
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 ≤ (m : ℝ) - 1) :
+    ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u (r + 1) /
+        ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r = (m : ℝ) - 1 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_eq_base_of_specMaxSq_le_base
+    u hu hm r hcap
+
+#print axioms doorIV_resonance_ratio_eq_floor_of_specMaxSq_le_floor_export
 
 /-- **[Lane 3 resonance two-sided off-diagonal constraint]** A one-step squared-spectrum dip `d`
 below the Parseval mean also forces `d² ≤ m · Re Off(2)`.  Near-flatness must therefore control
