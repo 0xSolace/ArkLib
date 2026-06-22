@@ -12602,3 +12602,22 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPart
 new theorems `norm_sub_max_eq_sum_erase` and `lower_band_slack_over_heaviest_ge`; permanent export
 `doorIV_partitionDepth_tail_slack_budget_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-worstb-no-sqrt2-perlevel-thinning] super-√2 coherent transfer floor blocks the dyadic √2 descent (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 constraint lemma extending `_DoorIVWorstBPerLevelGrowthFloor`.  The prior
+per-level floor kernel proved the conditional lower bound
+`‖A+B‖ ≥ (1+rlo)(1-ε)·M₂` from coherent-band plus near-worst transfer hypotheses.  This refinement
+specializes that floor to the prize dyadic threshold: if `(1+rlo)(1-ε) > √2`, then the square-root
+descent step `‖A+B‖ ≤ √2·M₂` is impossible on those hypotheses.
+
+VERDICT: a recursive proof strategy that hopes to thin the worst-b tower by a `√2` factor per dyadic
+level must make the sustained coherent transfer floor drop to at most `√2`.  In the measured regime
+where the floor is above `√2`, the descent is refuted by a direct lower-bound obstruction.  This is a
+conditional obstruction / threshold pin, not a CORE upper bound, cancellation, completion, moment-saving,
+or capacity claim. CORE remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPerLevelGrowthFloor.lean`,
+new theorem `no_sqrt_two_perLevel_thinning`; permanent export
+`doorIV_worstB_no_sqrt_two_perLevel_thinning_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`. Landed in `2991683ce`; conflict-marker fix in `d516c5885`.
