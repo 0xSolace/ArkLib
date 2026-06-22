@@ -7219,7 +7219,6 @@ by
 
 #print axioms doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export
 
-<<<<<<< Updated upstream
 /-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** For a coherent `k`-piece
 coset partition, the surplus over a certified heaviest piece is exactly the tail mass after erasing
 that piece, and any lower band on the tail forces a literal `(k-1)·rlo·H` surplus. This is the
@@ -7249,7 +7248,7 @@ theorem doorIV_partitionDepth_tail_slack_budget_export
     _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb_tail
 
 #print axioms doorIV_partitionDepth_tail_slack_budget_export
-=======
+
 /-- **[obstruction, DoorIVWorstBPerLevelGrowthFloor — door-(iv) Lane-1/3]** Under the measured
 coherent-band plus near-worst transfer hypotheses, if the conditional per-level floor satisfies
 `√2 < (1+rlo)(1−ε)`, then the dyadic wall cannot satisfy the square-root thinning step
@@ -7267,7 +7266,6 @@ theorem doorIV_worstB_no_sqrt_two_perLevel_thinning_export
     hcoh hlb hrlo htransfer hε hM₂ hsqrt
 
 #print axioms doorIV_worstB_no_sqrt_two_perLevel_thinning_export
->>>>>>> Stashed changes
 
 
 /-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half
