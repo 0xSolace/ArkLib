@@ -97,6 +97,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCommonRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSectorCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCanonicalHalfCoherenceQuantized
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVRealPieceCoherence
@@ -6017,6 +6018,72 @@ theorem doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export
 #print axioms doorIV_realPiece_compression_eq_signMass_export
 #print axioms doorIV_realPiece_compression_le_iff_minority_mass_ge_export
 #print axioms doorIV_realPiece_compression_slack_forces_minority_and_both_signs_export
+
+open scoped ComplexConjugate
+
+/-- **[Lane 1 canonical-half quantization obstruction]** A conjugate-closed finite sum is real:
+an involutive reindexing that sends each summand to its conjugate forces zero imaginary part. This
+is the formal real-axis gate behind canonical half-sum coherence probes. -/
+theorem doorIV_canonicalHalf_sum_conjClosed_isReal_export
+    {ι : Type*} (s : Finset ι) (f : ι → ℂ) (σ : ι → ι)
+    (hσ_mem : ∀ i ∈ s, σ i ∈ s)
+    (hσ_invol : ∀ i ∈ s, σ (σ i) = i)
+    (hσ_conj : ∀ i ∈ s, f (σ i) = conj (f i)) :
+    (∑ i ∈ s, f i).im = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.sum_conjClosed_isReal
+    s f σ hσ_mem hσ_invol hσ_conj
+
+/-- **[Lane 1 canonical-half quantization obstruction]** Once both canonical half pieces are real,
+the normalized two-piece real inner product is quantized to `{-1, 0, 1}`. There is no continuous
+coherence parameter to shave in this real-halved regime. -/
+theorem doorIV_canonicalHalf_coherence_quantized_of_real_export {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) :
+    let c := (a * conj b).re / (‖a‖ * ‖b‖)
+    c = -1 ∨ c = 0 ∨ c = 1 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_quantized_of_real
+    ha hb
+
+/-- **[Lane 1 canonical-half quantization obstruction]** If the two real canonical halves are both
+nonzero, the coherence is forced to `±1`. Any strict `1-ε` saving must first rule out the
+constructive `+1` sign case. -/
+theorem doorIV_canonicalHalf_coherence_pm_one_of_real_ne_export {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = -1 ∨
+      (a * conj b).re / (‖a‖ * ‖b‖) = 1 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_pm_one_of_real_ne
+    ha hb ha0 hb0
+
+/-- **[Lane 1 canonical-half quantization obstruction]** Positive product of the real half-sums
+pins the canonical-half coherence to the fully constructive value `+1`. -/
+theorem doorIV_canonicalHalf_coherence_eq_one_of_real_mul_pos_export {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hpos : 0 < a.re * b.re) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = 1 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_one_of_real_mul_pos
+    ha hb hpos
+
+/-- **[Lane 1 canonical-half quantization obstruction]** Negative product of the real half-sums
+pins the canonical-half coherence to the destructive value `-1`. -/
+theorem doorIV_canonicalHalf_coherence_eq_neg_one_of_real_mul_neg_export {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hneg : a.re * b.re < 0) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = -1 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_neg_one_of_real_mul_neg
+    ha hb hneg
+
+/-- **[Lane 1 canonical-half quantization obstruction]** Zero real-product gives zero coherence,
+closing the canonical-half sign-selector trichotomy. This is only a constraint on a proof route, not
+a CORE cancellation bound. -/
+theorem doorIV_canonicalHalf_coherence_eq_zero_of_real_mul_eq_zero_export {a b : ℂ}
+    (ha : a.im = 0) (hb : b.im = 0) (hzero : a.re * b.re = 0) :
+    (a * conj b).re / (‖a‖ * ‖b‖) = 0 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCanonicalHalfCoherence.coherence_eq_zero_of_real_mul_eq_zero
+    ha hb hzero
+
+#print axioms doorIV_canonicalHalf_sum_conjClosed_isReal_export
+#print axioms doorIV_canonicalHalf_coherence_quantized_of_real_export
+#print axioms doorIV_canonicalHalf_coherence_pm_one_of_real_ne_export
+#print axioms doorIV_canonicalHalf_coherence_eq_one_of_real_mul_pos_export
+#print axioms doorIV_canonicalHalf_coherence_eq_neg_one_of_real_mul_neg_export
+#print axioms doorIV_canonicalHalf_coherence_eq_zero_of_real_mul_eq_zero_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
