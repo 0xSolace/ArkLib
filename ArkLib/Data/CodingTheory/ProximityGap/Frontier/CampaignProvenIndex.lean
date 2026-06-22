@@ -7561,10 +7561,25 @@ theorem doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
   ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq
     u hu d hd hsmall
 
+/-- **[Lane 3 resonance two-sided off-diagonal constraint]** A one-step squared-spectrum dip `d`
+below the Parseval mean also forces `d² ≤ m · Re Off(2)`.  Near-flatness must therefore control
+both upward spikes and downward holes; either kind of deviation consumes the same named depth-two
+agreement budget. -/
+theorem doorIV_resonance_dip_cost_le_offDiag_two_re_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d)
+    (hdip : ∃ k : ZMod m,
+      ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 + d ≤ ((m : ℝ) - 1)) :
+    d ^ 2 ≤ (m : ℝ) *
+      (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re :=
+  ArkLib.ProximityGap.GaussPhaseResonance.dip_cost_le_offDiag_two_re u hu d hd hdip
+
 #print axioms doorIV_resonance_spike_cost_le_offDiag_two_re_export
 #print axioms doorIV_resonance_offDiag_two_re_ge_spike_sq_div_export
 #print axioms doorIV_resonance_spike_count_le_offDiag_two_re_div_export
 #print axioms doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
+#print axioms doorIV_resonance_dip_cost_le_offDiag_two_re_export
 
 /-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
 is the root count of the explicit quadratic form `Pp² - X·Qp²`; if that polynomial is nonzero,

@@ -84,9 +84,35 @@ theorem spike_count_eq_zero_of_offDiag_two_re_lt_sq
     exact hsmall
   exact hzero hvar
 
+/-- Downward deviations from the Parseval mean are also paid by the same depth-two agreement budget.
+If some frequency lies at least `d` *below* the mean, then `d² ≤ m · Re Off(2)`.
+
+This is the two-sided companion to the spike-cost lemma.  It is a constraint only: a near-flatness
+argument must control both upward spikes and downward holes, and either kind of deviation consumes
+the same named agreement off-diagonal budget. -/
+theorem dip_cost_le_offDiag_two_re
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (d : ℝ) (hd : 0 < d)
+    (hdip : ∃ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ^ 2 + d ≤ ((m : ℝ) - 1)) :
+    d ^ 2 ≤ (m : ℝ) * (resonanceOffDiag u 2).re := by
+  classical
+  obtain ⟨k, hk⟩ := hdip
+  let a : ℝ := ‖kernelSpectrum (dftChar k) u‖ ^ 2 - ((m : ℝ) - 1)
+  have hdev : d ≤ -a := by
+    dsimp [a]
+    linarith
+  have hsq : d ^ 2 ≤ a ^ 2 := by
+    have hnonneg : 0 ≤ d := le_of_lt hd
+    have hnonneg_neg : 0 ≤ -a := le_trans hnonneg hdev
+    have hs := pow_le_pow_left₀ hnonneg hdev 2
+    simpa [sq] using hs
+  have hbudget := centeredKernelSpectrum_sq_le_card_mul_offDiag_two_re u hu k
+  dsimp [a] at hsq
+  exact le_trans hsq hbudget
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_cost_le_offDiag_two_re
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.offDiag_two_re_ge_spike_sq_div
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_offDiag_two_re_div
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.dip_cost_le_offDiag_two_re
