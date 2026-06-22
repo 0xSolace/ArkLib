@@ -104,6 +104,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A2OnsetLatticeMinimum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditForced
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseCoherentNonRealizable
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -2533,6 +2534,7 @@ theorem doorIV_nonTensor_tensor_dilution_strict_export
 #print axioms doorIV_nonTensor_wrapCross_vacuous_of_noWraparound_export
 #print axioms doorIV_nonTensor_tensor_dilution_strict_export
 
+
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
 
 /-! ## Cone axiom audit — every permanent export above is axiom-clean
@@ -4728,5 +4730,49 @@ theorem doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
 #print axioms doorIV_orbit_saddle_obligation_dichotomy_export
 #print axioms doorIV_orbit_saddle_bound_of_onset_fail_and_wall_export
 #print axioms doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
+
+/-! ## Door-II/Door-IV boundary phase-coherent resonator non-realizability exports.
+Scope: **obstruction**.
+
+These exports make the phase-aligned √q-completion resonator no-go permanent. The residual
+`PhaseCoherentUniform` would force every nonzero Gauss period to attain the same completion-scale
+saturation value; the exact Parseval second moment forbids this in the thin prize regime. This backs
+the no-fifth-door tetrachotomy by closing a named completion-resonator residual, without proving any
+new cancellation or CORE upper bound.
+-/
+
+/-- **[identity, ResonancePhaseCoherent]** The trivial frequency has `η₀ = |G|`. -/
+theorem doorII_phaseCoherent_eta_zero_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    (ψ : AddChar F ℂ) (G : Finset F) :
+    _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G 0 = (G.card : ℂ) :=
+  _root_.ArkLib.ProximityGap.Frontier.ResonancePhaseCoherentNonRealizable.eta_zero ψ G
+
+/-- **[identity, ResonancePhaseCoherent]** The nonzero-frequency second moment is exactly
+`q|G|-|G|²`, after removing the trivial frequency from Parseval. -/
+theorem doorII_phaseCoherent_secondMoment_nonzero_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive) (G : Finset F) :
+    ∑ b ∈ (Finset.univ.erase (0 : F)),
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ G b‖ ^ 2
+      = (Fintype.card F : ℝ) * G.card - (G.card : ℝ) ^ 2 :=
+  _root_.ArkLib.ProximityGap.Frontier.ResonancePhaseCoherentNonRealizable.secondMoment_nonzero
+    hψ G
+
+/-- **[obstruction, ResonancePhaseCoherent]** In the prize regime `4d ≤ q-1`, the uniform
+phase-coherent completion resonator is non-realizable: it would contradict the exact nonzero
+Parseval mass. This closes the named phase-aligned √q-completion residual, not the CORE bound. -/
+theorem doorII_not_phaseCoherentUniform_of_prizeRegime_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {d : ℕ} (hd : d ∣ Fintype.card F - 1) (hd0 : 0 < d)
+    {ψ : AddChar F ℂ} (hψ : ψ.IsPrimitive)
+    (hregime : 4 * d ≤ Fintype.card F - 1) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.RES2Diagnostics.PhaseCoherentUniform ψ d :=
+  _root_.ArkLib.ProximityGap.Frontier.ResonancePhaseCoherentNonRealizable.not_phaseCoherentUniform_of_prizeRegime
+    hd hd0 hψ hregime
+
+#print axioms doorII_phaseCoherent_eta_zero_export
+#print axioms doorII_phaseCoherent_secondMoment_nonzero_export
+#print axioms doorII_not_phaseCoherentUniform_of_prizeRegime_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

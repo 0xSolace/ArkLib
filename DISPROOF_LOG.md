@@ -11639,3 +11639,15 @@ reduction backbone. Added citable exports for:
 Verdict: once onset is killed by the pigeonhole at prize scale, the surviving object is exactly the
 uniform orbit-count wall. This is reduction/capstone indexing only: the orbit wall and orbit-to-moment
 transfer remain explicit hypotheses, not proved; no CORE upper bound or cancellation claim.
+
+## [resonance-phase-coherent-nonrealizable-indexed] phase-aligned completion residual permanently exported (g55, 2026-06-21)
+
+Lane 2/3 indexing sweep.  The phase-aligned √q-completion resonator residual
+`PhaseCoherentUniform` is now citable through `CampaignProvenIndex`: the trivial frequency identity,
+the exact nonzero-frequency Parseval mass, and the contradiction theorem
+`¬ PhaseCoherentUniform ψ d` under `4d ≤ q-1` are exported.
+
+Verdict: this is only a permanent index/export of the already-proven non-realizability brick.  It
+backs the no-fifth-door/completion-door no-go: a b-uniform phase-coherent resonator would overspend the
+second moment.  It proves no CORE cancellation, no anti-concentration, no capacity claim, and no new
+bound on `M` beyond existing completion/Parseval facts.
