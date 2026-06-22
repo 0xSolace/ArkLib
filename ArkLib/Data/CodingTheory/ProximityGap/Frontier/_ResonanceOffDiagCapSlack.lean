@@ -3,6 +3,7 @@ Copyright (c) 2026 ArkLib Contributors. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: ArkLib Contributors
 -/
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementFlatnessCriterion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceAgreementSpectralVariance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceCapVarianceBudget
 
@@ -51,8 +52,25 @@ theorem resonanceOffDiag_two_re_eq_zero_of_cap_at_mean (u : ZMod m → ℂ)
   rw [hzero] at hle
   exact le_antisymm hle hnonneg
 
+/-- **Zero agreement excess iff no frequency rises above the Parseval mean.**  At depth two, the
+threshold cap `‖K̂(k)‖² ≤ m - 1` is equivalent to zero real off-diagonal.  One direction is the
+cap-slack endpoint; the other uses the flatness criterion. -/
+theorem resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) :
+    (resonanceOffDiag u 2).re = 0 ↔
+      ∀ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ^ 2 ≤ (m : ℝ) - 1 := by
+  constructor
+  · intro hzero k
+    have hflat := (resonanceOffDiag_two_re_eq_zero_iff_flat u hu).mp hzero
+    rw [hflat k]
+  · intro hcap
+    exact resonanceOffDiag_two_re_eq_zero_of_cap_at_mean u hu hcap
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_le_capSlack
-#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_eq_zero_of_cap_at_mean
+#print axioms
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_eq_zero_of_cap_at_mean
+#print axioms
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag_two_re_eq_zero_iff_cap_at_mean
