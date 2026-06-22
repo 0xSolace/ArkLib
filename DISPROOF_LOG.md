@@ -12693,3 +12693,23 @@ Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseMas
 GaussPhaseResonance only). Theorems: phaseMass, sum_phaseSum_eq_phaseMass_pow,
 normSq_sum_phaseSum_le_card_mul_resonanceMoment, resonanceMoment_ge_phaseMass_pow_div_card,
 phaseMass_floor_constraint. Axiom-clean ({propext, Classical.choice, Quot.sound}). Pushed a709da42f.
+
+## [resonance-phasemass-extremizer] the constant vector u=1 MAXIMIZES the phase-mass floor among unit phases — door-(iv) extremizer capstone (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 capstone closing the loop over [resonance-const-vector-ceiling-attained] +
+[resonance-universal-phasemass-floor]. Among unit-modulus phases (‖u a‖=1, the Gauss normalization), the
+phase mass S=sum_{a!=0}u(a) is triangle-bounded ‖S‖<=m-1 (norm_phaseMass_le_of_unit), ATTAINED exactly at
+u=1 (norm_phaseMass_const_one, ‖phaseMass 1‖=m-1). Hence the universal floor ‖S‖^{2r}/m is MAXIMIZED at
+the constant vector, value (m-1)^{2r}/m (phaseMass_pow_le_const_one_of_unit). u=1 is the extremizer of the
+whole phase-mass lower-bound family.
+
+VERDICT (constraint): the phase-mass floor stays large ONLY under maximal phase coherence (all phases
+equal); genuine multiplicative Gauss phases force ‖S‖<<m-1, and the prize √-cancellation regime lives
+precisely in that gap which the scalar phase mass cannot resolve. Reinforces that a prize-relevant bound
+must control the phase DISTRIBUTION of {b·x^m}, not the phase mass. No CORE/cancellation/completion/moment/
+anti-concentration/capacity claim. CORE OPEN.
+
+Formal kernel: ArkLib/Data/CodingTheory/ProximityGap/Frontier/_ResonancePhaseMassExtremizer.lean (leaf over
+_ResonancePhaseMassFloor). Theorems: card_nonzero_filter, norm_phaseMass_le_of_unit,
+norm_phaseMass_const_one, phaseMass_pow_le_const_one_of_unit, const_one_maximizes_phaseMass_floor.
+Axiom-clean ({propext, Classical.choice, Quot.sound}). Pushed 1694b7445.
