@@ -7093,6 +7093,31 @@ theorem doorIV_worstBCoset_card_sigmaOrbitImage_le_superLevelFinset_export {G β
       (DoorIVWorstBCosetClosed.superLevelFinset f c).card :=
   DoorIVWorstBCosetClosed.card_sigmaOrbitImage_le_superLevelFinset hf hσ c hb
 
+/-- **[Lane 1 worst-b selector obstruction]** Singleton selector collapse: if a finite
+super-level set containing `b` is literally a singleton, then the whole actual coset orbit image of
+`b` has already collapsed to one point. Thus an isolated worst-`b` selector is only possible after
+stabilizers have killed the coset fiber. -/
+theorem doorIV_worstBCoset_orbitImage_card_eq_one_of_superLevel_singleton_export
+    {G β : Type*} [Group G] [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c)
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card = 1) :
+    (Finset.univ.image (fun g : G => g • b)).card = 1 :=
+  DoorIVWorstBCosetClosed.orbitImage_card_eq_one_of_superLevelFinset_card_eq_one hf c hb hcard
+
+/-- **[Lane 1 worst-b selector obstruction]** Signed singleton selector collapse: a singleton
+near-max set containing `b` forces the signed coset image `g ↦ σ(g•b)` to have cardinal one.  Sign
+symmetry cannot produce a point-sized worst-frequency set unless the signed fiber is degenerate. -/
+theorem doorIV_worstBCoset_sigmaOrbitImage_card_eq_one_of_superLevel_singleton_export
+    {G β : Type*} [Group G] [MulAction G β] [Fintype G] [Fintype β] [DecidableEq β]
+    {f : β → ℝ} {σ : β → β} (hf : DoorIVWorstBCosetClosed.OrbitConstant (G := G) f)
+    (hσ : DoorIVWorstBCosetClosed.InvolutionConstant σ f) (c : ℝ) {b : β}
+    (hb : b ∈ DoorIVWorstBCosetClosed.superLevel f c)
+    (hcard : (DoorIVWorstBCosetClosed.superLevelFinset f c).card = 1) :
+    (Finset.univ.image (fun g : G => σ (g • b))).card = 1 :=
+  DoorIVWorstBCosetClosed.sigmaOrbitImage_card_eq_one_of_superLevelFinset_card_eq_one
+    hf hσ c hb hcard
+
 /-- **[Lane 1 worst-b selector obstruction]** Audit contrapositive: if a reported threshold set is
 smaller than the actual orbit image of `b`, then `b` cannot be in that threshold set. This pins the
 minimum budget any coset-blind worst-frequency selector must pay. -/
@@ -7167,6 +7192,8 @@ theorem doorIV_worstBCoset_not_exists_free_sigma_orbit_mem_of_card_lt_group_expo
 #print axioms doorIV_worstBCoset_sigma_smul_mem_superLevel_iff_export
 #print axioms doorIV_worstBCoset_card_orbitImage_le_superLevelFinset_export
 #print axioms doorIV_worstBCoset_card_sigmaOrbitImage_le_superLevelFinset_export
+#print axioms doorIV_worstBCoset_orbitImage_card_eq_one_of_superLevel_singleton_export
+#print axioms doorIV_worstBCoset_sigmaOrbitImage_card_eq_one_of_superLevel_singleton_export
 #print axioms doorIV_worstBCoset_not_mem_of_card_lt_orbitImage_export
 #print axioms doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_orbit_export
 #print axioms doorIV_worstBCoset_not_mem_of_card_lt_sigmaOrbitImage_export
