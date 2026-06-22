@@ -102,12 +102,30 @@ theorem dip_cost_le_offDiag_two_re
     linarith
   have hsq : d ^ 2 ≤ a ^ 2 := by
     have hnonneg : 0 ≤ d := le_of_lt hd
-    have hnonneg_neg : 0 ≤ -a := le_trans hnonneg hdev
     have hs := pow_le_pow_left₀ hnonneg hdev 2
     simpa [sq] using hs
   have hbudget := centeredKernelSpectrum_sq_le_card_mul_offDiag_two_re u hu k
   dsimp [a] at hsq
   exact le_trans hsq hbudget
+
+/-- Contrapositive downward-deviation guard: if the depth-two agreement budget is below `d²`, then
+no frequency can lie `d` below the Parseval mean.  Together with the upward spike guard, this states
+that a sub-`d²` agreement budget forces the one-step squared spectrum into the two-sided window
+`m-1-d < ‖K̂(k)‖² < m-1+d`. -/
+theorem dip_count_eq_zero_of_offDiag_two_re_lt_sq
+    (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1) (d : ℝ) (hd : 0 < d)
+    (hsmall : (m : ℝ) * (resonanceOffDiag u 2).re < d ^ 2) :
+    ((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ‖kernelSpectrum (dftChar k) u‖ ^ 2 + d ≤ ((m : ℝ) - 1))).card = 0 := by
+  classical
+  by_contra hne
+  have hpos : 0 < ((Finset.univ : Finset (ZMod m)).filter
+      (fun k => ‖kernelSpectrum (dftChar k) u‖ ^ 2 + d ≤ ((m : ℝ) - 1))).card :=
+    Nat.pos_of_ne_zero hne
+  rcases Finset.card_pos.mp hpos with ⟨k, hkT⟩
+  have hk := (Finset.mem_filter.mp hkT).2
+  have hcost := dip_cost_le_offDiag_two_re u hu d hd ⟨k, hk⟩
+  linarith
 
 end ArkLib.ProximityGap.GaussPhaseResonance
 
@@ -116,3 +134,4 @@ end ArkLib.ProximityGap.GaussPhaseResonance
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_le_offDiag_two_re_div
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.dip_cost_le_offDiag_two_re
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.dip_count_eq_zero_of_offDiag_two_re_lt_sq

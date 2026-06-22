@@ -7575,11 +7575,25 @@ theorem doorIV_resonance_dip_cost_le_offDiag_two_re_export
       (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re :=
   ArkLib.ProximityGap.GaussPhaseResonance.dip_cost_le_offDiag_two_re u hu d hd hdip
 
+/-- **[Lane 3 resonance two-sided off-diagonal constraint]** Contrapositive dip form: if the
+localized depth-two agreement budget is below `d²`, no frequency can lie `d` below the mean. -/
+theorem doorIV_resonance_dip_count_eq_zero_of_offDiag_two_re_lt_sq_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (d : ℝ) (hd : 0 < d)
+    (hsmall : (m : ℝ) *
+      (ArkLib.ProximityGap.GaussPhaseResonance.resonanceOffDiag u 2).re < d ^ 2) :
+    ((Finset.univ : Finset (ZMod m)).filter
+        (fun k => ‖ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum
+          (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2 + d ≤ ((m : ℝ) - 1))).card = 0 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.dip_count_eq_zero_of_offDiag_two_re_lt_sq
+    u hu d hd hsmall
+
 #print axioms doorIV_resonance_spike_cost_le_offDiag_two_re_export
 #print axioms doorIV_resonance_offDiag_two_re_ge_spike_sq_div_export
 #print axioms doorIV_resonance_spike_count_le_offDiag_two_re_div_export
 #print axioms doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
 #print axioms doorIV_resonance_dip_cost_le_offDiag_two_re_export
+#print axioms doorIV_resonance_dip_count_eq_zero_of_offDiag_two_re_lt_sq_export
 
 /-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
 is the root count of the explicit quadratic form `Pp² - X·Qp²`; if that polynomial is nonzero,
