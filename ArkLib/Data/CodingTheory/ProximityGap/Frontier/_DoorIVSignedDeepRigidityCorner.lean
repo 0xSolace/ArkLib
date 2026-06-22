@@ -126,6 +126,48 @@ theorem signedPeriodPow_eq_neg_card_pow_iff_zeroSumCount_zero
   · intro hZ
     rw [hZ]; simp
 
+/-- **The floor is an unconditional LOWER bound: `Re(A_r) ≥ −|S|^r`.** Since `q·Z ≥ 0`, the signed
+deep sum never drops below its rigidity floor. This grounds the OTHER half of the `DISPROOF_LOG`
+sign-rigidity measurement — the "smooth relaxation of `A_r` UP from the `−n^r` floor toward `0`":
+`A_r` sits in `[−|S|^r, ∞)`, anchored at the floor exactly where `Z = 0` and climbing by `q·Z`
+as genuine zero-sum relations switch on. (Real part; field-universal, `|·|`-free.) -/
+theorem neg_card_pow_le_signedPeriodPow_re
+    (S : Finset F) (r : ℕ) :
+    - (S.card : ℝ) ^ r
+      ≤ (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ S, ψ x) ^ r).re := by
+  have hid := nonzeroSignedPeriodPow_eq_zeroSumCount (F := F) S r
+  rw [hid]
+  have hre : ((Fintype.card F : ℂ) * (zeroSumCount S r : ℂ) - (S.card : ℂ) ^ r).re
+      = (Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) - (S.card : ℝ) ^ r := by
+    have h1 : ((Fintype.card F : ℂ) * (zeroSumCount S r : ℂ) - (S.card : ℂ) ^ r)
+        = (((Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) - (S.card : ℝ) ^ r : ℝ) : ℂ) := by
+      push_cast; ring
+    rw [h1, Complex.ofReal_re]
+  rw [hre]
+  have hq : (0 : ℝ) ≤ (Fintype.card F : ℝ) := by positivity
+  have hZ : (0 : ℝ) ≤ (zeroSumCount S r : ℝ) := by positivity
+  have : (0 : ℝ) ≤ (Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) := mul_nonneg hq hZ
+  linarith
+
+/-- **The deviation from the floor is exactly `q` times the zero-sum count.**
+`Re(A_r) + |S|^r = q · Z`. The signed deep sum's distance above its `−|S|^r` rigidity floor is
+literally `q·zeroSumCount` — the count of genuine zero-sum relations that have switched on. Bounding
+this deviation at `r ≈ log q` (`q·Z` staying `≤ |S|^r`, the RATE of approach) is the open BGK wall;
+this lemma names the deviation exactly. -/
+theorem signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount
+    (S : Finset F) (r : ℕ) :
+    (∑ ψ ∈ (univ.erase (0 : AddChar F ℂ)), (∑ x ∈ S, ψ x) ^ r).re + (S.card : ℝ) ^ r
+      = (Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) := by
+  have hid := nonzeroSignedPeriodPow_eq_zeroSumCount (F := F) S r
+  rw [hid]
+  have hre : ((Fintype.card F : ℂ) * (zeroSumCount S r : ℂ) - (S.card : ℂ) ^ r).re
+      = (Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) - (S.card : ℝ) ^ r := by
+    have h1 : ((Fintype.card F : ℂ) * (zeroSumCount S r : ℂ) - (S.card : ℂ) ^ r)
+        = (((Fintype.card F : ℝ) * (zeroSumCount S r : ℝ) - (S.card : ℝ) ^ r : ℝ) : ℂ) := by
+      push_cast; ring
+    rw [h1, Complex.ofReal_re]
+  rw [hre]; ring
+
 end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 
 /-! ## Axiom audit -/
@@ -133,3 +175,5 @@ end ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_neg_of_zeroSumCount_zero
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_nonpos_iff
 #print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_eq_neg_card_pow_iff_zeroSumCount_zero
+#print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.neg_card_pow_le_signedPeriodPow_re
+#print axioms ArkLib.ProximityGap.Frontier.SignedDeepRigidityCorner.signedPeriodPow_re_add_card_pow_eq_q_mul_zeroSumCount
