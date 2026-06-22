@@ -156,6 +156,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBImbalanceBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPartitionDepthBand
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBPerLevelGrowthFloor
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseCurvatureGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
@@ -7198,6 +7199,31 @@ theorem doorIV_partitionDepth_lower_band_slack_over_single_export
     hcoh hi₀ hH hlb
 
 #print axioms doorIV_partitionDepth_lower_band_slack_over_single_export
+
+/-! **[obstruction, DoorIVPhaseCurvatureGeneric — door-(iv) Lane-1/3]** The discrete-curvature
+small-ball lever has both probe-facing failures bundled in one permanent export.  If the cyclic
+second-difference map is injective, then its distinct-value set has the maximal possible cardinality
+`|ι|`, so no bounded-curvature budget `C < |ι|` can hold.  If the same curvature statistic also agrees
+at the worst and a generic frequency, then no threshold separates that worst/generic pair.  Hence this
+curvature statistic is simultaneously non-collapsed and frequency-blind: it cannot be the missing
+thinness-essential Door-IV anti-concentration input.  No CORE / cancellation / completion / moment /
+capacity claim; CORE remains OPEN. -/
+theorem doorIV_phase_curvature_generic_dead_export
+    {ι : Type*} [Fintype ι] {β : Type*}
+    (d : ι → ℤ) (hinj : Function.Injective d)
+    (s : β → ℕ) (bstar b0 : β)
+    (hblind : ArkLib.ProximityGap.Frontier.DoorIVPhaseCurvatureGeneric.FrequencyBlind s bstar b0) :
+    (ArkLib.ProximityGap.Frontier.DoorIVPhaseCurvatureGeneric.secondDiffSet d).card = Fintype.card ι ∧
+      (∀ C : ℕ, C < Fintype.card ι →
+        ¬ (ArkLib.ProximityGap.Frontier.DoorIVPhaseCurvatureGeneric.secondDiffSet d).card ≤ C) ∧
+      (∀ t : ℕ, ¬ (t ≤ s bstar ∧ s b0 < t)) :=
+by
+  classical
+  exact ArkLib.ProximityGap.Frontier.DoorIVPhaseCurvatureGeneric.doorIV_phaseCurvature_dead
+    d hinj s bstar b0 hblind
+
+#print axioms doorIV_phase_curvature_generic_dead_export
+
 /-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** For any coherent `k`-piece
 worst-frequency partition satisfying the stationary lower band and having at least one strict-under-max
 piece, the measured aggregate inflation `F_k = M/H` is strictly interior: `1 < F_k < k`.  This makes
