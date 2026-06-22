@@ -134,8 +134,46 @@ theorem coset_resonator_numerator_eq_parseval_add_offdiag {ι : Type*} [Decidabl
   rw [coset_resonator_numerator_diag_add_offdiag ψ G J r φ hφ]
   rw [parseval_mass_nonzero hψ G]
 
+/-! ## Two structural consequences of the split (Lane-3 constraint form) -/
+
+/-- **Hermitian symmetry of the autocorrelation kernel.** `Γ(j',j) = conj(Γ(j,j'))`: swapping the
+index pair conjugates the kernel (the `‖η_b‖²` weight is real, and `φ_j φ̄_{j'} ↦ φ_{j'} φ̄_j` is
+conjugation). This is the structural fact that makes the off-diagonal a Hermitian form in `r`, so the
+full numerator (manifestly real) stays real: the off-diagonal contribution is automatically real. -/
+theorem autocorrKernel_conj_symm {ι : Type*} (ψ : AddChar F ℂ) (G : Finset F) (φ : ι → F → ℂ)
+    (j j' : ι) :
+    autocorrKernel ψ G φ j' j = (starRingEnd ℂ) (autocorrKernel ψ G φ j j') := by
+  unfold autocorrKernel
+  rw [map_sum]
+  refine Finset.sum_congr rfl (fun b _ => ?_)
+  -- conj(φ_j b · conj(φ_{j'} b) · ‖η_b‖²) = φ_{j'} b · conj(φ_j b) · ‖η_b‖²
+  rw [map_mul, map_mul, Complex.conj_conj, Complex.conj_ofReal]
+  ring
+
+/-- **Single-coset resonator gives NO log (the off-diagonal is empty).** When the resonator support
+`J = {j₀}` is a single coset, `J.erase j₀ = ∅`, so the off-diagonal sum in the headline split
+VANISHES and the numerator is EXACTLY the Parseval diagonal `‖r‖²·A₁`. Hence a single-coset
+resonator can NEVER beat the bare `√n` floor — any log must use ≥ 2 cosets that genuinely correlate
+through the off-diagonal Gauss-period autocorrelation. (Constraint lemma; no size claim.) -/
+theorem coset_resonator_numerator_single_eq_parseval {ι : Type*} [DecidableEq ι] (ψ : AddChar F ℂ)
+    (G : Finset F) (j₀ : ι) (r : ι → ℂ) (φ : ι → F → ℂ)
+    (hφ : ∀ b ∈ Finset.univ.erase (0 : F), ‖φ j₀ b‖ = 1) :
+    ((∑ b ∈ Finset.univ.erase (0 : F),
+        ‖cosetResonator {j₀} r φ b‖ ^ 2 * ‖eta ψ G b‖ ^ 2 : ℝ) : ℂ)
+      = ((‖r j₀‖ ^ 2 : ℝ) : ℂ)
+          * ((∑ b ∈ Finset.univ.erase (0 : F), ‖eta ψ G b‖ ^ 2 : ℝ) : ℂ) := by
+  have hφ' : ∀ j ∈ ({j₀} : Finset ι), ∀ b ∈ Finset.univ.erase (0 : F), ‖φ j b‖ = 1 := by
+    intro j hj b hb
+    rw [Finset.mem_singleton] at hj; subst hj; exact hφ b hb
+  rw [coset_resonator_numerator_diag_add_offdiag ψ G {j₀} r φ hφ']
+  -- the off-diagonal double sum over `j ∈ {j₀}` reduces to `j = j₀` with `({j₀}).erase j₀ = ∅`, = 0;
+  -- the diagonal singleton sum reduces to `‖r j₀‖²`.
+  simp [Finset.sum_singleton, Finset.erase_singleton, Finset.sum_empty]
+
 end ArkLib.ProximityGap.Frontier.AvResonatorCand1
 
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.inner_sum_diag_add_offdiag
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_numerator_diag_add_offdiag
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_numerator_eq_parseval_add_offdiag
+#print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.autocorrKernel_conj_symm
+#print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_numerator_single_eq_parseval
