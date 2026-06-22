@@ -5462,11 +5462,35 @@ theorem doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_pro
   _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product
     h hrho0 hT hbad
 
+/-- **[Lane 3 coset-half zero-order budget obstruction, HalfMassFactorization]** Any period-norm
+floor `T ≤ ‖A+B‖` is already a half-mass floor `T ≤ ‖A‖+‖B‖`, before any coherence cap is considered.
+Thus a Door-IV split certificate cannot hide the original prize floor inside the split; the `L¹`
+half-mass budget must cover the floor first. NO CORE / cancellation / capacity claim. -/
+theorem doorIV_halfMass_normFloor_le_halfMass_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {T : ℝ}
+    (hT : T ≤ ‖A + B‖) :
+    T ≤ _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.normFloor_le_halfMass_of_normFloor_le_norm
+    hT
+
+/-- **[Lane 3 coset-half zero-order budget obstruction, HalfMassFactorization]** If an advertised
+half-mass cap `H` is below a known period floor `T`, the cap is impossible. Coherence bookkeeping is
+irrelevant until the raw half-mass budget can already pay the observed period floor. NO CORE /
+cancellation / capacity claim. -/
+theorem doorIV_not_halfMass_le_of_normFloor_gt_export
+    {E : Type*} [SeminormedAddCommGroup E] {A B : E} {T H : ℝ}
+    (hT : T ≤ ‖A + B‖) (hH : H < T) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.halfMass A B ≤ H :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassFactorization.not_halfMass_le_of_normFloor_gt
+    hT hH
+
 #print axioms doorIV_halfMass_coherence_lt_one_iff_norm_lt_halfMass_export
 #print axioms doorIV_halfMass_ge_normFloor_div_of_coherence_le_export
 #print axioms doorIV_not_coherence_le_of_normFloor_gt_product_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_halfMass_floor_gt_export
 #print axioms doorIV_not_family_coherence_and_halfMass_caps_of_exists_normFloor_gt_product_export
+#print axioms doorIV_halfMass_normFloor_le_halfMass_export
+#print axioms doorIV_not_halfMass_le_of_normFloor_gt_export
 /-- **[Lane 1/3 constraint, PhaseSetDilationInvariant]** The additive energy `E⁺(b • S)` of the
 worst-`b` phase set `S_b = b • μ_n` is INVARIANT under the nonzero dilation `b`: `E⁺(b • S) = E⁺(S)`.
 The worst frequency therefore cannot tune the additive (small-ball / Halász) structure of the phase
