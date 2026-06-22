@@ -170,6 +170,63 @@ theorem coset_resonator_numerator_single_eq_parseval {ι : Type*} [DecidableEq �
   -- the diagonal singleton sum reduces to `‖r j₀‖²`.
   simp [Finset.sum_singleton, Finset.erase_singleton, Finset.sum_empty]
 
+/-! ## The DENOMINATOR side: exact closed form under coset-character orthogonality -/
+
+/-- The denominator kernel `D(j,j') := ∑_{b≠0} φ_j(b) φ̄_{j'}(b)` (the resonator denominator is
+`∑_{b≠0} ‖∑_j r_j φ_j(b)‖² = ∑_{j,j'} r_j r̄_{j'} D(j,j')`). At `j=j'` (unit modulus) `D = q−1`;
+at `j≠j'` it is the coset-character orthogonality sum (`= 0` for genuine multiplicative characters). -/
+noncomputable def denomKernel {ι : Type*} (φ : ι → F → ℂ) (j j' : ι) : ℂ :=
+  ∑ b ∈ Finset.univ.erase (0 : F), φ j b * (starRingEnd ℂ) (φ j' b)
+
+/-- **The resonator denominator expands as a double index sum of `denomKernel`.**
+`(∑_{b≠0} ‖R(b)‖² : ℂ) = ∑_{j,j'∈J} r_j r̄_{j'} D(j,j')` (Fubini on the `‖R(b)‖²` expansion). -/
+theorem coset_resonator_denominator_expand {ι : Type*} (J : Finset ι) (r : ι → ℂ) (φ : ι → F → ℂ) :
+    ((∑ b ∈ Finset.univ.erase (0 : F), ‖cosetResonator J r φ b‖ ^ 2 : ℝ) : ℂ)
+      = ∑ j ∈ J, ∑ j' ∈ J, r j * (starRingEnd ℂ) (r j') * denomKernel φ j j' := by
+  have hperb : ∀ b : F,
+      ((‖cosetResonator J r φ b‖ ^ 2 : ℝ) : ℂ)
+        = ∑ j ∈ J, ∑ j' ∈ J, r j * (starRingEnd ℂ) (r j') * (φ j b * (starRingEnd ℂ) (φ j' b)) := by
+    intro b; exact cosetResonator_normSq_expand J r φ b
+  calc ((∑ b ∈ Finset.univ.erase (0 : F), ‖cosetResonator J r φ b‖ ^ 2 : ℝ) : ℂ)
+      = ∑ b ∈ Finset.univ.erase (0 : F), ((‖cosetResonator J r φ b‖ ^ 2 : ℝ) : ℂ) := by
+        push_cast; ring
+    _ = ∑ b ∈ Finset.univ.erase (0 : F),
+          ∑ j ∈ J, ∑ j' ∈ J, r j * (starRingEnd ℂ) (r j') * (φ j b * (starRingEnd ℂ) (φ j' b)) :=
+        Finset.sum_congr rfl (fun b _ => hperb b)
+    _ = ∑ j ∈ J, ∑ j' ∈ J, r j * (starRingEnd ℂ) (r j') * denomKernel φ j j' := by
+        rw [Finset.sum_comm]
+        refine Finset.sum_congr rfl (fun j _ => ?_)
+        rw [Finset.sum_comm]
+        refine Finset.sum_congr rfl (fun j' _ => ?_)
+        unfold denomKernel
+        rw [Finset.mul_sum]
+
+/-- **Under coset-character orthogonality, the denominator is EXACTLY `‖r‖²·(q−1)`.** If the
+weights `φ` are unit-modulus on `b≠0` (so `D(j,j) = q−1`) and ORTHOGONAL off-diagonal
+(`D(j,j') = 0` for `j≠j'`, the defining property of distinct multiplicative coset characters), then
+the full resonator denominator collapses to its diagonal `‖r‖²·(q−1)` with NO off-diagonal
+contribution. Combined with the numerator split, the resonator ratio is exactly
+`(‖r‖²·A₁ + Off) / (‖r‖²·(q−1))` — the denominator carries no open content; ALL of it is in the
+numerator off-diagonal `Off`. -/
+theorem coset_resonator_denominator_eq_diagonal_of_orthogonal {ι : Type*} [DecidableEq ι]
+    (J : Finset ι) (r : ι → ℂ) (φ : ι → F → ℂ)
+    (hdiag : ∀ j ∈ J, denomKernel φ j j = ((Finset.univ.erase (0 : F)).card : ℂ))
+    (horth : ∀ j ∈ J, ∀ j' ∈ J, j ≠ j' → denomKernel φ j j' = 0) :
+    ((∑ b ∈ Finset.univ.erase (0 : F), ‖cosetResonator J r φ b‖ ^ 2 : ℝ) : ℂ)
+      = ((Finset.univ.erase (0 : F)).card : ℂ) * ∑ j ∈ J, r j * (starRingEnd ℂ) (r j) := by
+  rw [coset_resonator_denominator_expand J r φ]
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl (fun j hj => ?_)
+  -- inner sum over j': only j'=j survives (orthogonality), giving r_j r̄_j (q−1)
+  rw [← Finset.add_sum_erase J (fun j' => r j * (starRingEnd ℂ) (r j') * denomKernel φ j j') hj]
+  have hoff : (∑ j' ∈ J.erase j, r j * (starRingEnd ℂ) (r j') * denomKernel φ j j') = 0 := by
+    refine Finset.sum_eq_zero (fun j' hj' => ?_)
+    have hj'J : j' ∈ J := Finset.mem_of_mem_erase hj'
+    have hne : j ≠ j' := (Finset.ne_of_mem_erase hj').symm
+    rw [horth j hj j' hj'J hne, mul_zero]
+  rw [hoff, add_zero, hdiag j hj]
+  ring
+
 end ArkLib.ProximityGap.Frontier.AvResonatorCand1
 
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.inner_sum_diag_add_offdiag
@@ -177,3 +234,5 @@ end ArkLib.ProximityGap.Frontier.AvResonatorCand1
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_numerator_eq_parseval_add_offdiag
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.autocorrKernel_conj_symm
 #print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_numerator_single_eq_parseval
+#print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_denominator_expand
+#print axioms ArkLib.ProximityGap.Frontier.AvResonatorCand1.coset_resonator_denominator_eq_diagonal_of_orthogonal
