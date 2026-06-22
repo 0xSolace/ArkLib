@@ -4287,6 +4287,39 @@ multiplicative normalized factor cannot rescue a slack certificate whose baselin
 
 open _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceSlackVacuousAtArgmax
 
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Vanishing-slack form: at a fully
+coherent frequency, a zero-slack certificate collapses all the way to `mass ≤ 0`. This is the local
+reason the `1 - ρ(b)` slack lever cannot control a positive coherent peak. -/
+theorem doorIV_coherenceSlack_vanishing_bound_at_coherent_export {ι : Type*}
+    {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    (hb : CoherenceSlackBound mass coh g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ 0 :=
+  slack_bound_trivial_at_coherent hb hcoh
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Any relaxed slack certificate evaluated at
+full coherence reduces to its zero-slack baseline `g 0`; no slack survives at the adversarial point. -/
+theorem doorIV_coherenceSlack_baseline_bound_at_coherent_export {ι : Type*}
+    {mass coh : ι → ℝ} {g : ℝ → ℝ}
+    (hb : CoherenceSlackBoundWithBaseline mass coh g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ g 0 :=
+  slack_bound_withBaseline_at_coherent hb hcoh
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Affine slack collapses to its additive
+baseline at full coherence; a `1 - ρ` penalty contributes nothing where `ρ = 1`. -/
+theorem doorIV_affineCoherenceSlack_baseline_bound_at_coherent_export {ι : Type*}
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    (hb : AffineCoherenceSlackBound mass coh B g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ B :=
+  affineSlack_bound_at_coherent hb hcoh
+
+/-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Multiplicative slack collapses to its
+baseline at full coherence; a normalized ratio factor cannot damp the coherent worst frequency. -/
+theorem doorIV_multiplicativeCoherenceSlack_baseline_bound_at_coherent_export {ι : Type*}
+    {mass coh : ι → ℝ} {B : ℝ} {g : ℝ → ℝ}
+    (hb : MultiplicativeCoherenceSlackBound mass coh B g) {i : ι} (hcoh : coh i = 1) :
+    mass i ≤ B :=
+  multiplicativeSlack_bound_at_coherent hb hcoh
+
 /-- **[obstruction, DoorIVCoherenceSlackVacuousAtArgmax]** Finite observed-argmax baseline form:
 when the coherent argmax has peak mass above `g 0`, a baseline slack certificate cannot hold. -/
 theorem doorIV_no_coherenceSlackWithBaseline_finsetArgmax_export {ι : Type*}
@@ -4317,6 +4350,10 @@ theorem doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export {ι : Type*}
   no_multiplicativeCoherenceSlackBound_of_small_baseline_finsetArgmax
     hbs hmax hcoh hsmall
 
+#print axioms doorIV_coherenceSlack_vanishing_bound_at_coherent_export
+#print axioms doorIV_coherenceSlack_baseline_bound_at_coherent_export
+#print axioms doorIV_affineCoherenceSlack_baseline_bound_at_coherent_export
+#print axioms doorIV_multiplicativeCoherenceSlack_baseline_bound_at_coherent_export
 #print axioms doorIV_no_coherenceSlackWithBaseline_finsetArgmax_export
 #print axioms doorIV_no_affineCoherenceSlack_finsetArgmax_export
 #print axioms doorIV_no_multiplicativeCoherenceSlack_finsetArgmax_export
