@@ -96,6 +96,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuo
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCommonRayCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVSectorCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
@@ -5869,6 +5870,56 @@ theorem doorIV_transverse_resultant_frame_deficit_budget_export (zs : List ℂ) 
 #print axioms doorIV_transverse_perp_sq_le_deficit_export
 #print axioms doorIV_transverse_resultant_frame_perp_sum_zero_export
 #print axioms doorIV_transverse_resultant_frame_deficit_budget_export
+
+/-- **[Lane 1 sector-coherence obligation]** If every phase piece remains in a sector whose
+projection floor is `c` along a fixed unit direction, then the list coherence is at least `c`.
+Consequently, any door-(iv) coherence saving must prove genuine sector escape, not just subdivision
+or common-ray bookkeeping. -/
+theorem doorIV_sector_floor_le_coherence_export {zs : List ℂ} {u : ℂ} {c : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hproj : ∀ z ∈ zs,
+      c * ‖z‖ ≤ _root_.ProximityGap.Frontier.DoorIVSectorCoherence.rayProj u z) :
+    c ≤ _root_.ProximityGap.Frontier.DoorIVSectorCoherence.complexPieceCoherence zs :=
+  _root_.ProximityGap.Frontier.DoorIVSectorCoherence.sector_floor_le_complexPieceCoherence
+    hu hden hproj
+
+/-- **[Lane 1 sector-coherence obligation]** A claimed bound `ρ ≤ θ` with `θ < c` forces at least
+one piece to leave every unit-direction sector of floor `c`. This is the precise consumer form of
+the sector obstruction. -/
+theorem doorIV_sector_escape_of_coherence_le_export {zs : List ℂ} {u : ℂ} {c θ : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hcoh : _root_.ProximityGap.Frontier.DoorIVSectorCoherence.complexPieceCoherence zs ≤ θ)
+    (hθ : θ < c) :
+    ∃ z ∈ zs, _root_.ProximityGap.Frontier.DoorIVSectorCoherence.rayProj u z < c * ‖z‖ :=
+  _root_.ProximityGap.Frontier.DoorIVSectorCoherence.exists_piece_rayProj_lt_of_complexPieceCoherence_le
+    hu hden hcoh hθ
+
+/-- **[Lane 1 aggregate angular budget]** Any `ρ ≤ 1 - ε` coherence drop forces at least an
+`ε`-fraction of the total `L¹` mass to appear as aggregate ray-projection deficit in every unit
+direction. This is a budget identity/obligation only, not a cancellation theorem. -/
+theorem doorIV_sector_aggregate_deficit_budget_export {zs : List ℂ} {u : ℂ} {ε : ℝ}
+    (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hcoh : _root_.ProximityGap.Frontier.DoorIVSectorCoherence.complexPieceCoherence zs ≤ 1 - ε) :
+    ε * (zs.map norm).sum ≤
+      (zs.map (fun z => ‖z‖ - _root_.ProximityGap.Frontier.DoorIVSectorCoherence.rayProj u z)).sum :=
+  _root_.ProximityGap.Frontier.DoorIVSectorCoherence.aggregate_rayProj_deficit_ge_eps_of_complexPieceCoherence_le_one_sub
+    hu hden hcoh
+
+/-- **[Lane 1 aggregate angular budget]** Contrapositive: if some unit direction has aggregate
+projection deficit below the `ε · L¹` budget, then the pieces cannot certify `ρ ≤ 1 - ε`. This pins
+the exact missing angular-spread input for door-(iv). -/
+theorem doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export {zs : List ℂ} {u : ℂ}
+    {ε : ℝ} (hu : ‖u‖ = 1) (hden : 0 < (zs.map norm).sum)
+    (hdef : (zs.map (fun z => ‖z‖ - _root_.ProximityGap.Frontier.DoorIVSectorCoherence.rayProj u z)).sum <
+      ε * (zs.map norm).sum) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVSectorCoherence.complexPieceCoherence zs ≤ 1 - ε :=
+  _root_.ProximityGap.Frontier.DoorIVSectorCoherence.not_complexPieceCoherence_le_one_sub_of_aggregate_rayProj_deficit_lt
+    hu hden hdef
+
+#print axioms doorIV_sector_floor_le_coherence_export
+#print axioms doorIV_sector_escape_of_coherence_le_export
+#print axioms doorIV_sector_aggregate_deficit_budget_export
+#print axioms doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification

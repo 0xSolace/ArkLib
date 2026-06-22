@@ -19139,3 +19139,20 @@ Formal exports: `doorIV_commonRay_coherence_eq_one_export`,
 `doorIV_transverse_resultant_frame_perp_sum_zero_export`, and
 `doorIV_transverse_resultant_frame_deficit_budget_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-sector-coherence-indexed] sector escape and aggregate projection-deficit budget exported (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1 coherence-budget constraint. Indexed `_DoorIVSectorCoherence.lean` into
+`CampaignProvenIndex`.
+
+VERDICT: a strict worst-frequency coherence drop cannot be obtained by naming sectors or by further
+subdividing phase pieces. If all pieces have projection floor `c` in one unit direction, coherence is
+at least `c`; conversely a `ρ ≤ θ < c` certificate forces a concrete sector-escape piece. In aggregate,
+`ρ ≤ 1-ε` forces at least `ε·L¹` total ray-projection deficit in every unit direction, and any smaller
+deficit refutes the claimed drop. This is a budget/obligation statement only, not CORE,
+anti-concentration, completion, moment, or capacity.
+
+Formal exports: `doorIV_sector_floor_le_coherence_export`,
+`doorIV_sector_escape_of_coherence_le_export`, `doorIV_sector_aggregate_deficit_budget_export`, and
+`doorIV_sector_not_coherence_le_one_sub_of_deficit_short_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
