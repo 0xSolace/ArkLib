@@ -133,16 +133,21 @@ theorem floorBad32_matches_smallestPrime :
 
 /-! ## The uniform-in-μ statement and the Linnik closure (named open Props) -/
 
-/-- The realizability oracle: `FloorBad n p` means prime `p ≡ 1 mod n` is floor-bad (some
-adjacent 7th-type pattern realizable over `F_p`). Left abstract here (its concrete content is the
-`F_p`-rank computation of KB §1); the localization route is about WHICH `p` satisfy it. -/
-opaque FloorBad : ℕ → ℕ → Prop
+/- The realizability oracle `FloorBad : ℕ → ℕ → Prop`: `FloorBad n p` means prime `p ≡ 1 mod n` is
+floor-bad (some adjacent 7th-type pattern realizable over `F_p`). It is left abstract — introduced as
+an EXPLICIT predicate PARAMETER of the statements below, NOT a bodyless `opaque`. Every result is
+proven *for an arbitrary* such predicate, so nothing is asserted to exist with magic content (a
+bodyless `opaque` would axiom-launder an unproven inhabitant of `ℕ → ℕ → Prop`, which CI rightly
+rejects). Quantifying over `FloorBad` is strictly more honest and equally usable: the conditional
+closure `floor_closes_by_linnik` holds whatever the concrete realizability predicate turns out to be
+(its concrete content is the `F_p`-rank computation of KB §1). -/
 
 /-- **OPEN (uniform-in-μ characterization).** For all `a ≥ 4`, with `n = 2^a`, the floor-bad
-primes are exactly the singleton smallest prime `≡ 1 mod n`. This is the genuinely-off-BGK
-conjecture: it is a 0-dimensional / height statement on a fixed cyclotomic resultant, NOT a
-character sum. Proven `a=4` (`floor_closed_n16`); `a=5` numerically supported (`{97}`). -/
-def FloorLocalizationUniform : Prop :=
+primes (per the abstract predicate `FloorBad`) are exactly the singleton smallest prime `≡ 1 mod n`.
+This is the genuinely-off-BGK conjecture: it is a 0-dimensional / height statement on a fixed
+cyclotomic resultant, NOT a character sum. Proven `a=4` (`floor_closed_n16`); `a=5` numerically
+supported (`{97}`). -/
+def FloorLocalizationUniform (FloorBad : ℕ → ℕ → Prop) : Prop :=
   ∀ a : ℕ, 4 ≤ a → ∀ p : ℕ, p.Prime → p % (2 ^ a) = 1 →
     (FloorBad (2 ^ a) p ↔ p = smallestPrime1ModN (2 ^ a) (2 ^ (5 * a)))
 
@@ -161,7 +166,8 @@ genuinely off the BGK wall — the dossier §9 actionable target.
 The proof: a prize prime `p ≥ n^4 > smallestPrime` (Linnik) cannot equal the smallest prime, so
 by the uniform characterization it is not floor-bad. -/
 theorem floor_closes_by_linnik
-    (hUnif : FloorLocalizationUniform) (hLinnik : LinnikLeastPrimeBelowPrize)
+    (FloorBad : ℕ → ℕ → Prop)
+    (hUnif : FloorLocalizationUniform FloorBad) (hLinnik : LinnikLeastPrimeBelowPrize)
     (a : ℕ) (ha : 4 ≤ a) (p : ℕ) (hp : p.Prime) (hmod : p % (2 ^ a) = 1)
     (hprize : (2 ^ a) ^ 4 ≤ p) :
     ¬ FloorBad (2 ^ a) p := by
@@ -186,10 +192,10 @@ this is the genuinely off-BGK route. -/
 theorem floor_localization_capstone :
     (FloorBadIsSmallestPrime 16 100 floorBad16
       ∧ smallestPrime1ModN 16 100 = 17 ∧ (17 : ℕ) < 16 ^ 4)
-    ∧ (FloorLocalizationUniform → LinnikLeastPrimeBelowPrize →
+    ∧ (∀ FloorBad : ℕ → ℕ → Prop, FloorLocalizationUniform FloorBad → LinnikLeastPrimeBelowPrize →
         ∀ a : ℕ, 4 ≤ a → ∀ p : ℕ, p.Prime → p % (2 ^ a) = 1 → (2 ^ a) ^ 4 ≤ p →
           ¬ FloorBad (2 ^ a) p) := by
-  exact ⟨floor_closed_n16, fun hU hL => floor_closes_by_linnik hU hL⟩
+  exact ⟨floor_closed_n16, fun FB hU hL => floor_closes_by_linnik FB hU hL⟩
 
 -- Axiom audits (must show only [propext, Classical.choice, Quot.sound]).
 #print axioms floorBad16_isSmallestPrime

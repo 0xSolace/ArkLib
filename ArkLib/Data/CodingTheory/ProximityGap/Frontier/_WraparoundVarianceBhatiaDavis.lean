@@ -415,15 +415,18 @@ end ArkLib.ProximityGap.Frontier.HermiteRecurrence
 
 namespace ArkLib.ProximityGap.Frontier.SpectralVariance
 
-/-- **`residual_note`** — the EXACT residual.  This file pins the variance of the squared periods
-over the FREQUENCY index `b` exactly (closed form, no open input), and gives the Bhatia–Davis floor
-`M² ≥ meanA + SpectralVar/meanA` (`= 3n` asymptotically, `M ≥ √3√n`).  This is the LOWER side of
-Face V and is unconditional.  It does NOT bound the wraparound `W_r` at depth `r ≈ log p` — that is
-the variance over the PRIME family (`_CreateWraparoundVariance.OffDiagonalPairCancellation`,
-the open Sato–Tate pair-equidistribution).  The frequency-index variance is a SECOND moment (`r=2`),
-the prize needs the depth-`log p` moment.  This is recorded as a `True` placeholder so the file's
-honesty is machine-witnessed (no false closure claim). -/
-theorem residual_note : True := trivial
+/- **Residual note (the EXACT residual, recorded as documentation only — NOT a theorem).**
+This file pins the variance of the squared periods over the FREQUENCY index `b` exactly (closed form,
+no open input), and gives the Bhatia–Davis floor `M² ≥ meanA + SpectralVar/meanA` (`= 3n` asymptotically,
+`M ≥ √3√n`) — the LOWER side of Face V, unconditional, witnessed by the proven `specVar_eq_centered`,
+`specVar_nonneg`, `bhatiaDavis`, `max_ge_mean_add_var_div`, `specMean_eta_eq` below. It does NOT bound
+the wraparound `W_r` at depth `r ≈ log p` — that is the variance over the PRIME family
+(`_CreateWraparoundVariance.OffDiagonalPairCancellation`, the open Sato–Tate pair-equidistribution).
+The frequency-index variance is a SECOND moment (`r=2`); the prize needs the depth-`log p` moment.
+The honesty is machine-witnessed by the real `#print axioms` of the actual theorems listed above; a
+vacuous placeholder declaration proving only the trivial proposition would say nothing about the named
+obligation (an axiom-laundering pattern the repo forbids), so the residual is recorded as this comment
+instead, per the repo's no-placebo contract. -/
 
 end ArkLib.ProximityGap.Frontier.SpectralVariance
 
