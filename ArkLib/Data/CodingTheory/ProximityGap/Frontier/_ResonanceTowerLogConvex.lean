@@ -179,9 +179,37 @@ theorem resonanceMoment_ratio_monotone (u : ZMod m → ℂ) (hu : ∀ l : ZMod m
   -- goal: T(r+1) * T(r+1) ≤ T(r+2) * T r, exactly log-convexity reassociated
   nlinarith [hlc]
 
+/-- **Parseval-floor lower bound for every resonance growth ratio.**
+For unit phases and `m ≥ 2`, every consecutive ratio of the named door-(iv) tower is at least the
+forced spectral mean `m−1`:
+`(m−1) ≤ T(r+1)/T(r)`.  This is the Chebyshev lower step with the positive denominator cleared.
+Together with `resonanceMoment_ratio_monotone`, it says the whole ratio ladder is monotone and never
+has a below-Parseval interior dip; any prize-saving input must lower the global geometric scale, not
+manufacture a local cheap rung. -/
+theorem resonanceMoment_ratio_floor (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) :
+    ((m : ℝ) - 1) ≤ resonanceMoment u (r + 1) / resonanceMoment u r := by
+  have hT : 0 < resonanceMoment u r := resonanceMoment_pos u hu hm r
+  have hstep : ((m : ℝ) - 1) * resonanceMoment u r ≤ resonanceMoment u (r + 1) :=
+    resonanceMoment_succ_ge u hu r
+  rw [le_div_iff₀ hT]
+  simpa [mul_comm] using hstep
+
+/-- **No below-floor ratio dip.**
+A direct constraint form of `resonanceMoment_ratio_floor`: no unit-phase resonance tower in the
+`m ≥ 2` door-(iv) regime can have a consecutive growth ratio strictly below the Parseval floor `m−1`.
+This is a refuted-lever guard against any proposed proof that relies on an anomalously cheap local
+moment rung. -/
+theorem not_resonanceMoment_ratio_lt_floor (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) :
+    ¬ resonanceMoment u (r + 1) / resonanceMoment u r < ((m : ℝ) - 1) := by
+  exact not_lt_of_ge (resonanceMoment_ratio_floor u hu hm r)
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.spectral_powerSum_sq_le_mul
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_sq_le_mul_succ_succ
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_monotone
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_floor
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.not_resonanceMoment_ratio_lt_floor

@@ -167,6 +167,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRec
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceOffDiagSpikeCost
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceTowerLogConvex
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -7560,6 +7561,31 @@ theorem doorIV_resonance_spike_count_eq_zero_of_offDiag_two_re_lt_sq_export
               (ArkLib.ProximityGap.GaussPhaseResonance.dftChar k) u‖ ^ 2)).card = 0 :=
   ArkLib.ProximityGap.GaussPhaseResonance.spike_count_eq_zero_of_offDiag_two_re_lt_sq
     u hu d hd hsmall
+
+/-- **[Lane 3 resonance tower shape]** Every consecutive growth ratio of the named door-(iv)
+resonance tower is at least the Parseval floor `m−1`: `(m−1) ≤ T(r+1)/T(r)`.  This pins the
+Chebyshev lower step directly at the ratio level used by the log-convex tower: no proof can obtain
+a prize-scale saving from a local below-floor rung. -/
+theorem doorIV_resonance_ratio_floor_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) :
+    ((m : ℝ) - 1) ≤
+      ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u (r + 1) /
+        ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r :=
+  ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment_ratio_floor u hu hm r
+
+/-- **[Lane 3 resonance tower shape]** No unit-phase resonance tower in the `m ≥ 2` regime can have
+a consecutive growth ratio strictly below the Parseval floor `m−1`.  Constraint form of the ratio
+floor, useful as a refuted-lever guard against proposed cheap local tower dips. -/
+theorem doorIV_not_resonance_ratio_lt_floor_export
+    {m : ℕ} [NeZero m] (u : ZMod m → ℂ) (hu : ∀ l : ZMod m, ‖u l‖ = 1)
+    (hm : 2 ≤ m) (r : ℕ) :
+    ¬ ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u (r + 1) /
+        ArkLib.ProximityGap.GaussPhaseResonance.resonanceMoment u r < ((m : ℝ) - 1) :=
+  ArkLib.ProximityGap.GaussPhaseResonance.not_resonanceMoment_ratio_lt_floor u hu hm r
+
+#print axioms doorIV_resonance_ratio_floor_export
+#print axioms doorIV_not_resonance_ratio_lt_floor_export
 
 /-- **[Lane 3 resonance two-sided off-diagonal constraint]** A one-step squared-spectrum dip `d`
 below the Parseval mean also forces `d² ≤ m · Re Off(2)`.  Near-flatness must therefore control
