@@ -127,6 +127,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCirc
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstCosetIndexUnstructured
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexMultGeneric
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExtreme
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5615,5 +5616,52 @@ theorem doorIV_dilate_pinned_between_marginal_and_surrogate_export {H I Smax : �
 #print axioms doorIV_twoDilate_no_copeak_recursion_export
 #print axioms doorIV_dilate_le_surrogate_le_two_max_export
 #print axioms doorIV_dilate_pinned_between_marginal_and_surrogate_export
+
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** If the upper segment of the dyadic coherence
+product is fully coherent, its factors are all `1`, so the whole product collapses to the bottom
+segment alone. Upper coherent levels provide no damping. -/
+theorem doorIV_tower_product_collapses_to_bottom_export (upper bottom : List ℝ)
+    (hupper : ∀ r ∈ upper, r = 1) :
+    (upper ++ bottom).prod = bottom.prod :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.product_collapses_to_bottom
+    upper bottom hupper
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** With a coherent upper tower and a uniform
+bottom-factor floor `c`, the full tower product is bounded below by `c ^ bottom.length`. Thus all
+possible damping lives in the bottom segment. -/
+theorem doorIV_tower_product_ge_bottom_floor_export (upper bottom : List ℝ) {c : ℝ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc : 0 ≤ c)
+    (hbottom : ∀ r ∈ bottom, c ≤ r) :
+    c ^ bottom.length ≤ (upper ++ bottom).prod :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_bottom_floor
+    upper bottom hupper hc hbottom
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** A fixed-width bottom slack zone gives only a
+fixed-width floor: if the nontrivial bottom segment has length at most `K` and all its factors are at
+least `c ∈ [0,1]`, then the full product is still at least `c^K`, independent of the upper tower
+height. This blocks logarithmic-in-`n` damping from a fully coherent upper tower. -/
+theorem doorIV_tower_product_ge_fixed_width_floor_export (upper bottom : List ℝ) {c : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (hlen : bottom.length ≤ K) (hbottom : ∀ r ∈ bottom, c ≤ r) :
+    c ^ K ≤ (upper ++ bottom).prod :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.tower_product_ge_fixed_width_floor
+    upper bottom hupper hc0 hc1 hlen hbottom
+
+/-- **[Lane 1/3 dyadic coherence-tower obstruction]** Any claimed coherence-product target below the
+fixed floor `c^K` forces an escape from the observed fixed-width-bottom model: either the bottom segment
+has more than `K` nontrivial levels, or some bottom factor is below `c`. No CORE or capacity claim. -/
+theorem doorIV_below_floor_target_forces_width_or_floor_break_export
+    (upper bottom : List ℝ) {c θ : ℝ} {K : ℕ}
+    (hupper : ∀ r ∈ upper, r = 1) (hc0 : 0 ≤ c) (hc1 : c ≤ 1)
+    (htarget : (upper ++ bottom).prod ≤ θ) (hbelow : θ < c ^ K) :
+    K < bottom.length ∨ ∃ r ∈ bottom, r < c :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVCoherenceTowerCollapse.below_floor_target_forces_width_or_floor_break
+    upper bottom hupper hc0 hc1 htarget hbelow
+
+#print axioms doorIV_tower_product_collapses_to_bottom_export
+#print axioms doorIV_tower_product_ge_bottom_floor_export
+#print axioms doorIV_tower_product_ge_fixed_width_floor_export
+#print axioms doorIV_below_floor_target_forces_width_or_floor_break_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

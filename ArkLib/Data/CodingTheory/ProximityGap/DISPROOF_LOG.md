@@ -19030,3 +19030,11 @@ Lane: door-(iv) Lane 1/3 constraint consolidation for `_DoorIVTwoDilateNoJointEx
 VERDICT: the dilation coupling is pinned between the marginal sub-period envelope and a structureless surrogate. It cannot provide either a recursive co-peak transfer or a new anti-concentration saving below the marginal `Smax`; the burden returns to the marginal Gauss-period wall. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
 
 Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_twoDilate_le_two_mul_max_export`, `doorIV_twoDilate_no_copeak_recursion_export`, `doorIV_dilate_le_surrogate_le_two_max_export`, and `doorIV_dilate_pinned_between_marginal_and_surrogate_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-coherence-tower-collapse-indexed] permanent exports for fixed-width bottom slack obstruction (2026-06-21, g55)
+
+Lane: door-(iv) Lane 1/3 constraint consolidation for `_DoorIVCoherenceTowerCollapse`. The dyadic phase-alignment recursion hoped to multiply small coherence deficits through `log n` levels. The probe found the opposite at the adversarial frequency: the upper tower is fully coherent and all nontrivial slack is confined to a bottom segment.
+
+VERDICT: fully coherent upper levels contribute product factor exactly `1`; the whole coherence product collapses to the bottom segment. If that bottom segment has fixed width `K` and factors bounded below by `c`, the full product is bounded below by `c^K`, independent of tower height. Therefore any below-floor/logarithmic damping target must prove either a growing number of noncoherent levels or shrinking bottom factors. No CORE upper bound, cancellation, completion, moment-saving, anti-concentration, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/CampaignProvenIndex.lean`, new exports `doorIV_tower_product_collapses_to_bottom_export`, `doorIV_tower_product_ge_bottom_floor_export`, `doorIV_tower_product_ge_fixed_width_floor_export`, and `doorIV_below_floor_target_forces_width_or_floor_break_export`, axiom-clean with axioms contained in `{propext, Classical.choice, Quot.sound}`.
