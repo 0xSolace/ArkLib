@@ -7178,6 +7178,7 @@ theorem doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
 
 #print axioms doorIV_worstB_imbalance_stationary_band_endpoint_gap_export
 
+
 /-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** At any coherent `k`-piece
 dyadic partition, if `i₀` is a heaviest piece `H` and every other piece still carries at least
 `rlo·H`, then the aggregate exceeds the single-piece endpoint by at least `(k-1)·rlo·H`, expressed as
@@ -7216,6 +7217,36 @@ by
     hcoh hi₀ hH hrlo hHpos htwo hlb hub hi₁ hstrict
 
 #print axioms doorIV_worstB_partition_depth_inflation_ratio_strictly_between_export
+
+/-- **[obstruction, DoorIVWorstBPartitionDepthBand — door-(iv) Lane-1/3]** For a coherent `k`-piece
+coset partition, the surplus over a certified heaviest piece is exactly the tail mass after erasing
+that piece, and any lower band on the tail forces a literal `(k-1)·rlo·H` surplus. This is the
+partition-depth version of the stationary-band endpoint gap: dyadic refinement gives no hidden
+anti-concentration beyond the mass already present in the non-heaviest tail. No CORE / cancellation /
+completion / moment / capacity claim; CORE remains OPEN. -/
+theorem doorIV_partitionDepth_tail_slack_budget_export
+    {ι E : Type*} [DecidableEq ι] [SeminormedAddCommGroup E]
+    {s : Finset ι} {Q : ι → E} {H rlo : ℝ} {i₀ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s)
+    (hH : ‖Q i₀‖ = H) (hlb_tail : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖) :
+    (‖∑ i ∈ s, Q i‖ - H = ∑ i ∈ s.erase i₀, ‖Q i‖) ∧
+      ((s.card - 1 : ℕ) : ℝ) * (rlo * H) ≤ ‖∑ i ∈ s, Q i‖ - H := by
+  have htail : ‖∑ i ∈ s, Q i‖ - H = ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+    rw [hcoh]
+    have hsplit : (∑ i ∈ s, ‖Q i‖) = ‖Q i₀‖ + ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+      rw [← Finset.sum_erase_add s _ hi₀]; ring
+    rw [hsplit, hH]
+    ring
+  refine ⟨htail, ?_⟩
+  rw [htail]
+  calc
+    ((s.card - 1 : ℕ) : ℝ) * (rlo * H)
+        = ((s.erase i₀).card : ℝ) * (rlo * H) := by
+          rw [Finset.card_erase_of_mem hi₀]
+    _ = ∑ _i ∈ s.erase i₀, rlo * H := by rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb_tail
+
+#print axioms doorIV_partitionDepth_tail_slack_budget_export
 
 
 /-! **[obstruction, DoorIVGreedyHeavierHalfDescent — door-(iv) Lane-1/3]** The greedy heavier-half

@@ -155,6 +155,7 @@ theorem strictly_between_single_and_ceiling [DecidableEq ι] {s : Finset ι} {Q 
   ⟨max_lt_norm_of_lower_band hcoh hi₀ hH hrlo hHpos htwo hlb,
    norm_lt_card_mul_max hcoh hub hi₁ hstrict⟩
 
+
 /-- **Inflation-ratio sandwich.**  Dividing the partition-depth band by the positive heaviest-piece
 norm `H` gives the exact probe quantity `F_k = M/H`: it lies strictly between `1` and `|s|`.  Thus the
 coherent `k`-piece split is a bounded interior reshuffle at that refinement depth, neither a
@@ -178,9 +179,40 @@ theorem one_lt_norm_div_max_and_norm_div_max_lt_card [DecidableEq ι] {s : Finse
       field_simp [ne_of_gt hHpos]
     simpa [hcard] using hlt
 
+/-- **Exact slack over the heaviest piece.**  At coherence, after removing a certified heaviest piece
+`i₀` with norm `H`, the surplus over the heaviest is exactly the sum of all remaining piece-norms.
+This is the kernel accounting identity behind the partition-depth obstruction: every claimed dyadic
+refinement gain must live in the non-heaviest tail, not in the coherent recombination itself. -/
+theorem norm_sub_max_eq_sum_erase [DecidableEq ι] {s : Finset ι} {Q : ι → E} {H : ℝ} {i₀ : ι}
+    (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s) (hH : ‖Q i₀‖ = H) :
+    ‖∑ i ∈ s, Q i‖ - H = ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+  rw [hcoh]
+  have hsplit : (∑ i ∈ s, ‖Q i‖) = ‖Q i₀‖ + ∑ i ∈ s.erase i₀, ‖Q i‖ := by
+    rw [← Finset.sum_erase_add s _ hi₀]; ring
+  rw [hsplit, hH]
+  ring
+
+/-- **Lower-band tail mass.**  If every non-heaviest piece carries at least `rlo·H`, then the surplus
+over the heaviest is at least `(k-1)·rlo·H`.  Thus a coherent `k`-piece split can avoid single-piece
+collapse only by paying a literal tail-mass budget; the refinement depth itself supplies no hidden
+anti-concentration. -/
+theorem lower_band_slack_over_heaviest_ge [DecidableEq ι] {s : Finset ι} {Q : ι → E} {H rlo : ℝ}
+    {i₀ : ι} (hcoh : ‖∑ i ∈ s, Q i‖ = ∑ i ∈ s, ‖Q i‖) (hi₀ : i₀ ∈ s)
+    (hH : ‖Q i₀‖ = H) (hlb_tail : ∀ i ∈ s.erase i₀, rlo * H ≤ ‖Q i‖) :
+    ((s.card - 1 : ℕ) : ℝ) * (rlo * H) ≤ ‖∑ i ∈ s, Q i‖ - H := by
+  rw [norm_sub_max_eq_sum_erase hcoh hi₀ hH]
+  calc
+    ((s.card - 1 : ℕ) : ℝ) * (rlo * H)
+        = ((s.erase i₀).card : ℝ) * (rlo * H) := by
+          rw [Finset.card_erase_of_mem hi₀]
+    _ = ∑ _i ∈ s.erase i₀, rlo * H := by rw [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ ∑ i ∈ s.erase i₀, ‖Q i‖ := Finset.sum_le_sum hlb_tail
+
 end ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand
 
 -- Axiom audit (must be ⊆ {propext, Classical.choice, Quot.sound}).
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.lower_band_slack_over_heaviest_ge
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_sub_max_eq_sum_erase
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.strictly_between_single_and_ceiling
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.max_lt_norm_of_lower_band
 #print axioms ArkLib.ProximityGap.Frontier.DoorIVWorstBPartitionDepthBand.norm_lt_card_mul_max

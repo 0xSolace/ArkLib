@@ -12423,6 +12423,7 @@ new theorems `zeroSumCount_eq_zero_of_deviation_lt_two_q` and
 `doorIV_signedDeep_eq_floor_of_deviation_lt_two_q_export`, axiom-clean with axioms contained in
 `{propext, Classical.choice, Quot.sound}`.
 
+
 ## [doorIV-worstb-perlevel-growth-floor] per-level wall growth has a (1+r_lo)(1-ε) FLOOR > √2 — the √-wall does not thin down the tower (2026-06-22, sol opus-4-8)
 
 Lane: door-(iv) Lane-1. Ties the worst-b coherent-imbalance band [doorIV-worstb-imbalance-stationary-band]
@@ -12555,6 +12556,7 @@ NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim
 Trilogy complete: worst-b gap VALUE (n/2+1), CURVATURE (maximal n), SPECTRUM (full n-1) — all
 dilation/wrong-direction ⟹ no exploitable gap-combinatorial lever at the adversarial frequency.
 
+
 ## [doorIV-worstb-gap-no-long-run] worst-b gap sequence has NO long monotone run — local near-AP lever dead (2026-06-22, sol opus-4-8)
 
 Lane: door-(iv) Lane 1, closing the worst-b gap-complexity survey. After gap-VALUE (n/2+1),
@@ -12581,3 +12583,22 @@ anti-concentration, or capacity claim. CORE stays OPEN.
 SURVEY COMPLETE: worst-b gap VALUE (n/2+1) / CURVATURE (maximal n) / SPECTRUM (full n-1) / LOCAL RUN
 (O(1)) are ALL generic or wrong-direction at b* => the entire gap-combinatorial face of door-(iv) Lane-1
 carries no exploitable non-energy structure at the adversarial frequency.
+
+## [doorIV-partition-depth-tail-slack-budget] coherent k-piece surplus is exactly tail mass (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 extension of `_DoorIVWorstBPartitionDepthBand`. The partition-depth kernel
+already showed a coherent k-piece worst-b split sits strictly between the single heaviest piece and the
+balanced `k·H` ceiling under a stationary band. This refinement names the exact tail-budget identity:
+after erasing a certified heaviest piece `i₀` with norm `H`, the surplus over `H` is exactly the sum of
+all remaining piece norms, and a lower band on those remaining pieces forces
+`(k-1)·rlo·H ≤ ‖ΣQ_i‖ - H`.
+
+VERDICT: dyadic refinement does not create hidden anti-concentration. Every unit of slack above the
+heaviest piece is paid literally by non-heaviest tail mass. Thus a coherent partition-depth lever can
+only be an O(1) reshuffle of existing mass; it cannot manufacture a sqrt-thinning/cancellation gain.
+No CORE, cancellation, completion, moment-saving, anti-concentration theorem, or capacity claim.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVWorstBPartitionDepthBand.lean`,
+new theorems `norm_sub_max_eq_sum_erase` and `lower_band_slack_over_heaviest_ge`; permanent export
+`doorIV_partitionDepth_tail_slack_budget_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.
