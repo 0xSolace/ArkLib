@@ -11560,3 +11560,25 @@ axiom-clean. Theorems `credit_pos_of_budget_of_wrap_pos`, `wrap_ne_zero_of_onset
 `budget_not_via_wrap_zero`, `wrap_zero_budget_iff_credit_nonneg`,
 `credit_strictly_exceeds_wrap_of_margin`, `saddle_target_is_budget_not_vanishing`. Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [onset-to-saddle-credit-chain] onset-pigeonhole ⟹ the saddle must spend a strictly-positive credit (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2/3 reduction chain wiring the two freshest W_r bricks into ONE citable chain.
+ONSET side (`_A2OnsetLatticeMinimum`, Shaw ef3305f3f): `not_onsetSavesSaddle_of_card_gt` proves that
+once the ℓ¹-ball of short relations outgrows p below the saddle (p < S.card, weight ≤ w ≤ r),
+`OnsetSavesSaddle m g r` is FALSE (a nonzero short lattice relation of weight ≤ 2r exists). SADDLE
+side (`_WraparoundSaddleCreditForced`, 5e027e702): `credit_pos_of_budget_of_wrap_pos` proves a positive
+wraparound mass forces the budget credit strictly positive. The missing rung was the count-positivity
+bridge `¬OnsetSavesSaddle ⟹ 0 < W`, carried here as an EXPLICIT hypothesis `WraparoundCountPositive`
+(never larped: the exact W = lattice-point-count identity lives in the DC-moment file).
+
+VERDICT (chain): p < S.card ⟹ ¬OnsetSavesSaddle ⟹ 0 < W ⟹ (budget pp·W ≤ credit) ⟹ 0 < credit, all
+kernel-checked. At prize scale the saddle is FORCED past onset (Shaw's lattice pigeonhole) AND the
+prize moment bound can never be discharged by a vanishing credit (saddle side) — one chain. No CORE
+upper bound, cancellation, completion, anti-concentration, or capacity claim; the single arithmetic
+rung is an explicit hypothesis. CORE (the open budget inequality on a positive W) remains open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OnsetToSaddleCreditChain.lean`,
+axiom-clean. Theorems `wrap_pos_of_pigeonhole`, `credit_pos_of_pigeonhole_chain`,
+`saddle_forced_past_onset_spends_credit`; def `WraparoundCountPositive`. Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
