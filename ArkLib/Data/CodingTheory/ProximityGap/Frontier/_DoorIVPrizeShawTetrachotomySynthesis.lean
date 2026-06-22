@@ -167,6 +167,21 @@ theorem prizeFloorBound_iff_floorPrizeRatio_le {M n C : ℝ} (hn : 0 < n) :
   unfold floorPrizeRatio
   rw [div_le_iff₀ (NoFifthDoorTetrachotomy.prizeScale_pos hn), mul_comm]
 
+/-- **Any floor-scale prize constant must be at least one.**  In `√n` units the Plancherel
+floor is the hard baseline: if `√n ≤ M` and also `M ≤ K√n`, then necessarily `1 ≤ K`.  Thus a
+floor-normalized certificate cannot have a sub-unit constant; all remaining work is to keep the
+constant bounded above, not to push the floor below `1`. -/
+theorem one_le_prizeFloorConstant_of_plancherel_floor
+    {M n K : ℝ} (hn : 0 < n)
+    (hfloor : NoFifthDoorTetrachotomy.prizeScale n ≤ M)
+    (hbound : M ≤ K * NoFifthDoorTetrachotomy.prizeScale n) :
+    1 ≤ K := by
+  have hratio_floor : 1 ≤ floorPrizeRatio M n :=
+    one_le_floorPrizeRatio_of_plancherel_floor hn hfloor
+  have hratio_bound : floorPrizeRatio M n ≤ K :=
+    (prizeFloorBound_iff_floorPrizeRatio_le hn).mp hbound
+  exact le_trans hratio_floor hratio_bound
+
 /-- **Floor-normalized synthesis.**  At the reference instance: the Plancherel floor pins the
 floor-normalized ratio at `≥ 1`, the prize-floor bound is exactly `M/√n ≤ C`, and any mechanism
 reaching the prize floor is door-(iv)-only.  One citable statement in the prize-floor `√n` units:
@@ -424,3 +439,5 @@ theorem prize_iff_shawBounded_nonneg_and_floorPrizeRatio
   exact hfloorPack nref hnfloor hq hrespAll M K hfloor
 
 end ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis
+
+#print axioms ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.one_le_prizeFloorConstant_of_plancherel_floor
