@@ -11582,3 +11582,30 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OnsetToSaddleCre
 axiom-clean. Theorems `wrap_pos_of_pigeonhole`, `credit_pos_of_pigeonhole_chain`,
 `saddle_forced_past_onset_spends_credit`; def `WraparoundCountPositive`. Axioms ⊆
 {propext, Classical.choice, Quot.sound}.
+
+## [orbit-count-wall-dichotomy] the orbit-count wall, named — the saddle dichotomy onset-saves ∨ orbit-wall-carries (2026-06-22, sol)
+
+Lane: door-(iv) Lane 2 reduction backbone. Shaw's `_A2OnsetLatticeMinimum` (ef3305f3f) names the
+surviving obligation IN PROSE ONLY: "the saddle bound must come from OrbitCountWall", where the wall
+is the per-shell orbit count ≤ Wick_r/n uniformly over the worst prime (the BGK/Paley wall). Only
+`OnsetSavesSaddle` was a kernel Prop; `OrbitCountWall` + the dichotomy were prose. This file turns
+them into kernel-checked statements.
+
+DEFS/THEOREMS: `OrbitCountWall orbitCount Wick n r := n*orbitCount r ≤ Wick r` (the per-shell wall);
+`OrbitWallImpliesSaddle` (the orbit→moment transfer, carried as EXPLICIT hypothesis — the deep-band
+orbit→moment step is itself conditional on worst-prime control = the open wall, never larped);
+`saddle_obligation_dichotomy` (the boolean backbone onset-saves ∨ ¬onset-saves);
+`saddle_bound_of_onset_fail_and_wall` (¬onset + wall + transfer ⟹ SaddleBound = "the bound must come
+from OrbitCountWall"); `pigeonhole_routes_to_orbit_wall` (Shaw's pigeonhole p<S.card ⟹ onset provably
+fails ⟹ the bound is routed entirely through the orbit wall, never onset).
+
+VERDICT: the named reduction verdict is now kernel-checked — at prize scale onset is a CONSTANT
+saving (pigeonhole), so the saddle moment bound, if it holds, comes entirely from the orbit-count
+wall. No CORE upper bound, cancellation, completion, anti-concentration, or capacity claim; the
+orbit→moment transfer is an explicit hypothesis and `OrbitCountWall` uniform over the worst prime IS
+the open core, NOT proved here. CORE remains open.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_OrbitCountWallDichotomy.lean`,
+axiom-clean. Defs `OrbitCountWall`, `OrbitWallImpliesSaddle`; theorems `saddle_obligation_dichotomy`,
+`saddle_bound_of_onset_fail_and_wall`, `pigeonhole_routes_to_orbit_wall`. Axioms ⊆
+{propext, Classical.choice, Quot.sound}.
