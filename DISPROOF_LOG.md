@@ -11796,3 +11796,24 @@ residue_delocalized_excludes_fixedPosition). New `CampaignProvenIndex` exports:
 `doorIV_worstIndex_delocalized_excludes_fixed_selector_export`,
 `doorIV_worstIndex_residueSpread_excludes_fixedPosition_export`. All axiom-clean
 `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-badset-coset-nonsidon-indexed] the worst-frequency BAD set is non-Sidon (forced additive structure) — b-side small-ball lever dead, now citable (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 3 b-SIDE constraint. The kernel `_AttackB1_BadSetCosetNonSidon.lean` (antipodal
+4-pattern ⟹ non-Sidon) existed on origin/main but was UNINDEXED. It is the b-side complement to the
+x-side phase-set dilation-invariance: where the x-side kernel kills the small-ball lever over the phase
+residues, this one kills the small-ball/Sidon lever over the FREQUENCY (bad) set itself.
+
+VERDICT (kernel-checked): the bad set `Bad_θ = {b : |η_b| ≥ θ·M}` is |η_b|-coset-constant, hence a
+UNION of multiplicative μ_n-cosets `b·μ_n`. For n even, `-1 ∈ μ_n`, so each coset is negation-symmetric
+and contains an antipodal quad `{a,-a,c,-c}` (a ≠ ±c, present once n ≥ 4). A Sidon set cannot contain
+such a quad (the coincidence `a+(-a)=0=c+(-c)` has no trivial resolution). Therefore the bad set is
+NON-SIDON with forced additive energy strictly above the Sidon baseline (probe: 1.45×–3.88× baseline,
+ratio GROWING). A b-side additive/Sidon/Littlewood-Offord-on-frequencies anti-concentration lever has
+no grip — the frequency set carries forced additive structure, exactly the multiplicative-energy object
+the moment route already saturates on. NO CORE / cancellation / completion / capacity claim. CORE OPEN.
+
+Formal kernel: `_AttackB1_BadSetCosetNonSidon.lean` (AtkB1.not_sidon_of_antipodal_quad,
+AtkB1.coset_with_two_antipodal_pairs_not_sidon). New `CampaignProvenIndex` exports:
+`doorIV_badSet_antipodal_not_sidon_export`, `doorIV_coset_two_antipodal_pairs_not_sidon_export`.
+Axiom-clean (axioms ⊆ {propext}).

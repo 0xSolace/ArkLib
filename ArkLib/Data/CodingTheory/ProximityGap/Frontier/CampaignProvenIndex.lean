@@ -116,6 +116,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._JacobiCongruencePadicPhas
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPerFrequencyLocalizationCollectiveOnly
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVPhaseSetDilationInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexDelocalized
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackB1_BadSetCosetNonSidon
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5280,5 +5281,33 @@ theorem doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
 #print axioms doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export
 #print axioms doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export
 #print axioms doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
+
+/-- **[Lane 3 b-side constraint, AttackB1 BadSetCosetNonSidon]** The worst-frequency BAD set
+`{b : |η_b| large}` is a union of negation-symmetric multiplicative `μ_n`-cosets (n even ⟹ `-1 ∈ μ_n`),
+so it contains an antipodal 4-pattern `{a,-a,c,-c}` (`a ≠ ±c`) and is therefore NOT a Sidon set: the
+additive coincidence `a+(-a)=0=c+(-c)` has no trivial resolution. Hence a b-SIDE additive (Sidon /
+Littlewood-Offord-on-frequencies) anti-concentration lever cannot grip the bad set — it carries forced
+additive structure. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_badSet_antipodal_not_sidon_export
+    {G : Type*} [AddCommGroup G] (S : Set G) (a c : G)
+    (ha : a ∈ S) (hna : -a ∈ S) (hc : c ∈ S) (hnc : -c ∈ S)
+    (hac : a ≠ c) (hanc : a ≠ -c) :
+    ¬ _root_.AtkB1.IsSidonSet S :=
+  _root_.AtkB1.not_sidon_of_antipodal_quad S a c ha hna hc hnc hac hanc
+
+/-- **[Lane 3 b-side constraint, AttackB1 BadSetCosetNonSidon]** Packaged coset form: any set carrying
+TWO genuinely-distinct negation-symmetric pairs `{a,-a}`, `{c,-c}` (`a ≠ ±c`) — exactly the structure of
+a single multiplicative coset `b·μ_n` with `n ≥ 4` — is non-Sidon. The bad set's coset structure forces
+additive energy strictly above the Sidon baseline, so no b-side small-ball/Sidon lever is available.
+NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_coset_two_antipodal_pairs_not_sidon_export
+    {G : Type*} [AddCommGroup G] (S : Set G) (a c : G)
+    (hpair_a : a ∈ S ∧ -a ∈ S) (hpair_c : c ∈ S ∧ -c ∈ S)
+    (hdiff : a ≠ c ∧ a ≠ -c) :
+    ¬ _root_.AtkB1.IsSidonSet S :=
+  _root_.AtkB1.coset_with_two_antipodal_pairs_not_sidon S a c hpair_a hpair_c hdiff
+
+#print axioms doorIV_badSet_antipodal_not_sidon_export
+#print axioms doorIV_coset_two_antipodal_pairs_not_sidon_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
