@@ -2138,6 +2138,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionDiagE
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceConvolutionOffDiagSign
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceDiagonalExtraction
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceEulerProductRefuted
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceFlatnessCriterion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceKernelSpectrumCeiling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceLogLocalizedOffDiagonal
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonanceMomentBaseCase
