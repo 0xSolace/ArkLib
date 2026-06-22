@@ -68,6 +68,25 @@ theorem kernelSpectrum_norm_cap_corridor (u : ZMod m → ℂ)
     (m : ℝ) - 1 ≤ R ^ 2 ∧ R ^ 2 ≤ 2 * (m : ℝ) * Real.log m :=
   ⟨kernelSpectrum_norm_cap_sq_ge_mean u hu hR, hRcap⟩
 
+/-- **No squared cap below the Parseval floor.**  A proposed uniform squared-spectrum cap
+`B < m - 1` contradicts the exact spectral mean.  This is the nonvacuity guard for the localized
+one-step cap: the door-(iv) theorem cannot ask for a cap below the unavoidable average. -/
+theorem not_kernelSpectrum_normSq_cap_lt_mean (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) {B : ℝ}
+    (hBlt : B < (m : ℝ) - 1) :
+    ¬ ∀ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ^ 2 ≤ B := by
+  intro hB
+  exact not_le_of_gt hBlt (kernelSpectrum_normSq_cap_ge_mean u hu hB)
+
+/-- **No norm cap whose square lies below the Parseval floor.**  In norm form, any claimed
+`‖K̂(k)‖ ≤ R` must have `m - 1 ≤ R²`; otherwise it contradicts the exact spectral mean. -/
+theorem not_kernelSpectrum_norm_cap_sq_lt_mean (u : ZMod m → ℂ)
+    (hu : ∀ l : ZMod m, ‖u l‖ = 1) {R : ℝ}
+    (hRlt : R ^ 2 < (m : ℝ) - 1) :
+    ¬ ∀ k : ZMod m, ‖kernelSpectrum (dftChar k) u‖ ≤ R := by
+  intro hR
+  exact not_le_of_gt hRlt (kernelSpectrum_norm_cap_sq_ge_mean u hu hR)
+
 end ArkLib.ProximityGap.GaussPhaseResonance
 
 -- Axiom audit: must be `{propext, Classical.choice, Quot.sound}` only.
@@ -75,3 +94,5 @@ end ArkLib.ProximityGap.GaussPhaseResonance
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum_norm_cap_sq_ge_mean
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum_normSq_cap_corridor
 #print axioms ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum_norm_cap_corridor
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.not_kernelSpectrum_normSq_cap_lt_mean
+#print axioms ArkLib.ProximityGap.GaussPhaseResonance.not_kernelSpectrum_norm_cap_sq_lt_mean
