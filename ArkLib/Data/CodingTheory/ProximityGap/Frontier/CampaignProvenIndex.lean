@@ -358,6 +358,8 @@ anything here; this index does not claim otherwise.
 | `doorIV_halfMass_eta_image_smul_eq_eta_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_eta_index_two_split_dilate_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_halfMass_norm_eta_le_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_halfMass_eq_two_dilate_export` | capstone | DoorIVHalfMassDilationForm |
+| `doorIV_halfMass_norm_eta_eq_two_dilate_of_coherent_export` | capstone | DoorIVHalfMassDilationForm |
 | `doorIV_sign_positiveMass_eq_negativeMass_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_not_all_nonneg_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
 | `doorIV_sign_exists_negative_cross_of_positiveMass_pos_export` | obstruction | DoorIVSignCocycleMassBalance |
@@ -3164,6 +3166,37 @@ theorem doorIV_halfMass_norm_eta_le_two_dilate_export
         ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.norm_eta_le_two_dilate H hg hdisj
 
+/-- **[capstone, DoorIVHalfMassDilationForm]** The index-two half-mass itself is exactly the
+sum of the same sub-period magnitude at the two dilated frequencies `b` and `g*b`.  This is the
+non-inequality identity behind the two-dilate reformulation. -/
+theorem doorIV_halfMass_eq_two_dilate_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (H : Finset F) {g b : F} (hg : g ≠ 0) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+          (H.image (fun y => g * y)) b‖ =
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+          ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.halfMass_eq_two_dilate H hg
+
+/-- **[capstone, DoorIVHalfMassDilationForm]** At a coherent two-dilate frequency the triangle
+upper bound is exact: the full period norm equals the two-dilate half-mass.  This names the equality
+case used by the worst-`b` coherence probes without asserting any CORE saving. -/
+theorem doorIV_halfMass_norm_eta_eq_two_dilate_of_coherent_export
+    {F : Type*} [Field F] [Fintype F] [DecidableEq F]
+    {ψ : AddChar F ℂ} (H : Finset F) {g b : F} (hg : g ≠ 0)
+    (hdisj : Disjoint H (H.image (fun y => g * y)))
+    (hcoh : ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b +
+        _root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ =
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖) :
+    ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ
+        (H ∪ H.image (fun y => g * y)) b‖ =
+      ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H b‖ +
+        ‖_root_.ArkLib.ProximityGap.SubgroupGaussSumSecondMoment.eta ψ H (g * b)‖ :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVHalfMassDilationForm.norm_eta_eq_two_dilate_of_coherent
+    H hg hdisj hcoh
+
 /-- **[obstruction, DoorIVSignCocycleMassBalance]** The positive same-sign/doubling cross-mass
 is exactly balanced by the negative opposite-sign/cancellation cross-mass. This is the indexed
 mass-level constraint behind the real dilation sign-cocycle: the `+` branch is not a free budget. -/
@@ -4198,6 +4231,8 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_halfMass_eta_image_smul_eq_eta_dilate_export
 #print axioms doorIV_halfMass_eta_index_two_split_dilate_export
 #print axioms doorIV_halfMass_norm_eta_le_two_dilate_export
+#print axioms doorIV_halfMass_eq_two_dilate_export
+#print axioms doorIV_halfMass_norm_eta_eq_two_dilate_of_coherent_export
 #print axioms doorIV_sign_positiveMass_eq_negativeMass_export
 #print axioms doorIV_sign_not_all_nonneg_of_positiveMass_pos_export
 #print axioms doorIV_sign_exists_negative_cross_of_positiveMass_pos_export
