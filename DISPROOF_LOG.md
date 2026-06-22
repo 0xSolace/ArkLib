@@ -12052,3 +12052,26 @@ Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_FloorBadRamifica
 theorem `floorBad_disjoint_from_ramification`; indexed as
 `CampaignProvenIndex.floorBad_disjoint_from_defect_ramification_export`. Axiom-clean with axioms
 contained in `{propext, Classical.choice, Quot.sound}`.
+
+## [doorIV-commonray-cosethalf-transverse-indexed] common-ray saturation and transverse-spread budgets are permanent exports (2026-06-22, g55)
+
+Lane: door-(iv) Lane 1/3 constraint indexing. Indexed existing axiom-clean kernels
+`_DoorIVCommonRayCoherence.lean`, `_DoorIVCosetHalfCoherence.lean`, and
+`_DoorIVTransverseSpread.lean` into `CampaignProvenIndex`.
+
+VERDICT: finite subdivision of the worst-frequency monomial sum does not by itself supply the missing
+anti-concentration input. Nonnegative common-ray decompositions saturate coherence at `1`; raw real
+coset-half same-sign sums also saturate at `1`; opposite-sign coset-half savings are exactly minority
+half-mass participation. The transverse-spread interface pins what a surviving angular route must pay:
+projection and perpendicular components obey the exact Pythagorean identity, projection deficit bounds
+perpendicular spread, and in the resultant frame per-piece transverse components sum to zero while the
+total projection deficit is exactly `L¹ - ‖Σ zᵢ‖`. No CORE, cancellation, completion, moment-saving,
+anti-concentration theorem, or capacity claim.
+
+Formal exports: `doorIV_commonRay_coherence_eq_one_export`,
+`doorIV_commonRay_not_coherence_le_target_export`, `doorIV_cosetHalf_sameSign_coherence_eq_one_export`,
+`doorIV_cosetHalf_saving_iff_minority_mass_export`, `doorIV_transverse_pythagorean_export`,
+`doorIV_transverse_perp_sq_le_deficit_export`,
+`doorIV_transverse_resultant_frame_perp_sum_zero_export`, and
+`doorIV_transverse_resultant_frame_deficit_budget_export`, axiom-clean with axioms contained in
+`{propext, Classical.choice, Quot.sound}`.

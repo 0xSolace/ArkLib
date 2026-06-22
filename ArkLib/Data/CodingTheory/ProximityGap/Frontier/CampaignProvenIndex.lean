@@ -94,7 +94,10 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._RudnevDilutionFixedSaving
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceDeficitThicknessInvariant
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceSlackVacuousAtArgmax
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVComplexRayCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCommonRayCoherence
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCosetHalfCoherence
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVHalfMassFactorization
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTransverseSpread
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBNonNested
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A1SOSLadderN16
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A3SumProductDepthConfinement
@@ -5784,6 +5787,87 @@ theorem doorIV_jointField_white_diagonalizes_export {ι : Type*}
 #print axioms doorIV_jointField_sum_centered_export
 #print axioms doorIV_jointField_diagonal_sndMoment_nonneg_export
 #print axioms doorIV_jointField_white_diagonalizes_export
+
+/-- **[Lane 1/3 common-ray coherence obstruction]** A finite list of nonnegative pieces on a fixed
+unit complex ray has coherence exactly `1` whenever its total mass is nonzero. Thus subdividing the
+worst-frequency monomial sum cannot by itself supply door-(iv) anti-concentration while all pieces
+remain ray-collinear; a real saving must prove genuine angular spread. -/
+theorem doorIV_commonRay_coherence_eq_one_export {xs : List ℝ} {u : ℂ}
+    (hu : ‖u‖ = 1) (hxs : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) :
+    _root_.ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence
+      (xs.map fun x => (x : ℂ) * u) = 1 :=
+  _root_.ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence_eq_one_of_commonRay_nonneg
+    hu hxs hsum
+
+/-- **[Lane 1/3 common-ray coherence obstruction]** A nonzero common-ray decomposition cannot satisfy
+any strict threshold `θ < 1`. This is the probe-facing target form of the same-ray obstruction: before
+claiming a `ρ ≤ θ` certificate, the door-(iv) route must first rule out common-ray alignment. -/
+theorem doorIV_commonRay_not_coherence_le_target_export {xs : List ℝ} {u : ℂ} {theta : ℝ}
+    (hu : ‖u‖ = 1) (hxs : ∀ x ∈ xs, 0 ≤ x) (hsum : 0 < xs.sum) (htheta : theta < 1) :
+    ¬ _root_.ProximityGap.Frontier.DoorIVCommonRayCoherence.complexPieceCoherence
+        (xs.map fun x => (x : ℂ) * u) ≤ theta :=
+  _root_.ProximityGap.Frontier.DoorIVCommonRayCoherence.commonRay_not_complexPieceCoherence_le_of_lt_one
+    hu hxs hsum htheta
+
+/-- **[Lane 1/3 raw coset-half obstruction]** For the real index-2 coset-half split, same-sign
+half-period sums saturate the two-piece coherence at `1`. The raw split therefore has no intrinsic
+anti-concentration slack at same-sign adversarial frequencies. -/
+theorem doorIV_cosetHalf_sameSign_coherence_eq_one_export {A B : ℝ}
+    (hsign : (0 ≤ A ∧ 0 ≤ B) ∨ (A ≤ 0 ∧ B ≤ 0)) (hsum : A + B ≠ 0) :
+    _root_.ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence A B = 1 :=
+  _root_.ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_eq_one_of_sameSign
+    hsign hsum
+
+/-- **[Lane 1/3 raw coset-half obstruction]** In the opposite-sign case, a non-strict `ε` coherence
+saving is equivalent to the minority half carrying the corresponding `ε/2` share of the total
+absolute half-mass. Opposite signs alone do not prove the missing anti-concentration input. -/
+theorem doorIV_cosetHalf_saving_iff_minority_mass_export {P N ε : ℝ}
+    (hP : 0 ≤ P) (hN : 0 ≤ N) (htotal : 0 < P + N) :
+    _root_.ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence P (-N) ≤ 1 - ε ↔
+      ε * (P + N) ≤ 2 * min P N :=
+  _root_.ProximityGap.Frontier.DoorIVCosetHalfCoherence.twoPieceCoherence_pos_neg_le_one_sub_iff_min_mass
+    hP hN htotal
+
+/-- **[Lane 1/3 transverse-spread geometry]** In a unit direction frame, projection and transverse
+components decompose the squared norm exactly. This names the geometric content a door-(iv) angular
+spread certificate must control. -/
+theorem doorIV_transverse_pythagorean_export {u z : ℂ} (hu : ‖u‖ = 1) :
+    (_root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayProj u z) ^ 2 +
+      (_root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp u z) ^ 2 = ‖z‖ ^ 2 :=
+  _root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayProj_sq_add_rayPerp_sq hu
+
+/-- **[Lane 1/3 transverse-spread geometry]** Projection deficit controls genuine perpendicular
+spread by the sharp inequality `perp² ≤ 2‖z‖(‖z‖ - proj)`. Sector/coherence deficit certificates
+therefore pay an explicit angular-spread budget rather than obtaining cancellation for free. -/
+theorem doorIV_transverse_perp_sq_le_deficit_export {u z : ℂ} (hu : ‖u‖ = 1) :
+    (_root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp u z) ^ 2 ≤
+      2 * ‖z‖ * (‖z‖ - _root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayProj u z) :=
+  _root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp_sq_le_two_norm_mul_deficit hu
+
+/-- **[Lane 1/3 resultant-frame geometry]** In the resultant frame of a nonzero list, the per-piece
+transverse components sum to zero. Any angular-spread argument must control a signed cancelling
+transverse set, not merely subdivide the monomial sum into more pieces. -/
+theorem doorIV_transverse_resultant_frame_perp_sum_zero_export (zs : List ℂ) (hR : zs.sum ≠ 0) :
+    (zs.map (_root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayPerp
+      (zs.sum / (‖zs.sum‖ : ℂ)))).sum = 0 :=
+  _root_.ProximityGap.Frontier.DoorIVTransverseSpread.sum_rayPerp_resultant_frame_eq_zero zs hR
+
+/-- **[Lane 1/3 resultant-frame geometry]** In the resultant frame, the total projection deficit is
+exactly `L¹ - ‖Σ zᵢ‖`, i.e. the coherence deficit times the `L¹` mass. This is only a sharp geometric
+accounting identity; it proves no CORE cancellation bound. -/
+theorem doorIV_transverse_resultant_frame_deficit_budget_export (zs : List ℂ) (hR : zs.sum ≠ 0) :
+    (zs.map (fun z => ‖z‖ - _root_.ProximityGap.Frontier.DoorIVTransverseSpread.rayProj
+      (zs.sum / (‖zs.sum‖ : ℂ)) z)).sum = (zs.map norm).sum - ‖zs.sum‖ :=
+  _root_.ProximityGap.Frontier.DoorIVTransverseSpread.sum_deficit_resultant_frame_eq zs hR
+
+#print axioms doorIV_commonRay_coherence_eq_one_export
+#print axioms doorIV_commonRay_not_coherence_le_target_export
+#print axioms doorIV_cosetHalf_sameSign_coherence_eq_one_export
+#print axioms doorIV_cosetHalf_saving_iff_minority_mass_export
+#print axioms doorIV_transverse_pythagorean_export
+#print axioms doorIV_transverse_perp_sq_le_deficit_export
+#print axioms doorIV_transverse_resultant_frame_perp_sum_zero_export
+#print axioms doorIV_transverse_resultant_frame_deficit_budget_export
 
 /-- **[Lane 3 floor-route constraint — §9 bad-prime localization]** For the #464 §9 `n=32` defect
 core `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (`disc(S) = 2⁴¹·17²·257²`): the disc-ramification
