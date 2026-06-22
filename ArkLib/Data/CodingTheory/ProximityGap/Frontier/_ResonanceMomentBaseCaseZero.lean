@@ -95,4 +95,14 @@ theorem resonanceMoment_zero (u : ZMod m → ℂ) :
   · intro h
     exact absurd (Finset.mem_univ (0 : ZMod m)) h
 
+/-- **`ResonanceConjecture u 0` holds UNCONDITIONALLY** (for ALL `u`, no unit / `m ≥ 2` hypothesis).
+The depth-`0` conjecture target is `(2·m·log m)^0 = 1` and `T 0 = 1`, so the bound `T 0 ≤ 1` holds
+with equality. This is the base-case companion of the depth-`1` discharge
+`resonanceConjecture_one_of_unit`: the Resonance Conjecture is trivially true at the small depths
+`r ∈ {0, 1}`; the open Gauss-period / BGK content lives at depth `r ≍ log m`. -/
+theorem resonanceConjecture_zero (u : ZMod m → ℂ) :
+    ResonanceConjecture u 0 := by
+  unfold ResonanceConjecture
+  rw [resonanceMoment_zero, pow_zero]
+
 end ArkLib.ProximityGap.GaussPhaseResonance
