@@ -12554,3 +12554,30 @@ NO CORE, cancellation, completion, moment, anti-concentration, or capacity claim
 
 Trilogy complete: worst-b gap VALUE (n/2+1), CURVATURE (maximal n), SPECTRUM (full n-1) — all
 dilation/wrong-direction ⟹ no exploitable gap-combinatorial lever at the adversarial frequency.
+
+## [doorIV-worstb-gap-no-long-run] worst-b gap sequence has NO long monotone run — local near-AP lever dead (2026-06-22, sol opus-4-8)
+
+Lane: door-(iv) Lane 1, closing the worst-b gap-complexity survey. After gap-VALUE (n/2+1),
+gap-CURVATURE (maximal n, a670238d0), gap-SPECTRUM (full n-1, b509ff44b) all came out generic, the
+last distinct LOCAL object was an anomalously long monotone (near-AP) run of consecutive gaps — a
+local-AP lever a structured small-ball bound could grip without multiplicative energy.
+
+PROBE (`scripts/probes/probe_dooriv_worstb_gap_longrun.py`; proper mu_n, p ≡ 1 mod n, p ~ n^4 ≫ n^3,
+never n=q-1; uniform coset-rep sampling; EXACT integer gaps; longest circular monotone non-decr/non-incr
+run; global worst-b scan; n=16/32/64 × 5 structured primes):
+
+  L(b*)  median = 3, 4, 4   ;   L(generic) median = 3, 4, 4   ;   ref 2·log2 n = 8, 10, 12
+
+VERDICT — REFUTATION-WITH-MECHANISM. The longest monotone run at the worst frequency is a TINY
+CONSTANT (~3-4), FAR below log n (let alone n), and IDENTICAL to a generic b. No long near-AP stretch
+to exploit; the run-length statistic is frequency-blind.
+
+Constraint lemma (formal kernel `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_DoorIVGapNoLongRun.lean`,
+axiom-clean ⊆ {propext, Quot.sound}): `no_long_run_target` + `run_below_length` (Lworst ≤ K small const =>
+no run of length L0 > K, run < n), `no_run_separation` (Lworst = Lgen => no separating threshold),
+`doorIV_gapNoLongRun_dead` bundles. NEGATIVE structural lemma; NO CORE, cancellation, completion, moment,
+anti-concentration, or capacity claim. CORE stays OPEN.
+
+SURVEY COMPLETE: worst-b gap VALUE (n/2+1) / CURVATURE (maximal n) / SPECTRUM (full n-1) / LOCAL RUN
+(O(1)) are ALL generic or wrong-direction at b* => the entire gap-combinatorial face of door-(iv) Lane-1
+carries no exploitable non-energy structure at the adversarial frequency.
