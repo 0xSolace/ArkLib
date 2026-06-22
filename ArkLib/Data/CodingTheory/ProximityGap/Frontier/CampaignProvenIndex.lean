@@ -5615,9 +5615,38 @@ theorem doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
       ∃ c, 0 < subMag c - subMag b :=
   _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_gap_pos
 
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** The quantitative transfer
+ratio certificate `subMag b / subMag c ≤ r` is exactly the missed-gap certificate
+`(1-r)M₂ ≤ M₂-a*`. This preserves the full scale of the non-nesting obstruction. -/
+theorem doorIV_worstB_ratio_le_iff_witness_gap_ge_export
+    {ι : Type*} {subMag : ι → ℝ} {b c : ι} {r : ℝ} (hpos : 0 < subMag c) :
+    subMag b / subMag c ≤ r ↔ (1 - r) * subMag c ≤ subMag c - subMag b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.ratio_le_iff_witness_gap_ge hpos
+
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** A claimed nested
+sub-maximizer with positive magnitude is equivalent to bounding every thinner-frequency ratio by
+`1`; high percentile evidence is insufficient unless all ratio spikes above one are ruled out. -/
+theorem doorIV_worstB_isSubMaximizer_iff_forall_ratio_le_one_export
+    {ι : Type*} {subMag : ι → ℝ} {b : ι} (hpos : 0 < subMag b) :
+    _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.IsSubMaximizer subMag b ↔
+      ∀ c, subMag c / subMag b ≤ 1 :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.isSubMaximizer_iff_forall_ratio_le_one hpos
+
+/-- **[Lane 1/3 worst-b recursive-ascent obstruction, WorstBNonNested]** Non-nesting is equivalently
+a ratio spike above one at the thinner level. This is the reciprocal audit hook for any proposed
+recursive-ascent proof: one explicit spike refutes nesting. -/
+theorem doorIV_worstB_not_isSubMaximizer_iff_exists_ratio_gt_one_export
+    {ι : Type*} {subMag : ι → ℝ} {b : ι} (hpos : 0 < subMag b) :
+    ¬ _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.IsSubMaximizer subMag b ↔
+      ∃ c, 1 < subMag c / subMag b :=
+  _root_.ArkLib.ProximityGap.Frontier.DoorIVWorstBNonNested.not_isSubMaximizer_iff_exists_ratio_gt_one hpos
+
 #print axioms doorIV_worstB_ratio_lt_one_iff_witness_gap_pos_export
 #print axioms doorIV_worstB_not_isSubMaximizer_of_ratio_le_lt_one_export
 #print axioms doorIV_worstB_not_isSubMaximizer_iff_exists_gap_pos_export
+#print axioms doorIV_worstB_ratio_le_iff_witness_gap_ge_export
+#print axioms doorIV_worstB_isSubMaximizer_iff_forall_ratio_le_one_export
+#print axioms doorIV_worstB_not_isSubMaximizer_iff_exists_ratio_gt_one_export
 
 /-- **[Lane 3 b-side constraint, AttackB1 BadSetCosetNonSidon]** The worst-frequency BAD set
 `{b : |η_b| large}` is a union of negation-symmetric multiplicative `μ_n`-cosets (n even ⟹ `-1 ∈ μ_n`),
