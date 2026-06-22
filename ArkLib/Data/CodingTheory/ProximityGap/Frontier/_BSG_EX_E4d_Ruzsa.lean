@@ -124,7 +124,16 @@ pair, has no fixed cardinality, and is exactly the object the `E4c` countermodel
 refinement `DRCRuzsaInputFixed` (in `_BSG_EX_E4e_RuzsaShapeAudit`) pins this `B` and reduces to this
 `Prop` via `drcRuzsaInput_of_fixed`. The Ruzsa triangle below needs only the *cardinality*
 `#(A'' - B)`, never a per-pair count — which is why this shape is repairable where `DRCRefinedReps`
-was not. -/
+was not.
+
+⚠️ **REFUTED — this `Prop` is FALSE as written (see `_BSG_EX_E4g_attempt0`, `drcRuzsaInput_false`).**
+The clause `A'' ⊆ leftNbhd A G b₀` (apex confinement) paired with `C₁ * K * #A'' ≥ #A` is
+*unsatisfiable* for constant `C₁`: a diagonal countermodel (`#A = 4K²`, every `leftNbhd b₀` a
+singleton) forces `#A'' = 1`, hence `C₁ ≥ 4K`. The theorems below (`card_diffSet_le_of_ruzsa`,
+`bareDRCExtract_of_ruzsaInput`) remain TRUE implications, but their premise can never be supplied,
+so this is a *vacuous* reduction. The honest fix relaxes confinement to `A'' ⊆ A`:
+`DRCRuzsaInputFixedRepaired` + `bareDRCExtract_of_drcRuzsaInputFixedRepaired` (both in
+`_BSG_EX_E4g_attempt0`). Kept here as documented-refuted (the standard `_REFUTED` convention). -/
 def DRCRuzsaInput (C₁ s_C s_c : ℕ) : Prop :=
   ∀ {α : Type} [inst : AddCommGroup α] [inst2 : DecidableEq α],
     ∀ (A : Finset α) (K : ℕ) (G : Finset (α × α)) (b₀ : α),
