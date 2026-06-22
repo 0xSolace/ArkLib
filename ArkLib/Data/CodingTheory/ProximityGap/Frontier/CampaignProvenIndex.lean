@@ -162,6 +162,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGapSpectrumFullRank
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._ResonancePhaseSpectrumRecursion
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -7697,5 +7698,30 @@ theorem doorIV_worstBCoset_not_exists_free_sigma_orbit_mem_of_card_lt_group_expo
 #print axioms doorIV_worstBCoset_card_group_le_superLevelFinset_of_free_sigma_orbit_export
 #print axioms doorIV_worstBCoset_not_exists_free_orbit_mem_of_card_lt_group_export
 #print axioms doorIV_worstBCoset_not_exists_free_sigma_orbit_mem_of_card_lt_group_export
+
+/-- Door-IV spectrum localization export: if the one-step kernel spectrum vanishes at a
+frequency, then every positive depth spectrum vanishes there too.  This is an exact
+algebraic annihilation criterion only, not a Gauss-period bound. -/
+theorem doorIV_phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero_export
+    {m : ℕ} [NeZero m] (ψ : ZMod m → ℂ) (u : ZMod m → ℂ) (r : ℕ)
+    (hmul : ∀ x y : ZMod m, ψ (x + y) = ψ x * ψ y)
+    (hk : ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum ψ u = 0) :
+    ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum ψ u (r + 1) = 0 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero
+    ψ u r hmul hk
+
+/-- Door-IV spectrum localization export: any nonzero positive-depth spectrum certifies
+that the one-step kernel spectrum is nonzero.  The prize-relevant obligation remains an
+upper bound on that one-step kernel. -/
+theorem doorIV_kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero_export
+    {m : ℕ} [NeZero m] (ψ : ZMod m → ℂ) (u : ZMod m → ℂ) (r : ℕ)
+    (hmul : ∀ x y : ZMod m, ψ (x + y) = ψ x * ψ y)
+    (hspec : ArkLib.ProximityGap.GaussPhaseResonance.phaseSpectrum ψ u (r + 1) ≠ 0) :
+    ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum ψ u ≠ 0 :=
+  ArkLib.ProximityGap.GaussPhaseResonance.kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero
+    ψ u r hmul hspec
+
+#print axioms doorIV_phaseSpectrum_succ_eq_zero_of_kernelSpectrum_eq_zero_export
+#print axioms doorIV_kernelSpectrum_ne_zero_of_phaseSpectrum_succ_ne_zero_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
