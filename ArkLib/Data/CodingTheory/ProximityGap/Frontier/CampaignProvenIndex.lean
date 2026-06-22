@@ -276,6 +276,7 @@ anything here; this index does not claim otherwise.
 | `doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
+| `doorIV_no_prize_iff_no_shawBound_nonneg_and_floorPrizeRatio_export` | capstone | DoorIVPrizeShawTetrachotomySynthesis |
 | `doorIV_corePrize_of_dominated_majorant_export` | capstone | ShawValueCapstone |
 | `doorIV_shawOOne_of_coreMajorant_export` | capstone | ShawValueCapstone |
 | `doorIV_landau_shaw_of_dominated_majorant_export` | capstone | ShawValueLandauBridge |
@@ -1807,6 +1808,30 @@ theorem doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export
                 m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
                 m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation)) :=
   ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.prize_iff_shawBounded_nonneg_and_floorPrizeRatio
+    hs hLnn hL hC hδ
+
+/-- **[capstone, DoorIVPrizeShawTetrachotomySynthesis]** Fully discharged wall-side package:
+failure of every nonnegative raw prize constant is exactly failure of every nonnegative Shaw-value
+constant, and the same eventual floor-ratio formulation leaves only door (iv) for honest
+ceiling-respecting mechanisms.  This is pure Lane-2/3 synthesis, not a new estimate. -/
+theorem doorIV_no_prize_iff_no_shawBound_nonneg_and_floorPrizeRatio_export
+    {ι : Type*} {Mfam n Lfam : ι → ℝ}
+    (hs : ∀ i, 0 < ShawValueCapstone.prizeScale (n i) (Lfam i))
+    {L q C δ : ℝ} (hLnn : 0 ≤ L) (hL : 1 < L) (hC : 0 < C) (hδ : δ < 1 / 2) :
+    ∃ N₀ : ℝ,
+      (¬ (∃ K, 0 ≤ K ∧ ShawValueCapstone.rawPrizeFamilyBound Mfam n Lfam K) ↔
+          ¬ (∃ K, 0 ≤ K ∧ ShawValueCapstone.shawValueFamilyBound Mfam n Lfam K)) ∧
+        (∀ nref : ℝ, max N₀ 1 ≤ nref → nref * L ≤ q →
+          (∀ m' : NoFifthDoorTetrachotomy.Mechanism,
+            m'.door.isClassical → m'.RespectsProvenScale q C δ nref) →
+          ∀ M K : ℝ, NoFifthDoorTetrachotomy.prizeScale nref ≤ M →
+            (1 ≤ DoorIVPrizeShawTetrachotomySynthesis.floorPrizeRatio M nref) ∧
+              (M ≤ K * NoFifthDoorTetrachotomy.prizeScale nref ↔
+                DoorIVPrizeShawTetrachotomySynthesis.floorPrizeRatio M nref ≤ K) ∧
+              (∀ m : NoFifthDoorTetrachotomy.Mechanism,
+                m.certScale ≤ NoFifthDoorTetrachotomy.prizeScale nref →
+                m.door = NoFifthDoorTetrachotomy.DoorType.newEvaluation)) :=
+  ArkLib.ProximityGap.Frontier.DoorIVPrizeShawTetrachotomySynthesis.no_prizeBound_iff_no_shawBound_nonneg_and_floorPrizeRatio
     hs hLnn hL hC hδ
 
 /-- **[capstone, ShawValueCapstone]** Elementary dominated-majorant transfer: a campaign
@@ -4115,6 +4140,7 @@ theorem shawValue_bracket_center_between_export {n L : ℝ} (hn : 1 ≤ n) (hL :
 #print axioms doorIV_prize_iff_shawBounded_nonneg_and_doorIV_only_export
 #print axioms doorIV_remaining_gap_is_sqrtL_factor_doorIV_only_export
 #print axioms doorIV_prize_iff_shawBounded_nonneg_and_floorPrizeRatio_export
+#print axioms doorIV_no_prize_iff_no_shawBound_nonneg_and_floorPrizeRatio_export
 #print axioms doorIV_decomposition_block_sum_common_ray_export
 #print axioms doorIV_decomposition_partition_invariant_coherence_export
 #print axioms doorIV_decomposition_no_partition_beats_one_export
