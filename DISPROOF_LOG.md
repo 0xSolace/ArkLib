@@ -1,3 +1,38 @@
+## [floorbad-defect-ramification-tower-invariant] §9 defect ramification locus {17,257} is TOWER-INVARIANT, forced by the unit constant term (2026-06-22, sol)
+
+Lane: door-(iv) is DEAD; this is the ONE off-BGK lever (§9 bad-prime localization / least-prime-in-AP,
+the δ* FLOOR). Lane-3 structural constraint backing §9's "0-dimensional / p-independent / flat-in-p
+bad-prime set" claim with a kernel-checked MECHANISM. Distinct from [floorbad-ramification-disjoint]
+(c2235ea2b), which pins floor-bad `97` ∉ ramification `{17,257}`; THIS pins the ramification SET is
+invariant across the dyadic tower.
+
+For the #464 §9 `n=8`/`n=32` defect tower, with `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` (the n=8
+excess quartic) and `R³²(g) = g¹⁶ − 196g¹² + 4486g⁸ − 21700g⁴ + 1` (the n=32 defect poly in its
+native variable):
+
+- **Tower self-identity:** `R³²(g) = S(g⁴)` EXACTLY over ℤ. The exponent `4 = (p−1)/n` step is the
+  multiplicative subgroup-dilation linking the n=8 and n=32 levels; the SAME quartic governs both.
+- **Unit constant term (the mechanism):** `S(0) = 1`, a unit, so all roots of `S` are units.
+- **Tower-invariant ramification:** `disc(S) = 2⁴¹·17²·257²` and `disc(R³²) = 2¹⁹⁶·17⁸·257⁸` have the
+  SAME odd-prime support `{17, 257}` (each is `17^a·257^b`; no new odd prime). The dilation `u ↦ g⁴`
+  adds no new odd ramification BECAUSE the general identity `oddrad(disc P(g⁴)) = oddrad(disc P) ∪
+  oddrad(P(0))` collapses its second term when `P(0)` is a unit.
+- **Non-trivial:** verified (probe, 40 random quartics) that a generic quartic GAINS extra odd primes
+  under `u ↦ g⁴` (24/40 did); `S` is special precisely via its unit constant term.
+
+VERDICT: the §9 bad-prime *ramification* locus is a FIXED finite set that does not grow with the tower
+level — consistent with (and a kernel-checked backbone for) the dossier's "0-dimensional, flat-in-p"
+characterization of the bad-prime set as a fixed cyclotomic-resultant / height object, not a growing
+√p character sum. This neither closes the floor (the Linnik-existence closure already reduces to the
+wall, `_AvD2_LinnikWindowCountRequired`) nor touches CORE. No CORE / cancellation / completion /
+moment / capacity claim; CORE `M(μ_n) ≤ C·√(n·log(p/n))` remains OPEN.
+
+Formal kernel: `ArkLib/Data/CodingTheory/ProximityGap/Frontier/_FloorBadDefectTowerInvariant.lean`,
+theorem `defect_ramification_tower_invariant` (with `R32_eq_S_dilate`, `S_const_term_unit`,
+`oddRamification_tower_invariant`), indexed
+`CampaignProvenIndex.floorBad_defect_ramification_tower_invariant_export`. Axioms ⊆ {propext,
+Classical.choice, Quot.sound}. Probe: `scripts/probes/probe_444_floorbad_defect_tower_invariant.py`.
+
 ## [jacobi-hankel-routes-to-moments] form (D)'s b_k Hankel/Toda structure ROUTES BACK to the deep moments (form A) — no independent door (2026-06-21, sol)
 
 Lane: door-(iv) Lane-1 constraint verdict closing the "unexplored frontier" Shaw's Jacobi note named

@@ -135,6 +135,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVTwoDilateNoJointExt
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVCoherenceTowerCollapse
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVDilationDescentTelescope
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5887,5 +5888,26 @@ theorem floorBad_disjoint_from_defect_ramification_export :
   FloorBadRamif.floorBad_disjoint_from_ramification
 
 #print axioms floorBad_disjoint_from_defect_ramification_export
+
+/-- **[Lane 3 floor-route constraint — §9 bad-prime 0-dimensionality / tower-invariance]** For the
+#464 §9 `n=8`/`n=32` defect tower: the `n=32` defect polynomial `R³²(g) = g¹⁶ − 196g¹² + 4486g⁸ −
+21700g⁴ + 1` is EXACTLY the `n=8` excess quartic `S(u) = u⁴ − 196u³ + 4486u² − 21700u + 1` composed
+with the subgroup-dilation `u = g⁴` (the `(p−1)/n` exponent step), `S` has a UNIT constant term
+`S(0)=1`, and consequently the odd-prime ramification support of `disc(S)` and of `disc(R³²)` is the
+*same* fixed set `{17, 257}` (each is `17^a·257^b`; the dilation adds no new odd prime BECAUSE the
+constant term is a unit). So the §9 bad-prime *ramification* locus is a fixed finite set that does NOT
+grow with the tower level — a kernel-checked backbone for the dossier's "0-dimensional / flat-in-`p`"
+characterization of the bad-prime set, *forced by the unit constant term*. Distinct from
+`floorBad_disjoint_from_defect_ramification_export` (which pins floor-bad `97` ∉ `{17,257}`; this
+pins the ramification SET is tower-invariant). No CORE / cancellation / completion / moment /
+capacity claim; CORE remains OPEN. -/
+theorem floorBad_defect_ramification_tower_invariant_export :
+    (∀ g : ℤ, FloorBadTower.R32 g = FloorBadTower.S (g ^ 4)) ∧
+    (FloorBadTower.S (0 : ℤ) = 1) ∧
+    (∀ q : ℕ, q.Prime → q ≠ 2 → q ∣ FloorBadTower.discS → q = 17 ∨ q = 257) ∧
+    (∀ q : ℕ, q.Prime → q ≠ 2 → q ∣ FloorBadTower.discR32 → q = 17 ∨ q = 257) :=
+  FloorBadTower.defect_ramification_tower_invariant
+
+#print axioms floorBad_defect_ramification_tower_invariant_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
