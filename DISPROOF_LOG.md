@@ -12182,3 +12182,32 @@ theorems `norm_lt_two_mul_max_of_coherent_imbalanced`, `two_mul_max_sub_norm_eq_
 with axioms contained in `{propext, Classical.choice, Quot.sound}`. Distinct from
 `_DoorIVHalfMassBalanceAtArgmax` (which proves the *conditional* balanced identity ‖A+B‖=2‖A‖); this
 pins that the conditioning hypothesis FAILS at the real argmax.
+
+## [doorIV-worstb-imbalance-growth] worst-b half-imbalance GROWS with n + heavier side is unstructured (PROBE-ONLY) (2026-06-21, sol opus-4-8)
+
+Lane: door-(iv) Lane-1 probe refinement of `[doorIV-worstb-coherent-imbalance]`. Object: at the TRUE
+worst frequency b* the index-2 coset-halves A (=μ_{n/2}, "squares") and B (=coset h·μ_{n/2}) are coherent
+(ρ=1) but imbalanced (balance r(b*)=min/max < 1).
+
+PROBE (`scripts/probes/probe_444_worstb_imbalance_growth.py`; EXHAUSTIVE worst-b coset scans over
+multiple odd-m primes per n, p≫n³, never n=q-1; exhaustiveness-guarded — non-exhaustive primes skipped):
+- Q1 heavier-half identity FLIPS across primes: heavier=A(squares) fraction = 0.67 (n=16, 12 primes),
+  0.38 (n=32, 8 primes), 0.00 (n=64, 3 primes). NOT locked to one residue class ⟹ the asymmetric
+  half-mass recursion carries NO exploitable parity in which half dominates.
+- Q2 imbalance GROWS with n: the worst-b balance FLOOR min_p r(b*) = 0.704 (n=16) → 0.527 (n=32) →
+  0.478 (n=64) — DECREASING. The two halves DIVERGE in magnitude as the subgroup thins; they do NOT
+  re-balance.
+
+VERDICT (probe-only): this SHARPENS `[doorIV-worstb-coherent-imbalance]` (which said "strictly
+imbalanced, non-monotone") to a MONOTONE-DOWN balance floor, and REFUTES the earlier
+`[door-iv-halfmass-balanced-at-argmax]` claim that worst-b is balanced — at the TRUE argmax the halves
+are coherent-but-divergent and the divergence only grows with n. Any "drop-a-half" / symmetric-descent
+lever is therefore doubly dead: the lighter half is never the negligible one in a *fixed* arithmetic
+class (Q1), and the halves grow MORE unequal (Q2) so the symmetric ÷2 simplification is increasingly
+wrong at scale.
+
+NOT formalized (HARD RULE 1, no-larp): the n-growth of the imbalance floor is an empirical analytic
+trend whose proof would require exactly the open CORE structure; asserting a Lean theorem for it would
+be fabricated closure. Logged as a precise probe verdict only. The axiom-clean *conditional* content
+(coherent + ‖A‖≠‖B‖ ⟹ ‖A+B‖ < 2·max, symmetric descent inapplicable) is already kernel-checked in
+`_DoorIVWorstBCoherentImbalance.lean`. CORE M(μ_n) ≤ C·√(n·log(p/n)) remains OPEN.
