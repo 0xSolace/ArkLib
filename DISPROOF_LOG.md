@@ -11842,3 +11842,21 @@ kurtosis_deficit) and `_DoorIVNegationSymmetryRealAndBalanced.lean` (signed_valu
 signed_value_selector_invariant_of_conjClosed). New `CampaignProvenIndex` exports:
 `doorIV_no_kurtosis_disproof_export`, `doorIV_signed_value_selector_pm_b_blind_export`,
 `doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-largestgap-energyblind-indexed] the longest-empty-arc small-ball functional yields only the trivial ceiling — now citable (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 1. Indexed `_DoorIVLargestGapEnergyBlind` (was unindexed): the NON-energy small-ball
+quantity the brief's anti-concentration probe asks about (max single-residue gap / longest empty arc).
+
+VERDICT: for unit-modulus terms, the largest-empty-arc split yields only the TRIVIAL linear ceiling
+‖∑ z_j‖ ≤ n (an empty arc has no inside mass, so the cardinality-split RHS is exactly n, blind to the gap
+size). Hence no largest-gap certificate can fit below a strict budget B < n; the empty-arc statistic
+supplies ZERO √-cancellation. A door-(iv) bound must prove coherence/cancellation among the surviving
+terms, not merely exhibit a hole. Complements the additive-energy/Sidon levers (also dead): the
+largest-gap functional is a DIFFERENT small-ball quantity and it too reproduces only the trivial ceiling.
+NO CORE / cancellation / completion / capacity claim. CORE OPEN.
+
+Formal kernel: `_DoorIVLargestGapEnergyBlind.lean` (largestGap_yields_only_trivial_ceiling,
+no_emptyArc_split_rhs_le_strict_budget, emptyArc_budget_forces_card_le, largestGap_ceiling_independent_of_gap).
+New `CampaignProvenIndex` exports: `doorIV_largestGap_yields_only_trivial_ceiling_export`,
+`doorIV_no_emptyArc_split_rhs_le_strict_budget_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.

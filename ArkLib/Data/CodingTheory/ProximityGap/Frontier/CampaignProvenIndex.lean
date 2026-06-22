@@ -119,6 +119,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstIndexDelocaliz
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AttackB1_BadSetCosetNonSidon
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AntiConcKurtosisRefuted
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVNegationSymmetryRealAndBalanced
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBlind
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5354,5 +5355,30 @@ theorem doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export
 
 #print axioms doorIV_signed_value_selector_pm_b_blind_export
 #print axioms doorIV_signed_value_selector_pm_b_blind_of_conjClosed_export
+
+/-- **[Lane 1 constraint, DoorIVLargestGapEnergyBlind]** The longest-empty-arc / largest-gap small-ball
+functional (the NON-energy small-ball quantity — max single-residue gap / longest empty arc) yields only
+the TRIVIAL linear ceiling `‖∑ z_j‖ ≤ n` for unit-modulus terms: an empty arc has no inside mass, so the
+cardinality split right-hand side is exactly `n`, blind to the gap size. Hence the largest-gap statistic
+cannot supply any √-cancellation — a door-(iv) bound must prove coherence/cancellation among the
+surviving terms, not merely exhibit a hole. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_largestGap_yields_only_trivial_ceiling_export
+    {n : ℕ} (z : Fin n → ℂ) (hz : ∀ j, ‖z j‖ = 1) (S : Finset (Fin n)) (hS : S = ∅) :
+    ‖∑ j, z j‖ ≤ (n : ℝ) :=
+  _root_.ProximityGap.Frontier.DoorIVLargestGapEnergyBlind.largestGap_yields_only_trivial_ceiling
+    z hz S hS
+
+/-- **[Lane 1 constraint, DoorIVLargestGapEnergyBlind]** Strict-budget obstruction: no largest-empty-arc
+split certificate can fit below a strict budget `B < n` (the split RHS is exactly `n`). A √-scale
+door-(iv) bound cannot come from the empty-arc statistic alone. NO CORE / cancellation / completion /
+capacity claim. -/
+theorem doorIV_no_emptyArc_split_rhs_le_strict_budget_export
+    {n : ℕ} (S : Finset (Fin n)) (hS : S = ∅) {B : ℝ} (hB : B < (n : ℝ)) :
+    ¬ (S.card : ℝ) + ((Sᶜ).card : ℝ) ≤ B :=
+  _root_.ProximityGap.Frontier.DoorIVLargestGapEnergyBlind.no_emptyArc_split_rhs_le_strict_budget
+    S hS hB
+
+#print axioms doorIV_largestGap_yields_only_trivial_ceiling_export
+#print axioms doorIV_no_emptyArc_split_rhs_le_strict_budget_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
