@@ -122,6 +122,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVNegationSymmetryRea
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVLargestGapEnergyBlind
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBDyadicSelectorWalled
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._AvN4_PadicMahlerSupplyGap
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVQVCauchySchwarzCircular
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -5435,5 +5436,31 @@ theorem doorIV_mahler_saddleDepth_unbounded_export (N : ℕ) :
 
 #print axioms doorIV_padic_mahler_no_leverage_export
 #print axioms doorIV_mahler_saddleDepth_unbounded_export
+
+/-- **[Lane 3 refuted-lever constraint, QVCauchySchwarzCircular — Shaw's Lever B]** Additive-energy /
+quadratic-variation circularity: the Cauchy-Schwarz + proven-QV (Freedman) combination on the
+log-ratio tower `Mtow` only RECOVERS the trivial ceiling `log(Mtow a) - log(Mtow 0) ≤ a·log 2`. It is the
+LARGEST value consistent with the QV inequality `S² ≤ a·log2·S` at `S ≥ 0`, so the QV lever does not
+distinguish the prize from the trivial ceiling. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_qv_route_recovers_trivial_ceiling_export
+    (Mtow : ℕ → ℝ) (a : ℕ)
+    (hpos : ∀ i, 0 < Mtow i) (hdouble : ∀ i, Mtow (i + 1) ≤ 2 * Mtow i)
+    (hmono : ∀ i, Mtow i ≤ Mtow (i + 1)) :
+    Real.log (Mtow a) - Real.log (Mtow 0) ≤ (a : ℝ) * Real.log 2 :=
+  _root_.ProximityGap.Frontier.DoorIVQVCauchySchwarzCircular.qv_route_recovers_trivial_ceiling
+    Mtow a hpos hdouble hmono
+
+/-- **[Lane 3 refuted-lever constraint, QVCauchySchwarzCircular — Shaw's Lever B]** No sublinear drift
+from the QV route: any drift bound strictly below the trivial ceiling, `R < a·log 2`, is NOT a
+consequence of the Cauchy-Schwarz + QV combination (which is satisfied by the full ceiling `a·log 2`).
+The Freedman QV lever alone cannot force the sublinear excess `O(log a)` the prize requires; an
+independent mean-drift control is necessary. NO CORE / cancellation / completion / capacity claim. -/
+theorem doorIV_qv_route_no_sublinear_saving_export (a : ℕ) (R : ℝ)
+    (hR : R < (a : ℝ) * Real.log 2) :
+    ¬ ((a : ℝ) * Real.log 2 ≤ R) :=
+  _root_.ProximityGap.Frontier.DoorIVQVCauchySchwarzCircular.qv_route_no_sublinear_saving a R hR
+
+#print axioms doorIV_qv_route_recovers_trivial_ceiling_export
+#print axioms doorIV_qv_route_no_sublinear_saving_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex

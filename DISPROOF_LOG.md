@@ -11896,3 +11896,21 @@ Formal kernel: `_AvN4_PadicMahlerSupplyGap.lean` (padic_mahler_no_leverage, supp
 saddleDepth_unbounded, rigidity_band_below_saddle). New `CampaignProvenIndex` exports:
 `doorIV_padic_mahler_no_leverage_export`, `doorIV_mahler_saddleDepth_unbounded_export`.
 Axioms ⊆ {propext, Classical.choice, Quot.sound}.
+
+## [doorIV-qv-cauchyschwarz-circular-indexed] Shaw's Lever B (additive-energy / QV circularity) refuted as citable constraint (2026-06-21, g-doorIV)
+
+Lane: door-(iv) Lane 3 — formalize Shaw's refuted Lever B (additive-energy circularity) per the brief's
+explicit Lane-3 list. Kernel `_DoorIVQVCauchySchwarzCircular` was unindexed.
+
+VERDICT: the quadratic-variation / Cauchy-Schwarz route is circular. The CS + proven-QV (Freedman)
+combination on the log-ratio tower only RECOVERS the trivial ceiling log(Mtow a)-log(Mtow 0) ≤ a·log 2 —
+the largest value consistent with S² ≤ a·log2·S at S ≥ 0. Any sublinear drift R < a·log 2 is NOT a
+consequence of the QV combination (satisfied by the full ceiling), so the Freedman QV lever alone cannot
+force the sublinear excess O(log a) the prize requires; an independent mean-drift control is necessary.
+The QV input does not distinguish the prize from the trivial ceiling. Lever B of Shaw's no-fifth-door
+tetrachotomy, now kernel-checked. NO CORE / cancellation / completion / capacity claim. CORE OPEN.
+
+Formal kernel: `_DoorIVQVCauchySchwarzCircular.lean` (qv_route_recovers_trivial_ceiling,
+qv_route_no_sublinear_saving, cauchy_schwarz_increments, drift_sq_le_card_mul_log2_mul_drift). New
+`CampaignProvenIndex` exports: `doorIV_qv_route_recovers_trivial_ceiling_export`,
+`doorIV_qv_route_no_sublinear_saving_export`. Axioms ⊆ {propext, Classical.choice, Quot.sound}.
