@@ -153,6 +153,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBParticipation
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBCoherentImbalance
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVGreedyHeavierHalfDescent
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVWorstBSpikeMomentBound
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._DoorIVZLagrangeBound
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadRamificationDisjoint
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._FloorBadDefectTowerInvariant
 
@@ -6800,6 +6801,42 @@ theorem doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
 #print axioms doorIV_worstB_spike_count_mul_sq_le_centered_sndMoment_export
 #print axioms doorIV_worstB_spike_count_le_sndMoment_div_export
 #print axioms doorIV_worstB_sndMoment_ge_sq_of_exists_threshold_export
+
+
+/-- **[Door-IV/G1 exact incidence bound]** The non-symmetric `Z` correction in the even/odd descent
+is the root count of the explicit quadratic form `Pp² - X·Qp²`; if that polynomial is nonzero,
+Lagrange gives `Z ≤ natDegree(R)`.  This is degree control only, not Gauss-sum cancellation, and it
+records the exact algebraic incidence handle left as prose in the A+Z descent rung. -/
+theorem doorIV_descentZ_card_le_natDegree_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F} (hR : ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (B.filter (fun y => (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2)).card
+      ≤ (ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp).natDegree :=
+  ArkLib.ProximityGap.EvenOddDescent.descentZ_card_le_natDegree hR B
+
+/-- **[Door-IV/G1 exact incidence bound]** The same `Z` correction is bounded by the explicit word
+exponent envelope `1 + 2 * max deg(Pp) deg(Qp)`.  Thus the descent's non-symmetric branch is governed
+by word degree/exponent, not by an unproved subgroup-root `O(1)` hope. -/
+theorem doorIV_descentZ_card_le_degBound_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F} (hR : ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (B.filter (fun y => (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2)).card
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  ArkLib.ProximityGap.EvenOddDescent.descentZ_card_le_degBound hR B
+
+/-- **[Door-IV/G1 exact incidence bound]** Indicator-sum consumer form of the exponent-controlled
+`Z` bound, matching the summed A+Z descent notation.  This is the usable capstone for downstream
+formal reductions: non-symmetric agreement contributes at most `1 + 2·max(deg Pp, deg Qp)`. -/
+theorem doorIV_descentZ_indicator_sum_le_degBound_export {F : Type*} [Field F] [DecidableEq F]
+    {Pp Qp : Polynomial F} (hR : ArkLib.ProximityGap.EvenOddDescent.descentQuadform Pp Qp ≠ 0)
+    (B : Finset F) :
+    (∑ y ∈ B, (if (Pp.eval y) ^ 2 = y * (Qp.eval y) ^ 2 then 1 else 0))
+      ≤ 1 + 2 * max Pp.natDegree Qp.natDegree :=
+  ArkLib.ProximityGap.EvenOddDescent.descentZ_indicator_sum_le_degBound hR B
+
+#print axioms doorIV_descentZ_card_le_natDegree_export
+#print axioms doorIV_descentZ_card_le_degBound_export
+#print axioms doorIV_descentZ_indicator_sum_le_degBound_export
 
 /-- **[Lane 1 worst-b selector obstruction]** If the frequency statistic is constant on group
 orbits, then super-level membership is exactly invariant under every orbit move. A worst-`b`
