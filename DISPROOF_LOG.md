@@ -11625,3 +11625,17 @@ successful proof must prove the budget inequality on genuinely positive wraparou
 DC/char-0 credit. This is a reduction/obstruction capstone only: no CORE upper bound, no cancellation,
 no completion, no anti-concentration, and the count-positivity bridge remains an explicit hypothesis.
 
+
+## door-(iv) Lane 2 — orbit-count wall dichotomy permanently indexed (2026-06-21)
+
+Scope: permanent CampaignProvenIndex export of `_OrbitCountWallDichotomy`, the named post-onset
+reduction backbone. Added citable exports for:
+- `OrbitCountWall` as the per-shell condition `n * orbitCount r ≤ Wick r`;
+- the boolean saddle dichotomy `OnsetSavesSaddle ∨ ¬OnsetSavesSaddle`;
+- the onset-fails branch: orbit-count wall + explicit orbit-to-moment transfer ⇒ saddle bound;
+- the pigeonhole route: short-ball cardinality `p < S.card`, with `w ≤ r`, refutes onset saving and
+  routes any saddle bound through the orbit-count wall.
+
+Verdict: once onset is killed by the pigeonhole at prize scale, the surviving object is exactly the
+uniform orbit-count wall. This is reduction/capstone indexing only: the orbit wall and orbit-to-moment
+transfer remain explicit hypotheses, not proved; no CORE upper bound or cancellation claim.

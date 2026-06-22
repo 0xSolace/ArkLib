@@ -103,6 +103,7 @@ import ArkLib.Data.CodingTheory.ProximityGap.Frontier._HDCocyclePhaseCoupling
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._A2OnsetLatticeMinimum
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._WraparoundSaddleCreditForced
 import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OnsetToSaddleCreditChain
+import ArkLib.Data.CodingTheory.ProximityGap.Frontier._OrbitCountWallDichotomy
 
 /-!
 # Campaign-Proven Index — permanent named exports of the prize close-out (#444)
@@ -4654,6 +4655,78 @@ theorem doorIV_onset_chain_saddle_spends_credit_export
 #print axioms doorIV_saddle_credit_pos_of_budget_wrap_pos_export
 #print axioms doorIV_saddle_target_budget_not_vanishing_export
 #print axioms doorIV_onset_chain_wrap_pos_of_pigeonhole_export
+
 #print axioms doorIV_onset_chain_saddle_spends_credit_export
+
+/-! ## Door-IV Lane 2 orbit-count wall dichotomy exports.
+Scope: **reduction capstone**.
+
+These exports make the named `OrbitCountWall` reduction discoverable. They record the precise
+post-onset dichotomy: if onset does not save the saddle, then the only remaining branch is the
+per-shell orbit-count wall plus an explicit orbit-to-moment transfer hypothesis. The wall itself is
+not proved here.
+-/
+
+/-- **[definition export, OrbitCountWallDichotomy]** The per-shell orbit-count wall: the `n`-fold
+orbit contribution at depth `r` is within the Wick saddle budget. This is the named open obligation
+that survives once onset fails. -/
+theorem doorIV_orbitCountWall_def_export
+    (orbitCount Wick : ℕ → ℝ) (n : ℝ) (r : ℕ) :
+    _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.OrbitCountWall
+        orbitCount Wick n r ↔
+      n * orbitCount r ≤ Wick r := by
+  rfl
+
+/-- **[capstone, OrbitCountWallDichotomy]** Boolean saddle dichotomy: either onset saves the saddle
+(no short relation at depth `r`) or onset fails and the burden passes to the orbit-count branch. -/
+theorem doorIV_orbit_saddle_obligation_dichotomy_export
+    (m : ℕ) {p : ℕ} (g : ZMod p) (r : ℕ) :
+    _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r ∨
+      ¬ _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r :=
+  _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.saddle_obligation_dichotomy
+    m g r
+
+/-- **[conditional reduction, OrbitCountWallDichotomy]** On the onset-fails branch, a per-shell
+orbit-count wall plus the explicit orbit-to-moment transfer implies the saddle bound. This is the
+kernel form of "the saddle bound must come from `OrbitCountWall`". -/
+theorem doorIV_orbit_saddle_bound_of_onset_fail_and_wall_export
+    (m : ℕ) {p : ℕ} (g : ZMod p) (r : ℕ)
+    (orbitCount Wick : ℕ → ℝ) (n : ℝ) (SaddleBound : ℕ → Prop)
+    (htransfer :
+      _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.OrbitWallImpliesSaddle
+        m g orbitCount Wick n SaddleBound)
+    (honsetFail :
+      ¬ _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r)
+    (hwall :
+      _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.OrbitCountWall
+        orbitCount Wick n r) :
+    SaddleBound r :=
+  _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.saddle_bound_of_onset_fail_and_wall
+    m g r orbitCount Wick n SaddleBound htransfer honsetFail hwall
+
+/-- **[conditional reduction, OrbitCountWallDichotomy]** Pigeonhole below the saddle forces onset
+failure, so with the explicit orbit-to-moment transfer and the orbit-count wall the saddle bound is
+routed through `OrbitCountWall`, not through `W_r=0`. -/
+theorem doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
+    {m : ℕ} (p : ℕ) [NeZero p] (g : ZMod p) (w r : ℕ) (hwr : w ≤ r)
+    (S : Finset (Fin m → ℤ))
+    (hSw : ∀ a ∈ S, _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.l1 a ≤ w)
+    (hcard : p < S.card)
+    (orbitCount Wick : ℕ → ℝ) (n : ℝ) (SaddleBound : ℕ → Prop)
+    (htransfer :
+      _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.OrbitWallImpliesSaddle
+        m g orbitCount Wick n SaddleBound)
+    (hwall :
+      _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.OrbitCountWall
+        orbitCount Wick n r) :
+    ¬ _root_.ProximityGap.Frontier.A2OnsetLatticeMinimum.OnsetSavesSaddle m g r ∧
+      SaddleBound r :=
+  _root_.ArkLib.ProximityGap.Frontier.OrbitCountWallDichotomy.pigeonhole_routes_to_orbit_wall
+    p g w r hwr S hSw hcard orbitCount Wick n SaddleBound htransfer hwall
+
+#print axioms doorIV_orbitCountWall_def_export
+#print axioms doorIV_orbit_saddle_obligation_dichotomy_export
+#print axioms doorIV_orbit_saddle_bound_of_onset_fail_and_wall_export
+#print axioms doorIV_orbit_pigeonhole_routes_to_orbit_wall_export
 
 end ArkLib.ProximityGap.Frontier.CampaignProvenIndex
